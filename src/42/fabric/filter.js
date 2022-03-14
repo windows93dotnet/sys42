@@ -1,7 +1,7 @@
 // @read https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters
 // @read https://ansible-docs.readthedocs.io/zh/stable-2.0/rst/playbooks_filters.html
 
-import locate from "./access/locate.js"
+import locate from "./locator/locate.js"
 
 const filters = {}
 

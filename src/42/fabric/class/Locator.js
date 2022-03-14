@@ -1,7 +1,7 @@
-import exists from "../access/exists.js"
-import locate from "../access/locate.js"
-import allocate from "../access/allocate.js"
-import deallocate from "../access/deallocate.js"
+import exists from "../locator/exists.js"
+import locate from "../locator/locate.js"
+import allocate from "../locator/allocate.js"
+import deallocate from "../locator/deallocate.js"
 
 export default class Locator {
   constructor(value = {}, options) {

@@ -2,7 +2,7 @@
 // @read https://web.dev/sanitizer/
 // @read https://web.dev/trusted-types/
 
-import locate from "../access/locate.js"
+import locate from "../locator/locate.js"
 import parseTemplate from "./template/parseTemplate.js"
 import formatTemplate from "./template/formatTemplate.js"
 import makeTemplate from "./template/makeTemplate.js"

@@ -1,4 +1,4 @@
-import parseDotNotation from "../../access/parseDotNotation.js"
+import parseDotNotation from "../../locator/parseDotNotation.js"
 
 export default function getBoundSchema(schema, path) {
   let found = false

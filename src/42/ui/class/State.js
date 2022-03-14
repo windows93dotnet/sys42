@@ -1,6 +1,6 @@
-import observe from "../../fabric/access/observe.js"
+import observe from "../../fabric/locator/observe.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
-import locate from "../../fabric/access/locate.js"
+import locate from "../../fabric/locator/locate.js"
 import Emitter from "../../fabric/class/Emitter.js"
 
 export default class State extends Emitter {

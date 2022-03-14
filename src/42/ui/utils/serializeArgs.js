@@ -1,5 +1,5 @@
-import locate from "../../fabric/access/locate.js"
-import parseDotNotation from "../../fabric/access/parseDotNotation.js"
+import locate from "../../fabric/locator/locate.js"
+import parseDotNotation from "../../fabric/locator/parseDotNotation.js"
 
 export default function serializeArgs(event, target, args) {
   let rect
