@@ -1,5 +1,5 @@
 // import parseDotNotation from "../../fabric/locator/parseDotNotation.js"
-import template from "../../fabric/formats/template.js"
+import template from "../../system/formats/template.js"
 import filter from "../../fabric/filter.js"
 // import { joinJSONPointer } from "../../type/json/JSONPointerUtils.js"
 

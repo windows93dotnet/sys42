@@ -1,5 +1,5 @@
 import groupBy from "../array/groupBy.js"
-import { isObject, isIterable, isDate } from "../../is.js"
+import { isObject, isIterable, isDate } from "../any/is.js"
 
 const TYPES = new Set(["string", "number", "boolean"])
 

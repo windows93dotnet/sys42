@@ -2,7 +2,7 @@
 
 // @thanks https://github.com/Microsoft/vscode/blob/master/src/vs/platform/contextkey/common/contextkey.ts
 
-import parseLiteral from "../../type/regex/parseLiteral.js"
+import parseLiteral from "../../../fabric/type/regex/parseLiteral.js"
 
 export const operators = {
   "===": (a, b) => a === b,

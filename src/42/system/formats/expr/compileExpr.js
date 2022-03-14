@@ -1,4 +1,4 @@
-import locate from "../../locator/locate.js"
+import locate from "../../../fabric/locator/locate.js"
 
 export default function compileExpr(rules) {
   if (rules.length === 1) {

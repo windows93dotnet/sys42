@@ -1,6 +1,6 @@
 /* eslint-disable max-params */
 import registerRenderer from "../utils/registerRenderer.js"
-import template from "../../fabric/formats/template.js"
+import template from "../../system/formats/template.js"
 
 const { fromTemplate } = registerRenderer
 

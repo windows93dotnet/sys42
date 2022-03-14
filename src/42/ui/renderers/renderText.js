@@ -1,7 +1,7 @@
 import render from "../render.js"
-import parseMarkdown from "../../fabric/formats/markdown/parseMarkdown.js"
+import parseMarkdown from "../../system/formats/markdown/parseMarkdown.js"
 import registerRenderer from "../utils/registerRenderer.js"
-import template from "../../fabric/formats/template.js"
+import template from "../../system/formats/template.js"
 import create from "../create.js"
 
 export default function renderText(text, ctx, parent, textElement) {

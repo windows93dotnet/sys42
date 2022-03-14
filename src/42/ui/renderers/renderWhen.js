@@ -1,7 +1,7 @@
 import render from "../render.js"
 import createRange from "../../fabric/dom/createRange.js"
 import registerRenderer from "../utils/registerRenderer.js"
-import expr from "../../fabric/formats/expr.js"
+import expr from "../../system/formats/expr.js"
 
 export default function renderWhen(def, ctx, parent, textMaker) {
   const parsed = expr.parse(def.when)

@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 
 import setAttributes from "../fabric/dom/setAttributes.js"
-import isEmptyObject from "../fabric/is/isEmptyObject.js"
+import isEmptyObject from "../fabric/type/any/is/isEmptyObject.js"
 import uid from "../fabric/uid.js"
 import parseDotNotation from "../fabric/locator/parseDotNotation.js"
 import ELEMENTS_ALLOW_LIST from "../fabric/constants/ELEMENTS_ALLOW_LIST.js"

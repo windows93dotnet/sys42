@@ -34,7 +34,7 @@
   }
 </style>
 
-<script type="module">
+<!-- <script type="module">
   import ui from "../42/ui.js"
 
   const app = await ui({
@@ -58,4 +58,14 @@
     app.data.bar = true
     app.data.list.push("c")
   }, 100)
+</script> -->
+
+<!-- <script type="module">
+  import test from "../42/test.js"
+  console.log(test)
+</script> -->
+
+<script type="module">
+  import testRunner from "../42/system/dev/testRunner.js"
+  testRunner(["/tests/ui.test.js"])
 </script>
