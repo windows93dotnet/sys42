@@ -1,5 +1,5 @@
 import Callable from "../class/Callable.js"
-import hashmap from "../../type/object/hashmap.js"
+import hashmap from "../type/object/hashmap.js"
 
 const GETTERS = Symbol.for("chainable.GETTERS")
 const METHODS = Symbol.for("chainable.METHODS")
@@ -21,7 +21,7 @@ function makeContext(chainlink, entries, tracker = Object.create(null)) {
       },
     },
     data: {
-      get: () => {
+      get() {
         tracker.data = merge(entries, chainlink[DEFAULTS])
         return tracker.data
       },
