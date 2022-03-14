@@ -1,0 +1,59 @@
+:root {
+  --txt-xxs: xx-small;
+  --txt-xs: x-small;
+  --txt-sm: smaller;
+  --txt-lg: larger;
+  --txt-xl: x-large;
+  --txt-xxl: xx-large;
+}
+
+.txt-xxs { font-size: var(--txt-xxs); }
+.txt-xs { font-size: var(--txt-xs); }
+.txt-sm { font-size: var(--txt-sm); }
+.txt-lg { font-size: var(--txt-lg); }
+.txt-xl { font-size: var(--txt-xl); }
+.txt-xxl { font-size: var(--txt-xxl); }
+
+.font-sans { font: var(--font-sans); }
+.font-mono { font: var(--font-mono); }
+
+.txt-normal {
+  font-weight: normal;
+  font-style: normal;
+  text-transform: none;
+  text-decoration: none;
+}
+
+.txt-inherit {
+  color: inherit;
+  font-family: inherit;
+  font-weight: inherit;
+  font-size: inherit;
+  text-decoration: inherit;
+  text-transform: inherit;
+}
+
+.txt-center { text-align: center; }
+.txt-left { text-align: left; justify-content: start; }
+.txt-right { text-align: right; justify-content: end; }
+.txt-justify { text-align: justify; }
+.txt-wrap { overflow-wrap: break-word; }
+.txt-break { white-space: break-spaces; }
+
+.txt-b { font-weight: bold; }
+.txt-i { font-style: italic; }
+.txt-s { text-decoration: line-through; }
+.txt-u { text-decoration: underline; }
+.txt-u-dot { text-decoration: underline dotted; }
+
+.txt-upper { text-transform: uppercase; }
+.txt-lower { text-transform: lowercase; }
+.txt-sentence::first-letter { text-transform: capitalize; }
+
+.txt-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  /* prevent hidden aliasing using pixel fonts */
+  text-indent: 1px;
+}

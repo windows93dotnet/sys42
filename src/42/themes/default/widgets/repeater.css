@@ -1,0 +1,15 @@
+:where(ui-repeater) {
+  display: block;
+  list-style: none;
+  overflow: auto;
+  max-height: 300px;
+}
+
+:where(ui-repeater > li) {
+  width: 100%;
+  padding-top: var(--fieldset-my);
+}
+
+:where(ui-repeater > li:first-child) {
+  padding-top: 0;
+}

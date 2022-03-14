@@ -1,0 +1,36 @@
+ui-folderview {
+  /* flex: 1; */
+  display: block;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+
+  position: relative;
+  padding: var(--unit-md) 0;
+}
+
+ui-folderview:focus {
+  outline: none;
+}
+
+ui-explorer {
+  /* flex: 1; */
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+}
+
+.ui-error {
+  padding: var(--unit);
+  max-width: 100%;
+}
+
+.ui-error * {
+  max-width: 100%;
+}
+
+.ui-error samp {
+  display: block;
+  white-space: pre;
+  height: min-content;
+  padding: var(--unit-md);
+}

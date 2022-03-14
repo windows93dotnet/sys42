@@ -1,0 +1,56 @@
+ui-swatch {
+  display: inline-block;
+  width: 20px;
+  overflow: hidden;
+  position: relative;
+  aspect-ratio: 1;
+  border: 1px solid #000;
+  box-shadow: inset 0 0 0 1px #fff5;
+  background-color: var(--color);
+  cursor: var(--cursor-pointer, pointer);
+}
+
+ui-swatch::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: auto;
+  height: auto;
+  z-index: -1;
+  background: var(--checkboard-bg);
+}
+
+ui-swatch:active {
+  box-shadow: none;
+}
+
+:where([virtualizable]) {
+  position: relative;
+  contain: strict;
+  height: 300px;
+  overflow-y: scroll;
+}
+
+:where([geometry]),
+:where([data-geometry]) {
+  position: fixed;
+  transform: translate(200vw, 200vh);
+}
+
+ui-dialog:not(:defined),
+ui-menu:not(:defined) {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rubberband {
+  stroke: #fff;
+  fill: transparent;
+  stroke-width: 1px;
+  shape-rendering: crispEdges;
+  stroke-dasharray: 1;
+  mix-blend-mode: difference;
+}

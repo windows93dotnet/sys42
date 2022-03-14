@@ -1,0 +1,172 @@
+/* stylelint-disable no-duplicate-selectors */
+
+/* [1] subpixel adjustment to minimise aliasing on 1px borders */
+
+:root {
+  --tail-offset-x: 0px;
+  --tail-h: var(--unit-md);
+  --tail-w: var(--unit-md);
+}
+
+:where(.tail-cr,.tail-cl,.tail-br,.tail-bl,.tail-bc,.tail-tr,.tail-tl,.tail-tc) {
+  --_h: var(--tail-h);
+  --_w: var(--tail-w);
+  --tail-bdw: var(--bdw, 0px);
+  position: relative;
+}
+
+:where(.tail-cr,.tail-cl,.tail-br,.tail-bl,.tail-bc,.tail-tr,.tail-tl,.tail-tc
+)::after,
+:where(.tail-cr,.tail-cl,.tail-br,.tail-bl,.tail-bc,.tail-tr,.tail-tl,.tail-tc
+)::before {
+  content: "";
+  position: absolute;
+  background: var(--bg);
+
+  height: calc(var(--_h) + 0.8px); /* [1] */
+  width: calc(var(--_w) + 0.8px);
+}
+
+:where(.tail-cr,.tail-cl,.tail-br,.tail-bl,.tail-bc,.tail-tr,.tail-tl,.tail-tc
+)::before {
+  /* prevent weird artifacts  */
+  background: transparent;
+  height: 0;
+  width: 0;
+  border: inherit;
+  --_b1: var(--tail-bdw);
+  --_b-1: calc(-1 * var(--_b1));
+  --_b2: calc(2 * var(--tail-bdw));
+  border-width: calc(var(--_b2) + max(var(--_h), var(--_w)));
+}
+
+/* corners
+---------- */
+
+.tail-tr::after,
+.tail-tl::after,
+.tail-br::after,
+.tail-bl::after,
+.tail-tr::before,
+.tail-br::before,
+.tail-bl::before,
+.tail-bl::before {
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+.tail-tr::before,
+.tail-tl::before,
+.tail-br::before,
+.tail-bl::before {
+  clip-path:
+    polygon(
+      0 var(--_b2),
+      calc(var(--_w) + var(--_b2)) var(--_b2),
+      var(--_b2) calc(var(--_h) + var(--_b2)),
+      calc(var(--_b2) - 2px) calc(1px + var(--_h) + var(--_b2)),
+      1px calc(1px + var(--_h) + var(--_b2)),
+      0 calc(var(--_h) + var(--_b2))
+    );
+}
+
+.tail-bc::after,
+.tail-bc::before,
+.tail-br::after,
+.tail-br::before,
+.tail-bl::after,
+.tail-bl::before {
+  top: 100%;
+}
+
+.tail-tc::after,
+.tail-tc::before,
+.tail-tr::after,
+.tail-tr::before,
+.tail-tl::after,
+.tail-tl::before {
+  transform-origin: top left;
+  top: 0;
+}
+
+.tail-tl::after,
+.tail-tl::before,
+.tail-bl::after,
+.tail-bl::before {
+  left: var(--tail-offset-x);
+}
+
+.tail-tr::after,
+.tail-tr::before,
+.tail-br::after,
+.tail-br::before {
+  left: calc(100% - var(--tail-offset-x));
+}
+
+.tail-bl::before { transform: translate(var(--_b-1), var(--_b-1)); }
+
+.tail-br::after { transform: scaleX(-1) translate(100%); }
+.tail-br::before { transform: scaleX(-1) translate(calc(100% - var(--_b1)), var(--_b-1)); }
+
+.tail-tl::after { transform: scaleY(-1); }
+.tail-tl::before { transform: scaleY(-1) translate(var(--_b-1), var(--_b-1)); }
+
+.tail-tr::after { transform: scale(-1); }
+.tail-tr::before { transform: scale(-1) translate(var(--_b-1), var(--_b-1)); }
+
+/* center
+--------- */
+
+.tail-cr::after,
+.tail-cl::after,
+.tail-tc::after,
+.tail-bc::after {
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+.tail-cr::before,
+.tail-cl::before,
+.tail-tc::before,
+.tail-bc::before {
+  clip-path:
+    polygon(
+      calc(50% - var(--_b1) - calc(0.5 * var(--_w))) var(--_b1),
+      calc(50% + var(--_b1) + calc(0.5 * var(--_w))) var(--_b1),
+      calc(50% + var(--_b1)) calc(var(--_h) + var(--_b1)),
+      calc(50% + var(--_b1) - 1px) calc(var(--_h) + var(--_b1) + 1px),
+      calc(50% - var(--_b1) + 1px) calc(var(--_h) + var(--_b1) + 1px),
+      calc(50% - var(--_b1)) calc(var(--_h) + var(--_b1))
+    );
+}
+
+.tail-tc::after,
+.tail-tc::before,
+.tail-bc::after,
+.tail-bc::before {
+  left: 50%;
+}
+
+.tail-bc::after,
+.tail-bc::before {
+  transform: translateX(-50%);
+}
+
+.tail-tc::after,
+.tail-tc::before {
+  transform: scale(-1) translateX(-50%);
+}
+
+.tail-cr::before,
+.tail-cr::after {
+  left: 100%;
+  top: 50%;
+  transform-origin: top left;
+  transform: rotate(-90deg) translateX(-50%);
+}
+
+.tail-cl::before,
+.tail-cl::after {
+  left: 0;
+  top: 50%;
+  transform-origin: top left;
+  transform: rotate(90deg) translateX(-50%);
+}

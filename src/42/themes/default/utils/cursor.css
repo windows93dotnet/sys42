@@ -1,0 +1,94 @@
+:root {
+  --cursor-auto: auto;
+  --cursor-default: default;
+  --cursor-none: none;
+  --cursor-context-menu: context-menu;
+  --cursor-help: help;
+  --cursor-pointer: pointer;
+  --cursor-progress: progress;
+  --cursor-wait: wait;
+  --cursor-cell: cell;
+  --cursor-crosshair: crosshair;
+  --cursor-text: text;
+  --cursor-vertical-text: vertical-text;
+  --cursor-alias: alias;
+  --cursor-copy: copy;
+  --cursor-move: move;
+  --cursor-no-drop: no-drop;
+  --cursor-not-allowed: not-allowed;
+  --cursor-grab: grab;
+  --cursor-grabbing: grabbing;
+  --cursor-all-scroll: all-scroll;
+  --cursor-col-resize: col-resize;
+  --cursor-row-resize: row-resize;
+  --cursor-n-resize: n-resize;
+  --cursor-e-resize: e-resize;
+  --cursor-s-resize: s-resize;
+  --cursor-w-resize: w-resize;
+  --cursor-ne-resize: ne-resize;
+  --cursor-nw-resize: nw-resize;
+  --cursor-se-resize: se-resize;
+  --cursor-sw-resize: sw-resize;
+  --cursor-ew-resize: ew-resize;
+  --cursor-ns-resize: ns-resize;
+  --cursor-nesw-resize: nesw-resize;
+  --cursor-nwse-resize: nwse-resize;
+  --cursor-zoom-in: zoom-in;
+  --cursor-zoom-out: zoom-out;
+}
+
+.cursor-auto, body.cursor-auto * { cursor: var(--cursor-auto); }
+.cursor-default, body.cursor-default * { cursor: var(--cursor-default); }
+.cursor-none, body.cursor-none * { cursor: var(--cursor-none); }
+
+/* Links & status */
+.cursor-context-menu, body.cursor-context-menu * { cursor: var(--cursor-context-menu); }
+.cursor-help, body.cursor-help * { cursor: var(--cursor-help); }
+.cursor-pointer, body.cursor-pointer * { cursor: var(--cursor-pointer); }
+.cursor-progress, body.cursor-progress * { cursor: var(--cursor-progress); }
+.cursor-wait, body.cursor-wait * { cursor: var(--cursor-wait); }
+
+/* Selection */
+.cursor-cell, body.cursor-cell * { cursor: var(--cursor-cell); }
+.cursor-crosshair, body.cursor-crosshair * { cursor: var(--cursor-crosshair); }
+.cursor-text, body.cursor-text * { cursor: var(--cursor-text); }
+.cursor-vertical-text, body.cursor-vertical-text * { cursor: var(--cursor-vertical-text); }
+
+/* Drag & drop */
+.cursor-alias, body.cursor-alias * { cursor: var(--cursor-alias); }
+.cursor-copy, body.cursor-copy * { cursor: var(--cursor-copy); }
+.cursor-move, body.cursor-move * { cursor: var(--cursor-move); }
+.cursor-no-drop, body.cursor-no-drop * { cursor: var(--cursor-no-drop); }
+.cursor-not-allowed, body.cursor-not-allowed * { cursor: var(--cursor-not-allowed); }
+.cursor-grab, body.cursor-grab * { cursor: var(--cursor-grab); }
+.cursor-grabbing, body.cursor-grabbing * { cursor: var(--cursor-grabbing); }
+
+/* Resizing & scrolling */
+.cursor-all-scroll, body.cursor-all-scroll * { cursor: var(--cursor-all-scroll); }
+.cursor-col-resize, body.cursor-col-resize * { cursor: var(--cursor-col-resize); }
+.cursor-row-resize, body.cursor-row-resize * { cursor: var(--cursor-row-resize); }
+.cursor-n-resize, body.cursor-n-resize * { cursor: var(--cursor-n-resize); }
+.cursor-e-resize, body.cursor-e-resize * { cursor: var(--cursor-e-resize); }
+.cursor-s-resize, body.cursor-s-resize * { cursor: var(--cursor-s-resize); }
+.cursor-w-resize, body.cursor-w-resize * { cursor: var(--cursor-w-resize); }
+.cursor-ne-resize, body.cursor-ne-resize * { cursor: var(--cursor-ne-resize); }
+.cursor-nw-resize, body.cursor-nw-resize * { cursor: var(--cursor-nw-resize); }
+.cursor-se-resize, body.cursor-se-resize * { cursor: var(--cursor-se-resize); }
+.cursor-sw-resize, body.cursor-sw-resize * { cursor: var(--cursor-sw-resize); }
+.cursor-ew-resize, body.cursor-ew-resize * { cursor: var(--cursor-ew-resize); }
+.cursor-ns-resize, body.cursor-ns-resize * { cursor: var(--cursor-ns-resize); }
+.cursor-nesw-resize, body.cursor-nesw-resize * { cursor: var(--cursor-nesw-resize); }
+.cursor-nwse-resize, body.cursor-nwse-resize * { cursor: var(--cursor-nwse-resize); }
+
+/* Zooming */
+.cursor-zoom-in, body.cursor-zoom-in * { cursor: var(--cursor-zoom-in); }
+.cursor-zoom-out, body.cursor-zoom-out * { cursor: var(--cursor-zoom-out); }
+
+/* https://www.w3.org/TR/wai-aria-1.1/#aria-dropeffect */
+/* https://www.levelaccess.com/differences-aria-1-0-1-1-deprecations-additions/ */
+[aria-dropeffect="copy" i] { cursor: var(--cursor-copy); }
+[aria-dropeffect="execute" i] { cursor: var(--cursor-execute, var(--cursor-progress)); }
+[aria-dropeffect="link" i] { cursor: var(--cursor-alias); }
+[aria-dropeffect="move" i] { cursor: var(--cursor-default); }
+[aria-dropeffect="none" i] { cursor: var(--cursor-no-drop); }
+[aria-dropeffect="popup" i] { cursor: var(--cursor-context-menu); }

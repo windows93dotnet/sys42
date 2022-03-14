@@ -1,0 +1,102 @@
+ui-icon {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  /* margin: var(--unit-sm); */
+  margin: 1px;
+  --icon-size: 32px;
+  --icon-gap: 2px;
+  width: calc((2 * var(--icon-size)) - calc(2 * var(--icon-gap)));
+  height: calc(2 * var(--icon-size));
+  position: relative;
+  user-select: none;
+  pointer-events: none;
+
+  /* --highlight-bg: palegreen; */
+  /* --highlight-bg: red; */
+}
+
+.ui-icon__figure {
+  pointer-events: auto;
+  display: grid;
+}
+
+.ui-icon__image,
+.ui-icon__mask {
+  grid-area: 1 / 1;
+  width: var(--icon-size);
+  height: var(--icon-size);
+}
+
+.ui-icon__label {
+  pointer-events: auto;
+  padding: 1px 4px;
+
+  max-width: 100%;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+
+  overflow: clip;
+  text-align: center;
+
+  position: absolute;
+  top: calc(var(--icon-size) + var(--icon-gap));
+}
+
+ui-icon:is([aria-pressed="true"],[aria-selected="true"]) .ui-icon__image {
+  filter: grayscale(100%) contrast(30%) brightness(90%) contrast(250%);
+}
+
+ui-icon:is([aria-pressed="true"],[aria-selected="true"]) .ui-icon__mask {
+  background-color: var(--highlight-bg);
+  mix-blend-mode: color;
+}
+
+ui-icon:focus {
+  outline: none;
+}
+
+ui-icon:focus .ui-icon__label {
+  -webkit-line-clamp: 8;
+  background-color: var(--bg);
+  z-index: 1;
+  /* outline: 1px dotted var(--fg);
+  outline-offset: -1px; */
+}
+
+ui-icon:is([aria-pressed="true"],[aria-selected="true"]) .ui-icon__label {
+  --fg: var(--highlight-fg);
+  background: var(--highlight-bg);
+  color: var(--fg);
+  text-shadow: var(--highlight-tsh, none);
+}
+
+.ui-icon__label svg {
+  display: none;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  mix-blend-mode: difference;
+}
+
+.ui-icon__label svg rect {
+  rx: 0.2;
+  ry: 0.2;
+  width: calc(100% - 1px);
+  height: calc(100% - 1px);
+  fill: transparent;
+  stroke: #fff;
+  stroke-width: 1px;
+  shape-rendering: crispEdges;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+ui-icon:focus .ui-icon__label svg {
+  display: block;
+}

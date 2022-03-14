@@ -1,0 +1,11 @@
+@media print {
+  *, *::after, *::before {
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+  }
+
+  .box-main,
+  .box-fit {
+    bottom: auto;
+  }
+}

@@ -1,0 +1,61 @@
+function escapeDotNotation(key) {
+  return key.replaceAll(".", "\\.")
+}
+
+export default function observe(data, options, fn) {
+  if (typeof options === "function") fn = options
+
+  const proxies = new WeakMap()
+  const revokes = new Set()
+
+  function createHander(path = []) {
+    return {
+      get(target, prop, receiver) {
+        if (prop === Symbol.toStringTag) return "[object Proxy]"
+        if (prop === observe.REVOKE) return destroy
+
+        if (!Reflect.has(target, prop, receiver)) return
+
+        const val = Reflect.get(target, prop, receiver)
+
+        if (val && typeof val === "object") {
+          if (proxies.has(val)) return proxies.get(val)
+          const p = [...path, prop]
+          const { proxy, revoke } = Proxy.revocable(val, createHander(p))
+          proxies.set(val, proxy)
+          revokes.add(revoke)
+          return proxy
+        }
+
+        return val
+      },
+
+      set(target, prop, val, receiver) {
+        const ret = Reflect.set(target, prop, val, receiver)
+        fn([...path, prop].map((x) => escapeDotNotation(x)).join("."), val)
+        return ret
+      },
+
+      deleteProperty(target, prop) {
+        const ret = Reflect.deleteProperty(target, prop)
+        fn([...path, prop].map((x) => escapeDotNotation(x)).join("."))
+        return ret
+      },
+    }
+  }
+
+  const { proxy, revoke } = Proxy.revocable(data, createHander())
+
+  revokes.add(revoke)
+
+  const destroy = () => {
+    for (const revoke of revokes) revoke()
+    revokes.clear()
+  }
+
+  options?.signal.addEventListener("abort", destroy, { once: true })
+
+  return proxy
+}
+
+observe.REVOKE = Symbol.for("observe.REVOKE")

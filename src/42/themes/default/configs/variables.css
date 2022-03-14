@@ -1,0 +1,66 @@
+/* @read https://open-props.style */
+/* @read https://css-tricks.com/consistent-fluidly-scaling-type-and-spacing/ */
+
+:root {
+  --empty: ; /* stylelint-disable-line */
+
+  /* Useful to ensure line-height */
+  --zero-width-space: "\200B";
+
+  /* fonts
+  ======== */
+
+  --_ff-emoji:
+    var(--ff-emoji, --empty),
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol",
+    "Noto Color Emoji";
+
+  --fs-sans: 12px;
+  --lh-sans: 1.16667;
+  --_ff-sans:
+    var(--ff-sans, --empty),
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    "Roboto",
+    "Ubuntu",
+    "Cantarell",
+    "Noto Sans",
+    sans-serif,
+    var(--_ff-emoji);
+
+  --font-sans: var(--fs-sans)/var(--lh-sans) var(--_ff-sans);
+
+  --fs-mono: 9px;
+  --lh-mono: 1.222223;
+  --_ff-mono:
+    var(--ff-mono, --empty),
+    ui-monospace,
+    "Menlo",
+    "Consolas",
+    "Roboto Mono",
+    "Ubuntu Monospace",
+    "Noto Mono",
+    "Oxygen Mono",
+    "Liberation Mono",
+    monospace,
+    var(--_ff-emoji);
+
+  --font-mono: var(--fs-mono)/var(--lh-mono) var(--_ff-mono);
+
+  --fs: var(--fs-sans);
+  --lh: var(--lh-sans);
+  --ff: var(--_ff-sans);
+  --font: var(--fs)/var(--lh) var(--ff);
+}
+
+/* @read https://kittygiraudel.com/2020/05/18/using-calc-to-figure-out-optimal-line-height/ */
+
+/* *,
+*::before,
+*::after {
+  --lh: calc(2px + 2ex + 2px);
+  line-height: var(--lh);
+} */

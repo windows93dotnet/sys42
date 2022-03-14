@@ -1,0 +1,132 @@
+/* @read https://css-tricks.com/need-css-utility-library/ */
+
+/* @read https://a11yproject.com/posts/how-to-hide-content/ */
+/* TODO: add dev.css with https://developer.chrome.com/blog/cvd/ */
+.sr-only:not(:focus):not(:active) {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border-width: 0 !important;
+}
+
+.reveal:not(:hover,:active,:focus,:focus-within) { --alpha: 0; opacity: var(--alpha); }
+*:is(:hover,:active,:focus,:focus-within) > .reveal { opacity: 1; }
+
+/* [hidden], */
+.hide { display: none !important; }
+
+.motionless,
+.animation-0, body.animation-0 * {
+  animation-delay: -1ms !important;
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+}
+
+.motionless,
+.transition-0, body.transition-0 * { transition: none !important; }
+
+.selection-0, body.selection-0 * { user-select: none !important; }
+.selection-1, body.selection-0 .selection-1 { user-select: auto !important; }
+
+.touch-0, body.touch-0 * { touch-action: none !important; }
+.touch-1, body.touch-0 .touch-1 { touch-action: auto !important; }
+
+.events-0, body.events-0 * { pointer-events: none !important; }
+.events-1, body.events-0 .events-1 { pointer-events: auto !important; }
+
+body.events-iframes-0 iframe { pointer-events: none !important; }
+
+.scrollbar-0 { scrollbar-width: none; }
+.scrollbar-0::-webkit-scrollbar { display: none; }
+.scrollbar-1 { scrollbar-width: auto; }
+.scrollbar-1::-webkit-scrollbar { display: block; }
+
+.scrollbar-invisible {
+  --scrollbar-track-bg: transparent;
+  --scrollbar-thumb-bg: transparent;
+}
+
+.scrollbar-invisible::-webkit-scrollbar-track {
+  box-shadow: none !important;
+  border-color: transparent !important;
+  background: transparent !important;
+}
+
+.scrollbar-invisible::-webkit-scrollbar-thumb {
+  box-shadow: none !important;
+  border-color: transparent !important;
+  background: transparent !important;
+}
+
+.pixelated, body.pixelated * {
+  image-rendering: optimizeSpeed; /* Legal fallback */
+  image-rendering: -moz-crisp-edges; /* Firefox */
+  image-rendering: -o-crisp-edges; /* Opera */
+  image-rendering: -webkit-optimize-contrast; /* Safari */
+  image-rendering: optimize-contrast; /* CSS3 Proposed */
+  image-rendering: crisp-edges; /* CSS4 Proposed */
+  image-rendering: pixelated; /* CSS4 Proposed */
+  -ms-interpolation-mode: nearest-neighbor; /* IE8+ */
+}
+
+.spaceless.spaceless.spaceless.spaceless {
+  padding: 0;
+  margin: 0;
+  width: auto;
+  min-width: auto;
+  max-width: none;
+  height: auto;
+  min-height: auto;
+  max-height: none;
+}
+
+.borderless.borderless.borderless.borderless {
+  border: none;
+  box-shadow: none;
+}
+
+.unstyled.unstyled.unstyled.unstyled {
+  color: unset;
+  background: none;
+  text-decoration: none;
+}
+
+:is(ul,ol,menu).unstyled {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* States
+========= */
+
+:root {
+  --has-scrollbar-bg: var(--panel-bg);
+  --has-scrollbar-fg: var(--panel-fg);
+  --has-scrollbar-pa: var(--unit-sm);
+  --has-scrollbar-bdw: var(--inset-bdw);
+  --has-scrollbar-bds: var(--inset-bds);
+  --has-scrollbar-bdc: var(--inset-bdc);
+  --has-scrollbar-bdi: var(--inset-bdi);
+  --has-scrollbar-br: var(--inset-br);
+  --has-scrollbar-tsh: var(--inset-tsh);
+  --has-scrollbar-bsh: var(--inset-bsh);
+}
+
+.has-scrollbar {
+  --bg: var(--has-scrollbar-bg);
+  --fg: var(--has-scrollbar-fg);
+  border-width: var(--has-scrollbar-bdw);
+  border-style: var(--has-scrollbar-bds);
+  border-color: var(--has-scrollbar-bdc);
+  border-image: var(--has-scrollbar-bdi);
+  border-radius: var(--has-scrollbar-br);
+  text-shadow: var(--has-scrollbar-tsh);
+  box-shadow: var(--has-scrollbar-bsh);
+  padding: var(--has-scrollbar-pa);
+}

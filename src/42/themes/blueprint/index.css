@@ -1,0 +1,102 @@
+/**
+ * Name: Blueprint
+ * Author: Lorenzo Buosi
+ * https://chrometaphore.com/work/projects/open_source/
+ */
+
+@import "../default/index.css";
+
+:root {
+  --bg: #00aced;
+  --fg: #fff;
+  background-color: var(--bg);
+  color: var(--fg);
+
+  --highlight-bg: rgba(255 255 255 / 0.3);
+  --highlight-fg: var(--fg);
+  --invalid-bg: rgba(255 0 0 / 0.3);
+
+  --btn-br: 0.6rem;
+  --select-br: var(--btn-br);
+  --ctrl-oc: #fff;
+  --ctrl🎯-bg: var(--highlight-bg);
+  --ctrl⚠-bg: var(--invalid-bg);
+
+  --check-oo: 0;
+  --check-br: 5px;
+  --check🎯-bg: var(--highlight-bg);
+  --check-size: 18px;
+  --check__bullet-ma: 5px;
+
+  --addon-w: var(--unit-xl);
+
+  /* --fld-bg: var(--bg); */
+  /* --btn-bg: var(--bg); */
+
+  --btn--primary-bg: #fff;
+  --btn--primary-fg: var(--bg);
+
+  --btn☑️👇-bg: rgba(0 0 0 / 0.3);
+
+  --fieldset-my: var(--unit-md);
+  --fieldset-mx: var(--unit-md);
+  --ctrl-px: var(--unit-md);
+  --ctrl-py: calc(0.6 * var(--unit));
+
+  --outset-bd: none;
+
+  --range__track-inactive-c: var(--highlight-bg);
+  --range__track-o: none;
+  --range🎯__thumb-bsh: 0 0 0 var(--unit-md) var(--highlight-bg);
+
+  --tooltip-offset-y: var(--unit-sm);
+  --tooltip-offset-x: var(--unit-sm);
+  --tail-offset-x: var(--unit);
+  --tail-h: var(--unit-md);
+  --tail-w: var(--unit-md);
+
+  /* --tail-offset-x: calc(100% - var(--tail-w));
+  --tail-h: var(--unit-md);
+  --tail-w: var(--unit-md); */
+
+  --tooltip-bg: var(--fg);
+  --tooltip-fg: var(--bg);
+  --tooltip-bdc: var(--bg);
+  --tooltip-bdw: 2px;
+
+  /* pictos
+  ========= */
+
+  --picto--up-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(255 255 255)" d="M7 6h1v1h1v1h1v1h1v1h-7v-1h1v-1h1v-1h1z"/></svg>');
+  --picto--down-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(255 255 255)" d="M4 6h7v1h-1v1h-1v1h-1v1h-1v-1h-1v-1h-1v-1h-1z"/></svg>');
+  --picto--upload-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(255 255 255)" d="M7 4h2v1h1v1h1v1h-2v3h-2v-3h-2v-1h1v-1h1z M3 9h1v2h8v-2h1v3h-10z"/></svg>');
+  --picto--calendar-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(255 255 255)" d="M4 3h1v1h5v-1h1v1h1v8h-9v-8h1z M4 6v5h7v-5z M5 7h2v2h-2z"/></svg>');
+}
+
+.outset {
+  padding: 0;
+}
+
+legend {
+  font-weight: bold;
+}
+
+.button,
+button,
+input[type="button"],
+input[type="reset"],
+input[type="color"],
+input[type="submit"],
+::file-selector-button,
+select {
+  font-weight: bold;
+}
+
+select {
+  border-radius: var(--outset-br);
+}
+
+ui-accordion {
+  border-radius: var(--outset-br);
+  /* border: 1px solid transparent; */
+}

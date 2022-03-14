@@ -1,0 +1,82 @@
+:root {
+  --dialog-bg: var(--outset-bg);
+  --dialog-fg: var(--outset-fg);
+  --dialog-bdw: var(--outset-bdw);
+  --dialog-bds: var(--outset-bds);
+  --dialog-bdc: var(--outset-bdc);
+  --dialog-bdi: var(--outset-bdi);
+  --dialog-br: var(--outset-br);
+  --dialog-tsh: var(--outset-tsh, none);
+  --dialog-bsh: var(--outset-bsh);
+}
+
+ui-dialog {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  width: max-content;
+  min-width: min(var(--ctrl-w), 100%);
+
+  --bg: var(--dialog-bg);
+  --fg: var(--dialog-fg);
+  background: var(--bg);
+  color: var(--fg);
+  border-width: var(--dialog-bdw);
+  border-style: var(--dialog-bds);
+  border-color: var(--dialog-bdc);
+  border-image: var(--dialog-bdi);
+  border-radius: var(--dialog-br);
+  text-shadow: var(--dialog-tsh, none);
+  box-shadow: var(--dialog-bsh);
+}
+
+ui-dialog:focus {
+  outline: none;
+}
+
+.ui-dialog__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+
+.ui-dialog__header,
+.ui-dialog__footer {
+  display: flex;
+  margin: 0;
+}
+
+.ui-dialog__footer {
+  /* padding: var(--unit-md); */
+  /* padding: 0; */
+  justify-content: end;
+  display: flex;
+  gap: var(--unit-sm);
+  /* flex-direction: column; */
+
+  /* margin: 0;
+  display: flex;
+  flex-direction: column;
+  */
+}
+
+/* .ui-dialog__footer button:not(:first-of-type) {
+  margin-left: var(--unit-md);
+} */
+
+.ui-dialog__title {
+  flex: 1;
+  padding: 0 var(--unit-md);
+  align-self: center;
+  display: inline-block;
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  position: relative;
+}
+
+.ui-dialog__title::before {
+  content: var(--zero-width-space);
+  speak: none;
+}

@@ -1,0 +1,72 @@
+:root {
+  --meter-pa: 2px;
+  --meter-bg: var(--fld-bg, #fff);
+  --meter-bdw: var(--fld-bdw);
+  --meter-bds: var(--fld-bds);
+  --meter-bdc: var(--fld-bdc);
+  --meter-bdi: var(--fld-bdi);
+  --meter-br: var(--fld-br);
+  --meter-bsh: var(--fld-bsh);
+
+  --meter__value-br: var(--meter-br);
+  --meter__value-bsh: none;
+
+  --meter__low-bg: crimson;
+  --meter__medium-bg: coral;
+  --meter__high-bg: yellowgreen;
+}
+
+meter {
+  height: var(--meter-h, var(--ctrl-h));
+  width: var(--meter-w, var(--ctrl-w));
+  vertical-align: baseline;
+  flex: 1;
+}
+
+@-moz-document url-prefix("") {
+  meter {
+    background: var(--meter-bg);
+    padding: var(--meter-pa);
+    border-width: var(--meter-bdw);
+    border-style: var(--meter-bds, solid);
+    border-color: var(--meter-bdc);
+    border-image: var(--meter-bdi);
+    border-radius: var(--meter-br);
+    box-shadow: var(--meter-bsh);
+  }
+}
+
+meter::-webkit-meter-bar {
+  background: var(--meter-bg);
+  padding: var(--meter-pa);
+  border-width: var(--meter-bdw);
+  border-style: var(--meter-bds, solid);
+  border-color: var(--meter-bdc);
+  border-image: var(--meter-bdi);
+  border-radius: var(--meter-br);
+  box-shadow: var(--meter-bsh);
+}
+
+meter::-webkit-meter-inner-element { display: block; }
+
+meter::-webkit-meter-optimum-value,
+meter::-webkit-meter-suboptimum-value,
+meter::-webkit-meter-even-less-good-value {
+  border-radius: var(--meter__value-br);
+  box-shadow: var(--meter__value-bsh);
+}
+
+meter::-webkit-meter-optimum-value { background: var(--meter__high-bg); }
+meter::-webkit-meter-suboptimum-value { background: var(--meter__medium-bg); }
+meter::-webkit-meter-even-less-good-value { background: var(--meter__low-bg); }
+
+meter:-moz-meter-optimum::-moz-meter-bar,
+meter:-moz-meter-sub-optimum::-moz-meter-bar,
+meter:-moz-meter-sub-sub-optimum::-moz-meter-bar {
+  border-radius: var(--meter__value-br);
+  box-shadow: var(--meter__value-bsh);
+}
+
+meter:-moz-meter-optimum::-moz-meter-bar { background: var(--meter__high-bg); }
+meter:-moz-meter-sub-optimum::-moz-meter-bar { background: var(--meter__medium-bg); }
+meter:-moz-meter-sub-sub-optimum::-moz-meter-bar { background: var(--meter__low-bg); }

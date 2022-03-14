@@ -1,0 +1,29 @@
+@font-face {
+  font-family: sserife;
+  src:
+    url("./sserife/sserife-bold.woff2") format("woff2"),
+    url("./sserife/sserife-bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: sserife;
+  src:
+    url("./sserife/sserife.woff2") format("woff2"),
+    url("./sserife/sserife.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: sserife-fallback;
+  src:
+    url("./sserife/sserife.woff2") format("woff2"),
+    url("./sserife/sserife.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}

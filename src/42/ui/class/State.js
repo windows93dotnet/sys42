@@ -1,0 +1,77 @@
+import observe from "../../fabric/access/observe.js"
+import paintThrottle from "../../fabric/type/function/paintThrottle.js"
+import locate from "../../fabric/access/locate.js"
+import Emitter from "../../fabric/class/Emitter.js"
+
+export default class State extends Emitter {
+  constructor(ctx) {
+    super()
+    this.renderers = ctx.global.renderers
+    this.rack = ctx.global.rack
+
+    this.queue = new Set()
+
+    this._update = paintThrottle(() => {
+      const keys = Object.keys(this.renderers)
+
+      this.emit("update", this.queue)
+
+      for (const path of this.queue) {
+        for (const key of keys) {
+          if (key.startsWith(path)) {
+            for (const render of this.renderers[key]) render()
+          }
+        }
+      }
+
+      this.queue.clear()
+    })
+
+    this.proxy = observe(
+      this.rack.value, //
+      { signal: ctx.cancel.signal },
+      (path) => this.update(path)
+    )
+  }
+
+  update(path) {
+    this.queue.add(path)
+
+    // if an array is changed using length
+    // add to the queue any registered renderers on the array
+    if (path.endsWith(".length")) this.queue.add(path.slice(0, -7))
+
+    this._update()
+  }
+
+  updateAll() {
+    const keys = Object.keys(this.renderers)
+    this.emit("update", new Set(keys))
+    for (const key of keys) {
+      for (const render of this.renderers[key]) render()
+    }
+  }
+
+  get value() {
+    return this.rack.value
+  }
+  set value(value) {
+    this.rack.clear()
+    Object.assign(this.rack.value, value)
+    this.updateAll()
+  }
+
+  set(path, value) {
+    this.rack.set(path, value)
+    if (path === "") this.updateAll()
+    else this.update(path)
+  }
+
+  get(path) {
+    return this.rack.get(path)
+  }
+
+  locateProxy(path) {
+    return locate(this.proxy, path)
+  }
+}

@@ -1,0 +1,63 @@
+:where(body) {
+  min-height: 100vh;
+  /* overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable; */
+  /* scrollbar-gutter: stable both-edges; */
+}
+
+:where(table) { font: inherit; }
+
+:where(iframe, img, video) {
+  height: auto;
+  max-width: 100%;
+}
+
+:where(kbd) {
+  border-style: solid;
+  border-width: 1px 2px 2px 1px;
+  padding: 0 2px;
+}
+
+/* @read https://css-tricks.com/lets-talk-speech-css/ */
+:where(abbr) {
+  speak-as: spell-out;
+}
+
+:where(blockquote) {
+  margin: var(--unit) var(--breath)
+}
+
+:where(summary) {
+  user-select: none;
+}
+
+:where(p) {
+  margin-block-start: var(--breath);
+  margin-block-end: var(--breath);
+}
+
+:where(ul, ol, menu) {
+  padding-left: var(--breath);
+}
+
+:where(body,nav,section,article,aside) > :where(section,article,header,footer) {
+  margin-block-start: var(--breath);
+  margin-block-end: var(--unit);
+}
+
+:where(h1,h2,h3,h4,h5,h6) {
+  margin-block-start: var(--breath);
+  margin-block-end: var(--unit);
+}
+
+:where(:is(section,article,header,footer):first-child),
+:where(:is(body,section,article,header,footer) > :is(h1,h2,h3,h4,h5,h6):first-child) {
+  margin-block-start: 0;
+}
+
+:where(:is(section,article,header,footer):last-child),
+:where(:is(section,article,header,footer) > :last-child) {
+  margin-block-end: 0;
+}
+

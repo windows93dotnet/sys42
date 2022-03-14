@@ -1,0 +1,83 @@
+:root {
+  /* --progress-h: var(--ctrl-h); */
+  --progress-pa: 2px;
+  --progress-bg: var(--fld-bg, #fff);
+  --progress-br: var(--fld-br);
+  --progress-bdw: var(--fld-bdw);
+  --progress-bds: var(--fld-bds);
+  --progress-bdc: var(--fld-bdc);
+  --progress-bdi: var(--fld-bdi);
+  --progress-bsh: var(--fld-bsh);
+
+  --progress__value-bg: var(--sk-highlight--background, steelblue);
+  --progress__value-br: var(--fld-br);
+  --progress__value-bsh: var(--fld-bsh);
+  --progress__wait-bg: var(--progress__value-bg);
+  /* --progress__wait-anim: progress-wait 14s infinite steps(25); */
+}
+
+@keyframes progress-wait {
+  from { transform: translateX(-50%); }
+  50% { transform: translateX(50%); }
+  to { transform: translateX(-50%); }
+}
+
+progress {
+  height: var(--progress-h, var(--ctrl-h));
+  width: var(--progress-w, var(--ctrl-w));
+  background: var(--progress-bg);
+  border-width: var(--progress-bdw);
+  border-style: var(--progress-bds);
+  border-color: var(--progress-bdc);
+  border-image: var(--progress-bdi);
+  border-radius: var(--progress-br);
+  box-shadow: var(--progress-bsh);
+  padding: var(--progress-pa);
+  overflow: hidden;
+  position: relative;
+  flex: 1;
+}
+
+progress[value]::-webkit-progress-bar {
+  background: var(--progress-bg);
+}
+
+progress[value]::-webkit-progress-value {
+  background: var(--progress__value-bg);
+  border-radius: var(--progress__value-br);
+  box-shadow: var(--progress__value-bsh);
+}
+
+progress[value]::-moz-progress-bar {
+  background: var(--progress__value-bg);
+  border-radius: var(--progress__value-br);
+  box-shadow: var(--progress__value-bsh);
+}
+
+progress:not([value])::-webkit-progress-bar { display: none; }
+
+progress:not([value])::after {
+  content: "";
+  position: absolute;
+  top: var(--progress-pa);
+  bottom: var(--progress-pa);
+  /* bottom: 0; */
+  left: var(--progress-pa);
+  right: var(--progress-pa);
+  background: var(--progress__wait-bg);
+  border-radius: var(--progress__value-br);
+  box-shadow: var(--progress__value-bsh);
+  will-change: transform;
+  transform-origin: 0;
+  animation: var(--progress__wait-anim);
+}
+
+progress:not([value])::-moz-progress-bar {
+  background: var(--progress__wait-bg);
+  border-radius: var(--progress__value-br);
+  box-shadow: var(--progress__value-bsh);
+  will-change: transform;
+  width: 100%;
+  transform-origin: 0;
+  animation: var(--progress__wait-anim);
+}

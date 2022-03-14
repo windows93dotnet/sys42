@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>desktop</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- <link rel="stylesheet" href="/style.css" id="theme" /> -->
+
+<!-- <script type="module">
+  // import "../42/ui.js"
+  // import create from "../42/ui/create.js"
+  // console.log(111, create("div"))
+
+  import render from "../42/ui/render.js"
+
+  const ctx = {}
+
+  document.body.append(
+    render(
+      { type: "#ok", content: "hello {{foo}}", data: { foo: "derp" } },
+      ctx
+    )
+  )
+
+  console.log(ctx)
+
+  setTimeout(() => {
+    ctx.global.state.set("foo", "world")
+    console.log(ctx.global.state)
+  }, 100)
+</script> -->
+
+<script type="module">
+  import ui from "../42/ui.js"
+
+  const app = await ui({
+    type: "#ok",
+    content: [
+      "hello {{foo}}", //
+      { when: "bar", type: "div", content: "bar" },
+      {
+        type: "ul",
+        scope: "list",
+        repeat: { type: "li", content: "{{.}}" },
+      },
+    ],
+    data: { foo: "derp", list: ["a", "b"] },
+  })
+
+  console.log(app.data.foo)
+
+  setTimeout(() => {
+    app.data.foo = "world"
+    app.data.bar = true
+    app.data.list.push("c")
+  }, 100)
+</script>

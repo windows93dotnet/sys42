@@ -1,0 +1,221 @@
+ui-accordion {
+  --speed: 0.15s;
+
+  /* flex: 1 1 auto; */
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+
+  max-width: 100%;
+  /* max-height: 100%; */
+
+  border-width: var(--inset-bdw);
+  border-style: var(--inset-bds);
+  border-color: var(--inset-bdc);
+  border-image: var(--inset-bdi);
+  border-radius: var(--inset-br);
+  text-shadow: var(--inset-tsh, none);
+  box-shadow: var(--inset-bsh);
+}
+
+.accordion__label {
+  font: inherit;
+  margin: var(--ctrl-group-gap);
+  padding: 0;
+  max-width: none;
+  margin-bottom: 0;
+  min-height: min-content;
+}
+
+.accordion__label:last-of-type {
+  margin-bottom: var(--ctrl-group-gap);
+}
+
+.accordion__label > * {
+  flex: 0 0 auto;
+}
+
+.accordion__button {
+  width: 100%;
+  text-align: left;
+  flex: 1 1 0%;
+}
+
+/* :where(.accordion__content > p) {
+  margin: var(--unit);
+  margin-right: 0;
+} */
+
+/* picto
+-------- */
+
+.accordion__button > .picto {
+  order: var(--accordion-picto-order, 0);
+}
+
+.accordion__button > .picto:nth-of-type(1)::after {
+  content: var(--accordion-picto-close, var(--picto--down));
+}
+
+.accordion__button > .picto:nth-of-type(2)::after {
+  content: var(--accordion-picto-open, var(--picto--right));
+}
+
+.accordion__button[aria-expanded="false"] .picto:nth-of-type(1),
+.accordion__button[aria-expanded="true"] .picto:nth-of-type(2) {
+  display: none;
+}
+
+/* border-radius adjstments
+--------------------------- */
+
+.accordion__label:not(:last-of-type),
+.accordion__label:not(:last-of-type) > button,
+.accordion__label.open,
+.accordion__button[aria-expanded="true"] {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.accordion__label:not(:first-of-type),
+.accordion__label:not(:first-of-type) > button {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+/* panels
+--------- */
+
+.accordion__panel {
+  flex: 1 1 0%;
+  display: grid;
+  margin: 0;
+
+  grid-template-rows: 1fr;
+  overflow: auto;
+  transition:
+    grid-template-rows var(--speed),
+    flex-grow var(--speed);
+}
+
+.accordion__panel[hidden] {
+  flex: 0 0 0%;
+  display: grid;
+
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  transition:
+    grid-template-rows var(--speed),
+    flex-grow var(--speed),
+    visibility 0s var(--speed);
+}
+
+:where(.accordion__content) {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+}
+
+:where(.accordion__content > *) {
+  padding-left: var(--unit);
+  padding-right: var(--unit);
+}
+
+:where(.accordion__content > :first-child) {
+  margin-top: var(--unit);
+}
+
+:where(.accordion__content > :last-child) {
+  margin-bottom: var(--unit);
+}
+
+/* accordion in document
+======================== */
+
+:is(:is(.document :not(.panel), .document) > ui-accordion,
+ui-accordion.document) {
+  border-radius: 0;
+  border: 0;
+  border-bottom: var(--separator-bdw) var(--separator-bds) var(--separator-bdc);
+  text-shadow: var(--document-tsh, none);
+  box-shadow: none;
+}
+
+:is(:is(.document :not(.panel), .document) > ui-accordion,
+ui-accordion.document) .accordion__label {
+  all: inherit;
+  font-weight: bold;
+  padding-top: var(--unit);
+  padding-bottom: var(--unit);
+  border: 0;
+  border-top: var(--separator-bdw) var(--separator-bds) var(--separator-bdc);
+}
+
+:is(:is(.document :not(.panel), .document) > ui-accordion,
+ui-accordion.document) .accordion__button {
+  all: inherit;
+  border: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+:is(:is(.document :not(.panel), .document) > ui-accordion,
+ui-accordion.document) .accordion__panel,
+:is(:is(.document :not(.panel), .document) > ui-accordion,
+ui-accordion.document) .accordion__content {
+  background: transparent;
+  color: inherit;
+  box-shadow: none;
+  text-shadow: var(--document-tsh, none);
+  border: none;
+}
+
+:is(:is(.document :not(.panel), .document) > ui-accordion,
+ui-accordion.document) .accordion__button[disabled] {
+  opacity: 0.5;
+}
+
+:is(:is(.document :not(.panel), .document) > ui-accordion,
+ui-accordion.document) .accordion__button > span {
+  overflow: unset;
+  text-overflow: unset;
+  white-space: unset;
+  text-indent: unset;
+}
+
+:is(:is(.document :not(.panel), .document) > ui-accordion,
+ui-accordion.document) .accordion__button > .picto {
+  order: var(--accordion-picto-order, 1);
+  margin-right: var(--unit-sm);
+  margin-left: var(--unit-sm);
+  aspect-ratio: 1;
+}
+
+:is(:is(.document :not(.panel), .document) > ui-accordion,
+ui-accordion.document) .accordion__button:focus > .picto {
+  outline: var(--ctrl-o);
+  outline-offset: 0;
+}
+
+:is(:is(.document :not(.panel), .document) > ui-accordion,
+ui-accordion.document) .accordion__button > .picto:nth-of-type(1)::after {
+  content: var(--accordion-picto-close, var(--picto--minus-large));
+}
+
+:is(:is(.document :not(.panel), .document) > ui-accordion,
+ui-accordion.document) .accordion__button > .picto:nth-of-type(2)::after {
+  content: var(--accordion-picto-open, var(--picto--plus-large));
+}
+
+:is(:is(.document :not(.panel), .document) > ui-accordion,
+ui-accordion.document) .accordion__content > * {
+  padding-left: unset;
+  padding-right: unset;
+}
+
+:is(:is(.document :not(.panel), .document) > ui-accordion,
+ui-accordion.document) .accordion__content > :first-child {
+  margin-top: 0;
+}

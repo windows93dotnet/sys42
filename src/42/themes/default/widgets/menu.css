@@ -1,0 +1,160 @@
+:root {
+  --menu-bg: var(--outset-bg);
+  --menu-fg: var(--outset-fg);
+  --menu-bdw: var(--outset-bdw);
+  --menu-bds: var(--outset-bds);
+  --menu-bdc: var(--outset-bdc);
+  --menu-bdi: var(--outset-bdi);
+  --menu-br: var(--outset-br);
+  --menu-tsh: var(--outset-tsh, none);
+  --menu-bsh: var(--outset-bsh);
+}
+
+ui-menu,
+ui-menubar {
+  list-style: none;
+  user-select: none;
+  max-width: 100vw;
+}
+
+ui-menubar {
+  display: flex;
+}
+
+ui-menu {
+  display: block;
+  width: max-content;
+  min-width: min(var(--ctrl-w), 100%);
+  z-index: var(--z-popups);
+
+  --bg: var(--menu-bg);
+  --fg: var(--menu-fg);
+  background: var(--bg);
+  color: var(--fg);
+  border-width: var(--menu-bdw);
+  border-style: var(--menu-bds);
+  border-color: var(--menu-bdc);
+  border-image: var(--menu-bdi);
+  border-radius: var(--menu-br);
+  text-shadow: var(--menu-tsh, none);
+  box-shadow: var(--menu-bsh);
+}
+
+ui-menu ui-menu {
+  min-width: var(--ctrl-w);
+}
+
+ui-menu > li {
+  width: 100%;
+  display: flex;
+}
+
+:is(ui-menu, ui-menubar) > li > button:is(:disabled,[aria-disabled="true"]) {
+  color: var(--btn🚫-fg);
+  opacity: var(--ctrl🚫-alpha);
+  text-shadow: var(--btn🚫-tsh);
+}
+
+ui-menubar hr {
+  height: auto;
+  width: 0;
+  border-width: var(--separator-v-bdw);
+  border-style: var(--separator-v-bds);
+  border-color: var(--separator-v-bdc);
+  box-shadow: var(--separator-v-bsh);
+}
+
+ui-menubar hr,
+ui-menu hr {
+  margin: 0;
+}
+
+:is(ui-menu, ui-menubar) > li > :is(button, label) {
+  all: unset;
+  box-sizing: border-box;
+
+  text-align: left;
+  display: flex;
+  flex: 1;
+
+  max-width: 100%;
+
+  padding: var(--unit-xs);
+  padding-right: var(--unit-md);
+  padding-left: var(--unit-xs);
+
+  --gap: var(--unit-sm);
+  gap: var(--gap);
+}
+
+ui-menubar > li > :is(button, label) {
+  --gap: var(--unit-xs);
+  padding-left: var(--unit-md);
+}
+
+ui-menubar > li > label {
+  padding-left: var(--unit-xs);
+}
+
+:is(ui-menu, ui-menubar) > li > label > input[type="checkbox" i],
+:is(ui-menu, ui-menubar) > li > label > input[type="radio" i],
+:is(ui-menu, ui-menubar) > li > button > ui-picto {
+  all: unset;
+  box-sizing: border-box;
+  flex: 0 1 16px;
+
+  vertical-align: middle;
+  transform: translateY(-1px);
+
+  width: 16px;
+  min-width: 16px;
+  height: 16px;
+}
+
+ui-menu button > kbd {
+  all: unset;
+  box-sizing: border-box;
+  flex: 0 1 auto;
+  opacity: 0.5;
+}
+
+ui-menubar > li > button > ui-picto,
+ui-menubar > li > button > kbd {
+  display: none;
+}
+
+ui-menu > li > button :first-child:not(ui-picto) {
+  margin-left: calc(var(--unit-sm) + 16px);
+}
+
+:is(ui-menu, ui-menubar) > li > button[aria-haspopup][aria-expanded="true"],
+:is(ui-menu, ui-menubar) > li > label:is(:focus-within),
+:is(ui-menu, ui-menubar) > li > button:not([aria-disabled="true"]):focus {
+  --bg: var(--highlight-bg);
+  --fg: var(--highlight-fg);
+  background: var(--bg);
+  color: var(--fg);
+  text-shadow: var(--highlight-tsh, none);
+}
+
+:is(ui-menu, ui-menubar) > li > button:focus {
+  outline: none;
+}
+
+/* debug */
+
+body.debug ui-menu {
+  box-shadow: 0 0 7px 0 #0004;
+}
+
+body.debug :is(ui-menu, ui-menubar) > li > button[aria-haspopup][aria-expanded="true"] {
+  background: red !important;
+}
+
+body.debug :is(ui-menu, ui-menubar) > li > button[aria-haspopup][aria-expanded="true"]:focus {
+  background: #f0f !important;
+}
+
+body.debug .aim-polygon {
+  fill: rgb(255 255 0 / 0.5) !important;
+}

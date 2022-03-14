@@ -1,0 +1,391 @@
+:root {
+  --bg: Canvas;
+  --fg: CanvasText;
+  /* --bg: #080a0c;
+  --fg: #595d69; */
+  /* color-scheme: dark; */
+
+  --prose-w: 80ch;
+
+  /* --document-pa: var(--unit-lg); */
+  /* --article-mw: var(--prose-w); */
+
+  --breath: var(--unit-xl);
+
+  --separator-bdw: 1px 0 0 0;
+  --separator-bds: solid;
+  --separator-bdc: var(--fg);
+  --separator-bsh: none;
+
+  --separator-v-bdw: 0 1px 0 0;
+  --separator-v-bds: solid;
+  --separator-v-bdc: var(--fg);
+  --separator-v-bsh: none;
+
+  --link-td: underline;
+
+  --code-bg: var(--ansi-bg, var(--bg));
+  --code-fg: var(--ansi-fg, var(--bg));
+
+  --desktop-bg: var(--bg);
+  --desktop-fg: var(--fg);
+  --ground-bg: var(--bg);
+  --ground-fg: var(--fg);
+  --panel-bg: var(--bg);
+  --panel-fg: var(--fg);
+
+  --highlight-bg: var(--fg);
+  --highlight-fg: var(--bg);
+  --highlight-tsh: none;
+
+  --inset-bg: var(--fld-bg, var(--bg));
+  --inset-fg: var(--fld-fg, var(--fg));
+  --inset-bdw: var(--fld-bdw);
+  --inset-bds: var(--fld-bds);
+  --inset-bdc: var(--fld-bdc);
+  --inset-bdi: var(--fld-bdi);
+  --inset-br: var(--fld-br);
+  --inset-tsh: var(--fld-tsh);
+  --inset-bsh: var(--fld-bsh);
+
+  --inset-shallow-bg: var(--inset-bg);
+  --inset-shallow-fg: var(--inset-fg);
+  --inset-shallow-bdw: var(--inset-bdw);
+  --inset-shallow-bds: var(--inset-bds);
+  --inset-shallow-bdc: var(--inset-bdc);
+  --inset-shallow-bdi: var(--inset-bdi);
+  --inset-shallow-br: var(--inset-br);
+  --inset-shallow-tsh: var(--inset-tsh);
+  --inset-shallow-bsh: var(--inset-bsh);
+
+  --outset-bg: var(--btn-bg, var(--bg));
+  --outset-fg: var(--btn-fg, var(--fg));
+  --outset-bdw: var(--btn-bdw);
+  --outset-bds: var(--btn-bds);
+  --outset-bdc: var(--btn-bdc);
+  --outset-bdi: var(--btn-bdi);
+  --outset-br: var(--btn-br);
+  --outset-tsh: var(--btn-tsh);
+  --outset-bsh: var(--btn-bsh);
+
+  --outset-shallow-bg: var(--outset-bg);
+  --outset-shallow-fg: var(--outset-fg);
+  --outset-shallow-bdw: var(--outset-bdw);
+  --outset-shallow-bds: var(--outset-bds);
+  --outset-shallow-bdc: var(--outset-bdc);
+  --outset-shallow-bdi: var(--outset-bdi);
+  --outset-shallow-br: var(--outset-br);
+  --outset-shallow-tsh: var(--outset-tsh);
+  --outset-shallow-bsh: var(--outset-bsh);
+
+  font: var(--font);
+}
+
+.breath {
+  padding: var(--breath);
+}
+
+.highlight,
+::selection {
+  --bg: var(--highlight-bg);
+  --fg: var(--highlight-fg);
+  background: var(--bg);
+  color: var(--fg);
+  text-shadow: var(--highlight-tsh, none);
+}
+
+.highlight::selection {
+  background: var(--highlight-sel-bg, var(--highlight-fg));
+  color: var(--highlight-sel-fg, var(--highlight-bg));
+  text-shadow: var(--highlight-sel-tsh, none);
+}
+
+.inset,
+.outset,
+.inset-shallow,
+.outset-shallow,
+.document,
+.ground,
+.desktop,
+.code,
+code,
+samp,
+output,
+.panel,
+menu,
+body {
+  background: var(--bg);
+  color: var(--fg);
+  /* user-select: auto; */
+}
+
+.inset {
+  --bg: var(--inset-bg);
+  --fg: var(--inset-fg);
+  border-width: var(--inset-bdw);
+  border-style: var(--inset-bds);
+  border-color: var(--inset-bdc);
+  border-image: var(--inset-bdi);
+  border-radius: var(--inset-br);
+  text-shadow: var(--inset-tsh, none);
+  box-shadow: var(--inset-bsh);
+
+  height: 300;
+}
+
+.inset-shallow {
+  --bg: var(--inset-shallow-bg);
+  --fg: var(--inset-shallow-fg);
+  border-width: var(--inset-shallow-bdw);
+  border-style: var(--inset-shallow-bds);
+  border-color: var(--inset-shallow-bdc);
+  border-image: var(--inset-shallow-bdi);
+  border-radius: var(--inset-shallow-br);
+  text-shadow: var(--inset-shallow-tsh, none);
+  box-shadow: var(--inset-shallow-bsh);
+}
+
+.outset {
+  --bg: var(--outset-bg);
+  --fg: var(--outset-fg);
+  border-width: var(--outset-bdw);
+  border-style: var(--outset-bds);
+  border-color: var(--outset-bdc);
+  border-image: var(--outset-bdi);
+  border-radius: var(--outset-br);
+  text-shadow: var(--outset-tsh, none);
+  box-shadow: var(--outset-bsh);
+}
+
+.outset-shallow {
+  --bg: var(--outset-shallow-bg);
+  --fg: var(--outset-shallow-fg);
+  border-width: var(--outset-shallow-bdw);
+  border-style: var(--outset-shallow-bds);
+  border-color: var(--outset-shallow-bdc);
+  border-image: var(--outset-shallow-bdi);
+  border-radius: var(--outset-shallow-br);
+  text-shadow: var(--outset-shallow-tsh, none);
+  box-shadow: var(--outset-shallow-bsh);
+}
+
+.desktop {
+  --bg: var(--desktop-bg);
+  --fg: var(--desktop-fg);
+  text-shadow: var(--desktop-tsh, none);
+}
+
+.ground {
+  --bg: var(--ground-bg);
+  --fg: var(--ground-fg);
+  text-shadow: var(--ground-tsh, none);
+}
+
+.document {
+  --bg: var(--document-bg);
+  --fg: var(--document-fg);
+  text-shadow: var(--document-tsh, none);
+}
+
+:not(.document) > :where(body,section,article,header,footer):is(.document) {
+  padding: var(--breath);
+}
+
+.document > * {
+  max-width: var(--prose-w);
+}
+
+.panel,
+menu,
+body {
+  --bg: var(--panel-bg);
+  --fg: var(--panel-fg);
+  text-shadow: var(--panel-tsh, none);
+}
+
+.code,
+code,
+samp,
+output {
+  --bg: var(--code-bg);
+  --fg: var(--code-fg);
+  text-shadow: var(--code-tsh, none);
+  font: var(--font-mono);
+  padding: var(--unit-sm) var(--unit-md);
+  overflow-y: auto;
+  overflow-x: auto;
+  white-space: pre;
+  speak-as: literal-punctuation;
+}
+
+:where(
+.code,
+code,
+samp,
+output
+)::selection {
+  background: var(--code-sel-bg, var(--code-fg));
+  color: var(--code-sel-fg, var(--code-bg));
+  text-shadow: var(--code-sel-tsh, none);
+}
+
+/* typography
+============= */
+
+/* @thanks https://www.w3.org/StyleSheets/TR/2016/base.css */
+
+:where(code, kbd, samp, pre) {
+  font: var(--font-mono);
+  widows: 3;
+  orphans: 3;
+  hyphens: none;
+  text-transform: none;
+  text-align: left;
+  text-align: start;
+  font-variant: normal;
+  page-break-before: avoid;
+}
+
+h1, h2, h3, h4, h5, h6, dt {
+  page-break-after: avoid;
+  page-break-inside: avoid;
+  hyphens: manual;
+}
+
+/* anchor links
+--------------- */
+
+/* @read https://amberwilson.co.uk/blog/are-your-anchor-links-accessible */
+
+:where(h1, h2, h3, h4, h5, h6) > a[href^="#"]:only-child:any-link {
+  color: inherit;
+  text-shadow: inherit;
+  text-decoration: none;
+  position: relative;
+}
+
+:where(h1, h2, h3, h4, h5, h6) > a[href^="#"]:only-child > ui-picto:first-of-type {
+  opacity: 0;
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--link-fg);
+}
+
+:where(h1, h2, h3, h4, h5, h6) > a[href^="#"]:only-child:is(:focus,:hover) {
+  outline: none;
+}
+
+:where(h1, h2, h3, h4, h5, h6) > a[href^="#"]:only-child:is(:focus,:hover) > ui-picto:first-of-type {
+  opacity: 1;
+}
+
+/* checkboard
+============= */
+
+:root,
+ui-swatch,
+.checkboard {
+  --checkboard-dark: #cecece;
+  --checkboard-light: #fff;
+  --checkboard-size: 9;
+  --checkboard-bg:
+    repeating-conic-gradient(
+      var(--checkboard-dark) 0% 25%,
+      var(--checkboard-light) 0% 50%
+    ) top left / calc(var(--checkboard-size) * 2px) calc(var(--checkboard-size) * 2px);
+}
+
+/* separators
+============= */
+
+/* hr {
+  height: 0;
+  width: 100%;
+} */
+
+hr {
+  margin-block: var(--unit);
+  margin-inline: 0;
+  border-width: var(--separator-bdw);
+  border-style: var(--separator-bds);
+  border-color: var(--separator-bdc);
+  box-shadow: var(--separator-bsh);
+}
+
+hr[aria-orientation="vertical"] {
+  margin-block: 0;
+  margin-inline: var(--unit);
+  display: inline-block;
+  height: auto;
+  width: 0;
+  border-width: var(--separator-v-bdw);
+  border-style: var(--separator-v-bds);
+  border-color: var(--separator-v-bdc);
+  box-shadow: var(--separator-v-bsh);
+}
+
+/* hyperlinks
+============= */
+
+:where(a) {
+  color: var(--link-fg, inherit);
+  text-decoration: var(--link-td);
+  text-shadow: var(--link-tsh, none);
+}
+
+:where(a:visited) {
+  color: var(--link☑️-fg, var(--link-fg, inherit));
+  text-decoration: var(--link☑️-td, var(--link-td));
+  text-shadow: var(--link☑️-tsh, var(--link-tsh, none));
+}
+
+:where(a[aria-current="page"]),
+:where(a[aria-current="location"]) {
+  color: var(--link🚩-fg, var(--link👇-fg, var(--link-fg, inherit)));
+  text-decoration: var(--link🚩-td, var(--link👇-td, var(--link-td)));
+  text-shadow: var(--link🚩-tsh, var(--link👇-tsh, var(--link-tsh, none)));
+}
+
+:where(a:active) {
+  color: var(--link👇-fg, var(--link-fg, inherit));
+  text-decoration: var(--link👇-td, var(--link-td));
+  text-shadow: var(--link👇-tsh, var(--link-tsh, none));
+}
+
+:where(a:focus),
+:where(a:hover) {
+  color: var(--link🎯-fg, var(--link-fg, inherit));
+  text-decoration: var(--link🎯-td, var(--link-td));
+  text-shadow: var(--link🎯-tsh, var(--link-tsh, none));
+}
+
+:where(a:focus) {
+  outline: var(--link-o, var(--ctrl-o));
+  outline-offset: var(--link-oo, 2px);
+}
+
+/* nav
+====== */
+
+nav:not(.unstyled) menu,
+nav:not(.unstyled) ol,
+nav:not(.unstyled) ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+:where(nav:not(.unstyled) li) > a {
+  color: inherit;
+  display: block;
+  text-decoration: none;
+  padding: var(--unit-xs) var(--unit-md);
+}
+
+:where(nav:not(.unstyled)) a:hover,
+:where(nav:not(.unstyled)) a[aria-current]:not([aria-current="false"]) {
+  background: var(--highlight-bg);
+  color: var(--highlight-fg);
+}

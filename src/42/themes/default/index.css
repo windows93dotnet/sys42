@@ -1,0 +1,52 @@
+/* @read https://medium.com/gusto-design/creating-the-perfect-css-system-fa38f5bcdd9e */
+/* @read https://slides.oddbird.net/csswg/tpac2021/ */
+
+/* Configs
+=========== */
+@import "./configs/variables.css";
+@import "./configs/ansi.css";
+
+/* Fonts
+======== */
+@import "./fonts/pictos.css";
+
+/* Reset
+======== */
+@import "./reset/sanitize.css";
+@import "./reset/reduce-motion.css";
+@import "./reset/reset.css";
+
+/* Elements
+=========== */
+@import "./html/form.css";
+@import "./html/addon.css";
+@import "./html/meter.css";
+@import "./html/progress.css";
+@import "./html/range.css";
+@import "./html/scrollbar.css";
+@import "./html/theme.css";
+
+/* Components
+============= */
+@import "./ui/ui.css";
+@import "./ui/layers.css";
+@import "./widgets/accordion.css";
+@import "./widgets/dialog.css";
+@import "./widgets/enclose.css";
+@import "./widgets/folderview.css";
+@import "./widgets/icon.css";
+@import "./widgets/menu.css";
+@import "./widgets/repeater.css";
+@import "./widgets/tooltip.css";
+@import "./widgets/workspaces.css";
+
+/* Utilities
+============ */
+@import "./utils/utils.css";
+@import "./utils/box.css";
+@import "./utils/colors.css";
+@import "./utils/cursor.css";
+@import "./utils/spacing.css";
+@import "./utils/txt.css";
+@import "./utils/tail.css";
+@import "./utils/print.css";

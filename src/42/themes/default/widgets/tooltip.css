@@ -1,0 +1,102 @@
+/* stylelint-disable no-duplicate-selectors */
+
+:root {
+  --tooltip-br: 0px;
+  --tooltip-offset-y: 0px;
+  --tooltip-offset-x: 0px;
+
+  --tooltip-bdw: 1px;
+
+  --tooltip-pa: var(--unit-md) var(--unit);
+
+  --tooltip__tail-offset: 0px;
+}
+
+/* tooltip
+========== */
+
+:where(.tooltip, [role="tooltip"]) {
+  --bg: var(--tooltip-bg);
+  --fg: var(--tooltip-fg);
+  --bdw: var(--tooltip-bdw);
+  --bdc: var(--tooltip-bdc, var(--fg));
+
+  --tail-offset-x: calc(var(--tooltip-br) + var(--tooltip__tail-offset));
+
+  font: var(--font);
+
+  padding: var(--tooltip-pa);
+
+  background: var(--bg);
+  color: var(--fg);
+  text-shadow: var(--tooltip-tsh, none);
+  border-width: var(--bdw);
+  border-style: var(--tooltip-bds, solid);
+  border-color: var(--bdc);
+  border-radius: var(--tooltip-br);
+
+  transition: opacity 0.2s;
+
+  filter: var(--tooltip-filter);
+  backdrop-filter: var(--tooltip-backdrop-filter);
+
+  width: max-content;
+  min-height: min-content;
+  max-width: min(32ch, 100%);
+
+  bottom: calc(100% + var(--tail-h) + calc(-1 * var(--tooltip-offset-y)));
+  right: calc(-1 * var(--tooltip-offset-x));
+}
+
+ui-tooltip {
+  aspect-ratio: 0;
+  bottom: auto;
+  right: auto;
+}
+
+:is(.tooltip, [role="tooltip"]).tail-tc,
+:is(.tooltip, [role="tooltip"]).tail-tl,
+:is(.tooltip, [role="tooltip"]).tail-tr {
+  margin-top: var(--tail-h);
+}
+
+:is(.tooltip, [role="tooltip"]).tail-bc,
+:is(.tooltip, [role="tooltip"]).tail-bl,
+:is(.tooltip, [role="tooltip"]).tail-br {
+  margin-top: calc(-1 * var(--tail-h));
+}
+
+:is(.tooltip, [role="tooltip"]).tail-cl {
+  margin-left: var(--tail-w);
+}
+
+:is(.tooltip, [role="tooltip"]).tail-cr {
+  margin-left: calc(-1 * var(--tail-w));
+}
+
+:is(.tooltip, [role="tooltip"]).tail-tr,
+:is(.tooltip, [role="tooltip"]).tail-br {
+  margin-left: var(--tail-offset-x);
+}
+
+:is(.tooltip, [role="tooltip"]).tail-tl,
+:is(.tooltip, [role="tooltip"]).tail-bl {
+  margin-left: calc(-1 * var(--tail-offset-x));
+}
+
+/* states
+========= */
+
+:where(ui-tooltip,.tooltip,[role="tooltip"]) {
+  position: absolute;
+  z-index: var(--z-tooltips);
+  opacity: 0;
+  pointer-events: none;
+}
+
+:where(ui-tooltip,.tooltip,[role="tooltip"]).open:not(:empty),
+:where(ui-tooltip,.tooltip,[role="tooltip"]):not(:empty):where(:hover,:focus,.focus),
+:where(:hover,:focus,.focus) + :where(ui-tooltip,.tooltip,[role="tooltip"]):not(:empty) {
+  opacity: 1;
+  pointer-events: auto;
+}

@@ -1,0 +1,293 @@
+/* @read https://css-tricks.com/responsive-layouts-fewer-media-queries/ */
+
+/* fit
+====== */
+
+.box-main,
+.box-fit {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+}
+
+img.box-fit,
+iframe.box-fit,
+textarea.box-fit {
+  width: 100%;
+  height: 100%;
+}
+
+/* grid
+======= */
+
+/* https://medium.com/@js_tut/css-grid-tutorial-filling-in-the-gaps-c596c9534611 */
+
+.box-grid,
+.box-grid-auto {
+  --gap: 0;
+  --edge: 0;
+  --ratio: 0;
+  --cols: 4;
+  --line: max-content;
+  --edge-color: currentColor;
+  display: grid;
+  grid-gap: calc(var(--gap) * var(--unit));
+  grid-template-columns: repeat(var(--cols), minmax(min-content, 1fr));
+  grid-auto-rows: var(--line);
+  ---: calc(var(--edge) * 1px);
+  padding-right: var(---);
+  padding-bottom: var(---);
+}
+
+.box-grid-auto {
+  --cell: calc(10 * var(--unit));
+  grid-template-columns: repeat(auto-fit, minmax(var(--cell), 1fr));
+}
+
+:where(.box-grid-auto, .box-grid) > * {
+  margin-right: calc(var(--edge) * -1px);
+  margin-bottom: calc(var(--edge) * -1px);
+  border: calc(var(--edge) * 1px) solid var(--edge-color);
+  /* min-width: max-content; */
+  aspect-ratio: var(--ratio);
+}
+
+.colspan.colspan.colspan.colspan.colspan {
+  --span: 9999;
+  grid-column: span var(--span);
+}
+
+/* ratio
+======== */
+
+:root {
+  /* @thanks https://open-props.style/#aspect-ratio */
+  --ratio-square: 1;
+  --ratio-landscape: 4/3;
+  --ratio-portrait: 3/4;
+  --ratio-widescreen: 16/9;
+  --ratio-ultrawide: 18/5;
+  --ratio-golden: 1.618;
+}
+
+.box-ratio {
+  --ratio: 1;
+  aspect-ratio: var(--ratio);
+}
+
+:where(.box-ratio) {
+  display: inline-block;
+}
+
+.ratio-square { --ratio: var(--ratio-square); }
+.ratio-landscape { --ratio: var(--ratio-landscape); }
+.ratio-portrait { --ratio: var(--ratio-portrait); }
+.ratio-widescreen { --ratio: var(--ratio-widescreen); }
+.ratio-ultrawide { --ratio: var(--ratio-ultrawide); }
+.ratio-golden { --ratio: var(--ratio-golden); }
+
+/* center
+========= */
+
+.box-main, .box-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* justify-content: safe center; */
+}
+
+:where(:is(.box-main, .box-center) > *) {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+/* stack
+======== */
+
+.box-stack {
+  display: grid;
+}
+
+.box-stack > * {
+  grid-area: 1 / 1;
+  /* position: relative; */
+}
+
+/* layout
+========= */
+/* [1] prevent flex child is growing out of parent https://stackoverflow.com/a/41675912 */
+
+.box-v {
+  display: flex;
+  flex-direction: row;
+  max-width: 100%;
+}
+:where(.box-v) { flex-wrap: wrap; min-width: 0; } /* [1] */
+
+.box-h {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+}
+:where(.box-h) { flex-wrap: wrap; min-height: 0; } /* [1] */
+
+:where(.box-v > *) {
+  flex: 1 1 0%;
+  min-width: 0; /* [1] */
+  position: relative;
+}
+
+:where(.box-h > *) {
+  flex: 1 1 0%;
+  min-height: 0; /* [1] */
+  position: relative;
+}
+
+:where(
+.box-v > :not(:only-child):is(
+  .button,
+  button,
+  input:is([type="button"],[type="submit"],[type="reset"],[type="color"]),
+  aside,
+  label,
+  nav,
+  menu,
+  ol,
+  ul,
+  span
+)) {
+  flex: 0 0 auto;
+  max-width: 50%;
+  overflow-y: auto;
+}
+
+:where(
+.box-h > :is(
+  footer,
+  header,
+  button,
+  input,
+  form,
+  label,
+  nav,
+  span,
+  [role="menubar"],
+  [role="toolbar"]
+)) {
+  margin-block: 0;
+  flex: 0 0 auto;
+  width: auto;
+}
+
+:is(.box-h,.box-v) > :not(:only-child,:first-child,:last-child),
+.ctrl-group:is(.box-h,.box-v) > :not(:only-child,:first-child,:last-child) > :is(
+  select,button,.button,input:not([type="radio"],[type="checkbox"])
+) {
+  border-radius: 0;
+}
+
+.box-h > :first-child:not(:only-child),
+.ctrl-group.box-h > :first-child:not(:only-child) > :is(
+  select,button,.button,input:not([type="radio"],[type="checkbox"])
+) {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.box-h > :last-child:not(:only-child),
+.ctrl-group.box-h > :last-child:not(:only-child) > :is(
+  select,button,.button,input:not([type="radio"],[type="checkbox"])
+) {
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+}
+
+.box-v > :first-child:not(:only-child),
+.ctrl-group.box-v > :first-child:not(:only-child) > :is(
+  select,button,.button,input:not([type="radio"],[type="checkbox"])
+) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.box-v > :last-child:not(:only-child),
+.ctrl-group.box-v > :last-child:not(:only-child) > :is(
+  select,button,.button,input:not([type="radio"],[type="checkbox"])
+) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.box-whitespace { gap: 1ch; }
+
+:where(.box-whitespace > *),
+:where(.box-liquid > *) { flex: 0 0 auto; }
+:where(.box-solid > *) { flex: 1 1 0%; }
+
+/* position
+=========== */
+
+.p-static { position: static; }
+.p-relative { position: relative; }
+.p-absolute { position: absolute; }
+.p-fixed { position: fixed; }
+.p-sticky { position: sticky; }
+
+/* display
+========== */
+
+.d-none { display: none; }
+.d-contents { display: contents; }
+.d-block { display: block; }
+.d-inline { display: inline; }
+.d-inline-block { display: inline-block; }
+.d-flex { display: flex; }
+.d-inline-flex { display: inline-flex; }
+.d-grid { display: grid; }
+.d-inline-grid { display: inline-grid; }
+.d-flow-root { display: flow-root; }
+
+/* scroll
+========= */
+
+.box-main,
+.scroll-y-auto,.scroll-auto { overflow-x: hidden; overflow-y: auto; }
+.scroll-y,.scroll { overflow-x: hidden; overflow-y: scroll; }
+.scroll-x { overflow-x: scroll; overflow-y: hidden; }
+.scroll-x-auto { overflow-x: scroll; overflow-y: auto; }
+.scroll-xy { overflow: scroll; }
+.scroll-xy-auto { overflow: auto; }
+.scroll-0 { overflow: hidden; }
+
+/* align
+======== */
+
+.items-center { align-items: center; justify-content: center; justify-items: center; }
+.items-y-center { align-items: center; }
+.items-x-center { justify-content: center; justify-items: center; }
+
+.items-start { align-items: flex-start; justify-content: flex-start; justify-items: flex-start; }
+.items-y-start { align-items: flex-start; }
+.items-x-start { justify-content: flex-start; justify-items: flex-start; }
+
+.items-end { align-items: flex-end; justify-content: flex-end; justify-items: flex-end; }
+.items-y-end { align-items: flex-end; }
+.items-x-end { justify-content: flex-end; justify-items: flex-end; }
+
+.items-space-betwen {
+  align-content: space-between;
+  justify-content: space-between;
+}
+
+.items-wrap { flex-wrap: wrap; }
+.items-wrap-0 { flex-wrap: nowrap; }
+
+.item-shrink {
+  justify-self: start;
+  flex: 0 0 auto;
+}
+
+.item-spread {
+  flex: 1 1 0%;
+}

@@ -1,0 +1,89 @@
+input[type="file" i],
+input[type="number" i],
+input[type="month" i],
+input[type="datetime-local" i],
+input[type="time" i],
+input[type="week" i],
+input[type="date" i] {
+  padding-right: var(--unit-sm);
+  position: relative;
+}
+
+::-webkit-datetime-edit-fields-wrapper {
+  padding: 0;
+}
+
+::file-selector-button,
+input[type="number" i]::-webkit-inner-spin-button,
+input::-webkit-calendar-picker-indicator {
+  margin: 0;
+  padding: 0;
+  display: block !important;
+  block-size: auto !important;
+  opacity: 1;
+  appearance: none;
+  box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  height: auto;
+  color: transparent;
+  width: var(--addon-w);
+  border-width: var(--addon-bdw);
+  border-style: var(--addon-bds);
+  border-color: var(--addon-bdc);
+  border-image: var(--addon-bdi);
+  box-shadow: var(--addon-bsh);
+  background-color: var(--addon-bg, var(--empty));
+  background-image: var(--picto--down-url);
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+  background-size: auto;
+}
+
+::file-selector-button {
+  background-image: var(--picto--upload-url);
+}
+
+input[type="month" i]::-webkit-calendar-picker-indicator,
+input[type="datetime-local" i]::-webkit-calendar-picker-indicator,
+input[type="time" i]::-webkit-calendar-picker-indicator,
+input[type="week" i]::-webkit-calendar-picker-indicator,
+input[type="date" i]::-webkit-calendar-picker-indicator {
+  background-image: var(--picto--calendar-url);
+}
+
+input[type="number" i]::-webkit-inner-spin-button {
+  background-image: var(--picto--up-url), var(--picto--down-url);
+  background-position-x: center;
+  ---: calc(2px + 0.5 * var(--ctrl-py));
+  background-position-y: calc(50% - var(---)), calc(50% + var(---));
+}
+
+input::-webkit-datetime-edit-ampm-field,
+input::-webkit-datetime-edit-day-field,
+input::-webkit-datetime-edit-hour-field,
+input::-webkit-datetime-edit-millisecond-field,
+input::-webkit-datetime-edit-minute-field,
+input::-webkit-datetime-edit-month-field,
+input::-webkit-datetime-edit-second-field,
+input::-webkit-datetime-edit-week-field,
+input::-webkit-datetime-edit-year-field {
+  padding: 0 1px;
+}
+
+input::-webkit-datetime-edit-ampm-field:focus,
+input::-webkit-datetime-edit-day-field:focus,
+input::-webkit-datetime-edit-hour-field:focus,
+input::-webkit-datetime-edit-millisecond-field:focus,
+input::-webkit-datetime-edit-minute-field:focus,
+input::-webkit-datetime-edit-month-field:focus,
+input::-webkit-datetime-edit-second-field:focus,
+input::-webkit-datetime-edit-week-field:focus,
+input::-webkit-datetime-edit-year-field:focus {
+  background: var(--highlight-bg);
+  color: var(--highlight-fg);
+  text-shadow: var(--highlight-tsh, none);
+}

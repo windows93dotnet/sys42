@@ -1,0 +1,473 @@
+/* stylelint-disable indentation */
+/* stylelint-disable shorthand-property-no-redundant-values */
+/* stylelint-disable no-duplicate-selectors */
+
+/**
+ * Name: Windows9x
+ * Author: zombectro
+ *
+ * Based on best parts from
+ * https://windows93.net by jankenpopp and zombectro
+ * https://98.js.org by 1j01
+ * https://tpenguinltg.github.io/winclassic by tPenguinLTG
+ */
+
+/* @ref https://guidebookgallery.org/screenshots */
+/* @ref https://copy.sh/v86/?profile=windows2000 */
+
+@import "../default/index.css";
+@import "../default/fonts/sserife.css";
+@import "../default/fonts/fixedsys.css";
+@import "../default/themes/inc/pixel-font.css";
+
+:root {
+  /* The active caption bar */
+  --ActiveTitle: rgb(10 36 106);
+  --GradientActiveTitle: rgb(166 202 240);
+  --TitleText: rgb(255 255 255);
+
+  /* The inactive caption bar */
+  --InactiveTitle: rgb(128 128 128);
+  --GradientInactiveTitle: rgb(192 192 192);
+  --InactiveTitleText: rgb(212 208 200);
+
+  /* Tooltip */
+  --InfoWindow: rgb(254 255 224);
+  --InfoText: rgb(0 0 0);
+
+  /* Window 3d colors */
+  --ButtonFace: rgb(212 208 200);
+  --ButtonLight: rgb(223 223 223);
+  --ButtonHilight: rgb(255 255 255);
+  --ButtonShadow: rgb(128 128 128);
+  --ButtonDkShadow: rgb(64 64 64);
+
+  /* Other window colors */
+  --ActiveBorder: rgb(212 208 200);
+  --InactiveBorder: rgb(212 208 200);
+  --MenuBar: rgb(236 233 216);
+  --Menu: rgb(212 208 200);
+  --WindowFrame: rgb(0 0 0);
+  --Scrollbar: rgb(212 208 200);
+  --Window: rgb(255 255 255);
+  /* --ButtonAlternateFace: rgb(181 181 181); */
+
+  /* Background workspace */
+  /* --Background: rgb(58 110 165); */
+  --Background: rgb(1 130 129);
+  --AppWorkspace: rgb(128 128 128);
+
+  /* Selection */
+  --MenuHilight: rgb(49 106 197);
+  --HilightText: rgb(255 255 255);
+  --Hilight: rgb(10 36 106);
+  --Hilight-fix: rgb(10 36 106 / 0.99);
+
+  /* Text colors */
+  --WindowText: rgb(0 0 0);
+  --MenuText: rgb(0 0 0);
+  --ButtonText: rgb(0 0 0);
+  --GrayText: rgb(128 128 128);
+  --HotTrackingColor: rgb(0 0 128);
+
+  /* Screentone */
+  --screentone-url: url("data:image/svg+xml,<svg width='2' height='2' xmlns='http://www.w3.org/2000/svg'> <path d='m2 0v1h-2v1h1v-2z' fill='rgb(255 255 255)'/></svg>");
+
+  /* pictos
+  ========= */
+  --picto--up-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(0 0 0)" d="M7 6h1v1h1v1h1v1h1v1h-7v-1h1v-1h1v-1h1z"/></svg>');
+  --picto--down-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(0 0 0)" d="M4 6h7v1h-1v1h-1v1h-1v1h-1v-1h-1v-1h-1v-1h-1z"/></svg>');
+  --picto--up-xs-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(0 0 0)" d="M7 6h1v1h1v1h-3v-1h1z"/></svg>');
+  --picto--down-xs-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(0 0 0)" d="M6 7h3v1h-1v1h-1v-1h-1z"/></svg>');
+  --picto--upload-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(0 0 0)" d="M7 4h2v1h1v1h1v1h-2v3h-2v-3h-2v-1h1v-1h1z M3 9h1v2h8v-2h1v3h-10z"/></svg>');
+  --picto--calendar-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(0 0 0)" d="M4 3h1v1h5v-1h1v1h1v8h-9v-8h1z M4 6v5h7v-5z M5 7h2v2h-2z"/></svg>');
+
+  /* Scrollbar icons */
+  --pictos-url: url("data:image/svg+xml,<svg width='96' height='32' viewBox='0 0 96 32' xmlns='http://www.w3.org/2000/svg'> <def> <path id='up' d='M7 6h1v1h1v1h1v1h1v1h-7v-1h1v-1h1v-1h1z'/> <path id='down' d='M4 6h7v1h-1v1h-1v1h-1v1h-1v-1h-1v-1h-1v-1h-1z'/> <path id='left' d='M8 4h1v7h-1v-1h-1v-1h-1v-1h-1v-1h1v-1h1v-1h1z'/> <path id='right' d='M6 4h1v1h1v1h1v1h1v1h-1v1h-1v1h-1v1h-1z'/> <path id='clear' d='M4 3h10v9h-10v-1h-1v-1h-1v-1h-1v-1h-1v-1h1v-1h1v-1h1v-1h1z M7 5v1h1v-1z M11 5v1h1v-1z M9 6h-1v1h1z M10 6v1h1v-1z M10 7h-1v1h1z M8 8v1h1v-1z M11 8h-1v1h1z M7 9v1h1v-1z M12 9h-1v1h1z'/> <path id='calendar' d='M4 3h1v1h5v-1h1v1h1v8h-9v-8h1z M4 6v5h7v-5z M5 7h2v2h-2z'/> </def> <svg fill='rgb(0%2c 0%2c 0)'> <svg x='0px'><use href='%23up'/></svg> <svg x='16px'><use href='%23down'/></svg> <svg x='32px'><use href='%23left'/></svg> <svg x='48px'><use href='%23right'/></svg> <svg x='64px'><use href='%23clear'/></svg> <svg x='80px'><use href='%23calendar'/></svg> </svg> <svg y='16px' fill='rgb(128%2c 128%2c 128)'> <svg x='0px'><use x='1px' y='1px' fill='rgb(255%2c 255%2c 255)' href='%23up'/><use href='%23up'/></svg> <svg x='16px'><use x='1px' y='1px' fill='rgb(255%2c 255%2c 255)' href='%23down'/><use href='%23down'/></svg> <svg x='32px'><use x='1px' y='1px' fill='rgb(255%2c 255%2c 255)' href='%23left'/><use href='%23left'/></svg> <svg x='48px'><use x='1px' y='1px' fill='rgb(255%2c 255%2c 255)' href='%23right'/><use href='%23right'/></svg> <svg x='64px'><use x='1px' y='1px' fill='rgb(255%2c 255%2c 255)' href='%23clear'/><use href='%23clear'/></svg> <svg x='80px'><use x='1px' y='1px' fill='rgb(255%2c 255%2c 255)' href='%23calendar'/><use href='%23calendar'/></svg> </svg> </svg>");
+
+  --picto-up: -0px 0 no-repeat var(--pictos-url);
+  --picto-down: -16px 0 no-repeat var(--pictos-url);
+  --picto-left: -32px 0 no-repeat var(--pictos-url);
+  --picto-right: -48px 0 no-repeat var(--pictos-url);
+  --picto-clear: -64px 0 no-repeat var(--pictos-url);
+  --picto-calendar: -80px 0 no-repeat var(--pictos-url);
+}
+
+:root {
+  --ff-sans: sserife, sserife-fallback;
+  --fs-sans: 11px;
+  --lh-sans: 1.27272727;
+
+  /* --ff-mono: fixedsys;
+  --fs-mono: 16px; */
+  --ff-mono: tomo;
+  --fs-mono: 8px;
+  --lh-mono: 1.5;
+
+  --ground-bg: var(--AppWorkspace);
+  --ground-fg: var(--ButtonLight);
+
+  --desktop-bg: var(--Background);
+  --desktop-fg: #fff;
+  --desktop-tsh: #000 0 1px;
+
+  --document-bg: var(--Window);
+  --document-fg: var(--WindowText);
+
+  --panel-bg: var(--ButtonFace);
+  --panel-fg: var(--ButtonText);
+
+  --tooltip-fg: var(--InfoText);
+  --tooltip-bg: var(--InfoWindow);
+  --tooltip-bdc: var(--InfoText);
+  --tail-h: var(--unit);
+  --tail-w: var(--unit);
+  --tooltip-br: 5px;
+  --tooltip-offset-y: 5px;
+  --tooltip-filter: drop-shadow(2px 2px 1px #0005);
+
+  --ctrl-group-gap: 0;
+  --ctrl-px: 4px;
+  --ctrl-py: 2px;
+
+  --ctrl-bdtw: 2px;
+  --ctrl-bdrw: 2px;
+  --ctrl-bdbw: 2px;
+  --ctrl-bdlw: 2px;
+
+  --ctrl-o: 1px dotted;
+  --ctrl-oo: -4px;
+  --ctrl🚫-alpha: 1;
+  --ctrl🚫-bg: var(--ButtonFace);
+  --ctrl🚫-fg: var(--GrayText);
+  --ctrl🚫-tsh: 1px 1px 0 var(--ButtonHilight);
+
+  --fld-bg: var(--Window);
+  --fld-fg: var(--WindowText);
+  --fld-bdw: 2px;
+  --fld-bdc: var(--ButtonShadow);
+
+  --fld⚠️-bg: #dfc8c8;
+
+  --btn-bg: var(--ButtonFace);
+  --btn-fg: var(--ButtonText);
+  --btn-bdw: 2px;
+  --btn-bdc: var(--ButtonShadow);
+  --fieldset-bdw: 2px;
+  --fieldset-bdc: var(--ButtonShadow);
+
+  --fld-bdi: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(128 128 128)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(64 64 64)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(223 223 223)" d="M5 1h1v5H1V5h4z"/><path fill="rgb(255 255 255)" d="M6 0h1v7H0V6h6z"/></svg>') 2 / 2px;
+  --btn-bdi: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(255 255 255)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(223 223 223)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(128 128 128)" d="M5 1h1v5H1V5h4z"/><path fill="rgb(64 64 64)" d="M6 0h1v7H0V6h6z"/></svg>') 2 / 2px;
+  --outset-bdi: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(223 223 223)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(255 255 255)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(128 128 128)" d="M5 1h1v5H1V5h4z"/><path fill="rgb(64 64 64)" d="M6 0h1v7H0V6h6z"/></svg>') 2 / 2px;
+  --btn☑️-bdi: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(64 64 64)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(128 128 128)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(223 223 223)" d="M5 1h1v5H1V5h4z"/><path fill="rgb(255 255 255)" d="M6 0h1v7H0V6h6z"/></svg>') 2 / 2px;
+  --btn👇-bdi: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(64 64 64)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(128 128 128)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(128 128 128)" d="M5 1h1v5H1V5h4z"/><path fill="rgb(64 64 64)" d="M6 0h1v7H0V6h6z"/></svg>') 2 / 2px;
+  --btn💾-bdi: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(64 64 64)" d="M7 0v7H0V0h7Z"/><path fill="rgb(255 255 255)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(223 223 223)" d="M2 2h2v1H3v1H2Z"/><path fill="rgb(128 128 128)" d="M4 2h1v3H2V4h2z"/></svg>') 3 / 3px;
+  --fieldset-bdi: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(128 128 128)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(255 255 255)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(128 128 128)" d="M5 1h1v5H1V5h4z"/><path fill="rgb(255 255 255)" d="M6 0h1v7H0V6h6z"/></svg>') 2 / 2px;
+
+  /* --btn--primary-bg: var(--ButtonAlternateFace); */
+
+  --btn👇-fg: var(--btn-fg);
+  --btn👇-bg: var(--btn-bg);
+  --btn👇-pa:
+    calc(var(--ctrl-py) + 1px)
+    calc(var(--ctrl-px) - 1px)
+    calc(var(--ctrl-py) - 1px)
+    calc(var(--ctrl-px) + 1px);
+  --btn☑️👇-pa: var(--btn👇-pa);
+  --btn☑️-pa: var(--ctrl-py) var(--ctrl-px);
+
+  --btn☑️-fg: var(--btn-fg);
+  --btn☑️-bg: var(--btn-bg) var(--screentone-url);
+  --btn☑️🚫-bdi: var(--btn☑️-bdi);
+
+  --check-o: var(--ctrl-o);
+  --check-oo: 1px;
+  --check-size: 10px;
+  --check__bullet-ma: 3px;
+  --check-bdw: 0;
+  --check-bdi: none; /* TODO: remake pixel art radio button */
+  --check-bsh:
+    -1px  -1px 0 var(--ButtonDkShadow),
+     0px  -1px 0 var(--ButtonDkShadow),
+    -1px   0px 0 var(--ButtonDkShadow),
+     1px  -1px 0 var(--ButtonLight),
+     1px   1px 0 var(--ButtonLight),
+     0px   1px 0 var(--ButtonLight),
+    -1px   1px 0 var(--ButtonLight),
+    -2px   1px 0 var(--ButtonShadow),
+    -2px   0px 0 var(--ButtonShadow),
+    -2px  -1px 0 var(--ButtonShadow),
+    -2px  -2px 0 var(--ButtonShadow),
+    -2px  -2px 0 var(--ButtonShadow),
+    -1px  -2px 0 var(--ButtonShadow),
+     0px  -2px 0 var(--ButtonShadow),
+     1px  -2px 0 var(--ButtonShadow),
+     2px  -2px 0 var(--ButtonHilight),
+     2px  -1px 0 var(--ButtonHilight),
+     2px   0px 0 var(--ButtonHilight),
+     2px   1px 0 var(--ButtonHilight),
+     2px   2px 0 var(--ButtonHilight),
+     1px   2px 0 var(--ButtonHilight),
+     0px   2px 0 var(--ButtonHilight),
+    -1px   2px 0 var(--ButtonHilight),
+    -2px   2px 0 var(--ButtonHilight);
+
+  --inset-shallow-bdw: 1px;
+  --inset-shallow-bdc: var(--ButtonShadow) var(--ButtonHilight) var(--ButtonHilight) var(--ButtonShadow);
+  --inset-shallow-bdi: none;
+
+  --link-fg: var(--Hilight);
+  --link👇-fg: #f00;
+
+  --highlight-bg: var(--Hilight);
+  --highlight-fg: var(--HilightText);
+
+  --dim-fg: #808080;
+
+  --addon-w: 16px;
+  --addon-bg: var(--ButtonFace);
+  --addon-bdw: 2px;
+  --addon-bds: solid;
+  --addon-bdi: var(--outset-bdi);
+
+  --fieldset__legend-pa: 2px;
+
+  --scrollbar-thumb-size: 16px;
+  --scrollbar-track-br: 0;
+
+  --range__track-h: 7px;
+  --range__track-bg: var(--ButtonFace);
+  --range__track-bdw: 2px;
+  --range__track-bdi: var(--fld-bdi);
+
+  --range__thumb-h: 20px;
+  --range__thumb-w: 10px;
+  --range__thumb-br: 0;
+  --range__thumb-bdw: 2px;
+  --range__thumb-bg: var(--ButtonFace);
+  --range__thumb-bdi: var(--btn-bdi);
+
+  --progress__value-bg:
+    0 0 / 10px 50px
+    linear-gradient(90deg, var(--Hilight) 8px, transparent 8px);
+
+  --separator-bdw: 1px 0 1px 0;
+  --separator-bdc: var(--ButtonShadow) transparent var(--ButtonHilight) transparent;
+
+  --separator-v-bdw: 0 1px 0 1px;
+  --separator-v-bdc: transparent var(--ButtonHilight) transparent var(--ButtonShadow);
+}
+
+/* :where(label,.label):not(.button)::after {
+  content: ":";
+}
+
+input:is([type="radio" i],[type="checkbox" i]) + label::after {
+  content: "";
+} */
+
+select:is([multiple],[size]),
+textarea {
+  overflow-y: scroll;
+}
+
+legend {
+  --legend-bg: var(--bg);
+}
+
+input[type="radio" i],
+input[type="checkbox" i] {
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+input[type="number" i]::-webkit-inner-spin-button {
+  background-image:
+    var(--picto--up-xs-url),
+    linear-gradient(to bottom, var(--ButtonShadow) 1px, #fff 1px),
+    var(--picto--down-xs-url);
+  background-position-x: 0, center, 0;
+  background-position-y: -2px, center, 5px;
+  background-origin: border-box;
+  background-size: auto, 16px 2px, auto;
+}
+
+ui-menu {
+  padding: 2px;
+}
+
+ui-menu hr {
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+/*  */
+
+ui-dialog {
+  padding: 2px;
+}
+
+.ui-dialog__header {
+  padding-right: 2px;
+  display: flex;
+  color: var(--InactiveTitleText);
+  background-color: var(--GradientInactiveTitle);
+  border-bottom: 2px solid var(--InactiveBorder);
+}
+
+.ui-dialog__footer {
+  margin-top: 2px;
+  /* padding: 2px; */
+}
+
+.ui-dialog__title {
+  padding: 3px 5px;
+  font-weight: 800;
+  background-image:
+    linear-gradient(
+      to right,
+      var(--InactiveTitle),
+      var(--GradientInactiveTitle)
+    );
+}
+
+ui-dialog[active] .ui-dialog__header {
+  color: var(--TitleText);
+  background-color: var(--GradientActiveTitle);
+  border-bottom: 2px solid var(--ActiveBorder);
+}
+
+ui-dialog[active] .ui-dialog__title {
+  background-image:
+    linear-gradient(
+      to right,
+      var(--ActiveTitle),
+      var(--GradientActiveTitle)
+    );
+}
+
+.ui-dialog__header button {
+  height: 16px;
+  min-width: 16px;
+  padding: 2px;
+  margin: 2px 0;
+}
+
+/* .ui-dialog__footer button:not(:first-of-type) {
+  margin-left: 4px;
+} */
+
+.ui-dialog__footer button {
+  min-width: 75px;
+}
+
+.ui-dialog__header button.btn-picto {
+  height: 16px;
+  width: 16px;
+  min-width: 16px;
+  padding: 0;
+  margin: 2px 0;
+}
+
+.ui-dialog__header button,
+.ui-dialog__header button.btn-picto:focus {
+  outline-offset: 0;
+}
+
+.ui-dialog__header button.btn-picto > ui-picto {
+  margin-top: -1px;
+  margin-left: -2px;
+}
+
+/* .ui-dialog__header button.focus,
+.ui-dialog__header button:focus {
+  outline: none;
+} */
+
+.ui-dialog__header button:last-of-type {
+  margin-left: 2px;
+}
+/*  */
+
+/* ui-menu hr {
+  margin-left: -1px;
+  width: calc(100% + 1px);
+} */
+
+/* ui-accordion > section:not(:last-of-type) > div {
+  box-shadow: inset 0 -1px 0 0 var(--ButtonDkShadow);
+} */
+
+/* scrollbars
+============= */
+
+*::-webkit-scrollbar {
+  background: var(--Scrollbar) var(--screentone-url) repeat;
+}
+
+*::-webkit-scrollbar,
+*::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-button {
+  width: var(--addon-w);
+  height: var(--addon-w);
+}
+
+*::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-button {
+  color: var(--ButtonText);
+  background: var(--Scrollbar);
+  border: 2px solid;
+  border-image: var(--outset-bdi);
+}
+
+*::-webkit-scrollbar-corner {
+  background: var(--Scrollbar);
+}
+
+*::-webkit-scrollbar-track-piece:active {
+  background: var(--ButtonDkShadow);
+}
+
+*::-webkit-scrollbar-button {
+  display: block;
+}
+
+*::-webkit-scrollbar-button:hover:active {
+  border: 1px solid var(--ButtonShadow);
+  box-shadow: none;
+}
+
+*::-webkit-scrollbar-button:vertical:decrement {
+  background: var(--Scrollbar) var(--picto-up);
+  background-origin: border-box;
+}
+
+*::-webkit-scrollbar-button:vertical:increment {
+  background: var(--Scrollbar) var(--picto-down);
+  background-origin: border-box;
+}
+
+*::-webkit-scrollbar-button:horizontal:decrement {
+  background: var(--Scrollbar) var(--picto-left);
+  background-origin: border-box;
+}
+
+*::-webkit-scrollbar-button:horizontal:increment {
+  background: var(--Scrollbar) var(--picto-right);
+  background-origin: border-box;
+}
+
+*:disabled::-webkit-scrollbar-button:horizontal,
+*::-webkit-scrollbar-button:horizontal:disabled {
+  background-position-y: -16px;
+}
+
+*:disabled::-webkit-scrollbar-button:vertical,
+*::-webkit-scrollbar-button:vertical:disabled {
+  background-position-y: -16px;
+}
+
+*::-webkit-scrollbar-button:end:decrement,
+*::-webkit-scrollbar-button:start:increment {
+  display: none;
+}

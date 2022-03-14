@@ -1,0 +1,18 @@
+:root {
+  --unit: 8px;
+
+  /* remove aliasing for pixel fonts */
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: unset;
+  font-smoothing: unset;
+  font-smooth: never;
+  filter: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="f"><feComponentTransfer><feFuncA type="discrete" tableValues="0 0.1 0.5 0.9 1" /></feComponentTransfer></filter></svg>#f');
+}
+
+@-moz-document url-prefix("") {
+  :root { filter: none; }
+}
+
+h1 { font-size: 300%; }
+h2 { font-size: 200%; }
+h3 { font-size: 200%; font-weight: normal; }
