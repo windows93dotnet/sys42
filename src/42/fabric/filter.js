@@ -27,9 +27,9 @@ filters.string = {
 }
 
 filters.number = {
-  ceil: { url: "../number/precision.js", key: true },
-  floor: { url: "../number/precision.js", key: true },
-  round: { url: "../number/precision.js", key: true },
+  ceil: { url: "number/precision", key: true },
+  floor: { url: "number/precision", key: true },
+  round: { url: "number/precision", key: true },
   add: (a, b) => a + b,
   minus: (a, b) => a - b,
   multiply: (a, b) => a * b,
@@ -38,14 +38,14 @@ filters.number = {
 }
 
 filters.array = {
-  difference: "../array/difference.js",
-  groupBy: "../array/groupBy.js",
+  difference: "array/difference",
+  groupBy: "array/groupBy",
   join: (arr, separator) => arr.join(separator),
-  removeItem: "../array/removeItem.js",
-  shuffle: "../array/shuffle.js",
+  removeItem: "array/removeItem",
+  shuffle: "array/shuffle",
   slice: STRING_FILTER,
-  union: "../array/union.js",
-  uniq: "../array/uniq.js",
+  union: "array/union",
+  uniq: "array/uniq",
 }
 
 filters.object = {
@@ -53,17 +53,17 @@ filters.object = {
   entries: (obj) => Object.entries(obj),
   keys: (obj) => Object.keys(obj),
   values: (obj) => Object.values(obj),
-  allKeys: "../object/allKeys.js",
-  omit: "../object/omit.js",
-  pick: "../object/pick.js",
+  allKeys: "object/allKeys",
+  omit: "object/omit",
+  pick: "object/pick",
 }
 
 filters.any = {
-  arrify: "../arrify.js",
-  cast: "../cast.js",
-  clone: "../clone.js",
-  equal: "../equal.js",
-  stringify: "../stringify.js",
+  arrify: "any/arrify",
+  cast: "any/cast",
+  clone: "any/clone",
+  equal: "any/equal",
+  stringify: "any/stringify",
 }
 
 const entries = Object.entries(filters)
@@ -74,7 +74,7 @@ export default async function filter(name) {
       const item = val[name]
       let fn = item.url ?? item
       if (typeof fn === "string") {
-        fn = await import(fn).then((m) =>
+        fn = await import(`./type/${fn}.js`).then((m) =>
           item.key
             ? locate(m.default, name)
             : item.import

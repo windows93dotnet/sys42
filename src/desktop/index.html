@@ -28,6 +28,12 @@
   }, 100)
 </script> -->
 
+<style>
+  ul {
+    border-bottom: 1px solid red;
+  }
+</style>
+
 <script type="module">
   import ui from "../42/ui.js"
 
@@ -37,8 +43,8 @@
       "hello {{foo}}", //
       { when: "bar", type: "div", content: "bar" },
       {
-        type: "ul",
         scope: "list",
+        type: "ul.top",
         repeat: { type: "li", content: "{{.}}" },
       },
     ],
