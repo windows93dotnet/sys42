@@ -27,6 +27,7 @@ import makeNewContext from "./utils/makeNewContext.js"
 import populateContext from "./utils/populateContext.js"
 import popupButton from "./utils/popupButton.js"
 import setAction from "./utils/setAction.js"
+import joinScope from "./utils/joinScope.js"
 import create from "./create.js"
 
 const { ELEMENT_NODE } = Node
@@ -113,11 +114,9 @@ function getNameAndLabel(def, ctx, required) {
     ? toCamelCase(label.textContent)
     : undefined
 
-  if (name && "scope" in ctx) {
-    name = name === "." ? ctx.scope : (ctx.scope ? ctx.scope + "/" : "") + name
-  }
+  if (name && "scope" in ctx) name = joinScope(ctx.scope, name)
 
-  if (name != null && !name.startsWith("/")) name = `/${name}`
+  // if (name != null && !name.startsWith(".")) name = `.${name}`
 
   if (label && required) {
     label.append(

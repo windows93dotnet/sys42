@@ -1,9 +1,6 @@
 import arrify from "../../fabric/type/any/arrify.js"
 import joinScope from "./joinScope.js"
-
-// import parseLocation from "../../type/object/location/parseLocation.js"
 import serializeArgs from "./serializeArgs.js"
-// import { joinJSONPointer } from "../../type/json/JSONPointerUtils.js"
 
 export default function setAction(el, { run, args }, ctx) {
   const type = typeof run
@@ -17,10 +14,7 @@ export default function setAction(el, { run, args }, ctx) {
       fn = (...args) => ctx.widget[run](...args)
     }
 
-    fn ??= ctx.global.actions.get(
-      joinScope(ctx.scope, run)
-      // ctx.scope + joinJSONPointer(parseLocation(run))
-    )
+    fn ??= ctx.global.actions.get(joinScope(ctx.scope, run))
 
     action = { type: "click", fn }
   } else if (type === "function") {
@@ -31,7 +25,6 @@ export default function setAction(el, { run, args }, ctx) {
   }
 
   if (!action.fn) throw new Error(`run not found: "${run}"`)
-  // if (!action.fn) return
 
   action.fn = action.fn.bind(ctx.global.state.locateProxy(ctx.scope))
 

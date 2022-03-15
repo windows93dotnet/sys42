@@ -147,19 +147,19 @@ test("scopes", async (t) => {
   const app = await ui(el, {
     content: [
       "{{a}} - {{b.c.d}}",
-      { type: "input", name: "b/c/d" },
+      { type: "input", name: "b.c.d" },
       { type: "input", name: "a" },
       {
         scope: "b",
         content: [
-          " - {{c.d}} - ",
+          " + {{c.d}} + ",
           { type: "input", scope: "", name: "a" },
-          { type: "input", name: "c/d" },
+          { type: "input", name: "c.d" },
           {
             scope: "",
             content: [
-              "{{a}} - {{b.c.d}}", //
-              { type: "input", name: "b/c/d" },
+              "{{a}} _ {{b.c.d}}", //
+              { type: "input", name: "b.c.d" },
             ],
           },
         ],
@@ -177,30 +177,30 @@ test("scopes", async (t) => {
 
   for (const item of app.getAll("label")) item.remove()
 
-  t.is(app.el.textContent, "1 - 2 - 2 - 1 - 2")
+  t.is(app.el.textContent, "1 - 2 + 2 + 1 _ 2")
 
   app.data.a = "a"
   app.data.b.c.d = "d"
   await repaint()
 
-  t.is(app.el.textContent, "a - d - d - a - d")
+  t.is(app.el.textContent, "a - d + d + a _ d")
 
   const inputs = app.getAll("input")
 
   t.eq(
     inputs.map(({ name }) => name),
-    ["/b/c/d", "/a", "/a", "/b/c/d", "/b/c/d"]
+    ["b.c.d", "a", "a", "b.c.d", "b.c.d"]
   )
 
   await change(inputs[0], "x")
 
-  t.is(app.el.textContent, "a - x - x - a - x")
+  t.is(app.el.textContent, "a - x + x + a _ x")
   t.is(inputs[3].value, "x")
   t.is(inputs[4].value, "x")
 
   await change(inputs[1], "y")
 
-  t.is(app.el.textContent, "y - x - x - y - x")
+  t.is(app.el.textContent, "y - x + x + y _ x")
   t.is(inputs[2].value, "y")
 })
 

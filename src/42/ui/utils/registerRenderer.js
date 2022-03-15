@@ -1,11 +1,8 @@
-// import parseDotNotation from "../../fabric/locator/parseDotNotation.js"
 import template from "../../system/formats/template.js"
 import filter from "../../fabric/filter.js"
-// import { joinJSONPointer } from "../../type/json/JSONPointerUtils.js"
+import joinScope from "./joinScope.js"
 
 function register(ctx, scope, render) {
-  // if (scope && !scope.startsWith("/")) scope = `/${scope}`
-
   ctx.global.renderers[scope] ??= new Set()
 
   if (!ctx.global.renderers[scope].has(render)) {
@@ -33,14 +30,7 @@ export default function registerRenderer(ctx, scope, render) {
   ctx.undones.push(render())
 }
 
-const dotNotation = (ctx, arr) =>
-  arr.map((x) => {
-    if (x === ".") return ctx.scope
-    // const tokens = joinJSONPointer(parseDotNotation(x))
-    // return ctx.scope ? ctx.scope + tokens : tokens
-    // return ctx.scope ? ctx.scope + x : x
-    return ctx.scope + x
-  })
+const dotNotation = (ctx, arr) => arr.map((x) => joinScope(ctx.scope, x))
 
 registerRenderer.fromDots = (ctx, arr, render) => {
   const scopes = dotNotation(ctx, arr)
