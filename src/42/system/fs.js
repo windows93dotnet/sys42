@@ -1,11 +1,11 @@
-import inOpaqueOrigin from "./system/env/runtime/inOpaqueOrigin.js"
-import configure from "./fabric/configure.js"
-import resolvePath from "./fabric/type/path/core/resolvePath.js"
-import FileSystemError from "./system/fs/FileSystemError.js"
-import addStack from "./fabric/type/error/addStack.js"
-import getDriverLazy from "./system/fs/getDriverLazy.js"
+import inOpaqueOrigin from "./env/runtime/inOpaqueOrigin.js"
+import configure from "../fabric/configure.js"
+import resolvePath from "../fabric/type/path/core/resolvePath.js"
+import FileSystemError from "./fs/FileSystemError.js"
+import addStack from "../fabric/type/error/addStack.js"
+import getDriverLazy from "./fs/getDriverLazy.js"
 
-export { default as FileError } from "./system/fs/FileSystemError.js"
+export { default as FileError } from "./fs/FileSystemError.js"
 
 const DEFAULTS = {
   places: { "/": inOpaqueOrigin ? "memory" : "indexeddb" },
@@ -254,22 +254,18 @@ export async function fsWriteJSON(path, value, replacer, space = 2) {
 
 let JSON5
 export async function fsReadJSON(path) {
-  JSON5 ??= await import("./system/formats/json5.js").then((m) => m.default)
+  JSON5 ??= await import("./formats/json5.js").then((m) => m.default)
   return fsRead(path, "utf8").then((value) => JSON5.parse(value))
 }
 
 export async function fsWriteCBOR(path, value) {
   // @read https://github.com/cbor-wg/cbor-magic-number
-  const encode = await import("./system/formats/cbor.js").then(
-    ({ encode }) => encode
-  )
+  const encode = await import("./formats/cbor.js").then(({ encode }) => encode)
   await fsWrite(path, encode(value))
 }
 
 export async function fsReadCBOR(path) {
-  const decode = await import("./system/formats/cbor.js").then(
-    ({ decode }) => decode
-  )
+  const decode = await import("./formats/cbor.js").then(({ decode }) => decode)
   return fsRead(path).then((value) => decode(value))
 }
 

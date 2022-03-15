@@ -1,6 +1,6 @@
 import configure from "../../../fabric/configure.js"
 import isBackend from "../../env/runtime/inBackend.js"
-import log from "../../../log.js"
+import log from "../../log.js"
 import highlight from "../../console/formats/highlight.js"
 import formatFilename from "../../console/formats/formatFilename.js"
 import formatError from "../../console/formats/formatError.js"

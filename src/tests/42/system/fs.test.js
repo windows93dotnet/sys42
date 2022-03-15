@@ -1,9 +1,9 @@
 /* eslint-disable unicorn/no-object-as-default-parameter */
 // @related https://github.com/matthewp/fs/tree/master/test
 
-import test, { suite } from "../../42/test.js"
-import fs from "../../42/fs.js"
-import system from "../../42/system.js"
+import test, { suite } from "../../../42/test.js"
+import fs from "../../../42/system/fs.js"
+import system from "../../../42/system.js"
 
 const { clone, parallel, shell, stream } = test.utils
 

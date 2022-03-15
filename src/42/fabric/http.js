@@ -2,8 +2,8 @@
 // @related https://github.com/sindresorhus/ky
 // @read https://developer.mozilla.org/en-US/docs/Web/API/AbortController
 
-import setup from "./system/setup.js"
-import noop from "./fabric/type/function/noop.js"
+import setup from "../system/setup.js"
+import noop from "./type/function/noop.js"
 
 const configure = setup("http", {
   headers: { "X-Requested-With": "XMLHttpRequest" },
@@ -48,9 +48,8 @@ export async function handleStatus(res, url) {
 
   // Lazy load status codes list
   if (HTTP_STATUS_CODES === undefined) {
-    HTTP_STATUS_CODES = (
-      await import("./fabric/constants/HTTP_STATUS_CODES.js")
-    ).default
+    HTTP_STATUS_CODES = (await import("./constants/HTTP_STATUS_CODES.js"))
+      .default
   }
 
   throw new HTTPError(res, url)

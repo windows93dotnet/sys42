@@ -31,7 +31,7 @@ export default class Disk extends FileIndex {
   }
 
   async format() {
-    const fs = await import("../../fs.js").then((m) => m.default)
+    const fs = await import("../fs.js").then((m) => m.default)
     await fs.deleteDir("/")
   }
 

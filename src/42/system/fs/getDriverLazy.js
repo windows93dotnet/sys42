@@ -1,5 +1,5 @@
 import addStack from "../../fabric/type/error/addStack.js"
-import fs from "../../fs.js"
+import fs from "../../system/fs.js"
 import { MASKS } from "./Disk.js"
 
 const drivers = {}

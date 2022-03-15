@@ -1,15 +1,15 @@
 // @related https://github.com/xpl/ololog
 
-import system from "./system.js"
-import stackTrace from "./fabric/type/error/stackTrace.js"
-import Logger from "./system/console/Logger.js"
-import formatFilename from "./system/console/formats/formatFilename.js"
-import formatEntries from "./system/console/formats/formatEntries.js"
-import formatError from "./system/console/formats/formatError.js"
-import highlight from "./system/console/formats/highlight.js"
-import tree from "./system/console/formats/tree.js"
-import stringify from "./fabric/type/any/stringify.js"
-import { esc, escapeLog, unescapeLog } from "./system/console/logUtils.js"
+import system from "../system.js"
+import stackTrace from "../fabric/type/error/stackTrace.js"
+import Logger from "./console/Logger.js"
+import formatFilename from "./console/formats/formatFilename.js"
+import formatEntries from "./console/formats/formatEntries.js"
+import formatError from "./console/formats/formatError.js"
+import highlight from "./console/formats/highlight.js"
+import tree from "./console/formats/tree.js"
+import stringify from "../fabric/type/any/stringify.js"
+import { esc, escapeLog, unescapeLog } from "./console/logUtils.js"
 
 export {
   esc,
@@ -17,9 +17,9 @@ export {
   unescapeLog,
   addStyle,
   removeStyles,
-} from "./system/console/logUtils.js"
+} from "./console/logUtils.js"
 
-export { CONSOLE_KEYS } from "./system/console/Logger.js"
+export { CONSOLE_KEYS } from "./console/Logger.js"
 
 const stringifyPresetsKeys = Object.keys(system.configs.stringify.presets)
 

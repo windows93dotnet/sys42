@@ -6,11 +6,11 @@
 // @read https://web.dev/websocketstream/
 // @read https://github.com/SocketDev/wormhole-crypto
 
-import pump from "./fabric/type/stream/pump.js"
-export { default as pump } from "./fabric/type/stream/pump.js"
+import pump from "./type/stream/pump.js"
+export { default as pump } from "./type/stream/pump.js"
 
-import absorb from "./fabric/type/stream/absorb.js"
-export { default as absorb } from "./fabric/type/stream/absorb.js"
+import absorb from "./type/stream/absorb.js"
+export { default as absorb } from "./type/stream/absorb.js"
 
 /* readable
 =========== */

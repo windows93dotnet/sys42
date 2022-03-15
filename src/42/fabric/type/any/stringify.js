@@ -9,7 +9,7 @@ import chainable from "../../trait/chainable.js"
 import replaceIndentation from "../string/replaceIndentation.js"
 import __p from "../string/pluralize.js"
 import { escapeUnicode, unescapeUnicode } from "../string/escapeUnicode.js"
-// import { joinJSONPointer, joinJSONPointerURI } from "./json/JSONPointerUtils.js"
+import { joinJSONPointer, joinJSONPointerURI } from "../../json/pointer.js"
 
 const IGNORE_UNICODE = ["↖", "…", "└", "├", "─", "│"].map(
   (x) => `\\${escapeUnicode(x)}`
@@ -176,7 +176,7 @@ class Stringifier {
     this._ = makeConfig(this.config)
     this.altConfigStyle = this._.nl ? PRESETS.line : PRESETS.min
     this.visitedRefs = new WeakMap()
-    // this.joinPath = this.config.uri ? joinJSONPointerURI : joinJSONPointer
+    this.joinPath = this.config.uri ? joinJSONPointerURI : joinJSONPointer
     if (this.config.maxBytes === false) this.config.maxBytes = Infinity
     if (this.config.maxChars === false) this.config.maxChars = Infinity
     if (this.config.maxItems === false) this.config.maxItems = Infinity
@@ -201,8 +201,7 @@ class Stringifier {
         return "globalThis"
       }
 
-      // const objLocation = this.joinPath(segments)
-      const objLocation = segments.join(".")
+      const objLocation = this.joinPath(segments)
       if (this.visitedRefs.has(val)) {
         const ref = this.visitedRefs.get(val)
         if (ref !== objLocation) {
