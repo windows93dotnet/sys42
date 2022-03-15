@@ -181,8 +181,8 @@ export default class Assert {
     } else if (this.#planned !== this.#count) {
       throw new VerifyError(
         `Planned for ${this.#planned} ${__p(
-          this.#planned,
-          "assertion"
+          "assertion",
+          this.#planned
         )}, but got ${this.#count}`,
         stackframe
       )

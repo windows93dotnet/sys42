@@ -1,7 +1,7 @@
-import test from "../42/test.js"
-import ui from "../42/ui.js"
+import test from "../../42/test.js"
+import ui from "../../42/ui.js"
 
-import repaint from "../42/fabric/type/promise/repaint.js"
+import repaint from "../../42/fabric/type/promise/repaint.js"
 
 function div() {
   return document.createElement("div")
@@ -632,7 +632,7 @@ test("non-string aria attributes", async (t) => {
 /* components
 ========== */
 
-test("components", "unknown", async (t) => {
+test.skip("components", "unknown", async (t) => {
   await t.throws(
     () => ui(div(), { type: "ui-unknown" }), //
     "Unknown component: ui-unknown"
@@ -680,7 +680,7 @@ test("components", "define properties via template", async (t) => {
   app.el.remove()
 })
 
-import Component from "../42/ui/class/Component.js"
+import Component from "../../42/ui/class/Component.js"
 
 class Testcomponent extends Component {
   static definition = {
@@ -842,12 +842,12 @@ test("filters", "buildin filters locate", async (t) => {
   t.is(app.el.innerHTML, "<pre>{a:1}</pre>")
 })
 
-test.only("filters", "pluralize", async (t) => {
+test("filters", "pluralize", async (t) => {
   const app = await ui(div(), {
-    content: "{{2|pluralize('apple')}}",
+    content: "{{'apple'|pluralize}}, {{'orange'|pluralize(5)}}",
   })
 
-  t.is(app.el.innerHTML, "apples")
+  t.is(app.el.innerHTML, "apples, oranges")
 })
 
 // test.only("filters", "input", async (t) => {

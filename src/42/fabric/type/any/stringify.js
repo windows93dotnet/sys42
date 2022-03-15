@@ -159,7 +159,7 @@ const escapeString = (val, config, q = '"') => {
     : val
 }
 
-const limitMessage = (n, word) => `${n} unshown ${__p(n, word)}`
+const limitMessage = (n, word) => `${n} unshown ${__p(word, n)}`
 
 const applyLimit = (items, limit, word = "item") =>
   items.length > limit
@@ -459,8 +459,8 @@ ${indentSpace.repeat(depth - 1)})`
     if (this.config.addComments) {
       const childNodesLen = val.childNodes.length
       out += `/* ${tag} > ${childNodesLen} ${__p(
-        childNodesLen,
-        "childNode"
+        "childNode",
+        childNodesLen
       )} | ${notDisplayed} */ `
     }
 

@@ -89,7 +89,7 @@ const getFooter = (results, config) => {
   const { onlies } = results.stats
 
   footer +=
-    onlies > 0 ? ` {red ┈ ${onlies} ${__p(onlies, "only suite")} ┈}\n` : "\n"
+    onlies > 0 ? ` {red ┈ ${onlies} ${__p("only suite", onlies)} ┈}\n` : "\n"
 
   return footer
 }
@@ -202,8 +202,8 @@ function displayFailedTests(failed, config) {
 
   if (unshown) {
     const notice = `[…] {reset.red ${unshown}} unshown failed ${__p(
-      unshown,
-      "test"
+      "test",
+      unshown
     )}\n{reset.grey increase verbose level to show more errors}`
     log.red.dim(notice)
     if (isBackend) log.hr()
