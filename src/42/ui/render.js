@@ -20,7 +20,7 @@ import renderRepeat from "./renderers/renderRepeat.js"
 import renderText from "./renderers/renderText.js"
 import renderTraits from "./renderers/renderTraits.js"
 import renderWhen from "./renderers/renderWhen.js"
-import renderWidget from "./renderers/renderWidget.js"
+import renderComponent from "./renderers/renderComponent.js"
 
 import normalizeDefinition from "./utils/normalizeDefinition.js"
 import makeNewContext from "./utils/makeNewContext.js"
@@ -245,8 +245,8 @@ export default function render(def, ctx = {}, parent = frag(), textMaker) {
   const normalized = normalizeDefinition(def)
   const attributes = normalized.attrs
 
-  /* widget
-  --------- */
+  /* component
+  ------------ */
 
   if (def.type?.startsWith("ui-")) {
     def = { ...def }
@@ -259,13 +259,13 @@ export default function render(def, ctx = {}, parent = frag(), textMaker) {
       def.permissions = "app"
     }
 
-    const el = renderWidget(def.type, def, ctx)
+    const el = renderComponent(def.type, def, ctx)
 
     if ("id" in attributes || "class" in attributes) {
-      const widgetAttrs = {}
-      if (attributes.id) widgetAttrs.id = attributes.id
-      if (attributes.class) widgetAttrs.class = attributes.class
-      renderAttributes(el, ctx, widgetAttrs)
+      const componentAttrs = {}
+      if (attributes.id) componentAttrs.id = attributes.id
+      if (attributes.class) componentAttrs.class = attributes.class
+      renderAttributes(el, ctx, componentAttrs)
     }
 
     return insert(parent, el)
@@ -350,7 +350,14 @@ export default function render(def, ctx = {}, parent = frag(), textMaker) {
     if (def.type === "select") {
       const validation = setValidation({ id, name }, control, def)
       const el = create(ctx, "select", validation, attributes)
-      render(def.content ?? control.schema?.enum, ctx, el, create("option"))
+      const options = []
+      for (let option of def.content ?? control.schema?.enum ?? options) {
+        const type = typeof option
+        if (type === "string") option = { type: "option", content: option }
+        options.push(option)
+      }
+
+      render(options, ctx, el)
       append(parent, def, ctx, el)
     } else if (def.type === "textarea") {
       const rows = def.rows ?? 4

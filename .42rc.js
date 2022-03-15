@@ -61,7 +61,6 @@ export default {
           "**/shortcuts.test.js",
           "**/ui/**/*.test.js",
           "**/dom/**/*.test.js",
-          "**/widgets/**/*.test.js",
           "**/traceBitmap.test.js",
           "**/isSerializable.test.js",
         ],

@@ -629,62 +629,62 @@ test("non-string aria attributes", async (t) => {
   t.is(app.el.innerHTML, "<div></div>")
 })
 
-/* widgets
+/* components
 ========== */
 
-test("widgets", "unknown", async (t) => {
-  await t.throws(
-    () => ui(div(), { type: "ui-unknown" }), //
-    "Unknown widget: ui-unknown"
-  )
-})
+// test("components", "unknown", async (t) => {
+//   await t.throws(
+//     () => ui(div(), { type: "ui-unknown" }), //
+//     "Unknown component: ui-unknown"
+//   )
+// })
 
-test(
-  "widgets",
-  "define properties and id/class as selector notation",
-  async (t) => {
-    const app = await ui(div(), {
-      type: "ui-swatch#foo.ma.pa",
-      value: "tan",
-    })
+// test(
+//   "components",
+//   "define properties and id/class as selector notation",
+//   async (t) => {
+//     const app = await ui(div(), {
+//       type: "ui-swatch#foo.ma.pa",
+//       value: "tan",
+//     })
 
-    t.is(app.el.innerHTML, '<ui-swatch id="foo" class="ma pa"></ui-swatch>')
+//     t.is(app.el.innerHTML, '<ui-swatch id="foo" class="ma pa"></ui-swatch>')
 
-    document.body.append(app.el)
+//     document.body.append(app.el)
 
-    t.is(
-      app.el.innerHTML,
-      '<ui-swatch id="foo" class="ma pa" value="tan" style="--color:tan;"></ui-swatch>'
-    )
+//     t.is(
+//       app.el.innerHTML,
+//       '<ui-swatch id="foo" class="ma pa" value="tan" style="--color:tan;"></ui-swatch>'
+//     )
 
-    app.el.remove()
-  }
-)
+//     app.el.remove()
+//   }
+// )
 
-test("widgets", "define properties via template", async (t) => {
-  const app = await ui(div(), {
-    type: "ui-swatch",
-    value: "{{foo}}",
-    data: { foo: "tan" },
-  })
+// test("components", "define properties via template", async (t) => {
+//   const app = await ui(div(), {
+//     type: "ui-swatch",
+//     value: "{{foo}}",
+//     data: { foo: "tan" },
+//   })
 
-  document.body.append(app.el)
+//   document.body.append(app.el)
 
-  await repaint()
+//   await repaint()
 
-  t.is(
-    app.el.innerHTML,
-    '<ui-swatch value="tan" style="--color:tan;"></ui-swatch>'
-  )
+//   t.is(
+//     app.el.innerHTML,
+//     '<ui-swatch value="tan" style="--color:tan;"></ui-swatch>'
+//   )
 
-  app.el.remove()
-})
+//   app.el.remove()
+// })
 
-// import Widget from "../../42/ui/class/Widget.js"
+// import Component from "../../42/ui/class/Component.js"
 
-// class Testwidget extends Widget {
+// class Testcomponent extends Component {
 //   static definition = {
-//     tag: "ui-testwidget",
+//     tag: "ui-testcomponent",
 //     properties: {
 //       value: {
 //         type: "string",
@@ -697,11 +697,11 @@ test("widgets", "define properties via template", async (t) => {
 //   }
 // }
 
-// await Widget.define(Testwidget)
+// await Component.define(Testcomponent)
 
-// test("widgets", "filters", async (t) => {
+// test("components", "filters", async (t) => {
 //   const app = await ui(div(), {
-//     type: "ui-testwidget",
+//     type: "ui-testcomponent",
 //     value: "{{foo|customFilter}}",
 //     data: { foo: "hello" },
 //   })
@@ -710,7 +710,7 @@ test("widgets", "define properties via template", async (t) => {
 
 //   await repaint()
 
-//   t.is(app.el.innerHTML, '<ui-testwidget value="HELLO"></ui-testwidget>')
+//   t.is(app.el.innerHTML, '<ui-testcomponent value="HELLO"></ui-testcomponent>')
 
 //   app.el.remove()
 // })
@@ -896,6 +896,10 @@ test("select", async (t) => {
     data: { foo: "foo" },
   })
 
+  t.eq(
+    app.get("select").innerHTML,
+    '<option label="derp" value="derp">derp</option><option label="foo" value="foo">foo</option>'
+  )
   t.eq(app.get("select").value, "foo")
 })
 
@@ -967,7 +971,7 @@ test("content from data", async (t) => {
 
   t.is(
     removeUid(app.el.innerHTML),
-    '<fieldset><div><label for="uid">Name</label><input id="uid" name="/name"></div></fieldset>'
+    '<fieldset><div><label for="uid">Name</label><input id="uid" name="name"></div></fieldset>'
   )
 
   const input = app.get("input")
@@ -1004,7 +1008,7 @@ test("schema", 2, async (t) => {
   const app = await ui(div(), {
     content: {
       type: "number",
-      schema: "#/properties/foo",
+      schema: "properties.foo",
     },
     schema: {
       properties: {

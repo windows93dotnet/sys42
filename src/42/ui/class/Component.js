@@ -1,16 +1,17 @@
 // @related https://www.fast.design/docs/fast-element/defining-elements/
 
 import normalizeDefinition from "../utils/normalizeDefinition.js"
-import noop from "../../type/function/noop.js"
-import configure from "../../configure.js"
+import noop from "../../fabric/type/function/noop.js"
+import configure from "../../fabric/configure.js"
 import makeNewContext from "../utils/makeNewContext.js"
 import populateContext from "../utils/populateContext.js"
-import shortcuts from "../../shortcuts.js"
-import cancelable from "../../fabric/trait/cancelable.js"
-import paintDebounce from "../../type/function/paintDebounce.js"
-import { toKebabCase } from "../../type/string/letters.js"
-import { joinJSONPointer } from "../../type/json/JSONPointerUtils.js"
-import observe from "../../type/object/observe.js"
+// import shortcuts from "../../shortcuts.js"
+import Canceller from "../../fabric/class/Canceller.js"
+import paintDebounce from "../../fabric/type/function/paintDebounce.js"
+import { toKebabCase } from "../../fabric/type/string/letters.js"
+// import { joinJSONPointer } from "../../type/json/JSONPointerUtils.js"
+import joinScope from "../utils/joinScope.js"
+import observe from "../../fabric/locator/observe.js"
 
 import renderAttributes from "../renderers/renderAttributes.js"
 import renderKeyVal from "../renderers/renderKeyVal.js"
@@ -26,7 +27,7 @@ const DEFAULTS = {
         {
           type: "any",
           fromView: true,
-          adapt: (el, value) => {
+          adapt(el, value) {
             renderTrait(el, trait, value, el._.ctx)
           },
         },
@@ -36,15 +37,15 @@ const DEFAULTS = {
       shortcuts: {
         type: "any",
         fromView: true,
-        adapt: (el, value, oldValue) => {
-          oldValue?.destroy?.()
-          const { ctx } = el._
-          return shortcuts(el, value, {
-            agent: ctx.global.actions.get(ctx.scope),
-            signal: ctx.cancel.signal,
-            preventDefault: true,
-            serializeArgs: true,
-          })
+        adapt(/* el, value, oldValue */) {
+          // oldValue?.destroy?.()
+          // const { ctx } = el._
+          // return shortcuts(el, value, {
+          //   agent: ctx.global.actions.get(ctx.scope),
+          //   signal: ctx.cancel.signal,
+          //   preventDefault: true,
+          //   serializeArgs: true,
+          // })
         },
       },
     }
@@ -52,7 +53,7 @@ const DEFAULTS = {
 }
 
 const _INSTANCES = Symbol.for("Trait.INSTANCES")
-const _IS_WIDGET = Symbol.for("Widget.IS_WIDGET")
+const _IS_COMPONENT = Symbol.for("Component.IS_COMPONENT")
 
 const DEFAULTS_ATTRIBUTES = Object.keys(DEFAULTS.properties)
 
@@ -63,7 +64,7 @@ const CONVERTERS = {
   },
   number: {
     toView: (val) => String(val),
-    fromView: (val, key) => {
+    fromView(val, key) {
       const out = Number(val)
       if (Number.isNaN(out)) {
         throw new TypeError(`"${key}" must be a valid number`)
@@ -85,7 +86,7 @@ const CONVERTERS = {
     toView: (val) => val.join(" "),
   },
   any: {
-    toView: (x) => {
+    toView(x) {
       if (typeof x === "string") return x
       try {
         return JSON.stringify(x)
@@ -93,7 +94,7 @@ const CONVERTERS = {
         return x
       }
     },
-    fromView: (x) => {
+    fromView(x) {
       try {
         return JSON.parse(x)
       } catch {
@@ -124,7 +125,7 @@ function setProperties(properties, out, el) {
       toView = true
     }
 
-    const path = joinJSONPointer(out.ctx.scope ? [out.ctx.scope, key] : [key])
+    const path = joinScope(out.ctx.scope, key)
 
     const assignProp = (item, value) => {
       if (item.adapt) {
@@ -203,7 +204,7 @@ function setProperties(properties, out, el) {
   }
 }
 
-function normalizeWidgetDef(el, args) {
+function normalizeComponentDef(el, args) {
   let { definition } = el.constructor
 
   definition = configure(DEFAULTS, definition)
@@ -237,10 +238,10 @@ function normalizeWidgetDef(el, args) {
 
   out.ctx = makeNewContext(out.ctx)
 
-  out.ctx.widget = el
+  out.ctx.component = el
   populateContext(out.ctx, out.def)
 
-  out.cancel = out.ctx.cancel?.fork(el.localName) ?? cancelable(el.localName)
+  out.cancel = out.ctx.cancel?.fork(el.localName) ?? new Canceller(el.localName)
   Object.defineProperty(out, "signal", { get: () => out.cancel.signal })
 
   out.config = configure(defaults, options)
@@ -248,7 +249,7 @@ function normalizeWidgetDef(el, args) {
   out.initial.attributes = out.attrs
 
   // define value from content
-  // usefull when widget is called as a function
+  // usefull when component is called as a function
   // e.g. picto("puzzle") -> out.content = ["puzzle"]
   if (
     "value" in properties &&
@@ -263,11 +264,11 @@ function normalizeWidgetDef(el, args) {
   return out
 }
 
-export default class Widget extends HTMLElement {
-  static IS_WIDGET = _IS_WIDGET
+export default class Component extends HTMLElement {
+  static IS_COMPONENT = _IS_COMPONENT
 
-  static isWidget(el) {
-    return el && typeof el === "object" && el[_IS_WIDGET] === true
+  static isComponent(el) {
+    return el && typeof el === "object" && el[_IS_COMPONENT] === true
   }
 
   static async define(Class) {
@@ -293,7 +294,7 @@ export default class Widget extends HTMLElement {
 
   constructor(...args) {
     super()
-    this[_IS_WIDGET] = true
+    this[_IS_COMPONENT] = true
     if (args.length > 0) this.$init(...args)
   }
 
@@ -331,7 +332,7 @@ export default class Widget extends HTMLElement {
 
   $init(...args) {
     this.removeAttribute("data-lazy-init")
-    this._ = normalizeWidgetDef(this, args)
+    this._ = normalizeComponentDef(this, args)
     this._.render = noop
     this._.repaint = noop
 

@@ -1,8 +1,8 @@
 // @read https://web.dev/more-capable-form-controls/
 
-import Widget from "./Widget.js"
+import Component from "./Component.js"
 
-export default class Control extends Widget {
+export default class Control extends Component {
   static formAssociated = true
 
   get value() {

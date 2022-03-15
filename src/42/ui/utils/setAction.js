@@ -10,8 +10,8 @@ export default function setAction(el, { run, args }, ctx) {
   if (type === "string") {
     let fn
 
-    if ("widget" in ctx && run in ctx.widget) {
-      fn = (...args) => ctx.widget[run](...args)
+    if ("component" in ctx && run in ctx.component) {
+      fn = (...args) => ctx.component[run](...args)
     }
 
     fn ??= ctx.global.actions.get(joinScope(ctx.scope, run))

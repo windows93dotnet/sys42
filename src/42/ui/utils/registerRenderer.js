@@ -55,8 +55,8 @@ registerRenderer.fromTemplate = (ctx, parsedTemplate, render) => {
   if (filtersNames) {
     for (const filtersName of filtersNames) {
       if (filtersName in filters === false) {
-        if (ctx.widget && filtersName in ctx.widget) {
-          filters[filtersName] = ctx.widget[filtersName]
+        if (ctx.component && filtersName in ctx.component) {
+          filters[filtersName] = ctx.component[filtersName]
         } else {
           modules.push(
             filter(filtersName).then((filter) => {

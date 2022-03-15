@@ -30,15 +30,15 @@
 ============= */
 @import "./ui/ui.css";
 @import "./ui/layers.css";
-@import "./widgets/accordion.css";
-@import "./widgets/dialog.css";
-@import "./widgets/enclose.css";
-@import "./widgets/folderview.css";
-@import "./widgets/icon.css";
-@import "./widgets/menu.css";
-@import "./widgets/repeater.css";
-@import "./widgets/tooltip.css";
-@import "./widgets/workspaces.css";
+@import "./components/accordion.css";
+@import "./components/dialog.css";
+@import "./components/enclose.css";
+@import "./components/folderview.css";
+@import "./components/icon.css";
+@import "./components/menu.css";
+@import "./components/repeater.css";
+@import "./components/tooltip.css";
+@import "./components/workspaces.css";
 
 /* Utilities
 ============ */

@@ -1,6 +1,7 @@
 /* eslint-disable max-params */
 import registerRenderer from "../utils/registerRenderer.js"
 import template from "../../system/formats/template.js"
+import joinScope from "../utils/joinScope.js"
 
 const { fromTemplate } = registerRenderer
 
@@ -19,10 +20,9 @@ export default function renderKeyVal(el, ctx, key, val, renderer = setVal) {
       })
     }
   } else if (type === "object" && "watch" in val) {
-    const scope = ctx.scope + "/" + val.watch
+    const scope = joinScope(ctx.scope, val.watch)
     return void registerRenderer(ctx, scope, () => {
-      const data = ctx.global.rack.get(scope)
-      renderer(el, key, data)
+      renderer(el, key, ctx.global.rack.get(scope))
     })
   }
 
