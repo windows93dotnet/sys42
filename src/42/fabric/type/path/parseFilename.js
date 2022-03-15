@@ -1,6 +1,6 @@
 import memoize from "../function/memoize.js"
 import parsePath from "./core/parsePath.js"
-import { EXTENSIONS, NAMES } from "../../data/FILE_TYPES.js"
+import { EXTENSIONS, NAMES } from "../../constants/FILE_TYPES.js"
 
 const parseFilename = memoize((filename, index = "index.html") => {
   // const obj = Object.create(null)

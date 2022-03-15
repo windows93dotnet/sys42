@@ -35,7 +35,7 @@ export default async function testRunner(testFiles, options) {
     testFiles.map((x) =>
       x.endsWith(".html")
         ? isFrontend && htmlTest(x)
-        : import(/* graph-ignore */ x)
+        : import(/* @vite-ignore */ x)
     )
   )
 

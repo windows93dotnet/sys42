@@ -1,9 +1,8 @@
 import Component from "../class/Component.js"
 import parseFilename from "../../fabric/type/path/parseFilename.js"
 import parseMimetype from "../../fabric/type/file/parseMimetype.js"
-import theme from "../os/theme.js"
-import { span, img } from "../html.js"
-import { svg, rect } from "../svg.js"
+import theme from "../../os/theme.js"
+import create from "../create.js"
 
 const TREEITEM_PARENTS = new Set(["tree", "treegrid", "group"])
 
@@ -35,10 +34,10 @@ class Icon extends Component {
     if (this._.oldpath === this.path) return
     this._.oldpath = this.path
 
-    let label = span("\u200B")
+    let label = create("span", "\u200B")
 
-    const image = img({ class: "ui-icon__image" })
-    const mask = span({ class: "ui-icon__mask" })
+    const image = create("img.ui-icon__image")
+    const mask = create("span.ui-icon__mask")
 
     if (this.path) {
       this._.parsed = parseFilename(this.path, false)
@@ -53,22 +52,22 @@ class Icon extends Component {
       }
 
       const isFile = this._.parsed.protocol === "file:"
-      label = [
-        span(
-          isFile
-            ? this._.parsed.name
-            : this._.parsed.host
-                .replace(/^www\./, "")
-                .split(".")
-                .join("\u200B.") +
-                (this._.parsed.pathname !== "/" || this._.parsed.search
-                  ? this._.parsed.pathname + this._.parsed.search
-                  : "")
-        ),
-      ]
+      const labelText = isFile
+        ? this._.parsed.name
+        : this._.parsed.host
+            .replace(/^www\./, "")
+            .split(".")
+            .join("\u200B.") +
+          (this._.parsed.pathname !== "/" || this._.parsed.search
+            ? this._.parsed.pathname + this._.parsed.search
+            : "")
+
+      label = [create("span", labelText)]
+      label[0].textContent = "lol"
+      console.log(1, labelText, label[0].textContent)
 
       if (isFile && this._.parsed.ext) {
-        label.push(span(`\u200B.${this._.parsed.ext}`))
+        label.push(create("span", `\u200B.${this._.parsed.ext}`))
       }
 
       this.setAttribute(
@@ -78,8 +77,8 @@ class Icon extends Component {
     }
 
     this.replaceChildren(
-      span({ class: "ui-icon__figure", aria: { hidden: true } }, image, mask),
-      span({ class: "ui-icon__label" }, svg(rect()), label)
+      create("span.ui-icon__figure", { aria: { hidden: true } }, image, mask),
+      create("span.ui-icon__label", create("svg", create("rect")), label)
     )
   }
 }

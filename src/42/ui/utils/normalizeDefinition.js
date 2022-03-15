@@ -30,20 +30,6 @@ const DEF_KEYWORDS = new Set([
   ...TRAITS,
 ])
 
-function expandAbbreviation(def, attrs) {
-  if (!def.type) return
-
-  for (const { type, buffer } of parseAbbreviation(def.type)) {
-    if (type === "element") def.type = buffer
-    else if (type === "class") {
-      if ("class" in attrs === false) attrs.class = [buffer]
-      else if (typeof attrs.class === "string") attrs.class += ` ${buffer}`
-      else if (Array.isArray(attrs.class)) attrs.class.push(buffer)
-      else attrs.class[buffer] = true
-    } else attrs[type] = buffer
-  }
-}
-
 export default function normalizeDefinition(...args) {
   let ctx = {}
   const def = {}
@@ -72,7 +58,8 @@ export default function normalizeDefinition(...args) {
     }
   }
 
-  expandAbbreviation(def, attrs)
+  const parsed = parseAbbreviation(def.type, attrs)
+  def.type = parsed.tag
 
   if (content.length > 0) def.content = content
 

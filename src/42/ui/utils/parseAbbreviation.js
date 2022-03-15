@@ -1,14 +1,26 @@
-export default function parseAbbreviation(source, defaultTag = "div") {
-  const tokens = []
+export default function parseAbbreviation(source, attrs = {}) {
+  const out = {
+    tag: "div",
+    attrs,
+  }
+
+  if (!source) return out
+
   let buffer = ""
   let current = 0
 
-  let type = "element"
+  let type = "tag"
   let lastCharEscaped = false
 
   const flush = () => {
-    if (buffer) tokens.push({ type, buffer })
-    else if (type === "element") tokens.push({ type, buffer: defaultTag })
+    if (type === "id") out.attrs.id = buffer
+    else if (type === "class") {
+      if ("class" in out.attrs === false) out.attrs.class = [buffer]
+      else if (typeof out.attrs.class === "string") {
+        out.attrs.class += ` ${buffer}`
+      } else if (Array.isArray(out.attrs.class)) out.attrs.class.push(buffer)
+      else out.attrs.class[buffer] = true
+    } else if (buffer && type === "tag") out.tag = buffer
     buffer = ""
   }
 
@@ -50,5 +62,5 @@ export default function parseAbbreviation(source, defaultTag = "div") {
 
   flush()
 
-  return tokens
+  return out
 }
