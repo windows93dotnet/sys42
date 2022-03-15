@@ -390,11 +390,13 @@ test("repeat", async (t) => {
 test("repeat", "element", async (t) => {
   const el = div()
   const app = await ui(el, {
-    content: {
-      scope: "arr",
-      type: "ul",
-      content: { type: "li", repeat: "{{.}}" },
-    },
+    content: [
+      {
+        scope: "arr",
+        type: "ul",
+        content: { type: "li", repeat: "{{.}}" },
+      },
+    ],
     data: { arr: [1, 2, 3] },
   })
 
@@ -425,7 +427,7 @@ test("repeat", "element", "scopped", async (t) => {
 
   const app = await ui(el, {
     type: "ul",
-    content: { type: "li", scope: "a/b", repeat: "{{.}}" },
+    content: { type: "li", scope: "a.b", repeat: "{{.}}" },
     data: { a: { b: ["foo", "bar"] } },
   })
 

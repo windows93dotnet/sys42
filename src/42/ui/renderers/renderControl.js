@@ -9,7 +9,6 @@ export default function renderControl(el, def, ctx) {
   if (def.bind !== false) {
     const { signal } = ctx.cancel
     const handler = () => {
-      console.log(888, ctx.global.rack)
       getControlData(el, ctx.global.rack)
       ctx.global.state.update(el.name)
     }

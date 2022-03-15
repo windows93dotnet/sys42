@@ -4,21 +4,13 @@ import registerRenderer from "../utils/registerRenderer.js"
 import makeNewContext from "../utils/makeNewContext.js"
 
 export default function renderRepeat(def, ctx, parent, textMaker) {
-  const { repeat } = def
-  delete def.repeat
-
-  let container = render(def, ctx, undefined, textMaker)
-
-  if (container.firstChild) {
-    container = container.firstChild
-    parent.append(container)
-  } else {
-    container = parent
-  }
-
   let lastChild
   const placeholder = document.createComment(`[repeat]`)
-  container.append(placeholder)
+  parent.append(placeholder)
+
+  def.content ??= def.repeat
+  delete def.repeat
+  delete def.scope
 
   registerRenderer(ctx, [ctx.scope, `${ctx.scope}.length`], () => {
     const array = ctx.global.rack.get(ctx.scope)
@@ -43,7 +35,7 @@ export default function renderRepeat(def, ctx, parent, textMaker) {
       const range = createRange()
       range.setStartAfter(placeholder)
       range.setEndAfter(lastChild)
-      if (!repeat.type && Array.isArray(repeat.content)) {
+      if (!def.type && Array.isArray(def.content)) {
         // delete all if previous nodes was made of fragments
         range.deleteContents()
       } else {
@@ -65,7 +57,7 @@ export default function renderRepeat(def, ctx, parent, textMaker) {
     for (; i < l; i++) {
       const newCtx = makeNewContext(ctx)
       newCtx.scope = `${newCtx.scope}.${i}`
-      render(repeat, newCtx, fragment, textMaker)
+      render(def, newCtx, fragment, textMaker)
     }
 
     lastChild = fragment.lastChild || previous?.lastChild
