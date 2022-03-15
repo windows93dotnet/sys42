@@ -1,19 +1,18 @@
 import arrify from "../../../fabric/type/any/arrify.js"
 import allKeys from "../../../fabric/type/object/allKeys.js"
-// import asyncIteratorToArray from "../../type/stream/asyncIteratorToArray.js"
 // import cast from "../../type/cast.js"
 import clone from "../../../fabric/type/any/clone.js"
 import hashmap from "../../../fabric/type/object/hashmap.js"
-// import http from "../../http.js"
+import http from "../../../http.js"
 // import load from "../../load.js"
 import noop from "../../../fabric/type/function/noop.js"
 import parallel from "../../../fabric/type/promise/parallel.js"
 // import path from "../../path.js"
 import repaint from "../../../fabric/type/promise/repaint.js"
 import serial from "../../../fabric/type/promise/serial.js"
-// import shell from "../../system/shell.js"
+import shell from "../../shell.js"
 import sleep from "../../../fabric/type/promise/sleep.js"
-// import stream from "../../stream.js"
+import stream from "../../../stream.js"
 import stringify from "../../../fabric/type/any/stringify.js"
 import system from "../../../system.js"
 import uid from "../../../fabric/uid.js"
@@ -55,11 +54,10 @@ export default function addUtilities(item, isExecutionContext) {
   item.utils = {
     arrify,
     allKeys,
-    // asyncIteratorToArray,
     // cast,
     clone,
     hashmap,
-    // http,
+    http,
     // load,
     log,
     noop,
@@ -67,9 +65,9 @@ export default function addUtilities(item, isExecutionContext) {
     // path,
     repaint,
     serial,
-    // shell,
+    shell,
     sleep,
-    // stream,
+    stream,
     stringify,
     system,
     uid,

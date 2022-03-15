@@ -1,5 +1,5 @@
-import absorb from "../../type/stream/absorb.js"
-import addStack from "../../type/error/addStack.js"
+import absorb from "../../fabric/type/stream/absorb.js"
+import addStack from "../../fabric/type/error/addStack.js"
 
 export default class Driver {
   constructor(config, stack) {
@@ -103,7 +103,7 @@ export default class Driver {
   async sink(filename, { encoding }) {
     const buffer = absorb(encoding)
     return {
-      write: (chunk) => {
+      write(chunk) {
         buffer.add(chunk)
       },
       close: async () => {

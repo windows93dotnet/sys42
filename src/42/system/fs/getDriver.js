@@ -1,4 +1,4 @@
-import addStack from "../../type/error/addStack.js"
+import addStack from "../../fabric/type/error/addStack.js"
 import fs from "../../fs.js"
 import { MASKS } from "./Disk.js"
 

@@ -1,13 +1,13 @@
 import Database from "../../system/db/Database.js"
-import configure from "../../configure.js"
-import flatten from "../../type/object/flatten.js"
-import trim from "../../type/string/trim.js"
-import isOpaqueOrigin from "../../system/env/runtime/isOpaqueOrigin.js"
+import configure from "../configure.js"
+import flatten from "../type/object/flatten.js"
+import trim from "../type/string/trim.js"
+import inOpaqueOrigin from "../../system/env/runtime/inOpaqueOrigin.js"
 
-import exists from "../../type/object/location/exists.js"
-import locate from "../../type/object/location/locate.js"
-import allocate from "../../type/object/location/allocate.js"
-import deallocate from "../../type/object/location/deallocate.js"
+import exists from "../locator/exists.js"
+import locate from "../locator/locate.js"
+import allocate from "../locator/allocate.js"
+import deallocate from "../locator/deallocate.js"
 
 const DEFAULTS = {
   name: "🔶 - Storable",
@@ -19,7 +19,7 @@ export default class Storable {
     this.root = {}
     this.config = configure(DEFAULTS, options)
     this.sep = this.config.sep
-    this.store = isOpaqueOrigin
+    this.store = inOpaqueOrigin
       ? new Map()
       : new Database({
           ...this.config,

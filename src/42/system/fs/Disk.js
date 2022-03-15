@@ -1,5 +1,5 @@
 import FileIndex from "./FileIndex.js"
-import cbor from "../../format/cbor.js"
+import cbor from "../formats/cbor.js"
 
 export const MASKS = {
   0x00: "fetch",

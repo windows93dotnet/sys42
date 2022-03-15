@@ -2,6 +2,13 @@
 import Disk, { RESERVED_BYTES } from "./Disk.js"
 import Driver from "./Driver.js"
 
+if (Symbol.asyncIterator in ReadableStream.prototype === false) {
+  import("../../system.js").then((m) =>
+    m.default.polyfills.push("readable-stream-async-iterator")
+  )
+  await import("../env/polyfills/readable-stream-async-iterator.js")
+}
+
 let $
 const { random, floor } = Math
 
