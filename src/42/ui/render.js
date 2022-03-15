@@ -116,8 +116,6 @@ function getNameAndLabel(def, ctx, required) {
 
   if (name && "scope" in ctx) name = joinScope(ctx.scope, name)
 
-  // if (name != null && !name.startsWith(".")) name = `.${name}`
-
   if (label && required) {
     label.append(
       create("abbr", { "aria-hidden": "true", "title": "Required" }, "*")

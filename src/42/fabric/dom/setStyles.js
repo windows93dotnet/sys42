@@ -1,4 +1,4 @@
-import cssPrefix from "../cssom/cssPrefix.js"
+import cssPrefix from "./cssPrefix.js"
 
 export function setStyle(el, key, val) {
   const firstLetter = key.charAt(0)
