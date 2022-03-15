@@ -5,13 +5,14 @@ import locate from "./locator/locate.js"
 
 const filters = {}
 
-const STRING_FILTER = { url: "../string/stringFilters.js", key: true }
+const STRING_FILTER = { url: "string/stringFilters", key: true }
 
 filters.string = {
   slice: STRING_FILTER,
   replace: STRING_FILTER,
   nospace: STRING_FILTER,
-  deburr: "../string/deburr.js",
+  deburr: "string/deburr",
+  pluralize: "string/pluralize",
   camel: STRING_FILTER,
   capital: STRING_FILTER,
   constant: STRING_FILTER,

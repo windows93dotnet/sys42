@@ -632,88 +632,88 @@ test("non-string aria attributes", async (t) => {
 /* components
 ========== */
 
-// test("components", "unknown", async (t) => {
-//   await t.throws(
-//     () => ui(div(), { type: "ui-unknown" }), //
-//     "Unknown component: ui-unknown"
-//   )
-// })
+test("components", "unknown", async (t) => {
+  await t.throws(
+    () => ui(div(), { type: "ui-unknown" }), //
+    "Unknown component: ui-unknown"
+  )
+})
 
-// test(
-//   "components",
-//   "define properties and id/class as selector notation",
-//   async (t) => {
-//     const app = await ui(div(), {
-//       type: "ui-swatch#foo.ma.pa",
-//       value: "tan",
-//     })
+test(
+  "components",
+  "define properties and id/class as selector notation",
+  async (t) => {
+    const app = await ui(div(), {
+      type: "ui-swatch#foo.ma.pa",
+      value: "tan",
+    })
 
-//     t.is(app.el.innerHTML, '<ui-swatch id="foo" class="ma pa"></ui-swatch>')
+    t.is(app.el.innerHTML, '<ui-swatch id="foo" class="ma pa"></ui-swatch>')
 
-//     document.body.append(app.el)
+    document.body.append(app.el)
 
-//     t.is(
-//       app.el.innerHTML,
-//       '<ui-swatch id="foo" class="ma pa" value="tan" style="--color:tan;"></ui-swatch>'
-//     )
+    t.is(
+      app.el.innerHTML,
+      '<ui-swatch id="foo" class="ma pa" value="tan" style="--color:tan;"></ui-swatch>'
+    )
 
-//     app.el.remove()
-//   }
-// )
+    app.el.remove()
+  }
+)
 
-// test("components", "define properties via template", async (t) => {
-//   const app = await ui(div(), {
-//     type: "ui-swatch",
-//     value: "{{foo}}",
-//     data: { foo: "tan" },
-//   })
+test("components", "define properties via template", async (t) => {
+  const app = await ui(div(), {
+    type: "ui-swatch",
+    value: "{{foo}}",
+    data: { foo: "tan" },
+  })
 
-//   document.body.append(app.el)
+  document.body.append(app.el)
 
-//   await repaint()
+  await repaint()
 
-//   t.is(
-//     app.el.innerHTML,
-//     '<ui-swatch value="tan" style="--color:tan;"></ui-swatch>'
-//   )
+  t.is(
+    app.el.innerHTML,
+    '<ui-swatch value="tan" style="--color:tan;"></ui-swatch>'
+  )
 
-//   app.el.remove()
-// })
+  app.el.remove()
+})
 
-// import Component from "../../42/ui/class/Component.js"
+import Component from "../42/ui/class/Component.js"
 
-// class Testcomponent extends Component {
-//   static definition = {
-//     tag: "ui-testcomponent",
-//     properties: {
-//       value: {
-//         type: "string",
-//       },
-//     },
-//   }
+class Testcomponent extends Component {
+  static definition = {
+    tag: "ui-testcomponent",
+    properties: {
+      value: {
+        type: "string",
+      },
+    },
+  }
 
-//   customFilter(str) {
-//     return str.toUpperCase()
-//   }
-// }
+  customFilter(str) {
+    return str.toUpperCase()
+  }
+}
 
-// await Component.define(Testcomponent)
+await Component.define(Testcomponent)
 
-// test("components", "filters", async (t) => {
-//   const app = await ui(div(), {
-//     type: "ui-testcomponent",
-//     value: "{{foo|customFilter}}",
-//     data: { foo: "hello" },
-//   })
+test("components", "filters", async (t) => {
+  const app = await ui(div(), {
+    type: "ui-testcomponent",
+    value: "{{foo|customFilter}}",
+    data: { foo: "hello" },
+  })
 
-//   document.body.append(app.el)
+  document.body.append(app.el)
 
-//   await repaint()
+  await repaint()
 
-//   t.is(app.el.innerHTML, '<ui-testcomponent value="HELLO"></ui-testcomponent>')
+  t.is(app.el.innerHTML, '<ui-testcomponent value="HELLO"></ui-testcomponent>')
 
-//   app.el.remove()
-// })
+  app.el.remove()
+})
 
 /* filters
 ========== */
@@ -835,21 +835,19 @@ test("filters", "buildin filters", async (t) => {
 test("filters", "buildin filters locate", async (t) => {
   const app = await ui(div(), {
     type: "pre",
-    content: '{{foo|stringify("min")}}',
+    content: "{{foo|stringify('min')}}",
     data: { foo: { a: 1 } },
   })
 
   t.is(app.el.innerHTML, "<pre>{a:1}</pre>")
 })
 
-test("filters", "buildin filters locate", async (t) => {
+test.only("filters", "pluralize", async (t) => {
   const app = await ui(div(), {
-    type: "pre",
-    content: "{{foo|stringify('min')}}",
-    data: { foo: { a: 1 } },
+    content: "{{2|pluralize('apple')}}",
   })
 
-  t.is(app.el.innerHTML, "<pre>{a:1}</pre>")
+  t.is(app.el.innerHTML, "apples")
 })
 
 // test.only("filters", "input", async (t) => {

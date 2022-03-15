@@ -1,4 +1,6 @@
-import deburr from "../string/deburr.js"
+import deburr from "./deburr.js"
+import pluralize from "./pluralize.js"
+
 import {
   toCamelCase,
   toCapitalCase,
@@ -12,13 +14,14 @@ import {
   toSnakeCase,
   toTitleCase,
   toUpperCase,
-} from "../string/letters.js"
+} from "./letters.js"
 
 export default {
   slice: (str, ...rest) => str.slice(...rest),
   replace: (str, ...rest) => str.replace(...rest),
   nospace: (str) => str.replace(/\s+/g, "_"),
   deburr,
+  pluralize,
   camel: toCamelCase,
   capital: toCapitalCase,
   constant: toConstantCase,
