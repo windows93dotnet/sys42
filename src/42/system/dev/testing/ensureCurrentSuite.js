@@ -13,6 +13,7 @@ export default function ensureCurrentSuite(titled) {
 
   const moduleTitle = shortenFilename(parentModule.url)
     .replace(TITLE_REGEX, "")
+    .replace(/\?(.*)$/, "")
     .replace(/\.test\.html/, " (html)")
 
   if (titled) lastTitled = titled
