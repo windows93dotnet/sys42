@@ -132,7 +132,7 @@ export class Explorer extends Component {
         content: [
           {
             type: ".py-xs.px-md.mr-xs.inset-shallow.panel.item-shrink",
-            content: "{{items.length}} item(s)",
+            content: "{{items.length}} {{'item'|pluralize(items.length)}}",
           },
           {
             type: "input.inset-shallow.panel",

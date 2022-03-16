@@ -271,11 +271,8 @@ export default class Component extends HTMLElement {
   }
 
   static async define(Class) {
-    customElements.define(
-      Class.definition.tag ?? `ui-${Class.name.toLowerCase()}`,
-      Class
-    )
-
+    const tagName = Class.definition.tag ?? `ui-${Class.name.toLowerCase()}`
+    if (!customElements.get(tagName)) customElements.define(tagName, Class)
     return (...args) => new Class(...args)
   }
 

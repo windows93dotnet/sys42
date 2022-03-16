@@ -79,7 +79,7 @@ export class Dialog extends Component {
       this._.parentCtx = ctx
       const data = this._.parentCtx.global.rack.get(this._.parentCtx.scope)
       ctx = makeNewContext()
-      ctx.widget = this
+      ctx.component = this
       ctx.global.rack.value = structuredClone(data)
       this._.backupData ??= structuredClone(ctx.global.rack.value)
       this._.ctx = ctx
@@ -105,9 +105,7 @@ export class Dialog extends Component {
     fragment.append(
       create(
         "header.ui-dialog__header",
-        render(label, ctx, undefined, (text) =>
-          create("h2.ui-dialog__title", text)
-        )
+        render(label, ctx, undefined, "h2.ui-dialog__title")
       )
     )
 

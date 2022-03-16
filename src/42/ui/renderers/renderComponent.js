@@ -14,7 +14,8 @@ export default function renderComponent(type, def, ctx) {
   }
 
   if (el.constructor === HTMLElement) {
-    import(`../components/${type.slice(3)}.js`).catch(() => {
+    import(`../components/${type.slice(3)}.js`).catch((err) => {
+      console.log(err)
       deferred.reject(new Error(`Unknown component: ${type}`))
     })
 

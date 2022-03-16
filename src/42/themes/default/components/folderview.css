@@ -1,5 +1,5 @@
 ui-folderview {
-  /* flex: 1; */
+  flex: 1;
   display: block;
   overflow-y: auto;
   scrollbar-gutter: stable;
@@ -13,7 +13,7 @@ ui-folderview:focus {
 }
 
 ui-explorer {
-  /* flex: 1; */
+  flex: 1;
   display: flex;
   flex-direction: column;
   max-height: 100%;

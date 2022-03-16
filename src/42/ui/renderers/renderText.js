@@ -11,7 +11,9 @@ export default function renderText(text, ctx, parent, textElement) {
     const tokens = parseMarkdown(text)
 
     if (!(tokens.length === 1 && tokens[0] === text)) {
-      const el = textElement ? textElement() : document.createDocumentFragment()
+      const el = textElement
+        ? create(textElement)
+        : document.createDocumentFragment()
       ctx.markdown = false
       render(tokens, ctx, el)
       parent.append(el)
@@ -22,7 +24,7 @@ export default function renderText(text, ctx, parent, textElement) {
   const parsed = template.parse(text)
 
   const el = textElement
-    ? create(textElement, undefined, text)
+    ? create(textElement, text)
     : document.createTextNode(text)
 
   if (parsed.substitutions.length > 0) {
