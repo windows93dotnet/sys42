@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/no-object-as-default-parameter */
 import Storable from "../../fabric/class/Storable.js"
 import FileSystemError from "./FileSystemError.js"
 import joinPath from "../../fabric/type/path/core/joinPath.js"
@@ -51,8 +50,8 @@ export default class FileIndex extends Storable {
     return sortPath(names)
   }
 
-  glob(patterns, { sort } = { sort: true }) {
+  glob(patterns, { sort } = {}) {
     const paths = glob.locate(this.root, patterns)
-    return sort ? sortGlobResults(paths) : paths
+    return sort === false ? paths : sortGlobResults(paths)
   }
 }

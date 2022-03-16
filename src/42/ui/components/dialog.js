@@ -46,7 +46,7 @@ export class Dialog extends Component {
       if (this._.config.modules?.apply) {
         const name = this._.config.modules.apply
         clone = await import(/* @vite-ignore */ name) //
-          .then((m) => m.default(clone))
+          .then((m) => m.apply(clone))
       }
 
       this._.parentCtx.global.state.set(this._.parentCtx.scope, clone)
@@ -60,7 +60,7 @@ export class Dialog extends Component {
       if (this._.config.modules?.cancel) {
         const name = this._.config.modules.cancel
         backupData = await import(/* @vite-ignore */ name) //
-          .then((m) => m.default(backupData))
+          .then((m) => m.cancel(backupData))
       }
 
       this._.parentCtx.global.state.set(this._.parentCtx.scope, backupData)

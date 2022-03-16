@@ -1,5 +1,5 @@
 import BrowserDriver from "../BrowserDriver.js"
-import http from "../../../http.js"
+import http from "../../../fabric/http.js"
 
 class FetchDriver extends BrowserDriver {
   static mask = 0x00

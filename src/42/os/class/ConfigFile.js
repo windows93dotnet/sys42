@@ -19,22 +19,22 @@ export class ConfigFile {
   }
 
   async open() {
-    this.root = await fs.read[this.type](this.filename)
-    if (this.defaults.version > this.root.version) await this.reset()
+    this.value = await fs.read[this.type](this.filename)
+    if (this.defaults.version > this.value.version) await this.reset()
   }
 
   async save() {
-    await fs.write[this.type](this.filename, this.root)
+    await fs.write[this.type](this.filename, this.value)
   }
 
   async update(value) {
-    if (typeof value === "function") this.root = await value(this.root)
-    else Object.assign(this.root, value)
+    if (typeof value === "function") this.value = await value(this.value)
+    else Object.assign(this.value, value)
     await this.save()
   }
 
   async reset() {
-    this.root = this.defaults
+    this.value = this.defaults
     await this.save()
   }
 }

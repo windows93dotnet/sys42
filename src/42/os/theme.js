@@ -13,13 +13,13 @@ const DEFAULTS = {
 class Theme extends ConfigFile {
   async init() {
     await super.init()
-    const el = await loadCSS(this.root.style)
+    const el = await loadCSS(this.value.style)
     document.querySelector("link#theme")?.remove()
     el.id = "theme"
   }
 
   getIconImage(desc) {
-    for (const theme of this.root.icons) {
+    for (const theme of this.value.icons) {
       const path = findIconPath(theme, desc)
       if (path) return path
     }

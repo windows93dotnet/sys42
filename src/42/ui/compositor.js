@@ -13,7 +13,7 @@ export const layers = {}
 async function initLayer(layerName, options) {
   if (layerName in layers) return
   if (options?.module) {
-    const LayerModule = await import(`./compositor/${layerName}.js`) //
+    const LayerModule = await import(`./layers/${options.module}.js`) //
       .then((m) => m.default)
     layers[layerName] ??= new LayerModule(layerName, options)
   } else {
