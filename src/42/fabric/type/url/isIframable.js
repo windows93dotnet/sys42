@@ -1,5 +1,4 @@
 export default async function isIframable(url, signal) {
-  // TODO: use iframe sandox with srcdoc
   const el = document.createElement("object")
   el.style.position = "fixed"
   el.style.width = "0"
@@ -11,6 +10,7 @@ export default async function isIframable(url, signal) {
     const cleanup = (el, signal) => {
       el.onerror = null
       el.onload = null
+      el.data = "about:blank"
       el.remove()
       el = null
       signal?.removeEventListener("abort", onabort)

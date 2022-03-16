@@ -1,7 +1,6 @@
 import Component from "../class/Component.js"
 import Resource from "../../fabric/class/Resource.js"
-import { div, a } from "../html.js"
-// import listen from "../type/dom/listen.js"
+import create from "../create.js"
 import ipc from "../../system/ipc.js"
 
 export class Enclose extends Component {
@@ -48,19 +47,13 @@ export class Enclose extends Component {
     view.message.replaceChildren(message)
   }
 
-  $create({ root, view /* , signal */ }) {
+  $create({ root, view }) {
     const { permissions } = this
     this.resource = new Resource({ permissions })
-    view.message = div({ class: "ui-enclose__message" })
-    view.scene = div({ class: "ui-enclose__scene" })
-    view.scene.append(this.resource.el)
+    view.message = create("div.ui-enclose__message")
+    view.scene = create("div.ui-enclose__scene")
 
-    // const options = { signal }
-    // listen(this, options, {
-    //   pointermove: ({ offsetX, offsetY }) => {
-    //     this.channel.emit("enclose->pointermove", { x: offsetX, y: offsetY })
-    //   },
-    // })
+    view.scene.append(this.resource.el)
 
     root.append(view.scene, view.message)
     this.unload()
@@ -84,8 +77,8 @@ export class Enclose extends Component {
       this.channel = ipc.to(this.resource.el)
     } catch {
       view.message.replaceChildren(
-        div("Impossible to embed this URL"),
-        a({ href: this.src, target: "_blank" }, this.src)
+        create("div", "Impossible to embed this URL"),
+        create("a", { href: this.src, target: "_blank" }, this.src)
       )
     }
   }

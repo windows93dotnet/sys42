@@ -1,4 +1,4 @@
-import debounce from "../function/debounce.js"
+import debounce from "../type/function/debounce.js"
 
 export default function motionless(el) {
   const saved = el.style.transitionDuration

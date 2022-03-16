@@ -5,137 +5,94 @@
 <link rel="stylesheet" href="/style.css" id="theme" />
 
 <script type="module">
+  import "../42/os.js"
+  import "../42/ui/components/enclose.js"
   import ui from "../42/ui.js"
-  import dirname from "../42/fabric/type/path/extract/dirname.js"
 
-  const explorer = {
-    // scope: "explorer",
-    type: ".box-h.pa-xs.outset",
-    style: { width: "300px", height: "300px" },
+  window.app = ui.trusted({
+    type: "body.box-fit.box-h.desktop",
     content: [
       {
-        type: "header.box-v.ctrl-group.mb-xs",
+        // type: "header.box-stack",
+        type: ".box-stack",
         content: [
           {
-            type: "button",
-            picto: "arrow-up",
-            run: "folderUp",
+            type: "ui-folderview.scroll-auto",
+            shortcuts: [
+              {
+                key: "[click]",
+                selector: "ui-icon",
+                run: "iconFocus",
+                args: ["target.path"],
+              },
+              {
+                key: "ctrl+[click]",
+                selector: "ui-icon",
+                run: "iconSelect",
+                args: ["target.path"],
+              },
+              {
+                key: "[dblclick]",
+                selector: "ui-icon",
+                run: "iconOpen",
+                args: ["target.path"],
+              },
+            ],
           },
-          {
-            type: "input",
-            name: "path",
-            bind: "change",
-            compact: true,
-            prose: false,
-            enterkeyhint: "go",
-          },
+          // { type: "ui-workspaces" },
         ],
       },
       {
-        type: "ui-folderview.inset",
-        path: "{{path}}",
-        // glob: true,
+        type: "ui-enclose.ma-xxl",
+        permissions: "app",
+        check: false,
+        // src: "../demos/ui/components/dialog.demo.html",
+        src: "../demos/ui/components/menu.demo.html",
+        // src: "../demos/os/exec.demo.html",
       },
-    ],
-
-    shortcuts: [
+      // {
+      //   type: "ui-enclose.ma-xxl",
+      //   permissions: "app",
+      //   check: false,
+      //   src: "../demos/widgets/dialog.demo.html?deep",
+      // },
+      // {
+      //   type: "ui-enclose.ma-xxl",
+      //   permissions: "app",
+      //   check: false,
+      //   src: "/demos/widgets/menu.demo.html",
+      // },
       {
-        key: "[dblclick]",
-        // key: "[click]",
-        selector: "ui-icon",
-        run: "changePath",
-        args: ["target.path"],
+        type: "footer.outset",
+        scope: "desktop",
+        content: { type: "button", label: "{{hello}}", run: "start" },
       },
     ],
-
-    actions: {
-      changePath(path) {
-        this.path = path
-      },
-      folderUp() {
-        let newPath = dirname(this.path)
-        if (!newPath.endsWith("/")) newPath += "/"
-        this.path = newPath
-      },
-    },
 
     data: {
-      path: "/42/",
-      // path: "/",
-    },
-  }
-
-  // window.app = await ui(explorer)
-
-  window.app = ui.trusted({
-    type: "body.box-center.desktop",
-    content: {
-      type: "div",
-      label: "Folder View",
-      style: { width: "300px" },
-      content: [
-        "The path textfield supports [https://en.wikipedia.org/wiki/Glob_(programming)](glob patterns).",
-        "A wildcard (*) is added automatically at the end of the path. Try typing first letters of any file/folder",
-        explorer,
-        // {
-        //   type: ".box-h.pa-xs.outset.mt",
-        //   style: { width: "300px", height: "50px" },
-        //   content: [
-        //     // {
-        //     //   type: "iframe",
-        //     //   src: "/42/os/apps/TextEdit/index.html",
-        //     // },
-        //     {
-        //       type: "ui-enclose",
-        //       // permissions: ["scripts", "same-origin"],
-        //       // permissions: false,
-        //       // permissions: "trusted",
-        //       permissions: "app",
-        //       check: false,
-        //       src: "/42/os/apps/TextEdit/index.html",
-        //     },
-        //   ],
-        // },
-      ],
+      desktop: {
+        hello: "hi",
+      },
     },
 
-    // data: {
-    //   explorer: {
-    //     path: "/42/",
-    //   },
-    // },
-
-    // actions: {
-    //   changePath(e, target) {
-    //     this.data.path = target.path
-    //   },
-    //   folderUp(e, target) {
-    //     let newPath = dirname(this.data.path)
-    //     if (!newPath.endsWith("/")) newPath += "/"
-    //     this.data.path = newPath
-    //   },
-    // },
-
-    // data: {
-    //   path: "/42/",
-    // },
+    actions: {
+      desktop: {
+        start() {
+          this.hello = "hello"
+        },
+      },
+      iconFocus(path) {
+        console.log("iconFocus", path)
+      },
+      iconOpen(path) {
+        console.log("iconOpen", path)
+      },
+      iconSelect(path) {
+        console.log("iconSelect", path)
+      },
+      removeSelection() {
+        console.log("removeSelection")
+      },
+    },
   })
-
-  // setTimeout(() => {
-  //   window.app.get("ui-icon").click()
-  // }, 600)
-
-  // import a11y from "../../42/a11y.js"
-
-  // setTimeout(() => {
-  //   a11y.tree()
-  // }, 1000)
-
-  const x = new Map()
-  x.set('yo',1)
-  x.set('derp',2)
-
-  for (const item of x) {
-    console.log(444,item)
-  }
 </script>

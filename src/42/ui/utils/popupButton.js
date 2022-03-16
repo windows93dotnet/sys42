@@ -12,7 +12,7 @@ export default function popupButton(el, def, ctx) {
   const pictoName = isSubmenu ? "right" : "down"
   def.positionable = { preset: isSubmenu ? "menuitem" : "popup" }
 
-  const type = def.type.startsWith("ui-") ? def.type.slice(3) : def.type
+  const type = def.type?.startsWith("ui-") ? def.type.slice(3) : def.type
   const haspopup = POPUP_TYPES.has(type) ? type : "true"
   el.id ||= uid()
   el.setAttribute("aria-haspopup", haspopup)

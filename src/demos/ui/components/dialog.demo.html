@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>ui-dialog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/style.css" id="theme" />
+
+<script type="module">
+  import ui from "../../../42/ui.js"
+  // import ipc from "../../../42/system/ipc.js"
+  import dialog from "../../../42/ui/components/dialog.js"
+  import explorer from "../../../42/ui/components/explorer.js"
+
+  const app = await ui({
+    type: "body.pa-xxl.bd.desktop",
+    content: [
+      { type: "number", scope: "derp", name: "foo" },
+      { type: "div", content: "output: {{derp.foo}}" },
+      {
+        type: "button#live",
+        dialog: {
+          live: true,
+          label: "Live",
+          scope: "derp",
+          content: [
+            { type: "number", name: "foo" }, //
+          ],
+        },
+      },
+      {
+        type: "button#apply",
+        dialog: {
+          label: "Apply",
+          scope: "derp",
+          content: [
+            { type: "number", name: "foo" },
+            { type: "div", content: "output: {{foo}}" },
+          ],
+        },
+      },
+      "\n",
+      "\n",
+      {
+        type: "button#prompt",
+        label: "Prompt",
+        async run() {
+          const res = await dialog.prompt("Question ?")
+          console.log("prompt res:", res)
+        },
+      },
+      {
+        type: "button#explorer",
+        label: "Explorer",
+        async run() {
+          const res = await explorer("/42/")
+          console.log("explorer res:", res)
+        },
+      },
+      {
+        type: "button#open",
+        label: "Open File…",
+        async run() {
+          const res = await explorer.open("/42/data/", {
+            selection: ["/42/data/ARIA.js", "/42/data/SGR.js"],
+          })
+          console.log("explorer.open res:", res?.selection)
+        },
+      },
+    ],
+
+    data: {
+      derp: {
+        foo: 42,
+      },
+    },
+  })
+
+  window.app = app
+
+  // app.get("#live").click()
+  // app.get("#apply").click()
+  // app.get("#prompt").click()
+  // app.get("#explorer").click()
+  app.get("#open").click()
+
+  // app.get(".inset").addEventListener("pointermove", (e) => {
+  //   console.log(e.type)
+  // })
+
+  // ipc.from(globalThis.parent).on("enclose->pointermove", ({ x, y }) => {
+  //   console.log(x, y)
+  // })
+</script>

@@ -1,16 +1,16 @@
 import compositor from "../compositor.js"
-import listen from "../../type/dom/listen.js"
-import uid from "../../type/random/uid.js"
-import isIframe from "../../system/env/runtime/isIframe.js"
-import { isFocusable } from "../../type/dom/focus.js"
+import listen from "../../fabric/dom/listen.js"
+import uid from "../../fabric/uid.js"
+import inIframe from "../../system/env/runtime/inIframe.js"
+import { isFocusable } from "../../fabric/dom/focus.js"
 
 let layer = compositor("popups", { module: true })
 
 layer.then((layer) => {
   const listenOptions = { capture: true }
-  if (isIframe) {
+  if (inIframe) {
     listen(listenOptions, {
-      pointerdown: ({ target }) => {
+      pointerdown({ target }) {
         const popupButton = target.closest("[aria-haspopup]")
         if (!popupButton) {
           layer.clear({ focusOpener: !isFocusable(target) })
@@ -19,7 +19,7 @@ layer.then((layer) => {
     })
   } else {
     listen(listenOptions, {
-      pointerdown: ({ target }) => {
+      pointerdown({ target }) {
         if (layer.map.size === 0) return
         const popupButton = target.closest("[aria-haspopup]")
         if (!popupButton && !layer.el.contains(target)) {

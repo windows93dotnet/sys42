@@ -1,9 +1,9 @@
 import setCursor from "../utils/setCursor.js"
 import Emitter from "../../fabric/class/Emitter.js"
 import render from "../render.js"
-import uid from "../../type/random/uid.js"
-import setTemp from "../../type/dom/setTemp.js"
-import { autofocus } from "../../type/dom/focus.js"
+import uid from "../../fabric/uid.js"
+import setTemp from "../../fabric/dom/setTemp.js"
+import { autofocus } from "../../fabric/dom/focus.js"
 
 // tiling-dialog, floating-dialog, popups, tooltip, toasts
 

@@ -3,14 +3,13 @@
 
 import Trait from "../class/Trait.js"
 import setup from "../../system/setup.js"
-import ready from "../../type/dom/ready.js"
+import documentReady from "../../fabric/dom/documentReady.js"
 import emittable from "../../fabric/trait/emittable.js"
 import listen from "../../fabric/dom/listen.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 import motionless from "../../fabric/dom/motionless.js"
-import styles from "../../styles.js"
-import setRelativeToViewport from "../../type/dom/setRelativeToViewport.js"
-import getFrameOffset from "../../type/dom/getFrameOffset.js"
+import setTemp from "../../fabric/dom/setTemp.js"
+import setRelativeToViewport from "../../fabric/dom/setRelativeToViewport.js"
 
 const DEFAULTS = {
   my: "center center",
@@ -202,17 +201,15 @@ class Positionable extends Trait {
         : this.config.of
 
     this.forgettings.push(
-      styles.temp(this.el, [
-        "transform",
-        "transitionDuration",
-        "position",
-        "top",
-        "left",
-        "height",
-      ])
+      setTemp(this.el, {
+        style: {
+          position: this.config.position,
+          transform: "translate(200vw, 200vh)",
+          top: 0,
+          left: 0,
+        },
+      })
     )
-
-    this.el.style.position = this.config.position
 
     this.round = this.config.subpixel ? (v) => v : round
 
@@ -337,12 +334,6 @@ class Positionable extends Trait {
     this.start = (of = this.of) => {
       this.of = of
 
-      this.frameOffset =
-        this.of.nodeType === ELEMENT_NODE &&
-        this.of.ownerDocument !== window.document
-          ? getFrameOffset(this.of)
-          : undefined
-
       setSizes(this, "my")
       setSizes(this, "at")
       setOffsets(this)
@@ -358,22 +349,20 @@ class Positionable extends Trait {
       }
 
       if (this.config.within) {
-        const topWindow = this.frameOffset ? window.top : window
-
         const withinRect =
           this.config.within === "window"
             ? {
                 top: 0,
                 left: 0,
-                width: topWindow.innerWidth,
-                height: topWindow.innerHeight,
+                width: globalThis.innerWidth,
+                height: globalThis.innerHeight,
               }
             : this.config.within === "viewport"
             ? {
-                top: topWindow.visualViewport.offsetTop,
-                left: topWindow.visualViewport.offsetLeft,
-                width: topWindow.visualViewport.width,
-                height: topWindow.visualViewport.height,
+                top: globalThis.visualViewport.offsetTop,
+                left: globalThis.visualViewport.offsetLeft,
+                width: globalThis.visualViewport.width,
+                height: globalThis.visualViewport.height,
               }
             : this.config.within.getBoundingClientRect()
 
@@ -395,8 +384,6 @@ class Positionable extends Trait {
         this.update()
 
         if (this.of.nodeType === ELEMENT_NODE) {
-          const topWindow = this.frameOffset ? window.top : window
-
           if (this.config.dynamic) {
             this.forgettings.push(
               listen(
@@ -405,10 +392,10 @@ class Positionable extends Trait {
                 { loadingdone: this.repaint }
               )
             )
-            await ready()
+            await documentReady()
             this.forgettings.push(
               listen(
-                topWindow,
+                window,
                 { signal, passive: true },
                 {
                   "resize scroll transitionend animationend": this.repaint,
@@ -417,7 +404,7 @@ class Positionable extends Trait {
                 }
               ),
               listen(
-                topWindow.visualViewport,
+                globalThis.visualViewport,
                 { signal, passive: true },
                 { "resize scroll": this.repaint }
               )
@@ -444,15 +431,8 @@ class Positionable extends Trait {
   update(e = this.of) {
     if (e.nodeType === ELEMENT_NODE) {
       const rect = e.getBoundingClientRect()
-      let x = rect.left
-      let y = rect.top
-
-      if (this.frameOffset) {
-        const rect = getFrameOffset(e)
-        x += rect.left
-        y += rect.top
-      }
-
+      const x = rect.left
+      const y = rect.top
       this.place(x, y)
     } else {
       this.place(e.x, e.y) // DOMRect or MouseEvent
