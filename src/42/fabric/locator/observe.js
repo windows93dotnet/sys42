@@ -20,7 +20,7 @@ export default function observe(data, options, fn) {
 
         if (val && typeof val === "object") {
           if (proxies.has(val)) return proxies.get(val)
-          const p = [...path, prop]
+          const p = [...path, escapeDotNotation(prop)]
           const { proxy, revoke } = Proxy.revocable(val, createHander(p))
           proxies.set(val, proxy)
           revokes.add(revoke)
@@ -32,13 +32,13 @@ export default function observe(data, options, fn) {
 
       set(target, prop, val, receiver) {
         const ret = Reflect.set(target, prop, val, receiver)
-        fn([...path, prop].map((x) => escapeDotNotation(x)).join("."), val)
+        fn([...path, escapeDotNotation(prop)].join("."), val)
         return ret
       },
 
       deleteProperty(target, prop) {
         const ret = Reflect.deleteProperty(target, prop)
-        fn([...path, prop].map((x) => escapeDotNotation(x)).join("."))
+        fn([...path, escapeDotNotation(prop)].join("."))
         return ret
       },
     }

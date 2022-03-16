@@ -30,10 +30,6 @@ class Icon extends Component {
   }
 
   $render() {
-    // TODO: prevent render on repeat
-    if (this._.oldpath === this.path) return
-    this._.oldpath = this.path
-
     let label = create("span", "\u200B")
 
     const image = create("img.ui-icon__image")

@@ -99,8 +99,6 @@ export class FolderView extends Component {
       )
     }
 
-    console.log(dir)
-
     this.items = dir.map((path) => ({
       path,
       selected: this.selection.includes(path),
