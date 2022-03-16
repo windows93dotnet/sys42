@@ -2,79 +2,131 @@
 <meta charset="utf-8" />
 <title>desktop</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<!-- <link rel="stylesheet" href="/style.css" id="theme" /> -->
-
-<body>
-  <!-- <ui-icon
-    path="/42/Lorem ipsum dolor sit, amet consectetur adipisicing elit.txt"></ui-icon> -->
-  <ui-icon path="/42/apdddp.poney"></ui-icon>
-  <!-- <ui-icon path="/42/index.html"></ui-icon>
-  <ui-icon path="/42/ui.js"></ui-icon>
-  <ui-icon path="/42/style.css"></ui-icon>
-  <ui-icon path="/42/image.svg"></ui-icon>
-  <ui-icon path="/42/app.webmanifest"></ui-icon>
-  <ui-icon path="/42/derp/"></ui-icon>
-  <ui-icon path="https://www.example.com"></ui-icon>
-  <ui-icon path="http://www.freedesktop.org/"></ui-icon>
-  <ui-icon path="https://www.youtube.com/watch?v=s6sdy20_QMM"></ui-icon> -->
-</body>
+<link rel="stylesheet" href="/style.css" id="theme" />
 
 <script type="module">
-  import "../42/ui/components/icon.js"
-</script>
-
-<!-- <script type="module">
-  // import "../42/ui.js"
-  // import create from "../42/ui/create.js"
-  // console.log(111, create("div"))
-
-  import render from "../42/ui/render.js"
-
-  const ctx = {}
-
-  document.body.append(
-    render(
-      { type: "#ok", content: "hello {{foo}}", data: { foo: "derp" } },
-      ctx
-    )
-  )
-
-  console.log(ctx)
-
-  setTimeout(() => {
-    ctx.global.state.set("foo", "world")
-    console.log(ctx.global.state)
-  }, 100)
-</script> -->
-
-<!-- <style>
-  ul {
-    border-bottom: 1px solid red;
-  }
-</style> -->
-
-<!-- <script type="module">
   import ui from "../42/ui.js"
+  import dirname from "../42/fabric/type/path/extract/dirname.js"
 
-  const app = await ui({
-    type: "#ok",
+  const explorer = {
+    // scope: "explorer",
+    type: ".box-h.pa-xs.outset",
+    style: { width: "300px", height: "300px" },
     content: [
-      "hello {{foo}}", //
-      { when: "bar", type: "div", content: "bar" },
       {
-        scope: "list",
-        type: "ul.top",
-        repeat: { type: "li", content: "{{.}}" },
+        type: "header.box-v.ctrl-group.mb-xs",
+        content: [
+          {
+            type: "button",
+            picto: "arrow-up",
+            run: "folderUp",
+          },
+          {
+            type: "input",
+            name: "path",
+            bind: "change",
+            compact: true,
+            prose: false,
+            enterkeyhint: "go",
+          },
+        ],
+      },
+      {
+        type: "ui-folderview.inset",
+        path: "{{path}}",
       },
     ],
-    data: { foo: "derp", list: ["a", "b"] },
+
+    // shortcuts: [
+    //   {
+    //     key: "[dblclick]",
+    //     // key: "[click]",
+    //     selector: "ui-icon",
+    //     run: "changePath",
+    //     args: ["target.path"],
+    //   },
+    // ],
+
+    actions: {
+      changePath(path) {
+        this.path = path
+      },
+      folderUp() {
+        let newPath = dirname(this.path)
+        if (!newPath.endsWith("/")) newPath += "/"
+        this.path = newPath
+      },
+    },
+
+    data: {
+      // path: "/42/",
+      path: "/",
+    },
+  }
+
+  // window.app = await ui(explorer)
+
+  window.app = ui.trusted({
+    type: "body.box-center.desktop",
+    content: {
+      type: "div",
+      label: "Folder View",
+      style: { width: "300px" },
+      content: [
+        "The path textfield supports [https://en.wikipedia.org/wiki/Glob_(programming)](glob patterns).",
+        "A wildcard (*) is added automatically at the end of the path. Try typing first letters of any file/folder",
+        explorer,
+        // {
+        //   type: ".box-h.pa-xs.outset.mt",
+        //   style: { width: "300px", height: "50px" },
+        //   content: [
+        //     // {
+        //     //   type: "iframe",
+        //     //   src: "/42/os/apps/TextEdit/index.html",
+        //     // },
+        //     {
+        //       type: "ui-enclose",
+        //       // permissions: ["scripts", "same-origin"],
+        //       // permissions: false,
+        //       // permissions: "trusted",
+        //       permissions: "app",
+        //       check: false,
+        //       src: "/42/os/apps/TextEdit/index.html",
+        //     },
+        //   ],
+        // },
+      ],
+    },
+
+    // data: {
+    //   explorer: {
+    //     path: "/42/",
+    //   },
+    // },
+
+    // actions: {
+    //   changePath(e, target) {
+    //     this.data.path = target.path
+    //   },
+    //   folderUp(e, target) {
+    //     let newPath = dirname(this.data.path)
+    //     if (!newPath.endsWith("/")) newPath += "/"
+    //     this.data.path = newPath
+    //   },
+    // },
+
+    // data: {
+    //   path: "/42/",
+    // },
   })
 
-  console.log(app.data.foo)
+  // setTimeout(() => {
+  //   window.app.get("ui-icon").click()
+  // }, 600)
 
-  setTimeout(() => {
-    app.data.foo = "world"
-    app.data.bar = true
-    app.data.list.push("c")
-  }, 100)
-</script> -->
+  // import a11y from "../../42/a11y.js"
+
+  // setTimeout(() => {
+  //   a11y.tree()
+  // }, 1000)
+</script>

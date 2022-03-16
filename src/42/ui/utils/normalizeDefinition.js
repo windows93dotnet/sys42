@@ -58,8 +58,10 @@ export default function normalizeDefinition(...args) {
     }
   }
 
-  const parsed = parseAbbreviation(def.type, attrs)
-  def.type = parsed.tag
+  if (def.type) {
+    const parsed = parseAbbreviation(def.type, attrs)
+    def.type = parsed.tag
+  }
 
   if (content.length > 0) def.content = content
 

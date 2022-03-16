@@ -1,7 +1,7 @@
 import Emitter from "../../fabric/class/Emitter.js"
 import listen from "../../fabric/dom/listen.js"
 import configure from "../../fabric/configure.js"
-import setTemp from "../../type/dom/setTemp.js"
+import setTemp from "../../fabric/dom/setTemp.js"
 
 const DEFAULTS = {
   distance: 0,

@@ -63,8 +63,6 @@ class Icon extends Component {
             : "")
 
       label = [create("span", labelText)]
-      label[0].textContent = "lol"
-      console.log(1, labelText, label[0].textContent)
 
       if (isFile && this._.parsed.ext) {
         label.push(create("span", `\u200B.${this._.parsed.ext}`))

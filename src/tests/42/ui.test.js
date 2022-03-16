@@ -204,6 +204,9 @@ test("scopes", async (t) => {
   t.is(inputs[2].value, "y")
 })
 
+/* when
+======= */
+
 test("when", async (t) => {
   const el = div()
   const app = await ui(el, {
@@ -343,6 +346,9 @@ test("when", "element", async (t) => {
   t.is(app.el.innerHTML, "<!--[when]-->")
 })
 
+/* repeat
+========= */
+
 test("repeat", async (t) => {
   const el = div()
   const app = await ui(el, {
@@ -394,7 +400,7 @@ test("repeat", "element", async (t) => {
       {
         scope: "arr",
         type: "ul",
-        content: { type: "li", repeat: "{{.}}" },
+        repeat: { type: "li", content: "{{.}}" },
       },
     ],
     data: { arr: [1, 2, 3] },
@@ -426,19 +432,24 @@ test("repeat", "element", "scopped", async (t) => {
   const el = div()
 
   const app = await ui(el, {
-    type: "ul",
-    content: { type: "li", scope: "a.b", repeat: "{{.}}" },
+    content: {
+      type: "ul",
+      scope: "a.b",
+      repeat: { type: "li", content: "{{.}}" },
+    },
     data: { a: { b: ["foo", "bar"] } },
   })
 
-  const ul = app.get("ul")
-  t.is(ul.innerHTML, "<!--[repeat]--><li>foo</li><li>bar</li>")
+  t.is(app.el.innerHTML, "<ul><!--[repeat]--><li>foo</li><li>bar</li></ul>")
   app.data.a.b.push("baz")
   await repaint()
-  t.is(ul.innerHTML, "<!--[repeat]--><li>foo</li><li>bar</li><li>baz</li>")
+  t.is(
+    app.el.innerHTML,
+    "<ul><!--[repeat]--><li>foo</li><li>bar</li><li>baz</li></ul>"
+  )
   app.data.a.b.length = 0
   await repaint()
-  t.is(ul.innerHTML, "<!--[repeat]-->")
+  t.is(app.el.innerHTML, "<ul><!--[repeat]--></ul>")
 })
 
 test("repeat", "array of objects", async (t) => {

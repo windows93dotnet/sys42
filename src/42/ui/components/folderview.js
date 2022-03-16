@@ -1,9 +1,10 @@
 import "./icon.js"
 import Component from "../class/Component.js"
-import selectable from "../ui/trait/selectable.js"
+import selectable from "../trait/selectable.js"
 import disk from "../../system/fs/disk.js"
 import listen from "../../fabric/dom/listen.js"
 import render from "../render.js"
+import joinScope from "../utils/joinScope.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
 
 export class FolderView extends Component {
@@ -64,7 +65,7 @@ export class FolderView extends Component {
     })
 
     const content = {
-      scope: ctx.scope + (ctx.scope.endsWith("/") ? "" : "/") + "items",
+      scope: joinScope(ctx.scope, "items"),
       repeat: {
         type: "ui-icon",
         path: "{{path}}",
@@ -97,6 +98,8 @@ export class FolderView extends Component {
         })
       )
     }
+
+    console.log(dir)
 
     this.items = dir.map((path) => ({
       path,
