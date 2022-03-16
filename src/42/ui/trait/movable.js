@@ -5,7 +5,7 @@ import throttle from "../../fabric/type/function/throttle.js"
 import noop from "../../fabric/type/function/noop.js"
 import listen, { delegate } from "../../fabric/dom/listen.js"
 import maxZindex from "../../fabric/dom/maxZIndex.js"
-import styles from "../../styles.js"
+import setTemp from "../../fabric/dom/setTemp.js"
 
 const DEFAULTS = {
   handle: undefined,
@@ -103,19 +103,21 @@ class Movable extends Trait {
       } else {
         this.restoreTargetsStyles.set(
           this.target,
-          styles.temp(this.target, {
-            "position": this.config.position,
-            "z-index": maxZindex() + 1,
-            "margin": 0,
-            "top": 0,
-            "left": 0,
-            "min-width": "initial",
-            "min-height": "initial",
-            "max-width": "initial",
-            "max-height": "initial",
-            "width": rect.width + "px",
-            "height": rect.height + "px",
-            "transform": "",
+          setTemp(this.target, {
+            styles: {
+              "position": this.config.position,
+              "z-index": maxZindex() + 1,
+              "margin": 0,
+              "top": 0,
+              "left": 0,
+              "min-width": "initial",
+              "min-height": "initial",
+              "max-width": "initial",
+              "max-height": "initial",
+              "width": rect.width + "px",
+              "height": rect.height + "px",
+              "transform": "",
+            },
           })
         )
       }

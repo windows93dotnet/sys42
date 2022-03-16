@@ -31,6 +31,7 @@ export default class Layer extends Emitter {
     const { id } = def
     if (this.map.has(id)) return
 
+    // TODO: add timeout to fail and remove "progress"
     const timerId = setTimeout(() => setCursor("progress"), 200)
 
     ctx.undones = undefined

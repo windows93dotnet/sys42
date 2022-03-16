@@ -24,7 +24,7 @@ export default function setAction(el, { run, args }, ctx) {
     }
   }
 
-  if (!action.fn) throw new Error(`run not found: "${run}"`)
+  if (!action.fn) throw new Error(`action not found: "${run}"`)
 
   action.fn = action.fn.bind(ctx.global.state.locateProxy(ctx.scope))
 

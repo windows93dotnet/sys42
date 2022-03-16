@@ -154,7 +154,7 @@ export default async function explorer(path, options = {}) {
   return dialog({
     label: "Explorer - {{path}}",
     style: { width: "400px", height: "350px" },
-    modules: { apply: "./dialog/explorer.apply.js" },
+    modules: { apply: "./dialog/selection.apply.js" },
     content: {
       type: "ui-explorer",
       path: { watch: "path" },

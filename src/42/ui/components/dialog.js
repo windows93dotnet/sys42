@@ -1,12 +1,12 @@
 // @related https://github.com/KittyGiraudel/a11y-dialog
 
 import Component from "../class/Component.js"
-import compositor from "../ui/compositor.js"
+import compositor from "../compositor.js"
 import render from "../render.js"
-import arrify from "../render.js"
+import arrify from "../../fabric/type/any/arrify.js"
 import populateContext from "../utils/populateContext.js"
 import makeNewContext from "../utils/makeNewContext.js"
-import { h2, div, header, footer } from "../html.js"
+import create from "../create.js"
 
 let layer = compositor("dialogs")
 
@@ -44,7 +44,8 @@ export class Dialog extends Component {
       let clone = structuredClone(this._.ctx.global.rack.value)
 
       if (this._.config.modules?.apply) {
-        clone = await import(this._.config.modules.apply) //
+        const name = this._.config.modules.apply
+        clone = await import(/* @vite-ignore */ name) //
           .then((m) => m.default(clone))
       }
 
@@ -57,7 +58,8 @@ export class Dialog extends Component {
       let { backupData } = this._
 
       if (this._.config.modules?.cancel) {
-        backupData = await import(this._.config.modules.cancel) //
+        const name = this._.config.modules.cancel
+        backupData = await import(/* @vite-ignore */ name) //
           .then((m) => m.default(backupData))
       }
 
@@ -101,36 +103,25 @@ export class Dialog extends Component {
     }
 
     fragment.append(
-      header(
-        { class: "ui-dialog__header" },
+      create(
+        "header.ui-dialog__header",
         render(label, ctx, undefined, (text) =>
-          h2({ class: "ui-dialog__title" }, text)
+          create("h2.ui-dialog__title", text)
         )
       )
     )
 
     if ("menubar" in this._.rest) {
       fragment.append(
-        div(
-          { class: "ui-dialog__menubar" }, //
-          render(this._.rest.menubar, ctx)
-        )
+        create("div.ui-dialog__menubar", render(this._.rest.menubar, ctx))
       )
     }
 
-    fragment.append(
-      div(
-        { class: "ui-dialog__content" }, //
-        render(content, ctx)
-      )
-    )
+    fragment.append(create("div.ui-dialog__content", render(content, ctx)))
 
     if ("footer" in this._.rest) {
       fragment.append(
-        footer(
-          { class: "ui-dialog__footer" }, //
-          render(this._.rest.footer, ctx)
-        )
+        create("footer.ui-dialog__footer", render(this._.rest.footer, ctx))
       )
     }
 
