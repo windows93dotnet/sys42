@@ -1,14 +1,14 @@
 import system from "../system.js"
+import truncate from "../fabric/type/string/truncate.js"
 
 export const copy = async (text, options) => {
   await navigator.clipboard.writeText(text)
   if (options?.notif) {
     const type = typeof options.notif
-    if (type === "object") {
-      options.notif.value ??= `copied "${text}" to clipboard`
+    if (type === "string") {
       system.emit("notif", options.notif)
     } else {
-      system.emit("notif", options.notif)
+      system.emit("notif", `copied "${truncate(text)}" to clipboard`)
     }
   }
 }

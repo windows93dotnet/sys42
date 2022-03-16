@@ -90,7 +90,7 @@ export class FolderView extends Component {
         ? disk.glob(this.path.endsWith("*") ? this.path : this.path + "*")
         : disk.readDir(this.path, { absolute: true })
     } catch (error) {
-      this.dispatchEvent(
+      return void this.dispatchEvent(
         new ErrorEvent("patherror", {
           error,
           message: error.message,

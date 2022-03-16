@@ -5,7 +5,7 @@ import isEmptyObject from "../fabric/type/any/is/isEmptyObject.js"
 import uid from "../fabric/uid.js"
 import parseDotNotation from "../fabric/locator/parseDotNotation.js"
 import ELEMENTS_ALLOW_LIST from "../fabric/constants/ELEMENTS_ALLOW_LIST.js"
-// import shortcuts from "../shortcuts.js"
+import shortcuts from "../system/shortcuts.js"
 
 import arrify from "../fabric/type/any/arrify.js"
 import {
@@ -177,14 +177,14 @@ function append(parent, def, ctx, el) {
   if (el.nodeType === ELEMENT_NODE) {
     renderTraits(el, def, ctx)
     if (shortcutsConfig) {
-      // shortcuts(el, def.shortcuts, shortcutsConfig)
+      shortcuts(el, def.shortcuts, shortcutsConfig)
     }
   } else if (shortcutsConfig) {
-    // shortcuts(
-    //   parent.nodeType === ELEMENT_NODE ? parent : globalThis,
-    //   def.shortcuts,
-    //   shortcutsConfig
-    // )
+    shortcuts(
+      parent.nodeType === ELEMENT_NODE ? parent : globalThis,
+      def.shortcuts,
+      shortcutsConfig
+    )
   }
 
   parent.append(el)

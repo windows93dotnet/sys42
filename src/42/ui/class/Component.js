@@ -5,11 +5,10 @@ import noop from "../../fabric/type/function/noop.js"
 import configure from "../../fabric/configure.js"
 import makeNewContext from "../utils/makeNewContext.js"
 import populateContext from "../utils/populateContext.js"
-// import shortcuts from "../../shortcuts.js"
+import shortcuts from "../../system/shortcuts.js"
 import Canceller from "../../fabric/class/Canceller.js"
 import paintDebounce from "../../fabric/type/function/paintDebounce.js"
 import { toKebabCase } from "../../fabric/type/string/letters.js"
-// import { joinJSONPointer } from "../../type/json/JSONPointerUtils.js"
 import joinScope from "../utils/joinScope.js"
 import observe from "../../fabric/locator/observe.js"
 
@@ -37,15 +36,15 @@ const DEFAULTS = {
       shortcuts: {
         type: "any",
         fromView: true,
-        adapt(/* el, value, oldValue */) {
-          // oldValue?.destroy?.()
-          // const { ctx } = el._
-          // return shortcuts(el, value, {
-          //   agent: ctx.global.actions.get(ctx.scope),
-          //   signal: ctx.cancel.signal,
-          //   preventDefault: true,
-          //   serializeArgs: true,
-          // })
+        adapt(el, value, oldValue) {
+          oldValue?.destroy?.()
+          const { ctx } = el._
+          return shortcuts(el, value, {
+            agent: ctx.global.actions.get(ctx.scope),
+            signal: ctx.cancel.signal,
+            preventDefault: true,
+            serializeArgs: true,
+          })
         },
       },
     }

@@ -34,18 +34,19 @@
       {
         type: "ui-folderview.inset",
         path: "{{path}}",
+        // glob: true,
       },
     ],
 
-    // shortcuts: [
-    //   {
-    //     key: "[dblclick]",
-    //     // key: "[click]",
-    //     selector: "ui-icon",
-    //     run: "changePath",
-    //     args: ["target.path"],
-    //   },
-    // ],
+    shortcuts: [
+      {
+        key: "[dblclick]",
+        // key: "[click]",
+        selector: "ui-icon",
+        run: "changePath",
+        args: ["target.path"],
+      },
+    ],
 
     actions: {
       changePath(path) {
@@ -59,8 +60,8 @@
     },
 
     data: {
-      // path: "/42/",
-      path: "/",
+      path: "/42/",
+      // path: "/",
     },
   }
 
@@ -129,4 +130,12 @@
   // setTimeout(() => {
   //   a11y.tree()
   // }, 1000)
+
+  const x = new Map()
+  x.set('yo',1)
+  x.set('derp',2)
+
+  for (const item of x) {
+    console.log(444,item)
+  }
 </script>
