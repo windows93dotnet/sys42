@@ -21,12 +21,32 @@ async function initLayer(layerName, options) {
   }
 }
 
+function restoreFocus(opener, options) {
+  if (!opener || options?.focusOpener === false) return
+  // requestAnimationFrame(() => {
+  document
+    .querySelector(`#${opener}`)
+    ?.focus({ preventScroll: options?.preventScroll ?? true })
+
+  if (options?.focusOut) {
+    const menu = document.activeElement.closest("ui-menu,ui-menubar")
+    if (menu) {
+      const tab = new TabOrder()
+      focusFirst(menu)
+      tab[options.focusOut]()
+      tab.destroy()
+    }
+  }
+  // })
+}
+
 if (!inIframe) {
   ipc
     .on("layer<-init", async ({ layerName, options }, { send }) => {
       await initLayer(layerName, options)
       layers[layerName]
-        .on("delete", ({ id }) => {
+        .on("delete", ({ id, opener }, options) => {
+          restoreFocus(opener, options)
           const { instances } = layers[layerName]
           if (instances.has(id)) {
             instances.get(id).off()
@@ -215,22 +235,7 @@ export default async function compositor(layerName, options) {
   }
 
   layers[layerName].on("delete", ({ opener }, options) => {
-    if (!opener || options?.focusOpener === false) return
-    requestAnimationFrame(() => {
-      document
-        .querySelector(`#${opener}`)
-        ?.focus({ preventScroll: options?.preventScroll ?? true })
-
-      if (options?.focusOut) {
-        const menu = document.activeElement.closest("ui-menu,ui-menubar")
-        if (menu) {
-          const tab = new TabOrder()
-          focusFirst(menu)
-          tab[options.focusOut]()
-          tab.destroy()
-        }
-      }
-    })
+    restoreFocus(opener, options)
   })
 
   return layers[layerName]
