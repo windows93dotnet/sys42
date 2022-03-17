@@ -4,7 +4,8 @@ import uid from "../../fabric/uid.js"
 import inIframe from "../../system/env/runtime/inIframe.js"
 import { isFocusable } from "../../fabric/dom/focus.js"
 
-let layer = compositor("popups", { module: "LayerPopups" })
+// let layer = compositor("popups", { module: "LayerPopups" })
+let layer = compositor("popups")
 
 layer.then((layer) => {
   const listenOptions = { capture: true }

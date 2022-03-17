@@ -60,7 +60,9 @@ function addMenuItemListeners(menu, el, signal, inMenubar) {
   listen(el, options, {
     click() {
       if (el.getAttribute("aria-haspopup") === "menu") return
-      requestAnimationFrame(() => layers.popups?.clear())
+      setTimeout(() => {
+        requestAnimationFrame(() => layers.popups?.clear())
+      }, 0)
     },
     [`pointerdown ${event}`](e) {
       if (e.type === event && e.x === moving.x && e.y === moving.y) return

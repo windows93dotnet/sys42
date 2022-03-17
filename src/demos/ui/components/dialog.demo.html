@@ -14,6 +14,7 @@
     type: "body.pa-xxl.bd.desktop",
     content: [
       { type: "number", scope: "derp", name: "foo" },
+      { type: "checkbox", scope: "derp", name: "baz" },
       { type: "div", content: "output: {{derp.foo}}" },
       {
         type: "button#live",
@@ -23,6 +24,7 @@
           scope: "derp",
           content: [
             { type: "number", name: "foo" }, //
+            { type: "checkbox", name: "baz" },
           ],
         },
       },
@@ -33,6 +35,7 @@
           scope: "derp",
           content: [
             { type: "number", name: "foo" },
+            { type: "checkbox", name: "baz" },
             { type: "div", content: "output: {{foo}}" },
           ],
         },
@@ -70,16 +73,17 @@
     data: {
       derp: {
         foo: 42,
+        baz: true,
       },
     },
   })
 
   window.app = app
 
-  // app.get("#live").click()
+  app.get("#live").click()
   // app.get("#apply").click()
   // app.get("#prompt").click()
-  app.get("#explorer").click()
+  // app.get("#explorer").click()
   // app.get("#open").click()
 
   // app.get(".inset").addEventListener("pointermove", (e) => {

@@ -23,21 +23,21 @@ async function initLayer(layerName, options) {
 
 function restoreFocus(opener, options) {
   if (!opener || options?.focusOpener === false) return
-  // requestAnimationFrame(() => {
-  document
-    .querySelector(`#${opener}`)
-    ?.focus({ preventScroll: options?.preventScroll ?? true })
+  requestAnimationFrame(() => {
+    document
+      .querySelector(`#${opener}`)
+      ?.focus({ preventScroll: options?.preventScroll ?? true })
 
-  if (options?.focusOut) {
-    const menu = document.activeElement.closest("ui-menu,ui-menubar")
-    if (menu) {
-      const tab = new TabOrder()
-      focusFirst(menu)
-      tab[options.focusOut]()
-      tab.destroy()
+    if (options?.focusOut) {
+      const menu = document.activeElement.closest("ui-menu,ui-menubar")
+      if (menu) {
+        const tab = new TabOrder()
+        focusFirst(menu)
+        tab[options.focusOut]()
+        tab.destroy()
+      }
     }
-  }
-  // })
+  })
 }
 
 if (!inIframe) {
@@ -61,6 +61,7 @@ if (!inIframe) {
       if (layers[layerName].instances.has(id)) {
         const instance = layers[layerName].instances.get(id)
         instance.pause = true
+
         for (const [key, val] of data.entries()) {
           instance.ctx.global.state.set(key, val)
         }
@@ -105,6 +106,7 @@ if (!inIframe) {
         const instance = { ctx, pause: false }
 
         instance.off = ctx.global.state.on("update", { off: true }, () => {
+          console.log(999, instance.pause)
           if (instance.pause) return
           const data = ctx.global.rack.value
           send("layer->data", { id, data })
@@ -147,7 +149,9 @@ export default async function compositor(layerName, options) {
       .on("layer->data", ({ id, data }) => {
         if (instances.has(id)) {
           const instance = instances.get(id)
+          instance.pause = true
           instance.ctx.global.state.set(instance.scope, data)
+          instance.pause = false
         }
       })
 
@@ -172,9 +176,12 @@ export default async function compositor(layerName, options) {
             const opener = Layer.getOpener(options.opener)
             options.opener = opener
 
+            const instance = { ctx, scope, opener, pause: false }
+
             let off
             if (ctx.global) {
               off = ctx.global.state.on("update", { off: true }, (queue) => {
+                if (instance.pause) return
                 const data = new Map()
                 for (const path of queue) {
                   const pathMinusScope = scope
@@ -189,7 +196,7 @@ export default async function compositor(layerName, options) {
               if (ctx.global.rack.value) def.data = ctx.global.rack.get(scope)
             } else off = noop
 
-            const instance = { ctx, scope, opener, off }
+            instance.off = off
             instances.set(id, instance)
 
             const [res] = await bus.send("layer<-method", {

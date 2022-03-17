@@ -39,6 +39,7 @@ export default class Layer extends Emitter {
 
     if (options?.clear) await this.clear(options?.clear)
     const item = render(def, ctx).firstChild
+
     const restore = setTemp(item, {
       style: {
         "opacity": 0,
