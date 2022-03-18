@@ -2,12 +2,14 @@ import inTop from "../system/env/runtime/inTop.js"
 import inIframe from "../system/env/runtime/inIframe.js"
 import ipc from "../system/ipc.js"
 
-import parseCommand from "../cli/parseCommand.js"
-import argv from "../cli/argv.js"
+import parseCommand from "./cli/parseCommand.js"
+import argv from "./cli/argv.js"
 
 let bus
 
-if (inTop) ipc.on("main<-exec", (cmd) => exec(cmd))
+if (inTop) {
+  ipc.on("main<-exec", (cmd) => exec(cmd))
+}
 
 export default async function exec(cmd) {
   if (inIframe) {
@@ -15,17 +17,23 @@ export default async function exec(cmd) {
     return bus.send("main<-exec", cmd).then(([res]) => res)
   }
 
-  cmd = cmd.startsWith("$ ") ? cmd.slice(2) : cmd
-
   const [name, ...rest] = parseCommand(cmd)
-  const args = argv(rest, { argsKey: "glob" })
 
   let program
-  try {
-    program = await import(`./cmd/${name}.js`).then((m) => m.default)
-  } catch {
-    console.log(`"${name}" command not found`)
-  }
+  let cli
 
-  return program(args)
+  await import(`./cmd/${name}.cmd.js`)
+    .then((m) => {
+      program = m.default
+      cli = m.cli
+    })
+    .catch(() => {
+      console.log(`"${name}" command not found`)
+    })
+
+  if (!program) return
+
+  if (cli) return program(cli(rest))
+
+  return program(argv(rest, { argsKey: "glob" }))
 }

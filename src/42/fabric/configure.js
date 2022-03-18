@@ -6,7 +6,7 @@ export function merge(target, source) {
       target[key] = []
       merge(target[key], val)
     } else if (toString.call(val) === OBJECT) {
-      target[key] ??= Object.create(null)
+      target[key] ??= {}
       merge(target[key], val)
     } else {
       target[key] = val
@@ -17,7 +17,7 @@ export function merge(target, source) {
 }
 
 export default function configure(...options) {
-  const config = Object.create(null)
+  const config = {}
   if (options.length === 0) return config
 
   for (const opt of options) {

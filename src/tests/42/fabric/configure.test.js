@@ -25,7 +25,7 @@ test("deep merge options", (t) => {
     c: 3,
   }
   const config = configure(defaults, options)
-  t.alike(config, expected)
+  t.eq(config, expected)
 })
 
 test("functions", (t) => {
@@ -37,7 +37,7 @@ test("functions", (t) => {
 })
 
 test("multiple sources", (t) => {
-  t.alike(
+  t.eq(
     configure(
       t.stays({ foo: 0 }),
       t.stays({ bar: 1, baz: 3 }),
@@ -45,36 +45,36 @@ test("multiple sources", (t) => {
     ),
     { foo: 0, bar: 2, baz: 3 }
   )
-  t.alike(configure({}, {}, { foo: 1 }), { foo: 1 })
+  t.eq(configure({}, {}, { foo: 1 }), { foo: 1 })
 })
 
 test("clone option objects", (t) => {
   const plainObj1 = t.stays({ value: "foo" })
   const plainObj2 = t.stays({ value: "bar" })
   const result = configure({ array: [plainObj1] }, { array: [plainObj2] })
-  t.alike(result.array[0], plainObj2)
+  t.eq(result.array[0], plainObj2)
   t.not(result.array[0], plainObj1)
   t.not(result.array[0], plainObj2)
 })
 
 test("ignore `undefined`", (t) => {
-  t.alike(configure(undefined), {})
+  t.eq(configure(undefined), {})
   const expected = { foo: false }
-  t.alike(configure(undefined, { foo: true }, { foo: false }), expected)
-  t.alike(configure({ foo: true }, undefined, { foo: false }), expected)
-  t.alike(configure({ foo: true }, { foo: false }, undefined), expected)
+  t.eq(configure(undefined, { foo: true }, { foo: false }), expected)
+  t.eq(configure({ foo: true }, undefined, { foo: false }), expected)
+  t.eq(configure({ foo: true }, { foo: false }, undefined), expected)
 })
 
 test("ignore `null`", (t) => {
-  t.alike(configure(null), {})
+  t.eq(configure(null), {})
   const expected = { foo: false }
-  t.alike(configure(null, { foo: true }, { foo: false }), expected)
-  t.alike(configure({ foo: true }, null, { foo: false }), expected)
-  t.alike(configure({ foo: true }, { foo: false }, null), expected)
+  t.eq(configure(null, { foo: true }, { foo: false }), expected)
+  t.eq(configure({ foo: true }, null, { foo: false }), expected)
+  t.eq(configure({ foo: true }, { foo: false }, null), expected)
 })
 
 test("support `undefined` Option Values", (t) => {
-  t.alike(configure({ foo: true }, { foo: undefined }), {
+  t.eq(configure({ foo: true }, { foo: undefined }), {
     foo: undefined,
   })
 })
