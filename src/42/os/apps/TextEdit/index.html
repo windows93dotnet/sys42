@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="/style.css" id="theme" />
+<script type="module" src="./app.js"></script>
+
+<!-- <script type="module">
+  document.body.append("hello script")
+
+  // console.log(globalThis.parent.name)
+
+  // console.log(777, globalThis.top === globalThis.parent)
+  // globalThis.parent.parent.postMessage("hello", "*")
+  globalThis.top.postMessage("hello", "*")
+
+  // globalThis.addEventListener("message", ({ origin, data }) => {
+  //   console.log(112, origin, data)
+  // })
+</script> -->
+
+<!-- <script type="module">
+  import ipc from "../../../system/ipc.js"
+
+  document.body.append("hello same-origin")
+
+  ipc.on("greetings", async (data) => "in iframe: " + (await data.text()))
+
+  ipc
+    .to(globalThis.parent)
+    .send("hello", { a: 1 })
+    .then((reply) => {
+      console.log(2, reply)
+    })
+</script> -->
+
+<!-- <script type="module">
+  const bc = new BroadcastChannel("yo")
+  console.log(bc)
+</script> -->
