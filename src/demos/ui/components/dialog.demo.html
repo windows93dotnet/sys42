@@ -6,7 +6,6 @@
 
 <script type="module">
   import ui from "../../../42/ui.js"
-  // import ipc from "../../../42/system/ipc.js"
   import dialog from "../../../42/ui/components/dialog.js"
   import explorer from "../../../42/ui/components/explorer.js"
 
@@ -62,8 +61,8 @@
         type: "button#open",
         label: "Open File…",
         async run() {
-          const res = await explorer.open("/42/data/", {
-            selection: ["/42/data/ARIA.js", "/42/data/SGR.js"],
+          const res = await explorer.open("/42/", {
+            selection: ["/42/os.js", "/42/test.js"],
           })
           console.log("explorer.open res:", res?.selection)
         },
@@ -80,17 +79,9 @@
 
   window.app = app
 
-  app.get("#live").click()
+  // app.get("#live").click()
   // app.get("#apply").click()
   // app.get("#prompt").click()
   // app.get("#explorer").click()
-  // app.get("#open").click()
-
-  // app.get(".inset").addEventListener("pointermove", (e) => {
-  //   console.log(e.type)
-  // })
-
-  // ipc.from(globalThis.parent).on("enclose->pointermove", ({ x, y }) => {
-  //   console.log(x, y)
-  // })
+  app.get("#open").click()
 </script>

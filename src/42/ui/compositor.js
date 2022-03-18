@@ -106,7 +106,8 @@ if (!inIframe) {
         const instance = { ctx, pause: false }
 
         instance.off = ctx.global.state.on("update", { off: true }, () => {
-          console.log(999, instance.pause)
+          // TODO: fix endless update in menu checkbox
+          // console.log(999, instance.pause)
           if (instance.pause) return
           const data = ctx.global.rack.value
           send("layer->data", { id, data })

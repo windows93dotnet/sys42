@@ -13,50 +13,50 @@
   window.app = ui.trusted({
     type: "body.box-fit.box-h.desktop.debug",
     content: [
-      // {
-      //   // type: "header.box-stack",
-      //   type: ".box-stack",
-      //   content: [
-      //     {
-      //       type: "ui-folderview.scroll-auto",
-      //       shortcuts: [
-      //         {
-      //           key: "[click]",
-      //           selector: "ui-icon",
-      //           run: "iconFocus",
-      //           args: ["target.path"],
-      //         },
-      //         {
-      //           key: "ctrl+[click]",
-      //           selector: "ui-icon",
-      //           run: "iconSelect",
-      //           args: ["target.path"],
-      //         },
-      //         {
-      //           key: "[dblclick]",
-      //           selector: "ui-icon",
-      //           run: "iconOpen",
-      //           args: ["target.path"],
-      //         },
-      //       ],
-      //     },
-      //     // { type: "ui-workspaces" },
-      //   ],
-      // },
-      // {
-      //   type: "ui-enclose.ma-xxl",
-      //   permissions: "app",
-      //   check: false,
-      //   src: "../demos/ui/components/dialog.demo.html",
-      // },
+      {
+        // type: "header.box-stack",
+        type: ".box-stack",
+        content: [
+          {
+            type: "ui-folderview.scroll-auto",
+            shortcuts: [
+              {
+                key: "[click]",
+                selector: "ui-icon",
+                run: "iconFocus",
+                args: ["target.path"],
+              },
+              {
+                key: "ctrl+[click]",
+                selector: "ui-icon",
+                run: "iconSelect",
+                args: ["target.path"],
+              },
+              {
+                key: "[dblclick]",
+                selector: "ui-icon",
+                run: "iconOpen",
+                args: ["target.path"],
+              },
+            ],
+          },
+          // { type: "ui-workspaces" },
+        ],
+      },
       {
         type: "ui-enclose.ma-xxl",
-        // permissions: "trusted",
         permissions: "app",
         check: false,
-        // src: "../demos/ui/components/menu.demo.html",
-        src: "../demos/os/exec.demo.html",
+        src: "../demos/ui/components/dialog.demo.html",
       },
+      // {
+      //   type: "ui-enclose.ma-xxl",
+      //   // permissions: "trusted",
+      //   permissions: "app",
+      //   check: false,
+      //   // src: "../demos/ui/components/menu.demo.html",
+      //   src: "../demos/os/exec.demo.html",
+      // },
       {
         type: "footer.outset",
         scope: "desktop",

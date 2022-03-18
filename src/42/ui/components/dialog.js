@@ -111,7 +111,10 @@ export class Dialog extends Component {
 
     if ("menubar" in this._.rest) {
       fragment.append(
-        create("div.ui-dialog__menubar", render(this._.rest.menubar, ctx))
+        create(
+          "div.ui-dialog__menubar",
+          render({ type: "ui-menubar", content: this._.rest.menubar }, ctx)
+        )
       )
     }
 

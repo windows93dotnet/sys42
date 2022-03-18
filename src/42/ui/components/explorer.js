@@ -155,6 +155,24 @@ export default async function explorer(path, options = {}) {
     label: "Explorer - {{path}}",
     style: { width: "400px", height: "350px" },
     modules: { apply: "./dialog/selection.apply.js" },
+    menubar: [
+      {
+        label: "File",
+        content: [
+          { label: "Open" }, //
+        ],
+      },
+      {
+        label: "Edit",
+        content: [
+          { label: "Copy" },
+          { label: "Cut" },
+          { label: "Paste" },
+          "---",
+          { label: "Select all" },
+        ],
+      },
+    ],
     content: {
       type: "ui-explorer",
       path: { watch: "path" },
