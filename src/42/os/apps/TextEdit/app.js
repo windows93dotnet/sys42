@@ -10,7 +10,18 @@ const install = preinstall({
 })
 
 const content = [
-  // { label: "Clear" /* , run: "clear" */ },
+  {
+    label: "Open",
+    picto: "folder-open",
+    shortcut: "Ctrl+O",
+    run: "open",
+  },
+  {
+    label: "Save",
+    picto: "save",
+    shortcut: "Ctrl+S",
+    run: "save",
+  },
   {
     label: "File",
     id: "file",
@@ -25,10 +36,7 @@ const content = [
         label: "Open",
         picto: "folder-open",
         shortcut: "Ctrl+O",
-        // run: "open",
-        dialog: {
-          content: "hello",
-        },
+        run: "open",
       },
       {
         label: "Save",
@@ -51,6 +59,11 @@ const content = [
         run: "fullscreen",
         disabled: !document.fullscreenEnabled,
       },
+      "---",
+      {
+        label: "Spellcheck",
+        type: "checkbox",
+      },
     ],
   },
   {
@@ -62,23 +75,44 @@ const content = [
       },
     ],
   },
-  {
-    label: "Fullscreen",
-    run: "fullscreen",
-    disabled: !document.fullscreenEnabled,
-  },
 ]
+
+import explorer from "../../../ui/components/explorer.js"
 
 const app = await ui({
   type: ".box-fit.box-h",
   content: [
     { type: "ui-menubar", content },
-    { type: "textarea.w-full", name: "text", compact: true },
+    {
+      type: "footer",
+      content: [
+        {
+          type: "button",
+          label: "explorer",
+          async run() {
+            const res = await explorer("/42/")
+            console.log("explorer res:", res)
+          },
+        },
+      ],
+    },
+    {
+      // type: "textarea.w-full.{{monospace}}",
+      type: "textarea.w-full",
+      name: "text",
+      class: "{{monospace}}",
+      spellcheck: "{{spellcheck}}",
+      prose: false,
+      compact: true,
+    },
   ],
 
   data: {
     path: undefined,
     text: "hello",
+    monospace: "font-mono",
+    spellcheck: true,
+    wrap: false,
   },
 
   actions: {
@@ -86,26 +120,27 @@ const app = await ui({
       this.path = undefined
       this.text = ""
     },
+
     async open() {
-      // eslint-disable-next-line no-alert
-      const path = prompt("Path", "/")
-      if (path == null) return
-      this.path = path
-      const fs = import("../../../system/fs.js").then((m) => m.default)
-      this.text = await fs.readText(this.path)
+      const res = await explorer.pick(this.path)
+      if (res) {
+        this.path = res.selection[0]
+        this.text = await res.files[0].text()
+      }
     },
+
     async save() {
-      const fs = import("../../../system/fs.js").then((m) => m.default)
-      if (this.path) await fs.writeText(this.path, this.text)
-      else app.def.actions.saveAs.call(this)
+      const res = await (this.path
+        ? explorer.save(this.path, new Blob([this.text]))
+        : app.def.actions.saveAs.call(this))
+      console.log("save", res)
     },
+
     async saveAs() {
-      // eslint-disable-next-line no-alert
-      const path = prompt("Path", "/")
-      if (path == null) return
-      this.path = path
-      return app.def.actions.save.call(this)
+      const res = await explorer.save("unamed.txt", new Blob([this.text]))
+      console.log("saveAs", res)
     },
+
     install() {
       if (inIframe) {
         window.open(location, "_blank")
@@ -113,6 +148,7 @@ const app = await ui({
         install()
       }
     },
+
     async fullscreen() {
       try {
         await document.documentElement.requestFullscreen({
@@ -124,13 +160,3 @@ const app = await ui({
     },
   },
 })
-
-// dialog("yo")
-
-// if (!(await fs.access("/test.txt"))) {
-//   fs.writeText("/test.txt", "hello")
-// }
-
-// setTimeout(() => {
-//   ui.get("ui-menubar #file").dispatchEvent(new PointerEvent("pointerdown"))
-// }, 100)

@@ -61,10 +61,10 @@
         type: "button#open",
         label: "Open File…",
         async run() {
-          const res = await explorer.open("/42/", {
+          const res = await explorer.pick("/42/", {
             selection: ["/42/os.js", "/42/test.js"],
           })
-          console.log("explorer.open res:", res?.selection)
+          console.log("explorer.pick res:", res?.selection)
         },
       },
     ],

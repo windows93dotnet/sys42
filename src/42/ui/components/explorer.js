@@ -94,7 +94,7 @@ export class Explorer extends Component {
     this.querySelector(".message").replaceChildren()
   }
 
-  $create({ root, ctx }) {
+  $create({ root, ctx, config }) {
     this.addEventListener("patherror", ({ error }) => {
       this.querySelector(".message").replaceChildren(displayError(error))
     })
@@ -154,7 +154,7 @@ export default async function explorer(path, options = {}) {
   return dialog({
     label: "Explorer - {{path}}",
     style: { width: "400px", height: "350px" },
-    modules: { apply: "./dialog/selection.apply.js" },
+    modules: options.modules,
     menubar: [
       {
         label: "File",
@@ -183,8 +183,17 @@ export default async function explorer(path, options = {}) {
   })
 }
 
-export async function open(path, options = {}) {
-  const res = await explorer(path, {
+function getDir(path, defaultPath = "/") {
+  let out = path ? dirname(path) : defaultPath
+  out = out === "." ? defaultPath : out
+  if (!out.endsWith("/")) out += "/"
+  return out
+}
+
+export async function pickFile(path, options = {}) {
+  const res = await explorer(getDir(path, options.defaultPath), {
+    modules: { apply: "./dialog/selection.apply.js" },
+    selection: [path],
     footer: {
       type: ".w-full.items-end.box-v.ma-sm.gap-sm",
       content: [
@@ -198,10 +207,27 @@ export async function open(path, options = {}) {
   return res.ok
     ? {
         path: res.value.path,
-        selection: res.value.selection,
         files: res.value.files,
+        selection: res.value.selection,
       }
     : undefined
 }
 
-explorer.open = open
+export async function saveFile(path, options = {}) {
+  const res = await explorer(getDir(path, options.defaultPath), {
+    selection: [path],
+    footer: {
+      type: ".w-full.items-end.box-v.ma-sm.gap-sm",
+      content: [
+        { type: "button", label: "Cancel", run: "cancel" },
+        { type: "button.btn-default", label: "Save", run: "ok" },
+      ],
+    },
+    ...options,
+  })
+
+  return res.ok ? {} : undefined
+}
+
+explorer.pick = pickFile
+explorer.save = saveFile
