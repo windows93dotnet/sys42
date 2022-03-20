@@ -26,6 +26,8 @@ export class Dialog extends Component {
       closable: true,
       live: false,
       modules: undefined,
+      menubar: undefined,
+      footer: undefined,
     },
 
     properties: {
@@ -81,9 +83,9 @@ export class Dialog extends Component {
       ctx = makeNewContext()
       ctx.component = this
       ctx.global.rack.value = structuredClone(data)
-      this._.backupData ??= structuredClone(ctx.global.rack.value)
+      this._.backupData ??= structuredClone(data)
       this._.ctx = ctx
-      this._.rest.footer ??= [
+      config.footer ??= [
         { type: "button", run: "cancel", label: "Cancel" },
         { type: "button", run: "apply", label: "Apply" },
         { type: "button.btn-default", run: "ok", label: "Ok" },
@@ -109,20 +111,20 @@ export class Dialog extends Component {
       )
     )
 
-    if ("menubar" in this._.rest) {
+    if ("menubar" in config) {
       fragment.append(
         create(
           "div.ui-dialog__menubar",
-          render({ type: "ui-menubar", content: this._.rest.menubar }, ctx)
+          render({ type: "ui-menubar", content: config.menubar }, ctx)
         )
       )
     }
 
     fragment.append(create("div.ui-dialog__content", render(content, ctx)))
 
-    if ("footer" in this._.rest) {
+    if ("footer" in config) {
       fragment.append(
-        create("footer.ui-dialog__footer", render(this._.rest.footer, ctx))
+        create("footer.ui-dialog__footer", render(config.footer, ctx))
       )
     }
 

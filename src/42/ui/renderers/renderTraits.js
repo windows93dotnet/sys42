@@ -35,7 +35,6 @@ export function renderTrait(el, key, val, ctx) {
 
 export default function renderTraits(el, def, ctx) {
   for (const key of TRAITS) {
-    if (key in def === false) continue
-    renderTrait(el, key, def[key], ctx)
+    if (key in def.traits) renderTrait(el, key, def.traits[key], ctx)
   }
 }

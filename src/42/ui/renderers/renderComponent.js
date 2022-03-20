@@ -5,8 +5,8 @@ export default function renderComponent(type, def, ctx) {
   const el = create(type)
   el.setAttribute("data-lazy-init", "true")
   const tag = el.localName
-  const deferred = defer()
 
+  const deferred = defer()
   ctx.undones.push(deferred)
 
   const initComponent = () => {

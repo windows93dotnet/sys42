@@ -46,10 +46,6 @@ export class Explorer extends Component {
       },
     },
 
-    defaults: {
-      ping: false,
-    },
-
     shortcuts: [
       {
         key: "[click]",
@@ -98,7 +94,7 @@ export class Explorer extends Component {
     this.querySelector(".message").replaceChildren()
   }
 
-  $create({ root, ctx, config }) {
+  $create({ root, ctx }) {
     this.addEventListener("patherror", ({ error }) => {
       this.querySelector(".message").replaceChildren(displayError(error))
     })
@@ -148,8 +144,6 @@ export class Explorer extends Component {
       },
     ]
 
-    console.log(111, config.ping)
-
     root.append(render(content, ctx))
   }
 }
@@ -183,7 +177,6 @@ export default async function explorer(path, options = {}) {
       type: "ui-explorer",
       path: { watch: "path" },
       selection: { watch: "selection" },
-      ping: true,
     },
     footer: options.footer ? options.footer : false,
     data: { path, selection: options.selection ?? [] },

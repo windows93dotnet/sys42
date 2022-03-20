@@ -105,6 +105,54 @@ const CONVERTERS = {
 
 CONVERTERS.array = CONVERTERS.object
 
+function normalizeComponentDef(el, args) {
+  let { definition } = el.constructor
+
+  definition = configure(DEFAULTS, definition)
+
+  const { properties, defaults } = definition
+
+  const out = normalizeDefinition(definition, ...args)
+
+  out.properties = {}
+  out.originals = {}
+  out.observed = {}
+
+  out.content = out.def.content ?? []
+  out.repeat = out.def.repeat
+  out.label = out.def.label
+
+  out.initial = {
+    properties: Object.assign(out.props, out.def.traits),
+    attributes: out.attrs,
+  }
+
+  out.ctx = makeNewContext(out.ctx)
+
+  out.ctx.component = el
+  populateContext(out.ctx, out.def)
+
+  out.cancel = out.ctx.cancel?.fork(el.localName) ?? new Canceller(el.localName)
+  Object.defineProperty(out, "signal", { get: () => out.cancel.signal })
+
+  out.config = configure(defaults, out.options)
+
+  // define value from content
+  // usefull when component is called as a function
+  // e.g. picto("puzzle") -> out.content === ["puzzle"] -> el.value === "puzzle"
+  if (
+    "value" in properties &&
+    "value" in out.initial.attributes === false &&
+    out.content.length === 1
+  ) {
+    out.initial.properties.value = out.content[0]
+  }
+
+  if (properties) setProperties(properties, out, el)
+
+  return out
+}
+
 function setProperties(properties, out, el) {
   const { signal } = out
 
@@ -201,54 +249,6 @@ function setProperties(properties, out, el) {
       out.properties[key] = false
     }
   }
-}
-
-function normalizeComponentDef(el, args) {
-  let { definition } = el.constructor
-
-  definition = configure(DEFAULTS, definition)
-
-  const { properties, defaults } = definition
-
-  const out = normalizeDefinition(definition, ...args)
-
-  out.properties = {}
-  out.originals = {}
-  out.observed = {}
-
-  out.content = out.def.content ?? []
-  out.repeat = out.def.repeat
-  out.label = out.def.label
-
-  out.initial = {
-    properties: out.props,
-    attributes: out.attrs,
-  }
-
-  out.ctx = makeNewContext(out.ctx)
-
-  out.ctx.component = el
-  populateContext(out.ctx, out.def)
-
-  out.cancel = out.ctx.cancel?.fork(el.localName) ?? new Canceller(el.localName)
-  Object.defineProperty(out, "signal", { get: () => out.cancel.signal })
-
-  out.config = configure(defaults, out.options)
-
-  // define value from content
-  // usefull when component is called as a function
-  // e.g. picto("puzzle") -> out.content === ["puzzle"] -> el.value === "puzzle"
-  if (
-    "value" in properties &&
-    "value" in out.initial.attributes === false &&
-    out.content.length === 1
-  ) {
-    out.initial.properties.value = out.content[0]
-  }
-
-  if (properties) setProperties(properties, out, el)
-
-  return out
 }
 
 export default class Component extends HTMLElement {

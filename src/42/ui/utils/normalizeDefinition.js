@@ -26,14 +26,13 @@ const DEF_KEYWORDS = new Set([
   "shortcuts",
   "type",
   "when",
-  ...TRAITS,
 ])
 
 export default function normalizeDefinition(...args) {
   const { properties, defaults } = args[0]
 
   let ctx = {}
-  const def = {}
+  const def = { traits: {} }
   const attrs = {}
   const props = {}
   const options = {}
@@ -50,6 +49,7 @@ export default function normalizeDefinition(...args) {
           if (Array.isArray(val)) content.push(...val)
           else content.push(val)
         } else if (key === "ctx") ctx = val
+        else if (TRAITS.includes(key)) def.traits[key] = val
         else if (DEF_KEYWORDS.has(key)) def[key] = val
         else if (properties && key in properties) props[key] = val
         else if (defaults && key in defaults) options[key] = val

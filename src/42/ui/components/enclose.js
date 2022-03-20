@@ -43,28 +43,29 @@ export class Enclose extends Component {
   }
 
   unload(message = "loading...") {
-    const { view } = this._
-    view.message.replaceChildren(message)
+    this.view.message.replaceChildren(message)
   }
 
-  $create({ root, view }) {
+  $create({ root }) {
     const { permissions } = this
     this.resource = new Resource({ permissions })
-    view.message = create("div.ui-enclose__message")
-    view.scene = create("div.ui-enclose__scene")
+    this.view = {
+      message: create("div.ui-enclose__message"),
+      scene: create("div.ui-enclose__scene"),
+    }
 
-    view.scene.append(this.resource.el)
+    this.view.scene.append(this.resource.el)
 
-    root.append(view.scene, view.message)
+    root.append(this.view.scene, this.view.message)
     this.unload()
   }
 
-  async $render({ view, ctx }) {
+  async $render({ ctx }) {
     this.cancel()
 
     if (!this.src) return this.unload("")
 
-    view.message.replaceChildren()
+    this.view.message.replaceChildren()
 
     this.#cancel = ctx.cancel.fork()
     const { signal } = this.#cancel
@@ -76,7 +77,7 @@ export class Enclose extends Component {
       this.channel?.destroy()
       this.channel = ipc.to(this.resource.el)
     } catch {
-      view.message.replaceChildren(
+      this.view.message.replaceChildren(
         create("div", "Impossible to embed this URL"),
         create("a", { href: this.src, target: "_blank" }, this.src)
       )
