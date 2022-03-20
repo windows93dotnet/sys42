@@ -46,6 +46,10 @@ export class Explorer extends Component {
       },
     },
 
+    defaults: {
+      ping: false,
+    },
+
     shortcuts: [
       {
         key: "[click]",
@@ -144,6 +148,8 @@ export class Explorer extends Component {
       },
     ]
 
+    console.log(111, config.ping)
+
     root.append(render(content, ctx))
   }
 }
@@ -152,7 +158,7 @@ await Component.define(Explorer)
 
 export default async function explorer(path, options = {}) {
   return dialog({
-    label: "Explorer - {{path}}",
+    label: "{{path}}",
     style: { width: "400px", height: "350px" },
     modules: options.modules,
     menubar: [
@@ -177,6 +183,7 @@ export default async function explorer(path, options = {}) {
       type: "ui-explorer",
       path: { watch: "path" },
       selection: { watch: "selection" },
+      ping: true,
     },
     footer: options.footer ? options.footer : false,
     data: { path, selection: options.selection ?? [] },

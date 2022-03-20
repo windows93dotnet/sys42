@@ -87,7 +87,7 @@ const app = await ui({
       type: "footer",
       content: [
         {
-          type: "button",
+          type: "button#explorer",
           label: "explorer",
           async run() {
             const res = await explorer("/42/")
@@ -160,3 +160,5 @@ const app = await ui({
     },
   },
 })
+
+app.get("#explorer").click()

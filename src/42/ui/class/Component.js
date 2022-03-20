@@ -208,7 +208,15 @@ function normalizeComponentDef(el, args) {
 
   definition = configure(DEFAULTS, definition)
 
+  const { properties, defaults } = definition
+  const defaultsKeys = defaults ? Object.keys(defaults) : []
+  const propertiesKeys = properties ? Object.keys(properties) : []
+
   const out = normalizeDefinition(definition, ...args)
+
+  if (el.localName === "ui-explorer") {
+    console.log(out)
+  }
 
   out.content = out.def.content ?? []
   out.repeat = out.def.repeat
@@ -222,17 +230,38 @@ function normalizeComponentDef(el, args) {
 
   const options = Object.create(null)
 
-  const { properties, defaults } = definition
-  const defaultsKeys = defaults ? Object.keys(defaults) : []
+  for (const key of defaultsKeys) {
+    if (key in out.def) {
+      options[key] = out.def[key]
+      delete out.def[key]
+    }
 
-  for (const [key, val] of Object.entries(out.def)) {
-    if (defaultsKeys.includes(key)) options[key] = val
-    else if (key in properties) out.initial.properties[key] = val
+    if (key in out.rest) {
+      options[key] = out.rest[key]
+      delete out.rest[key]
+    }
+
+    if (key in out.attrs) {
+      options[key] = out.attrs[key]
+      delete out.attrs[key]
+    }
   }
 
-  for (const [key, val] of Object.entries(out.rest)) {
-    if (defaultsKeys.includes(key)) options[key] = val
-    else if (key in properties) out.initial.properties[key] = val
+  for (const key of propertiesKeys) {
+    if (key in out.def) {
+      out.initial.properties[key] = out.def[key]
+      delete out.def[key]
+    }
+
+    if (key in out.rest) {
+      out.initial.properties[key] = out.rest[key]
+      delete out.rest[key]
+    }
+
+    if (key in out.attrs) {
+      out.initial.properties[key] = out.attrs[key]
+      delete out.attrs[key]
+    }
   }
 
   out.ctx = makeNewContext(out.ctx)
@@ -249,7 +278,7 @@ function normalizeComponentDef(el, args) {
 
   // define value from content
   // usefull when component is called as a function
-  // e.g. picto("puzzle") -> out.content = ["puzzle"]
+  // e.g. picto("puzzle") -> out.content === ["puzzle"] -> el.value === "puzzle"
   if (
     "value" in properties &&
     "value" in out.initial.attributes === false &&

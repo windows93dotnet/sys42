@@ -700,6 +700,10 @@ class Testcomponent extends Component {
       value: {
         type: "string",
       },
+      foo: {
+        type: "string",
+        reflect: true,
+      },
     },
   }
 
@@ -721,7 +725,25 @@ test("components", "filters", async (t) => {
 
   await repaint()
 
-  t.is(app.el.innerHTML, '<ui-testcomponent value="HELLO"></ui-testcomponent>')
+  t.is(app.el.firstChild.value, "HELLO")
+  t.is(app.el.innerHTML, "<ui-testcomponent></ui-testcomponent>")
+
+  app.el.remove()
+})
+
+test("components", "filters", async (t) => {
+  const app = await ui(div(), {
+    type: "ui-testcomponent",
+    foo: "{{foo|customFilter}}",
+    data: { foo: "hello" },
+  })
+
+  document.body.append(app.el)
+
+  await repaint()
+
+  t.is(app.el.firstChild.foo, "HELLO")
+  t.is(app.el.innerHTML, '<ui-testcomponent foo="HELLO"></ui-testcomponent>')
 
   app.el.remove()
 })
