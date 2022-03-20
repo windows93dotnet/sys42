@@ -153,6 +153,7 @@ await Component.define(Explorer)
 export default async function explorer(path, options = {}) {
   return dialog({
     label: "{{path}}",
+    icon: "{{path}}",
     style: { width: "400px", height: "350px" },
     modules: options.modules,
     menubar: [

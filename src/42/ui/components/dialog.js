@@ -26,6 +26,7 @@ export class Dialog extends Component {
       closable: true,
       live: false,
       modules: undefined,
+      icon: undefined,
       menubar: undefined,
       footer: undefined,
     },
@@ -95,6 +96,16 @@ export class Dialog extends Component {
     const fragment = document.createDocumentFragment()
 
     label = arrify(label ?? "")
+
+    if (config.icon) {
+      if (typeof config.icon === "string") config.icon = { path: config.icon }
+      label.unshift({
+        type: "ui-icon",
+        small: true,
+        label: false,
+        ...config.icon,
+      })
+    }
 
     if (config.closable) {
       label.push({

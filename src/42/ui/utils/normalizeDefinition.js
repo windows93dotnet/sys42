@@ -45,14 +45,14 @@ export default function normalizeDefinition(...args) {
     else if ("global" in arg && "scope" in arg && "cancel" in arg) ctx = arg
     else {
       for (const [key, val] of Object.entries(arg)) {
-        if (key === "content") {
+        if (properties && key in properties) props[key] = val
+        else if (defaults && key in defaults) options[key] = val
+        else if (TRAITS.includes(key)) def.traits[key] = val
+        else if (key === "content") {
           if (Array.isArray(val)) content.push(...val)
           else content.push(val)
         } else if (key === "ctx") ctx = val
-        else if (TRAITS.includes(key)) def.traits[key] = val
         else if (DEF_KEYWORDS.has(key)) def[key] = val
-        else if (properties && key in properties) props[key] = val
-        else if (defaults && key in defaults) options[key] = val
         else if (ATTRIBUTES.has(toKebabCase(key))) attrs[key] = val
       }
     }

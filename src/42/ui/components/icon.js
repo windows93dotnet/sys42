@@ -16,6 +16,17 @@ class Icon extends Component {
         reflect: true,
         render: true,
       },
+      small: {
+        type: "boolean",
+        reflect: true,
+        render: true,
+      },
+      label: {
+        type: "boolean",
+        reflect: true,
+        render: true,
+        default: true,
+      },
     },
   }
 
@@ -30,7 +41,9 @@ class Icon extends Component {
   }
 
   $render() {
-    let label = create("span", "\u200B")
+    if (this.path === this._.parsed?.filename) return
+
+    let label
 
     const image = create("img.ui-icon__image")
     const mask = create("span.ui-icon__mask")
@@ -47,21 +60,23 @@ class Icon extends Component {
           -webkit-mask-image: url("${src}");`
       }
 
-      const isFile = this._.parsed.protocol === "file:"
-      const labelText = isFile
-        ? this._.parsed.name
-        : this._.parsed.host
-            .replace(/^www\./, "")
-            .split(".")
-            .join("\u200B.") +
-          (this._.parsed.pathname !== "/" || this._.parsed.search
-            ? this._.parsed.pathname + this._.parsed.search
-            : "")
+      if (this.label) {
+        const isFile = this._.parsed.protocol === "file:"
+        const labelText = isFile
+          ? this._.parsed.name
+          : this._.parsed.host
+              .replace(/^www\./, "")
+              .split(".")
+              .join("\u200B.") +
+            (this._.parsed.pathname !== "/" || this._.parsed.search
+              ? this._.parsed.pathname + this._.parsed.search
+              : "")
 
-      label = [create("span", labelText)]
+        label = [create("span", labelText)]
 
-      if (isFile && this._.parsed.ext) {
-        label.push(create("span", `\u200B.${this._.parsed.ext}`))
+        if (isFile && this._.parsed.ext) {
+          label.push(create("span", `\u200B.${this._.parsed.ext}`))
+        }
       }
 
       this.setAttribute(
@@ -71,9 +86,14 @@ class Icon extends Component {
     }
 
     this.replaceChildren(
-      create("span.ui-icon__figure", { aria: { hidden: true } }, image, mask),
-      create("span.ui-icon__label", create("svg", create("rect")), label)
+      create("span.ui-icon__figure", { aria: { hidden: true } }, image, mask)
     )
+
+    if (this.label) {
+      this.append(
+        create("span.ui-icon__label", create("svg", create("rect")), label)
+      )
+    }
   }
 }
 

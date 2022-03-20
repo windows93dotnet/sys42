@@ -56,6 +56,9 @@ const _IS_COMPONENT = Symbol.for("Component.IS_COMPONENT")
 
 const DEFAULTS_ATTRIBUTES = Object.keys(DEFAULTS.properties)
 
+const BOOLEAN_TRUE = new Set(["", "on", "true"])
+const BOOLEAN_FALSE = new Set(["none", "off", "false"])
+
 const CONVERTERS = {
   string: {
     toView: (val) => String(val),
@@ -74,30 +77,36 @@ const CONVERTERS = {
   },
   boolean: {
     toView: noop,
-    fromView: (val) => (val === "false" ? false : Boolean(val)),
+    fromView(val) {
+      if (BOOLEAN_TRUE.has(val)) return true
+      if (BOOLEAN_FALSE.has(val)) return false
+      return Boolean(val)
+    },
   },
   object: {
-    toView: (x) => JSON.stringify(x),
-    fromView: (x) => JSON.parse(x),
+    toView: (val) => JSON.stringify(val),
+    fromView: (val) => JSON.parse(val),
   },
   tokens: {
     fromView: (val) => String(val).split(" "),
     toView: (val) => val.join(" "),
   },
   any: {
-    toView(x) {
-      if (typeof x === "string") return x
+    toView(val) {
+      if (typeof val === "string") return val
       try {
-        return JSON.stringify(x)
+        return JSON.stringify(val)
       } catch {
-        return x
+        return val
       }
     },
-    fromView(x) {
+    fromView(val) {
+      if (BOOLEAN_TRUE.has(val)) return true
+      if (BOOLEAN_FALSE.has(val)) return false
       try {
-        return JSON.parse(x)
+        return JSON.parse(val)
       } catch {
-        return x
+        return val
       }
     },
   },
@@ -123,7 +132,7 @@ function normalizeComponentDef(el, args) {
   out.label = out.def.label
 
   out.initial = {
-    properties: Object.assign(out.props, out.def.traits),
+    properties: out.props,
     attributes: out.attrs,
   }
 
@@ -209,12 +218,7 @@ function setProperties(properties, out, el) {
     if (fromView) {
       fromView = typeof fromView === "function" ? fromView : converter.fromView
       out.observed[attribute] = (value) => {
-        value = fromView(value, attribute, el)
-
-        if (item.type === "any" && value === "") value = true
-
-        assignProp(item, value)
-
+        assignProp(item, fromView(value, attribute, el, item))
         if (item.render) el._.repaint()
       }
     }
@@ -233,8 +237,9 @@ function setProperties(properties, out, el) {
             item.type === "boolean" ||
             (item.type === "any" && typeof value === "boolean")
           ) {
-            el.toggleAttribute(attribute, value)
-          } else el.setAttribute(attribute, toView(value, key, el))
+            if (item.default === true) el.setAttribute(attribute, "false")
+            else el.toggleAttribute(attribute, value)
+          } else el.setAttribute(attribute, toView(value, key, el, item))
         } else if (item.render) el._.repaint()
       },
       get() {

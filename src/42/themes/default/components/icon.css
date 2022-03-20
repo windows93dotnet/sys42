@@ -100,3 +100,18 @@ ui-icon:is([aria-pressed="true"],[aria-selected="true"]) .ui-icon__label {
 ui-icon:focus .ui-icon__label svg {
   display: block;
 }
+
+/*  */
+
+ui-icon[small] {
+  --icon-size: 16px;
+  --icon-gap: 0;
+  width: auto;
+  height: auto;
+  justify-content: center;
+  flex-direction: row;
+}
+
+ui-icon[small] .ui-icon__label {
+  position: static;
+}

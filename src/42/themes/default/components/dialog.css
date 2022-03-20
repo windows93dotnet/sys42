@@ -47,6 +47,10 @@ ui-dialog:focus {
   margin: 0;
 }
 
+.ui-dialog__header {
+  justify-content: center;
+}
+
 .ui-dialog__footer {
   /* padding: var(--unit-md); */
   /* padding: 0; */
@@ -68,7 +72,7 @@ ui-dialog:focus {
 .ui-dialog__title {
   flex: 1;
   padding: 0 var(--unit-md);
-  align-self: center;
+  /* align-self: center; */
   display: inline-block;
   margin: 0;
   font-size: inherit;
