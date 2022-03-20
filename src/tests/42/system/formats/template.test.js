@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-concat */
 import test from "../../../../42/test.js"
 
 import template from "../../../../42/system/formats/template.js"
@@ -15,19 +16,19 @@ test.tasks(
       parsed: { strings: ["a {b c"], substitutions: [] },
     },
     {
-      source: "a {{b c", // }}
+      source: "a {" + "{b c",
       data: [],
-      parsed: { strings: ["a {{b c"], substitutions: [] }, // }}
+      parsed: { strings: ["a {" + "{b c"], substitutions: [] },
     },
     {
-      source: "a {{b} c", // }}
+      source: "a {" + "{b} c",
       data: [],
-      parsed: { strings: ["a {{b} c"], substitutions: [] }, // }}
+      parsed: { strings: ["a {" + "{b} c"], substitutions: [] },
     },
     {
-      source: "a {{b}", // }}
+      source: "a {" + "{b}",
       data: [],
-      parsed: { strings: ["a {{b}"], substitutions: [] }, // }}
+      parsed: { strings: ["a {" + "{b}"], substitutions: [] },
     },
     {
       source: "a {{x}}",

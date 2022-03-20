@@ -110,6 +110,7 @@ ui-icon[small] {
   height: auto;
   justify-content: center;
   flex-direction: row;
+  margin: 0;
 }
 
 ui-icon[small] .ui-icon__label {

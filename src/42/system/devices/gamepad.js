@@ -2,6 +2,7 @@
 // @read https://github.com/neogeek/gamepad.js#buttons
 // @read https://cyangmou.itch.io/animated-button-props-for-consols
 // @read https://sancarlosminas.info/46-xbox-one-controller-layout-cz8y/xbox-one-controller-layout-play-half-life-with-xbox-360-controller-on-mac-osx/
+// @related https://github.com/cdleveille/gamepad-helper/blob/main/gamepadhelper.js
 
 /*
        ╭╴ 6 ╶╮                ╭╴ 7 ╶╮
@@ -138,7 +139,8 @@ for (const item of [
 }
 
 const update = () => {
-  for (const pad of navigator.getGamepads()) {
+  const gamepads = navigator.getGamepads()
+  for (const pad of gamepads) {
     if (pad) {
       const tracked = tracker.get(pad.index)
       if (tracked) {

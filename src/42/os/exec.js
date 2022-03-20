@@ -1,6 +1,7 @@
 import inTop from "../system/env/runtime/inTop.js"
 import inIframe from "../system/env/runtime/inIframe.js"
 import ipc from "../system/ipc.js"
+import disk from "../system/fs/disk.js"
 
 import parseCommand from "./cli/parseCommand.js"
 import argv from "./cli/argv.js"
@@ -21,6 +22,8 @@ export default async function exec(cmd) {
 
   let program
   let cli
+
+  console.log(disk.glob(`**/${name}{.cmd,.app}.{js,json}`))
 
   await import(`./cmd/${name}.cmd.js`)
     .then((m) => {

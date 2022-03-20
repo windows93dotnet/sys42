@@ -307,17 +307,17 @@ ui-dialog {
   padding: 2px;
 }
 
+.ui-dialog__footer {
+  margin-top: 2px;
+  /* padding: 2px; */
+}
+
 .ui-dialog__header {
   padding-right: 2px;
   display: flex;
   color: var(--InactiveTitleText);
   background-color: var(--GradientInactiveTitle);
   border-bottom: 2px solid var(--InactiveBorder);
-}
-
-.ui-dialog__footer {
-  margin-top: 2px;
-  /* padding: 2px; */
 }
 
 .ui-dialog__title {
@@ -329,6 +329,15 @@ ui-dialog {
       var(--InactiveTitle),
       var(--GradientInactiveTitle)
     );
+}
+
+.ui-dialog__header ui-icon {
+  background-color: var(--InactiveTitle);
+  padding-left: 2px;
+}
+
+ui-dialog[active] .ui-dialog__header ui-icon {
+  background-color: var(--ActiveTitle);
 }
 
 ui-dialog[active] .ui-dialog__header {

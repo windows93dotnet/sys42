@@ -41,8 +41,6 @@ class Icon extends Component {
   }
 
   $render() {
-    if (this.path === this._.parsed?.filename) return
-
     let label
 
     const image = create("img.ui-icon__image")

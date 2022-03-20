@@ -789,6 +789,33 @@ test("filters", async (t) => {
   t.is(app.el.innerHTML, "a B")
 })
 
+test("filters", "inline variable", async (t) => {
+  const app = await ui(div(), {
+    content: "a {{'b'|uppercase}}",
+    filters: {
+      uppercase: (str) => str.toUpperCase(),
+    },
+  })
+
+  t.is(app.el.innerHTML, "a B")
+})
+
+test.skip("filters", "as function", async (t) => {
+  const app = await ui(div(), {
+    content: "a {{uppercase(foo)}}",
+    data: { foo: "b" },
+    filters: {
+      // uppercase: (str) => str.toUpperCase(),
+      uppercase(str) {
+        console.log("uppercase as function")
+        return str.toUpperCase()
+      },
+    },
+  })
+
+  t.is(app.el.innerHTML, "a B")
+})
+
 test("filters", "thisArg", async (t) => {
   t.plan(2)
   const app = await ui(div(), {
