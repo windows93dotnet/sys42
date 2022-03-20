@@ -1,3 +1,5 @@
+import equal from "../type/any/equal.js"
+
 function escapeDotNotation(key) {
   return key.replaceAll(".", "\\.")
 }
@@ -31,8 +33,13 @@ export default function observe(data, options, fn) {
       },
 
       set(target, prop, val, receiver) {
+        const oldVal = Reflect.get(target, prop, receiver)
         const ret = Reflect.set(target, prop, val, receiver)
-        fn([...path, escapeDotNotation(prop)].join("."), val)
+
+        if (prop === "length" || !equal(val, oldVal)) {
+          fn([...path, escapeDotNotation(prop)].join("."), val)
+        }
+
         return ret
       },
 
