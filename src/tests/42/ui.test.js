@@ -57,6 +57,28 @@ test("template", async (t) => {
   t.is(app.el.textContent, "Hello Derp")
 })
 
+test("expand abbreviations", async (t) => {
+  const el = div()
+  const app = await ui(el, [
+    { type: "span#foo.bar", class: "baz" },
+    { type: "checkbox#foo.bar", class: "baz" },
+    { type: "ui-testcomponent#foo.bar", class: "baz" },
+  ])
+
+  t.is(
+    app.el.children[0].outerHTML, //
+    '<span class="baz bar" id="foo"></span>'
+  )
+  t.is(
+    app.el.children[1].outerHTML,
+    '<div class="check-cont"><input class="baz bar" id="foo" type="checkbox"></div>'
+  )
+  t.is(
+    app.el.children[2].outerHTML,
+    '<ui-testcomponent id="foo" class="bar"></ui-testcomponent>'
+  )
+})
+
 test("2-way data binding", async (t) => {
   const el = div()
   const app = await ui(el, [

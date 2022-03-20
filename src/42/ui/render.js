@@ -22,6 +22,7 @@ import renderWhen from "./renderers/renderWhen.js"
 import renderComponent from "./renderers/renderComponent.js"
 
 import normalizeDefinition from "./utils/normalizeDefinition.js"
+import parseAbbreviation from "./utils/parseAbbreviation.js"
 import makeNewContext from "./utils/makeNewContext.js"
 import populateContext from "./utils/populateContext.js"
 import popupButton from "./utils/popupButton.js"
@@ -251,10 +252,17 @@ export default function render(def, ctx = {}, parent = frag(), textMaker) {
     return insert(parent, renderComponent(def.type, def, ctx))
   }
 
-  const normalized = normalizeDefinition(def)
-  const attributes = normalized.attrs
+  /* normalize
+  ------------ */
 
+  const normalized = normalizeDefinition({}, def)
   def = normalized.def
+
+  const attributes = normalized.attrs
+  if (def.type) {
+    const parsed = parseAbbreviation(def.type, attributes)
+    def.type = parsed.tag
+  }
 
   /* button
   --------- */
@@ -392,7 +400,10 @@ export default function render(def, ctx = {}, parent = frag(), textMaker) {
   /* fieldset
   ----------- */
 
-  if (def.type === "fieldset" || def.type === "form") {
+  if (
+    def.type === "fieldset" ||
+    (ctx.trusted === true && def.type === "form")
+  ) {
     const { label } = getNameAndLabel(def, ctx)
 
     const el = create(ctx, def.type, attributes)
@@ -434,6 +445,7 @@ export default function render(def, ctx = {}, parent = frag(), textMaker) {
   }
 
   const isBody = def.type === "body"
+
   const el =
     isBody || (!def.type && isEmptyObject(attributes))
       ? frag()

@@ -209,55 +209,20 @@ function normalizeComponentDef(el, args) {
   definition = configure(DEFAULTS, definition)
 
   const { properties, defaults } = definition
-  const defaultsKeys = defaults ? Object.keys(defaults) : []
-  const propertiesKeys = properties ? Object.keys(properties) : []
 
   const out = normalizeDefinition(definition, ...args)
+
+  out.properties = {}
+  out.originals = {}
+  out.observed = {}
 
   out.content = out.def.content ?? []
   out.repeat = out.def.repeat
   out.label = out.def.label
 
-  out.properties = {}
-  out.originals = {}
-  out.observed = {}
-  out.view = {}
-  out.initial = { properties: {} }
-
-  const options = Object.create(null)
-
-  for (const key of defaultsKeys) {
-    if (key in out.def) {
-      options[key] = out.def[key]
-      delete out.def[key]
-    }
-
-    if (key in out.rest) {
-      options[key] = out.rest[key]
-      delete out.rest[key]
-    }
-
-    if (key in out.attrs) {
-      options[key] = out.attrs[key]
-      delete out.attrs[key]
-    }
-  }
-
-  for (const key of propertiesKeys) {
-    if (key in out.def) {
-      out.initial.properties[key] = out.def[key]
-      delete out.def[key]
-    }
-
-    if (key in out.rest) {
-      out.initial.properties[key] = out.rest[key]
-      delete out.rest[key]
-    }
-
-    if (key in out.attrs) {
-      out.initial.properties[key] = out.attrs[key]
-      delete out.attrs[key]
-    }
+  out.initial = {
+    properties: out.props,
+    attributes: out.attrs,
   }
 
   out.ctx = makeNewContext(out.ctx)
@@ -268,9 +233,7 @@ function normalizeComponentDef(el, args) {
   out.cancel = out.ctx.cancel?.fork(el.localName) ?? new Canceller(el.localName)
   Object.defineProperty(out, "signal", { get: () => out.cancel.signal })
 
-  out.config = configure(defaults, options)
-
-  out.initial.attributes = out.attrs
+  out.config = configure(defaults, out.options)
 
   // define value from content
   // usefull when component is called as a function
