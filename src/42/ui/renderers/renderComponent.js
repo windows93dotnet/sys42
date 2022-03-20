@@ -1,8 +1,10 @@
 import defer from "../../fabric/type/promise/defer.js"
+import create from "../create.js"
 
 export default function renderComponent(type, def, ctx) {
-  const el = document.createElement(type)
+  const el = create(type)
   el.setAttribute("data-lazy-init", "true")
+  const tag = el.localName
   const deferred = defer()
 
   ctx.undones.push(deferred)
@@ -10,17 +12,17 @@ export default function renderComponent(type, def, ctx) {
   const initComponent = () => {
     ctx.undones = undefined
     el.$init(def, ctx)
-    ctx.undones.then((x) => deferred.resolve([`component ${type}`, ...x]))
+    ctx.undones.then((x) => deferred.resolve([`component ${tag}`, ...x]))
   }
 
   if (el.constructor === HTMLElement) {
-    import(`../components/${type.slice(3)}.js`).catch((err) => {
+    import(`../components/${tag.slice(3)}.js`).catch((err) => {
       console.log(err)
-      deferred.reject(new Error(`Unknown component: ${type}`))
+      deferred.reject(new Error(`Unknown component: ${tag}`))
     })
 
     customElements
-      .whenDefined(type)
+      .whenDefined(tag)
       .then(() => {
         customElements.upgrade(el)
         initComponent()

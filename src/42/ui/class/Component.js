@@ -214,10 +214,6 @@ function normalizeComponentDef(el, args) {
 
   const out = normalizeDefinition(definition, ...args)
 
-  if (el.localName === "ui-explorer") {
-    console.log(out)
-  }
-
   out.content = out.def.content ?? []
   out.repeat = out.def.repeat
   out.label = out.def.label

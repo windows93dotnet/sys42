@@ -14,7 +14,6 @@ import {
   toTitleCase,
 } from "../fabric/type/string/letters.js"
 
-import renderAttributes from "./renderers/renderAttributes.js"
 import renderControl from "./renderers/renderControl.js"
 import renderRepeat from "./renderers/renderRepeat.js"
 import renderText from "./renderers/renderText.js"
@@ -240,34 +239,20 @@ export default function render(def, ctx = {}, parent = frag(), textMaker) {
     return renderRepeat(def, ctx, parent, textMaker)
   }
 
-  const normalized = normalizeDefinition(def)
-  const attributes = normalized.attrs
-
   /* component
   ------------ */
 
   if (def.type?.startsWith("ui-")) {
     def = { ...def }
-    def.type = normalized.def.type
 
-    if (
-      ctx.trusted !== true && // force "app" permissions for <ui-enclose>
-      "permissions" in def
-    ) {
-      def.permissions = "app"
-    }
+    // force "app" permissions for <ui-enclose>
+    if (ctx.trusted !== true && "permissions" in def) def.permissions = "app"
 
-    const el = renderComponent(def.type, def, ctx)
-
-    if ("id" in attributes || "class" in attributes) {
-      const componentAttrs = {}
-      if (attributes.id) componentAttrs.id = attributes.id
-      if (attributes.class) componentAttrs.class = attributes.class
-      renderAttributes(el, ctx, componentAttrs)
-    }
-
-    return insert(parent, el)
+    return insert(parent, renderComponent(def.type, def, ctx))
   }
+
+  const normalized = normalizeDefinition(def)
+  const attributes = normalized.attrs
 
   def = normalized.def
 

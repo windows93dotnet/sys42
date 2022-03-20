@@ -132,8 +132,13 @@ export class Dialog extends Component {
 
 await Component.define(Dialog)
 
-export default async function dialog(def, ctx, options = {}) {
+export default async function dialog(def, ctx, options) {
   layer = await layer
+
+  if (options === undefined) {
+    options = ctx ?? {}
+    ctx = undefined
+  }
 
   ctx = makeNewContext(ctx)
   populateContext(ctx, def)

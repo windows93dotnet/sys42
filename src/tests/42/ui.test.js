@@ -2,6 +2,30 @@ import test from "../../42/test.js"
 import ui from "../../42/ui.js"
 
 import repaint from "../../42/fabric/type/promise/repaint.js"
+import Component from "../../42/ui/class/Component.js"
+
+class Testcomponent extends Component {
+  static definition = {
+    tag: "ui-testcomponent",
+    class: "derp",
+    // id: true,
+    properties: {
+      value: {
+        type: "string",
+      },
+      foo: {
+        type: "string",
+        reflect: true,
+      },
+    },
+  }
+
+  customFilter(str) {
+    return str.toUpperCase()
+  }
+}
+
+await Component.define(Testcomponent)
 
 function div() {
   return document.createElement("div")
@@ -691,29 +715,6 @@ test("components", "define properties via template", async (t) => {
   app.el.remove()
 })
 
-import Component from "../../42/ui/class/Component.js"
-
-class Testcomponent extends Component {
-  static definition = {
-    tag: "ui-testcomponent",
-    properties: {
-      value: {
-        type: "string",
-      },
-      foo: {
-        type: "string",
-        reflect: true,
-      },
-    },
-  }
-
-  customFilter(str) {
-    return str.toUpperCase()
-  }
-}
-
-await Component.define(Testcomponent)
-
 test("components", "filters", async (t) => {
   const app = await ui(div(), {
     type: "ui-testcomponent",
@@ -726,7 +727,7 @@ test("components", "filters", async (t) => {
   await repaint()
 
   t.is(app.el.firstChild.value, "HELLO")
-  t.is(app.el.innerHTML, "<ui-testcomponent></ui-testcomponent>")
+  t.is(app.el.innerHTML, '<ui-testcomponent class="derp"></ui-testcomponent>')
 
   app.el.remove()
 })
@@ -743,7 +744,10 @@ test("components", "filters", async (t) => {
   await repaint()
 
   t.is(app.el.firstChild.foo, "HELLO")
-  t.is(app.el.innerHTML, '<ui-testcomponent foo="HELLO"></ui-testcomponent>')
+  t.is(
+    app.el.innerHTML,
+    '<ui-testcomponent class="derp" foo="HELLO"></ui-testcomponent>'
+  )
 
   app.el.remove()
 })
