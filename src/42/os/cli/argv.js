@@ -25,6 +25,7 @@ export const DEFAULTS = {
   splitSmallOption: true,
   autoBoolean: true,
   autocast: true,
+  jsonParse: JSON.parse,
   aliases: {},
   presets: {},
   schema: {},
@@ -58,7 +59,7 @@ function autocast(config, val) {
     if (val === "undefined") return
 
     try {
-      return JSON.parse(val)
+      return config.jsonParse(val)
     } catch {}
   }
 

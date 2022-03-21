@@ -6,6 +6,7 @@ import traverse from "../fabric/type/object/traverse.js"
 import dirname from "../fabric/type/path/extract/dirname.js"
 import resolvePath from "../fabric/type/path/core/resolvePath.js"
 import getParentModule from "../fabric/getParentModule.js"
+import JSON5 from "../system/formats/json5.js"
 
 import parseCommand from "./cli/parseCommand.js"
 import argv from "./cli/argv.js"
@@ -28,7 +29,6 @@ export default async function exec(cmd, locals = {}) {
   const [name, ...rest] = parseCommand(cmd)
 
   let program
-  let cli
 
   const programs = disk.glob(
     [`${HOME}/**/${name}{.cmd,.app}.js`, `**/${name}{.cmd,.app}.js`],
@@ -37,19 +37,21 @@ export default async function exec(cmd, locals = {}) {
 
   if (programs.length === 0) throw new Error(`"${name}" command not found`)
 
-  let options = { argsKey: "glob" }
+  let cliOptions = { argsKey: "glob" }
 
   await import(/* @vite-ignore */ programs[0]).then((m) => {
     program = m.default
-    if (m.cli) options = m.cli
+    if (m.cli) cliOptions = m.cli
   })
+
+  cliOptions.jsonParse ??= JSON5.parse
 
   if (!program) return
 
-  const args = cli ? cli(rest) : argv(rest, options)
+  const args = argv(rest, cliOptions)
 
   traverse(args, (key, val, obj) => {
-    if (key === options.argsKey && val.length === 1) {
+    if (key === cliOptions.argsKey && val.length === 1) {
       obj.filename = resolvePath(locals.cwd, val[0])
     }
   })

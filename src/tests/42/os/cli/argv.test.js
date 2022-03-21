@@ -1,6 +1,7 @@
 import test from "../../../../42/test.js"
 import argv from "../../../../42/os/cli/argv.js"
 import parseCommand from "../../../../42/os/cli/parseCommand.js"
+import JSON5 from "../../../../42/system/formats/json5.js"
 
 import configure from "../../../../42/fabric/configure.js"
 export const PRESETS = {
@@ -110,6 +111,20 @@ test.tasks(
       expected: {
         aaa: { a: 1 },
         aa: "{a:1}",
+        b: [2, 3],
+        c: ["[;]", 5],
+        d: null,
+      },
+    },
+
+    {
+      input: `--aaa='{"a":1}' --aa={a:1} -b [2,3] -c [;] 5 -d null`,
+      options: {
+        jsonParse: JSON5.parse,
+      },
+      expected: {
+        aaa: { a: 1 },
+        aa: { a: 1 },
         b: [2, 3],
         c: ["[;]", 5],
         d: null,

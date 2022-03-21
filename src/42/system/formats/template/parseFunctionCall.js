@@ -1,8 +1,8 @@
-function addArg(args, locals, buffer, jsonParser = JSON.parse) {
+function addArg(args, locals, buffer, jsonParse = JSON.parse) {
   const arg = buffer.trim()
   if (arg) {
     try {
-      args.push(jsonParser(arg))
+      args.push(jsonParse(arg))
     } catch {
       locals[arg] = args.length
       args.push(undefined)
@@ -19,7 +19,7 @@ const pairs = {
 
 const pairsKeys = Object.keys(pairs)
 
-export default function parseFunctionCall(source, jsonParser) {
+export default function parseFunctionCall(source, jsonParse) {
   let buffer = ""
   let current = 0
 
@@ -33,14 +33,14 @@ export default function parseFunctionCall(source, jsonParser) {
 
     if (state === "args") {
       if (char === ",") {
-        addArg(args, locals, buffer, jsonParser)
+        addArg(args, locals, buffer, jsonParse)
         buffer = ""
         current++
         continue
       }
 
       if (char === ")") {
-        addArg(args, locals, buffer, jsonParser)
+        addArg(args, locals, buffer, jsonParse)
         break
       }
     } else if (char === "(") {
@@ -54,7 +54,7 @@ export default function parseFunctionCall(source, jsonParser) {
     if (pairsKeys.includes(state)) {
       if (char === pairs[state]) {
         state = "args"
-        addArg(args, locals, buffer + char, jsonParser)
+        addArg(args, locals, buffer + char, jsonParse)
         buffer = ""
         current++
         continue
