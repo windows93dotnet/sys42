@@ -12,6 +12,7 @@ import union from "../array/union.js"
 import difference from "../array/difference.js"
 import escapeRegex from "../string/escapeRegex.js"
 import locate from "../../locator/locate.js"
+import exists from "../../locator/exists.js"
 
 export const parseGlob = (source) => {
   let current = 0
@@ -195,6 +196,8 @@ glob.locate = (obj, patterns, options) => {
   let flattened = {}
 
   for (const pattern of patterns) {
+    if (!pattern) continue
+
     const [exclude, tokens] = pattern.startsWith("!")
       ? [true, parseGlob(pattern.slice(1))]
       : [false, parseGlob(pattern)]
@@ -203,6 +206,7 @@ glob.locate = (obj, patterns, options) => {
     let paths = []
     let current = ""
     let buffer = ""
+
     for (const { type, value } of tokens) {
       if (type === "all" || type === "multi") {
         const sub = locate(obj, current, "/")
@@ -221,6 +225,10 @@ glob.locate = (obj, patterns, options) => {
       out,
       paths.filter((x) => reg.test(x))
     )
+
+    if (exists(obj, pattern, "/")) {
+      out.push(pattern.startsWith("/") ? pattern : "/" + pattern)
+    }
   }
 
   flattened = undefined

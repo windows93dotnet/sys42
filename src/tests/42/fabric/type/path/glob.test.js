@@ -256,3 +256,21 @@ test("expand dir", (t) => {
 test("expact path", (t) => {
   t.eq(glob(["src/a.js", "bin/a.js", "tmp/a.js"], "src/a.js"), ["src/a.js"])
 })
+
+test("glob.locate", (t) => {
+  const obj = {
+    src: {
+      "a.js": 0,
+    },
+    bin: {
+      "a.js": 0,
+      "b.js": 0,
+    },
+  }
+
+  t.eq(glob.locate(obj, "**/*.js"), ["/src/a.js", "/bin/a.js", "/bin/b.js"])
+  t.eq(glob.locate(obj, "**/a.js"), ["/src/a.js", "/bin/a.js"])
+  t.eq(glob.locate(obj, "/src/a.js"), ["/src/a.js"])
+  t.eq(glob.locate(obj, "src/a.js"), ["/src/a.js"])
+  t.eq(glob.locate(obj, ""), [])
+})
