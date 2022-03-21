@@ -25,10 +25,22 @@ export default function parseTemplate(source, jsonParser) {
       let list = keys
       let key = ""
 
+      let lastCharEscaped = false
+
       do {
         key += source[i]
         i++
         n = source.charCodeAt(i)
+
+        if (lastCharEscaped) {
+          lastCharEscaped = false
+          continue
+        }
+
+        if (n === 92 /* \ */) {
+          lastCharEscaped = true
+          continue
+        }
 
         if (n === 124 /* | */) {
           addKey(list, filterKeys, key)

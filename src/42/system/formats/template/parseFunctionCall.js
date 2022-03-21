@@ -28,8 +28,24 @@ export default function parseFunctionCall(source, jsonParse) {
   const args = []
   const locals = {}
 
+  let lastCharEscaped = false
+
   while (current < source.length) {
     const char = source[current]
+
+    if (char === "\\") {
+      lastCharEscaped = true
+      buffer += char
+      current++
+      continue
+    }
+
+    if (lastCharEscaped) {
+      lastCharEscaped = false
+      buffer += char
+      current++
+      continue
+    }
 
     if (state === "args") {
       if (char === ",") {

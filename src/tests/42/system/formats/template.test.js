@@ -3,6 +3,8 @@ import test from "../../../../42/test.js"
 
 import template from "../../../../42/system/formats/template.js"
 
+const uppercase = (str) => str.toUpperCase()
+
 test.tasks(
   [
     {
@@ -77,6 +79,18 @@ test.tasks(
       parsed: { strings: ["a {cyan ", "}"], substitutions: ["x"] },
       expected: "a {cyan b}",
     },
+    // {
+    //   source: ["a {{foo ? 'b' : 'c'}}"],
+    //   data: { foo: true },
+    //   parsed: {},
+    //   expected: "a b",
+    // },
+    // {
+    //   source: ["a {{foo ? 'b' : 'c'}}"],
+    //   data: { foo: false },
+    //   parsed: {},
+    //   expected: "a c",
+    // },
     {
       source: [
         "a {{x|uppercase}}",
@@ -84,9 +98,7 @@ test.tasks(
         'a {{ "b" | uppercase }}',
       ],
       data: { x: "b" },
-      filters: {
-        uppercase: (str) => str.toUpperCase(),
-      },
+      filters: { uppercase },
       expected: "a B",
     },
     {
@@ -96,9 +108,7 @@ test.tasks(
         "a {{ uppercase ( x ) }}",
       ],
       data: { x: "b" },
-      filters: {
-        uppercase: (str) => str.toUpperCase(),
-      },
+      filters: { uppercase },
       parsed: {
         strings: ["a ", ""],
         substitutions: [undefined],
@@ -110,10 +120,21 @@ test.tasks(
       source: ["a {{uppercase(x)|double}}"],
       data: { x: "b" },
       filters: {
-        uppercase: (str) => str.toUpperCase(),
+        uppercase,
         double: (str) => str + str,
       },
       expected: "a BB",
+    },
+    {
+      source: ["a {{uppercase('x\\'x')}}"],
+      data: { x: "b" },
+      filters: { uppercase },
+      expected: "a X'X",
+    },
+    {
+      source: ["a {{foo\\|bar}}"],
+      data: { "foo|bar": "b" },
+      expected: "a b",
     },
     {
       source: ["a {{x|add(y)}}", "a {{x|add(2)}}", "a {{1|add(2)}}"],
