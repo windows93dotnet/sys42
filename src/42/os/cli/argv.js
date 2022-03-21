@@ -90,6 +90,12 @@ function getFollowingArguments(arg, config, args, i) {
   return { value, i }
 }
 
+/**
+ * Command line argument parsing
+ * @param {array<string>} args
+ * @param {object} options
+ * @returns {object}
+ */
 export default function argv(args, options) {
   const config = configure(options)
 
@@ -121,12 +127,12 @@ export default function argv(args, options) {
 
   config.subcommands = subcommands
 
-  const rootObj = {}
-  let obj = rootObj
+  const out = {}
+  let obj = out
   if (emptyArgs) obj[argsKey] = []
 
   function addOption(obj, key, value) {
-    if (config.globalOptions.includes(key)) obj = rootObj
+    if (config.globalOptions.includes(key)) obj = out
 
     if (key in presets) {
       Object.assign(obj, presets[key])
@@ -173,12 +179,11 @@ export default function argv(args, options) {
     } else if (subcommands.includes(arg)) {
       if (arg in cmdHashMap) {
         obj =
-          locate(rootObj, cmdHashMap[arg]) ||
-          (emptyArgs ? { [argsKey]: [] } : {})
-        allocate(rootObj, cmdHashMap[arg], obj)
+          locate(out, cmdHashMap[arg]) || (emptyArgs ? { [argsKey]: [] } : {})
+        allocate(out, cmdHashMap[arg], obj)
       } else {
         obj = emptyArgs ? { [argsKey]: [] } : {}
-        rootObj[arg] = obj
+        out[arg] = obj
       }
     } else if (arg.startsWith("--")) {
       arg = arg.slice(2)
@@ -222,5 +227,5 @@ export default function argv(args, options) {
     } else addInput(arg)
   }
 
-  return rootObj
+  return out
 }

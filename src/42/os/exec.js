@@ -2,20 +2,27 @@ import inTop from "../system/env/runtime/inTop.js"
 import inIframe from "../system/env/runtime/inIframe.js"
 import ipc from "../system/ipc.js"
 import disk from "../system/fs/disk.js"
+import traverse from "../fabric/type/object/traverse.js"
+import dirname from "../fabric/type/path/extract/dirname.js"
+import resolvePath from "../fabric/type/path/core/resolvePath.js"
+import getParentModule from "../fabric/getParentModule.js"
 
 import parseCommand from "./cli/parseCommand.js"
 import argv from "./cli/argv.js"
 
 let bus
+const { HOME } = disk
 
 if (inTop) {
-  ipc.on("main<-exec", (cmd) => exec(cmd))
+  ipc.on("main<-exec", ({ cmd, locals }) => exec(cmd, locals))
 }
 
-export default async function exec(cmd) {
+export default async function exec(cmd, locals = {}) {
+  locals.cwd ??= dirname(new URL(getParentModule().url).pathname)
+
   if (inIframe) {
-    bus ??= ipc.to(globalThis.parent)
-    return bus.send("main<-exec", cmd).then(([res]) => res)
+    bus ??= ipc.to(globalThis.top)
+    return bus.send("main<-exec", { cmd, locals }).then(([res]) => res)
   }
 
   const [name, ...rest] = parseCommand(cmd)
@@ -23,20 +30,29 @@ export default async function exec(cmd) {
   let program
   let cli
 
-  console.log(disk.glob(`**/${name}{.cmd,.app}.{js,json}`))
+  const programs = disk.glob(
+    [`${HOME}/**/${name}{.cmd,.app}.js`, `**/${name}{.cmd,.app}.js`],
+    { sort: false }
+  )
 
-  await import(`./cmd/${name}.cmd.js`)
-    .then((m) => {
-      program = m.default
-      cli = m.cli
-    })
-    .catch(() => {
-      console.log(`"${name}" command not found`)
-    })
+  if (programs.length === 0) throw new Error(`"${name}" command not found`)
+
+  let options = { argsKey: "glob" }
+
+  await import(/* @vite-ignore */ programs[0]).then((m) => {
+    program = m.default
+    if (m.cli) options = m.cli
+  })
 
   if (!program) return
 
-  if (cli) return program(cli(rest))
+  const args = cli ? cli(rest) : argv(rest, options)
 
-  return program(argv(rest, { argsKey: "glob" }))
+  traverse(args, (key, val, obj) => {
+    if (key === options.argsKey && val.length === 1) {
+      obj.filename = resolvePath(locals.cwd, val[0])
+    }
+  })
+
+  return program(args)
 }
