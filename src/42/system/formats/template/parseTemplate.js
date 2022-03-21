@@ -1,5 +1,11 @@
 import parseFunctionCall from "./parseFunctionCall.js"
 
+function addKey(list, filterKeys, key) {
+  key = key.trim()
+  if (key.endsWith(")")) filterKeys.push(key)
+  else list.push(key.trim())
+}
+
 export default function parseTemplate(source, jsonParser) {
   const strings = []
   const substitutions = []
@@ -25,8 +31,7 @@ export default function parseTemplate(source, jsonParser) {
         n = source.charCodeAt(i)
 
         if (n === 124 /* | */) {
-          const filter = key.trim()
-          list.push(filter)
+          addKey(list, filterKeys, key)
           list = filterKeys
           key = ""
           i++
@@ -36,7 +41,7 @@ export default function parseTemplate(source, jsonParser) {
         i + 1 < source.length
       )
 
-      list.push(key.trim())
+      addKey(list, filterKeys, key)
 
       if (source.charCodeAt(i++) === 125 && source.charCodeAt(i++) === 125) {
         strings.push(buffer)

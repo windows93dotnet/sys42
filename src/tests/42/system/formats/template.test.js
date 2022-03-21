@@ -90,6 +90,32 @@ test.tasks(
       expected: "a B",
     },
     {
+      source: [
+        "a {{uppercase(x)}}",
+        "a {{ uppercase( x ) }}",
+        "a {{ uppercase ( x ) }}",
+      ],
+      data: { x: "b" },
+      filters: {
+        uppercase: (str) => str.toUpperCase(),
+      },
+      parsed: {
+        strings: ["a ", ""],
+        substitutions: [undefined],
+        filters: [[{ name: "uppercase", args: [undefined], locals: { x: 0 } }]],
+      },
+      expected: "a B",
+    },
+    {
+      source: ["a {{uppercase(x)|double}}"],
+      data: { x: "b" },
+      filters: {
+        uppercase: (str) => str.toUpperCase(),
+        double: (str) => str + str,
+      },
+      expected: "a BB",
+    },
+    {
       source: ["a {{x|add(y)}}", "a {{x|add(2)}}", "a {{1|add(2)}}"],
       data: { x: 1, y: 2 },
       filters: {

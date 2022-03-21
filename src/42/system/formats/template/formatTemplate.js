@@ -27,12 +27,18 @@ export default function formatTemplate(
     }
 
     if (filterKeys !== undefined) {
+      let first = true
       for (const { name, args, locals: filterLocals } of filterKeys) {
         for (const [key, index] of Object.entries(filterLocals)) {
           args[index] = locate(locals, key)
         }
 
-        res = locate(options.filters, name)?.(res, ...args) ?? ""
+        res =
+          (key === undefined && first
+            ? locate(options.filters, name)?.(...args)
+            : locate(options.filters, name)?.(res, ...args)) ?? ""
+
+        first = false
       }
     }
 

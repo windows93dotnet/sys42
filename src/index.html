@@ -46,15 +46,16 @@
 </main>
 
 <script type="module">
-  import disk from "./42/system/fs/disk.js"
+  // import disk from "./42/system/fs/disk.js"
 
   import testRunner from "./42/system/dev/testRunner.js"
   testRunner(
-    disk.glob("**/*.test.js"),
-    // [
-    //   // "/tests/42/ui.test.js", //
-    //   "/tests/42/fabric/type/path/glob.test.js",
-    // ],
+    // disk.glob("**/*.test.js"),
+    [
+      // "/tests/42/ui.test.js", //
+      // "/tests/42/fabric/type/path/glob.test.js",
+      "/tests/42/system/formats/template.test.js",
+    ],
     { verbose: 3 }
   )
 </script>
