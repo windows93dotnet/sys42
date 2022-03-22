@@ -1,3 +1,81 @@
+const operators = ["===", "!==", "==", "!=", ">=", "<=", ">", "<", "=~"]
+
+const operatorsFirstletter = new Set(operators.map((x) => x[0]))
+
+export function parseExpr(source, jsonParse = JSON.parse) {
+  let buffer = ""
+  let current = 0
+  const tokens = []
+
+  function eat(char) {
+    buffer += char
+    current++
+  }
+
+  function flush() {
+    let value = buffer.trim()
+    if (value) {
+      let type = "key"
+      let negated = false
+
+      if (value.startsWith("!")) {
+        negated = true
+        value = value.slice(1)
+      }
+
+      try {
+        value = jsonParse(value)
+        type = "arg"
+      } catch {
+        type = "key"
+      }
+
+      if (negated) {
+        tokens.push({ type, value, negated: true })
+      } else {
+        tokens.push({ type, value })
+      }
+
+      buffer = ""
+    }
+  }
+
+  main: while (current < source.length) {
+    const char = source[current]
+
+    if (operatorsFirstletter.has(char)) {
+      for (const operator of operators) {
+        if (source.startsWith(operator, current)) {
+          flush()
+          tokens.push({ type: "operator", value: operator })
+          current += operator.length
+          continue main
+        }
+      }
+    }
+
+    if (source.startsWith("&&", current)) {
+      flush()
+      tokens.push({ type: "and" })
+      current += 2
+      continue
+    }
+
+    if (source.startsWith("||", current)) {
+      flush()
+      tokens.push({ type: "or" })
+      current += 2
+      continue
+    }
+
+    eat(char)
+  }
+
+  flush()
+
+  return tokens
+}
+
 const pairs = {
   '"': '"',
   "'": "'",
@@ -24,15 +102,25 @@ export default function parseTemplateSyntax(source, jsonParse = JSON.parse) {
   function flush() {
     buffer = buffer.trim()
     if (buffer || state === "condition") {
-      if (state === "arg") {
+      if (state === "arg" || state === "key") {
         try {
           buffer = jsonParse(buffer)
+          state = "arg"
         } catch {
           state = "key"
         }
+
+        if (state === "key") {
+          const expr = parseExpr(buffer)
+          if (expr[0]?.value !== buffer) {
+            tokens.push({ type: "expr", value: expr, pos: current })
+            buffer = ""
+            return
+          }
+        }
       }
 
-      tokens.push({ type: state, buffer, pos: current })
+      tokens.push({ type: state, value: buffer, pos: current })
       buffer = ""
     }
   }
@@ -95,6 +183,12 @@ export default function parseTemplateSyntax(source, jsonParse = JSON.parse) {
     }
 
     if (char === "|") {
+      if (source[current + 1] === "|") {
+        buffer += "||"
+        current += 2
+        continue
+      }
+
       flush()
       tokens.push({ type: "pipe" })
       currentFunction = undefined
@@ -117,6 +211,12 @@ export default function parseTemplateSyntax(source, jsonParse = JSON.parse) {
     }
 
     if (char === "?") {
+      if (source[current + 1] === "?") {
+        buffer += "??"
+        current += 2
+        continue
+      }
+
       if (currentFunction === undefined) {
         tokens.push({ type: "ternary" })
         flush()

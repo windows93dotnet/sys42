@@ -60,7 +60,7 @@ export default function parseExpr(expr) {
         return { key, comparator: (x) => !x }
       }
 
-      return { key, comparator: (x) => x }
+      return { key, comparator: (x) => Boolean(x) }
     }
 
     return { key, comparator, value }
