@@ -79,12 +79,12 @@ test.tasks(
       parsed: { strings: ["a {cyan ", "}"], substitutions: ["x"] },
       expected: "a {cyan b}",
     },
-    // {
-    //   source: ["a {{foo ? 'b' : 'c'}}"],
-    //   data: { foo: true },
-    //   parsed: {},
-    //   expected: "a b",
-    // },
+    {
+      source: ["a {{foo ? 'b' : 'c'}}"],
+      data: { foo: true },
+      parsed: {},
+      expected: "a b",
+    },
     // {
     //   source: ["a {{foo ? 'b' : 'c'}}"],
     //   data: { foo: false },
