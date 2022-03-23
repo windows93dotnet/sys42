@@ -1,6 +1,6 @@
 import test from "../../../../../42/test.js"
 
-import parseTemplateSyntax from "../../../../../42/system/formats/template/parseTemplateSyntax.js"
+import parseExpression from "../../../../../42/system/formats/template/parseExpression.js"
 
 test.tasks(
   [
@@ -35,6 +35,18 @@ test.tasks(
         { type: "key", value: "x" },
         { type: "functionEnd" },
       ],
+    },
+    {
+      source: 'a(")")',
+      parsed: [
+        { type: "function", value: "a" },
+        { type: "arg", value: ")" },
+        { type: "functionEnd" },
+      ],
+    },
+    {
+      source: '"a()"',
+      parsed: [{ type: "arg", value: "a()" }],
     },
     {
       source: 'a(x,y,1,"z",z)',
@@ -74,7 +86,8 @@ test.tasks(
       parsed: [
         { type: "key", value: "a" },
         { type: "pipe" },
-        { type: "key", value: "filter" },
+        { type: "function", value: "filter" },
+        { type: "functionEnd" },
       ],
     },
     {
@@ -82,9 +95,11 @@ test.tasks(
       parsed: [
         { type: "key", value: "a" },
         { type: "pipe" },
-        { type: "key", value: "filter1" },
+        { type: "function", value: "filter1" },
+        { type: "functionEnd" },
         { type: "pipe" },
-        { type: "key", value: "filter2" },
+        { type: "function", value: "filter2" },
+        { type: "functionEnd" },
       ],
     },
     {
@@ -106,7 +121,8 @@ test.tasks(
         { type: "key", value: "b" },
         { type: "functionEnd" },
         { type: "pipe" },
-        { type: "key", value: "filter2" },
+        { type: "function", value: "filter2" },
+        { type: "functionEnd" },
       ],
     },
     {
@@ -123,6 +139,15 @@ test.tasks(
       parsed: [
         { type: "ternary" },
         { type: "key", value: "a" },
+        { type: "arg", value: "b" },
+        { type: "arg", value: "c" },
+      ],
+    },
+    {
+      source: '"a"?"b":"c"',
+      parsed: [
+        { type: "ternary" },
+        { type: "arg", value: "a" },
         { type: "arg", value: "b" },
         { type: "arg", value: "c" },
       ],
@@ -167,14 +192,11 @@ test.tasks(
       source: "a > 1 ? true : false",
       parsed: [
         { type: "ternary" },
-        {
-          type: "expr",
-          value: [
-            { type: "key", value: "a" },
-            { type: "operator", value: ">" },
-            { type: "arg", value: 1 },
-          ],
-        },
+        { type: "condition" },
+        { type: "key", value: "a" },
+        { type: "operator", value: ">" },
+        { type: "arg", value: 1 },
+        { type: "conditionEnd" },
         { type: "arg", value: true },
         { type: "arg", value: false },
       ],
@@ -182,31 +204,44 @@ test.tasks(
     {
       source: "1 && b > 1",
       parsed: [
-        {
-          type: "expr",
-          value: [
-            { type: "arg", value: 1 },
-            { type: "and" },
-            { type: "key", value: "b" },
-            { type: "operator", value: ">" },
-            { type: "arg", value: 1 },
-          ],
-        },
+        { type: "condition" },
+        { type: "arg", value: 1 },
+        { type: "and" },
+        { type: "key", value: "b" },
+        { type: "operator", value: ">" },
+        { type: "arg", value: 1 },
+        { type: "conditionEnd" },
       ],
     },
     {
       source: "!a || a > 1",
       parsed: [
-        {
-          type: "expr",
-          value: [
-            { type: "key", value: "a", negated: true },
-            { type: "or" },
-            { type: "key", value: "a" },
-            { type: "operator", value: ">" },
-            { type: "arg", value: 1 },
-          ],
-        },
+        { type: "condition" },
+        { type: "key", value: "a", negated: true },
+        { type: "or" },
+        { type: "key", value: "a" },
+        { type: "operator", value: ">" },
+        { type: "arg", value: 1 },
+        { type: "conditionEnd" },
+      ],
+    },
+    {
+      source: "a | b(!a || a > 1) ? c : d",
+      parsed: [
+        { type: "key", value: "a" },
+        { type: "pipe" },
+        { type: "ternary" },
+        { type: "function", value: "b" },
+        { type: "condition" },
+        { type: "key", value: "a", negated: true },
+        { type: "or" },
+        { type: "key", value: "a" },
+        { type: "operator", value: ">" },
+        { type: "arg", value: 1 },
+        { type: "conditionEnd" },
+        { type: "functionEnd" },
+        { type: "key", value: "c" },
+        { type: "key", value: "d" },
       ],
     },
   ],
@@ -214,7 +249,7 @@ test.tasks(
   ({ source, parsed }) => {
     for (const str of test.utils.arrify(source)) {
       test(str, (t) => {
-        const actual = parseTemplateSyntax(str).map((x) => {
+        const actual = parseExpression(str).map((x) => {
           delete x.pos
           return x
         })

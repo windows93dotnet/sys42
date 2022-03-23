@@ -6,12 +6,13 @@
 
 // import detectCircular from "./object/detectCircular.js"
 import isEmptyObject from "./is/isEmptyObject.js"
+import isLength from "./is/isLength.js"
 
 // TODO: move usefull is* functions in 'any' folder
 export { default as isEmptyObject } from "./is/isEmptyObject.js"
+export { default as isLength } from "./is/isLength.js"
 
 const { toString } = Object.prototype
-const { MAX_SAFE_INTEGER } = Number
 
 export const isPositiveInteger = (x) => x >>> 0 === x
 export const { isSafeInteger } = Number
@@ -83,9 +84,6 @@ export const isPlainObjectOrHashmap = (x) =>
   x !== null &&
   typeof x === "object" &&
   (Object.getPrototypeOf(x) === null || x.constructor === Object)
-
-export const isLength = (x) =>
-  typeof x === "number" && x > -1 && x % 1 === 0 && x <= MAX_SAFE_INTEGER
 
 export const isArrayLike = (x) =>
   x != undefined && typeof x !== "function" && isLength(x.length)

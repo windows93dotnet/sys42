@@ -2,7 +2,7 @@ const operators = ["===", "!==", "==", "!=", ">=", "<=", ">", "<", "=~"]
 
 const operatorsFirstletter = new Set(operators.map((x) => x[0]))
 
-export function parseExpr(source, jsonParse = JSON.parse) {
+export function parseCondition(source, jsonParse = JSON.parse) {
   let buffer = ""
   let current = 0
   const tokens = []
@@ -85,7 +85,7 @@ const pairs = {
 
 const pairsKeys = new Set(Object.keys(pairs))
 
-export default function parseTemplateSyntax(source, jsonParse = JSON.parse) {
+export default function parseExpression(source, jsonParse = JSON.parse) {
   let buffer = ""
   let current = 0
 
@@ -111,16 +111,29 @@ export default function parseTemplateSyntax(source, jsonParse = JSON.parse) {
         }
 
         if (state === "key") {
-          const expr = parseExpr(buffer)
+          if (tokens.at(-1)?.type === "pipe") {
+            tokens.push(
+              { type: "function", value: buffer },
+              { type: "functionEnd" }
+            )
+            buffer = ""
+            return
+          }
+
+          const expr = parseCondition(buffer)
           if (expr[0]?.value !== buffer) {
-            tokens.push({ type: "expr", value: expr, pos: current })
+            tokens.push(
+              { type: "condition" }, //
+              ...expr,
+              { type: "conditionEnd" }
+            )
             buffer = ""
             return
           }
         }
       }
 
-      tokens.push({ type: state, value: buffer, pos: current })
+      tokens.push({ type: state, value: buffer })
       buffer = ""
     }
   }
@@ -151,25 +164,17 @@ export default function parseTemplateSyntax(source, jsonParse = JSON.parse) {
 
       if (char === ")") {
         flush()
-        state = "key"
+        state = "arg"
         current++
         tokens.push({ type: "functionEnd" })
         continue
       }
-    } else if (char === "(") {
-      state = "function"
-      currentFunction = tokens.length
-      flush()
-      state = "arg"
-      current++
-      continue
     }
 
     if (pairsKeys.has(state)) {
       if (char === pairs[state]) {
         state = "arg"
         buffer += char
-        flush()
         current++
         continue
       }
@@ -179,6 +184,15 @@ export default function parseTemplateSyntax(source, jsonParse = JSON.parse) {
     } else if (pairsKeys.has(char)) {
       state = char
       eat(char)
+      continue
+    }
+
+    if (char === "(") {
+      state = "function"
+      currentFunction = tokens.length
+      flush()
+      state = "arg"
+      current++
       continue
     }
 
@@ -196,7 +210,7 @@ export default function parseTemplateSyntax(source, jsonParse = JSON.parse) {
       continue
     }
 
-    if (state === "key" && char === ",") {
+    if (char === ",") {
       flush()
       state = "arg"
       current++
@@ -205,7 +219,7 @@ export default function parseTemplateSyntax(source, jsonParse = JSON.parse) {
 
     if (char === ":") {
       flush()
-      state = "key"
+      state = "arg"
       current++
       continue
     }
@@ -226,7 +240,7 @@ export default function parseTemplateSyntax(source, jsonParse = JSON.parse) {
         currentFunction = undefined
       }
 
-      state = "key"
+      // state = "key"
       current++
       continue
     }

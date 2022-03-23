@@ -23,7 +23,9 @@ const castTestTitleParts = async (arg, config) =>
 
 async function serializeTest(test, config) {
   test.title = await Promise.all(
-    test.title.map((x) => castTestTitleParts(x, config))
+    test.title
+      .filter((x) => x !== undefined)
+      .map((x) => castTestTitleParts(x, config))
   )
   if (test.error) {
     let tmpDiff
