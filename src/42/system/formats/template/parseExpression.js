@@ -1,75 +1,6 @@
-/* eslint-disable max-depth */
-const operators = [
-  "&&",
-  "||",
-  "===",
-  "!==",
-  "==",
-  "!=",
-  ">=",
-  "<=",
-  ">",
-  "<",
-  "=~",
-]
+import operators from "./operators.js"
 
-export function parseCondition(source, jsonParse = JSON.parse) {
-  let buffer = ""
-  let current = 0
-  const tokens = []
-
-  function eat(char) {
-    buffer += char
-    current++
-  }
-
-  function flush() {
-    let value = buffer.trim()
-    if (value) {
-      let type = "key"
-      let negated = false
-
-      if (value.startsWith("!")) {
-        negated = true
-        value = value.slice(1)
-      }
-
-      try {
-        value = jsonParse(value)
-        type = "arg"
-      } catch {
-        type = "key"
-      }
-
-      if (negated) {
-        tokens.push({ type, value, negated: true })
-      } else {
-        tokens.push({ type, value })
-      }
-
-      buffer = ""
-    }
-  }
-
-  main: while (current < source.length) {
-    const char = source[current]
-
-    for (const operator of operators) {
-      if (source.startsWith(operator, current)) {
-        flush()
-        tokens.push({ type: "operator", value: operator })
-        current += operator.length
-        continue main
-      }
-    }
-
-    eat(char)
-  }
-
-  flush()
-
-  return tokens
-}
+const operatorsKeys = Object.keys(operators)
 
 const pairs = {
   '"': '"',
@@ -87,8 +18,6 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
   let state = "key"
   const tokens = []
 
-  let currentFunction
-
   function eat(char) {
     buffer += char
     current++
@@ -97,7 +26,10 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
   function flush() {
     buffer = buffer.trim()
     if (buffer || state === "condition") {
+      let negated
       if (state === "arg" || state === "key") {
+        negated = buffer.startsWith("!")
+        if (negated) buffer = buffer.slice(1)
         try {
           buffer = jsonParse(buffer)
           state = "arg"
@@ -105,41 +37,26 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
           state = "key"
         }
 
-        if (state === "key") {
-          if (tokens.at(-1)?.type === "pipe") {
-            tokens.push(
-              { type: "function", value: buffer },
-              { type: "functionEnd" }
-            )
-            buffer = ""
-            return
-          }
-
-          const expr = parseCondition(buffer)
-          if (expr[0]?.value !== buffer) {
-            if (currentFunction === undefined) {
-              tokens.push({ type: "condition" })
-            } else {
-              tokens.splice(currentFunction, 0, { type: "condition" })
-              currentFunction = undefined
-            }
-
-            tokens.push(...expr, { type: "conditionEnd" })
-
-            buffer = ""
-            return
-          }
+        if (state === "key" && tokens.at(-1)?.type === "pipe") {
+          tokens.push(
+            { type: "function", value: buffer },
+            { type: "functionEnd" }
+          )
+          buffer = ""
+          return
         }
       }
 
-      tokens.push({ type: state, value: buffer })
+      const token = { type: state, value: buffer }
+      if (negated) token.negated = true
+      tokens.push(token)
       buffer = ""
     }
   }
 
   let lastCharEscaped = false
 
-  while (current < source.length) {
+  main: while (current < source.length) {
     const char = source[current]
 
     if (char === "\\") {
@@ -188,23 +105,15 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
 
     if (char === "(") {
       state = "function"
-      currentFunction = tokens.length
       flush()
       state = "arg"
       current++
       continue
     }
 
-    if (char === "|") {
-      if (source[current + 1] === "|") {
-        buffer += "||"
-        current += 2
-        continue
-      }
-
+    if (char === "|" && source[current + 1] !== "|") {
       flush()
       tokens.push({ type: "pipe" })
-      currentFunction = undefined
       current++
       continue
     }
@@ -218,30 +127,28 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
 
     if (char === ":") {
       flush()
+      tokens.push({ type: "ternary", value: false })
       state = "arg"
       current++
       continue
     }
 
-    if (char === "?") {
-      if (source[current + 1] === "?") {
-        buffer += "??"
-        current += 2
-        continue
-      }
-
-      if (currentFunction === undefined) {
-        tokens.push({ type: "ternary" })
-        flush()
-      } else {
-        flush()
-        tokens.splice(currentFunction, 0, { type: "ternary" })
-        currentFunction = undefined
-      }
-
-      // state = "key"
+    if (char === "?" && source[current + 1] !== "?") {
+      flush()
+      tokens.push({ type: "ternary", value: true })
+      state = "arg"
       current++
       continue
+    }
+
+    for (const operator of operatorsKeys) {
+      if (source.startsWith(operator, current)) {
+        flush()
+        tokens.push({ type: "operator", value: operator })
+        state = "arg"
+        current += operator.length
+        continue main
+      }
     }
 
     eat(char)

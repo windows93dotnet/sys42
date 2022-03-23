@@ -1,34 +1,33 @@
 import isLength from "../../../fabric/type/any/is/isLength.js"
+import operators from "./operators.js"
 
-/* eslint-disable eqeqeq */
-// @thanks https://github.com/Microsoft/vscode/blob/master/src/vs/platform/contextkey/common/contextkey.ts
-export const operators = {
-  "&&": (a, b) => a && b,
-  "||": (a, b) => a || b,
-  "===": (a, b) => a === b,
-  "!==": (a, b) => a !== b,
-  "==": (a, b) => a == b,
-  "!=": (a, b) => a != b,
-  ">=": (a, b) => a >= b,
-  "<=": (a, b) => a <= b,
-  ">": (a, b) => a > b,
-  "<": (a, b) => a < b,
-  "=~": (a, b) => b.test(a),
-}
+let n = 0
 
 function compileSub(i, list, substitution, options) {
+  if (n++ > 200) throw new Error("Max recursion")
+
   const { type, value } = substitution[i]
   const { locate, filters, locals: compileLocals } = options
 
   if (type === "function") {
-    const args = []
-
     const inPipe = substitution.at(i - 1)?.type === "pipe"
 
-    i++
-    while (substitution[i].type !== "functionEnd") {
-      compileSub(i, args, substitution, options)
-      i++
+    let args = []
+
+    const start = i + 1
+    let end = start
+
+    for (let j = start, l = substitution.length; j < l; j++) {
+      if (substitution[j].type === "functionEnd") {
+        end = j
+        break
+      }
+    }
+
+    if (end > start) {
+      const subset = substitution.slice(start, end)
+      args = compileExpression(subset, options)
+      i = end
     }
 
     if (inPipe) {
@@ -48,34 +47,13 @@ function compileSub(i, list, substitution, options) {
     return i
   }
 
-  if (type === "operator") {
-    list.push(operators[value])
+  if (type === "ternary") {
+    list.push(value)
     return i
   }
 
-  if (type === "condition") {
-    let args = []
-
-    i++
-    while (substitution[i].type !== "conditionEnd") {
-      compileSub(i, args, substitution, options)
-      i++
-    }
-
-    for (let i = 0, l = args.length; i < l; i += 3) {
-      const left = args[i]
-      if (l - i >= 3) {
-        const operator = args[i + 1]
-        const right = args[i + 2]
-        list.push((locals) => operator(left(locals), right(locals)))
-      } else {
-        list.push(left)
-      }
-    }
-
-    args.length = 0
-    args = undefined
-
+  if (type === "operator") {
+    list.push(value)
     return i
   }
 
@@ -100,25 +78,40 @@ function compileSub(i, list, substitution, options) {
   return i
 }
 
+function compileExpression(substitution, options) {
+  const list = []
+
+  for (let i = 0, l = substitution.length; i < l; i++) {
+    i = compileSub(i, list, substitution, options)
+  }
+
+  for (let i = 0, l = list.length; i < l; i++) {
+    if (typeof list[i] === "string") {
+      const operate = operators[list[i]]
+      const [left, , right] = list.splice(i - 1, 3, (locals) =>
+        operate(left(locals), right(locals))
+      )
+    }
+  }
+
+  for (let i = 0, l = list.length; i < l; i++) {
+    if (list[i] === true) {
+      const [condition, , ifTrue, , ifFalse] = list.splice(i - 1, 5, (locals) =>
+        condition(locals) ? ifTrue(locals) : ifFalse(locals)
+      )
+    }
+  }
+
+  return list
+}
+
 export default function compileTemplate(parsed, options = {}) {
+  n = 0
   const { strings } = parsed
   const substitutions = []
 
   for (const substitution of parsed.substitutions) {
-    const list = []
-
-    const ternaries = []
-
-    for (let i = 0, l = substitution.length; i < l; i++) {
-      if (substitution[i].type === "ternary") ternaries.push(i)
-      else i = compileSub(i, list, substitution, options)
-    }
-
-    for (const ternary of ternaries) {
-      const condition = list.splice(ternary, 3, (locals) =>
-        condition[0](locals) ? condition[1](locals) : condition[2](locals)
-      )
-    }
+    const list = compileExpression(substitution, options)
 
     substitutions.push(
       list.length === 1

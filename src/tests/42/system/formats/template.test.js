@@ -134,6 +134,7 @@ test.tasks(
     },
 
     {
+      // only: true,
       source: ["a {{x|uppercase}}", "a {{ x | uppercase }}"],
       data: { x: "b" },
       filters: {
@@ -215,15 +216,22 @@ test.tasks(
     },
 
     {
+      source: "{{a > 1}}",
+      data: { a: 2, b: "b", c: "c" },
+      expected: "true",
+    },
+
+    {
       source: "a {{foo ? x : y}}",
       data: { x: "b", y: "c", foo: true },
       parsed: {
         strings: ["a ", ""],
         substitutions: [
           [
-            { type: "ternary" },
             { type: "key", value: "foo" },
+            { type: "ternary", value: true },
             { type: "key", value: "x" },
+            { type: "ternary", value: false },
             { type: "key", value: "y" },
           ],
         ],
@@ -254,6 +262,7 @@ test.tasks(
     },
 
     {
+      // only: true,
       source: [
         "a {{foo ? x : y}}",
         "a {{foo() ? x() : y()}}",
@@ -297,15 +306,6 @@ test.tasks(
       data: { a: 0, b: "b", c: "c" },
       filters: { a: () => 0, one: () => 1, b: () => "b", c: () => "c" },
       expected: "c",
-    },
-
-    {
-      only: true,
-      source: ["{{a() > one() ? b : c}}"],
-      parsed: {},
-      // data: { a: 0, b: "b", c: "c" },
-      // filters: { a: () => 0, one: () => 1, b: () => "b", c: () => "c" },
-      // expected: "c",
     },
   ],
 
