@@ -4,16 +4,17 @@
 
 import locate from "../../fabric/locator/locate.js"
 import parseTemplate from "./template/parseTemplate.js"
-import formatTemplate from "./template/formatTemplate.js"
+import compileTemplate from "./template/compileTemplate.js"
 import makeTemplate from "./template/makeTemplate.js"
 import JSON5 from "./json5.js"
 
 const jsonParse = JSON5.parse
 
-export default function template(source) {
-  const parsed = parseTemplate(source, jsonParse)
-  return (locals, filters) =>
-    formatTemplate(parsed, locals, { filters, locate })
+export default function template(source, { filters, locals } = {}) {
+  return compileTemplate(
+    parseTemplate(source, jsonParse), //
+    { locate, filters, jsonParse, locals }
+  )
 }
 
 template.make = makeTemplate
@@ -21,14 +22,25 @@ template.make = makeTemplate
 template.parse = (source) => parseTemplate(source, jsonParse)
 
 template.format = (parsed, locals, filters) =>
-  formatTemplate(parsed, locals, { filters, locate, jsonParse })
+  compileTemplate(
+    parsed, //
+    { locate, filters, jsonParse, locals }
+  )(locals)
 
 template.format.async = async (parsed, locals, filters) =>
-  formatTemplate(parsed, locals, { filters, locate, jsonParse, async: true })
+  compileTemplate(
+    parsed, //
+    { locate, filters, jsonParse, locals, async: true }
+  )(locals)
 
 template.render = (source, locals, filters) =>
-  formatTemplate(
+  compileTemplate(
     parseTemplate(source, jsonParse), //
-    locals,
-    { filters, locate, jsonParse }
-  )
+    { locate, filters, jsonParse, locals }
+  )(locals)
+
+template.render.async = (source, locals, filters) =>
+  compileTemplate(
+    parseTemplate(source, jsonParse), //
+    { locate, filters, jsonParse, locals, async: true }
+  )(locals)
