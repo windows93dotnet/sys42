@@ -268,6 +268,45 @@ test.tasks(
       filters: { x: () => "b", y: () => "c", foo: () => false },
       expected: "a c",
     },
+
+    // {
+    //   source: "{{!a}}",
+    //   parsed: {},
+    // },
+
+    {
+      source: "{{a > 1}}",
+      data: { a: 2, b: "b", c: "c" },
+      expected: "true",
+    },
+
+    {
+      source: "{{a > 1 ? b : c}}",
+      data: { a: 2, b: "b", c: "c" },
+      expected: "b",
+    },
+
+    {
+      source: [
+        "{{a > 1 ? b : c}}", //
+        '{{a > 1 ? "b" : "c"}}', //
+        '{{0 > 1 ? "b" : "c"}}', //
+        "{{a() > 1 ? b : c}}",
+        "{{a() > one() ? b : c}}",
+      ],
+      data: { a: 0, b: "b", c: "c" },
+      filters: { a: () => 0, one: () => 1, b: () => "b", c: () => "c" },
+      expected: "c",
+    },
+
+    {
+      only: true,
+      source: ["{{a() > one() ? b : c}}"],
+      parsed: {},
+      // data: { a: 0, b: "b", c: "c" },
+      // filters: { a: () => 0, one: () => 1, b: () => "b", c: () => "c" },
+      // expected: "c",
+    },
   ],
 
   ({ title, source, data, parsed, filters, expected }) => {
@@ -275,12 +314,12 @@ test.tasks(
       test(str, title, (t) => {
         if (parsed) {
           const p = template.parse(str)
-          if (filters === undefined) delete p.filters
-          t.eq(p, parsed)
 
           if (expected) {
             t.is(template.format(p, data, filters), expected)
           }
+
+          t.eq(p, parsed)
         }
 
         if (expected) {

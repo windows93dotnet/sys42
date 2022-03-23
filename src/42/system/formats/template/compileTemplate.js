@@ -1,8 +1,24 @@
 import isLength from "../../../fabric/type/any/is/isLength.js"
 
+/* eslint-disable eqeqeq */
+// @thanks https://github.com/Microsoft/vscode/blob/master/src/vs/platform/contextkey/common/contextkey.ts
+export const operators = {
+  "&&": (a, b) => a && b,
+  "||": (a, b) => a || b,
+  "===": (a, b) => a === b,
+  "!==": (a, b) => a !== b,
+  "==": (a, b) => a == b,
+  "!=": (a, b) => a != b,
+  ">=": (a, b) => a >= b,
+  "<=": (a, b) => a <= b,
+  ">": (a, b) => a > b,
+  "<": (a, b) => a < b,
+  "=~": (a, b) => b.test(a),
+}
+
 function compileSub(i, list, substitution, options) {
-  const { type, value, locals: compileLocals } = substitution[i]
-  const { locate, filters } = options
+  const { type, value } = substitution[i]
+  const { locate, filters, locals: compileLocals } = options
 
   if (type === "function") {
     const args = []
@@ -28,6 +44,37 @@ function compileSub(i, list, substitution, options) {
         return fn(...compiledArgs)
       })
     }
+
+    return i
+  }
+
+  if (type === "operator") {
+    list.push(operators[value])
+    return i
+  }
+
+  if (type === "condition") {
+    let args = []
+
+    i++
+    while (substitution[i].type !== "conditionEnd") {
+      compileSub(i, args, substitution, options)
+      i++
+    }
+
+    for (let i = 0, l = args.length; i < l; i += 3) {
+      const left = args[i]
+      if (l - i >= 3) {
+        const operator = args[i + 1]
+        const right = args[i + 2]
+        list.push((locals) => operator(left(locals), right(locals)))
+      } else {
+        list.push(left)
+      }
+    }
+
+    args.length = 0
+    args = undefined
 
     return i
   }

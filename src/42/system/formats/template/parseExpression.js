@@ -1,6 +1,17 @@
-const operators = ["===", "!==", "==", "!=", ">=", "<=", ">", "<", "=~"]
-
-const operatorsFirstletter = new Set(operators.map((x) => x[0]))
+/* eslint-disable max-depth */
+const operators = [
+  "&&",
+  "||",
+  "===",
+  "!==",
+  "==",
+  "!=",
+  ">=",
+  "<=",
+  ">",
+  "<",
+  "=~",
+]
 
 export function parseCondition(source, jsonParse = JSON.parse) {
   let buffer = ""
@@ -43,29 +54,13 @@ export function parseCondition(source, jsonParse = JSON.parse) {
   main: while (current < source.length) {
     const char = source[current]
 
-    if (operatorsFirstletter.has(char)) {
-      for (const operator of operators) {
-        if (source.startsWith(operator, current)) {
-          flush()
-          tokens.push({ type: "operator", value: operator })
-          current += operator.length
-          continue main
-        }
+    for (const operator of operators) {
+      if (source.startsWith(operator, current)) {
+        flush()
+        tokens.push({ type: "operator", value: operator })
+        current += operator.length
+        continue main
       }
-    }
-
-    if (source.startsWith("&&", current)) {
-      flush()
-      tokens.push({ type: "and" })
-      current += 2
-      continue
-    }
-
-    if (source.startsWith("||", current)) {
-      flush()
-      tokens.push({ type: "or" })
-      current += 2
-      continue
     }
 
     eat(char)
@@ -122,11 +117,15 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
 
           const expr = parseCondition(buffer)
           if (expr[0]?.value !== buffer) {
-            tokens.push(
-              { type: "condition" }, //
-              ...expr,
-              { type: "conditionEnd" }
-            )
+            if (currentFunction === undefined) {
+              tokens.push({ type: "condition" })
+            } else {
+              tokens.splice(currentFunction, 0, { type: "condition" })
+              currentFunction = undefined
+            }
+
+            tokens.push(...expr, { type: "conditionEnd" })
+
             buffer = ""
             return
           }
