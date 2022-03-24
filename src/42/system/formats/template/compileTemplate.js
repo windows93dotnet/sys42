@@ -32,10 +32,17 @@ function compileSub(i, list, substitution, options) {
 
     const fn = locate(filters, value)
     if (fn) {
-      list.push((locals, compiledArgs = []) => {
-        for (const arg of args) compiledArgs.push(arg(locals))
-        return fn(...compiledArgs)
-      })
+      list.push(
+        options.async
+          ? async (locals, compiledArgs = []) => {
+              for (const arg of args) compiledArgs.push(arg(locals))
+              return fn(...(await Promise.all(compiledArgs)))
+            }
+          : (locals, compiledArgs = []) => {
+              for (const arg of args) compiledArgs.push(arg(locals))
+              return fn(...compiledArgs)
+            }
+      )
     }
 
     return i
@@ -79,27 +86,29 @@ function compileExpression(substitution, options) {
   for (let i = 0, l = list.length; i < l; i++) {
     if (typeof list[i] === "string") {
       const operate = operators[list[i]]
-      const [left, , right] = list.splice(i - 1, 3, (locals) =>
-        operate(left(locals), right(locals))
-      )
+      const fn = options.async
+        ? async (locals) => operate(await left(locals), await right(locals))
+        : (locals) => operate(left(locals), right(locals))
+      const [left, , right] = list.splice(i - 1, 3, fn)
       i -= l - list.length
     }
   }
 
   for (let i = 0, l = list.length; i < l; i++) {
     if (list[i] === true) {
-      const [condition, , ifTrue, , ifFalse] = list.splice(i - 1, 5, (locals) =>
-        condition(locals) ? ifTrue(locals) : ifFalse(locals)
-      )
+      const fn = options.async
+        ? async (locals) =>
+            (await condition(locals)) ? ifTrue(locals) : ifFalse(locals)
+        : (locals) => (condition(locals) ? ifTrue(locals) : ifFalse(locals))
+      const [condition, , ifTrue, , ifFalse] = list.splice(i - 1, 5, fn)
       i -= l - list.length
     }
   }
 
   for (let i = 0, l = list.length; i < l; i++) {
     if (list[i] === PIPE) {
-      const [res, , filter] = list.splice(i - 1, 3, (locals) =>
-        filter(locals, [res(locals)])
-      )
+      const fn = (locals) => filter(locals, [res(locals)])
+      const [res, , filter] = list.splice(i - 1, 3, fn)
       i -= l - list.length
     }
   }
@@ -115,15 +124,14 @@ export default function compileTemplate(parsed, options = {}) {
   for (const substitution of parsed.substitutions) {
     const list = compileExpression(substitution, options)
 
-    substitutions.push(
-      list.length === 1
-        ? list[0]
-        : (locals) => {
-            let out = ""
-            for (const exec of list) out += exec(locals)
-            return out
-          }
-    )
+    if (list.length > 1) {
+      throw Object.assign(
+        new Error("template syntax error, didn't reduced to one function"),
+        { parsed, list }
+      )
+    }
+
+    substitutions.push(list[0])
   }
 
   return options.async
@@ -132,7 +140,7 @@ export default function compileTemplate(parsed, options = {}) {
 
         for (let i = 0, l = substitutions.length; i < l; i++) {
           const res = substitutions[i](locals)
-          out.push(res, strings[i + 1] ?? "")
+          out.push(res, strings[i + 1])
         }
 
         return (await Promise.all(out)).join("")

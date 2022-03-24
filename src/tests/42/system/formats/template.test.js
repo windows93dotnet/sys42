@@ -5,6 +5,11 @@ import template from "../../../../42/system/formats/template.js"
 
 const uppercase = (str) => str.toUpperCase()
 
+async function uppercaseAsync(str) {
+  await test.utils.sleep(10)
+  return str.toUpperCase()
+}
+
 test.tasks(
   [
     {
@@ -119,6 +124,9 @@ test.tasks(
       expected: "a {cyan b}",
     },
 
+    /* filters
+    ========== */
+
     {
       source: "a {{x()}}",
       filters: {
@@ -131,6 +139,13 @@ test.tasks(
         ],
       },
       expected: "a b",
+    },
+
+    {
+      source: ["a {{uppercase('x\\'x')}}"],
+      data: { x: "b" },
+      filters: { uppercase },
+      expected: "a X'X",
     },
 
     {
@@ -178,13 +193,6 @@ test.tasks(
     },
 
     {
-      source: ["a {{uppercase('x\\'x')}}"],
-      data: { x: "b" },
-      filters: { uppercase },
-      expected: "a X'X",
-    },
-
-    {
       source: ["a {{foo\\|bar}}"],
       data: { "foo|bar": "b" },
       expected: "a b",
@@ -214,11 +222,8 @@ test.tasks(
       expected: "a 0b0011",
     },
 
-    {
-      source: "{{a > 1}}",
-      data: { a: 2, b: "b", c: "c" },
-      expected: "true",
-    },
+    /* ternary
+    ========== */
 
     {
       source: "a {{foo ? x : y}}",
@@ -291,6 +296,9 @@ test.tasks(
       expected: "a c",
     },
 
+    /* operator
+    =========== */
+
     {
       source: "{{a > 1}}",
       data: { a: 2 },
@@ -341,6 +349,9 @@ test.tasks(
       expected: "c",
     },
 
+    /* negated
+    ========== */
+
     {
       source: "{{!a}}",
       parsed: {
@@ -360,23 +371,78 @@ test.tasks(
       data: { a: "foo" },
       expected: "c",
     },
+
+    /* async
+    ======== */
+
+    {
+      title: "failing async filter",
+      source: ["{{foo()}}"],
+      filters: { foo: async () => "foo" },
+      expected: "[object Promise]",
+    },
+
+    {
+      source: ["{{foo()}}"],
+      filters: { foo: async () => "foo" },
+      async: true,
+      expected: "foo",
+    },
+
+    {
+      source: ["{{foo()|uppercaseAsync}}"],
+      filters: {
+        foo: async () => "foo",
+        uppercaseAsync,
+      },
+      async: true,
+      expected: "FOO",
+    },
+
+    {
+      source: ["{{zero() > one() ? a() : b()|uppercaseAsync}}"],
+      filters: {
+        zero: async () => 0,
+        one: async () => 1,
+        a: async () => "a",
+        b: async () => "b",
+        uppercaseAsync,
+      },
+      async: true,
+      expected: "B",
+    },
+
+    {
+      source: ["{{zero() < one() ? a() : b()|uppercaseAsync}}"],
+      filters: {
+        zero: async () => 0,
+        one: async () => 1,
+        a: async () => "a",
+        b: async () => "b",
+        uppercaseAsync,
+      },
+      async: true,
+      expected: "A",
+    },
   ],
 
-  ({ title, source, data, parsed, filters, expected }) => {
+  ({ title, source, data, parsed, filters, expected, async }) => {
+    const format = async ? "formatAsync" : "format"
+    const render = async ? "renderAsync" : "render"
     for (const str of test.utils.arrify(source)) {
-      test(str, title, (t) => {
+      test(str, title, async (t) => {
         if (parsed) {
           const p = template.parse(str)
 
           if (expected) {
-            t.is(template.format(p, data, filters), expected)
+            t.is(await template[format](p, data, filters), expected)
           }
 
           t.eq(p, parsed)
         }
 
         if (expected) {
-          t.is(template.render(str, data, filters), expected)
+          t.is(await template[render](str, data, filters), expected)
         }
       })
     }
