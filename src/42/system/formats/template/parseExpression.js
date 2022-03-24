@@ -15,7 +15,7 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
   let buffer = ""
   let current = 0
 
-  let state = "key"
+  let state = "arg"
   const tokens = []
 
   function eat(char) {
@@ -42,6 +42,7 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
             { type: "function", value: buffer },
             { type: "functionEnd" }
           )
+          state = "arg"
           buffer = ""
           return
         }
@@ -50,6 +51,7 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
       const token = { type: state, value: buffer }
       if (negated) token.negated = true
       tokens.push(token)
+      state = "arg"
       buffer = ""
     }
   }
@@ -80,7 +82,6 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
 
       if (char === ")") {
         flush()
-        state = "arg"
         current++
         tokens.push({ type: "functionEnd" })
         continue

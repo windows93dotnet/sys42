@@ -199,6 +199,13 @@ test.tasks(
     },
 
     {
+      source: ["a {{foo(a > 1, a, 1)}}"],
+      data: { a: 2 },
+      filters: { foo: (...args) => args.join(" - ") },
+      expected: "a true - 2 - 1",
+    },
+
+    {
       source: ["a {{x|add(y)}}", "a {{x|add(2)}}", "a {{1|add(2)}}"],
       data: { x: 1, y: 2 },
       filters: {

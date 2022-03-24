@@ -258,6 +258,24 @@ test.tasks(
         { type: "key", value: "c" },
       ],
     },
+    {
+      source: "foo(1, a)",
+      parsed: [
+        { type: "function", value: "foo" },
+        { type: "arg", value: 1 },
+        { type: "key", value: "a" },
+        { type: "functionEnd" },
+      ],
+    },
+    {
+      source: "foo(a, 1)",
+      parsed: [
+        { type: "function", value: "foo" },
+        { type: "key", value: "a" },
+        { type: "arg", value: 1 },
+        { type: "functionEnd" },
+      ],
+    },
   ],
 
   ({ source, parsed }) => {
