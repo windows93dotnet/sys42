@@ -3,7 +3,7 @@ import operators from "./operators.js"
 
 const PIPE = Symbol("pipe")
 
-function compileSub(i, list, tokens, options) {
+function compileToken(i, list, tokens, options) {
   const { type, value, negated } = tokens[i]
   const { locate, filters, locals: compileLocals } = options
 
@@ -72,12 +72,12 @@ function compileSub(i, list, tokens, options) {
   return i
 }
 
-export default function compileExpression(tokens, options) {
+export default function compileExpression(tokens, options = {}) {
   const list = []
 
   // reduce function, key and arg tokens
   for (let i = 0, l = tokens.length; i < l; i++) {
-    i = compileSub(i, list, tokens, options)
+    i = compileToken(i, list, tokens, options)
   }
 
   // reduce operation tokens

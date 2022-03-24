@@ -1,4 +1,4 @@
-export default function parsePattern(reg) {
+export default function parseRegexPattern(reg) {
   const source = reg.source ?? reg
 
   const type = typeof source

@@ -1,3 +1,6 @@
+/* eslint-disable max-depth */
+/* eslint-disable complexity */
+import parseRegexLiteral from "../../../fabric/type/regex/parseRegexLiteral.js"
 import operators from "./operators.js"
 
 const operatorsKeys = Object.keys(operators)
@@ -8,6 +11,8 @@ const pairs = {
   "[": "]",
   "{": "}",
 }
+
+const regexFlags = new Set(["d", "g", "i", "m", "s", "u", "y"])
 
 const pairsKeys = new Set(Object.keys(pairs))
 
@@ -27,7 +32,10 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
     buffer = buffer.trim()
     if (buffer || state === "condition") {
       let negated
-      if (state === "arg" || state === "key") {
+      if (state === "regex") {
+        buffer = new RegExp(...parseRegexLiteral(buffer))
+        state = "arg"
+      } else if (state === "arg" || state === "key") {
         negated = buffer.startsWith("!")
         if (negated) buffer = buffer.slice(1)
         try {
@@ -57,6 +65,7 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
   }
 
   let lastCharEscaped = false
+  let regexOpen = false
 
   main: while (current < source.length) {
     const char = source[current]
@@ -69,6 +78,28 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
 
     if (lastCharEscaped) {
       lastCharEscaped = false
+      eat(char)
+      continue
+    }
+
+    if (state === "regex") {
+      if (regexOpen && char === "/") {
+        eat(char)
+        let i = 0
+        const l = regexFlags.size
+        for (; i < l; i++) {
+          const flag = source[current + i]
+          if (regexFlags.has(flag)) eat(flag)
+        }
+
+        flush()
+        state = "arg"
+        current += i
+        continue
+      } else if (char === "/") {
+        regexOpen = true
+      }
+
       eat(char)
       continue
     }
@@ -146,7 +177,7 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
       if (source.startsWith(operator, current)) {
         flush()
         tokens.push({ type: "operator", value: operator })
-        state = "arg"
+        state = operator === "=~" ? "regex" : "arg"
         current += operator.length
         continue main
       }

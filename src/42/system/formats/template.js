@@ -21,6 +21,12 @@ template.make = makeTemplate
 
 template.parse = (source) => parseTemplate(source, jsonParse)
 
+template.compile = (parsed, locals, filters) =>
+  compileTemplate(
+    parsed, //
+    { locate, filters, jsonParse, locals }
+  )
+
 template.format = (parsed, locals, filters) =>
   compileTemplate(
     parsed, //
