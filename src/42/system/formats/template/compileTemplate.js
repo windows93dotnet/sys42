@@ -41,31 +41,17 @@ function compileSub(i, list, substitution, options) {
     return i
   }
 
-  if (type === "pipe") {
-    list.push(PIPE)
-    return i
-  }
-
-  if (type === "ternary") {
-    list.push(value)
-    return i
-  }
-
-  if (type === "operator") {
-    list.push(value)
-    return i
-  }
-
-  if (type === "key") {
+  if (type === "pipe") list.push(PIPE)
+  else if (type === "ternary") list.push(value)
+  else if (type === "operator") list.push(value)
+  else if (type === "key") {
     list.push(
       negated
         ? (locals) => !locate(locals, value) ?? ""
         : (locals) => locate(locals, value) ?? ""
     )
-  }
-
-  if (type === "arg") {
-    if (isLength(value)) {
+  } else if (type === "arg") {
+    if (!negated && isLength(value)) {
       if (compileLocals) {
         list.push(
           Array.isArray(compileLocals)
@@ -77,7 +63,7 @@ function compileSub(i, list, substitution, options) {
           Array.isArray(locals) ? locals[value] ?? "" : value
         )
       }
-    } else list.push(() => value)
+    } else list.push(negated ? () => !value : () => value)
   }
 
   return i

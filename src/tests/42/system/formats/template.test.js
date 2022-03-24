@@ -351,8 +351,14 @@ test.tasks(
     },
 
     {
-      source: '{{!a ? "b" : "c"}}',
+      source: ['{{!a ? "b" : "c"}}', '{{!0 ? "b" : "c"}}'],
       expected: "b",
+    },
+
+    {
+      source: ['{{!a ? "b" : "c"}}', '{{!1 ? "b" : "c"}}'],
+      data: { a: "foo" },
+      expected: "c",
     },
   ],
 
