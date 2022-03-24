@@ -134,7 +134,6 @@ test.tasks(
     },
 
     {
-      // only: true,
       source: ["a {{x|uppercase}}", "a {{ x | uppercase }}"],
       data: { x: "b" },
       filters: {
@@ -262,7 +261,21 @@ test.tasks(
     },
 
     {
-      // only: true,
+      source: [
+        "a {{foo ? x : y|uppercase}}",
+        "a {{foo() ? x() : y()|uppercase}}",
+        'a {{foo ? "b" : y|uppercase}}',
+        'a {{true ? "b" : y|uppercase}}',
+        'a {{1 ? "b" : y|uppercase}}',
+        'a {{"foo" ? "b" : y|uppercase}}',
+        'a {{[] ? "b" : y|uppercase}}',
+      ],
+      data: { x: "b", y: "c", foo: true },
+      filters: { x: () => "b", y: () => "c", foo: () => true, uppercase },
+      expected: "a B",
+    },
+
+    {
       source: [
         "a {{foo ? x : y}}",
         "a {{foo() ? x() : y()}}",
@@ -278,20 +291,40 @@ test.tasks(
       expected: "a c",
     },
 
-    // {
-    //   source: "{{!a}}",
-    //   parsed: {},
-    // },
+    {
+      source: "{{a > 1}}",
+      data: { a: 2 },
+      title: "true",
+      expected: "true",
+    },
 
     {
       source: "{{a > 1}}",
-      data: { a: 2, b: "b", c: "c" },
-      expected: "true",
+      data: { a: 0 },
+      title: "false",
+      expected: "false",
+    },
+
+    {
+      source: "{{a > 1|foo}}",
+      data: { a: 2 },
+      filters: { foo: (arg) => (arg ? "more" : "less") },
+      title: "more",
+      expected: "more",
+    },
+
+    {
+      source: "{{a > 1|foo}}",
+      data: { a: 0 },
+      filters: { foo: (arg) => (arg ? "more" : "less") },
+      title: "less",
+      expected: "less",
     },
 
     {
       source: "{{a > 1 ? b : c}}",
       data: { a: 2, b: "b", c: "c" },
+      title: "b",
       expected: "b",
     },
 
@@ -306,6 +339,20 @@ test.tasks(
       data: { a: 0, b: "b", c: "c" },
       filters: { a: () => 0, one: () => 1, b: () => "b", c: () => "c" },
       expected: "c",
+    },
+
+    {
+      source: "{{!a}}",
+      parsed: {
+        strings: ["", ""],
+        substitutions: [[{ type: "key", value: "a", negated: true }]],
+      },
+      expected: "true",
+    },
+
+    {
+      source: '{{!a ? "b" : "c"}}',
+      expected: "b",
     },
   ],
 

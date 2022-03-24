@@ -3,15 +3,15 @@ import operators from "./operators.js"
 
 let n = 0
 
+const PIPE = Symbol("pipe")
+
 function compileSub(i, list, substitution, options) {
   if (n++ > 200) throw new Error("Max recursion")
 
-  const { type, value } = substitution[i]
+  const { type, value, negated } = substitution[i]
   const { locate, filters, locals: compileLocals } = options
 
   if (type === "function") {
-    const inPipe = substitution.at(i - 1)?.type === "pipe"
-
     let args = []
 
     const start = i + 1
@@ -30,20 +30,19 @@ function compileSub(i, list, substitution, options) {
       i = end
     }
 
-    if (inPipe) {
-      const previous = list.pop()
-      args.unshift(previous)
-    }
-
     const fn = locate(filters, value)
     if (fn) {
-      list.push((locals) => {
-        const compiledArgs = []
+      list.push((locals, compiledArgs = []) => {
         for (const arg of args) compiledArgs.push(arg(locals))
         return fn(...compiledArgs)
       })
     }
 
+    return i
+  }
+
+  if (type === "pipe") {
+    list.push(PIPE)
     return i
   }
 
@@ -57,7 +56,13 @@ function compileSub(i, list, substitution, options) {
     return i
   }
 
-  if (type === "key") list.push((locals) => locate(locals, value) ?? "")
+  if (type === "key") {
+    list.push(
+      negated
+        ? (locals) => !locate(locals, value) ?? ""
+        : (locals) => locate(locals, value) ?? ""
+    )
+  }
 
   if (type === "arg") {
     if (isLength(value)) {
@@ -91,6 +96,7 @@ function compileExpression(substitution, options) {
       const [left, , right] = list.splice(i - 1, 3, (locals) =>
         operate(left(locals), right(locals))
       )
+      i -= l - list.length
     }
   }
 
@@ -99,6 +105,16 @@ function compileExpression(substitution, options) {
       const [condition, , ifTrue, , ifFalse] = list.splice(i - 1, 5, (locals) =>
         condition(locals) ? ifTrue(locals) : ifFalse(locals)
       )
+      i -= l - list.length
+    }
+  }
+
+  for (let i = 0, l = list.length; i < l; i++) {
+    if (list[i] === PIPE) {
+      const [res, , filter] = list.splice(i - 1, 3, (locals) =>
+        filter(locals, [res(locals)])
+      )
+      i -= l - list.length
     }
   }
 
