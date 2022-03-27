@@ -62,11 +62,12 @@ export default class Dragger extends Emitter {
       forget?.()
       restore?.()
       if (this.isDragging) {
-        this.emit("stop", e.x, e.y)
         window.getSelection().empty()
+        requestAnimationFrame(() => {
+          this.isDragging = false
+          this.emit("stop", e.x, e.y)
+        })
       }
-
-      this.isDragging = false
     }
 
     const drag = (e) => {

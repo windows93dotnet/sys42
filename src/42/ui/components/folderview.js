@@ -40,7 +40,7 @@ export class FolderView extends Component {
     selectable(this)
 
     listen(this, {
-      rubberbandadd: (e) => {
+      selectionadd: (e) => {
         if (!this.selection.includes(e.target.path)) {
           this.selection.push(e.target.path)
           for (const item of this.items) {
@@ -51,7 +51,7 @@ export class FolderView extends Component {
           }
         }
       },
-      rubberbandremove: (e) => {
+      selectionremove: (e) => {
         if (this.selection.includes(e.target.path)) {
           removeItem(this.selection, e.target.path)
           for (const item of this.items) {

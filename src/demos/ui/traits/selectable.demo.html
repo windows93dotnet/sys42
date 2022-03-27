@@ -34,7 +34,7 @@
       <span>b</span>
       <span>c</span>
       <span>d</span>
-      <span>e</span>
+      <span><em>e</em></span>
     </div>
   </div>
 </body>
@@ -46,10 +46,10 @@
   selectable(".selectable")
 
   listen(".selectable", {
-    rubberbandadd(e) {
+    selectionadd(e) {
       e.target.classList.add("selected")
     },
-    rubberbandremove(e) {
+    selectionremove(e) {
       e.target.classList.remove("selected")
     },
   })

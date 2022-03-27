@@ -47,18 +47,18 @@ export class Explorer extends Component {
     },
 
     shortcuts: [
-      {
-        key: "[click]",
-        selector: "ui-icon",
-        run: "select",
-        args: ["target.path"],
-      },
-      {
-        key: "Ctrl+[click]",
-        selector: "ui-icon",
-        run: "select",
-        args: ["target.path", true],
-      },
+      // {
+      //   key: "[click]",
+      //   selector: "ui-icon",
+      //   run: "select",
+      //   args: ["target.path"],
+      // },
+      // {
+      //   key: "Ctrl+[click]",
+      //   selector: "ui-icon",
+      //   run: "select",
+      //   args: ["target.path", true],
+      // },
       {
         key: "[dblclick]",
         selector: 'ui-icon[aria-description="folder"]',
@@ -68,10 +68,10 @@ export class Explorer extends Component {
     ],
   }
 
-  select(path, add) {
-    if (add !== true) this.selection.length = 0
-    this.selection.push(path)
-  }
+  // select(path, add) {
+  //   if (add !== true) this.selection.length = 0
+  //   this.selection.push(path)
+  // }
 
   folderUp() {
     let path = dirname(this.path)
