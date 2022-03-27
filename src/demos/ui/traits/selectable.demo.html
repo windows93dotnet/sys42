@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>selectable</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/style.css" id="theme" />
+
+<style>
+  .selectable {
+    padding: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 300px;
+    height: 300px;
+  }
+  .selectable span {
+    display: inline-block;
+    padding: 3.2rem;
+    border: 1px solid;
+  }
+  .selectable span.selected {
+    color: var(--highlight-fg);
+    background-color: var(--highlight-bg);
+  }
+</style>
+
+<body class="box-center desktop">
+  <div>
+    <h2>Drag to select</h2>
+    <div class="selectable inset">
+      <span>a</span>
+      <span>b</span>
+      <span>c</span>
+      <span>d</span>
+      <span>e</span>
+    </div>
+  </div>
+</body>
+
+<script type="module">
+  import selectable from "../../../42/ui/trait/selectable.js"
+  import listen from "../../../42/fabric/dom/listen.js"
+
+  selectable(".selectable")
+
+  listen(".selectable", {
+    rubberbandadd(e) {
+      e.target.classList.add("selected")
+    },
+    rubberbandremove(e) {
+      e.target.classList.remove("selected")
+    },
+  })
+</script>
