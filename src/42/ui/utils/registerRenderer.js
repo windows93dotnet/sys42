@@ -1,6 +1,7 @@
 import template from "../../system/formats/template.js"
 import filter from "../../fabric/filter.js"
 import joinScope from "./joinScope.js"
+import isLength from "../../fabric/type/any/is/isLength.js"
 
 function register(ctx, scope, render) {
   ctx.global.renderers[scope] ??= new Set()
@@ -39,45 +40,42 @@ registerRenderer.fromDots = (ctx, arr, render) => {
 
 registerRenderer.fromTemplate = (ctx, parsedTemplate, render) => {
   const filters = { ...ctx.global.filters.value }
-  const filtersNames = []
-  const filtersLocals = parsedTemplate.filters.flatMap(
-    (x) =>
-      x?.flatMap(({ name, locals }) => {
-        filtersNames.push(name)
-        return Object.keys(locals)
-      }) ?? []
-  )
-
-  const vars = [...parsedTemplate.substitutions, ...filtersLocals]
-  const scopes = new Set(dotNotation(ctx, vars))
-
+  const locals = ctx.global.rack.get(ctx.scope)
   const modules = []
-  if (filtersNames) {
-    for (const filtersName of filtersNames) {
-      if (filtersName in filters === false) {
-        if (ctx.component && filtersName in ctx.component) {
-          filters[filtersName] = ctx.component[filtersName]
-        } else {
-          modules.push(
-            filter(filtersName).then((filter) => {
-              if (filter) filters[filtersName] = filter
-            })
-          )
+
+  const vars = []
+  for (const tokens of parsedTemplate.substitutions) {
+    for (const token of tokens) {
+      if (token.type === "key") vars.push(token.value)
+      else if (token.type === "arg" && isLength(token.value)) {
+        vars.push(token.value)
+      } else if (token.type === "function") {
+        const filtersName = token.value
+        if (filtersName in filters === false) {
+          ctx.component && filtersName in ctx.component
+            ? (filters[filtersName] = ctx.component[filtersName])
+            : modules.push(
+                filter(filtersName).then((filter) => {
+                  if (filter) filters[filtersName] = filter
+                })
+              )
         }
       }
     }
   }
 
+  const scopes = new Set(dotNotation(ctx, vars))
+
+  const renderTemplate = template.compile(parsedTemplate, {
+    async: true,
+    locals,
+    filters,
+  })
+
   const fn = render
   render = async () => {
     await Promise.all(modules)
-    fn(
-      await template.format.async(
-        parsedTemplate,
-        ctx.global.rack.get(ctx.scope),
-        filters
-      )
-    )
+    fn(await renderTemplate(ctx.global.rack.get(ctx.scope)))
   }
 
   if (scopes.size > 0) registerRenderer(ctx, scopes, render)

@@ -21,32 +21,32 @@ template.make = makeTemplate
 
 template.parse = (source) => parseTemplate(source, jsonParse)
 
-template.compile = (parsed, locals, filters) =>
+template.compile = (parsed, options = {}) =>
   compileTemplate(
     parsed, //
-    { locate, filters, jsonParse, locals }
+    { locate, jsonParse, ...options }
   )
 
 template.format = (parsed, locals, filters) =>
   compileTemplate(
     parsed, //
-    { locate, filters, jsonParse, locals }
+    { locate, jsonParse, filters, locals }
   )(locals)
 
 template.render = (source, locals, filters) =>
   compileTemplate(
     parseTemplate(source, jsonParse), //
-    { locate, filters, jsonParse, locals }
+    { locate, jsonParse, filters, locals }
   )(locals)
 
 template.formatAsync = async (parsed, locals, filters) =>
   compileTemplate(
     parsed, //
-    { locate, filters, jsonParse, locals, async: true }
+    { locate, jsonParse, filters, locals, async: true }
   )(locals)
 
 template.renderAsync = async (source, locals, filters) =>
   compileTemplate(
     parseTemplate(source, jsonParse), //
-    { locate, filters, jsonParse, locals, async: true }
+    { locate, jsonParse, filters, locals, async: true }
   )(locals)

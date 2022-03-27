@@ -275,6 +275,31 @@ test("when", async (t) => {
   t.is(app.el.textContent, "")
 })
 
+test("when", "array", async (t) => {
+  const el = div()
+  const app = await ui(el, {
+    content: {
+      scope: "arr",
+      content: [{ when: "0", content: "x" }],
+    },
+    data: {
+      arr: [false],
+    },
+  })
+
+  t.is(app.el.textContent, "")
+
+  app.data.arr[0] = true
+  await repaint()
+
+  t.is(app.el.textContent, "x")
+
+  app.data.arr[0] = false
+  await repaint()
+
+  t.is(app.el.textContent, "")
+})
+
 test("when", "else", async (t) => {
   const el = div()
   const app = await ui(el, {
