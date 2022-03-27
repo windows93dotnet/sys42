@@ -120,7 +120,14 @@ const i18n = chainable(
       if (template in ctx === false) return false
       const parsed = parseTemplate(ctx[template])
       strings = parsed.strings
-      substitutions = parsed.substitutions.map((x) => substitutions[x])
+
+      const tmp = []
+
+      for (const tokens of parsed.substitutions) {
+        for (const { value } of tokens) tmp.push(substitutions[value])
+      }
+
+      substitutions = tmp
     })
 
     let out = strings[0]

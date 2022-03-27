@@ -1,7 +1,7 @@
 import { normalizeString } from "./core/normalizePath.js"
 import parsePath from "./core/parsePath.js"
 import formatPath from "./core/formatPath.js"
-import parseLiteral from "../regex/parseLiteral.js"
+import parseRegexLiteral from "../regex/parseRegexLiteral.js"
 import arrify from "../any/arrify.js"
 import stringFilters from "../string/stringFilters.js"
 
@@ -22,7 +22,7 @@ const makeFilter = (filter, replacer) => {
         let replacer = args.slice(0, lastCommaPos)
         const newSubstr = args.slice(lastCommaPos + 1)
         if (replacer.startsWith("/")) {
-          replacer = new RegExp(...parseLiteral(replacer))
+          replacer = new RegExp(...parseRegexLiteral(replacer))
         }
 
         args = [replacer, newSubstr]
