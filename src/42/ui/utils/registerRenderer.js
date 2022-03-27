@@ -41,7 +41,6 @@ registerRenderer.fromDots = (ctx, arr, render) => {
 registerRenderer.fromTemplate = (ctx, parsedTemplate, render) => {
   const filters = { ...ctx.global.filters.value }
   const locals = ctx.global.rack.get(ctx.scope)
-  const modules = []
 
   const vars = []
   for (const tokens of parsedTemplate.substitutions) {
@@ -54,11 +53,7 @@ registerRenderer.fromTemplate = (ctx, parsedTemplate, render) => {
         if (filtersName in filters === false) {
           ctx.component && filtersName in ctx.component
             ? (filters[filtersName] = ctx.component[filtersName])
-            : modules.push(
-                filter(filtersName).then((filter) => {
-                  if (filter) filters[filtersName] = filter
-                })
-              )
+            : (filters[filtersName] = filter(filtersName))
         }
       }
     }
@@ -74,9 +69,8 @@ registerRenderer.fromTemplate = (ctx, parsedTemplate, render) => {
 
   const fn = render
   render = async () => {
-    await Promise.all(modules)
     fn(await renderTemplate(ctx.global.rack.get(ctx.scope)))
   }
 
-  if (scopes.size > 0) registerRenderer(ctx, scopes, render)
+  registerRenderer(ctx, scopes, render)
 }

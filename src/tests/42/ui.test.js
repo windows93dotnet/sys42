@@ -4,6 +4,8 @@ import ui from "../../42/ui.js"
 import repaint from "../../42/fabric/type/promise/repaint.js"
 import Component from "../../42/ui/class/Component.js"
 
+const uppercase = (str) => str.toUpperCase()
+
 class Testcomponent extends Component {
   static definition = {
     tag: "ui-testcomponent",
@@ -802,13 +804,20 @@ test("components", "filters", async (t) => {
 /* filters
 ========== */
 
+test("noop", async (t) => {
+  const app = await ui(div(), {
+    content: "a",
+    data: { foo: "b" },
+  })
+
+  t.is(app.el.innerHTML, "a")
+})
+
 test("filters", async (t) => {
   const app = await ui(div(), {
     content: "a {{foo|uppercase}}",
     data: { foo: "b" },
-    filters: {
-      uppercase: (str) => str.toUpperCase(),
-    },
+    filters: { uppercase },
   })
 
   t.is(app.el.innerHTML, "a B")
@@ -817,25 +826,17 @@ test("filters", async (t) => {
 test("filters", "inline variable", async (t) => {
   const app = await ui(div(), {
     content: "a {{'b'|uppercase}}",
-    filters: {
-      uppercase: (str) => str.toUpperCase(),
-    },
+    filters: { uppercase },
   })
 
   t.is(app.el.innerHTML, "a B")
 })
 
-test.skip("filters", "as function", async (t) => {
+test("filters", "as function", async (t) => {
   const app = await ui(div(), {
     content: "a {{uppercase(foo)}}",
     data: { foo: "b" },
-    filters: {
-      // uppercase: (str) => str.toUpperCase(),
-      uppercase(str) {
-        console.log("uppercase as function")
-        return str.toUpperCase()
-      },
-    },
+    filters: { uppercase },
   })
 
   t.is(app.el.innerHTML, "a B")

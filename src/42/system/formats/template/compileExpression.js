@@ -31,8 +31,11 @@ function compileToken(i, list, tokens, options) {
       list.push(
         options.async
           ? async (locals, args = []) => {
-              for (const arg of argTokens) args.push(arg(locals))
-              return fn(...(await Promise.all(args)))
+              args.unshift(fn)
+              const undones = args
+              for (const arg of argTokens) undones.push(arg(locals))
+              const [asyncFn, ...rest] = await Promise.all(undones)
+              return asyncFn(...rest)
             }
           : (locals, args = []) => {
               for (const arg of argTokens) args.push(arg(locals))
