@@ -52,9 +52,10 @@ export default async function exec(cmd, locals = {}) {
 
   traverse(args, (key, val, obj) => {
     if (key === cliOptions.argsKey && val.length === 1) {
-      obj.filename = resolvePath(locals.cwd, val[0])
+      const filename = resolvePath(locals.cwd, val[0])
+      if (disk.has(filename)) obj.filename = filename
     }
   })
 
-  return program(args)
+  return program(args, locals)
 }

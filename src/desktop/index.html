@@ -70,14 +70,14 @@
       //   // src: "../demos/ui/components/dialog.demo.html",
       //   src: "../42/os/apps/TextEdit/index.html",
       // },
-      // {
-      //   type: "ui-enclose.ma-xxl",
-      //   // permissions: "trusted",
-      //   permissions: "app",
-      //   check: false,
-      //   // src: "../demos/ui/components/menu.demo.html",
-      //   src: "../demos/os/exec.demo.html",
-      // },
+      {
+        type: "ui-enclose.ma-xxl",
+        // permissions: "trusted",
+        permissions: "app",
+        check: false,
+        // src: "../demos/ui/components/menu.demo.html",
+        src: "../demos/os/exec.demo.html",
+      },
       {
         type: "footer.outset",
         scope: "desktop",
@@ -111,8 +111,4 @@
       },
     },
   })
-
-  import disk from "../42/system/fs/disk.js"
-
-  console.log(disk.glob("index.html"))
 </script>

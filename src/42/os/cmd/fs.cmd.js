@@ -7,16 +7,16 @@ export const cli = {
 }
 
 export default async function fs(args) {
-  const [key, sub] = Object.entries(args)[0]
+  const [cmd, options] = Object.entries(args)[0]
 
-  if (sub) {
-    if (sub.filename) {
-      return fsModule[key](sub.filename)
+  if (options) {
+    if (options.filename) {
+      return fsModule[cmd](options.filename)
     }
 
     return Promise.all(
-      disk.glob(sub.glob).map(
-        (path) => fsModule[key](path) //
+      disk.glob(options.glob).map(
+        (path) => fsModule[cmd](path) //
       )
     )
   }
