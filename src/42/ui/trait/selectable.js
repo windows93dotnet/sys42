@@ -1,3 +1,4 @@
+/* eslint-disable max-params */
 import Trait from "../class/Trait.js"
 import setup from "../../system/setup.js"
 import Dragger from "../class/Dragger.js"
@@ -9,6 +10,20 @@ import shortcuts from "../../system/shortcuts.js"
 const DEFAULTS = {
   items: ":scope > *",
   check: "colliding",
+  shortcuts: [
+    {
+      key: "[click]",
+      run: "toggleSelectOne",
+    },
+    {
+      key: "Ctrl+[click]",
+      run: "toggleSelect",
+    },
+    {
+      key: "Ctrl+a",
+      run: "selectAll",
+    },
+  ],
 }
 
 const configure = setup("ui.trait.selectable", DEFAULTS)
@@ -20,47 +35,55 @@ function emit(item, event) {
 }
 
 class Selectable extends Trait {
+  add(item, force) {
+    if (force !== true && this.selection.has(item)) {
+      this.selection.delete(item)
+      emit(item, "selectionremove")
+    } else {
+      this.selection.add(item)
+      emit(item, "selectionadd")
+    }
+  }
+
+  remove(item) {
+    this.selection.delete(item)
+    emit(item, "selectionremove")
+  }
+
+  toggleSelectOne(e, target) {
+    if (this.dragger.isDragging) return
+    this.selection.clear()
+    const items = this.el.querySelectorAll(this.config.items)
+    for (const item of items) {
+      this[item.contains(target) ? "add" : "remove"](item)
+    }
+  }
+
+  toggleSelect(e, target) {
+    if (this.dragger.isDragging) return
+    const items = this.el.querySelectorAll(this.config.items)
+    for (const item of items) if (item.contains(target)) this.add(item)
+  }
+
+  selectAll() {
+    if (this.dragger.isDragging) return
+    const items = this.el.querySelectorAll(this.config.items)
+    for (const item of items) this.add(item, true)
+  }
+
   constructor(el, options) {
     super("selectable", el)
 
     this.config = configure(options)
+    this.selection = new Set()
 
-    shortcuts(this.el, { preventDefault: true }, [
-      {
-        key: "[click]",
-        run: (e, target) => {
-          if (this.dragger.isDragging) return
-          const items = this.el.querySelectorAll(this.config.items)
-          for (const item of items) {
-            if (item.contains(target)) {
-              emit(item, "selectionadd")
-            } else {
-              emit(item, "selectionremove")
-            }
-          }
-        },
-      },
-      {
-        key: "Ctrl+[click]",
-        run: (e, target) => {
-          if (this.dragger.isDragging) return
-          const items = this.el.querySelectorAll(this.config.items)
-          for (const item of items) {
-            if (item.contains(target)) emit(item, "selectionadd")
-          }
-        },
-      },
-      {
-        key: "Ctrl+a",
-        run: () => {
-          if (this.dragger.isDragging) return
-          const items = this.el.querySelectorAll(this.config.items)
-          for (const item of items) {
-            emit(item, "selectionadd")
-          }
-        },
-      },
-    ])
+    this.el.tabIndex = 0
+
+    shortcuts(
+      this.el,
+      { preventDefault: true, agent: this },
+      this.config.shortcuts
+    )
 
     this.dragger = new Dragger(this.el, this.config)
 
@@ -89,7 +112,7 @@ class Selectable extends Trait {
         items = this.el.querySelectorAll(this.config.items)
         document.body.append(this.svg)
       })
-      .on("drag", (x, y, fromX, fromY) => {
+      .on("drag", (x, y, fromX, fromY, { ctrlKey }) => {
         const points = `${fromX},${fromY} ${x},${fromY} ${x},${y} ${fromX},${y}`
         this.polygon.setAttribute("points", points)
 
@@ -113,11 +136,11 @@ class Selectable extends Trait {
 
         for (const item of items) {
           const A = item.getBoundingClientRect()
-          emit(item, check(A, B) ? "selectionadd" : "selectionremove")
+          if (check(A, B)) this.add(item, true)
+          else if (ctrlKey === false) this.remove(item)
         }
       })
       .on("stop", () => {
-        console.log(888)
         this.polygon.setAttribute("points", points)
         this.svg.remove()
       })

@@ -53,7 +53,7 @@ export default class Dragger extends Emitter {
           "transition-0": true,
         },
       })
-      this.emit("start", e.x, e.y)
+      this.emit("start", e.x, e.y, e)
     }
 
     const stop = (e) => {
@@ -65,7 +65,7 @@ export default class Dragger extends Emitter {
         window.getSelection().empty()
         requestAnimationFrame(() => {
           this.isDragging = false
-          this.emit("stop", e.x, e.y)
+          this.emit("stop", e.x, e.y, e)
         })
       }
     }
@@ -73,7 +73,7 @@ export default class Dragger extends Emitter {
     const drag = (e) => {
       if (this.isDragging || checkDistance(e)) {
         if (!this.isDragging) start(e)
-        this.emit("drag", e.x, e.y, fromX, fromY)
+        this.emit("drag", e.x, e.y, fromX, fromY, e)
       }
     }
 

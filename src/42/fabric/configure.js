@@ -5,7 +5,7 @@ export function merge(target, source) {
     if (Array.isArray(val)) {
       target[key] = []
       merge(target[key], val)
-    } else if (toString.call(val) === OBJECT) {
+    } else if (toString.call(val) === OBJECT && val.constructor === Object) {
       target[key] ??= {}
       merge(target[key], val)
     } else {
