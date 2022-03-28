@@ -44,13 +44,13 @@ export class Dialog extends Component {
 
   async apply() {
     if (this._.parentCtx) {
-      let clone = structuredClone(this._.ctx.global.rack.value)
+      const clone = structuredClone(this._.ctx.global.rack.value)
 
-      if (this._.config.modules?.apply) {
-        const name = this._.config.modules.apply
-        clone = await import(/* @vite-ignore */ name) //
-          .then((m) => m.apply(clone))
-      }
+      // if (this._.config.modules?.apply) {
+      //   const name = this._.config.modules.apply
+      //   clone = await import(/* @vite-ignore */ name) //
+      //     .then((m) => m.default(clone))
+      // }
 
       this._.parentCtx.global.state.set(this._.parentCtx.scope, clone)
     }
@@ -58,14 +58,7 @@ export class Dialog extends Component {
 
   async cancel() {
     if ("backupData" in this._) {
-      let { backupData } = this._
-
-      if (this._.config.modules?.cancel) {
-        const name = this._.config.modules.cancel
-        backupData = await import(/* @vite-ignore */ name) //
-          .then((m) => m.cancel(backupData))
-      }
-
+      const { backupData } = this._
       this._.parentCtx.global.state.set(this._.parentCtx.scope, backupData)
     }
 

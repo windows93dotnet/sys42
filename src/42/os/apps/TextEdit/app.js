@@ -14,6 +14,7 @@ const content = [
     label: "Open",
     picto: "folder-open",
     shortcut: "Ctrl+O",
+    id: "open",
     run: "open",
   },
   {
@@ -161,4 +162,4 @@ const app = await ui({
   },
 })
 
-app.get("#explorer").click()
+app.get("#open").click()

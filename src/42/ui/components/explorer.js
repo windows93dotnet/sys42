@@ -47,18 +47,6 @@ export class Explorer extends Component {
     },
 
     shortcuts: [
-      // {
-      //   key: "[click]",
-      //   selector: "ui-icon",
-      //   run: "select",
-      //   args: ["target.path"],
-      // },
-      // {
-      //   key: "Ctrl+[click]",
-      //   selector: "ui-icon",
-      //   run: "select",
-      //   args: ["target.path", true],
-      // },
       {
         key: "[dblclick]",
         selector: 'ui-icon[aria-description="folder"]',
@@ -67,11 +55,6 @@ export class Explorer extends Component {
       },
     ],
   }
-
-  // select(path, add) {
-  //   if (add !== true) this.selection.length = 0
-  //   this.selection.push(path)
-  // }
 
   folderUp() {
     let path = dirname(this.path)
@@ -193,8 +176,7 @@ function getDir(path, defaultPath = "/") {
 
 export async function pickFile(path, options = {}) {
   const res = await explorer(getDir(path, options.defaultPath), {
-    modules: { apply: "./dialog/selection.apply.js" },
-    selection: [path],
+    selection: path ? [path] : [],
     footer: {
       type: ".w-full.items-end.box-v.ma-sm.gap-sm",
       content: [
@@ -205,18 +187,20 @@ export async function pickFile(path, options = {}) {
     ...options,
   })
 
-  return res.ok
-    ? {
-        path: res.value.path,
-        files: res.value.files,
-        selection: res.value.selection,
-      }
-    : undefined
+  if (!res.ok) return
+
+  const out = {
+    path: res.value.path,
+    files: res.value.files,
+    selection: res.value.selection,
+  }
+
+  return out
 }
 
 export async function saveFile(path, options = {}) {
   const res = await explorer(getDir(path, options.defaultPath), {
-    selection: [path],
+    selection: path ? [path] : [],
     footer: {
       type: ".w-full.items-end.box-v.ma-sm.gap-sm",
       content: [
