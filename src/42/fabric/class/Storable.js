@@ -2,6 +2,7 @@ import Database from "../../system/db/Database.js"
 import configure from "../configure.js"
 import flatten from "../type/object/flatten.js"
 import trim from "../type/string/trim.js"
+import defer from "../type/promise/defer.js"
 import inOpaqueOrigin from "../../system/env/runtime/inOpaqueOrigin.js"
 
 import exists from "../locator/exists.js"
@@ -19,16 +20,27 @@ export default class Storable {
     this.root = {}
     this.config = configure(DEFAULTS, options)
     this.sep = this.config.sep
-    this.store = inOpaqueOrigin
-      ? new Map()
-      : new Database({
-          ...this.config,
-          // version: Date.now(),
-          populate: async (db) => {
-            this.db = db
-            await this.populate(root)
-          },
-        }).store
+    if (inOpaqueOrigin) {
+      // TODO: use ipc with "database" permissions
+      this.store = new Map()
+      this.store.fromEntries = (entries) => {
+        for (const [key, val] of entries) {
+          this.store.set(key, val)
+        }
+      }
+
+      const d = defer()
+      this.store.then = d.then
+      this.populate(root).then(() => d.resolve())
+    } else {
+      this.store = new Database({
+        ...this.config,
+        // version: Date.now(),
+        populate: async () => {
+          await this.populate(root)
+        },
+      }).store
+    }
   }
 
   async populate(root) {
@@ -37,6 +49,7 @@ export default class Storable {
   }
 
   async init() {
+    await this.store
     for await (const [key, val] of this.store.entries()) {
       allocate(this.root, key, val, this.sep)
     }

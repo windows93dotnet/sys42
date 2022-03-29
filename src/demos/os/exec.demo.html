@@ -23,30 +23,14 @@
 </script> -->
 
 <script type="module">
-  // import fs from "../../42/system/fs.js"
+  import fs from "../../42/system/fs.js"
 
   // console.log(await fs.readText("/index.html"))
+  console.log(await fs.readText("/home/anonymous/theme.cbor"))
 
   import disk from "../../42/system/fs/disk.js"
-  console.log(disk.root)
 
-  import JSON5 from "../../42/system/formats/json5.js"
-  // console.log(JSON5.evaluate("{a:1}"))
-
-  const str = `
-{
-  // yep
-  number: 1,
-  /* string: 'yes', */
-  object: { nested: true },
-  array: ['this', 'that', 'the other']
-}`
-
-  const object = JSON5.parse(str)
-  object.number = 42
-  object.array[2] = "EVERYTHING"
-
-  // const object = { number: 2 }
-
-  console.log(JSON5.format(str, object))
+  setTimeout(() => {
+    console.log(disk.root)
+  }, 1000)
 </script>
