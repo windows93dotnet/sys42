@@ -124,10 +124,10 @@ export default {
 
     {
       only: true,
-      src: "json5",
-      dest: "src/42/format/json5.js",
+      src: "golden-fleece",
+      dest: "src/42/system/formats/json5.js",
+      foot: "export default { ast: parse, parse: evaluate, format: patch, stringify }",
       eslint: { disable: true },
-      // map: ["dist/index.js", "json5.js"],
     },
 
     {

@@ -248,25 +248,37 @@ export async function fsReadText(path) {
   return fsRead(path, "utf8")
 }
 
+let JSON5
 export async function fsWriteJSON(path, value, replacer, space = 2) {
-  await fsWrite(path, JSON.stringify(value, replacer, space), "utf8")
+  let previous
+
+  try {
+    previous = await fsRead(path, "utf8")
+  } catch {}
+
+  if (previous) {
+    JSON5 ??= await import("./formats/json5.js").then((m) => m.default)
+    await fsWrite(path, JSON5.format(previous, value), "utf8")
+  } else {
+    await fsWrite(path, JSON.stringify(value, replacer, space), "utf8")
+  }
 }
 
-let JSON5
 export async function fsReadJSON(path) {
   JSON5 ??= await import("./formats/json5.js").then((m) => m.default)
   return fsRead(path, "utf8").then((value) => JSON5.parse(value))
 }
 
+let CBOR
 export async function fsWriteCBOR(path, value) {
   // @read https://github.com/cbor-wg/cbor-magic-number
-  const encode = await import("./formats/cbor.js").then(({ encode }) => encode)
-  await fsWrite(path, encode(value))
+  CBOR ??= await import("./formats/cbor.js").then((m) => m.default)
+  await fsWrite(path, CBOR.encode(value))
 }
 
 export async function fsReadCBOR(path) {
-  const decode = await import("./formats/cbor.js").then(({ decode }) => decode)
-  return fsRead(path).then((value) => decode(value))
+  CBOR ??= await import("./formats/cbor.js").then((m) => m.default)
+  return fsRead(path).then((value) => CBOR.decode(value))
 }
 
 const fs = {

@@ -184,6 +184,61 @@ const makeSuite = (driver) => {
     t.eq(await stream.ws.collect(fs.source(path)), buffer)
   })
 
+  /* cbor
+  ======= */
+
+  test("cbor()", async (t) => {
+    const path = cleanFile(`42-${d}-cbor`)
+    const object = { a: 1 }
+    await fs.writeCBOR(path, object)
+    t.eq(await fs.readCBOR(path), object)
+    t.eq(await fs.readText(path), "\ufffdaa\x01")
+  })
+
+  /* json
+  ======= */
+
+  test("json()", async (t) => {
+    const path = cleanFile(`42-${d}-json`)
+    const object = { a: 1 }
+    await fs.writeJSON(path, object)
+    t.eq(await fs.readJSON(path), object)
+    t.eq(
+      await fs.readText(path),
+      `\
+{
+  "a": 1
+}`
+    )
+  })
+
+  test("json()", "preserve comments using JSON5", async (t) => {
+    const path = cleanFile(`42-${d}-json5`)
+    const content = `\
+{
+  // yep
+  number: 1,
+  /* string: 'yes', */
+  object: { nested: true },
+  array: ['this', 'that', 'the other']
+}`
+
+    const expected = {
+      number: 1,
+      object: { nested: true },
+      array: ["this", "that", "the other"],
+    }
+
+    await fs.writeText(path, content)
+    t.eq(await fs.readJSON(path), expected)
+
+    expected.number = 42
+
+    await fs.writeJSON(path, expected)
+
+    t.eq(await fs.readText(path), content.replace("1", "42"))
+  })
+
   /* dir
   ====== */
 
