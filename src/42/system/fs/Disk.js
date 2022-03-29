@@ -3,6 +3,7 @@ import cbor from "../formats/cbor.js"
 
 export const MASKS = {
   0x00: "fetch",
+  0x01: "ipc",
   0x10: "memory",
   0x11: "sessionstorage",
   0x12: "localstorage",

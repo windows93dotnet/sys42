@@ -8,7 +8,7 @@
   exec
 </body>
 
-<script type="module">
+<!-- <script type="module">
   import exec from "../../42/os/exec.js"
 
   // console.log(222, await exec("open **/*.cbor"))
@@ -20,4 +20,13 @@
   console.log(222, await exec("fs open **/*.html"))
 
   // console.log(222, await exec("fs write **/index.html"))
+</script> -->
+
+<script type="module">
+  // import fs from "../../42/system/fs.js"
+
+  // console.log(await fs.readText("/index.html"))
+
+  import disk from "../../42/system/fs/disk.js"
+  console.log(disk.root)
 </script>

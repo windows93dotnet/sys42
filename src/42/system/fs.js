@@ -8,7 +8,7 @@ import getDriverLazy from "./fs/getDriverLazy.js"
 export { default as FileError } from "./fs/FileSystemError.js"
 
 const DEFAULTS = {
-  places: { "/": inOpaqueOrigin ? "memory" : "indexeddb" },
+  places: { "/": inOpaqueOrigin ? "ipc" : "indexeddb" },
 }
 
 // "/var/": "localstorage",
