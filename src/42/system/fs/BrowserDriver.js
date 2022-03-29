@@ -1,5 +1,4 @@
 /* eslint-disable no-throw-literal */
-import Disk, { RESERVED_BYTES } from "./Disk.js"
 import Driver from "./Driver.js"
 
 if (Symbol.asyncIterator in ReadableStream.prototype === false) {
@@ -9,7 +8,7 @@ if (Symbol.asyncIterator in ReadableStream.prototype === false) {
   await import("../env/polyfills/readable-stream-async-iterator.js")
 }
 
-let $
+let disk
 const { random, floor } = Math
 
 export default class BrowserDriver extends Driver {
@@ -39,12 +38,11 @@ export default class BrowserDriver extends Driver {
     this.getDriver = getDriver
     this.store = this.constructor.store
     this.mask = this.constructor.mask
-    this.reservedBytes = RESERVED_BYTES
   }
 
   async init() {
-    $ = new Disk()
-    await $.init()
+    disk ??= await import("./disk.js").then((m) => m.default)
+    this.reservedBytes = disk.RESERVED_BYTES
     return this
   }
 
@@ -52,25 +50,24 @@ export default class BrowserDriver extends Driver {
   ======== */
 
   async access(filename) {
-    return $.has(filename)
+    return disk.has(filename)
   }
 
   async isDir(filename) {
-    return $.isDir(filename)
+    return disk.isDir(filename)
   }
-
   async isFile(filename) {
-    return $.isFile(filename)
+    return disk.isFile(filename)
   }
 
   /* file
   ======= */
 
   async open(filename) {
-    if (!$.has(filename)) throw { errno: 2 }
-    else if ($.isDir(filename)) throw { errno: 21 }
+    if (!disk.has(filename)) throw { errno: 2 }
+    else if (disk.isDir(filename)) throw { errno: 21 }
 
-    const { id, mask } = $.getIdAndMask(filename)
+    const { id, mask } = disk.getIdAndMask(filename)
 
     if (this.mask !== mask) {
       const driver = await this.getDriver(mask)
@@ -81,7 +78,7 @@ export default class BrowserDriver extends Driver {
 
     if (blob === undefined) {
       // TODO: remove memoryDriver files from FileIndex on init
-      $.delete(filename)
+      disk.delete(filename)
       throw { errno: 2 }
     }
 
@@ -93,31 +90,31 @@ export default class BrowserDriver extends Driver {
   }
 
   async write(filename, data, { encoding }) {
-    if ($.isDir(filename)) throw { errno: 21 }
+    if (disk.isDir(filename)) throw { errno: 21 }
     if (ArrayBuffer.isView(data)) data = data.buffer
 
-    let { id, mask } = $.getIdAndMask(filename)
+    let { id, mask } = disk.getIdAndMask(filename)
 
     if (id === undefined) {
       id = this.makeID()
-      $.set(filename, id)
+      disk.set(filename, id)
     } else if (this.mask !== mask) {
       const driver = await this.getDriver(mask)
       driver.delete(filename)
       id = this.makeID()
-      $.set(filename, id)
+      disk.set(filename, id)
     }
 
     return this.store.set(id, BrowserDriver.toFile([data], encoding))
   }
 
   async delete(filename) {
-    if (!$.has(filename)) throw { errno: 2 }
-    else if ($.isDir(filename)) throw { errno: 21 }
+    if (!disk.has(filename)) throw { errno: 2 }
+    else if (disk.isDir(filename)) throw { errno: 21 }
 
-    const { id, mask } = $.getIdAndMask(filename)
+    const { id, mask } = disk.getIdAndMask(filename)
 
-    $.delete(filename)
+    disk.delete(filename)
 
     if (mask === 0x00) return false
 
@@ -131,7 +128,7 @@ export default class BrowserDriver extends Driver {
 
   async append(filename, data, { encoding }) {
     const prev = await this.open(filename)
-    const id = $.get(filename)
+    const id = disk.get(filename)
     return this.store.set(id, BrowserDriver.toFile([prev, data], encoding))
   }
 
@@ -139,25 +136,27 @@ export default class BrowserDriver extends Driver {
   ====== */
 
   async writeDir(filename) {
-    if ($.has(filename) && $.isFile(filename)) throw { errno: 17 }
-    $.set(filename, {})
+    if (disk.has(filename) && disk.isFile(filename)) throw { errno: 17 }
+    disk.set(filename, {})
   }
 
   async readDir(filename, options) {
-    return $.readDir(filename, options)
+    return disk.readDir(filename, options)
   }
 
   async deleteDir(filename) {
-    if (!$.has(filename)) throw { errno: 2 }
-    else if (!$.isDir(filename)) throw { errno: 20 }
+    if (!disk.has(filename)) throw { errno: 2 }
+    else if (!disk.isDir(filename)) throw { errno: 20 }
 
     await Promise.all(
-      $.readDir(filename, { absolute: true }).map((path) =>
-        path.endsWith("/") ? this.deleteDir(path) : this.delete(path)
-      )
+      disk
+        .readDir(filename, { absolute: true })
+        .map((path) =>
+          path.endsWith("/") ? this.deleteDir(path) : this.delete(path)
+        )
     )
 
-    $.delete(filename)
+    disk.delete(filename)
   }
 
   /* stream

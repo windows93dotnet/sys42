@@ -1,14 +1,16 @@
 import inOpaqueOrigin from "./env/runtime/inOpaqueOrigin.js"
+import inTop from "./env/runtime/inTop.js"
 import configure from "../fabric/configure.js"
 import resolvePath from "../fabric/type/path/core/resolvePath.js"
 import FileSystemError from "./fs/FileSystemError.js"
 import addStack from "../fabric/type/error/addStack.js"
 import getDriverLazy from "./fs/getDriverLazy.js"
+import ipc from "./ipc.js"
 
 export { default as FileError } from "./fs/FileSystemError.js"
 
 const DEFAULTS = {
-  places: { "/": inOpaqueOrigin ? "ipc" : "indexeddb" },
+  places: { "/": "indexeddb" },
 }
 
 // "/var/": "localstorage",
@@ -18,6 +20,8 @@ const DEFAULTS = {
 // TODO: https://web.dev/file-system-access/
 
 let places
+
+if (inTop) ipc.on("IPCDriver", async ({ type, args }) => fs[type](...args))
 
 function mountPlace(place, driverName, options = {}) {
   driverName = driverName.toLowerCase()
@@ -48,12 +52,18 @@ export async function fsMount(place, driverName, options) {
 
 async function findDriver(path, stack) {
   const filename = resolvePath(path)
-  const place = places.find((item) => filename.startsWith(item))
-  if (place in fs.config.places === false) {
-    throw addStack(new Error(`no driver mounted for '${filename}'`), stack)
+  let name
+  if (inOpaqueOrigin) {
+    name = "ipc"
+  } else {
+    const place = places.find((item) => filename.startsWith(item))
+    if (place in fs.config.places === false) {
+      throw addStack(new Error(`no driver mounted for '${filename}'`), stack)
+    }
+
+    name = fs.config.places[place]
   }
 
-  const name = fs.config.places[place]
   const driver = await getDriverLazy(name, stack)
   return { filename, driver }
 }

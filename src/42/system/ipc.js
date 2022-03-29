@@ -59,7 +59,8 @@ globalThis.addEventListener(
 
           undones.push(ipc.send(event, data, meta))
 
-          const res = (await Promise.all(undones)).flat()
+          let res = (await Promise.all(undones)).flat()
+          if (undones.length === 1) res = res[0]
           port.postMessage({ id, res })
         }
       }

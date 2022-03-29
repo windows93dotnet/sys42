@@ -14,16 +14,14 @@ import argv from "./cli/argv.js"
 let bus
 const { HOME } = disk
 
-if (inTop) {
-  ipc.on("main<-exec", ({ cmd, locals }) => exec(cmd, locals))
-}
+if (inTop) ipc.on("main<-exec", ({ cmd, locals }) => exec(cmd, locals))
 
 export default async function exec(cmd, locals = {}) {
   locals.cwd ??= dirname(new URL(getParentModule().url).pathname)
 
   if (inIframe) {
     bus ??= ipc.to(globalThis.top)
-    return bus.send("main<-exec", { cmd, locals }).then(([res]) => res)
+    return bus.send("main<-exec", { cmd, locals })
   }
 
   const [name, ...rest] = parseCommand(cmd)

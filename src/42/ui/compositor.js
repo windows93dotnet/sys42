@@ -1,4 +1,5 @@
 import inIframe from "../system/env/runtime/inIframe.js"
+import inTop from "../system/env/runtime/inTop.js"
 import ipc from "../system/ipc.js"
 import uid from "../fabric/uid.js"
 import emittable from "../fabric/trait/emittable.js"
@@ -40,7 +41,7 @@ function restoreFocus(opener, options) {
   })
 }
 
-if (!inIframe) {
+if (inTop) {
   ipc
     .on("layer<-init", async ({ layerName, options }, { send }) => {
       await initLayer(layerName, options)
@@ -200,7 +201,7 @@ export default async function compositor(layerName, options) {
             instance.off = off
             instances.set(id, instance)
 
-            const [res] = await bus.send("layer<-method", {
+            const res = await bus.send("layer<-method", {
               layerName,
               id,
               method: "add",
