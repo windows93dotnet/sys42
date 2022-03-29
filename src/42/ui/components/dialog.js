@@ -115,7 +115,7 @@ export class Dialog extends Component {
       )
     )
 
-    if ("menubar" in config) {
+    if (config.menubar) {
       fragment.append(
         create(
           "div.ui-dialog__menubar",
@@ -126,7 +126,7 @@ export class Dialog extends Component {
 
     fragment.append(create("div.ui-dialog__content", render(content, ctx)))
 
-    if ("footer" in config) {
+    if (config.footer) {
       fragment.append(
         create("footer.ui-dialog__footer", render(config.footer, ctx))
       )
