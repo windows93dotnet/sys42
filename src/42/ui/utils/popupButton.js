@@ -1,6 +1,7 @@
 import uid from "../../fabric/uid.js"
 import listen from "../../fabric/dom/listen.js"
 import render from "../render.js"
+import { addOpenerListeners } from "../renderers/renderPopup.js"
 
 // @read https://labs.levelaccess.com/index.php/ARIA_Haspopup_property
 const POPUP_TYPES = new Set(["menu", "listbox", "tree", "grid", "dialog"])
@@ -30,15 +31,8 @@ export default function popupButton(el, def, ctx) {
     })
   } else {
     el.setAttribute("aria-expanded", "false")
-
     el.append(render({ type: "ui-picto", value: pictoName }, ctx))
-
-    ctx.undones.push(
-      import("../renderers/renderPopup.js").then((m) => {
-        m.addOpenerListeners(el, role, def, ctx)
-        return "renderer renderPopup"
-      })
-    )
+    addOpenerListeners(el, role, def, ctx)
   }
 
   return el

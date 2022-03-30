@@ -2,7 +2,10 @@ import "../../theme.js"
 import inIframe from "../../../system/env/runtime/inIframe.js"
 import preinstall from "../../utils/preinstall.js"
 import ui from "../../../ui.js"
-import fs from "../../../system/fs.js"
+
+let fs
+let explorer
+let toggleFullscreen
 
 const install = preinstall({
   name: "TextEdit",
@@ -72,9 +75,13 @@ const content = [
       },
     ],
   },
+  // {
+  //   label: "Fullscreen",
+  //   // type: "checkbox",
+  //   run: "fullscreen",
+  //   disabled: !document.fullscreenEnabled,
+  // },
 ]
-
-import explorer from "../../../ui/components/explorer.js"
 
 const app = await ui({
   type: ".box-fit.box-h",
@@ -93,7 +100,6 @@ const app = await ui({
   data: {
     path: undefined,
     text: "hello",
-    // monospace: false,
     monospace: true,
     spellcheck: true,
     wrap: false,
@@ -107,6 +113,8 @@ const app = await ui({
     },
 
     async open() {
+      explorer ??= await import("../../../ui/components/explorer.js") //
+        .then((m) => m.default)
       const res = await explorer.pick(this.path)
       if (res) {
         this.path = res.selection[0]
@@ -116,15 +124,21 @@ const app = await ui({
     },
 
     async save() {
-      await (this.path
-        ? fs.write(this.path, new Blob([this.text]))
-        : app.def.actions.saveAs.call(this))
-      this.dirty = false
+      if (this.path) {
+        fs ??= await import("../../../system/fs.js").then((m) => m.default)
+        fs.write(this.path, new Blob([this.text]))
+        this.dirty = false
+      } else {
+        await app.def.actions.saveAs.call(this)
+      }
     },
 
     async saveAs() {
+      explorer ??= await import("../../../ui/components/explorer.js") //
+        .then((m) => m.default)
       const res = await explorer.save(this.path ?? "untitled.txt")
       if (res) {
+        fs ??= await import("../../../system/fs.js").then((m) => m.default)
         await fs.write(res, new Blob([this.text]))
         this.path = res
         this.dirty = false
@@ -140,13 +154,10 @@ const app = await ui({
     },
 
     async fullscreen() {
-      try {
-        await document.documentElement.requestFullscreen({
-          navigationUI: "hide",
-        })
-      } catch (err) {
-        console.log(err)
-      }
+      toggleFullscreen ??= await import(
+        "../../../fabric/dom/toggleFullscreen.js"
+      ).then((m) => m.default)
+      toggleFullscreen()
     },
   },
 })
