@@ -5,7 +5,7 @@ export class Mainloop extends Loop {
     const registry = new Map()
     super((delta) => registry.forEach((fn) => fn(delta)))
     this.registry = registry
-    this.play()
+    globalThis.requestIdleCallback(() => this.play(), { timeout: 500 })
   }
 
   add(name, fn) {

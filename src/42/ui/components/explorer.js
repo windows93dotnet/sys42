@@ -3,6 +3,7 @@ import Component from "../class/Component.js"
 import dirname from "../../fabric/type/path/extract/dirname.js"
 import render from "../render.js"
 import dialog from "./dialog.js"
+import basename from "../../fabric/type/path/extract/basename.js"
 
 function displayError(err) {
   const div = document.createElement("div")
@@ -115,7 +116,7 @@ export class Explorer extends Component {
         content: [
           {
             type: ".py-xs.px-md.mr-xs.inset-shallow.panel.item-shrink",
-            content: "{{items.length}} {{'item'|pluralize(items.length)}}",
+            content: "{{items.length}} {{pluralize('item', items.length)}}",
           },
           {
             type: "input.inset-shallow.panel",
@@ -174,6 +175,8 @@ function getDir(path, defaultPath = "/") {
   return out
 }
 
+let fs
+
 export async function pickFile(path, options = {}) {
   const res = await explorer(getDir(path, options.defaultPath), {
     selection: path ? [path] : [],
@@ -189,21 +192,26 @@ export async function pickFile(path, options = {}) {
 
   if (!res.ok) return
 
-  const out = {
-    path: res.value.path,
-    files: res.value.files,
-    selection: res.value.selection,
-  }
+  fs ??= await import("../../system/fs.js").then((m) => m.default)
 
-  return out
+  const files = await Promise.all(
+    res.value.selection.map((path) => fs.open(path))
+  )
+
+  return {
+    path: res.value.path,
+    selection: res.value.selection,
+    files,
+  }
 }
 
-export async function saveFile(path, options = {}) {
+export async function saveFile(path, options = {}, value) {
   const res = await explorer(getDir(path, options.defaultPath), {
     selection: path ? [path] : [],
     footer: {
       type: ".w-full.items-end.box-v.ma-sm.gap-sm",
       content: [
+        { type: "input", name: "filename", compact: true, prose: false },
         { type: "button", label: "Cancel", run: "cancel" },
         { type: "button.btn-default", label: "Save", run: "ok" },
       ],
@@ -211,7 +219,16 @@ export async function saveFile(path, options = {}) {
     ...options,
   })
 
-  return res.ok ? {} : undefined
+  if (!res.ok || !res.value.filename) return
+
+  if (!res.value.path.endsWith("/")) res.value.path += "/"
+  const filename = res.value.path + basename(res.value.filename)
+
+  if (value === undefined) return filename
+
+  fs ??= await import("../../system/fs.js").then((m) => m.default)
+
+  return fs.write(filename, value)
 }
 
 explorer.pick = pickFile

@@ -151,9 +151,10 @@ function setValidation(attr, control, def) {
     if ("exclusiveMaximum" in schema) attr.max = schema.exclusiveMaximum - 1
   }
 
+  attr.autocomplete = "off"
+
   if (def.prose === false) {
     attr.autocapitalize = "none"
-    attr.autocomplete = "off"
     attr.autocorrect = "off"
     attr.spellcheck = "false"
     attr.translate = "no"

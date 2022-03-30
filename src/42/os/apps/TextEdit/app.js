@@ -2,6 +2,7 @@ import "../../theme.js"
 import inIframe from "../../../system/env/runtime/inIframe.js"
 import preinstall from "../../utils/preinstall.js"
 import ui from "../../../ui.js"
+import fs from "../../../system/fs.js"
 
 const install = preinstall({
   name: "TextEdit",
@@ -21,7 +22,15 @@ const content = [
     label: "Save",
     picto: "save",
     shortcut: "Ctrl+S",
+    id: "save",
     run: "save",
+  },
+  {
+    label: "Save As…",
+    picto: "save",
+    shortcut: "Ctrl+Shift+S",
+    id: "saveAs",
+    run: "saveAs",
   },
   {
     label: "File",
@@ -95,6 +104,9 @@ const app = await ui({
             console.log("explorer res:", res)
           },
         },
+        {
+          content: " {{dirty ? '*' : '~'}}",
+        },
       ],
     },
     {
@@ -119,6 +131,7 @@ const app = await ui({
   actions: {
     new() {
       this.path = undefined
+      this.dirty = false
       this.text = ""
     },
 
@@ -127,19 +140,24 @@ const app = await ui({
       if (res) {
         this.path = res.selection[0]
         this.text = await res.files[0].text()
+        this.dirty = false
       }
     },
 
     async save() {
-      const res = await (this.path
-        ? explorer.save(this.path, new Blob([this.text]))
+      await (this.path
+        ? fs.write(this.path, new Blob([this.text]))
         : app.def.actions.saveAs.call(this))
-      console.log("save", res)
+      this.dirty = false
     },
 
     async saveAs() {
-      const res = await explorer.save("unamed.txt", new Blob([this.text]))
-      console.log("saveAs", res)
+      const res = await explorer.save(this.path ?? "untitled.txt")
+      if (res) {
+        await fs.write(res, new Blob([this.text]))
+        this.path = res
+        this.dirty = false
+      }
     },
 
     install() {
@@ -162,4 +180,9 @@ const app = await ui({
   },
 })
 
-app.get("#open").click()
+app.state.on("update", (queue) => {
+  if (queue.has("text")) app.data.dirty = true
+})
+
+// app.get("#open").click()
+// app.get("#save").click()
