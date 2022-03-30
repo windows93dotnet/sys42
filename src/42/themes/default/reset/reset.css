@@ -1,9 +1,5 @@
 :where(body) {
   min-height: 100vh;
-  /* overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-gutter: stable; */
-  /* scrollbar-gutter: stable both-edges; */
 }
 
 :where(table) { font: inherit; }
@@ -41,23 +37,26 @@
   padding-left: var(--breath);
 }
 
-:where(body,nav,section,article,aside) > :where(section,article,header,footer) {
+:where(body, nav, section, article, aside) > :where(section, article, header, footer) {
   margin-block-start: var(--breath);
   margin-block-end: var(--unit);
 }
 
-:where(h1,h2,h3,h4,h5,h6) {
+:where(h1, h2, h3, h4, h5, h6) {
   margin-block-start: var(--breath);
   margin-block-end: var(--unit);
 }
 
-:where(:is(section,article,header,footer):first-child),
-:where(:is(body,section,article,header,footer) > :is(h1,h2,h3,h4,h5,h6):first-child) {
+:where(:is(section, article, header, footer):first-child),
+:where(:is(body, section, article, header, footer) > :is(h1, h2, h3, h4, h5, h6):first-child) {
   margin-block-start: 0;
 }
 
-:where(:is(section,article,header,footer):last-child),
-:where(:is(section,article,header,footer) > :last-child) {
+:where(:is(section, article, header, footer):last-child),
+:where(:is(section, article, header, footer) > :last-child) {
   margin-block-end: 0;
 }
 
+:where(textarea) {
+  cursor: auto;
+}

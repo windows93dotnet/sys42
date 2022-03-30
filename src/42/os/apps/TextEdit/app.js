@@ -12,27 +12,6 @@ const install = preinstall({
 
 const content = [
   {
-    label: "Open",
-    picto: "folder-open",
-    shortcut: "Ctrl+O",
-    id: "open",
-    run: "open",
-  },
-  {
-    label: "Save",
-    picto: "save",
-    shortcut: "Ctrl+S",
-    id: "save",
-    run: "save",
-  },
-  {
-    label: "Save As…",
-    picto: "save",
-    shortcut: "Ctrl+Shift+S",
-    id: "saveAs",
-    run: "saveAs",
-  },
-  {
     label: "File",
     id: "file",
     content: [
@@ -46,18 +25,22 @@ const content = [
         label: "Open",
         picto: "folder-open",
         shortcut: "Ctrl+O",
+        id: "open",
         run: "open",
       },
       {
         label: "Save",
         picto: "save",
         shortcut: "Ctrl+S",
+        id: "save",
         run: "save",
       },
-      "---",
       {
-        label: "Recent",
-        content: [{ label: "Clear", run: "clear" }],
+        label: "Save As…",
+        picto: "save",
+        shortcut: "Ctrl+Shift+S",
+        id: "saveAs",
+        run: "saveAs",
       },
     ],
   },
@@ -70,6 +53,10 @@ const content = [
         disabled: !document.fullscreenEnabled,
       },
       "---",
+      {
+        label: "Monospace",
+        type: "checkbox",
+      },
       {
         label: "Spellcheck",
         type: "checkbox",
@@ -94,26 +81,9 @@ const app = await ui({
   content: [
     { type: "ui-menubar", content },
     {
-      type: "footer",
-      content: [
-        {
-          type: "button#explorer",
-          label: "explorer",
-          async run() {
-            const res = await explorer("/42/")
-            console.log("explorer res:", res)
-          },
-        },
-        {
-          content: " {{dirty ? '*' : '~'}}",
-        },
-      ],
-    },
-    {
-      // type: "textarea.w-full.{{monospace}}",
       type: "textarea.w-full",
       name: "text",
-      class: "{{monospace}}",
+      class: "{{monospace ? 'font-mono' : ''}}",
       spellcheck: "{{spellcheck}}",
       prose: false,
       compact: true,
@@ -123,7 +93,8 @@ const app = await ui({
   data: {
     path: undefined,
     text: "hello",
-    monospace: "font-mono",
+    // monospace: false,
+    monospace: true,
     spellcheck: true,
     wrap: false,
   },
