@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 
 import defer from "../../fabric/type/promise/defer.js"
+// import inOpaqueOrigin from "../../system/env/runtime/inOpaqueOrigin.js"
 
 function resolve(url) {
   return new URL(url, document.URL).href
@@ -69,11 +70,11 @@ export default function preinstall(app) {
 
   const deferred = defer()
 
-  // navigator.serviceWorker
-  //   ?.register("/42.sw.js", {
-  //     type: "module",
-  //   })
-  //   .catch(deferred.reject)
+  // if (!inOpaqueOrigin) {
+  //   navigator.serviceWorker
+  //     ?.register("/42.sw.js", { type: "module" })
+  //     .catch(deferred.reject)
+  // }
 
   // https://web.dev/customize-install/
 

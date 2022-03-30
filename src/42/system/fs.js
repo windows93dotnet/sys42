@@ -250,6 +250,9 @@ export async function fsMove(from, to, options) {
 /* sugar
 ======== */
 
+let JSON5
+let CBOR
+
 export async function fsWriteText(path, value) {
   await fsWrite(path, value, "utf8")
 }
@@ -258,7 +261,6 @@ export async function fsReadText(path) {
   return fsRead(path, "utf8")
 }
 
-let JSON5
 export async function fsWriteJSON(path, value, replacer, space = 2) {
   let previous
 
@@ -279,7 +281,6 @@ export async function fsReadJSON(path) {
   return fsRead(path, "utf8").then((value) => JSON5.parse(value))
 }
 
-let CBOR
 export async function fsWriteCBOR(path, value) {
   // @read https://github.com/cbor-wg/cbor-magic-number
   CBOR ??= await import("./formats/cbor.js").then((m) => m.default)

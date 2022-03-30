@@ -1,12 +1,7 @@
 /* eslint-disable no-throw-literal */
+import "../env/polyfills/readable-stream-async-iterator.js"
+import Disk, { RESERVED_BYTES } from "./Disk.js"
 import Driver from "./Driver.js"
-
-if (Symbol.asyncIterator in ReadableStream.prototype === false) {
-  await import("../env/polyfills/readable-stream-async-iterator.js")
-  import("../../system.js").then((m) =>
-    m.default.polyfills.push("readable-stream-async-iterator")
-  )
-}
 
 let disk
 const { random, floor } = Math
@@ -38,11 +33,12 @@ export default class BrowserDriver extends Driver {
     this.getDriver = getDriver
     this.store = this.constructor.store
     this.mask = this.constructor.mask
+    this.reservedBytes = RESERVED_BYTES
   }
 
   async init() {
-    disk ??= await import("./disk.js").then((m) => m.default)
-    this.reservedBytes = disk.RESERVED_BYTES
+    disk = new Disk()
+    await disk.init()
     return this
   }
 
