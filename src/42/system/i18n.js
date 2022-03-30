@@ -10,8 +10,8 @@ import makeTemplate from "./formats/template/makeTemplate.js"
 import parseTemplate from "./formats/template/parseTemplate.js"
 
 if ("isTemplateObject" in globalThis.Array === false) {
-  system.polyfills.push("Array.isTemplateObject")
   await import("./env/polyfills/Array.isTemplateObject.js")
+  system.polyfills.push("Array.isTemplateObject")
 }
 
 system.i18n ??= {

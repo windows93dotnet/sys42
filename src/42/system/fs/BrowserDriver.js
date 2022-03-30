@@ -2,10 +2,10 @@
 import Driver from "./Driver.js"
 
 if (Symbol.asyncIterator in ReadableStream.prototype === false) {
+  await import("../env/polyfills/readable-stream-async-iterator.js")
   import("../../system.js").then((m) =>
     m.default.polyfills.push("readable-stream-async-iterator")
   )
-  await import("../env/polyfills/readable-stream-async-iterator.js")
 }
 
 let disk
