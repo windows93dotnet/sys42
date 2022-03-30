@@ -139,7 +139,6 @@ export default async function explorer(path, options = {}) {
     label: "{{path}}",
     icon: "{{path}}",
     style: { width: "400px", height: "350px" },
-    modules: options.modules,
     menubar: [
       {
         label: "File",
@@ -163,6 +162,7 @@ export default async function explorer(path, options = {}) {
       path: { watch: "path" },
       selection: { watch: "selection" },
     },
+    shortcuts: options.shortcuts ? options.shortcuts : false,
     footer: options.footer ? options.footer : false,
     data: { path, selection: options.selection ?? [] },
   })
@@ -180,6 +180,13 @@ let fs
 export async function pickFile(path, options = {}) {
   const res = await explorer(getDir(path, options.defaultPath), {
     selection: path ? [path] : [],
+    shortcuts: [
+      {
+        key: "[dblclick]",
+        selector: 'ui-icon[aria-description="file"]',
+        run: "ok",
+      },
+    ],
     footer: {
       type: ".w-full.items-end.box-v.ma-sm.gap-sm",
       content: [
@@ -208,6 +215,13 @@ export async function pickFile(path, options = {}) {
 export async function saveFile(path, options = {}, value) {
   const res = await explorer(getDir(path, options.defaultPath), {
     selection: path ? [path] : [],
+    shortcuts: [
+      {
+        key: "[dblclick]",
+        selector: 'ui-icon[aria-description="file"]',
+        run: "ok",
+      },
+    ],
     footer: {
       type: ".w-full.items-end.box-v.ma-sm.gap-sm",
       content: [

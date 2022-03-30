@@ -25,7 +25,6 @@ export class Dialog extends Component {
       maximizable: true,
       closable: true,
       live: false,
-      modules: undefined,
       icon: undefined,
       menubar: undefined,
       footer: undefined,
@@ -45,13 +44,6 @@ export class Dialog extends Component {
   async apply() {
     if (this._.parentCtx) {
       const clone = structuredClone(this._.ctx.global.rack.value)
-
-      // if (this._.config.modules?.apply) {
-      //   const name = this._.config.modules.apply
-      //   clone = await import(/* @vite-ignore */ name) //
-      //     .then((m) => m.default(clone))
-      // }
-
       this._.parentCtx.global.state.set(this._.parentCtx.scope, clone)
     }
   }
