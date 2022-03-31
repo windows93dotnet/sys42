@@ -69,7 +69,7 @@ filters.any = {
 
 const entries = Object.entries(filters)
 
-export default async function filter(name) {
+export default async function getFilter(name) {
   for (const [, val] of entries) {
     if (name in val) {
       const item = val[name]

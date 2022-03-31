@@ -72,7 +72,7 @@ export default class State extends Emitter {
     return this.rack.get(path)
   }
 
-  locateProxy(path) {
+  getThisArg(path) {
     const proxy = locate(this.proxy, path)
     proxy.$state ??= this
     proxy.$ui ??= this.ui

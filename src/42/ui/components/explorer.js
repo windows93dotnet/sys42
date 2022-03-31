@@ -226,7 +226,13 @@ export async function saveFile(path, options = {}, value) {
     footer: {
       type: ".w-full.items-end.box-v.ma-sm.gap-sm",
       content: [
-        { type: "input", name: "filename", compact: true, prose: false },
+        {
+          type: "input",
+          name: "filename",
+          compact: true,
+          prose: false,
+          value: "{{upper(path)}}",
+        },
         { type: "button", label: "Cancel", run: "cancel" },
         { type: "button.btn-default", label: "Save", run: "ok" },
       ],

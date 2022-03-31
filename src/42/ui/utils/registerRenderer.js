@@ -1,5 +1,5 @@
 import template from "../../system/formats/template.js"
-import filter from "../../fabric/filter.js"
+import getFilter from "../../fabric/getFilter.js"
 import joinScope from "./joinScope.js"
 import isLength from "../../fabric/type/any/is/isLength.js"
 
@@ -53,7 +53,7 @@ registerRenderer.fromTemplate = (ctx, parsedTemplate, render) => {
         if (filtersName in filters === false) {
           ctx.component && filtersName in ctx.component
             ? (filters[filtersName] = ctx.component[filtersName])
-            : (filters[filtersName] = filter(filtersName))
+            : (filters[filtersName] = getFilter(filtersName))
         }
       }
     }
