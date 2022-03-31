@@ -98,6 +98,7 @@ export class Explorer extends Component {
             compact: true,
             prose: false,
             enterkeyhint: "go",
+            autofocus: true,
           },
         ],
       },

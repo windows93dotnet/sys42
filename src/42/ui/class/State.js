@@ -8,6 +8,7 @@ export default class State extends Emitter {
     super()
     this.renderers = ctx.global.renderers
     this.rack = ctx.global.rack
+    this.ctx = ctx
 
     this.queue = new Set()
 
@@ -72,6 +73,10 @@ export default class State extends Emitter {
   }
 
   locateProxy(path) {
-    return locate(this.proxy, path)
+    const proxy = locate(this.proxy, path)
+    proxy.$state ??= this
+    proxy.$ui ??= this.ui
+    proxy.$run ??= this.ctx.global.actions.get(path)
+    return proxy
   }
 }

@@ -129,7 +129,7 @@ const app = await ui({
         fs.write(this.path, new Blob([this.text]))
         this.dirty = false
       } else {
-        await app.def.actions.saveAs.call(this)
+        await this.$run.saveAs()
       }
     },
 
@@ -166,5 +166,4 @@ app.state.on("update", (queue) => {
   if (queue.has("text")) app.data.dirty = true
 })
 
-// app.get("#open").click()
-// app.get("#save").click()
+app.run.save()

@@ -1,10 +1,12 @@
+import DOMQuery from "../../fabric/class/DOMQuery.js"
 import render from "../render.js"
 import makeNewContext from "../utils/makeNewContext.js"
 import clearElement from "../utils/clearElement.js"
 import ensureElement from "../../fabric/dom/ensureElement.js"
 
-export default class UI {
+export default class UI extends DOMQuery {
   constructor(...args) {
+    super()
     if (args[0] instanceof Node || typeof args[0] === "string") {
       this.el = args[0]
       this.def = args[1]
@@ -26,6 +28,7 @@ export default class UI {
       : 2
 
     this.ctx = makeNewContext({ level, ...this.ctx, ...options })
+    this.ctx.global.state.ui = this
 
     clearElement(el)
 
@@ -34,7 +37,9 @@ export default class UI {
 
     this.state = this.ctx.global.state
 
-    this.get("[data-autofocus]")?.focus()
+    this.run = this.ctx.global.actions.value
+
+    this.getAll("[data-autofocus]").at(-1)?.focus()
 
     return this
   }
@@ -46,28 +51,6 @@ export default class UI {
     const type = typeof value
     if (value && type === "object") this.state.value = value
     else throw new TypeError(`data must be an array or object: ${type}`)
-  }
-
-  get(selector) {
-    return this.el.querySelector(`:scope ${selector}`)
-  }
-
-  getAll(selector) {
-    return [...this.el.querySelectorAll(`:scope ${selector}`)]
-  }
-
-  batch(selector) {
-    return new Proxy(this.getAll(selector), {
-      get(target, prop) {
-        if (Reflect.has(target, prop)) return Reflect.get(target, prop)
-
-        if (typeof HTMLElement.prototype[prop] === "function") {
-          return (...args) => target.map((item) => item[prop](...args))
-        }
-
-        return target.map((item) => item[prop])
-      },
-    })
   }
 
   destroy() {

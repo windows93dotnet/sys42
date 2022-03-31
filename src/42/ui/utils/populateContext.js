@@ -57,6 +57,11 @@ function assignFunctions(ctx, scope, actions) {
   const thisArg = ctx.global.state.locateProxy(scope)
   const entries = []
   for (const [key, val] of Object.entries(actions)) {
+    // TODO: add reserved prefix error for data too
+    if (key.startsWith("$")) {
+      throw new Error(`Reserved prefix "$" is not allowed: ${key}`)
+    }
+
     const type = typeof val
     if (type === "function") {
       entries.push([key, val.bind(thisArg)])
