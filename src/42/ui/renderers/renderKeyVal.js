@@ -15,7 +15,7 @@ export default function renderKeyVal(el, ctx, key, val, renderer = setVal) {
   if (type === "string") {
     const parsed = template.parse(val)
     if (parsed.substitutions.length > 0) {
-      return void fromTemplate(ctx, parsed, async (value) => {
+      return void fromTemplate(ctx, el, parsed, async (value) => {
         renderer(el, key, value)
       })
     }

@@ -67,6 +67,37 @@ filters.any = {
   stringify: "any/stringify",
 }
 
+filters.path = {
+  formatPath: "path/core/formatPath",
+  joinPath: "path/core/joinPath",
+  normalizePath: "path/core/normalizePath",
+  parsePath: "path/core/parsePath",
+  postfixPath: "path/core/postfixPath",
+  prefixPath: "path/core/prefixPath",
+  relativePath: "path/core/relativePath",
+  removeExt: "path/core/removeExt",
+  replaceExt: "path/core/replaceExt",
+  resolvePath: "path/core/resolvePath",
+  // sortGlobResults: "path/core/sortGlobResults",
+  sortPath: "path/core/sortPath",
+
+  extname: "path/extract/extname",
+  dirname: "path/extract/dirname",
+  basename: "path/extract/basename",
+}
+
+filters.dom = {
+  textSelect(text, el) {
+    requestIdleCallback(() => {
+      // console.log(el.value)
+      const start = el.value.indexOf(text)
+      el.focus()
+      el.setSelectionRange(start, start + text.length)
+    })
+    return text
+  },
+}
+
 const entries = Object.entries(filters)
 
 export default async function getFilter(name) {

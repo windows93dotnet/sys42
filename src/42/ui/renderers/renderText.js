@@ -28,7 +28,7 @@ export default function renderText(text, ctx, parent, textElement) {
     : document.createTextNode(text)
 
   if (parsed.substitutions.length > 0) {
-    registerRenderer.fromTemplate(ctx, parsed, async (value) => {
+    registerRenderer.fromTemplate(ctx, el, parsed, async (value) => {
       el.textContent = value
     })
   }

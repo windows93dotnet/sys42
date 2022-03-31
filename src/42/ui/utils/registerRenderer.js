@@ -38,9 +38,10 @@ registerRenderer.fromDots = (ctx, arr, render) => {
   if (scopes.length > 0) registerRenderer(ctx, scopes, render)
 }
 
-registerRenderer.fromTemplate = (ctx, parsedTemplate, render) => {
+registerRenderer.fromTemplate = (ctx, el, parsedTemplate, render) => {
   const filters = { ...ctx.global.filters.value }
   const locals = ctx.global.rack.get(ctx.scope)
+  locals.this = el
 
   const vars = []
   for (const tokens of parsedTemplate.substitutions) {

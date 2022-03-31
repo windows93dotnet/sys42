@@ -231,7 +231,10 @@ export async function saveFile(path, options = {}, value) {
           name: "filename",
           compact: true,
           prose: false,
-          value: "{{upper(selection.-1)}}",
+          // value:
+          //   "{{basename(selection.-1)|removeExt|textSelect(this)}}{{extname(selection.-1)}}",
+          value:
+            "{{basename(selection.-1)|removeExt}}{{extname(selection.-1)}}",
         },
         { type: "button", label: "Cancel", run: "cancel" },
         { type: "button.btn-default", label: "Save", run: "ok" },
