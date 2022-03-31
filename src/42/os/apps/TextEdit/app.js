@@ -129,7 +129,8 @@ const app = await ui({
         fs.write(this.path, new Blob([this.text]))
         this.dirty = false
       } else {
-        await this.$run.saveAs()
+        // await this.$run.saveAs()
+        await app.run.saveAs()
       }
     },
 

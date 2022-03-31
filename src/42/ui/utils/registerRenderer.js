@@ -70,6 +70,7 @@ registerRenderer.fromTemplate = (ctx, parsedTemplate, render) => {
   const fn = render
   render = async () => {
     fn(await renderTemplate(ctx.global.rack.get(ctx.scope)))
+    return "registerRenderer.fromTemplate"
   }
 
   registerRenderer(ctx, scopes, render)

@@ -231,7 +231,7 @@ export async function saveFile(path, options = {}, value) {
           name: "filename",
           compact: true,
           prose: false,
-          value: "{{upper(path)}}",
+          value: "{{upper(selection.-1)}}",
         },
         { type: "button", label: "Cancel", run: "cancel" },
         { type: "button.btn-default", label: "Save", run: "ok" },
@@ -239,6 +239,8 @@ export async function saveFile(path, options = {}, value) {
     },
     ...options,
   })
+
+  console.log(res.value)
 
   if (!res.ok || !res.value.filename) return
 

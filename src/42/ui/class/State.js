@@ -74,9 +74,9 @@ export default class State extends Emitter {
 
   getThisArg(path) {
     const proxy = locate(this.proxy, path)
-    proxy.$state ??= this
-    proxy.$ui ??= this.ui
-    proxy.$run ??= this.ctx.global.actions.get(path)
+    // proxy.$state ??= this
+    // proxy.$ui ??= this.ui
+    // proxy.$run ??= this.ctx.global.actions.get(path)
     return proxy
   }
 }

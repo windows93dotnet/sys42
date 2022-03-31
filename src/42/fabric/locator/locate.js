@@ -8,6 +8,11 @@ locate.tokens = (obj, tokens) => {
   let current = obj
 
   for (const key of tokens) {
+    if (key.startsWith("-") && typeof current?.at === "function") {
+      current = current.at(key)
+      continue
+    }
+
     if (typeof current !== "object" || key in current === false) return
     current = current[key]
   }
