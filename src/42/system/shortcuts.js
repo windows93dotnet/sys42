@@ -133,7 +133,9 @@ export class Shortcuts {
     this.config.agent ??= this.el
     this.config.thisArg ??= this.config.agent
 
-    if (this.definitions) this.setRules(this.definitions)
+    if (this.definitions) {
+      setTimeout(() => this.setRules(this.definitions), 0)
+    }
 
     devices.listen()
   }
@@ -271,9 +273,16 @@ export class Shortcuts {
     const type = typeof rule.run
 
     if (type === "string") {
-      if (this.el.nodeType === Node.ELEMENT_NODE && rule.run in this.el) {
-        rule.run = this.el[rule.run].bind(this.el, ...args)
-        return
+      if (this.el.nodeType === Node.ELEMENT_NODE) {
+        let { el } = this
+        while (el) {
+          if (rule.run in el) {
+            rule.run = el[rule.run].bind(el, ...args)
+            return
+          }
+
+          el = el.parentNode
+        }
       }
 
       const fn =

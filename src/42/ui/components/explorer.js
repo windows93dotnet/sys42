@@ -166,6 +166,7 @@ export default async function explorer(path, options = {}) {
     shortcuts: options.shortcuts ? options.shortcuts : false,
     footer: options.footer ? options.footer : false,
     data: { path, selection: options.selection ?? [] },
+    actions: options.actions,
   })
 }
 
@@ -216,16 +217,14 @@ export async function pickFile(path, options = {}) {
 export async function saveFile(path, options = {}, value) {
   const res = await explorer(getDir(path, options.defaultPath), {
     selection: path ? [path] : [],
+    actions: {
+      $ref: "./explorer/explorer.actions.js",
+    },
     shortcuts: [
       {
         key: "[dblclick]",
         selector: 'ui-icon[aria-description="file"]',
         run: "ok",
-      },
-      {
-        key: "[focus]", //
-        selector: "input",
-        run: "autoselect",
       },
     ],
     footer: {
@@ -237,7 +236,7 @@ export async function saveFile(path, options = {}, value) {
           compact: true,
           prose: false,
           value: "{{stemname(selection.-1)}}{{extname(selection.-1)}}",
-          // shortcuts: [{ key: "[focus]", run: "autoselect" }],
+          shortcuts: [{ key: "[focusin]", run: "autoselect" }],
         },
         { type: "button", label: "Cancel", run: "cancel" },
         { type: "button.btn-default", label: "Save", run: "ok" },
