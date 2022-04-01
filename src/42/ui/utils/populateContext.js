@@ -38,14 +38,14 @@ export default function populateContext(ctx, def) {
     ctx.control = {}
   }
 
-  if ("actions" in def) {
+  if (def.actions) {
     ctx.global.actions.assign(
       ctx.scope,
       assignFunctions(ctx, ctx.scope, def.actions)
     )
   }
 
-  if ("filters" in def) {
+  if (def.filters) {
     ctx.global.filters.assign(
       ctx.scope,
       assignFunctions(ctx, ctx.scope, def.filters)

@@ -217,9 +217,6 @@ export async function pickFile(path, options = {}) {
 export async function saveFile(path, options = {}, value) {
   const res = await explorer(getDir(path, options.defaultPath), {
     selection: path ? [path] : [],
-    actions: {
-      $ref: "./explorer/explorer.actions.js",
-    },
     shortcuts: [
       {
         key: "[dblclick]",
@@ -236,7 +233,7 @@ export async function saveFile(path, options = {}, value) {
           compact: true,
           prose: false,
           value: "{{stemname(selection.-1)}}{{extname(selection.-1)}}",
-          shortcuts: [{ key: "[focusin]", run: "autoselect" }],
+          // shortcuts: [{ key: "[focusin]", run: "autoselect" }],
         },
         { type: "button", label: "Cancel", run: "cancel" },
         { type: "button.btn-default", label: "Save", run: "ok" },
