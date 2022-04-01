@@ -3,6 +3,7 @@ import Emitter from "../../fabric/class/Emitter.js"
 import render from "../render.js"
 import uid from "../../fabric/uid.js"
 import setTemp from "../../fabric/dom/setTemp.js"
+import timeout from "../../fabric/type/promise/timeout.js"
 import { autofocus } from "../../fabric/dom/focus.js"
 
 // tiling-dialog, floating-dialog, popups, tooltip, toasts
@@ -31,7 +32,6 @@ export default class Layer extends Emitter {
     const { id } = def
     if (this.map.has(id)) return
 
-    // TODO: add timeout to fail and remove "progress"
     const timerId = setTimeout(() => setCursor("progress"), 200)
 
     ctx.undones = undefined
@@ -52,17 +52,25 @@ export default class Layer extends Emitter {
     const opener = Layer.getOpener(options?.opener)
     this.map.set(id, { ctx, item, opener })
 
-    await ctx.undones
+    const end = () => {
+      clearTimeout(timerId)
+      setCursor()
+      restore()
+    }
+
+    try {
+      await Promise.race([ctx.undones, timeout(1000)])
+    } catch (err) {
+      end()
+      item.remove()
+      throw err
+    }
 
     if (options?.autofocus && this.map.has(id)) {
       autofocus(item, options.autofocus)
     }
 
-    requestAnimationFrame(() => {
-      clearTimeout(timerId)
-      setCursor()
-      restore()
-    })
+    requestAnimationFrame(end)
 
     return { id, item, ctx }
   }

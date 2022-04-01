@@ -222,6 +222,11 @@ export async function saveFile(path, options = {}, value) {
         selector: 'ui-icon[aria-description="file"]',
         run: "ok",
       },
+      {
+        key: "[focus]", //
+        selector: "input",
+        run: "autoselect",
+      },
     ],
     footer: {
       type: ".w-full.items-end.box-v.ma-sm.gap-sm",
@@ -231,8 +236,8 @@ export async function saveFile(path, options = {}, value) {
           name: "filename",
           compact: true,
           prose: false,
-          value:
-            "{{stemname(selection.-1)|autoselect}}{{extname(selection.-1)}}",
+          value: "{{stemname(selection.-1)}}{{extname(selection.-1)}}",
+          // shortcuts: [{ key: "[focus]", run: "autoselect" }],
         },
         { type: "button", label: "Cancel", run: "cancel" },
         { type: "button.btn-default", label: "Save", run: "ok" },

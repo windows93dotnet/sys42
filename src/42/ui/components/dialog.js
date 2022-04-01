@@ -35,6 +35,10 @@ export class Dialog extends Component {
     },
   }
 
+  autoselect() {
+    console.log(888)
+  }
+
   async close(ok = false) {
     layer = await layer
     if (layer.map) layer.delete(this.id, { ok })
