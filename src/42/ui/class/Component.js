@@ -141,7 +141,11 @@ function normalizeComponentDef(el, args) {
   out.ctx.component = el
   populateContext(out.ctx, out.def)
 
-  out.cancel = out.ctx.cancel?.fork(el.localName) ?? new Canceller(el.localName)
+  out.ctx.cancel =
+    out.ctx.cancel?.fork(el.localName) ?? new Canceller(el.localName)
+
+  out.cancel = out.ctx.cancel
+
   Object.defineProperty(out, "signal", { get: () => out.cancel.signal })
 
   out.config = configure(defaults, out.options)

@@ -27,7 +27,12 @@ function compileToken(i, list, tokens, options) {
     }
 
     const fn = locate(filters, value)
+
     if (fn) {
+      if (!options.async && typeof fn !== "function") {
+        throw new TypeError(`Template filter is not a function: "${value}"`)
+      }
+
       list.push(
         options.async
           ? async (locals, args = []) => {
@@ -35,11 +40,17 @@ function compileToken(i, list, tokens, options) {
               const undones = args
               for (const arg of argTokens) undones.push(arg(locals))
               const [asyncFn, ...rest] = await Promise.all(undones)
-              return asyncFn(...rest)
+              if (typeof asyncFn !== "function") {
+                throw new TypeError(
+                  `Template filter didn't resolve as a function: "${value}"`
+                )
+              }
+
+              return asyncFn.call(options.thisArg, ...rest)
             }
           : (locals, args = []) => {
               for (const arg of argTokens) args.push(arg(locals))
-              return fn(...args)
+              return fn.call(options.thisArg, ...args)
             }
       )
     }

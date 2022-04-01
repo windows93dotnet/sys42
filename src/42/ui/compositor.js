@@ -106,13 +106,18 @@ if (inTop) {
 
         const instance = { ctx, pause: false }
 
-        instance.off = ctx.global.state.on("update", { off: true }, () => {
+        const off = ctx.global.state.on("update", { off: true }, () => {
           // TODO: fix endless update in menu checkbox
           // console.log(999, instance.pause)
           if (instance.pause) return
           const data = ctx.global.rack.value
           send("layer->data", { id, data })
         })
+
+        instance.off = () => {
+          off()
+          // ctx.cancel()
+        }
 
         layers[layerName].instances.set(id, instance)
 
@@ -198,7 +203,11 @@ export default async function compositor(layerName, options) {
               if (ctx.global.rack.value) def.data = ctx.global.rack.get(scope)
             } else off = noop
 
-            instance.off = off
+            instance.off = () => {
+              off()
+              // ctx.cancel()
+            }
+
             instances.set(id, instance)
 
             const res = await bus.send("layer<-method", {

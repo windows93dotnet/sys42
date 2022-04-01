@@ -68,10 +68,10 @@ filters.any = {
 }
 
 filters.path = {
-  formatPath: "path/core/formatPath",
-  joinPath: "path/core/joinPath",
-  normalizePath: "path/core/normalizePath",
-  parsePath: "path/core/parsePath",
+  // formatPath: "path/core/formatPath",
+  // joinPath: "path/core/joinPath",
+  // normalizePath: "path/core/normalizePath",
+  // parsePath: "path/core/parsePath",
   postfixPath: "path/core/postfixPath",
   prefixPath: "path/core/prefixPath",
   relativePath: "path/core/relativePath",
@@ -84,16 +84,45 @@ filters.path = {
   extname: "path/extract/extname",
   dirname: "path/extract/dirname",
   basename: "path/extract/basename",
+  stemname: "path/extract/stemname",
 }
 
 filters.dom = {
-  textSelect(text, el) {
-    requestIdleCallback(() => {
-      // console.log(el.value)
-      const start = el.value.indexOf(text)
-      el.focus()
-      el.setSelectionRange(start, start + text.length)
-    })
+  autoselect(text) {
+    // requestAnimationFrame(() => {
+    //   console.log(this.value)
+    //   const start = this.value.indexOf(text)
+    //   if (start > -1) {
+    //     const end = start + text.length
+    //     console.log(start, end)
+    //     // this.focus()
+
+    //     const selection = window.getSelection()
+
+    //     if (selection.rangeCount > 0) selection.removeAllRanges()
+
+    //     const range = document.createRange()
+    //     range.setStart(this, start)
+    //     range.setEnd(this, end)
+    //     // range.setEnd(this, start)
+    //     // this.setSelectionRange(start, start + text.length)
+
+    //     selection.addRange(range)
+    //   }
+    // })
+
+    const { el, ctx } = this
+    const { signal } = ctx.cancel
+
+    el.addEventListener(
+      "focus",
+      () => {
+        const start = el.value.indexOf(text)
+        if (start > -1) el.setSelectionRange(start, start + text.length)
+      },
+      { signal }
+    )
+
     return text
   },
 }

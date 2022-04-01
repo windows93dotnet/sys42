@@ -66,7 +66,9 @@ export class Dialog extends Component {
     if (config.live === false) {
       this._.parentCtx = ctx
       const data = this._.parentCtx.global.rack.get(this._.parentCtx.scope)
+
       ctx = makeNewContext()
+      ctx.cancel = this._.parentCtx.cancel.fork()
       ctx.component = this
       ctx.global.rack.value = structuredClone(data)
       this._.backupData ??= structuredClone(data)

@@ -25,8 +25,7 @@ export default function popupButton(el, def, ctx) {
         const dialog = await import("../components/dialog.js") //
           .then((m) => m.default)
 
-        const options = { opener: el.id }
-        dialog(def.content, ctx, options)
+        dialog(def.content, ctx, { opener: el.id })
       },
     })
   } else {
