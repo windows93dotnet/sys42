@@ -15,6 +15,13 @@ const install = preinstall({
 
 const content = [
   {
+    label: "Explorer",
+    picto: "file",
+    run() {
+      explorer()
+    },
+  },
+  {
     label: "File",
     id: "file",
     content: [
@@ -168,3 +175,4 @@ app.state.on("update", (queue) => {
 })
 
 app.run.save()
+// app.run.open()

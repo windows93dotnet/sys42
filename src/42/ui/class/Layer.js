@@ -66,11 +66,11 @@ export default class Layer extends Emitter {
       throw err
     }
 
+    end()
+
     if (options?.autofocus && this.map.has(id)) {
       autofocus(item, options.autofocus)
     }
-
-    requestAnimationFrame(end)
 
     return { id, item, ctx }
   }

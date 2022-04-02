@@ -1,43 +1,42 @@
 import arrify from "../../fabric/type/any/arrify.js"
 import joinScope from "./joinScope.js"
 import serializeArgs from "./serializeArgs.js"
+import getParentMethod from "../../fabric/dom/getParentMethod.js"
 
 export default function setAction(el, { run, args }, ctx) {
-  const type = typeof run
+  queueMicrotask(() => {
+    const type = typeof run
 
-  let action
+    let action
 
-  if (type === "string") {
-    let fn
+    if (type === "string") {
+      let fn = getParentMethod(el, run)
 
-    if ("component" in ctx && run in ctx.component) {
-      fn = (...args) => ctx.component[run](...args)
+      fn ??= ctx.global.actions.get(joinScope(ctx.scope, run))
+
+      action = { type: "click", fn }
+    } else if (type === "function") {
+      action = {
+        type: "click",
+        fn: run,
+      }
     }
 
-    fn ??= ctx.global.actions.get(joinScope(ctx.scope, run))
+    if (!action.fn) throw new Error(`action not found: "${run}"`)
 
-    action = { type: "click", fn }
-  } else if (type === "function") {
-    action = {
-      type: "click",
-      fn: run,
-    }
-  }
+    action.fn = action.fn.bind(ctx.global.state.getThisArg(ctx.scope))
 
-  if (!action.fn) throw new Error(`action not found: "${run}"`)
+    const { signal } = ctx.cancel
 
-  action.fn = action.fn.bind(ctx.global.state.getThisArg(ctx.scope))
+    args = arrify(args)
 
-  const { signal } = ctx.cancel
-
-  args = arrify(args)
-
-  el.addEventListener(
-    action.type,
-    (e) => {
-      if (el.getAttribute("aria-disabled") === "true") return
-      action.fn(...serializeArgs(e, el, args))
-    },
-    { signal }
-  )
+    el.addEventListener(
+      action.type,
+      (e) => {
+        if (el.getAttribute("aria-disabled") === "true") return
+        action.fn(...serializeArgs(e, el, args))
+      },
+      { signal }
+    )
+  })
 }

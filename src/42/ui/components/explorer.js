@@ -3,7 +3,9 @@ import Component from "../class/Component.js"
 import dirname from "../../fabric/type/path/extract/dirname.js"
 import render from "../render.js"
 import dialog from "./dialog.js"
-import basename from "../../fabric/type/path/extract/basename.js"
+
+import bisect from "../../fabric/type/object/bisect.js"
+import configure from "../../fabric/configure.js"
 
 function displayError(err) {
   const div = document.createElement("div")
@@ -47,6 +49,10 @@ export class Explorer extends Component {
       },
     },
 
+    defaults: {
+      footer: undefined,
+    },
+
     shortcuts: [
       {
         key: "[dblclick]",
@@ -78,7 +84,7 @@ export class Explorer extends Component {
     this.querySelector(".message").replaceChildren()
   }
 
-  $create({ root, ctx }) {
+  $create({ root, ctx, config }) {
     this.addEventListener("patherror", ({ error }) => {
       this.querySelector(".message").replaceChildren(displayError(error))
     })
@@ -112,7 +118,7 @@ export class Explorer extends Component {
       {
         type: ".message",
       },
-      {
+      config.footer ?? {
         type: "footer.w-full.mt-xs.ma-0.box-v",
         content: [
           {
@@ -135,40 +141,51 @@ export class Explorer extends Component {
 
 await Component.define(Explorer)
 
-export default async function explorer(path, options = {}) {
-  return dialog({
-    label: "{{path}}",
-    icon: "{{path}}",
-    style: { width: "400px", height: "350px" },
-    menubar: [
+export default async function explorer(path = "/", options = {}) {
+  const [rest, config] = bisect(options, ["footer", "selection", "shortcuts"])
+  return dialog(
+    configure(
       {
-        label: "File",
-        content: [
-          { label: "Open" }, //
+        label: "{{path}}",
+        icon: "{{path}}",
+        style: { width: "400px", height: "350px" },
+        menubar: [
+          {
+            label: "File",
+            content: [
+              { label: "Open" }, //
+            ],
+          },
+          {
+            label: "Edit",
+            content: [
+              { label: "Copy" },
+              { label: "Cut" },
+              { label: "Paste" },
+              "---",
+              { label: "Select all" },
+            ],
+          },
         ],
+        content: {
+          type: "ui-explorer",
+          path: { watch: "path" },
+          selection: { watch: "selection" },
+          footer: config.footer,
+          shortcuts: config.shortcuts ? config.shortcuts : false,
+        },
+        footer: false,
+        data: { path, selection: config.selection ?? [] },
       },
-      {
-        label: "Edit",
-        content: [
-          { label: "Copy" },
-          { label: "Cut" },
-          { label: "Paste" },
-          "---",
-          { label: "Select all" },
-        ],
-      },
-    ],
-    content: {
-      type: "ui-explorer",
-      path: { watch: "path" },
-      selection: { watch: "selection" },
-    },
-    shortcuts: options.shortcuts ? options.shortcuts : false,
-    footer: options.footer ? options.footer : false,
-    data: { path, selection: options.selection ?? [] },
-    actions: options.actions,
-  })
+      rest
+    )
+  )
 }
+
+/* exports
+========== */
+
+let fs
 
 function getDir(path, defaultPath = "/") {
   let out = path ? dirname(path) : defaultPath
@@ -177,10 +194,9 @@ function getDir(path, defaultPath = "/") {
   return out
 }
 
-let fs
-
 export async function pickFile(path, options = {}) {
   const res = await explorer(getDir(path, options.defaultPath), {
+    label: "Open File",
     selection: path ? [path] : [],
     shortcuts: [
       {
@@ -190,7 +206,7 @@ export async function pickFile(path, options = {}) {
       },
     ],
     footer: {
-      type: ".w-full.items-end.box-v.ma-sm.gap-sm",
+      type: "footer.items-end.box-v.ma-sm.gap-sm",
       content: [
         { type: "button", label: "Cancel", run: "cancel" },
         { type: "button.btn-default", label: "Open", run: "ok" },
@@ -216,6 +232,7 @@ export async function pickFile(path, options = {}) {
 
 export async function saveFile(path, options = {}, value) {
   const res = await explorer(getDir(path, options.defaultPath), {
+    label: "Save File",
     selection: path ? [path] : [],
     shortcuts: [
       {
@@ -225,29 +242,38 @@ export async function saveFile(path, options = {}, value) {
       },
     ],
     footer: {
-      type: ".w-full.items-end.box-v.ma-sm.gap-sm",
+      type: "footer.box-h.ma-sm.gap-sm",
       content: [
         {
-          type: "input",
-          name: "filename",
+          type: "input.inset-shallow.panel",
+          value: "{{selection|displaySelection}}",
+          readonly: true,
           compact: true,
-          prose: false,
-          value: "{{stemname(selection.-1)}}{{extname(selection.-1)}}",
-          // shortcuts: [{ key: "[focusin]", run: "autoselect" }],
         },
-        { type: "button", label: "Cancel", run: "cancel" },
-        { type: "button.btn-default", label: "Save", run: "ok" },
+        {
+          type: ".box-v.gap-sm",
+          content: [
+            {
+              type: "input",
+              id: "basename",
+              name: "basename",
+              compact: true,
+              prose: false,
+              value: "{{stemname(selection.-1)}}{{extname(selection.-1)}}",
+            },
+            { type: "button", label: "Cancel", run: "cancel" },
+            { type: "button.btn-default", label: "Save", run: "ok" },
+          ],
+        },
       ],
     },
     ...options,
   })
 
-  console.log(res.value)
-
-  if (!res.ok || !res.value.filename) return
+  if (!res.ok || !res.value.basename) return
 
   if (!res.value.path.endsWith("/")) res.value.path += "/"
-  const filename = res.value.path + basename(res.value.filename)
+  const filename = res.value.path + res.value.basename
 
   if (value === undefined) return filename
 

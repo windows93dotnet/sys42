@@ -8,6 +8,7 @@ import setup from "./setup.js"
 import listen from "../fabric/dom/listen.js"
 import signature from "../fabric/dom/signature.js"
 import serializeArgs from "../ui/utils/serializeArgs.js"
+import getParentMethod from "../fabric/dom/getParentMethod.js"
 import expr from "./expr.js"
 import locate from "../fabric/locator/locate.js"
 import arrify from "../fabric/type/any/arrify.js"
@@ -133,9 +134,7 @@ export class Shortcuts {
     this.config.agent ??= this.el
     this.config.thisArg ??= this.config.agent
 
-    if (this.definitions) {
-      setTimeout(() => this.setRules(this.definitions), 0)
-    }
+    if (this.definitions) queueMicrotask(() => this.setRules(this.definitions))
 
     devices.listen()
   }
@@ -273,16 +272,10 @@ export class Shortcuts {
     const type = typeof rule.run
 
     if (type === "string") {
-      if (this.el.nodeType === Node.ELEMENT_NODE) {
-        let { el } = this
-        while (el) {
-          if (rule.run in el) {
-            rule.run = el[rule.run].bind(el, ...args)
-            return
-          }
-
-          el = el.parentNode
-        }
+      const parentMethod = getParentMethod(this.el, rule.run)
+      if (parentMethod) {
+        rule.run = parentMethod
+        return
       }
 
       const fn =

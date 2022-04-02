@@ -157,7 +157,8 @@ export default async function dialog(def, ctx, options) {
   })
 }
 
-/*  */
+/* exports
+========== */
 
 export async function prompt(message = "", options = {}) {
   if (typeof message === "object") {
