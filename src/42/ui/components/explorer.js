@@ -4,6 +4,8 @@ import dirname from "../../fabric/type/path/extract/dirname.js"
 import render from "../render.js"
 import dialog from "./dialog.js"
 
+import basename from "../../fabric/type/path/extract/basename.js"
+import stemname from "../../fabric/type/path/extract/stemname.js"
 import bisect from "../../fabric/type/object/bisect.js"
 import configure from "../../fabric/configure.js"
 
@@ -35,6 +37,19 @@ export class Explorer extends Component {
         reflect: true,
         render: true,
         default: "/",
+        adapt(value) {
+          const defaultPath = "/"
+          let out = value ? dirname(value) : defaultPath
+          out = out === "." ? defaultPath : out
+          if (!out.endsWith("/")) out += "/"
+
+          const base = basename(value)
+          if (base && this._.properties.selection?.length === 0) {
+            this._.properties.selection.push(out + base)
+          }
+
+          return out
+        },
       },
       glob: {
         state: true,
@@ -84,7 +99,7 @@ export class Explorer extends Component {
     this.querySelector(".message").replaceChildren()
   }
 
-  $create({ root, ctx, config }) {
+  $create({ root, ctx, config, signal }) {
     this.addEventListener("patherror", ({ error }) => {
       this.querySelector(".message").replaceChildren(displayError(error))
     })
@@ -136,6 +151,33 @@ export class Explorer extends Component {
     ]
 
     root.append(render(content, ctx))
+
+    const saveFileInput = root.querySelector('[name="basename"]')
+    if (saveFileInput) {
+      const setValue = () => {
+        if (this.selection.length > 0) {
+          saveFileInput.value = basename(this.selection[0])
+        }
+      }
+
+      setValue()
+
+      ctx.global.state.on("update", { signal }, (queue) => {
+        if (queue.has("selection")) setValue()
+      })
+
+      saveFileInput.addEventListener(
+        "focus",
+        async function () {
+          queueMicrotask(() => {
+            const stem = stemname(this.value)
+            const start = this.value.indexOf(stem)
+            if (start > -1) this.setSelectionRange(start, start + stem.length)
+          })
+        },
+        { signal }
+      )
+    }
   }
 }
 
@@ -187,17 +229,9 @@ export default async function explorer(path = "/", options = {}) {
 
 let fs
 
-function getDir(path, defaultPath = "/") {
-  let out = path ? dirname(path) : defaultPath
-  out = out === "." ? defaultPath : out
-  if (!out.endsWith("/")) out += "/"
-  return out
-}
-
 export async function pickFile(path, options = {}) {
-  const res = await explorer(getDir(path, options.defaultPath), {
+  const res = await explorer(path, {
     label: "Open File",
-    selection: path ? [path] : [],
     shortcuts: [
       {
         key: "[dblclick]",
@@ -208,6 +242,12 @@ export async function pickFile(path, options = {}) {
     footer: {
       type: "footer.items-end.box-v.ma-sm.gap-sm",
       content: [
+        {
+          type: "input.inset-shallow.panel",
+          value: "{{selection|displaySelection}}",
+          readonly: true,
+          compact: true,
+        },
         { type: "button", label: "Cancel", run: "cancel" },
         { type: "button.btn-default", label: "Open", run: "ok" },
       ],
@@ -231,9 +271,8 @@ export async function pickFile(path, options = {}) {
 }
 
 export async function saveFile(path, options = {}, value) {
-  const res = await explorer(getDir(path, options.defaultPath), {
+  const res = await explorer(path, {
     label: "Save File",
-    selection: path ? [path] : [],
     shortcuts: [
       {
         key: "[dblclick]",
@@ -259,7 +298,7 @@ export async function saveFile(path, options = {}, value) {
               name: "basename",
               compact: true,
               prose: false,
-              value: "{{stemname(selection.-1)}}{{extname(selection.-1)}}",
+              // value: "{{stemname(selection.-1)}}{{extname(selection.-1)}}",
             },
             { type: "button", label: "Cancel", run: "cancel" },
             { type: "button.btn-default", label: "Save", run: "ok" },

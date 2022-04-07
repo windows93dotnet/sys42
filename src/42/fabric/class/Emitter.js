@@ -11,13 +11,22 @@ export default class Emitter {
   }
 
   on(events, options, fn) {
-    if (typeof options === "function") fn = options
+    if (typeof options === "function") {
+      fn = options
+      options = undefined
+    }
 
     for (const event of events.split(" ")) {
       if (typeof fn === "function") {
         this[Emitter.EVENTS][event] ??= []
         this[Emitter.EVENTS][event].push(fn)
       }
+    }
+
+    if (options?.signal) {
+      options.signal.addEventListener("abort", () => this.off(events, fn), {
+        once: true,
+      })
     }
 
     if (options?.off) return () => this.off(events, fn)

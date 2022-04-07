@@ -26,8 +26,8 @@ const DEFAULTS = {
         {
           type: "any",
           fromView: true,
-          adapt(el, value) {
-            renderTrait(el, trait, value, el._.ctx)
+          adapt(value) {
+            renderTrait(this, trait, value, this._.ctx)
           },
         },
       ])
@@ -36,10 +36,10 @@ const DEFAULTS = {
       shortcuts: {
         type: "any",
         fromView: true,
-        adapt(el, value, oldValue) {
+        adapt(value, oldValue) {
           oldValue?.destroy?.()
-          const { ctx } = el._
-          return shortcuts(el, value, {
+          const { ctx } = this._
+          return shortcuts(this, value, {
             agent: ctx.global.actions.get(ctx.scope),
             signal: ctx.cancel.signal,
             preventDefault: true,
@@ -189,7 +189,7 @@ function setProperties(properties, out, el) {
 
     const assignProp = (item, value) => {
       if (item.adapt) {
-        const res = item.adapt(el, value, out.properties[key])
+        const res = item.adapt.call(el, value, out.properties[key])
         if (res !== undefined) value = res
       }
 
@@ -241,8 +241,9 @@ function setProperties(properties, out, el) {
             item.type === "boolean" ||
             (item.type === "any" && typeof value === "boolean")
           ) {
-            if (item.default === true) el.setAttribute(attribute, "false")
-            else el.toggleAttribute(attribute, value)
+            if (item.default === true && value === false) {
+              el.setAttribute(attribute, "false")
+            } else el.toggleAttribute(attribute, value)
           } else el.setAttribute(attribute, toView(value, key, el, item))
         } else if (item.render) el._.repaint()
       },

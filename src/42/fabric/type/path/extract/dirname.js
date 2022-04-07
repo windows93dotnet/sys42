@@ -3,21 +3,28 @@
 
 import assertPath from "../assertPath.js"
 
-function findDirname(path, hasRoot) {
-  const i = path.lastIndexOf("/")
-
-  if (i === -1) return "."
-  if (i === 0) return "/"
-  if (i === path.length - 1) return findDirname(path.slice(0, -1), hasRoot)
-  if (hasRoot && i === 1) return "//"
-  return path.slice(0, i)
-}
-
 export default function dirname(path) {
   assertPath(path)
 
   if (path.length === 0) return "."
-  const hasRoot = path.charCodeAt(0) === 47 /* / */
+  let code = path.charCodeAt(0)
+  const hasRoot = code === 47 /* / */
+  let end = -1
+  let matchedSlash = true
+  for (let i = path.length - 1; i >= 1; --i) {
+    code = path.charCodeAt(i)
+    if (code === 47 /* / */) {
+      if (!matchedSlash) {
+        end = i
+        break
+      }
+    } else {
+      // We saw the first non-path separator
+      matchedSlash = false
+    }
+  }
 
-  return findDirname(path, hasRoot)
+  if (end === -1) return hasRoot ? "/" : "."
+  if (hasRoot && end === 1) return "//"
+  return path.slice(0, end)
 }
