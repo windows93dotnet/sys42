@@ -151,8 +151,8 @@ Object.entries(MIMETYPES).forEach(([main, item]) => {
         NAMES.mimetype[ext] = `${main}/${sub}`
         if (main === "text") NAMES.charset[ext] = "utf8"
       } else {
-        EXTENSIONS.mimetype[ext] = `${main}/${sub}`
-        if (main === "text") EXTENSIONS.charset[ext] = "utf8"
+        EXTENSIONS.mimetype[`.${ext}`] = `${main}/${sub}`
+        if (main === "text") EXTENSIONS.charset[`.${ext}`] = "utf8"
       }
     })
   })

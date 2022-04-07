@@ -5,9 +5,16 @@
 <link rel="stylesheet" href="/style.css" id="theme" />
 
 <script type="module">
+  import realm from "../42/system/realm.js"
+
+  console.log(await realm())
+</script>
+
+<script type="module">
   import "../42/os.js"
   import "../42/ui/components/enclose.js"
   import ui from "../42/ui.js"
+  import explorer from "../42/ui/components/explorer.js"
 
   // navigator.serviceWorker?.register("/42.sw.js", { type: "module" })
 
@@ -21,22 +28,22 @@
           {
             type: "ui-folderview.scroll-auto",
             shortcuts: [
-              {
-                key: "[click]",
-                selector: "ui-icon",
-                run: "iconFocus",
-                args: ["target.path"],
-              },
-              {
-                key: "ctrl+[click]",
-                selector: "ui-icon",
-                run: "iconSelect",
-                args: ["target.path"],
-              },
+              // {
+              //   key: "[click]",
+              //   selector: "ui-icon",
+              //   run: "iconFocus",
+              //   args: ["target.path"],
+              // },
+              // {
+              //   key: "ctrl+[click]",
+              //   selector: "ui-icon",
+              //   run: "iconSelect",
+              //   args: ["target.path"],
+              // },
               {
                 key: "[dblclick]",
-                selector: "ui-icon",
-                run: "iconOpen",
+                selector: 'ui-icon[aria-description="folder"]',
+                run: "folderOpen",
                 args: ["target.path"],
               },
             ],
@@ -75,18 +82,22 @@
           this.hello = "hello"
         },
       },
-      iconFocus(path) {
-        console.log("iconFocus", path)
+      folderOpen(path) {
+        console.log(888)
+        explorer(path)
       },
-      iconOpen(path) {
-        console.log("iconOpen", path)
-      },
-      iconSelect(path) {
-        console.log("iconSelect", path)
-      },
-      removeSelection() {
-        console.log("removeSelection")
-      },
+      // iconFocus(path) {
+      //   console.log("iconFocus", path)
+      // },
+      // iconSelect(path) {
+      //   console.log("iconSelect", path)
+      // },
+      // removeSelection() {
+      //   console.log("removeSelection")
+      // },
     },
   })
+
+  // explorer("/42/")
+  // explorer("/42/os/")
 </script>

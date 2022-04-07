@@ -17,7 +17,7 @@ const app = new App({
   },
 
   data: {
-    path: undefined,
+    path: "/index.html",
     text: "hello",
     monospace: true,
     spellcheck: true,
@@ -25,4 +25,6 @@ const app = new App({
   },
 })
 
-app.mount()
+await app.mount()
+
+app.run.open()

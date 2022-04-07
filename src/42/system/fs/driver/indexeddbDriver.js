@@ -1,7 +1,7 @@
 import BrowserDriver from "../BrowserDriver.js"
 import Database from "../../db/Database.js"
 
-const db = new Database("💽 - File System", { stores: { files: {} } })
+const db = new Database("filestore", { stores: { files: {} } })
 
 class IndexedDBDriver extends BrowserDriver {
   static store = db.files

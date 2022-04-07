@@ -8,7 +8,7 @@ import assertPath from "../assertPath.js"
 const CHAR_DOT = 46 /* . */
 const CHAR_FORWARD_SLASH = 47 /* / */
 
-export default function parsePath(path) {
+export default function parsePath(path, { checkDir } = {}) {
   assertPath(path)
 
   const res = Object.create(null)
@@ -28,6 +28,11 @@ export default function parsePath(path) {
     start = 1
   } else {
     start = 0
+  }
+
+  if (checkDir === true && path.endsWith("/")) {
+    res.dir = path.slice(0, -1)
+    return res
   }
 
   let startDot = -1

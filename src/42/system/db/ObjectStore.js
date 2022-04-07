@@ -147,7 +147,8 @@ export default class ObjectStore {
       throw new DOMException("Aborted", "AbortError")
     }
 
-    const db = await this.db.init()
+    await this.db.init()
+    const db = this.db.indexedDB
 
     return new Promise((resolve, reject) => {
       const tx = db.transaction(this.name, mode, {

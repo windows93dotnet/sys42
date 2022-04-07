@@ -11,7 +11,7 @@ import allocate from "../locator/allocate.js"
 import deallocate from "../locator/deallocate.js"
 
 const DEFAULTS = {
-  name: "🔶 - Storable",
+  name: "storable",
   sep: ".",
 }
 

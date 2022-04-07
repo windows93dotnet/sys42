@@ -13,12 +13,10 @@ export default class State extends Emitter {
     this.queue = new Set()
 
     this._update = paintThrottle(() => {
-      const keys = Object.keys(this.renderers)
-
       this.emit("update", this.queue)
 
       for (const path of this.queue) {
-        for (const key of keys) {
+        for (const key of Object.keys(this.renderers)) {
           if (key.startsWith(path)) {
             for (const render of this.renderers[key]) render()
           }

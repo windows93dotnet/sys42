@@ -3,7 +3,6 @@ import parsePath from "./core/parsePath.js"
 import { EXTENSIONS, NAMES } from "../../constants/FILE_TYPES.js"
 
 const parseFilename = memoize((filename, index = "index.html") => {
-  // const obj = Object.create(null)
   const obj = new URL(filename, "file:")
 
   obj.filename = decodeURI(
@@ -17,7 +16,8 @@ const parseFilename = memoize((filename, index = "index.html") => {
   const parsed = parsePath(obj.filename)
   obj.dir = parsed.dir
   obj.base = parsed.base
-  obj.ext = parsed.ext.slice(1)
+  // obj.ext = parsed.ext.slice(1)
+  obj.ext = parsed.ext
   obj.name = parsed.name
 
   obj.charset = EXTENSIONS.charset[obj.ext] ?? NAMES.charset[obj.name]

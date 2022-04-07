@@ -6,6 +6,8 @@ import dialog from "./dialog.js"
 
 import basename from "../../fabric/type/path/extract/basename.js"
 import stemname from "../../fabric/type/path/extract/stemname.js"
+import parsePath from "../../fabric/type/path/core/parsePath.js"
+
 import bisect from "../../fabric/type/object/bisect.js"
 import configure from "../../fabric/configure.js"
 
@@ -37,19 +39,6 @@ export class Explorer extends Component {
         reflect: true,
         render: true,
         default: "/",
-        adapt(value) {
-          const defaultPath = "/"
-          let out = value ? dirname(value) : defaultPath
-          out = out === "." ? defaultPath : out
-          if (!out.endsWith("/")) out += "/"
-
-          const base = basename(value)
-          if (base && this._.properties.selection?.length === 0) {
-            this._.properties.selection.push(out + base)
-          }
-
-          return out
-        },
       },
       glob: {
         state: true,
@@ -185,6 +174,16 @@ await Component.define(Explorer)
 
 export default async function explorer(path = "/", options = {}) {
   const [rest, config] = bisect(options, ["footer", "selection", "shortcuts"])
+
+  const parsed = parsePath(path, { checkDir: true })
+
+  config.selection ??= []
+  if (parsed.base && config.selection.length === 0) {
+    config.selection.push(parsed.dir + parsed.base)
+  }
+
+  path = parsed.dir === "/" ? parsed.dir : parsed.dir + "/"
+
   return dialog(
     configure(
       {

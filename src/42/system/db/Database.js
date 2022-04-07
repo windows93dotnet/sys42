@@ -3,14 +3,13 @@ import ObjectStore from "./ObjectStore.js"
 import configure from "../../fabric/configure.js"
 
 const DEFAULTS = {
-  name: "🔴 - Database",
+  name: "database",
   version: 1,
   stores: {},
   durability: "default",
 }
 
 export default class Database {
-  #db
   #config
   #obsolete = false
 
@@ -78,6 +77,7 @@ export default class Database {
 
     this.#config = configure(DEFAULTS, options)
 
+    this.indexedDB = undefined
     this.name = this.#config.name
     this.durability = this.#config.durability
     this.range = IDBKeyRange
@@ -96,12 +96,12 @@ export default class Database {
 
   #registerDB(db) {
     db.addEventListener("close", () => {
-      this.#db = undefined
+      this.indexedDB = undefined
     })
     db.addEventListener("versionchange", () => {
       db.close()
       this.#obsolete = true
-      this.#db = undefined
+      this.indexedDB = undefined
     })
     return db
   }
@@ -170,20 +170,20 @@ export default class Database {
   }
 
   async init() {
-    if (this.#db) return this.#db
+    if (this.indexedDB) return this.indexedDB
 
     if (this.#obsolete) {
       throw new DatabaseError("Database is obsolete")
     }
 
     const { name, version } = this.#config
-    this.#db = await Database.open(name, version, {
+    this.indexedDB = await Database.open(name, version, {
       upgrade: async (...args) => this.#upgrade(...args),
       downgrade: async (...args) => this.#downgrade(...args),
     })
-    this.#registerDB(this.#db)
+    this.#registerDB(this.indexedDB)
 
-    return this.#db
+    return this
   }
 
   then(resolve, reject) {
@@ -191,7 +191,7 @@ export default class Database {
   }
 
   async destroy(arg) {
-    this.#db?.close()
+    this.indexedDB?.close()
     await Database.delete(this.#config.name, arg)
   }
 }

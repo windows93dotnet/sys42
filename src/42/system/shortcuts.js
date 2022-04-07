@@ -273,6 +273,7 @@ export class Shortcuts {
 
     if (type === "string") {
       const parentMethod = getParentMethod(this.el, rule.run)
+      // console.log(rule.run, parentMethod)
       if (parentMethod) {
         rule.run = parentMethod
         return

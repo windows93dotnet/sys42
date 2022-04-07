@@ -1,16 +1,19 @@
 import Storable from "../../fabric/class/Storable.js"
 import FileSystemError from "./FileSystemError.js"
+import configure from "../../fabric/configure.js"
 import joinPath from "../../fabric/type/path/core/joinPath.js"
 import sortPath from "../../fabric/type/path/core/sortPath.js"
 import sortGlobResults from "../../fabric/type/path/core/sortGlobResults.js"
 import glob from "../../fabric/type/path/glob.js"
 
+const DEFAULTS = {
+  name: "fileindex",
+  sep: "/",
+}
+
 export default class FileIndex extends Storable {
-  constructor(root = {}) {
-    super(root, {
-      name: "🗃️ - File Index",
-      sep: "/",
-    })
+  constructor(root = {}, options) {
+    super(root, configure(DEFAULTS, options))
   }
 
   isDir(path) {

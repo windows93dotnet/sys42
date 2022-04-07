@@ -1,4 +1,7 @@
+/* eslint-disable unicorn/no-this-assignment */
+/* eslint-disable no-constructor-return */
 import FileIndex from "./FileIndex.js"
+import system from "../../system.js"
 import cbor from "../formats/cbor.js"
 
 export const MASKS = {
@@ -17,11 +20,20 @@ const getFiles = async () => {
   return res.status === 200 ? cbor.decode(await res.arrayBuffer()) : {}
 }
 
+let instance
+
 export default class Disk extends FileIndex {
   static MASKS = MASKS
 
   constructor() {
+    if (instance) return instance
+
     super(getFiles)
+
+    this.HOME = system.HOME
+    this.MASKS = MASKS
+    this.RESERVED_BYTES = RESERVED_BYTES
+    instance = this
   }
 
   getIdAndMask(filename) {
