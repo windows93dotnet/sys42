@@ -1,14 +1,14 @@
 // @related https://github.com/KittyGiraudel/a11y-dialog
 
 import Component from "../class/Component.js"
-import compositor from "../compositor.js"
+import layerManager from "../layerManager.js"
 import render from "../render.js"
 import arrify from "../../fabric/type/any/arrify.js"
 import populateContext from "../utils/populateContext.js"
 import makeNewContext from "../utils/makeNewContext.js"
 import create from "../create.js"
 
-let layer = compositor("dialogs")
+let layer = layerManager("dialogs")
 
 export class Dialog extends Component {
   static definition = {

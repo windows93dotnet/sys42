@@ -2,7 +2,7 @@ import Component from "../class/Component.js"
 import render from "../render.js"
 import listen from "../../fabric/dom/listen.js"
 import debounce from "../../fabric/type/function/debounce.js"
-import { layers } from "../compositor.js"
+import { layers } from "../layerManager.js"
 
 function closeMenuItems(el, options = {}) {
   const items = el.querySelectorAll(`

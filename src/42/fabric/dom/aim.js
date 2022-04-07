@@ -30,7 +30,7 @@ class Aim {
     this.reset()
 
     this.forget = listen({
-      pointermove: throttle((e) => this.setCursor(e), 100),
+      pointermove: throttle((e) => this.setCursor(e), 300),
     })
   }
 
@@ -68,14 +68,42 @@ class Aim {
 
     if (this.inMenubar) {
       if (y > rect.bottom) {
-        this.setPoints(x, y, rect.left, rect.bottom, rect.right, rect.bottom) // v
+        this.setPoints(
+          x,
+          y + 1,
+          rect.left - 5,
+          rect.bottom,
+          rect.right + 5,
+          rect.bottom
+        ) // v
       } else if (y < rect.top) {
-        this.setPoints(x, y, rect.left, rect.top, rect.right, rect.top) // ^
+        this.setPoints(
+          x,
+          y - 1,
+          rect.left - 5,
+          rect.top,
+          rect.right + 5,
+          rect.top
+        ) // ^
       } else this.resetPoints()
     } else if (x < rect.left) {
-      this.setPoints(x, y, rect.left, rect.top, rect.left, rect.bottom) // <
+      this.setPoints(
+        x + 1,
+        y,
+        rect.left,
+        rect.top - 5,
+        rect.left,
+        rect.bottom + 5
+      ) // <
     } else if (x > rect.right) {
-      this.setPoints(x, y, rect.right, rect.top, rect.right, rect.bottom) // >
+      this.setPoints(
+        x - 1,
+        y,
+        rect.right,
+        rect.top - 5,
+        rect.right,
+        rect.bottom + 5
+      ) // >
     } else this.resetPoints()
   }
 

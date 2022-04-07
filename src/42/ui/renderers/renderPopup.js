@@ -1,11 +1,11 @@
-import compositor from "../compositor.js"
+import layerManager from "../layerManager.js"
 import listen from "../../fabric/dom/listen.js"
 import uid from "../../fabric/uid.js"
 import inIframe from "../../system/env/runtime/inIframe.js"
 import { isFocusable } from "../../fabric/dom/focus.js"
 
-// let layer = compositor("popups", { module: "LayerPopups" })
-let layer = compositor("popups")
+let layer = layerManager("popups", { module: "LayerPopups" })
+// let layer = layerManager("popups")
 
 layer.then((layer) => {
   const listenOptions = { capture: true }

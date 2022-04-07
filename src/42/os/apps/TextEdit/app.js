@@ -174,5 +174,5 @@ app.state.on("update", (queue) => {
   if (queue.has("text")) app.data.dirty = true
 })
 
-app.run.save()
+// app.run.save()
 // app.run.open()

@@ -128,7 +128,7 @@ if (inTop) {
     })
 }
 
-export default async function compositor(layerName, options) {
+export default async function layerManager(layerName, options) {
   if (layerName in layers) return layers[layerName]
 
   if (inIframe) {
@@ -259,4 +259,4 @@ export default async function compositor(layerName, options) {
   return layers[layerName]
 }
 
-compositor.layers = layers
+layerManager.layers = layers
