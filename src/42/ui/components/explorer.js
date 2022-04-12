@@ -213,7 +213,7 @@ export default async function explorer(path = "/", options = {}) {
           path: { watch: "path" },
           selection: { watch: "selection" },
           footer: config.footer,
-          shortcuts: config.shortcuts ? config.shortcuts : false,
+          shortcuts: config.shortcuts ?? Explorer.definition.shortcuts,
         },
         footer: false,
         data: { path, selection: config.selection ?? [] },
@@ -232,6 +232,7 @@ export async function pickFile(path, options = {}) {
   const res = await explorer(path, {
     label: "Open File",
     shortcuts: [
+      ...Explorer.definition.shortcuts,
       {
         key: "[dblclick]",
         selector: 'ui-icon[aria-description="file"]',
@@ -273,6 +274,7 @@ export async function saveFile(path, options = {}, value) {
   const res = await explorer(path, {
     label: "Save File",
     shortcuts: [
+      ...Explorer.definition.shortcuts,
       {
         key: "[dblclick]",
         selector: 'ui-icon[aria-description="file"]',
@@ -297,7 +299,6 @@ export async function saveFile(path, options = {}, value) {
               name: "basename",
               compact: true,
               prose: false,
-              // value: "{{stemname(selection.-1)}}{{extname(selection.-1)}}",
             },
             { type: "button", label: "Cancel", run: "cancel" },
             { type: "button.btn-default", label: "Save", run: "ok" },
