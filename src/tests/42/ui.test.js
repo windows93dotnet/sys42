@@ -426,7 +426,6 @@ test("repeat", async (t) => {
   const el = div()
   const app = await ui(el, {
     content: { scope: "arr", repeat: "{{.}}" },
-    // data: [1, 2, 3],
   })
 
   t.is(app.el.textContent, "")
@@ -461,9 +460,96 @@ test("repeat", async (t) => {
   t.is(childNodes[1], app.el.childNodes[1])
   t.is(childNodes[2], app.el.childNodes[2])
 
+  app.data.arr[1] = "b"
+  await repaint()
+
+  t.is(app.el.textContent, "ab")
+  t.is(childNodes[1], app.el.childNodes[1])
+  t.is(childNodes[2], app.el.childNodes[2])
+
   app.data.arr.length = 0
   await repaint()
   t.is(app.el.textContent, "")
+})
+
+test("repeat", "array with objects", async (t) => {
+  const el = div()
+  const app = await ui(el, {
+    content: {
+      scope: "arr",
+      repeat: {
+        type: "span",
+        content: "{{x}}",
+        class: "{{y}}",
+      },
+    },
+    data: {
+      arr: [
+        { x: "A", y: "1" },
+        { x: "B", y: "2" },
+      ],
+    },
+  })
+
+  t.is(
+    app.el.innerHTML,
+    '<!--[repeat]--><span class="1">A</span><span class="2">B</span>'
+  )
+
+  app.data.arr[0].x = "foo"
+  await repaint()
+  t.is(
+    app.el.innerHTML,
+    '<!--[repeat]--><span class="1">foo</span><span class="2">B</span>'
+  )
+
+  app.data.arr = [{ x: "Z", y: "9" }]
+  await repaint()
+  t.is(app.el.innerHTML, '<!--[repeat]--><span class="9">Z</span>')
+})
+
+import "../../42/ui/components/icon.js"
+
+test.only("repeat", "ui-icon", async (t) => {
+  const el = div()
+  document.body.append(el)
+  const app = await ui(el, {
+    content: {
+      scope: "arr",
+      repeat: {
+        type: "ui-icon",
+        path: "{{path}}",
+      },
+    },
+    data: {
+      arr: [{ path: "A" }, { path: "B" }],
+    },
+  })
+
+  await repaint()
+
+  t.is(el.children.length, 2)
+  t.is(el.textContent, "AB")
+
+  app.data.arr[0].path = "foo"
+  await repaint()
+  await repaint()
+  t.is(el.children.length, 2)
+  t.is(el.textContent, "fooB")
+
+  app.data.arr = [{ path: "Z" }]
+  await repaint()
+  await repaint()
+  t.is(el.children.length, 1)
+  t.is(el.textContent, "Z")
+
+  app.data.arr = [{ path: "X" }, { path: "Y" }]
+  await repaint()
+  await repaint()
+  t.is(el.children.length, 2)
+  t.is(el.textContent, "XY")
+
+  el.remove() // TODO: add test teardown
 })
 
 test("repeat", "element", async (t) => {
@@ -1042,7 +1128,7 @@ test("content from schema", async (t) => {
   })
 
   t.eq(app.ctx.global.schema, { type: "string" })
-  t.eq(removeUid(app.el.innerHTML), '<input id="uid">')
+  t.eq(removeUid(app.el.innerHTML), '<input id="uid" autocomplete="off">')
 })
 
 test("content from schema", 2, async (t) => {
@@ -1056,7 +1142,10 @@ test("content from schema", 2, async (t) => {
   })
 
   t.eq(app.ctx.global.schema, { type: "string" })
-  t.eq(removeUid(app.el.innerHTML), '<div><input id="uid"></div>')
+  t.eq(
+    removeUid(app.el.innerHTML),
+    '<div><input id="uid" autocomplete="off"></div>'
+  )
 })
 
 test("content from schema ref", async (t) => {
@@ -1071,7 +1160,10 @@ test("content from schema ref", async (t) => {
   })
 
   t.eq(app.ctx.global.schema, { type: "string" })
-  t.eq(removeUid(app.el.innerHTML), '<div><input id="uid"></div>')
+  t.eq(
+    removeUid(app.el.innerHTML),
+    '<div><input id="uid" autocomplete="off"></div>'
+  )
 })
 
 test("content from data", async (t) => {
@@ -1081,7 +1173,7 @@ test("content from data", async (t) => {
 
   t.is(
     removeUid(app.el.innerHTML),
-    '<fieldset><div><label for="uid">Name</label><input id="uid" name="name"></div></fieldset>'
+    '<fieldset><div><label for="uid">Name</label><input id="uid" name="name" autocomplete="off"></div></fieldset>'
   )
 
   const input = app.get("input")
@@ -1110,7 +1202,7 @@ test("schema", async (t) => {
 
   t.is(
     removeUid(app.el.innerHTML),
-    '<input id="uid" type="number" required="" step="2">'
+    '<input id="uid" type="number" required="" step="2" autocomplete="off">'
   )
 })
 
@@ -1132,6 +1224,6 @@ test("schema", 2, async (t) => {
 
   t.is(
     removeUid(app.el.innerHTML),
-    '<input id="uid" type="number" required="" step="2">'
+    '<input id="uid" type="number" required="" step="2" autocomplete="off">'
   )
 })

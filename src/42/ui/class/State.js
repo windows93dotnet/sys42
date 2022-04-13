@@ -15,11 +15,24 @@ export default class State extends Emitter {
     this._update = paintThrottle(() => {
       this.emit("update", this.queue)
 
+      console.log("///////////////////////////////////")
+
       for (const path of this.queue) {
+        const xxx = []
         for (const key of Object.keys(this.renderers)) {
-          if (key.startsWith(path)) {
-            for (const render of this.renderers[key]) render()
+          // console.log(0, key, path)
+          if (key === path) {
+            xxx.push(path)
+            continue
           }
+
+          if (key.startsWith(path) && this.renderers[key]) {
+            for (const render of this.renderers[key]) render(key)
+          }
+        }
+
+        for (const x of xxx) {
+          for (const render of this.renderers[x]) render(x)
         }
       }
 
@@ -34,11 +47,10 @@ export default class State extends Emitter {
   }
 
   update(path) {
-    this.queue.add(path)
-
     // if an array is changed using length
     // add to the queue any registered renderers on the array
     if (path.endsWith(".length")) this.queue.add(path.slice(0, -7))
+    else this.queue.add(path)
 
     this._update()
   }

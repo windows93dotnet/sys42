@@ -33,9 +33,11 @@ export default function create(ctx, tagName, ...args) {
   renderAttributes(el, ctx, parsed.attrs)
 
   for (const arg of args) {
-    if (typeof arg !== "object" || arg instanceof Node) el.append(arg)
-    else if (Array.isArray(arg)) el.append(...arg)
-    else if (arg) renderAttributes(el, ctx, arg)
+    if (arg !== undefined) {
+      if (typeof arg !== "object" || arg instanceof Node) el.append(arg)
+      else if (Array.isArray(arg)) el.append(...arg)
+      else renderAttributes(el, ctx, arg)
+    }
   }
 
   return el
