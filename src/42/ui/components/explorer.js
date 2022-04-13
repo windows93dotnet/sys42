@@ -7,6 +7,8 @@ import dialog from "./dialog.js"
 import basename from "../../fabric/type/path/extract/basename.js"
 import stemname from "../../fabric/type/path/extract/stemname.js"
 import parsePath from "../../fabric/type/path/core/parsePath.js"
+import joinPath from "../../fabric/type/path/core/joinPath.js"
+import normalizePath from "../../fabric/type/path/core/normalizePath.js"
 
 import bisect from "../../fabric/type/object/bisect.js"
 import configure from "../../fabric/configure.js"
@@ -175,11 +177,11 @@ await Component.define(Explorer)
 export default async function explorer(path = "/", options = {}) {
   const [rest, config] = bisect(options, ["footer", "selection", "shortcuts"])
 
-  const parsed = parsePath(path, { checkDir: true })
+  const parsed = parsePath(normalizePath(path), { checkDir: true })
 
   config.selection ??= []
   if (parsed.base && config.selection.length === 0) {
-    config.selection.push(parsed.dir + parsed.base)
+    config.selection.push(joinPath(parsed.dir, parsed.base))
   }
 
   path = parsed.dir === "/" ? parsed.dir : parsed.dir + "/"

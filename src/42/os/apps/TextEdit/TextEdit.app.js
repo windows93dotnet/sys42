@@ -27,4 +27,4 @@ const app = new App({
 
 await app.mount()
 
-app.run.open()
+// app.run.open()
