@@ -308,6 +308,8 @@ export default class Component extends HTMLElement {
   disconnectedCallback() {
     this._?.cancel()
 
+    this._.initial = this._.initialBackup
+
     if (_INSTANCES in this) {
       // Iterate over Trait instances in reverse order
       // to try to restaure originals attributes
@@ -352,6 +354,7 @@ export default class Component extends HTMLElement {
     this._.init = () => {
       if (this._.initial) {
         const { initial } = this._
+        this._.initialBackup = initial
         delete this._.initial
 
         renderAttributes(this, this._.ctx, initial.attributes)

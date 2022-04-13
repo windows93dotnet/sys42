@@ -508,9 +508,39 @@ test("repeat", "array with objects", async (t) => {
   t.is(app.el.innerHTML, '<!--[repeat]--><span class="9">Z</span>')
 })
 
-import "../../42/ui/components/icon.js"
+test("repeat", "div", "render index 0 bug", async (t) => {
+  const el = div()
+  const app = await ui(el, {
+    content: {
+      scope: "arr",
+      repeat: {
+        type: "div",
+        content: "{{path}}",
+      },
+    },
+    data: {
+      arr: [{ path: "A" }],
+    },
+  })
 
-test.only("repeat", "ui-icon", async (t) => {
+  await repaint()
+
+  t.is(el.children.length, 1)
+  t.is(el.textContent, "A")
+
+  app.data.arr = [{ path: "Z" }]
+  await repaint()
+  t.is(el.children.length, 1)
+  t.is(el.textContent, "Z")
+
+  app.data.arr = [{ path: "X" }, { path: "Y" }]
+  await repaint()
+  t.is(el.children.length, 2)
+  t.is(el.textContent, "XY")
+})
+
+test("repeat", "ui-icon", "render index 0 bug", async (t) => {
+  t.timeout(1000)
   const el = div()
   document.body.append(el)
   const app = await ui(el, {
@@ -522,20 +552,14 @@ test.only("repeat", "ui-icon", async (t) => {
       },
     },
     data: {
-      arr: [{ path: "A" }, { path: "B" }],
+      arr: [{ path: "A" }],
     },
   })
 
   await repaint()
 
-  t.is(el.children.length, 2)
-  t.is(el.textContent, "AB")
-
-  app.data.arr[0].path = "foo"
-  await repaint()
-  await repaint()
-  t.is(el.children.length, 2)
-  t.is(el.textContent, "fooB")
+  t.is(el.children.length, 1)
+  t.is(el.textContent, "A")
 
   app.data.arr = [{ path: "Z" }]
   await repaint()
@@ -552,7 +576,7 @@ test.only("repeat", "ui-icon", async (t) => {
   el.remove() // TODO: add test teardown
 })
 
-test("repeat", "element", async (t) => {
+test("repeat", "innerHTML", async (t) => {
   const el = div()
   const app = await ui(el, {
     content: [

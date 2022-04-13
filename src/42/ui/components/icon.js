@@ -43,11 +43,6 @@ class Icon extends Component {
   $render() {
     let label
 
-    // if (this.parentElement.localName === "ui-folderview") {
-    //   console.log(111, this._.ctx.scope)
-    //   console.log(222, this.path)
-    // }
-
     const image = create("img.ui-icon__image")
     const mask = create("span.ui-icon__mask")
 
