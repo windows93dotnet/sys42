@@ -10,7 +10,7 @@ export default function popupButton(el, def, ctx) {
   const role = el.getAttribute("role")
 
   const isSubmenu = role === "menuitem" && !def.inMenubar
-  const pictoName = isSubmenu ? "right" : "down"
+  const pictoName = "picto" in def ? def.picto : isSubmenu ? "right" : "down"
   def.positionable = { preset: isSubmenu ? "menuitem" : "popup" }
 
   const type = def.type?.startsWith("ui-") ? def.type.slice(3) : def.type
@@ -30,7 +30,10 @@ export default function popupButton(el, def, ctx) {
     })
   } else {
     el.setAttribute("aria-expanded", "false")
-    el.append(render({ type: "ui-picto", value: pictoName }, ctx))
+    if (pictoName) {
+      el.append(render({ type: "ui-picto", value: pictoName }, ctx))
+    }
+
     addOpenerListeners(el, role, def, ctx)
   }
 

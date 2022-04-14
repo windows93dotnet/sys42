@@ -4,12 +4,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" href="/style.css" id="theme" />
 
-<!-- <script type="module">
-  import realm from "../42/system/realm.js"
-
-  console.log(await realm())
-</script> -->
-
 <script type="module">
   import "../42/os.js"
   import "../42/ui/components/enclose.js"
@@ -22,24 +16,11 @@
     type: "body.box-fit.box-h.desktop._debug",
     content: [
       {
-        // type: "header.box-stack",
         type: ".box-stack",
         content: [
           {
             type: "ui-folderview.scroll-auto",
             shortcuts: [
-              // {
-              //   key: "[click]",
-              //   selector: "ui-icon",
-              //   run: "iconFocus",
-              //   args: ["target.path"],
-              // },
-              // {
-              //   key: "ctrl+[click]",
-              //   selector: "ui-icon",
-              //   run: "iconSelect",
-              //   args: ["target.path"],
-              // },
               {
                 key: "[dblclick]",
                 selector: 'ui-icon[aria-description="folder"]',
@@ -66,35 +47,23 @@
       {
         type: "footer.outset",
         scope: "desktop",
-        content: { type: "button", label: "{{hello}}", run: "start" },
+        content: {
+          type: "button",
+          label: "Start",
+          picto: "puzzle",
+          popup: {
+            picto: false,
+            type: "ui-menu",
+            content: [{ label: "Test" }],
+          },
+        },
       },
     ],
 
-    data: {
-      desktop: {
-        hello: "hi",
-      },
-    },
-
     actions: {
-      desktop: {
-        start() {
-          this.hello = "hello"
-        },
-      },
       folderOpen(path) {
-        console.log(888)
         explorer(path)
       },
-      // iconFocus(path) {
-      //   console.log("iconFocus", path)
-      // },
-      // iconSelect(path) {
-      //   console.log("iconSelect", path)
-      // },
-      // removeSelection() {
-      //   console.log("removeSelection")
-      // },
     },
   })
 
