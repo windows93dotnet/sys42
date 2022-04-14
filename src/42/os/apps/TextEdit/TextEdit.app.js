@@ -1,6 +1,6 @@
 import App from "../../class/App.js"
 
-const app = new App({
+export const definition = {
   name: "TextEdit",
 
   categories: ["utilities", "productivity", "development"],
@@ -23,8 +23,6 @@ const app = new App({
     spellcheck: true,
     wrap: false,
   },
-})
+}
 
-await app.mount()
-
-// app.run.open()
+export default await new App(definition).mount()
