@@ -9,6 +9,7 @@ import stemname from "../../fabric/type/path/extract/stemname.js"
 import parsePath from "../../fabric/type/path/core/parsePath.js"
 import joinPath from "../../fabric/type/path/core/joinPath.js"
 import normalizePath from "../../fabric/type/path/core/normalizePath.js"
+import open from "../../os/cmd/open.cmd.js"
 
 import bisect from "../../fabric/type/object/bisect.js"
 import configure from "../../fabric/configure.js"
@@ -66,6 +67,12 @@ export class Explorer extends Component {
         run: "go",
         args: ["target.path"],
       },
+      {
+        key: "[dblclick]",
+        selector: 'ui-icon[aria-description="file"]',
+        run: "open",
+        args: ["target.path"],
+      },
     ],
   }
 
@@ -78,6 +85,10 @@ export class Explorer extends Component {
   go(path) {
     this.selection.length = 0
     this.path = path
+  }
+
+  open(path) {
+    open(path)
   }
 
   displaySelection(selection) {

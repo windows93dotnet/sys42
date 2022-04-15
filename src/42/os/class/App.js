@@ -6,6 +6,7 @@ import UI from "../../ui/class/UI.js"
 let fs
 let explorer
 let toggleFullscreen
+let filesImport
 
 const menubar = [
   {
@@ -19,7 +20,7 @@ const menubar = [
         run: "new",
       },
       {
-        label: "Open",
+        label: "Open…",
         picto: "folder-open",
         shortcut: "Ctrl+O",
         id: "open",
@@ -38,6 +39,19 @@ const menubar = [
         shortcut: "Ctrl+Shift+S",
         id: "saveAs",
         run: "saveAs",
+      },
+      "---",
+      {
+        label: "Import…",
+        picto: "import",
+        id: "import",
+        run: "import",
+      },
+      {
+        label: "Export…",
+        picto: "export",
+        id: "export",
+        run: "export",
       },
     ],
   },
@@ -72,7 +86,7 @@ const menubar = [
 ]
 
 export default class App extends UI {
-  constructor({ name, categories, data, content }) {
+  constructor({ name, categories, decode, data, content }) {
     const install = preinstall({ name, categories })
 
     super({
@@ -120,6 +134,21 @@ export default class App extends UI {
             this.path = res
             this.dirty = false
           }
+        },
+
+        async import() {
+          filesImport ??= await import(
+            "../../fabric/type/file/filesImport.js"
+          ).then((m) => m.default)
+          const [file] = await filesImport(decode)
+          if (file) {
+            this.text = await file.text()
+            this.dirty = false
+          }
+        },
+
+        async export() {
+          console.log("export")
         },
 
         install() {

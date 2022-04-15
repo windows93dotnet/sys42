@@ -9,6 +9,7 @@
   import "../42/ui/components/enclose.js"
   import ui from "../42/ui.js"
   import explorer from "../42/ui/components/explorer.js"
+  import open from "../42/os/cmd/open.cmd.js"
 
   // navigator.serviceWorker?.register("/42.sw.js", { type: "module" })
 
@@ -24,7 +25,13 @@
               {
                 key: "[dblclick]",
                 selector: 'ui-icon[aria-description="folder"]',
-                run: "folderOpen",
+                run: "openFolder",
+                args: ["target.path"],
+              },
+              {
+                key: "[dblclick]",
+                selector: 'ui-icon[aria-description="file"]',
+                run: "openFile",
                 args: ["target.path"],
               },
             ],
@@ -61,8 +68,11 @@
     ],
 
     actions: {
-      folderOpen(path) {
+      openFolder(path) {
         explorer(path)
+      },
+      openFile(path) {
+        open(path)
       },
     },
   })

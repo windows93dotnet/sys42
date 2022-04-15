@@ -5,6 +5,19 @@ export const definition = {
 
   categories: ["utilities", "productivity", "development"],
 
+  decode: {
+    types: [
+      {
+        description: "Images",
+        accept: {
+          "text/*": [],
+        },
+      },
+    ],
+    excludeAcceptAllOption: true,
+    multiple: false,
+  },
+
   // menubar,
 
   content: {
