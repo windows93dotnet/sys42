@@ -2,11 +2,13 @@
 import inIframe from "../../system/env/runtime/inIframe.js"
 import preinstall from "../utils/preinstall.js"
 import UI from "../../ui/class/UI.js"
+import basename from "../../fabric/type/path/extract/basename.js"
 
 let fs
 let explorer
 let toggleFullscreen
-let filesImport
+let fileImport
+let fileExport
 
 const menubar = [
   {
@@ -86,7 +88,7 @@ const menubar = [
 ]
 
 export default class App extends UI {
-  constructor({ name, categories, decode, data, content }) {
+  constructor({ name, categories, data, content, encode, decode }) {
     const install = preinstall({ name, categories })
 
     super({
@@ -137,10 +139,10 @@ export default class App extends UI {
         },
 
         async import() {
-          filesImport ??= await import(
-            "../../fabric/type/file/filesImport.js"
+          fileImport ??= await import(
+            "../../fabric/type/file/fileImport.js"
           ).then((m) => m.default)
-          const [file] = await filesImport(decode)
+          const [file] = await fileImport(decode)
           if (file) {
             this.text = await file.text()
             this.dirty = false
@@ -148,7 +150,10 @@ export default class App extends UI {
         },
 
         async export() {
-          console.log("export")
+          fileExport ??= await import(
+            "../../fabric/type/file/fileExport.js"
+          ).then((m) => m.default)
+          await fileExport(new File([this.text], basename(this.path)), encode)
         },
 
         install() {

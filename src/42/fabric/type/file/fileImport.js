@@ -3,8 +3,7 @@
 // @thanks https://stackoverflow.com/a/67603015
 
 import inOpaqueOrigin from "../../../system/env/runtime/inOpaqueOrigin.js"
-const supportShowOpenFilePicker =
-  typeof self !== "undefined" && "showOpenFilePicker" in self
+const supportShowOpenFilePicker = "showOpenFilePicker" in globalThis
 
 function legacyAccept(types) {
   if (!Array.isArray(types)) return
@@ -21,7 +20,7 @@ function legacyAccept(types) {
   return [...mimetypes, extensions].join(",")
 }
 
-function legacyFilePicker(options) {
+function legacyOpenFile(options) {
   return new Promise((resolve) => {
     let input = document.createElement("input")
     input.type = "file"
@@ -55,8 +54,8 @@ function legacyFilePicker(options) {
   })
 }
 
-async function filePicker(options = {}) {
-  const handle = await window.showOpenFilePicker(options)
+async function openFile(options = {}) {
+  const handle = await globalThis.showOpenFilePicker(options)
 
   const files = []
 
@@ -69,7 +68,7 @@ async function filePicker(options = {}) {
   return files
 }
 
-export default async function filesImport(options = {}) {
+export default async function fileImport(options = {}) {
   const config = {
     types: options.types,
     accept: options.accept,
@@ -78,7 +77,7 @@ export default async function filesImport(options = {}) {
     directory: options.directory,
   }
 
-  return inOpaqueOrigin || !supportShowOpenFilePicker
-    ? legacyFilePicker(config)
-    : filePicker(config)
+  return !inOpaqueOrigin && supportShowOpenFilePicker
+    ? openFile(config)
+    : legacyOpenFile(config)
 }

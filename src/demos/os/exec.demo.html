@@ -7,7 +7,8 @@
 <body class="pa-xxl desktop">
   exec
 </body>
-<script type="module">
+
+<!-- <script type="module">
   import exec from "../../42/os/exec.js"
 
   // console.log(222, await exec("open **/*.cbor"))
@@ -19,4 +20,14 @@
   console.log(222, await exec("fs open **/*.html"))
 
   // console.log(222, await exec("fs write **/index.html"))
-</script>
+</script> -->
+
+<!-- <script type="module">
+  import fileExport from "../../42/fabric/type/file/fileExport.js"
+
+  const file = new File(["mdr"], "yo.txt")
+
+  document.body.onclick = async () => {
+    console.log(await fileExport(file))
+  }
+</script> -->
