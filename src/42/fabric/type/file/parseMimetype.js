@@ -4,10 +4,10 @@
 export default function parseMimetype(source) {
   const [type, subtype] = source.trim().split("/")
   const out = { type, subtype }
+
   const [x, suffix] = subtype.split("+")
   if (suffix) {
     out.suffix = suffix
-    // out._subtype = subtype
     out.subtype = x
   }
 

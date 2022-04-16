@@ -8,6 +8,21 @@
   exec
 </body>
 
+<script type="module">
+  import exec from "../../42/os/exec.js"
+
+  await exec("open /index.html")
+
+  // console.log(222, await exec("fs read /index.html"))
+  // console.log(222, await exec("fs read **/index.html"))
+  // console.log(222, await exec("fs open **/*.cbor"))
+  // console.log(222, await exec("fs open ./hello.txt"))
+  // console.log(222, await exec("fs open /index.html"))
+  // console.log(222, await exec("fs open **/*.html"))
+
+  // console.log(222, await exec("fs write **/index.html"))
+</script>
+
 <!-- <script type="module">
   import exec from "../../42/os/exec.js"
 
