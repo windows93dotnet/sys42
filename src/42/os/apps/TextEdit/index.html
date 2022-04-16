@@ -1,4 +1,8 @@
 <!DOCTYPE html>
 <meta charset="utf-8" />
 <link rel="stylesheet" href="/style.css" id="theme" />
-<script type="module" src="./TextEdit.app.js"></script>
+<script type="module">
+  import App from "../../class/App.js"
+  import definition from "./TextEdit.app.js"
+  new App(definition).mount()
+</script>

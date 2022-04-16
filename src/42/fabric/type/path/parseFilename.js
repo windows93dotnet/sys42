@@ -16,7 +16,6 @@ const parseFilename = memoize((filename, index = "index.html") => {
   const parsed = parsePath(obj.filename)
   obj.dir = parsed.dir
   obj.base = parsed.base
-  // obj.ext = parsed.ext.slice(1)
   obj.ext = parsed.ext
   obj.name = parsed.name
 

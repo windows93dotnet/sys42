@@ -1,6 +1,5 @@
-import system from "../system.js"
-import findIconPath from "./theme/findIconPath.js"
 import { ConfigFile } from "./class/ConfigFile.js"
+import findIconPath from "./theme/findIconPath.js"
 
 import loadCSS from "../system/load/loadCSS.js"
 
@@ -26,7 +25,7 @@ class Theme extends ConfigFile {
   }
 }
 
-const theme = new Theme(`${system.HOME}/theme.cbor`, DEFAULTS)
+const theme = new Theme("theme.cbor", DEFAULTS)
 await theme.init()
 
 export default theme

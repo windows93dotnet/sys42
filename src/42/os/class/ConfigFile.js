@@ -1,17 +1,18 @@
 import fs from "../../system/fs.js"
+import system from "../../system.js"
 import extname from "../../fabric/type/path/extract/extname.js"
-import resolvePath from "../../fabric/type/path/core/resolvePath.js"
+import basename from "../../fabric/type/path/extract/basename.js"
 import configure from "../../fabric/configure.js"
 
 export class ConfigFile {
   constructor(filename, defaults) {
-    this.filename = resolvePath(filename)
+    this.filename = `${system.HOME}/${basename(filename)}`
     this.type = (extname(this.filename) || ".cbor").slice(1)
     this.defaults = configure({ version: -1 * Date.now() }, defaults)
   }
 
   async init() {
-    await ((await fs.access(this.filename)) === false //
+    await (system.DEV || (await fs.access(this.filename)) === false //
       ? this.reset()
       : this.open())
 
@@ -33,8 +34,11 @@ export class ConfigFile {
     await this.save()
   }
 
+  async populate() {}
+
   async reset() {
     this.value = this.defaults
+    await this.populate()
     await this.save()
   }
 }

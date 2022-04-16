@@ -1,19 +1,10 @@
-import App from "../../class/App.js"
-
-export const definition = {
+export default {
   name: "TextEdit",
 
   categories: ["utilities", "productivity", "development"],
 
   decode: {
-    types: [
-      {
-        description: "Images",
-        accept: {
-          "text/*": [],
-        },
-      },
-    ],
+    types: [{ description: "Text", accept: { "text/*": [] } }],
     excludeAcceptAllOption: true,
     multiple: false,
   },
@@ -37,5 +28,3 @@ export const definition = {
     wrap: false,
   },
 }
-
-export default await new App(definition).mount()
