@@ -1,35 +1,59 @@
 import memoize from "../function/memoize.js"
+import pick from "../object/pick.js"
+import parseMimetype from "../file/parseMimetype.js"
 import parsePath from "./core/parsePath.js"
 import { EXTENSIONS, NAMES } from "../../constants/FILE_TYPES.js"
 
-const parseFilename = memoize((filename, index = "index.html") => {
-  const obj = new URL(filename, "file:")
+const urlKeys = [
+  "origin",
+  "protocol",
+  // "username",
+  // "password",
+  "host",
+  "hostname",
+  "port",
+  "pathname",
+  // "search",
+  "hash",
+  // "href",
+]
 
-  obj.filename = decodeURI(
-    index && obj.pathname.endsWith("/")
-      ? `${obj.pathname}${index}`
-      : obj.pathname
+const parseFilename = memoize((filename, options) => {
+  const index = options?.index // ?? "index.html"
+
+  const url = new URL(filename, "file:")
+  const out = pick(url, urlKeys)
+  out.query = url.search
+
+  out.filename = decodeURI(
+    index && out.pathname.endsWith("/")
+      ? `${out.pathname}${index}`
+      : out.pathname
   )
 
-  obj.query = obj.search
+  const parsed = parsePath(out.filename)
+  out.dir = parsed.dir
+  out.base = parsed.base
+  out.ext = parsed.ext
+  out.name = parsed.name
 
-  const parsed = parsePath(obj.filename)
-  obj.dir = parsed.dir
-  obj.base = parsed.base
-  obj.ext = parsed.ext
-  obj.name = parsed.name
-
-  obj.charset = EXTENSIONS.charset[obj.ext] ?? NAMES.charset[obj.name]
-  obj.mimetype =
-    EXTENSIONS.mimetype[obj.ext] ||
-    NAMES.mimetype[obj.name] ||
+  out.charset = EXTENSIONS.charset[out.ext] ?? NAMES.charset[out.name]
+  out.mimetype =
+    EXTENSIONS.mimetype[out.ext] ||
+    NAMES.mimetype[out.name] ||
     "application/octet-stream"
 
-  obj.headers = Object.create(null)
-  obj.headers["content-type"] =
-    obj.mimetype + (obj.charset ? `; charset=${obj.charset}` : "")
+  if (options?.headers) {
+    out.headers = {}
+    out.headers["content-type"] =
+      out.mimetype + (out.charset ? `; charset=${out.charset}` : "")
+  }
 
-  return obj
+  if (options?.parseMimetype !== false) {
+    out.mime = parseMimetype(out.mimetype)
+  }
+
+  return out
 })
 
 export default parseFilename

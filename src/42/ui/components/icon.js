@@ -1,6 +1,5 @@
 import Component from "../class/Component.js"
 import parseFilename from "../../fabric/type/path/parseFilename.js"
-import parseMimetype from "../../fabric/type/file/parseMimetype.js"
 import theme from "../../os/theme.js"
 import create from "../create.js"
 
@@ -47,8 +46,7 @@ class Icon extends Component {
     const mask = create("span.ui-icon__mask")
 
     if (this.path) {
-      this._.parsed = parseFilename(this.path, false)
-      Object.assign(this._.parsed, parseMimetype(this._.parsed.mimetype))
+      this._.parsed = parseFilename(this.path)
 
       const src = theme.getIconImage(this._.parsed)
       if (src) {

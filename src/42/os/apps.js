@@ -1,6 +1,5 @@
 import { ConfigFile } from "./class/ConfigFile.js"
 import parseFilename from "../fabric/type/path/parseFilename.js"
-import parseMimetype from "../fabric/type/file/parseMimetype.js"
 import disk from "../system/fs/disk.js"
 
 const DEFAULTS = {
@@ -49,12 +48,12 @@ class AppManager extends ConfigFile {
   lookup(filename) {
     const { extensions, mimetypes } = this.value.defaultApps
     const out = []
-    const { ext, mimetype } = parseFilename(filename)
+    const { ext, mimetype, mime } = parseFilename(filename)
 
     if (ext in extensions) out.push(...extensions[ext])
     if (mimetype in mimetypes) out.push(...mimetypes[mimetype])
 
-    const mimeGlob = parseMimetype(mimetype).type + "/*"
+    const mimeGlob = mime.type + "/*"
     if (mimeGlob in mimetypes) out.push(...mimetypes[mimeGlob])
 
     return out

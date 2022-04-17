@@ -1,5 +1,4 @@
-export default function pick(obj, arr) {
-  const out = {}
+export default function pick(obj, arr, out = {}) {
   for (const key of arr) {
     if (key in obj) out[key] = obj[key]
   }

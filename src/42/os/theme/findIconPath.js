@@ -3,7 +3,7 @@ import disk from "../../system/fs/disk.js"
 
 export default function findIconPath(
   theme,
-  { filename, ext, type, subtype, suffix, protocol, host }
+  { filename, ext, mime, protocol, host }
 ) {
   const dir = disk.get(theme)
   if (!dir) return
@@ -43,8 +43,8 @@ export default function findIconPath(
   if ("subtype" in dir) {
     for (const k of Object.keys(dir.subtype)) {
       if (
-        k.startsWith(`${subtype}.`) ||
-        (suffix && k.startsWith(`${suffix}.`))
+        k.startsWith(`${mime.subtype}.`) ||
+        (mime.suffix && k.startsWith(`${mime.suffix}.`))
       ) {
         return `${theme}/subtype/${k}`
       }
@@ -53,7 +53,7 @@ export default function findIconPath(
 
   if ("type" in dir) {
     for (const k of Object.keys(dir.type)) {
-      if (k.startsWith(`${type}.`)) return `${theme}/type/${k}`
+      if (k.startsWith(`${mime.type}.`)) return `${theme}/type/${k}`
     }
   }
 }
