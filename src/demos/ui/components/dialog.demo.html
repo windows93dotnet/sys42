@@ -8,6 +8,7 @@
   import ui from "../../../42/ui.js"
   import dialog from "../../../42/ui/components/dialog.js"
   import explorer from "../../../42/ui/components/explorer.js"
+  import apps from "../../../42/os/apps.js"
 
   const app = await ui({
     type: "body.pa-xxl.bd.desktop",
@@ -30,6 +31,7 @@
       {
         type: "button#apply",
         dialog: {
+          footer: true,
           label: "Apply",
           scope: "derp",
           content: [
@@ -67,6 +69,15 @@
           console.log("explorer.pick res:", res?.selection)
         },
       },
+      "\n",
+      "\n",
+      {
+        type: "button#app",
+        label: "App",
+        async run() {
+          apps.open("/index.html")
+        },
+      },
     ],
 
     data: {
@@ -79,9 +90,10 @@
 
   window.app = app
 
-  app.get("#live").click()
+  // app.get("#live").click()
   // app.get("#apply").click()
   // app.get("#prompt").click()
   // app.get("#explorer").click()
   // app.get("#open").click()
+  app.get("#app").click()
 </script>

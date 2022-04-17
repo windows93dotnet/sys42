@@ -9,6 +9,8 @@ const DEFAULTS = {
   },
 }
 
+let dialog
+
 function addMIMETypes({ defaultApps }, name, types) {
   for (const { accept } of types) {
     for (const [mime, exts] of Object.entries(accept)) {
@@ -36,8 +38,9 @@ class AppManager extends ConfigFile {
             addMIMETypes(this.value, def.name, def.decode.types)
           }
 
-          const { categories } = def
-          this.value.dialogs[def.name] = { path, categories }
+          const { categories, geometry } = def
+          if (def.path) path = def.path
+          this.value.dialogs[def.name] = { path, categories, geometry }
         })
       )
     )
@@ -57,6 +60,24 @@ class AppManager extends ConfigFile {
     if (mimeGlob in mimetypes) out.push(...mimetypes[mimeGlob])
 
     return out
+  }
+
+  async open(filename) {
+    const [appName] = this.lookup(filename)
+    const app = this.value.dialogs[appName]
+    dialog ??= await import("../ui/components/dialog.js").then((m) => m.default)
+
+    dialog({
+      label: appName,
+      content: {
+        // style: { width: "400px", height: "350px" },
+        permissions: "app",
+        type: "ui-enclose",
+        src: app.path,
+        // src: filename,
+        // content: "hello",
+      },
+    })
   }
 }
 

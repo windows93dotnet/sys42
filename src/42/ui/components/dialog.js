@@ -73,11 +73,13 @@ export class Dialog extends Component {
       ctx.global.rack.value = structuredClone(data)
       this._.backupData ??= structuredClone(data)
       this._.ctx = ctx
-      config.footer ??= [
-        { type: "button", run: "cancel", label: "Cancel" },
-        { type: "button", run: "apply", label: "Apply" },
-        { type: "button.btn-default", run: "ok", label: "Ok" },
-      ]
+      if (config.footer === true) {
+        config.footer = [
+          { type: "button", run: "cancel", label: "Cancel" },
+          { type: "button", run: "apply", label: "Apply" },
+          { type: "button.btn-default", run: "ok", label: "Ok" },
+        ]
+      }
     }
 
     const fragment = document.createDocumentFragment()

@@ -5,6 +5,6 @@ export default async function open(options) {
   if (typeof options === "string") options = { glob: options }
   const { glob } = options
   for (const filename of disk.glob(glob)) {
-    console.log(1, apps.lookup(filename))
+    apps.open(filename)
   }
 }
