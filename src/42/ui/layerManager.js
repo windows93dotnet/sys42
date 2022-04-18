@@ -132,7 +132,7 @@ export default async function layerManager(layerName, options) {
   if (layerName in layers) return layers[layerName]
 
   if (inIframe) {
-    const bus = ipc.to(globalThis.parent)
+    const bus = ipc.to(globalThis.top)
 
     const instances = new Map()
     const proxyEmitter = emittable()

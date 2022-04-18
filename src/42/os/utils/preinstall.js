@@ -5,7 +5,7 @@ import defer from "../../fabric/type/promise/defer.js"
 
 export default function preinstall(app) {
   function resolve(url) {
-    return new URL(url, app.folder).href
+    return new URL(url, app.dir).href
   }
 
   const manifest = {

@@ -33,7 +33,7 @@ class AppManager extends ConfigFile {
 
     await Promise.all(
       disk.glob("**/*.app.js").map((path) =>
-        import(path).then((m) => {
+        import(/* @vite-ignore */ path).then((m) => {
           const def = m.default
           if (def?.decode?.types) {
             addMIMETypes(this.value, def.name, def.decode.types)
@@ -68,24 +68,24 @@ class AppManager extends ConfigFile {
     const app = this.value.dialogs[appName]
     dialog ??= await import("../ui/components/dialog.js").then((m) => m.default)
 
-    const folder = new URL(dirname(app.path + "/"), location).href
+    const dir = new URL(dirname(app.path + "/"), location).href
 
     dialog({
       label: appName,
       content: {
-        // style: { width: "400px", height: "350px" },
+        style: { width: "400px", height: "350px" },
         type: "ui-enclose",
         permissions: "app",
-        src: "/42/os/apps/TextEdit/index.html",
-        _srcdoc: `\
+        // src: "/42/os/apps/TextEdit/index.html",
+        srcdoc: `\
 <!DOCTYPE html>
 <meta charset="utf-8" />
 <link rel="stylesheet" href="/style.css" id="theme" />
 <script type="module">
   import App from "/42/os/class/App.js"
   import definition from "${app.path}"
-  definition.folder = "${folder}"
-  new App(definition).mount()
+  definition.dir = "${dir}"
+  const app = await new App(definition).mount()
 </script>
 `,
       },

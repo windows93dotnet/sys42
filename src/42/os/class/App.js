@@ -89,9 +89,9 @@ const menubar = [
 ]
 
 export default class App extends UI {
-  constructor({ name, categories, data, content, encode, decode, folder }) {
-    folder ??= dirname(document.URL) + "/"
-    const install = preinstall({ name, categories, folder })
+  constructor({ name, categories, data, content, encode, decode, dir }) {
+    dir ??= dirname(document.URL) + "/"
+    const install = preinstall({ name, categories, dir })
 
     super({
       type: ".box-fit.box-h",

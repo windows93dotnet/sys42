@@ -15,6 +15,6 @@ system.theme = theme
 system.devices = devices
 system.apps = apps
 
-globalThis.$ = system
+globalThis.$ ??= system
 
 export { default } from "./system.js"

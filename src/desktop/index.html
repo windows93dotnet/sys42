@@ -13,7 +13,7 @@
 
   // navigator.serviceWorker?.register("/42.sw.js", { type: "module" })
 
-  window.app = ui.trusted({
+  window.app = await ui.trusted({
     type: "body.box-fit.box-h.desktop._debug",
     content: [
       {
@@ -39,18 +39,18 @@
           // { type: "ui-workspaces" },
         ],
       },
-      {
-        type: "ui-enclose.ma-xxl.bd",
-        permissions: "app",
-        // permissions: "trusted",
-        // permissions: ["scripts"],
-        check: false,
-        // src: "../demos/ui/components/menu.demo.html",
-        src: "../demos/ui/components/dialog.demo.html",
-        // src: "../42/os/apps/TextEdit/index.html",
-        // src: "../demos/os/exec.demo.html",
-        // src: "../demos/ui/traits/selectable.demo.html",
-      },
+      // {
+      //   type: "ui-enclose.ma-xxl.bd",
+      //   permissions: "app",
+      //   // permissions: "trusted",
+      //   // permissions: ["scripts"],
+      //   check: false,
+      //   // src: "../demos/ui/components/menu.demo.html",
+      //   src: "../demos/ui/components/dialog.demo.html",
+      //   // src: "../42/os/apps/TextEdit/index.html",
+      //   // src: "../demos/os/exec.demo.html",
+      //   // src: "../demos/ui/traits/selectable.demo.html",
+      // },
       {
         type: "footer.outset",
         scope: "desktop",
@@ -76,6 +76,8 @@
       },
     },
   })
+
+  window.app.run.openFile("/index.html")
 
   // explorer("/42/")
   // explorer("/42/../ui.js")
