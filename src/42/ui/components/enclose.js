@@ -13,6 +13,11 @@ export class Enclose extends Component {
         fromView: true,
         render: true,
       },
+      srcdoc: {
+        type: "string",
+        fromView: true,
+        render: true,
+      },
       permissions: {
         type: "any",
         fromView: true,
@@ -62,6 +67,12 @@ export class Enclose extends Component {
 
   async $render({ ctx }) {
     this.cancel()
+
+    if (this.srcdoc) {
+      this.unload("")
+      this.resource.fill(this.srcdoc)
+      return
+    }
 
     if (!this.src) return this.unload("")
 

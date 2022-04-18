@@ -138,6 +138,11 @@ export default class Resource {
     this.el.allow = allow.join("; ")
   }
 
+  async fill(doc) {
+    delete this.el.src
+    this.el.srcdoc = doc
+  }
+
   async go(url, { signal } = this.config) {
     url = new URL(url, location.href)
 
@@ -177,6 +182,7 @@ export default class Resource {
         )
       }
 
+      delete this.el.srcdoc
       this.el.src = url
 
       if (this.config.checkIframable) {

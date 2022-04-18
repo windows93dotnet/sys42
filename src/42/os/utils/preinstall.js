@@ -3,11 +3,11 @@
 import defer from "../../fabric/type/promise/defer.js"
 // import inOpaqueOrigin from "../../system/env/runtime/inOpaqueOrigin.js"
 
-function resolve(url) {
-  return new URL(url, document.URL).href
-}
-
 export default function preinstall(app) {
+  function resolve(url) {
+    return new URL(url, app.folder).href
+  }
+
   const manifest = {
     name: app.name,
     categories: app.categories ?? [],

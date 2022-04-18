@@ -3,6 +3,7 @@ import inIframe from "../../system/env/runtime/inIframe.js"
 import preinstall from "../utils/preinstall.js"
 import UI from "../../ui/class/UI.js"
 import basename from "../../fabric/type/path/extract/basename.js"
+import dirname from "../../fabric/type/path/extract/dirname.js"
 
 let fs
 let explorer
@@ -88,8 +89,9 @@ const menubar = [
 ]
 
 export default class App extends UI {
-  constructor({ name, categories, data, content, encode, decode }) {
-    const install = preinstall({ name, categories })
+  constructor({ name, categories, data, content, encode, decode, folder }) {
+    folder ??= dirname(document.URL) + "/"
+    const install = preinstall({ name, categories, folder })
 
     super({
       type: ".box-fit.box-h",

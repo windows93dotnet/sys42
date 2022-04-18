@@ -1,6 +1,7 @@
 import { ConfigFile } from "./class/ConfigFile.js"
 import parseFilename from "../fabric/type/path/parseFilename.js"
 import disk from "../system/fs/disk.js"
+import dirname from "../fabric/type/path/extract/dirname.js"
 
 const DEFAULTS = {
   defaultApps: {
@@ -67,15 +68,26 @@ class AppManager extends ConfigFile {
     const app = this.value.dialogs[appName]
     dialog ??= await import("../ui/components/dialog.js").then((m) => m.default)
 
+    const folder = new URL(dirname(app.path + "/"), location).href
+
     dialog({
       label: appName,
       content: {
         // style: { width: "400px", height: "350px" },
-        permissions: "app",
         type: "ui-enclose",
-        src: app.path,
-        // src: filename,
-        // content: "hello",
+        permissions: "app",
+        src: "/42/os/apps/TextEdit/index.html",
+        _srcdoc: `\
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="/style.css" id="theme" />
+<script type="module">
+  import App from "/42/os/class/App.js"
+  import definition from "${app.path}"
+  definition.folder = "${folder}"
+  new App(definition).mount()
+</script>
+`,
       },
     })
   }

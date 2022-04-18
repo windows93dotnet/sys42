@@ -26,7 +26,10 @@ globalThis.addEventListener(
 
       const trusted =
         origin === location.origin ||
-        (iframe && new URL(iframe.src).origin === location.origin)
+        (iframe &&
+          (iframe.src
+            ? new URL(iframe.src).origin === location.origin
+            : Boolean(iframe.srcdoc)))
 
       if (!trusted) {
         console.warn("IPC_PING: untrusted")
@@ -137,7 +140,12 @@ export class IPC extends Emitter {
     if (target instanceof HTMLIFrameElement) {
       // default "targetOrigin" use wildcard only if iframe is sandboxed
       // with "allow-same-origin" and is from same origin.
-      const iframeOrigin = new URL(target.src).origin
+      const iframeOrigin = target.src
+        ? new URL(target.src).origin
+        : target.srcdoc
+        ? location.origin
+        : undefined
+
       targetOrigin ??= target.sandbox.contains("allow-same-origin")
         ? iframeOrigin
         : iframeOrigin === location.origin
@@ -146,7 +154,7 @@ export class IPC extends Emitter {
 
       target = target.contentWindow
     } else {
-      targetOrigin ??= location.origin
+      targetOrigin ??= location.ancestorOrigins[0]
     }
 
     return new Sender(target, targetOrigin)
