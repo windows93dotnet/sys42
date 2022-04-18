@@ -162,6 +162,25 @@ export default async function dialog(def, ctx, options) {
 /* exports
 ========== */
 
+export async function alert(message = "", options = {}) {
+  if (typeof message === "object") {
+    options = message
+    message = options.message
+  }
+
+  await dialog({
+    label: options.label ?? "Alert",
+    class: "ui-alert" + options.class ? ` ${options.class}` : "",
+    content: {
+      type: ".box-h.my",
+      content: message,
+    },
+    footer: options.footer ?? [
+      { type: "button.btn-default", run: "ok" }, //
+    ],
+  })
+}
+
 export async function prompt(message = "", options = {}) {
   if (typeof message === "object") {
     options = message
@@ -193,4 +212,5 @@ export async function prompt(message = "", options = {}) {
   return res.ok ? res.value.text : undefined
 }
 
+dialog.alert = alert
 dialog.prompt = prompt

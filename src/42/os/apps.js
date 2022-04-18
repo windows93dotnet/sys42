@@ -65,7 +65,14 @@ class AppManager extends ConfigFile {
 
   async open(filename) {
     const [appName] = this.lookup(filename)
+
+    if (appName === undefined) {
+      dialog.alert("No app available to open this type of file")
+      return
+    }
+
     const app = this.value.dialogs[appName]
+
     dialog ??= await import("../ui/components/dialog.js").then((m) => m.default)
 
     const dir = new URL(dirname(app.path + "/"), location).href
