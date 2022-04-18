@@ -1,5 +1,6 @@
 import deburr from "./deburr.js"
 import pluralize from "./pluralize.js"
+import { countLetters, countWords, countBytes } from "./count.js"
 
 import {
   toCamelCase,
@@ -34,6 +35,10 @@ export default {
   snake: toSnakeCase,
   title: toTitleCase,
   upper: toUpperCase,
+
+  countLetters,
+  countWords,
+  countBytes,
 
   // TODO:
   // normalize

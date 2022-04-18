@@ -2,6 +2,7 @@
 // @read https://ansible-docs.readthedocs.io/zh/stable-2.0/rst/playbooks_filters.html
 
 import locate from "./locator/locate.js"
+import fileSize from "./type/file/fileSize.js"
 
 const filters = {}
 
@@ -87,45 +88,11 @@ filters.path = {
   stemname: "path/extract/stemname",
 }
 
-// filters.dom = {
-//   autoselect(text) {
-//     // requestAnimationFrame(() => {
-//     //   console.log(this.value)
-//     //   const start = this.value.indexOf(text)
-//     //   if (start > -1) {
-//     //     const end = start + text.length
-//     //     console.log(start, end)
-//     //     // this.focus()
-
-//     //     const selection = window.getSelection()
-
-//     //     if (selection.rangeCount > 0) selection.removeAllRanges()
-
-//     //     const range = document.createRange()
-//     //     range.setStart(this, start)
-//     //     range.setEnd(this, end)
-//     //     // range.setEnd(this, start)
-//     //     // this.setSelectionRange(start, start + text.length)
-
-//     //     selection.addRange(range)
-//     //   }
-//     // })
-
-//     const { el, ctx } = this
-//     const { signal } = ctx.cancel
-
-//     el.addEventListener(
-//       "focus",
-//       () => {
-//         const start = el.value.indexOf(text)
-//         if (start > -1) el.setSelectionRange(start, start + text.length)
-//       },
-//       { signal }
-//     )
-
-//     return text
-//   },
-// }
+filters.file = {
+  fileText: async (file) => file.text(),
+  fileArrayBuffer: async (file) => file.arrayBuffer(),
+  fileSize: (file, option) => fileSize(file.size, option),
+}
 
 const entries = Object.entries(filters)
 

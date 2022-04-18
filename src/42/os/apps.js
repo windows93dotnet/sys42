@@ -92,6 +92,7 @@ class AppManager extends ConfigFile {
   import App from "/42/os/class/App.js"
   import definition from "${app.path}"
   definition.dir = "${dir}"
+  definition.data.path = "${filename}"
   const app = await new App(definition).mount()
 </script>
 `,

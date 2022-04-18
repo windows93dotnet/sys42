@@ -83,7 +83,7 @@ export default function formatFilename(stackframe, options) {
   // }
 
   if (config.bytes) {
-    const { size, unit } = fileSize(config.bytes)
+    const { size, unit } = fileSize(config.bytes, { asString: false })
     out += `  {${colors.bytes} ${size}} {${colors.bytes}.dim ${unit}}`
   }
 

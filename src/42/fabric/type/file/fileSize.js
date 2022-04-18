@@ -11,20 +11,28 @@ const UNITS = {
   SI: ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"],
 }
 
-export default function fileSize(bytes, { SI = false, decimals = 2 } = {}) {
-  if (bytes === 0) return { readable: "0 B", size: 0, unit: "B", bytes }
+const DEFAULTS = {
+  SI: false,
+  decimals: 2,
+  asString: true,
+}
+
+function toString() {
+  return `${this.size} ${this.unit}`
+}
+
+export default function fileSize(bytes, options = {}) {
+  const { SI, decimals, asString } = { ...DEFAULTS, ...options }
+
+  if (bytes === 0) {
+    return asString ? "0 B" : { size: 0, unit: "B", toString }
+  }
+
   const k = SI ? K_SI : K_IEC
   const units = SI ? UNITS.SI : UNITS.IEC
   const i = Math.floor(Math.log(bytes) / Math.log(k))
   const size = round(bytes / k ** i, decimals)
   const unit = units[i]
-  return {
-    get readable() {
-      return `${size} ${unit}`
-    },
-    size,
-    unit,
-    bytes,
-    SI,
-  }
+
+  return asString ? `${size} ${unit}` : { size, unit, toString }
 }
