@@ -260,11 +260,6 @@ States
   border-radius: 0;
 }
 
-:where(textarea) {
-  overflow-x: hidden;
-  resize: none;
-}
-
 :where(:disabled,[aria-disabled="true"]) {
   opacity: var(--ctrl🚫-alpha);
 }
@@ -407,6 +402,10 @@ textarea
   width: var(--ctrl-w);
   overscroll-behavior: none;
   overflow: hidden;
+}
+
+textarea {
+  overflow: auto;
 }
 
 :not(.field) > :where(

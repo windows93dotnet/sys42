@@ -92,9 +92,9 @@ filters.path = {
 }
 
 filters.file = {
-  fileText: async (file) => file.text(),
-  fileArrayBuffer: async (file) => file.arrayBuffer(),
-  fileSize: (file, option) => fileSize(file.size, option),
+  text: async (file) => file?.text?.(),
+  arrayBuffer: async (file) => file?.arrayBuffer?.(),
+  size: (file, option) => fileSize(file?.size ?? 0, option),
 }
 
 const entries = Object.entries(filters)

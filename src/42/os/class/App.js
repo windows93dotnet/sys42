@@ -75,6 +75,11 @@ const menubar = [
         label: "Spellcheck",
         type: "checkbox",
       },
+      {
+        label: "Word-wrap",
+        name: "wrap",
+        type: "checkbox",
+      },
     ],
   },
   {
@@ -93,14 +98,14 @@ async function readFiles(openedFiles) {
 }
 
 async function readFile(openedFile) {
-  if (openedFile.tmp || (openedFile.path && !openedFile.blob)) {
+  if (openedFile.tmp || (openedFile.path && !openedFile.file)) {
     fs ??= await import("../../system/fs.js").then((m) => m.default)
     try {
-      openedFile.blob = await fs.open(openedFile.path)
+      openedFile.file = await fs.open(openedFile.path)
     } catch (err) {
       console.log(err)
       openedFile.path = undefined
-      openedFile.blob = new Blob([""])
+      openedFile.file = new Blob([""])
     }
   }
 
@@ -123,8 +128,8 @@ export default class App extends UI {
     ]
 
     for (const openedFile of data.openedFiles) {
-      if (openedFile.blob === undefined) {
-        openedFile.blob = new Blob([""])
+      if (openedFile.file === undefined) {
+        openedFile.file = new Blob([""])
         openedFile.tmp = true
       }
     }

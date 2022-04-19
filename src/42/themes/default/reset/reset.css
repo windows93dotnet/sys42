@@ -59,4 +59,6 @@
 
 :where(textarea) {
   cursor: auto;
+  resize: none;
+  overflow: auto;
 }

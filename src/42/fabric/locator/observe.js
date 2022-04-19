@@ -33,7 +33,10 @@ export default function observe(data, options, fn) {
           } else return
         }
 
-        if (typeof val === "object" && val?.constructor === Object) {
+        if (
+          typeof val === "object" &&
+          (val?.constructor === Object || Array.isArray(val))
+        ) {
           if (proxies.has(val)) return proxies.get(val)
           const p = [...path, escapeDotNotation(prop)]
           const { proxy, revoke } = Proxy.revocable(val, createHander(p))
