@@ -12,15 +12,28 @@ export default function observe(data, options, fn) {
 
   function createHander(path = []) {
     return {
+      has(target, prop, receiver) {
+        const has = Reflect.has(target, prop, receiver)
+        if (!has && options?.rootFallback) return prop in data
+        return has
+      },
+
       get(target, prop, receiver) {
         if (prop === Symbol.toStringTag) return "[object Proxy]"
         if (prop === observe.REVOKE) return destroy
 
-        if (!Reflect.has(target, prop, receiver)) return
+        let val = Reflect.get(target, prop, receiver)
 
-        const val = Reflect.get(target, prop, receiver)
+        if (val === undefined) {
+          if (options?.rootFallback && !Reflect.has(target, prop, receiver)) {
+            if (prop in data) val = data[prop]
+            else if (options?.commons && prop in options.commons) {
+              return options.commons[prop]
+            } else return
+          } else return
+        }
 
-        if (val && typeof val === "object") {
+        if (typeof val === "object" && val?.constructor === Object) {
           if (proxies.has(val)) return proxies.get(val)
           const p = [...path, escapeDotNotation(prop)]
           const { proxy, revoke } = Proxy.revocable(val, createHander(p))

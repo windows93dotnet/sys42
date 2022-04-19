@@ -32,7 +32,14 @@ export default class State extends Emitter {
 
     this.proxy = observe(
       this.rack.value, //
-      { signal: ctx.cancel.signal },
+      {
+        signal: ctx.cancel.signal,
+        rootFallback: true,
+        commons: {
+          $ui: this.ui,
+          $run: this.ctx.global.actions,
+        },
+      },
       (path) => this.update(path)
     )
   }
@@ -75,9 +82,6 @@ export default class State extends Emitter {
 
   getThisArg(path) {
     const proxy = locate(this.proxy, path)
-    // proxy.$state ??= this
-    // proxy.$ui ??= this.ui
-    // proxy.$run ??= this.ctx.global.actions.get(path)
     return proxy
   }
 }

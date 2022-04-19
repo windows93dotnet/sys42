@@ -691,6 +691,35 @@ test("repeat", "array of objects", "scopped", async (t) => {
   t.is(app.el.textContent, "")
 })
 
+test("repeat", "access root data", async (t) => {
+  const el = div()
+  const app = await ui(el, {
+    content: { scope: "arr", repeat: "{{a}} {{foo}} " },
+    data: {
+      foo: "bar",
+      arr: [{ a: 1 }, { a: 2 }],
+    },
+  })
+
+  t.is(app.el.textContent, "1 bar 2 bar ")
+})
+
+test("repeat", "access root data two level", async (t) => {
+  const el = div()
+  const app = await ui(el, {
+    content: { scope: "baz.arr", repeat: "{{a}} {{foo}} {{baz.foo}} " },
+    data: {
+      foo: "bar",
+      baz: {
+        foo: "baz",
+        arr: [{ a: 1, foo: "derp" }, { a: 2 }],
+      },
+    },
+  })
+
+  t.is(app.el.textContent, "1 derp baz 2 bar baz ")
+})
+
 /* actions
 ========== */
 

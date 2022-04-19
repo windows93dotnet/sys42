@@ -34,7 +34,7 @@ export default {
     scope: "openedFiles",
     repeat: {
       type: "div",
-      content: "{{_.monospace}} --- {{blob|fileText}}",
+      content: "{{monospace}} --- {{blob|fileText}}",
     },
   },
 
