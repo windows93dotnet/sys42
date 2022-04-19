@@ -51,6 +51,7 @@ registerRenderer.fromTemplate = (ctx, el, parsedTemplate, render) => {
       } else if (token.type === "function") {
         const filtersName = token.value
         if (filtersName in filters === false) {
+          // TODO: use getParentMethod ?
           ctx.component && filtersName in ctx.component
             ? (filters[filtersName] = ctx.component[filtersName])
             : (filters[filtersName] = getFilter(filtersName))
@@ -65,12 +66,13 @@ registerRenderer.fromTemplate = (ctx, el, parsedTemplate, render) => {
     async: true,
     locals,
     filters,
-    thisArg: { el, ctx },
+    // thisArg: { el, ctx },
   })
 
   const fn = render
   render = async () => {
-    fn(await renderTemplate(ctx.global.state.getThisArg(ctx.scope)))
+    const locals = ctx.global.state.getThisArg(ctx.scope)
+    fn(await renderTemplate(locals))
     return "registerRenderer.fromTemplate"
   }
 

@@ -70,8 +70,6 @@ export class FolderView extends Component {
         type: "ui-icon",
         path: "{{path}}",
         aria: { selected: "{{selected}}" },
-        // type: "div",
-        // content: "{{path}}: {{selected}}",
       },
     }
 

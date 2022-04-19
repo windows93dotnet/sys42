@@ -20,7 +20,6 @@ export default function renderRepeat(def, ctx, parent, textMaker) {
   const placeholder = document.createComment(`[repeat]`)
   container.append(placeholder)
 
-  // registerRenderer(ctx, [ctx.scope, `${ctx.scope}.length`], () => {
   registerRenderer(ctx, ctx.scope, () => {
     const array = ctx.global.rack.get(ctx.scope)
 
@@ -60,11 +59,6 @@ export default function renderRepeat(def, ctx, parent, textMaker) {
 
       lastChild = undefined
     }
-
-    // const range = createRange()
-    // range.setStartAfter(placeholder)
-    // range.setEndAfter(lastChild || placeholder)
-    // range.deleteContents()
 
     const fragment = document.createDocumentFragment()
 

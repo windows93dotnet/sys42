@@ -41,8 +41,8 @@ export default {
   },
 
   data: {
-    monospace: false,
-    spellcheck: true,
+    monospace: !false,
+    spellcheck: !true,
     wrap: true,
   },
 }
