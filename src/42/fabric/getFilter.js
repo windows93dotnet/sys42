@@ -39,10 +39,12 @@ filters.number = {
   modulo: (a, b) => a % b,
 }
 
+// TODO: find a way to register globstar renderer when using filters.array or filters.object
 filters.array = {
   difference: "array/difference",
   groupBy: "array/groupBy",
   join: (arr, separator) => arr.join(separator),
+  at: (arr, index) => arr.at(index),
   removeItem: "array/removeItem",
   shuffle: "array/shuffle",
   slice: STRING_FILTER,
@@ -55,6 +57,7 @@ filters.object = {
   entries: (obj) => Object.entries(obj),
   keys: (obj) => Object.keys(obj),
   values: (obj) => Object.values(obj),
+  locate: (...args) => locate(...args),
   allKeys: "object/allKeys",
   omit: "object/omit",
   pick: "object/pick",

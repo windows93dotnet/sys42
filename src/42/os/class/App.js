@@ -88,10 +88,46 @@ const menubar = [
   },
 ]
 
+async function readFiles(openedFiles) {
+  await Promise.all(openedFiles.map(readFile))
+}
+
+async function readFile(openedFile) {
+  if (openedFile.tmp || (openedFile.path && !openedFile.blob)) {
+    fs ??= await import("../../system/fs.js").then((m) => m.default)
+    try {
+      openedFile.blob = await fs.open(openedFile.path)
+    } catch (err) {
+      console.log(err)
+      openedFile.path = undefined
+      openedFile.blob = new Blob([""])
+    }
+  }
+
+  openedFile.dirty = false
+  delete openedFile.tmp
+}
+
 export default class App extends UI {
   constructor({ name, categories, data, content, encode, decode, dir }) {
     dir ??= dirname(document.URL) + "/"
     const install = preinstall({ name, categories, dir })
+
+    data.current ??= 0
+    data.openedFiles ??= [
+      {
+        dirty: false,
+        path: undefined,
+        blob: new Blob([""]),
+      },
+    ]
+
+    for (const openedFile of data.openedFiles) {
+      if (openedFile.blob === undefined) {
+        openedFile.blob = new Blob([""])
+        openedFile.tmp = true
+      }
+    }
 
     super({
       type: ".box-fit.box-h",
@@ -101,9 +137,14 @@ export default class App extends UI {
 
       actions: {
         new() {
-          this.path = undefined
-          this.dirty = false
-          this.text = ""
+          this.current = 0
+          this.openedFiles = [
+            {
+              dirty: false,
+              path: undefined,
+              blob: new Blob([""]),
+            },
+          ]
         },
 
         async open() {
@@ -176,5 +217,17 @@ export default class App extends UI {
     })
 
     const app = this
+  }
+
+  async mount(...args) {
+    await super.mount(...args)
+
+    readFiles(this.data.openedFiles).then(() => {
+      this.state.update("openedFiles")
+    })
+
+    // this.state.on("update", (queue) => {
+    //   console.log(queue)
+    // })
   }
 }

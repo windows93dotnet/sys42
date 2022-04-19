@@ -45,6 +45,7 @@ export const MIMETYPES = {
     "x-ndjson": "ndjson",
     "x-web-app-manifest+json": "webapp",
     "xml": "rdf xml",
+    "xslt+xml": "xslt",
 
     // Manifest files
     "octet-stream": "safariextz",
@@ -102,8 +103,6 @@ export const MIMETYPES = {
     "x-component": "htc",
     "x-markdown": "md markdown mkd mdown",
     "x-nfo": "nfo",
-    "xml": "xml xsl",
-    "xslt+xml": "xslt",
   },
 }
 

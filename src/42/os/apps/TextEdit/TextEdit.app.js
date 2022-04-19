@@ -4,25 +4,41 @@ export default {
   categories: ["utilities", "productivity", "development"],
 
   decode: {
-    types: [{ description: "Text", accept: { "text/*": [] } }],
-    excludeAcceptAllOption: true,
-    multiple: false,
+    types: [
+      {
+        description: "Text",
+        accept: {
+          "text/*": [],
+          "application/json": [],
+          "application/rss+xml": [],
+          "application/xml": [],
+        },
+      },
+    ],
+    // excludeAcceptAllOption: true,
+    // multiple: false,
   },
 
   // menubar,
 
   content: {
-    type: "textarea.w-full",
-    name: "text",
-    class: "{{monospace ? 'font-mono' : ''}}",
-    spellcheck: "{{spellcheck}}",
-    prose: false,
-    compact: true,
+    // type: "textarea.w-full",
+    // name: "text",
+    // // value: "{{openedFiles.0.blob|fileText}}",
+    // value: "{{at(openedFiles, current)|locate('blob')|fileText}}",
+    // class: "{{monospace ? 'font-mono' : ''}}",
+    // spellcheck: "{{spellcheck}}",
+    // prose: false,
+    // compact: true,
+
+    scope: "openedFiles",
+    repeat: {
+      type: "div",
+      content: "{{_.monospace}} --- {{blob|fileText}}",
+    },
   },
 
   data: {
-    path: "/index.html",
-    text: "hello",
     monospace: true,
     spellcheck: true,
     wrap: false,
