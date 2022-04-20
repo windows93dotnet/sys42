@@ -171,11 +171,10 @@ export class Explorer extends Component {
       saveFileInput.addEventListener(
         "focus",
         async function () {
-          queueMicrotask(() => {
-            const stem = stemname(this.value)
-            const start = this.value.indexOf(stem)
-            if (start > -1) this.setSelectionRange(start, start + stem.length)
-          })
+          await 0 // queueMicrotask
+          const stem = stemname(this.value)
+          const start = this.value.indexOf(stem)
+          if (start > -1) this.setSelectionRange(start, start + stem.length)
         },
         { signal }
       )
@@ -226,7 +225,6 @@ export default async function explorer(path = "/", options = {}) {
           path: { watch: "path" },
           selection: { watch: "selection" },
           footer: config.footer,
-          // shortcuts: config.shortcuts ?? Explorer.definition.shortcuts,
           ...(config.shortcuts ? { shortcuts: config.shortcuts } : {}),
         },
         footer: false,

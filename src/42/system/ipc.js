@@ -154,7 +154,7 @@ export class IPC extends Emitter {
 
       target = target.contentWindow
     } else {
-      targetOrigin ??= location.ancestorOrigins[0]
+      targetOrigin ??= location.origin === "null" ? "*" : location.origin
     }
 
     return new Sender(target, targetOrigin)

@@ -138,7 +138,6 @@ function normalizeComponentDef(el, args) {
 
   out.ctx = makeNewContext(out.ctx)
 
-  out.ctx.component = el
   populateContext(out.ctx, out.def)
 
   out.ctx.cancel =

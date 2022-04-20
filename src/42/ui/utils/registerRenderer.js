@@ -1,5 +1,6 @@
 import template from "../../system/formats/template.js"
 import getFilter from "../../fabric/getFilter.js"
+import getParentMethod from "../../fabric/dom/getParentMethod.js"
 import joinScope from "./joinScope.js"
 import isLength from "../../fabric/type/any/is/isLength.js"
 
@@ -38,7 +39,9 @@ registerRenderer.fromDots = (ctx, arr, render) => {
   if (scopes.length > 0) registerRenderer(ctx, scopes, render)
 }
 
-registerRenderer.fromTemplate = (ctx, el, parsedTemplate, render) => {
+registerRenderer.fromTemplate = async (ctx, el, parsedTemplate, render) => {
+  await 0 // queueMicrotask
+
   const filters = { ...ctx.global.filters.value }
   const locals = ctx.global.state.getThisArg(ctx.scope)
 
@@ -49,13 +52,8 @@ registerRenderer.fromTemplate = (ctx, el, parsedTemplate, render) => {
       else if (token.type === "arg" && isLength(token.value)) {
         vars.push(token.value)
       } else if (token.type === "function") {
-        const filtersName = token.value
-        if (filtersName in filters === false) {
-          // TODO: use getParentMethod ?
-          ctx.component && filtersName in ctx.component
-            ? (filters[filtersName] = ctx.component[filtersName])
-            : (filters[filtersName] = getFilter(filtersName))
-        }
+        const { value } = token
+        filters[value] ??= getParentMethod(el, value) ?? getFilter(value)
       }
     }
   }

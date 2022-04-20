@@ -14,10 +14,10 @@
   // navigator.serviceWorker?.register("/42.sw.js", { type: "module" })
 
   window.app = await ui.trusted({
-    type: "body.box-fit.box-h.desktop._debug",
+    type: "body.box-fit.box-h._debug",
     content: [
       {
-        type: ".box-stack",
+        type: "main#desktop.desktop",
         content: [
           {
             type: "ui-folderview.scroll-auto",
@@ -41,7 +41,7 @@
         ],
       },
       // {
-      //   type: "ui-enclose.ma-xxl.bd",
+      //   type: "ui-enclose.pa-xxl.bd.desktop",
       //   permissions: "app",
       //   // permissions: "trusted",
       //   // permissions: ["scripts"],
@@ -53,7 +53,7 @@
       //   // src: "../demos/ui/traits/selectable.demo.html",
       // },
       {
-        type: "footer.outset",
+        type: "footer#taskbar.outset.pa-xs",
         scope: "desktop",
         content: {
           type: "button",
@@ -78,9 +78,9 @@
     },
   })
 
-  // window.app.run.openFile("/index.html")
+  open(["/index.html", "/42/test.js"])
 
-  // explorer("/42/")
+  // explorer("/42/", { selection: ["/42/ui.js", "/42/test.js"] })
   // explorer("/42/../ui.js")
   // explorer("/42/../style.css")
   // explorer("/42/fabric/../ui.js")

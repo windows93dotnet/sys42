@@ -69,7 +69,6 @@ export class Dialog extends Component {
 
       ctx = makeNewContext()
       ctx.cancel = this._.parentCtx.cancel.fork()
-      ctx.component = this
       populateContext(ctx, { data: structuredClone(data) })
       // ctx.global.rack.value = structuredClone(data)
       // ctx.global.state.set("", ctx.global.rack.value)
