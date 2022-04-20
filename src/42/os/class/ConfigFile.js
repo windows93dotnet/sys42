@@ -1,14 +1,19 @@
 import fs from "../../system/fs.js"
 import system from "../../system.js"
+import defer from "../../fabric/type/promise/defer.js"
 import extname from "../../fabric/type/path/extract/extname.js"
 import basename from "../../fabric/type/path/extract/basename.js"
 import configure from "../../fabric/configure.js"
 
+const VALID_TYPES = new Set([".json", ".json5", ".cbor"])
+
 export class ConfigFile {
   constructor(filename, defaults) {
     this.filename = `${system.HOME}/${basename(filename)}`
-    this.type = (extname(this.filename) || ".cbor").slice(1)
+    const ext = extname(this.filename)
+    this.type = (VALID_TYPES.has(ext) ? ext : ".cbor").slice(1)
     this.defaults = configure({ version: -1 * Date.now() }, defaults)
+    this.ready = defer()
   }
 
   async init() {
@@ -16,7 +21,13 @@ export class ConfigFile {
       ? this.reset()
       : this.open())
 
-    // fs.on(this.name, () => this.open())
+    this.ready.resolve()
+
+    // fs.on(this.name, async () => {
+    //   this.ready = defer()
+    //   await this.open()
+    //   this.ready.resolve()
+    // })
   }
 
   async open() {

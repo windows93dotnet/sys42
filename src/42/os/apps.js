@@ -48,7 +48,9 @@ class AppManager extends ConfigFile {
     )
   }
 
-  lookup(filename) {
+  async lookup(filename) {
+    await this.ready
+
     const { extensions, mimetypes } = this.value.defaultApps
     const out = []
     const { ext, mimetype, mime } = parseFilename(filename)
@@ -63,37 +65,47 @@ class AppManager extends ConfigFile {
   }
 
   async open(filenames) {
+    await this.ready
+
     const openers = new Map()
 
     dialog ??= await import("../ui/components/dialog.js").then((m) => m.default)
 
     for (const filename of arrify(filenames)) {
-      const [appName] = this.lookup(filename)
+      let [appName] = await this.lookup(filename)
 
       if (appName === undefined) {
-        dialog.alert("No app available to open this type of file")
-        return
+        appName = "TextEdit"
+        // dialog.alert("No app available to open this type of file")
+        // return
       }
 
       openers[appName] ??= []
       openers[appName].push(filename)
     }
 
-    for (let [appName, filenames] of Object.entries(openers)) {
-      const app = this.value.windows[appName]
+    for (const [appName, filenames] of Object.entries(openers)) {
+      this.exec(appName, filenames)
+    }
+  }
 
-      const dir = new URL(dirname(app.path + "/"), location).href
+  async exec(appName, filenames) {
+    await this.ready
 
-      filenames = filenames.map((path) => ({ path }))
+    const app = this.value.windows[appName]
 
-      dialog({
-        label: appName,
-        content: {
-          style: { width: "400px", height: "350px" },
-          type: "ui-enclose",
-          permissions: "app",
-          // src: "/42/os/apps/TextEdit/index.html",
-          srcdoc: `\
+    const dir = new URL(dirname(app.path + "/"), location).href
+
+    filenames = filenames.map((path) => ({ path }))
+
+    return dialog({
+      label: appName,
+      content: {
+        style: { width: "400px", height: "350px" },
+        type: "ui-enclose",
+        permissions: "app",
+        // src: "/42/os/apps/TextEdit/index.html",
+        srcdoc: `\
 <!DOCTYPE html>
 <meta charset="utf-8" />
 <link rel="stylesheet" href="/style.css" id="theme" />
@@ -105,9 +117,8 @@ class AppManager extends ConfigFile {
   const app = await new App(definition).mount()
 </script>
 `,
-        },
-      })
-    }
+      },
+    })
   }
 }
 

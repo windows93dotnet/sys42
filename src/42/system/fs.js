@@ -328,8 +328,12 @@ const fs = {
 
 fs.write.text = fsWriteText
 fs.read.text = fsReadText
+
 fs.write.json = fsWriteJSON
 fs.read.json = fsReadJSON
+fs.write.json5 = fsWriteJSON
+fs.read.json5 = fsReadJSON
+
 fs.write.cbor = fsWriteCBOR
 fs.read.cbor = fsReadCBOR
 
