@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>desktop</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/style.css" id="theme" />
+
+<style>
+  div {
+    background-color: #eee;
+    border: 1px solid black;
+    padding: 5px;
+    float: left;
+    clear: both;
+  }
+</style>
+<!-- <div id="uiLinkText" draggable="true">Drag <b>Text</b> to a text editor</div>
+<div id="uiLinkHyperlink" draggable="true">
+  Drag <b>Hyperlink</b> to address bar
+</div>
+<div id="uiLinkUrlDownload" draggable="true">
+  Drag <b>Url Download</b> to file system
+</div>
+<div id="uiLinkStaticDownload" draggable="true">
+  Drag <b>Static Download</b> to file system
+</div> -->
+
+<!-- <div>
+  <a id="download" href="http://localhost:3000/42/fabric/mainloop.js" download
+    >download</a
+  >
+</div> -->
+
+<!-- <div id="download" draggable="true">
+  Drag <b>Static Download</b> to file system
+</div> -->
+
+<!-- [
+  {
+    "kind": "string",
+    "type": "text/uri-list",
+    "string": "http://localhost:3000/42/fabric/mainloop.js"
+  },
+  {
+    "kind": "string",
+    "type": "text/plain",
+    "string": "http://localhost:3000/42/fabric/mainloop.js"
+  },
+  {
+    "kind": "string",
+    "type": "text/html",
+    "string": "<a id=\"download\" href=\"http://localhost:3000/42/fabric/mainloop.js\" download=\"\">download</a>"
+  }
+] -->
+
+<style>
+  #draggable {
+    width: 200px;
+    height: 20px;
+    text-align: center;
+    background: white;
+  }
+
+  .dropzone {
+    width: 200px;
+    height: 20px;
+    background: blueviolet;
+    margin-bottom: 10px;
+    padding: 10px;
+  }
+</style>
+
+<div class="dropzone">
+  <div id="draggable" draggable="true">This div is draggable</div>
+</div>
+<div class="dropzone"></div>
+<div class="dropzone"></div>
+<div class="dropzone"></div>
+<div>
+  <a download href="http://localhost:3000/home/anonymous/theme.cbor"
+    >theme.cbor</a
+  >
+  <br />
+  <br />
+  <a href="http://localhost:3000/test.txt">test.txt</a>
+</div>
+
+<script type="module">
+  // import fs from "../42/system/fs.js"
+
+  // await fs.writeText("/test.txt", "hop")
+
+  // navigator.serviceWorker?.register("/42.sw.js", { type: "module" })
+
+  // @read https://paul.kinlan.me/unintended-silos/
+  import normalizeDataTransfert from "../42/fabric/type/file/normalizeDataTransfert.js"
+
+  window.addEventListener("dragstart", (e) => {
+    // const url = "http://localhost:3000/42/fabric/mainloop.js"
+    const url = "http://localhost:3000/home/anonymous/theme.cbor"
+
+    // const t = "text/javascript"
+    // const n = "mainloop.js"
+    // e.dataTransfer.setData("DownloadURL", `${t}:${n}:${url}`)
+    // e.dataTransfer.setData("text/plain", "---")
+    e.dataTransfer.setData("text/x-moz-url", url)
+    e.dataTransfer.setData("text/uri-list", url)
+
+    e.dataTransfer.effectAllowed = "all"
+  })
+
+  window.addEventListener("dragend", async () => {
+    console.log("dragend")
+  })
+
+  // const dropEffect = {
+  //   // "shift+ctrl": "link",
+  //   // "shift": "link",
+  //   // "ctrl": "copy",
+  //   // "alt": "move",
+  //   // "default": "move",
+  //   link: "shift+ctrl",
+  //   copy: "ctrl",
+  //   move: "",
+  // }
+
+  let dropEffect
+
+  const ondrag = (e) => {
+    e.preventDefault()
+    // dropEffect = e.shiftKey ? "link" : e.ctrlKey ? "copy" : "move"
+    // e.dataTransfer.dropEffect = dropEffect
+  }
+
+  window.addEventListener("dragover", ondrag)
+  window.addEventListener("dragenter", ondrag)
+
+  window.addEventListener("drop", async (e) => {
+    console.log("drop", dropEffect)
+    e.preventDefault()
+    console.log(await normalizeDataTransfert(e.dataTransfer))
+  })
+</script>
+
+<script type="_module">
+  // import mainloop from "../42/fabric/mainloop.js"
+  import normalizeDataTransfert from "../42/fabric/type/file/normalizeDataTransfert.js"
+
+  let eventCounter = 0
+  let draggingInPage = false
+
+  let dataTransfer
+
+  document.body.addEventListener("dragstart", (e) => {
+    // e.dataTransfer.dropEffect = "none"
+    // e.preventDefault()
+    // e.dataTransfer.setData("text/plain", "hello")
+    // e.dataTransfer.setData(
+    //   "text/uri-list",
+    //   "http://localhost:3000/42/fabric/mainloop.js"
+    // )
+    // e.dataTransfer.setData(
+    //   "text/uri-list",
+    //   // "http://localhost:3000/42/fabric/mainloop.js\r\nhttp://localhost:3000/42/fabric/type/file/normalizeDataTransfert.js\r\n"
+    //   "http://localhost:3000/42/fabric/type/file/normalizeDataTransfert.js"
+    // )
+
+    // const url = [
+    //   "http://localhost:3000/42/fabric/mainloop.js",
+    //   "http://localhost:3000/42/fabric/type/file/normalizeDataTransfert.js",
+    // ]
+
+    // e.dataTransfer.setData("text/uri-list", url.join('\r\n'))
+    // e.dataTransfer.setData("text/x-moz-url", url.join("\r\n"))
+
+    const url = "http://localhost:3000/42/fabric/mainloop.js"
+    e.dataTransfer.setData("text/x-moz-url", url)
+    e.dataTransfer.setData("text/uri-list", url)
+
+    // console.log("dropEffect", e.dataTransfer.dropEffect)
+    // console.log("effectAllowed", e.dataTransfer.effectAllowed)
+    e.dataTransfer.effectAllowed = "all"
+  })
+
+  window.addEventListener("dragend", async () => {
+    console.log("dragend")
+    eventCounter = 0
+    draggingInPage = false
+  })
+
+  window.addEventListener("dragover", (e) => {
+    e.preventDefault()
+    console.log(e.shiftKey, e.ctrlKey, e.altKey)
+    e.dataTransfer.dropEffect =
+      e.ctrlKey && e.shiftKey ? "link" : e.ctrlKey ? "copy" : "move"
+  })
+
+  window.addEventListener("dragenter", () => {
+    eventCounter += 1
+    draggingInPage = true
+  })
+  window.addEventListener("dragleave", () => {
+    eventCounter -= 1
+    draggingInPage = eventCounter > 0
+  })
+  window.addEventListener("drop", async (e) => {
+    console.log("drop")
+    e.preventDefault()
+    eventCounter = 0
+    draggingInPage = false
+
+    console.log(await normalizeDataTransfert(e.dataTransfer))
+  })
+</script>

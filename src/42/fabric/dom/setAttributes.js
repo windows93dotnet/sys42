@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import uid from "../../fabric/uid.js"
 import setStyles from "./setStyles.js"
 
@@ -63,7 +64,9 @@ export function setAttribute(el, key, val) {
   } else if (key !== "childs") {
     const type = typeof val
     if (type === "boolean" || val === undefined) {
-      el.toggleAttribute(key, Boolean(val))
+      val = Boolean(val)
+      if (typeof el[key] === "boolean") el[key] = val
+      else el.toggleAttribute(key, val)
     } else if (type === "function") {
       el[key] = (e) => {
         if (val(e) === false) {

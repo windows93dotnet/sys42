@@ -21,6 +21,47 @@
 @import "../default/themes/inc/pixel-font.css";
 
 :root {
+  --cursor-default: url("./cursors/default.cur"), default;
+  /* --cursor-context-menu: url("./cursors/context-menu.cur"), context-menu; */
+  --cursor-help: url("./cursors/help.cur"), help;
+  --cursor-pointer: url("./cursors/pointer.cur"), pointer;
+  --cursor-progress: url("./cursors/progress.cur"), progress;
+  --cursor-wait: url("./cursors/wait.cur"), wait;
+  --cursor-cell: url("./cursors/cell.cur"), cell;
+  /* --cursor-crosshair: url("./cursors/crosshair.cur"), crosshair; */
+  --cursor-text: url("./cursors/text.cur"), text;
+  /* --cursor-vertical-text: url("./cursors/vertical-text.cur"), vertical-text; */
+  --cursor-alias: url("./cursors/alias.cur"), alias;
+  --cursor-copy: url("./cursors/copy.cur"), copy;
+  --cursor-move: url("./cursors/move.cur"), move;
+  --cursor-no-drop: url("./cursors/no-drop.cur"), no-drop;
+  --cursor-not-allowed: url("./cursors/not-allowed.cur"), not-allowed;
+  --cursor-grab: url("./cursors/grab.cur"), grab;
+  --cursor-grabbing: url("./cursors/grabbing.cur"), grabbing;
+  /* --cursor-all-scroll: url("./cursors/all-scroll.cur"), all-scroll; */
+  /* --cursor-col-resize: url("./cursors/col-resize.cur"), col-resize; */
+  /* --cursor-row-resize: url("./cursors/row-resize.cur"), row-resize; */
+  /* --cursor-n-resize: url("./cursors/n-resize.cur"), n-resize; */
+  /* --cursor-e-resize: url("./cursors/e-resize.cur"), e-resize; */
+  /* --cursor-s-resize: url("./cursors/s-resize.cur"), s-resize; */
+  /* --cursor-w-resize: url("./cursors/w-resize.cur"), w-resize;  */
+  /* --cursor-ne-resize: url("./cursors/ne-resize.cur"), ne-resize; */
+  /* --cursor-nw-resize: url("./cursors/nw-resize.cur"), nw-resize; */
+  /* --cursor-se-resize: url("./cursors/se-resize.cur"), se-resize; */
+  /* --cursor-sw-resize: url("./cursors/sw-resize.cur"), sw-resize; */
+  --cursor-ew-resize: url("./cursors/ew-resize.cur"), ew-resize;
+  --cursor-ns-resize: url("./cursors/ns-resize.cur"), ns-resize;
+  --cursor-nesw-resize: url("./cursors/nesw-resize.cur"), nesw-resize;
+  --cursor-nwse-resize: url("./cursors/nwse-resize.cur"), nwse-resize;
+  /* --cursor-zoom-in: url("./cursors/zoom-in.cur"), zoom-in; */
+  /* --cursor-zoom-out: url("./cursors/zoom-out.cur"), zoom-out; */
+}
+
+body * {
+  cursor: var(--cursor-default) !important;
+}
+
+:root {
   /* The active caption bar */
   --ActiveTitle: rgb(10 36 106);
   --GradientActiveTitle: rgb(166 202 240);

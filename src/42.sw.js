@@ -13,15 +13,26 @@ self.addEventListener("activate", () => {
 })
 
 self.addEventListener("fetch", (e) => {
+  // console.log("fetch", e.request.url)
   const url = new URL(e.request.url)
   const { id, mask } = disk.getIdAndMask(url.pathname)
   if (mask !== 0 && typeof id === "number") {
-    // console.log(`🛰 ${url.pathname}: id:${id} mask:${mask}`)
+    console.log(`🛰 ${url.pathname}: id:${id} mask:${mask}`)
     e.respondWith(
       getDriver(mask)
         .then((driver) => driver.open(url.pathname))
         .then((blob) => new Response(blob))
     )
+
+    // @read https://bugs.chromium.org/p/chromium/issues/detail?id=468227#c15
+    // e.respondWith(
+    //   new Response("Hello world", {
+    //     headers: [
+    //       ["content-type", "application/octet-stream; charset=utf-8"],
+    //       ["Content-Disposition", "attachment; filename=test.txt"],
+    //     ],
+    //   })
+    // )
   }
 })
 
