@@ -2,7 +2,7 @@ ui-folderview {
   flex: 1;
   display: block;
   overflow-y: auto;
-  scrollbar-gutter: stable;
+  /* scrollbar-gutter: stable; */
 
   position: relative;
   padding: var(--unit-md) 0;

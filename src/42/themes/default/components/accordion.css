@@ -113,7 +113,7 @@ ui-accordion {
 :where(.accordion__content) {
   overflow-y: auto;
   overflow-x: hidden;
-  scrollbar-gutter: stable;
+  /* scrollbar-gutter: stable; */
 }
 
 :where(.accordion__content > *) {

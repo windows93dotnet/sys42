@@ -402,6 +402,7 @@ textarea
   width: var(--ctrl-w);
   overscroll-behavior: none;
   overflow: hidden;
+  cursor: var(--cursor-text, text);
 }
 
 textarea {
@@ -843,6 +844,7 @@ select {
   /* background-size: var(--addon-w); */
   background-repeat: no-repeat;
   padding-right: var(--addon-w);
+  cursor: var(--cursor-default, default);
 }
 
 select:is([multiple],[size]) {

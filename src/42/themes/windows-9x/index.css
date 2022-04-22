@@ -57,8 +57,8 @@
   /* --cursor-zoom-out: url("./cursors/zoom-out.cur"), zoom-out; */
 }
 
-body * {
-  cursor: var(--cursor-default) !important;
+body {
+  cursor: var(--cursor-default);
 }
 
 :root {
@@ -453,6 +453,7 @@ ui-dialog[active] .ui-dialog__title {
 
 *::-webkit-scrollbar {
   background: var(--Scrollbar) var(--screentone-url) repeat;
+  cursor: var(--cursor-default, default);
 }
 
 *::-webkit-scrollbar,
