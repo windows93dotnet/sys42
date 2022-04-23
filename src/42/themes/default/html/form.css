@@ -712,7 +712,7 @@ button,
 input[type="button"],
 input[type="reset"],
 input[type="submit"]
-):where([aria-pressed="true"],[aria-expanded="true"]),
+):where([aria-pressed="true"],[aria-selected="true"],[aria-expanded="true"]),
 input:is([type="checkbox"],[type="radio"]):checked + label.button {
   --fg: var(--btn☑️-fg);
   --bg: var(--btn☑️-bg);

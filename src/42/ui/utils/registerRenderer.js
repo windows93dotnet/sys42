@@ -32,7 +32,8 @@ export default function registerRenderer(ctx, scope, render) {
   ctx.undones.push(render())
 }
 
-const dotNotation = (ctx, arr) => arr.map((x) => joinScope(ctx.scope, x))
+const dotNotation = (ctx, arr) =>
+  arr.map((x) => (ctx.global.rack.has(x) ? x : joinScope(ctx.scope, x)))
 
 registerRenderer.fromDots = (ctx, arr, render) => {
   const scopes = dotNotation(ctx, arr)

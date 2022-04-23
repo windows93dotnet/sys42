@@ -22,27 +22,20 @@ export default {
   // menubar,
 
   content: {
-    // scope: "openedFiles.0",
-    // type: "textarea.w-full",
-    // name: "text",
-    // value: "{{file|text}}",
-    // class: "{{monospace ? 'font-mono' : ''}}",
-    // spellcheck: "{{spellcheck}}",
-    // wrap: "{{wrap ? 'soft' : 'off'}}",
-    // prose: false,
-    // compact: true,
-    // autofocus: true,
-
-    // repeat: {
-    //   type: "div",
-    //   content: "{{monospace}} --- {{path}} --- {{file|text}}",
-    // },
-
     type: "ui-tabs",
     scope: "openedFiles",
-    repeat: {
-      label: "{{path|basename}}{{dirty ? '*' : ''}}",
-      content: "{{file|text}}",
+    label: "{{path|basename}}{{dirty ? '*' : ''}}",
+    content: {
+      type: "textarea.w-full",
+      name: "text",
+      label: "{{openedFiles|at(currentTab)|locate('path')}}",
+      value: "{{openedFiles|at(currentTab)|locate('file')|text}}",
+      class: "{{monospace ? 'font-mono' : ''}}",
+      spellcheck: "{{spellcheck}}",
+      wrap: "{{wrap ? 'soft' : 'off'}}",
+      prose: false,
+      compact: true,
+      autofocus: true,
     },
   },
 

@@ -118,7 +118,7 @@ export default class App extends UI {
     dir ??= dirname(document.URL) + "/"
     const install = preinstall({ name, categories, dir })
 
-    data.current ??= 0
+    data.currentTab ??= 0
     data.openedFiles ??= [
       {
         dirty: false,
@@ -142,7 +142,7 @@ export default class App extends UI {
 
       actions: {
         new() {
-          this.current = 0
+          this.currentTab = 0
           this.openedFiles = [
             {
               dirty: false,

@@ -21,6 +21,8 @@ export default function observe(root, options, fn) {
         if (!has) {
           if (prop === Symbol.toStringTag) return true
           if (prop === observe.REVOKE) return true
+          if (typeof prop !== "string") return false
+
           if (prop.startsWith("@") || prop.startsWith("#")) return true
           if (options?.rootFallback) return prop in root
         }
@@ -34,6 +36,7 @@ export default function observe(root, options, fn) {
         if (val === undefined) {
           if (prop === Symbol.toStringTag) return "[object Proxy]"
           if (prop === observe.REVOKE) return destroy
+          if (typeof prop !== "string") return
 
           if (prop.startsWith("#")) {
             return path.at(-1).padStart(prop.length, "0")

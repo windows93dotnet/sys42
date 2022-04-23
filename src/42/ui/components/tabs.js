@@ -1,38 +1,52 @@
 import Component from "../class/Component.js"
 import render from "../render.js"
-import joinScope from "../utils/joinScope.js"
+import uid from "../../fabric/uid.js"
 
 class Tabs extends Component {
   static definition = {
     tag: "ui-tabs",
-    properties: {
-      items: {
-        state: true,
-        type: "array",
-        default: [],
-      },
-    },
   }
 
-  selectTab(target, blob) {
-    console.log(888, target, blob)
+  setCurrent(index) {
+    this._.ctx.global.state.proxy.currentTab = index
   }
 
-  $create({ root, repeat, ctx }) {
-    // this.items = ctx.global.rack.get(ctx.scope)
-    this.items = ctx.global.state.getThisArg(ctx.scope)
+  $create({ root, content, label, ctx }) {
+    const id = uid()
 
-    const content = {
-      scope: joinScope(ctx.scope, "items"),
-      repeat: {
-        type: "button",
-        run: "selectTab",
-        args: ["e.target", "file"],
-        label: "{{@index}}" + repeat.label,
+    ctx.global.state.proxy.currentTab ??= 0
+
+    const def = [
+      {
+        type: "ul",
+        role: "tablist",
+        repeat: {
+          type: "li",
+          role: "none",
+          content: {
+            type: "button",
+            role: "tab",
+            id: `tab-${id}-{{@index}}`,
+            label,
+            run: "setCurrent",
+            args: ["@index"],
+            aria: { selected: "{{@index === currentTab}}" },
+          },
+        },
       },
-    }
+      {
+        type: "section",
+        role: "tabpanel",
+        aria: { labeledby: `tab-${id}-{{currentTab}}` },
+        content,
+      },
+    ]
 
-    root.append(render(content, ctx))
+    root.append(render(def, ctx))
+
+    // setTimeout(() => {
+    //   this.setCurrent(1)
+    // }, 1000)
   }
 }
 
