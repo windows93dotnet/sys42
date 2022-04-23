@@ -237,10 +237,6 @@ export default function render(def, ctx = {}, parent = frag(), textMaker) {
     return renderWhen(def, ctx, parent, textMaker)
   }
 
-  if ("repeat" in def) {
-    return renderRepeat(def, ctx, parent, textMaker)
-  }
-
   /* component
   ------------ */
 
@@ -251,6 +247,10 @@ export default function render(def, ctx = {}, parent = frag(), textMaker) {
     if (ctx.trusted !== true && "permissions" in def) def.permissions = "app"
 
     return insert(parent, renderComponent(def.type, def, ctx))
+  }
+
+  if ("repeat" in def) {
+    return renderRepeat(def, ctx, parent, textMaker)
   }
 
   /* normalize

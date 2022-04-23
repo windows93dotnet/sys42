@@ -25,7 +25,8 @@ export default function setAction(el, { run, args }, ctx) {
 
       if (!action.fn) throw new Error(`action not found: "${run}"`)
 
-      action.fn = action.fn.bind(ctx.global.state.getThisArg(ctx.scope))
+      const locals = ctx.global.state.getThisArg(ctx.scope)
+      action.fn = action.fn.bind(locals)
 
       const { signal } = ctx.cancel
 
@@ -35,7 +36,7 @@ export default function setAction(el, { run, args }, ctx) {
         action.type,
         (e) => {
           if (el.getAttribute("aria-disabled") === "true") return
-          action.fn(...serializeArgs(e, el, args))
+          action.fn(...serializeArgs(e, el, args, locals))
         },
         { signal }
       )

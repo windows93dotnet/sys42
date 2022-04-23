@@ -25,6 +25,9 @@ export default function observe(data, options, fn) {
         let val = Reflect.get(target, prop, receiver)
 
         if (val === undefined) {
+          console.log(prop)
+          if (prop === "@index") return "INDEX"
+
           if (options?.rootFallback && !Reflect.has(target, prop, receiver)) {
             if (prop in data) val = data[prop]
             else if (options?.commons && prop in options.commons) {
