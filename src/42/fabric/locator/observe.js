@@ -1,35 +1,56 @@
+/* eslint-disable eqeqeq */
+/* eslint-disable complexity */
+
 import equal from "../type/any/equal.js"
 
 function escapeDotNotation(key) {
   return key.replaceAll(".", "\\.")
 }
 
-export default function observe(data, options, fn) {
+export default function observe(root, options, fn) {
   if (typeof options === "function") fn = options
 
   const proxies = new WeakMap()
   const revokes = new Set()
 
-  function createHander(path = []) {
+  function createHander(path, parent) {
     return {
       has(target, prop, receiver) {
         const has = Reflect.has(target, prop, receiver)
-        if (!has && options?.rootFallback) return prop in data
+
+        if (!has) {
+          if (prop === Symbol.toStringTag) return true
+          if (prop === observe.REVOKE) return true
+          if (prop.startsWith("@") || prop.startsWith("#")) return true
+          if (options?.rootFallback) return prop in root
+        }
+
         return has
       },
 
       get(target, prop, receiver) {
-        if (prop === Symbol.toStringTag) return "[object Proxy]"
-        if (prop === observe.REVOKE) return destroy
-
         let val = Reflect.get(target, prop, receiver)
 
         if (val === undefined) {
-          console.log(prop)
-          if (prop === "@index") return "INDEX"
+          if (prop === Symbol.toStringTag) return "[object Proxy]"
+          if (prop === observe.REVOKE) return destroy
+
+          if (prop.startsWith("#")) {
+            return path.at(-1).padStart(prop.length, "0")
+          }
+
+          if (prop.startsWith("@")) {
+            if (prop === "@index") return Number(path.at(-1))
+            if (prop === "@key") return path.at(-1)
+            if (prop === "@first") return path.at(-1) === "0"
+            if (prop === "@last") return path.at(-1) == parent.length - 1
+            if (prop === "@path") return path.join(".")
+            if (prop === "@parent") return proxies.get(parent)
+            if (prop === "@root") return proxies.get(root)
+          }
 
           if (options?.rootFallback && !Reflect.has(target, prop, receiver)) {
-            if (prop in data) val = data[prop]
+            if (prop in root) val = root[prop]
             else if (options?.commons && prop in options.commons) {
               return options.commons[prop]
             } else return
@@ -42,7 +63,10 @@ export default function observe(data, options, fn) {
         ) {
           if (proxies.has(val)) return proxies.get(val)
           const p = [...path, escapeDotNotation(prop)]
-          const { proxy, revoke } = Proxy.revocable(val, createHander(p))
+          const { proxy, revoke } = Proxy.revocable(
+            val,
+            createHander(p, target)
+          )
           proxies.set(val, proxy)
           revokes.add(revoke)
           return proxy
@@ -70,7 +94,7 @@ export default function observe(data, options, fn) {
     }
   }
 
-  const { proxy, revoke } = Proxy.revocable(data, createHander())
+  const { proxy, revoke } = Proxy.revocable(root, createHander([], root))
 
   revokes.add(revoke)
 

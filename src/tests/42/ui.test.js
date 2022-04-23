@@ -720,6 +720,74 @@ test("repeat", "access root data two level", async (t) => {
   t.is(app.el.textContent, "1 derp baz 2 bar baz ")
 })
 
+test("repeat", "@index", async (t) => {
+  const el = div()
+  const app = await ui(el, {
+    content: { scope: "arr", repeat: "{{@index}} {{a}} " },
+    data: {
+      foo: "bar",
+      arr: [{ a: "x" }, { a: "y" }],
+    },
+  })
+
+  t.is(app.el.textContent, "0 x 1 y ")
+})
+
+test("repeat", "#", async (t) => {
+  const el = div()
+  const app = await ui(el, {
+    content: {
+      scope: "arr",
+      repeat: ["{{#}} {{a}}\n", "{{##}} {{a}}\n", "{{###}} {{a}}\n"],
+    },
+    data: {
+      foo: "bar",
+      arr: [{ a: "x" }, { a: "y" }],
+    },
+  })
+
+  t.is(
+    app.el.textContent,
+    `\
+0 x
+00 x
+000 x
+1 y
+01 y
+001 y
+`
+  )
+})
+
+test("repeat", "@last", async (t) => {
+  const el = div()
+  const app = await ui(el, {
+    content: { scope: "arr", repeat: "{{##}} {{a}}{{@last ? '' : ', '}}" },
+    data: {
+      foo: "bar",
+      arr: [{ a: "x" }, { a: "y" }],
+    },
+  })
+
+  t.is(app.el.textContent, "00 x, 01 y")
+})
+
+test("repeat", "@last element", async (t) => {
+  const el = div()
+  const app = await ui(el, {
+    content: {
+      scope: "arr",
+      repeat: ["{{@index}} {{a}}", { type: "br", when: "{{!@last}}" }],
+    },
+    data: {
+      foo: "bar",
+      arr: [{ a: "x" }, { a: "y" }],
+    },
+  })
+
+  t.is(app.el.innerHTML, "<!--[repeat]-->0 x<!--[when]--><br>1 y<!--[when]-->")
+})
+
 /* actions
 ========== */
 

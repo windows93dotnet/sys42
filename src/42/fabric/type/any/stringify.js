@@ -79,6 +79,7 @@ const PRESETS = {
 
   overview: {
     escapeUnicode: true,
+    traceProxy: true,
     clean: (res) =>
       res
         .replace(IGNORE_UNICODE_REGEX, unescapeUnicode)
@@ -95,6 +96,7 @@ const DEFAULTS = {
   ignoreKeys: [],
   ignoreGlobalThis: true,
   traceNullProto: true,
+  traceProxy: false,
   traceDescriptor: true,
   traceHexDump: true,
   displayNewlines: true,
@@ -519,7 +521,8 @@ ${indentSpace.repeat(depth - 1)})`
           ? ""
           : typeof this.config.prefix === "string"
           ? this.config.prefix
-          : this.config.addComments
+          : this.config.addComments &&
+            (this.config.traceProxy || tag !== "[object Proxy]")
           ? `/* ${tag} */ `
           : ""
     }

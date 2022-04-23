@@ -1,11 +1,12 @@
 import render from "../render.js"
+import omit from "../../fabric/type/object/omit.js"
 import createRange from "../../fabric/dom/createRange.js"
 import registerRenderer from "../utils/registerRenderer.js"
 import makeNewContext from "../utils/makeNewContext.js"
 
 export default function renderRepeat(def, ctx, parent, textMaker) {
   const { repeat } = def
-  delete def.repeat
+  def = omit(def, ["repeat"])
 
   let container = render(def, ctx, undefined, textMaker)
 
