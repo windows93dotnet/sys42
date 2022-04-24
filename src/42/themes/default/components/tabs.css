@@ -1,0 +1,52 @@
+ui-tabs {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+  max-height: 100%;
+  /* overflow: auto; */
+  overflow: hidden;
+}
+
+ui-tabs > [role="tablist"] > button {
+  /* border-top-left-radius: 10px;
+  border-top-right-radius: 10px; */
+  /* border-bottom: 0;
+  border-image: none;
+  margin: 5px; */
+}
+
+ui-tabs > [role="tabpanel"] {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  /* overflow: auto; */
+}
+
+ui-tabs > [role="tabpanel"] > * {
+  flex: 1;
+  max-height: 100%;
+  overflow: auto;
+}
+
+/* ui-tabs > [role="tabpanel"] {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+ui-tabs > [role="tabpanel"] > * {
+  flex: 1 0 auto;
+  max-height: 100%;
+  overflow: auto;
+} */
+
+/* ui-tabs > [role="tabpanel"] {
+  flex: 1;
+  overflow: auto;
+}
+
+ui-tabs > [role="tabpanel"] > p:first-child {
+  margin-top: 0;
+} */

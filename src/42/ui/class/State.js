@@ -19,6 +19,11 @@ export default class State extends Emitter {
         a.length > b.length ? -1 : 0
       )
 
+      console.group("---")
+      console.log(this.queue)
+      console.log(keys)
+      console.groupEnd("---")
+
       for (const path of this.queue) {
         for (const key of keys) {
           if (key.startsWith(path)) {

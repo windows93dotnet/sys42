@@ -4,6 +4,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" href="/style.css" id="theme" />
 
+<!-- <style>
+  ui-tabs {
+    display: flex;
+    flex-direction: column;
+    width: max-content;
+  }
+</style> -->
+
 <script type="module">
   import "../42/os.js"
   import "../42/ui/components/enclose.js"
@@ -41,14 +49,37 @@
         ],
       },
       // {
+      //   type: "ui-tabs",
+      //   // scope: "openedFiles",
+      //   // data: [{ path: "ok" }],
+      //   data: {
+      //     currentTab: 0,
+      //     openedFiles: [],
+      //   },
+
+      //   label: "{{path|basename}}{{dirty ? '*' : ''}}",
+      //   content: {
+      //     type: "textarea.w-full",
+      //     name: "text",
+      //     label: "{{openedFiles|at(currentTab)|locate('path')}}",
+      //     value: "{{openedFiles|at(currentTab)|locate('file')|text}}",
+      //     class: "{{monospace ? 'font-mono' : ''}}",
+      //     spellcheck: "{{spellcheck}}",
+      //     wrap: "{{wrap ? 'soft' : 'off'}}",
+      //     prose: false,
+      //     compact: true,
+      //     autofocus: true,
+      //   },
+      // },
+      // {
       //   type: "ui-enclose.pa-xxl.bd.desktop",
       //   permissions: "app",
       //   // permissions: "trusted",
       //   // permissions: ["scripts"],
       //   check: false,
       //   // src: "../demos/ui/components/menu.demo.html",
-      //   src: "../demos/ui/components/dialog.demo.html",
-      //   // src: "../42/os/apps/TextEdit/index.html",
+      //   // src: "../demos/ui/components/dialog.demo.html",
+      //   src: "../42/os/apps/TextEdit/index.html",
       //   // src: "../demos/os/exec.demo.html",
       //   // src: "../demos/ui/traits/selectable.demo.html",
       // },
@@ -78,7 +109,7 @@
     },
   })
 
-  open(["/index.html", "/42/test.js"])
+  // open(["/index.html", "/42/test.js"])
   // open("/home/anonymous/theme.cbor")
   // explorer("/")
   // explorer("/home/anonymous/")

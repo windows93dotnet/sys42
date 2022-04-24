@@ -34,7 +34,7 @@ export default function observe(root, options, fn) {
         let val = Reflect.get(target, prop, receiver)
 
         if (val === undefined) {
-          if (prop === Symbol.toStringTag) return "[object Proxy]"
+          if (prop === Symbol.toStringTag) return "Proxy"
           if (prop === observe.REVOKE) return destroy
           if (typeof prop !== "string") return
 
@@ -43,6 +43,7 @@ export default function observe(root, options, fn) {
           }
 
           if (prop.startsWith("@")) {
+            // @see https://handlebarsjs.com/api-reference/data-variables.html
             if (prop === "@index") return Number(path.at(-1))
             if (prop === "@key") return path.at(-1)
             if (prop === "@first") return path.at(-1) === "0"
@@ -50,6 +51,7 @@ export default function observe(root, options, fn) {
             if (prop === "@path") return path.join(".")
             if (prop === "@parent") return proxies.get(parent)
             if (prop === "@root") return proxies.get(root)
+            if (prop === "@target") return target
           }
 
           if (options?.rootFallback && !Reflect.has(target, prop, receiver)) {

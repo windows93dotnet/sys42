@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>tabs</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/style.css" id="theme" />
+
+<script type="module">
+  import ui from "../../../42/ui.js"
+
+  window.app = await ui({
+    type: "body.box-center.desktop",
+    content: {
+      type: "div",
+      content: [
+        // {
+        //   type: ".pa-sm.panel.outset",
+        //   style: { width: "300px", height: "300px" },
+        //   content: {
+        //     type: "ui-tabs",
+        //     content: [
+        //       {
+        //         label: { type: "strong", content: "Foo" },
+        //         content: {
+        //           type: ".inset.pa",
+        //           content:
+        //             "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sequi distinctio accusamus cumque labore at, corrupti ducimus, illum soluta similique earum quis facilis repellat. Laudantium, qui est, repellendus, exercitationem voluptatum distinctio enim rerum reiciendis autem assumenda aperiam suscipit quis voluptate fugiat ad magni nemo rem ratione. Repellat earum non, voluptate mollitia, a, voluptatibus accusantium consequatur rem distinctio sunt inventore ex natus. repellendus, exercitationem voluptatum distinctio enim rerum reiciendis autem assumenda aperiam suscipit quis voluptate fugiat ad magni nemo rem ratione. Repellat earum non, voluptate mollitia, a, voluptatibus accusantium consequatur rem distinctio sunt inventore ex natus. Sequi distinctio accusamus cumque labore at, corrupti ducimus, illum soluta similique earum quis facilis repellat. Laudantium, qui est, repellendus, exercitationem voluptatum distinctio enim rerum reiciendis autem assumenda aperiam suscipit quis voluptate fugiat ad magni nemo rem ratione. Repellat earum non, voluptate mollitia, a, voluptatibus accusantium consequatur rem distinctio sunt inventore ex natus. repellendus, exercitationem voluptatum distinctio enim rerum reiciendis autem assumenda aperiam suscipit quis voluptate fugiat ad magni nemo rem ratione. Repellat earum non, voluptate mollitia, a, voluptatibus accusantium consequatur rem distinctio sunt inventore ex natus.",
+        //         },
+        //       },
+        //       {
+        //         label: "Bar",
+        //         content:
+        //           "Nullam at diam nec arcu suscipit auctor non a erat. Sed et magna semper, eleifend magna non, facilisis nisl. Proin et est et lorem dictum finibus ut nec turpis. Aenean nisi tortor, euismod a mauris a, mattis scelerisque tortor. Sed dolor risus, varius a nibh id, condimentum lacinia est. In lacinia cursus odio a aliquam. Curabitur tortor magna, laoreet ut rhoncus at, sodales consequat tellus.",
+        //       },
+        //     ],
+        //   },
+        // },
+        "\n",
+        {
+          type: ".pa-sm.panel.outset",
+          style: { width: "300px", height: "300px" },
+          content: {
+            // scope: "tabs",
+            type: "ui-tabs",
+            content: [{ label: "ok", content: "a" }],
+          },
+        },
+      ],
+    },
+
+    data: {
+      tabs: {},
+    },
+
+    // {
+    //   type: "ui-tabs",
+    //   // scope: "openedFiles",
+    //   // data: [{ path: "ok" }],
+    //   data: {
+    //     currentTab: 0,
+    //     openedFiles: [],
+    //   },
+    //   label: "{{path|basename}}{{dirty ? '*' : ''}}",
+    //   content: {
+    //     type: "textarea.w-full",
+    //     name: "text",
+    //     label: "{{openedFiles|at(currentTab)|locate('path')}}",
+    //     value: "{{openedFiles|at(currentTab)|locate('file')|text}}",
+    //     class: "{{monospace ? 'font-mono' : ''}}",
+    //     spellcheck: "{{spellcheck}}",
+    //     wrap: "{{wrap ? 'soft' : 'off'}}",
+    //     prose: false,
+    //     compact: true,
+    //     autofocus: true,
+    //   },
+    // },
+  })
+
+  // window.app.data.items.push({
+  //   label: "Yo",
+  //   content: "Hello",
+  // })
+  // window.app.data.current = window.app.data.items.length - 1
+</script>

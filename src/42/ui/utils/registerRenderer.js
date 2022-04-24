@@ -32,8 +32,28 @@ export default function registerRenderer(ctx, scope, render) {
   ctx.undones.push(render())
 }
 
+// const dotNotation = (ctx, arr) =>
+//   arr.map((x) => (ctx.global.rack.has(x) ? x : joinScope(ctx.scope, x)))
+
 const dotNotation = (ctx, arr) =>
-  arr.map((x) => (ctx.global.rack.has(x) ? x : joinScope(ctx.scope, x)))
+  arr.map((x) => {
+    let current = ctx.global.state.getThisArg(ctx.scope)
+
+    // if (x === "current") {
+    //   // console.log(x in current, current[x], x, current?.["@path"])
+    //   console.log(current["@path"], current["@parent"][x])
+    // }
+
+    // while (current && x in current["@target"] === false) {
+    //   current = current["@parent"]
+    // }
+
+    while (current && x in current === false) {
+      current = current["@parent"]
+    }
+
+    return joinScope(current?.["@path"] ?? "", x)
+  })
 
 registerRenderer.fromDots = (ctx, arr, render) => {
   const scopes = dotNotation(ctx, arr)
@@ -65,7 +85,7 @@ registerRenderer.fromTemplate = async (ctx, el, parsedTemplate, render) => {
     async: true,
     locals,
     filters,
-    // thisArg: { el, ctx },
+    thisArg: { el, ctx },
   })
 
   const fn = render
