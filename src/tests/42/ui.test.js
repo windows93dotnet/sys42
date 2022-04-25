@@ -200,7 +200,7 @@ test("scopes", async (t) => {
       {
         scope: "b",
         content: [
-          " + {{c.d}} + ",
+          " + {{c.d}} & ",
           { type: "input", scope: "", name: "a" },
           { type: "input", name: "c.d" },
           {
@@ -225,13 +225,13 @@ test("scopes", async (t) => {
 
   for (const item of app.getAll("label")) item.remove()
 
-  t.is(app.el.textContent, "1 - 2 + 2 + 1 _ 2")
+  t.is(app.el.textContent, "1 - 2 + 2 & 1 _ 2")
 
   app.data.a = "a"
   app.data.b.c.d = "d"
   await repaint()
 
-  t.is(app.el.textContent, "a - d + d + a _ d")
+  t.is(app.el.textContent, "a - d + d & a _ d")
 
   const inputs = app.getAll("input")
 
@@ -242,13 +242,13 @@ test("scopes", async (t) => {
 
   await change(inputs[0], "x")
 
-  t.is(app.el.textContent, "a - x + x + a _ x")
+  t.is(app.el.textContent, "a - x + x & a _ x")
   t.is(inputs[3].value, "x")
   t.is(inputs[4].value, "x")
 
   await change(inputs[1], "y")
 
-  t.is(app.el.textContent, "y - x + x + y _ x")
+  t.is(app.el.textContent, "y - x + x & y _ x")
   t.is(inputs[2].value, "y")
 })
 
@@ -704,10 +704,31 @@ test("repeat", "access root data", async (t) => {
   t.is(app.el.textContent, "1 bar 2 bar ")
 })
 
-test("repeat", "access root data two level", async (t) => {
+test("repeat", "access data in previous level", async (t) => {
   const el = div()
   const app = await ui(el, {
-    content: { scope: "baz.arr", repeat: "{{a}} {{foo}} {{baz.foo}} " },
+    content: { scope: "baz.arr", repeat: "{{a}} {{foo}} {{x}} {{hello}} - " },
+    data: {
+      foo: "bar",
+      x: "y",
+      baz: {
+        foo: "baz",
+        hello: "world",
+        arr: [{ a: 1, foo: "derp" }, { a: 2 }],
+      },
+    },
+  })
+
+  t.is(app.el.textContent, "1 derp y world - 2 baz y world - ")
+})
+
+test("repeat", "@parent & @root", async (t) => {
+  const el = div()
+  const app = await ui(el, {
+    content: {
+      scope: "baz.arr",
+      repeat: "{{a}} {{foo}} {{@parent.foo}} {{@root.foo}} - ",
+    },
     data: {
       foo: "bar",
       baz: {
@@ -717,7 +738,7 @@ test("repeat", "access root data two level", async (t) => {
     },
   })
 
-  t.is(app.el.textContent, "1 derp baz 2 bar baz ")
+  t.is(app.el.textContent, "1 derp baz bar - 2 baz baz bar - ")
 })
 
 test("repeat", "@index", async (t) => {

@@ -19,10 +19,10 @@ export default class State extends Emitter {
         a.length > b.length ? -1 : 0
       )
 
-      console.group("---")
-      console.log(this.queue)
-      console.log(keys)
-      console.groupEnd("---")
+      // console.group("---")
+      // console.log(this.queue)
+      // console.log(keys)
+      // console.groupEnd("---")
 
       for (const path of this.queue) {
         for (const key of keys) {
@@ -39,7 +39,7 @@ export default class State extends Emitter {
       this.rack.value, //
       {
         signal: ctx.cancel.signal,
-        rootFallback: true,
+        recursive: true,
         commons: {
           $ui: this.ui,
           $run: this.ctx.global.actions,

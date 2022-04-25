@@ -1,10 +1,12 @@
 import parseDotNotation from "./parseDotNotation.js"
 
-export default function exists(obj, loc, sep = ".") {
-  return exists.tokens(obj, parseDotNotation(loc, sep))
+export default function exists(obj, loc, sep) {
+  return exists.evaluate(obj, parseDotNotation(loc, sep))
 }
 
-exists.tokens = (obj, tokens) => {
+exists.parse = (loc, sep) => parseDotNotation(loc, sep)
+
+exists.evaluate = (obj, tokens) => {
   let current = obj
 
   for (const key of tokens) {

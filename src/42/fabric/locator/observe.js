@@ -2,6 +2,7 @@
 /* eslint-disable complexity */
 
 import equal from "../type/any/equal.js"
+import exists from "./exists.js"
 
 function escapeDotNotation(key) {
   return key.replaceAll(".", "\\.")
@@ -28,15 +29,15 @@ export default function observe(root, options, fn) {
 
           if (prop.startsWith("@") || prop.startsWith("#")) return true
 
-          if (options?.rootFallback) {
-            let p = parent
+          if (options?.recursive) {
+            let prev = parent
             let i = 0
-            while (p && prop in p === false) {
+            while (prev && prop in prev === false) {
               if (i++ > WHILE_LIMIT) throw new Error(WHILE_LIMIT_ERROR)
-              p = proxies.get(p)?.["@parent"]?.["@target"]
+              prev = proxies.get(prev)?.["@parent"]?.["@target"]
             }
 
-            return p && prop in p
+            return prev && prop in prev
           }
         }
 
@@ -76,31 +77,43 @@ export default function observe(root, options, fn) {
 
             if (prop === "@findPath") {
               return (prop) => {
+                prop = String(prop)
+
                 if (prop.startsWith("@") || prop.startsWith("#")) {
                   return path.join(".")
                 }
 
-                let p = target
+                let prev = target
                 let i = 0
-                while (p && prop in p === false) {
-                  if (i++ > WHILE_LIMIT) throw new Error(WHILE_LIMIT_ERROR)
-                  p = proxies.get(p)?.["@parent"]?.["@target"]
+
+                const tokens = exists.parse(prop)
+
+                if (tokens.length === 1) {
+                  while (prev && prop in prev === false) {
+                    if (i++ > WHILE_LIMIT) throw new Error(WHILE_LIMIT_ERROR)
+                    prev = proxies.get(prev)?.["@parent"]?.["@target"]
+                  }
+                } else {
+                  while (prev && exists.evaluate(prev, tokens) === false) {
+                    if (i++ > WHILE_LIMIT) throw new Error(WHILE_LIMIT_ERROR)
+                    prev = proxies.get(prev)?.["@parent"]?.["@target"]
+                  }
                 }
 
-                return proxies.get(p)?.["@path"] ?? ""
+                return proxies.get(prev)?.["@path"] ?? ""
               }
             }
           }
 
-          if (options?.rootFallback && !Reflect.has(target, prop, receiver)) {
-            let p = parent
+          if (options?.recursive && !Reflect.has(target, prop, receiver)) {
+            let prev = parent
             let i = 0
-            while (p && prop in p === false) {
+            while (prev && prop in prev === false) {
               if (i++ > WHILE_LIMIT) throw new Error(WHILE_LIMIT_ERROR)
-              p = proxies.get(p)?.["@parent"]?.["@target"]
+              prev = proxies.get(prev)?.["@parent"]?.["@target"]
             }
 
-            if (p && prop in p) return p[prop]
+            if (prev && prop in prev) return prev[prop]
           }
 
           if (options?.commons && prop in options.commons) {

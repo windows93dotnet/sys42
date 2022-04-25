@@ -522,7 +522,7 @@ ${indentSpace.repeat(depth - 1)})`
           : typeof this.config.prefix === "string"
           ? this.config.prefix
           : this.config.addComments &&
-            (this.config.traceProxy || tag !== "[object Proxy]")
+            (this.config.traceProxy || tag !== "Proxy")
           ? `/* ${tag} */ `
           : ""
     }

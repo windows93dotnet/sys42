@@ -2,7 +2,6 @@ import configure, { merge } from "../fabric/configure.js"
 import freeze from "../fabric/type/object/freeze.js"
 import system from "../system.js"
 
-import parseDotNotation from "../fabric/locator/parseDotNotation.js"
 import exists from "../fabric/locator/exists.js"
 import allocate from "../fabric/locator/allocate.js"
 import locate from "../fabric/locator/locate.js"
@@ -34,8 +33,8 @@ class Config {
 export default function setup(name, defaults, presets) {
   let config
 
-  const tokens = parseDotNotation(name)
-  if (exists.tokens(configs, tokens)) config = locate.tokens(configs, tokens)
+  const tokens = exists.parse(name)
+  if (exists.evaluate(configs, tokens)) config = locate.tokens(configs, tokens)
   else {
     config = new Config(name, defaults, presets)
     allocate.tokens(configs, tokens, config)
