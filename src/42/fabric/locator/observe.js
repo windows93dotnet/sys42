@@ -7,6 +7,9 @@ function escapeDotNotation(key) {
   return key.replaceAll(".", "\\.")
 }
 
+const WHILE_LIMIT = 64
+const WHILE_LIMIT_ERROR = "Max parent recursion"
+
 export default function observe(root, options, fn) {
   if (typeof options === "function") fn = options
 
@@ -24,14 +27,24 @@ export default function observe(root, options, fn) {
           if (typeof prop !== "string") return false
 
           if (prop.startsWith("@") || prop.startsWith("#")) return true
-          if (options?.rootFallback) return prop in root
+
+          if (options?.rootFallback) {
+            let p = parent
+            let i = 0
+            while (p && prop in p === false) {
+              if (i++ > WHILE_LIMIT) throw new Error(WHILE_LIMIT_ERROR)
+              p = proxies.get(p)?.["@parent"]?.["@target"]
+            }
+
+            return p && prop in p
+          }
         }
 
         return has
       },
 
       get(target, prop, receiver) {
-        let val = Reflect.get(target, prop, receiver)
+        const val = Reflect.get(target, prop, receiver)
 
         if (val === undefined) {
           if (prop === Symbol.toStringTag) return "Proxy"
@@ -49,17 +62,52 @@ export default function observe(root, options, fn) {
             if (prop === "@first") return path.at(-1) === "0"
             if (prop === "@last") return path.at(-1) == parent.length - 1
             if (prop === "@path") return path.join(".")
-            if (prop === "@parent") return proxies.get(parent)
+
             if (prop === "@root") return proxies.get(root)
             if (prop === "@target") return target
+
+            if (prop === "@parent") {
+              return target === parent ? undefined : proxies.get(parent)
+            }
+
+            if (prop === "@has") {
+              return (prop) => Reflect.has(target, prop, receiver)
+            }
+
+            if (prop === "@findPath") {
+              return (prop) => {
+                if (prop.startsWith("@") || prop.startsWith("#")) {
+                  return path.join(".")
+                }
+
+                let p = target
+                let i = 0
+                while (p && prop in p === false) {
+                  if (i++ > WHILE_LIMIT) throw new Error(WHILE_LIMIT_ERROR)
+                  p = proxies.get(p)?.["@parent"]?.["@target"]
+                }
+
+                return proxies.get(p)?.["@path"] ?? ""
+              }
+            }
           }
 
           if (options?.rootFallback && !Reflect.has(target, prop, receiver)) {
-            if (prop in root) val = root[prop]
-            else if (options?.commons && prop in options.commons) {
-              return options.commons[prop]
-            } else return
-          } else return
+            let p = parent
+            let i = 0
+            while (p && prop in p === false) {
+              if (i++ > WHILE_LIMIT) throw new Error(WHILE_LIMIT_ERROR)
+              p = proxies.get(p)?.["@parent"]?.["@target"]
+            }
+
+            if (p && prop in p) return p[prop]
+          }
+
+          if (options?.commons && prop in options.commons) {
+            return options.commons[prop]
+          }
+
+          return
         }
 
         if (
@@ -67,10 +115,10 @@ export default function observe(root, options, fn) {
           (val?.constructor === Object || Array.isArray(val))
         ) {
           if (proxies.has(val)) return proxies.get(val)
-          const p = [...path, escapeDotNotation(prop)]
+          const newPath = [...path, escapeDotNotation(prop)]
           const { proxy, revoke } = Proxy.revocable(
             val,
-            createHander(p, target)
+            createHander(newPath, target)
           )
           proxies.set(val, proxy)
           revokes.add(revoke)
@@ -101,6 +149,7 @@ export default function observe(root, options, fn) {
 
   const { proxy, revoke } = Proxy.revocable(root, createHander([], root))
 
+  proxies.set(root, proxy)
   revokes.add(revoke)
 
   const destroy = () => {

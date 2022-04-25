@@ -25,9 +25,6 @@ class Tabs extends Component {
   }
 
   $create({ root, content, ctx }) {
-    // console.log(this.items)
-    // console.log(this.current)
-
     for (const item of content) {
       this.items.push(item)
     }
