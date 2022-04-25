@@ -1,10 +1,12 @@
 import parseDotNotation from "./parseDotNotation.js"
 
 export default function deallocate(obj, loc, sep = ".") {
-  return deallocate.tokens(obj, parseDotNotation(loc, sep))
+  return deallocate.evaluate(obj, parseDotNotation(loc, sep))
 }
 
-deallocate.tokens = (obj, tokens) => {
+deallocate.parse = parseDotNotation
+
+deallocate.evaluate = (obj, tokens) => {
   let current = obj
 
   if (tokens.length === 0) {

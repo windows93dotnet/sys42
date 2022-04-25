@@ -1,10 +1,12 @@
 import parseDotNotation from "./parseDotNotation.js"
 
 export default function locate(obj, loc, sep = ".") {
-  return locate.tokens(obj, parseDotNotation(loc, sep))
+  return locate.evaluate(obj, parseDotNotation(loc, sep))
 }
 
-locate.tokens = (obj, tokens) => {
+locate.parse = parseDotNotation
+
+locate.evaluate = (obj, tokens) => {
   let current = obj
 
   for (const key of tokens) {

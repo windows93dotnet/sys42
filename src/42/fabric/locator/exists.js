@@ -4,7 +4,7 @@ export default function exists(obj, loc, sep) {
   return exists.evaluate(obj, parseDotNotation(loc, sep))
 }
 
-exists.parse = (loc, sep) => parseDotNotation(loc, sep)
+exists.parse = parseDotNotation
 
 exists.evaluate = (obj, tokens) => {
   let current = obj

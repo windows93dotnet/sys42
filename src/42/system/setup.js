@@ -34,10 +34,11 @@ export default function setup(name, defaults, presets) {
   let config
 
   const tokens = exists.parse(name)
-  if (exists.evaluate(configs, tokens)) config = locate.tokens(configs, tokens)
-  else {
+  if (exists.evaluate(configs, tokens)) {
+    config = locate.evaluate(configs, tokens)
+  } else {
     config = new Config(name, defaults, presets)
-    allocate.tokens(configs, tokens, config)
+    allocate.evaluate(configs, tokens, config)
   }
 
   return (...options) => {

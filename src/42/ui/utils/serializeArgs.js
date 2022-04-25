@@ -20,11 +20,11 @@ export default function serializeArgs(event, target, args, locals) {
     // TODO: use template
     const tokens = parseDotNotation(arg)
     if (tokens.length > 1 && tokens[0] in meta) {
-      return locate.tokens(meta, tokens) ?? locals
-        ? locate.tokens(locals, tokens)
+      return locate.evaluate(meta, tokens) ?? locals
+        ? locate.evaluate(locals, tokens)
         : undefined
     }
 
-    return locals ? locate.tokens(locals, tokens) ?? arg : arg
+    return locals ? locate.evaluate(locals, tokens) ?? arg : arg
   })
 }
