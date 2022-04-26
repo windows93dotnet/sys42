@@ -273,7 +273,9 @@ export default function render(def, ctx = {}, parent = frag(), textMaker) {
   if (BUTTON_TYPES.has(def.type)) {
     const { value, type } = def
 
-    let { label } = def
+    let { label, content } = def
+    label ??= content
+
     let tooltip
 
     if (!label) {

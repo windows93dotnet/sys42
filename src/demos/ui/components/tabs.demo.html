@@ -13,9 +13,10 @@
       type: "div",
       content: [
         {
-          type: ".pa-sm.panel.outset",
+          type: ".box-h.pa-sm.panel.outset",
           style: { width: "300px", height: "150px" },
           content: {
+            scope: "tabs1",
             type: "ui-tabs",
             content: [
               {
@@ -35,27 +36,37 @@
           },
         },
         "\n",
+        {
+          type: ".box-h.pa-sm.panel.outset",
+          style: { width: "300px", height: "150px" },
+          content: {
+            type: "ui-tabs",
+            items: { watch: "openedFiles" },
+            repeat: {
+              label: "{{path|basename}}",
+              content: {
+                type: "textarea",
+                value: "{{path|read}}",
+              },
+            },
+          },
+        },
+        // "\n",
         // {
-        //   type: ".pa-sm.panel.outset",
+        //   type: ".box-h.pa-sm.panel.outset",
         //   style: { width: "300px", height: "150px" },
         //   content: {
-        //     type: "ui-tabs",
         //     scope: "openedFiles",
+        //     type: "ui-tabs",
         //     repeat: {
-        //       label: "foo",
-        //       content: "a",
+        //       label: "{{path|basename}}",
+        //       content: "{{file}}",
         //     },
-        //     // scope: "tabs3",
-        //     // items: { watch: "openedFiles" },
-        //     // content: [
-        //     //   { label: "foo", content: "a" },
-        //     //   { label: "bar", content: "b" },
-        //     // ],
         //   },
         // },
         // "\n",
         // {
-        //   type: ".pa-sm.panel.outset",
+        //   type: ".box-h.pa-sm.panel.outset",
         //   style: { width: "300px", height: "150px" },
         //   content: {
         //     scope: "tabs2",
@@ -64,41 +75,6 @@
         //       { path: "/index.html", file: "hello" },
         //       { path: "/42/test.js", file: "world" },
         //     ],
-        //     // content: [
-        //     //   { label: "foo", content: "a" },
-        //     //   { label: "bar", content: "b" },
-        //     // ],
-        //   },
-        // },
-        "\n",
-        {
-          type: ".pa-sm.panel.outset",
-          style: { width: "300px", height: "150px" },
-          content: {
-            // scope: "tabs3",
-            type: "ui-tabs",
-            // items: [
-            //   { path: "/index.html", file: "hello" },
-            //   { path: "/42/test.js", file: "world" },
-            // ],
-            // items: { watch: "@parent.openedFiles" },
-            // items: { watch: "@parent" },
-            // items: "{{files}}",
-            // items: { watch: "files" },
-            items: { watch: "openedFiles" },
-            repeat: {
-              label: "{{path|basename}}",
-              content: "{{file}}",
-            },
-          },
-        },
-        // "\n",
-        // {
-        //   type: ".pa-sm.panel.outset",
-        //   style: { width: "300px", height: "150px" },
-        //   content: {
-        //     scope: "openedFiles",
-        //     type: "ui-tabs",
         //     repeat: {
         //       label: "{{path|basename}}",
         //       content: "{{file}}",
@@ -113,13 +89,13 @@
       tabs2: {},
       tabs3: {
         files: [
-          { path: "/a.html", file: "hello" },
-          { path: "/42/b.js", file: "world" },
+          { path: "/index.html" }, //
+          { path: "/42/test.js" },
         ],
       },
       openedFiles: [
-        { path: "/index.html", file: "hello" },
-        { path: "/42/test.js", file: "world" },
+        { path: "/indexx.html" }, //
+        { path: "/42/test.js" },
       ],
     },
 

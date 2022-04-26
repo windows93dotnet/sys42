@@ -91,7 +91,26 @@ filters.path = {
   stemname: "path/extract/stemname",
 }
 
+let fs
 filters.file = {
+  async open(path, fallback = "") {
+    fs ??= await import("../system/fs.js").then((m) => m.default)
+    try {
+      return await fs.open(path)
+    } catch (error) {
+      this.el.dispatchEvent(new ErrorEvent("error", { error, bubbles: true }))
+      return fallback
+    }
+  },
+  async read(path, fallback = "") {
+    fs ??= await import("../system/fs.js").then((m) => m.default)
+    try {
+      return await fs.readText(path)
+    } catch (error) {
+      this.el.dispatchEvent(new ErrorEvent("error", { error, bubbles: true }))
+      return fallback
+    }
+  },
   text: async (file) => file?.text?.(),
   arrayBuffer: async (file) => file?.arrayBuffer?.(),
   size: (file, option) => fileSize(file?.size ?? 0, option),

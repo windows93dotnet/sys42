@@ -37,9 +37,10 @@ class Tabs extends Component {
         {
           role: "tablist",
           repeat: {
+            // type: ".button",
             type: "button",
             role: "tab",
-            label: repeat?.label ?? "{{label|render}}",
+            content: repeat?.label ?? "{{label|render}}",
             aria: { selected: "{{@index === current}}" },
             run: "setCurrent",
             args: ["@index"],
@@ -49,7 +50,6 @@ class Tabs extends Component {
           repeat: {
             // when: "{{@index === current}}",
             class: "{{@index === current ? '' : 'hide'}}",
-            type: "div",
             role: "tabpanel",
             content: repeat?.content ?? "{{content|render}}",
           },
