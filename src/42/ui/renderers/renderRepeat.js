@@ -24,7 +24,7 @@ export default function renderRepeat(def, ctx, parent, textMaker) {
   registerRenderer(ctx, ctx.scope, () => {
     const array = ctx.global.rack.get(ctx.scope)
 
-    if (!Array.isArray(array)) {
+    if (!Array.isArray(array) || array.length === 0) {
       if (lastChild) {
         const range = createRange()
         range.setStartAfter(placeholder)
@@ -36,44 +36,52 @@ export default function renderRepeat(def, ctx, parent, textMaker) {
       return
     }
 
-    let previous
     let i = 0
-    const l = array.length
+    const { length } = array
 
     if (lastChild) {
-      const range = createRange()
-      range.setStartAfter(placeholder)
-      range.setEndAfter(lastChild)
-      if (!repeat.type && Array.isArray(repeat.content)) {
-        // delete all if previous nodes was made of fragments
-        range.deleteContents()
-      } else {
-        // only append necessary node
-        previous = range.extractContents()
-        i = previous.childNodes.length
-        // console.log(111, i, l)
-        if (i > l) {
-          range.setStartBefore(previous.childNodes[l])
-          range.setEndAfter(previous.lastChild)
-          range.deleteContents()
+      const walker = document.createTreeWalker(
+        placeholder.parentElement,
+        NodeFilter.SHOW_COMMENT
+      )
+
+      let lastPrevious
+      const l = length - 1
+      i = 0
+
+      while (walker.nextNode()) {
+        const { currentNode } = walker
+
+        if (currentNode.textContent === "[#]") {
+          lastPrevious = currentNode
+          if (++i > l) {
+            const range = createRange()
+            range.setStartAfter(lastPrevious)
+            range.setEndAfter(lastChild)
+            range.deleteContents()
+            break
+          }
         }
+
+        if (currentNode === lastChild) break
       }
 
       lastChild = undefined
     }
 
-    const fragment = document.createDocumentFragment()
+    const fragment =
+      placeholder.parentElement ?? document.createDocumentFragment()
 
-    for (; i < l; i++) {
+    for (; i < length; i++) {
       const newCtx = makeNewContext(ctx)
       newCtx.scope = `${newCtx.scope}.${i}`
       render(repeat, newCtx, fragment, textMaker)
+      fragment.append(document.createComment(`[#]`))
     }
 
-    lastChild = fragment.lastChild || previous?.lastChild
+    lastChild = fragment.lastChild
 
-    placeholder.after(fragment)
-    if (previous) placeholder.after(previous)
+    if (!placeholder.parentElement) placeholder.after(fragment)
   })
 
   return parent

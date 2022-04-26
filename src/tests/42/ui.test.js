@@ -493,19 +493,19 @@ test("repeat", "array with objects", async (t) => {
 
   t.is(
     app.el.innerHTML,
-    '<!--[repeat]--><span class="1">A</span><span class="2">B</span>'
+    '<!--[repeat]--><span class="1">A</span><!--[#]--><span class="2">B</span><!--[#]-->'
   )
 
   app.data.arr[0].x = "foo"
   await repaint()
   t.is(
     app.el.innerHTML,
-    '<!--[repeat]--><span class="1">foo</span><span class="2">B</span>'
+    '<!--[repeat]--><span class="1">foo</span><!--[#]--><span class="2">B</span><!--[#]-->'
   )
 
   app.data.arr = [{ x: "Z", y: "9" }]
   await repaint()
-  t.is(app.el.innerHTML, '<!--[repeat]--><span class="9">Z</span>')
+  t.is(app.el.innerHTML, '<!--[repeat]--><span class="9">Z</span><!--[#]-->')
 })
 
 test("repeat", "div", "render index 0 bug", async (t) => {
@@ -532,9 +532,14 @@ test("repeat", "div", "render index 0 bug", async (t) => {
   await repaint()
   t.is(el.children.length, 1)
   t.is(el.textContent, "Z")
+  t.is(app.el.innerHTML, "<!--[repeat]--><div>Z</div><!--[#]-->")
 
   app.data.arr = [{ path: "X" }, { path: "Y" }]
   await repaint()
+  t.is(
+    app.el.innerHTML,
+    "<!--[repeat]--><div>X</div><!--[#]--><div>Y</div><!--[#]-->"
+  )
   t.is(el.children.length, 2)
   t.is(el.textContent, "XY")
 })
@@ -592,7 +597,7 @@ test("repeat", "innerHTML", async (t) => {
   t.is(app.el.textContent, "123")
   t.is(
     app.el.innerHTML,
-    "<ul><!--[repeat]--><li>1</li><li>2</li><li>3</li></ul>"
+    "<ul><!--[repeat]--><li>1</li><!--[#]--><li>2</li><!--[#]--><li>3</li><!--[#]--></ul>"
   )
 
   app.data.arr.push(4)
@@ -601,14 +606,17 @@ test("repeat", "innerHTML", async (t) => {
   t.is(app.el.textContent, "1234")
   t.is(
     app.el.innerHTML,
-    "<ul><!--[repeat]--><li>1</li><li>2</li><li>3</li><li>4</li></ul>"
+    "<ul><!--[repeat]--><li>1</li><!--[#]--><li>2</li><!--[#]--><li>3</li><!--[#]--><li>4</li><!--[#]--></ul>"
   )
 
   app.data.arr.length = 2
   await repaint()
 
   t.is(app.el.textContent, "12")
-  t.is(app.el.innerHTML, "<ul><!--[repeat]--><li>1</li><li>2</li></ul>")
+  t.is(
+    app.el.innerHTML,
+    "<ul><!--[repeat]--><li>1</li><!--[#]--><li>2</li><!--[#]--></ul>"
+  )
 })
 
 test("repeat", "element", "scopped", async (t) => {
@@ -623,14 +631,18 @@ test("repeat", "element", "scopped", async (t) => {
     data: { a: { b: ["foo", "bar"] } },
   })
 
-  t.is(app.el.innerHTML, "<ul><!--[repeat]--><li>foo</li><li>bar</li></ul>")
+  t.is(
+    app.el.innerHTML,
+    "<ul><!--[repeat]--><li>foo</li><!--[#]--><li>bar</li><!--[#]--></ul>"
+  )
   app.data.a.b.push("baz")
   await repaint()
   t.is(
     app.el.innerHTML,
-    "<ul><!--[repeat]--><li>foo</li><li>bar</li><li>baz</li></ul>"
+    "<ul><!--[repeat]--><li>foo</li><!--[#]--><li>bar</li><!--[#]--><li>baz</li><!--[#]--></ul>"
   )
   app.data.a.b.length = 0
+  // app.data.a.b = []
   await repaint()
   t.is(app.el.innerHTML, "<ul><!--[repeat]--></ul>")
 })
@@ -806,7 +818,59 @@ test("repeat", "@last element", async (t) => {
     },
   })
 
-  t.is(app.el.innerHTML, "<!--[repeat]-->0 x<!--[when]--><br>1 y<!--[when]-->")
+  t.is(
+    app.el.innerHTML,
+    "<!--[repeat]-->0 x<!--[when]--><br><!--[#]-->1 y<!--[when]--><!--[#]-->"
+  )
+})
+
+test("repeat", "input element", async (t) => {
+  const el = div()
+  const app = await ui(el, {
+    content: {
+      scope: "arr",
+      repeat: [{ type: "textarea", name: "a" }],
+    },
+    data: {
+      arr: [{ a: "x" }, { a: "y" }],
+    },
+  })
+
+  let ta = app.getAll("textarea")
+  t.is(ta.length, 2)
+  t.is(ta[0].name, "arr.0.a")
+  t.is(ta[0].value, "x")
+  t.is(ta[1].name, "arr.1.a")
+  t.is(ta[1].value, "y")
+
+  // app.data.arr.pop()
+  app.data.arr = [{ a: "z" }]
+  await repaint()
+
+  ta = app.getAll("textarea")
+  t.is(ta.length, 1)
+  t.is(ta[0].name, "arr.0.a")
+  t.is(ta[0].value, "z")
+})
+
+test("repeat", "lastChild bug", async (t) => {
+  const el = div()
+  const app = await ui(el, {
+    content: {
+      scope: "arr",
+      content: [{ repeat: [{ content: "{{a}}" }] }, { content: "z" }],
+    },
+    data: {
+      arr: [{ a: "x" }, { a: "y" }],
+    },
+  })
+
+  t.is(app.el.innerHTML, "<!--[repeat]-->x<!--[#]-->y<!--[#]-->z")
+
+  app.data.arr.push({ a: "a" })
+  await repaint()
+
+  t.is(app.el.innerHTML, "<!--[repeat]-->x<!--[#]-->y<!--[#]-->a<!--[#]-->z")
 })
 
 /* actions
