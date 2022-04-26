@@ -12,7 +12,7 @@ class Tabs extends Component {
         type: "array",
         default: [],
       },
-      current: {
+      currentTab: {
         state: true,
         type: "number",
         default: 0,
@@ -21,7 +21,9 @@ class Tabs extends Component {
   }
 
   setCurrent(index) {
-    this.current = index
+    console.log(888, index)
+    this.currentTab = index
+    console.log(this._.ctx.global.rack.value)
   }
 
   $create({ root, content, repeat, ctx }) {
@@ -41,15 +43,15 @@ class Tabs extends Component {
             type: "button",
             role: "tab",
             content: repeat?.label ?? "{{label|render}}",
-            aria: { selected: "{{@index === current}}" },
+            aria: { selected: "{{@index === currentTab}}" },
             run: "setCurrent",
             args: ["@index"],
           },
         },
         {
           repeat: {
-            // when: "{{@index === current}}",
-            class: "{{@index === current ? '' : 'hide'}}",
+            // when: "{{@index === currentTab}}",
+            class: "{{@index === currentTab ? '' : 'hide'}}",
             role: "tabpanel",
             content: repeat?.content ?? "{{content|render}}",
           },
@@ -66,57 +68,3 @@ class Tabs extends Component {
 }
 
 export default await Component.define(Tabs)
-
-// import Component from "../class/Component.js"
-// import render from "../render.js"
-// import uid from "../../fabric/uid.js"
-
-// class Tabs extends Component {
-//   static definition = {
-//     tag: "ui-tabs",
-//   }
-
-//   setCurrent(index) {
-//     this._.ctx.global.state.proxy.currentTab = index
-//   }
-
-//   $create({ root, content, label, ctx }) {
-//     const id = uid()
-
-//     ctx.global.state.proxy.currentTab ??= 0
-
-//     const def = [
-//       {
-//         type: "ul",
-//         role: "tablist",
-//         repeat: {
-//           type: "li",
-//           role: "none",
-//           content: {
-//             type: "button",
-//             role: "tab",
-//             id: `tab-${id}-{{@index}}`,
-//             label,
-//             run: "setCurrent",
-//             args: ["@index"],
-//             aria: { selected: "{{@index === currentTab}}" },
-//           },
-//         },
-//       },
-//       {
-//         type: "section",
-//         role: "tabpanel",
-//         aria: { labeledby: `tab-${id}-{{currentTab}}` },
-//         content,
-//       },
-//     ]
-
-//     root.append(render(def, ctx))
-
-//     // setTimeout(() => {
-//     //   this.setCurrent(1)
-//     // }, 1000)
-//   }
-// }
-
-// export default await Component.define(Tabs)

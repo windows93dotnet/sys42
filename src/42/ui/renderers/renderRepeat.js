@@ -51,6 +51,7 @@ export default function renderRepeat(def, ctx, parent, textMaker) {
         // only append necessary node
         previous = range.extractContents()
         i = previous.childNodes.length
+        // console.log(111, i, l)
         if (i > l) {
           range.setStartBefore(previous.childNodes[l])
           range.setEndAfter(previous.lastChild)

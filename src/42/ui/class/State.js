@@ -60,6 +60,10 @@ export default class State extends Emitter {
 
   updateAll() {
     const keys = Object.keys(this.renderers)
+    // const keys = Object.keys(this.renderers).sort((a, b) =>
+    //   a.length > b.length ? -1 : 0
+    // )
+
     this.emit("update", new Set(keys))
     for (const key of keys) {
       for (const render of this.renderers[key]) render()
