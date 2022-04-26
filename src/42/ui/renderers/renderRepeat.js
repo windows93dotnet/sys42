@@ -21,10 +21,10 @@ export default function renderRepeat(def, ctx, parent, textMaker) {
   const placeholder = document.createComment(`[repeat]`)
   container.append(placeholder)
 
-  registerRenderer(ctx, ctx.scope, () => {
+  registerRenderer(ctx, ctx.scope, async () => {
     const array = ctx.global.rack.get(ctx.scope)
 
-    if (!Array.isArray(array) || array.length === 0) {
+    if (!array || !Array.isArray(array) || array.length === 0) {
       if (lastChild) {
         const range = createRange()
         range.setStartAfter(placeholder)
@@ -39,13 +39,14 @@ export default function renderRepeat(def, ctx, parent, textMaker) {
     let i = 0
     const { length } = array
 
+    let lastPrevious
+
     if (lastChild) {
       const walker = document.createTreeWalker(
         placeholder.parentElement,
         NodeFilter.SHOW_COMMENT
       )
 
-      let lastPrevious
       const l = length - 1
       i = 0
 
@@ -59,29 +60,27 @@ export default function renderRepeat(def, ctx, parent, textMaker) {
             range.setStartAfter(lastPrevious)
             range.setEndAfter(lastChild)
             range.deleteContents()
+            lastChild = lastPrevious
             break
           }
         }
 
         if (currentNode === lastChild) break
       }
-
-      lastChild = undefined
     }
 
-    const fragment =
-      placeholder.parentElement ?? document.createDocumentFragment()
+    const fragment = document.createDocumentFragment()
 
     for (; i < length; i++) {
       const newCtx = makeNewContext(ctx)
       newCtx.scope = `${newCtx.scope}.${i}`
       render(repeat, newCtx, fragment, textMaker)
-      fragment.append(document.createComment(`[#]`))
+      lastChild = document.createComment(`[#]`)
+      fragment.append(lastChild)
     }
 
-    lastChild = fragment.lastChild
-
-    if (!placeholder.parentElement) placeholder.after(fragment)
+    if (lastPrevious) lastPrevious.after(fragment)
+    else placeholder.after(fragment)
   })
 
   return parent

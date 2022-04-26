@@ -530,12 +530,14 @@ test("repeat", "div", "render index 0 bug", async (t) => {
 
   app.data.arr = [{ path: "Z" }]
   await repaint()
+
   t.is(el.children.length, 1)
   t.is(el.textContent, "Z")
   t.is(app.el.innerHTML, "<!--[repeat]--><div>Z</div><!--[#]-->")
 
   app.data.arr = [{ path: "X" }, { path: "Y" }]
   await repaint()
+
   t.is(
     app.el.innerHTML,
     "<!--[repeat]--><div>X</div><!--[#]--><div>Y</div><!--[#]-->"
@@ -674,16 +676,19 @@ test("repeat", "array of objects", "scopped", async (t) => {
     },
   })
 
+  t.is(app.el.innerHTML, "<!--[repeat]-->1 - 2 - <!--[#]-->3 - 4 - <!--[#]-->")
   t.is(app.el.textContent, "1 - 2 - 3 - 4 - ")
 
   app.data.arr.length = 1
   await repaint()
 
+  t.is(app.el.innerHTML, "<!--[repeat]-->1 - 2 - <!--[#]-->")
   t.is(app.el.textContent, "1 - 2 - ")
 
   app.data.arr = undefined
   await repaint()
 
+  t.is(app.el.innerHTML, "<!--[repeat]-->")
   t.is(app.el.textContent, "")
 
   app.data.arr = [{ a: "a", b: "b" }]
@@ -871,6 +876,16 @@ test("repeat", "lastChild bug", async (t) => {
   await repaint()
 
   t.is(app.el.innerHTML, "<!--[repeat]-->x<!--[#]-->y<!--[#]-->a<!--[#]-->z")
+
+  app.data.arr.length = 1
+  await repaint()
+
+  t.is(app.el.innerHTML, "<!--[repeat]-->x<!--[#]-->z")
+
+  delete app.data.arr
+  await repaint()
+
+  t.is(app.el.innerHTML, "<!--[repeat]-->z")
 })
 
 /* actions
