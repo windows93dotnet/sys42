@@ -24,18 +24,20 @@ export default {
   content: {
     type: "ui-tabs",
     scope: "openedFiles",
-    label: "{{path|basename}}{{dirty ? '*' : ''}}",
-    content: {
-      type: "textarea.w-full",
-      name: "text",
-      label: "{{openedFiles|at(currentTab)|locate('path')}}",
-      value: "{{openedFiles|at(currentTab)|locate('file')|text}}",
-      class: "{{monospace ? 'font-mono' : ''}}",
-      spellcheck: "{{spellcheck}}",
-      wrap: "{{wrap ? 'soft' : 'off'}}",
-      prose: false,
-      compact: true,
-      autofocus: true,
+    repeat: {
+      label: "{{path|basename}}{{dirty ? '*' : ''}}",
+      content: {
+        type: "textarea.w-full",
+        name: "text",
+        label: "{{path}}",
+        value: "{{file|text}}",
+        class: "{{monospace ? 'font-mono' : ''}}",
+        spellcheck: "{{spellcheck}}",
+        wrap: "{{wrap ? 'soft' : 'off'}}",
+        prose: false,
+        compact: true,
+        autofocus: true,
+      },
     },
   },
 

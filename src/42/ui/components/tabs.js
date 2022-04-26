@@ -24,20 +24,22 @@ class Tabs extends Component {
     this.current = index
   }
 
-  $create({ root, content, ctx }) {
+  $create({ root, content, repeat, ctx }) {
     for (const item of content) {
       this.items.push(item)
     }
 
+    const scopeIsArray = Array.isArray(ctx.global.rack.get(ctx.scope))
+
     const def = {
-      scope: joinScope(ctx.scope, "items"),
+      scope: scopeIsArray ? ctx.scope : joinScope(ctx.scope, "items"),
       content: [
         {
           role: "tablist",
           repeat: {
             type: "button",
             role: "tab",
-            label: "{{label|render}}",
+            label: repeat?.label ?? "{{label|render}}",
             aria: { selected: "{{@index === current}}" },
             run: "setCurrent",
             args: ["@index"],
@@ -49,7 +51,7 @@ class Tabs extends Component {
             class: "{{@index === current ? '' : 'hide'}}",
             type: "div",
             role: "tabpanel",
-            content: "{{content|render}}",
+            content: repeat?.content ?? "{{content|render}}",
           },
         },
       ],

@@ -1,7 +1,7 @@
 import template from "../../system/formats/template.js"
 import getFilter from "../../fabric/getFilter.js"
 import getParentMethod from "../../fabric/dom/getParentMethod.js"
-import joinScope from "./joinScope.js"
+import resolveScope from "./resolveScope.js"
 import isLength from "../../fabric/type/any/is/isLength.js"
 
 function register(ctx, scope, render) {
@@ -32,15 +32,10 @@ export default function registerRenderer(ctx, scope, render) {
   ctx.undones.push(render())
 }
 
-const resolveScope = (ctx, arr) =>
-  arr.map((x) => {
-    const current = ctx.global.state.getThisArg(ctx.scope)
-    const p = current?.["@findPath"]?.(x) ?? ctx.scope
-    return joinScope(p, x)
-  })
+const resolveScopes = (ctx, arr) => arr.map((loc) => resolveScope(ctx, loc))
 
 registerRenderer.fromDots = (ctx, arr, render) => {
-  const scopes = resolveScope(ctx, arr)
+  const scopes = resolveScopes(ctx, arr)
   if (scopes.length > 0) registerRenderer(ctx, scopes, render)
 }
 
@@ -63,7 +58,7 @@ registerRenderer.fromTemplate = async (ctx, el, parsedTemplate, render) => {
     }
   }
 
-  const scopes = new Set(resolveScope(ctx, vars))
+  const scopes = new Set(resolveScopes(ctx, vars))
 
   const renderTemplate = template.compile(parsedTemplate, {
     async: true,
