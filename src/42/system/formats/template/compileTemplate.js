@@ -22,7 +22,7 @@ export default function compileTemplate(parsed, options = {}) {
         const out = [strings[0]]
 
         for (let i = 0, l = substitutions.length; i < l; i++) {
-          const res = substitutions[i](locals)
+          const res = substitutions[i](locals) ?? ""
           out.push(res, strings[i + 1])
         }
 
@@ -32,7 +32,7 @@ export default function compileTemplate(parsed, options = {}) {
         let out = strings[0]
 
         for (let i = 0, l = substitutions.length; i < l; i++) {
-          out += substitutions[i](locals)
+          out += substitutions[i](locals) ?? ""
           out += strings[i + 1]
         }
 

@@ -62,9 +62,15 @@ globalThis.addEventListener(
 
           undones.push(ipc.send(event, data, meta))
 
-          let res = (await Promise.all(undones)).flat()
-          if (undones.length === 1) res = res[0]
-          port.postMessage({ id, res })
+          Promise.all(undones)
+            .then((res) => {
+              res = res.flat()
+              if (undones.length === 1) res = res[0]
+              port.postMessage({ id, res })
+            })
+            .catch((err) => {
+              port.postMessage({ id, err })
+            })
         }
       }
     }
@@ -93,7 +99,12 @@ export class Sender extends Emitter {
     this.ready = new Promise((resolve) => {
       port1.onmessage = ({ data }) => {
         if (data.id && this.#queue.has(data.id)) {
-          this.#queue.get(data.id).resolve(data.res)
+          if (data.err) {
+            this.#queue.get(data.id).reject(data.err)
+          } else {
+            this.#queue.get(data.id).resolve(data.res)
+          }
+
           this.#queue.delete(data.id)
           return
         }

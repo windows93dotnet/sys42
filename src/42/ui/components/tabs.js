@@ -21,9 +21,7 @@ class Tabs extends Component {
   }
 
   setCurrent(index) {
-    console.log(888, index)
     this.currentTab = index
-    console.log(this._.ctx.global.rack.value)
   }
 
   $create({ root, content, repeat, ctx }) {
@@ -33,27 +31,54 @@ class Tabs extends Component {
 
     const scopeIsArray = Array.isArray(ctx.global.rack.get(ctx.scope))
 
+    // const def = {
+    //   scope: scopeIsArray ? ctx.scope : joinScope(ctx.scope, "items"),
+    //   content: [
+    //     {
+    //       role: "tablist",
+    //       repeat: {
+    //         // type: ".button",
+    //         type: "button",
+    //         role: "tab",
+    //         content: repeat?.label ?? "{{label|render}}",
+    //         aria: { selected: "{{@index === currentTab}}" },
+    //         run: "setCurrent",
+    //         args: ["@index"],
+    //       },
+    //     },
+    //     {
+    //       repeat: {
+    //         // when: "{{@index === currentTab}}",
+    //         // class: "{{@index === currentTab ? '' : 'hide'}}",
+    //         role: "tabpanel",
+    //         content: repeat?.content ?? "{{content|render}}",
+    //       },
+    //     },
+    //   ],
+    // }
+
     const def = {
       scope: scopeIsArray ? ctx.scope : joinScope(ctx.scope, "items"),
       content: [
         {
           role: "tablist",
-          repeat: {
-            // type: ".button",
-            type: "button",
-            role: "tab",
-            content: repeat?.label ?? "{{label|render}}",
-            aria: { selected: "{{@index === currentTab}}" },
-            run: "setCurrent",
-            args: ["@index"],
-          },
+          // repeat: {},
+          // repeat: {
+          //   // type: ".button",
+          //   type: "button",
+          //   role: "tab",
+          //   // content: repeat?.label ?? "{{label|render}}",
+          //   // aria: { selected: "{{@index === currentTab}}" },
+          //   run: "setCurrent",
+          //   args: ["@index"],
+          // },
         },
         {
           repeat: {
-            // when: "{{@index === currentTab}}",
-            class: "{{@index === currentTab ? '' : 'hide'}}",
+            // class: "{{@index === currentTab ? '' : 'hide'}}",
             role: "tabpanel",
-            content: repeat?.content ?? "{{content|render}}",
+            content: repeat?.content,
+            // content: "{{@index}} / {{currentTab}}",
           },
         },
       ],

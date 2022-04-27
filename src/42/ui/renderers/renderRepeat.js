@@ -21,7 +21,7 @@ export default function renderRepeat(def, ctx, parent, textMaker) {
   const placeholder = document.createComment(`[repeat]`)
   container.append(placeholder)
 
-  registerRenderer(ctx, ctx.scope, async () => {
+  registerRenderer(ctx, ctx.scope, () => {
     const array = ctx.global.rack.get(ctx.scope)
 
     if (!array || !Array.isArray(array) || array.length === 0) {
@@ -43,7 +43,7 @@ export default function renderRepeat(def, ctx, parent, textMaker) {
 
     if (lastChild) {
       const walker = document.createTreeWalker(
-        placeholder.parentElement,
+        lastChild.parentElement,
         NodeFilter.SHOW_COMMENT
       )
 
@@ -55,6 +55,8 @@ export default function renderRepeat(def, ctx, parent, textMaker) {
 
         if (currentNode.textContent === "[#]") {
           lastPrevious = currentNode
+
+          // remove extra items only
           if (++i > l) {
             const range = createRange()
             range.setStartAfter(lastPrevious)

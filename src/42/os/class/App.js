@@ -93,46 +93,13 @@ const menubar = [
   },
 ]
 
-// async function readFiles(openedFiles) {
-//   await Promise.all(openedFiles.map(readFile))
-// }
-
-// async function readFile(openedFile) {
-//   if (openedFile.tmp || (openedFile.path && !openedFile.file)) {
-//     fs ??= await import("../../system/fs.js").then((m) => m.default)
-//     try {
-//       openedFile.file = await fs.open(openedFile.path)
-//     } catch (err) {
-//       console.log(err)
-//       openedFile.path = undefined
-//       // openedFile.file = new Blob([""])
-//     }
-//   }
-
-//   openedFile.dirty = false
-//   delete openedFile.tmp
-// }
-
 export default class App extends UI {
   constructor({ name, categories, data, content, encode, decode, dir }) {
     dir ??= dirname(document.URL) + "/"
+
     const install = preinstall({ name, categories, dir })
 
-    // data.currentTab ??= 0
-    data.openedFiles ??= [
-      {
-        dirty: false,
-        path: undefined,
-        // blob: new Blob([""]),
-      },
-    ]
-
-    // for (const openedFile of data.openedFiles) {
-    //   if (openedFile.file === undefined) {
-    //     openedFile.file = new Blob([""])
-    //     openedFile.tmp = true
-    //   }
-    // }
+    data.openedFiles ??= [{ dirty: false, path: undefined }]
 
     super({
       type: ".box-fit.box-h",
@@ -142,14 +109,7 @@ export default class App extends UI {
 
       actions: {
         new() {
-          // this.currentTab = 0
-          this.openedFiles = [
-            {
-              dirty: false,
-              path: undefined,
-              // blob: new Blob([""]),
-            },
-          ]
+          this.openedFiles = [{ dirty: false, path: undefined }]
         },
 
         async open() {
@@ -227,38 +187,21 @@ export default class App extends UI {
   async mount(...args) {
     await super.mount(...args)
 
-    // console.log(this.ctx.global.rack.value)
+    const data = {
+      // currentTab: 0,
+      // monospace: false,
+      spellcheck: false,
+      wrap: true,
+      openedFiles: [
+        { path: "/desktop/index.html" }, //
+        // { path: "/42.sw.js" },
+        // { path: "/42/os.js" },
+      ],
+    }
 
-    // const xxx = {
-    //   monospace: true,
-    //   spellcheck: false,
-    //   wrap: true,
-    //   openedFiles: [
-    //     {
-    //       path: "/desktop/index.html",
-    //       // path: "/index.html",
-    //     },
-    //     {
-    //       path: "/42/test.js",
-    //     },
-    //   ],
-    // }
-
-    // setTimeout(() => {
-    //   this.ctx.global.state.set("", xxx)
-    //   // this.ctx.global.state.set("openedFiles.0", xxx.openedFiles[0])
-    //   // this.ctx.global.state.set("openedFiles.1", xxx.openedFiles[1])
-    //   // this.ctx.global.state.set("monospace", false)
-    // }, 1000)
-
-    /*  */
-
-    // readFiles(this.data.openedFiles).then(() => {
-    //   this.state.update("openedFiles")
-    // })
-
-    // this.state.on("update", (queue) => {
-    //   console.log(queue)
-    // })
+    setTimeout(() => {
+      this.ctx.global.state.assign(this.ctx.scope, data)
+      // this.ctx.global.state.set(this.ctx.scope, data)
+    }, 500)
   }
 }

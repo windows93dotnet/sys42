@@ -1,9 +1,12 @@
 import observe from "../../fabric/locator/observe.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
+import allocate from "../../fabric/locator/allocate.js"
 import locate from "../../fabric/locator/locate.js"
 import Emitter from "../../fabric/class/Emitter.js"
 
 export default class State extends Emitter {
+  #update
+
   constructor(ctx) {
     super()
     this.renderers = ctx.global.renderers
@@ -12,17 +15,17 @@ export default class State extends Emitter {
 
     this.queue = new Set()
 
-    this._update = paintThrottle(() => {
+    this.#update = paintThrottle(() => {
       this.emit("update", this.queue)
 
       const keys = Object.keys(this.renderers).sort((a, b) =>
         a.length > b.length ? -1 : 0
       )
 
-      // console.group("---")
+      // console.group("--- update")
       // console.log(this.queue)
       // console.log(keys)
-      // console.groupEnd("---")
+      // console.groupEnd()
 
       for (const path of this.queue) {
         for (const key of keys) {
@@ -55,34 +58,29 @@ export default class State extends Emitter {
     if (path.endsWith(".length")) this.queue.add(path.slice(0, -7))
     else this.queue.add(path)
 
-    this._update()
-  }
-
-  updateAll() {
-    const keys = Object.keys(this.renderers)
-    // const keys = Object.keys(this.renderers).sort((a, b) =>
-    //   a.length > b.length ? -1 : 0
-    // )
-
-    this.emit("update", new Set(keys))
-    for (const key of keys) {
-      for (const render of this.renderers[key]) render()
-    }
+    this.#update()
   }
 
   get value() {
     return this.rack.value
   }
   set value(value) {
-    this.rack.clear()
-    Object.assign(this.rack.value, value)
-    this.updateAll()
+    for (const key in this.proxy) {
+      if (Object.hasOwnProperty.call(this.proxy, key)) {
+        delete this.proxy[key]
+      }
+    }
+
+    Object.assign(this.proxy, value)
+  }
+
+  assign(path, value) {
+    const proxy = locate(this.proxy, path)
+    Object.assign(proxy, value)
   }
 
   set(path, value) {
-    this.rack.set(path, value)
-    if (path === "") this.updateAll()
-    else this.update(path)
+    allocate(this.proxy, path, value)
   }
 
   get(path) {
@@ -90,7 +88,6 @@ export default class State extends Emitter {
   }
 
   getThisArg(path) {
-    const proxy = locate(this.proxy, path)
-    return proxy
+    return locate(this.proxy, path)
   }
 }

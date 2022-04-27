@@ -57,6 +57,16 @@ test("template", async (t) => {
   await repaint()
 
   t.is(app.el.textContent, "Hello Derp")
+
+  app.data = { world: 0 }
+  await repaint()
+
+  t.is(app.el.textContent, "Hello 0")
+
+  app.data = { world: undefined }
+  await repaint()
+
+  t.is(app.el.textContent, "Hello ")
 })
 
 test("expand abbreviations", async (t) => {

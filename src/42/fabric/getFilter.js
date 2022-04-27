@@ -94,19 +94,23 @@ filters.path = {
 let fs
 filters.file = {
   async open(path, fallback = "") {
+    if (path === undefined) return fallback
     fs ??= await import("../system/fs.js").then((m) => m.default)
     try {
       return await fs.open(path)
     } catch (error) {
+      console.log(0, path, error)
       this.el.dispatchEvent(new ErrorEvent("error", { error, bubbles: true }))
       return fallback
     }
   },
   async read(path, fallback = "") {
+    if (path === undefined) return fallback
     fs ??= await import("../system/fs.js").then((m) => m.default)
     try {
       return await fs.readText(path)
     } catch (error) {
+      console.log(0, path, error)
       this.el.dispatchEvent(new ErrorEvent("error", { error, bubbles: true }))
       return fallback
     }

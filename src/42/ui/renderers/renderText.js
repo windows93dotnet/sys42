@@ -23,14 +23,15 @@ export default function renderText(text, ctx, parent, textElement) {
 
   const parsed = template.parse(text)
 
-  const el = textElement
-    ? create(textElement, text)
-    : document.createTextNode(text)
+  let el
 
   if (parsed.substitutions.length > 0) {
+    el = textElement ? create(textElement) : document.createTextNode("")
     registerRenderer.fromTemplate(ctx, el, parsed, async (value) => {
       el.textContent = value
     })
+  } else {
+    el = textElement ? create(textElement, text) : document.createTextNode(text)
   }
 
   parent.append(el)

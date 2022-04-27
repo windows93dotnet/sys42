@@ -64,21 +64,17 @@ function compileToken(i, list, tokens, options) {
   else if (type === "key") {
     list.push(
       negated
-        ? (locals) => !locate(locals, value) ?? ""
-        : (locals) => locate(locals, value) ?? ""
+        ? (locals) => !locate(locals, value)
+        : (locals) => locate(locals, value)
     )
   } else if (type === "arg") {
     if (!negated && isLength(value)) {
       if (compileLocals) {
         list.push(
-          Array.isArray(compileLocals)
-            ? (locals) => locals[value] ?? ""
-            : () => value
+          Array.isArray(compileLocals) ? (locals) => locals[value] : () => value
         )
       } else {
-        list.push((locals) =>
-          Array.isArray(locals) ? locals[value] ?? "" : value
-        )
+        list.push((locals) => (Array.isArray(locals) ? locals[value] : value))
       }
     } else list.push(negated ? () => !value : () => value)
   }
