@@ -187,21 +187,21 @@ export default class App extends UI {
   async mount(...args) {
     await super.mount(...args)
 
-    const data = {
-      // currentTab: 0,
-      // monospace: false,
-      spellcheck: false,
-      wrap: true,
-      openedFiles: [
-        { path: "/desktop/index.html" }, //
-        // { path: "/42.sw.js" },
-        // { path: "/42/os.js" },
-      ],
-    }
+    // const data = {
+    //   // currentTab: 0,
+    //   monospace: false,
+    //   spellcheck: false,
+    //   wrap: true,
+    //   openedFiles: [
+    //     { path: "/desktop/index.html" }, //
+    //     { path: "/42.sw.js" },
+    //     // { path: "/42/os.js" },
+    //   ],
+    // }
 
-    setTimeout(() => {
-      this.ctx.global.state.assign(this.ctx.scope, data)
-      // this.ctx.global.state.set(this.ctx.scope, data)
-    }, 500)
+    // setTimeout(() => {
+    //   this.ctx.global.state.assign(this.ctx.scope, data)
+    //   // this.ctx.global.state.set(this.ctx.scope, data)
+    // }, 500)
   }
 }
