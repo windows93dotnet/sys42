@@ -898,6 +898,45 @@ test("repeat", "lastChild bug", async (t) => {
   t.is(app.el.innerHTML, "<!--[repeat]-->z")
 })
 
+test("repeat", "range bug", async (t) => {
+  const el = div()
+  const app = await ui(el, {
+    content: {
+      scope: "arr",
+      content: [
+        { repeat: "{{a}}" }, //
+        { content: "+" },
+        { repeat: "{{a}}" },
+      ],
+    },
+
+    data: {
+      arr: [{ a: 1 }, { a: 2 }],
+    },
+  })
+
+  t.is(
+    app.el.innerHTML,
+    "<!--[repeat]-->1<!--[#]-->2<!--[#]-->+<!--[repeat]-->1<!--[#]-->2<!--[#]-->"
+  )
+
+  app.data.arr.push({ a: 3 })
+  await repaint()
+
+  t.is(
+    app.el.innerHTML,
+    "<!--[repeat]-->1<!--[#]-->2<!--[#]-->3<!--[#]-->+<!--[repeat]-->1<!--[#]-->2<!--[#]-->3<!--[#]-->"
+  )
+
+  app.data.arr.length = 1
+  await repaint()
+
+  t.is(
+    app.el.innerHTML,
+    "<!--[repeat]-->1<!--[#]-->+<!--[repeat]-->1<!--[#]-->"
+  )
+})
+
 /* actions
 ========== */
 

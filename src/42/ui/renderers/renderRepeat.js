@@ -4,6 +4,9 @@ import createRange from "../../fabric/dom/createRange.js"
 import registerRenderer from "../utils/registerRenderer.js"
 import makeNewContext from "../utils/makeNewContext.js"
 
+const PLACEHOLDER_COMMENT = "[repeat]"
+const ITEM_COMMENT = "[#]"
+
 export default function renderRepeat(def, ctx, parent, textMaker) {
   const { repeat } = def
   def = omit(def, ["repeat"])
@@ -18,7 +21,7 @@ export default function renderRepeat(def, ctx, parent, textMaker) {
   }
 
   let lastChild
-  const placeholder = document.createComment(`[repeat]`)
+  const placeholder = document.createComment(PLACEHOLDER_COMMENT)
   container.append(placeholder)
 
   registerRenderer(ctx, ctx.scope, () => {
@@ -50,11 +53,22 @@ export default function renderRepeat(def, ctx, parent, textMaker) {
       const l = length - 1
       i = 0
 
-      while (walker.nextNode()) {
-        const { currentNode } = walker
+      let inRange = false
+      let node
 
-        if (currentNode.textContent === "[#]") {
-          lastPrevious = currentNode
+      while ((node = walker.nextNode())) {
+        if (node === placeholder) {
+          inRange = true
+          continue
+        }
+
+        if (inRange && node.textContent === ITEM_COMMENT) {
+          lastPrevious = node
+
+          if (lastPrevious === lastChild) {
+            ++i
+            break
+          }
 
           // remove extra items only
           if (++i > l) {
@@ -66,8 +80,6 @@ export default function renderRepeat(def, ctx, parent, textMaker) {
             break
           }
         }
-
-        if (currentNode === lastChild) break
       }
     }
 
@@ -77,7 +89,7 @@ export default function renderRepeat(def, ctx, parent, textMaker) {
       const newCtx = makeNewContext(ctx)
       newCtx.scope = `${newCtx.scope}.${i}`
       render(repeat, newCtx, fragment, textMaker)
-      lastChild = document.createComment(`[#]`)
+      lastChild = document.createComment(ITEM_COMMENT)
       fragment.append(lastChild)
     }
 

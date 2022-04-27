@@ -300,10 +300,10 @@ ui-swatch,
 /* separators
 ============= */
 
-/* hr {
-  height: 0;
+hr {
+  /* height: 0; */
   width: 100%;
-} */
+}
 
 hr {
   margin-block: var(--unit);

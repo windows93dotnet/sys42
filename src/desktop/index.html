@@ -13,6 +13,35 @@
 </style> -->
 
 <script type="module">
+  import ui from "../42/ui.js"
+
+  const app = await ui({
+    type: "body.box-center",
+    content: [
+      {
+        scope: "arr",
+        content: [
+          { repeat: "{{a}}" }, //
+          { content: "lalala" },
+          { repeat: "{{a}}" },
+        ],
+      },
+    ],
+
+    data: {
+      arr: [{ a: 1 }, { a: 2 }],
+    },
+  })
+
+  setTimeout(() => {
+    app.data.arr.push({ a: 3 })
+    // app.data.arr.length = 0
+    // app.data.arr.pop()
+    // app.data.arr.length = 1
+  }, 500)
+</script>
+
+<script type="_module">
   import "../42/os.js"
   import open from "../42/os/cmd/open.cmd.js"
   open(["/index.html", "/42/test.js"])
