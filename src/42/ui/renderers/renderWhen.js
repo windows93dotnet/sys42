@@ -14,7 +14,7 @@ export default function renderWhen(def, ctx, parent, textMaker) {
       ? when.slice(2, -2)
       : when
   )
-  const check = expr.compile(parsed)
+  const check = expr.compile(parsed, { boolean: true })
 
   def = omit(def, ["when"])
 

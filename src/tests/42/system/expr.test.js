@@ -19,7 +19,7 @@ const target = {
 
 test.tasks(
   [
-    { str: "a", res: Boolean(target.a) },
+    { str: "a", res: target.a },
     { str: "!a", res: !target.a },
     { str: "a == 0", res: target.a == 0 },
     { str: "b == 1", res: target.b == 1 },
@@ -36,18 +36,18 @@ test.tasks(
     { str: "e == 'Hello'", res: target.e == "Hello" },
     { str: 'e == "hello"', res: target.e == "hello" },
     { str: 'e == "Hello"', res: target.e == "Hello" },
-    { str: "a", res: false },
-    { str: "b", res: true },
-    { str: "c", res: false },
-    { str: "d", res: true },
-    { str: "e", res: true },
-    { str: "f", res: true },
-    { str: "g", res: false },
-    { str: "h", res: false },
-    { str: "b && d", res: Boolean(target.b && target.d) },
-    { str: "b && !c", res: Boolean(target.b && !target.c) },
-    { str: "a && c && f", res: Boolean(target.a && target.c && target.f) },
-    { str: "b && d && e", res: Boolean(target.b && target.d && target.e) },
+    { str: "a", res: target.a },
+    { str: "b", res: target.b },
+    { str: "c", res: target.c },
+    { str: "d", res: target.d },
+    { str: "e", res: target.e },
+    { str: "f", res: target.f },
+    { str: "g", res: target.g },
+    { str: "h", res: target.h },
+    { str: "b && d", res: target.b && target.d },
+    { str: "b && !c", res: target.b && !target.c },
+    { str: "a && c && f", res: target.a && target.c && target.f },
+    { str: "b && d && e", res: target.b && target.d && target.e },
     { str: "f > 10 && f <= 42", res: target.f > 10 && target.f <= 42 },
     { str: "i.j.k === 1", res: target.i.j.k === 1 },
     { str: "i.l === 2", res: target.i.l === 2 },
@@ -61,6 +61,7 @@ test.tasks(
       t.is(expr(target, str), res, str)
       t.is(expr.compile(expr.parse(str))(target), res, str)
       t.is(expr.evaluate(str)(target), res, str)
+      t.is(expr.evaluate(str, { boolean: true })(target), Boolean(res), str)
     })
   }
 )

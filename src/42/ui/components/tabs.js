@@ -1,7 +1,6 @@
 import Component from "../class/Component.js"
 import render from "../render.js"
 import joinScope from "../utils/joinScope.js"
-// import uid from "../../fabric/uid.js"
 
 class Tabs extends Component {
   static definition = {
@@ -24,6 +23,12 @@ class Tabs extends Component {
     this.currentTab = index
   }
 
+  closeTab(index) {
+    this.items.splice(index, 1)
+    this.currentTab = 0
+    return false
+  }
+
   $create({ root, content, repeat, ctx }) {
     for (const item of content) {
       this.items.push(item)
@@ -31,16 +36,25 @@ class Tabs extends Component {
 
     const scopeIsArray = Array.isArray(ctx.global.rack.get(ctx.scope))
 
+    const tab = [repeat?.label ?? "{{label|render}}"]
+
+    tab.push({
+      type: "button.btn-clear.btn-picto.close",
+      tabIndex: -1,
+      picto: "close",
+      run: "closeTab",
+      args: ["@index"],
+    })
+
     const def = {
       scope: scopeIsArray ? ctx.scope : joinScope(ctx.scope, "items"),
       content: [
         {
           role: "tablist",
           repeat: {
-            // type: ".button",
-            type: "button",
+            type: ".button",
             role: "tab",
-            content: repeat?.label ?? "{{label|render}}",
+            content: tab,
             aria: { selected: "{{@index === currentTab}}" },
             run: "setCurrent",
             args: ["@index"],
@@ -57,6 +71,10 @@ class Tabs extends Component {
     }
 
     root.append(render(def, ctx))
+
+    setTimeout(() => {
+      this.querySelector(".close").click()
+    }, 500)
   }
 }
 

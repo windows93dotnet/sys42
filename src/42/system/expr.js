@@ -7,15 +7,17 @@ import compileExpression from "./formats/template/compileExpression.js"
 
 const jsonParse = JSON5.parse
 
-export default function expr(target, str) {
-  return expr.compile(expr.parse(str))(target)
+export default function expr(target, str, options) {
+  return expr.compile(expr.parse(str), options)(target)
 }
 
 expr.parse = (source) => parseExpression(source, jsonParse)
 
-expr.compile = (parsed) => {
+expr.compile = (parsed, options) => {
   const compiled = compileExpression(parsed, { locate, jsonParse })[0]
-  return (target) => Boolean(compiled(target))
+  return options?.boolean
+    ? (target) => Boolean(compiled(target))
+    : (target) => compiled(target)
 }
 
-expr.evaluate = (str) => expr.compile(expr.parse(str))
+expr.evaluate = (str, options) => expr.compile(expr.parse(str), options)

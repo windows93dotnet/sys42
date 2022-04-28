@@ -1,16 +1,11 @@
 import signature from "./signature.js"
+import cancelEvent from "./cancelEvent.js"
 
 const DEFAULTS = {
   passive: false,
   capture: false,
   once: false,
   signal: undefined,
-}
-
-export const cancelEvent = (e) => {
-  e.preventDefault()
-  e.stopPropagation()
-  e.stopImmediatePropagation()
 }
 
 export const delegate = (selector, fn) => (e) => {

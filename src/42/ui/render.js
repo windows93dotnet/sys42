@@ -164,6 +164,8 @@ function setValidation(attr, control, def) {
 }
 
 function append(parent, def, ctx, el) {
+  if (def.run && def.type !== "button") setAction(el, def, ctx)
+
   let shortcutsConfig
 
   if ("shortcuts" in def) {

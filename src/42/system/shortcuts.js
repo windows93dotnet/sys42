@@ -263,7 +263,7 @@ export class Shortcuts {
     rule.options = { ...this.config, ...rule.options }
 
     if (typeof rule.options.when === "string") {
-      rule.when = expr.evaluate(rule.options.when)
+      rule.when = expr.evaluate(rule.options.when, { boolean: true })
     }
 
     rule.options.args = arrify(rule.options.args)

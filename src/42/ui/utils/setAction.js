@@ -1,5 +1,6 @@
 import arrify from "../../fabric/type/any/arrify.js"
 import joinScope from "./joinScope.js"
+import cancelEvent from "../../fabric/dom/cancelEvent.js"
 import serializeArgs from "./serializeArgs.js"
 import getParentMethod from "../../fabric/dom/getParentMethod.js"
 
@@ -36,7 +37,8 @@ export default function setAction(el, { run, args }, ctx) {
         action.type,
         (e) => {
           if (el.getAttribute("aria-disabled") === "true") return
-          action.fn(...serializeArgs(e, el, args, locals))
+          const res = action.fn(...serializeArgs(e, el, args, locals))
+          if (res === false) cancelEvent(e)
         },
         { signal }
       )
