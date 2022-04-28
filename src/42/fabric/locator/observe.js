@@ -146,7 +146,7 @@ export default function observe(root, options, fn) {
         const ret = Reflect.set(target, prop, val, receiver)
 
         if (prop === "length" || !equal(val, oldVal)) {
-          fn([...path, escapeDotNotation(prop)].join("."), val)
+          fn([...path, escapeDotNotation(prop)].join("."), val, oldVal)
         }
 
         return ret

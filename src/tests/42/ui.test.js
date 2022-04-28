@@ -181,7 +181,6 @@ test("data in definition", "Array", async (t) => {
 
   const input = app.get("input")
 
-  // t.is(text.innerHTML, "- a -")
   t.is(text.textContent, "- a -")
   t.is(input.value, "a")
 
@@ -480,6 +479,23 @@ test("repeat", async (t) => {
   app.data.arr.length = 0
   await repaint()
   t.is(app.el.textContent, "")
+})
+
+test("repeat", async (t) => {
+  const el = div()
+  const app = await ui(el, {
+    content: { scope: "arr", repeat: "{{.}}" },
+  })
+
+  app.data.arr = [1, 2, 3]
+  await repaint()
+
+  t.is(app.el.textContent, "123")
+
+  app.data.arr.splice(1, 1)
+  await repaint()
+
+  t.is(app.el.textContent, "13")
 })
 
 test("repeat", "array with objects", async (t) => {

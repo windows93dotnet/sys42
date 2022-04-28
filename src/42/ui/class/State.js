@@ -1,3 +1,4 @@
+/* eslint-disable max-depth */
 import observe from "../../fabric/locator/observe.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 import allocate from "../../fabric/locator/allocate.js"
@@ -18,9 +19,7 @@ export default class State extends Emitter {
     this.#update = paintThrottle(() => {
       this.emit("update", this.queue)
 
-      const keys = Object.keys(this.renderers).sort((a, b) =>
-        a.length > b.length ? -1 : 0
-      )
+      const keys = Object.keys(this.renderers)
 
       // console.group("--- update")
       // console.log(this.queue)
@@ -28,10 +27,26 @@ export default class State extends Emitter {
       // console.groupEnd()
 
       for (const path of this.queue) {
-        for (const key of keys) {
-          if (key.startsWith(path)) {
-            for (const render of this.renderers[key]) render(key)
+        if (path.array !== undefined) {
+          if (path.array in this.renderers) {
+            for (const render of this.renderers[path.array]) {
+              render(path.array)
+            }
           }
+
+          let i = path.val
+          const l = path.oldVal
+          for (; i < l; i++) {
+            const key = `${path.array}.${i}`
+            const rds = this.renderers[key]
+            if (rds) for (const render of rds) render(key)
+          }
+
+          continue
+        }
+
+        for (const key of keys) {
+          for (const render of this.renderers[key]) render(key)
         }
       }
 
@@ -48,15 +63,16 @@ export default class State extends Emitter {
           $run: this.ctx.global.actions,
         },
       },
-      (path) => this.update(path)
+      (path, val, oldVal) => this.update(path, val, oldVal)
     )
   }
 
-  update(path) {
-    // if an array is changed using length
-    // add to the queue any registered renderers on the array
-    if (path.endsWith(".length")) this.queue.add(path.slice(0, -7))
-    else this.queue.add(path)
+  update(path, val, oldVal) {
+    this.queue.add(
+      path.endsWith(".length")
+        ? { array: path.slice(0, -7), val, oldVal }
+        : path
+    )
 
     this.#update()
   }

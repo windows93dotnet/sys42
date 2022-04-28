@@ -72,9 +72,9 @@ class Tabs extends Component {
 
     root.append(render(def, ctx))
 
-    setTimeout(() => {
-      this.querySelector(".close").click()
-    }, 500)
+    // setTimeout(() => {
+    //   this.querySelector(".close").click()
+    // }, 500)
   }
 }
 
