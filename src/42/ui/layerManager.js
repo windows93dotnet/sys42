@@ -106,11 +106,14 @@ if (inTop) {
 
         const instance = { ctx, pause: false }
 
-        const off = ctx.global.state.on("update", { off: true }, () => {
+        const off = ctx.global.state.on("update", { off: true }, (queue) => {
           // TODO: fix endless update in menu checkbox
           // console.log(999, instance.pause)
           if (instance.pause) return
-          const data = ctx.global.rack.value
+
+          const data = new Map()
+          for (const path of queue) data.set(path, ctx.global.rack.get(path))
+
           send("layer->data", { id, data })
         })
 
@@ -157,7 +160,11 @@ export default async function layerManager(layerName, options) {
         if (instances.has(id)) {
           const instance = instances.get(id)
           instance.pause = true
-          instance.ctx.global.state.set(instance.scope, data)
+
+          for (const [key, val] of data.entries()) {
+            instance.ctx.global.state.set(key, val)
+          }
+
           instance.pause = false
         }
       })
