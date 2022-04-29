@@ -3,9 +3,8 @@ import observe from "../../fabric/locator/observe.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 import allocate from "../../fabric/locator/allocate.js"
 import locate from "../../fabric/locator/locate.js"
+import flatten from "../../fabric/type/object/flatten.js"
 import Emitter from "../../fabric/class/Emitter.js"
-
-let i = 0
 
 export default class State extends Emitter {
   #update
@@ -29,11 +28,6 @@ export default class State extends Emitter {
       // console.log(keys)
       // console.groupEnd()
 
-      if (i++ > 20) {
-        console.warn("MAX", this.queue)
-        return
-      }
-
       for (const path of this.queue) {
         if (path.array !== undefined) {
           if (path.array in this.renderers) {
@@ -54,7 +48,9 @@ export default class State extends Emitter {
         }
 
         for (const key of keys) {
-          for (const render of this.renderers[key]) render(key)
+          if (key === path) {
+            for (const render of this.renderers[key]) render(key)
+          }
         }
       }
 
@@ -76,11 +72,14 @@ export default class State extends Emitter {
   }
 
   update(path, val, oldVal) {
-    this.queue.add(
-      path.endsWith(".length")
-        ? { array: path.slice(0, -7), val, oldVal }
-        : path
-    )
+    if (path.endsWith(".length")) {
+      this.queue.add({ array: path.slice(0, -7), val, oldVal })
+    } else if (Array.isArray(val)) {
+      this.queue.add(path)
+      for (const x of flatten.keys(val, ".", path)) this.queue.add(x)
+    } else {
+      this.queue.add(path)
+    }
 
     this.#update()
   }
