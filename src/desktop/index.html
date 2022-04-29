@@ -4,7 +4,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" href="/style.css" id="theme" />
 
-<script type="module">
+<script type="_module">
   import ui from "../42/ui.js"
   ui({
     type: "ui-explorer",
@@ -23,7 +23,7 @@
   open(["/index.html", "/42/test.js"])
 </script>
 
-<script type="_module">
+<script type="module">
   import "../42/os.js"
   import "../42/ui/components/enclose.js"
   import ui from "../42/ui.js"
@@ -120,9 +120,9 @@
     },
   })
 
-  // open(["/index.html", "/42/test.js"])
   // open("/home/anonymous/theme.cbor")
-  // explorer("/")
+  // open(["/index.html", "/42/test.js"])
+  explorer("/42/")
   // explorer("/home/anonymous/")
 
   // explorer("/42/", { selection: ["/42/ui.js", "/42/test.js"] })

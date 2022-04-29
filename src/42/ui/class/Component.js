@@ -187,6 +187,7 @@ function setProperties(properties, out, el) {
     const scope = joinScope(out.ctx.scope, key)
 
     const assignProp = (item, value) => {
+      const targetValue = value
       if (item.adapt) {
         const res = item.adapt.call(el, value, out.properties[key])
         if (res !== undefined) value = res
@@ -199,9 +200,9 @@ function setProperties(properties, out, el) {
         typeof value === "object"
       ) {
         out.originals[key] = value
-        value = observe(value, { signal }, (path) =>
-          out.ctx.global.state.update(joinScope(scope, path))
-        )
+        value = observe(value, { signal }, (path, val, oldVal) => {
+          out.ctx.global.state.update(joinScope(scope, path), val, oldVal)
+        })
       }
 
       out.properties[key] = value === null ? item.default : value
@@ -214,7 +215,7 @@ function setProperties(properties, out, el) {
       }
 
       if (item.state && out.ctx.global.state && el._.render !== noop) {
-        out.ctx.global.state.update(scope)
+        out.ctx.global.state.update(scope, targetValue)
       }
     }
 

@@ -1,9 +1,7 @@
-/* eslint-disable max-depth */
 import observe from "../../fabric/locator/observe.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 import allocate from "../../fabric/locator/allocate.js"
 import locate from "../../fabric/locator/locate.js"
-import flatten from "../../fabric/type/object/flatten.js"
 import Emitter from "../../fabric/class/Emitter.js"
 
 export default class State extends Emitter {
@@ -15,46 +13,58 @@ export default class State extends Emitter {
     this.rack = ctx.global.rack
     this.ctx = ctx
 
-    this.queue = new Set()
+    this.queue = {
+      paths: new Set(),
+      lengths: new Set(),
+      objects: new Set(),
+    }
 
     this.#update = paintThrottle(() => {
-      if (this.queue.size === 0) return
-      this.emit("update", this.queue)
+      const changes = new Set()
 
-      const keys = Object.keys(this.renderers)
-
-      // console.group("--- update")
-      // console.log(this.queue)
-      // console.log(keys)
-      // console.groupEnd()
-
-      for (const path of this.queue) {
-        if (path.array !== undefined) {
-          if (path.array in this.renderers) {
-            for (const render of this.renderers[path.array]) {
-              render(path.array)
+      for (const { path, val, oldVal } of this.queue.lengths) {
+        let i = val
+        const l = oldVal
+        for (; i < l; i++) {
+          const key = `${path}.${i}`
+          if (key in this.renderers) {
+            for (const render of this.renderers[key]) {
+              render(key)
             }
-          }
-
-          let i = path.val
-          const l = path.oldVal
-          for (; i < l; i++) {
-            const key = `${path.array}.${i}`
-            const rds = this.renderers[key]
-            if (rds) for (const render of rds) render(key)
-          }
-
-          continue
-        }
-
-        for (const key of keys) {
-          if (key === path) {
-            for (const render of this.renderers[key]) render(key)
           }
         }
       }
 
-      this.queue.clear()
+      for (const path of this.queue.objects) {
+        changes.add(path)
+        for (const key of Object.keys(this.renderers)) {
+          if (key.startsWith(path) && key in this.renderers) {
+            for (const render of this.renderers[key]) {
+              render(key)
+            }
+          }
+        }
+      }
+
+      for (const path of this.queue.paths) {
+        changes.add(path)
+        if (path in this.renderers) {
+          for (const render of this.renderers[path]) {
+            render(path)
+          }
+        }
+      }
+
+      this.emit("update", changes)
+
+      // console.group("--- update")
+      // console.log(changes)
+      // console.log(Object.keys(this.renderers))
+      // console.groupEnd()
+
+      this.queue.paths.clear()
+      this.queue.lengths.clear()
+      this.queue.objects.clear()
     })
 
     this.proxy = observe(
@@ -73,12 +83,13 @@ export default class State extends Emitter {
 
   update(path, val, oldVal) {
     if (path.endsWith(".length")) {
-      this.queue.add({ array: path.slice(0, -7), val, oldVal })
-    } else if (Array.isArray(val)) {
-      this.queue.add(path)
-      for (const x of flatten.keys(val, ".", path)) this.queue.add(x)
+      path = path.slice(0, -7)
+      this.queue.objects.add(path)
+      this.queue.lengths.add({ path, val, oldVal })
+    } else if (val && typeof val === "object") {
+      this.queue.objects.add(path)
     } else {
-      this.queue.add(path)
+      this.queue.paths.add(path)
     }
 
     this.#update()
