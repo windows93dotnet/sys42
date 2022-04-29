@@ -77,6 +77,7 @@ export class FolderView extends Component {
   }
 
   async $render() {
+    console.log(1000, this.path)
     if (
       !this.hasAttribute("aria-label") &&
       !this.hasAttribute("aria-labelledby")

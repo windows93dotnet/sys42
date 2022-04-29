@@ -22,7 +22,7 @@ export default function renderWhen(def, ctx, parent, textMaker) {
   const placeholder = document.createComment(`[when]`)
   parent.append(placeholder)
 
-  const locals = ctx.global.state.getThisArg(ctx.scope)
+  const locals = ctx.global.state.getProxy(ctx.scope)
   const keys = []
 
   for (const { type, value, negated } of parsed) {
@@ -33,7 +33,7 @@ export default function renderWhen(def, ctx, parent, textMaker) {
   }
 
   registerRenderer.fromDots(ctx, keys, () => {
-    const locals = ctx.global.state.getThisArg(ctx.scope)
+    const locals = ctx.global.state.getProxy(ctx.scope)
     const res = check(locals)
 
     if (res && !lastChild) {

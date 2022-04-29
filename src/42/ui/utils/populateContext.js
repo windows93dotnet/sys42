@@ -54,7 +54,7 @@ export default function populateContext(ctx, def) {
 }
 
 function assignFunctions(ctx, scope, actions) {
-  const thisArg = ctx.global.state.getThisArg(scope)
+  const thisArg = ctx.global.state.getProxy(scope)
   const entries = []
   for (const [key, val] of Object.entries(actions)) {
     // TODO: add reserved prefix error for data too

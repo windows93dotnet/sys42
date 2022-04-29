@@ -121,7 +121,7 @@ export class Explorer extends Component {
             compact: true,
             prose: false,
             enterkeyhint: "go",
-            autofocus: true,
+            // autofocus: true,
           },
         ],
       },
@@ -202,6 +202,7 @@ export default async function explorer(path = "/", options = {}) {
         label: "{{path}}",
         icon: "{{path}}",
         style: { width: "400px", height: "350px" },
+        // style: { width: "1024px", height: "600px" },
         menubar: [
           {
             label: "File",

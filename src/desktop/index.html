@@ -5,6 +5,19 @@
 <link rel="stylesheet" href="/style.css" id="theme" />
 
 <script type="module">
+  import ui from "../42/ui.js"
+  ui({
+    type: "ui-explorer",
+    path: "/",
+  })
+</script>
+
+<script type="_module">
+  import explorer from "../42/ui/components/explorer.js"
+  explorer()
+</script>
+
+<script type="_module">
   import "../42/os.js"
   import open from "../42/os/cmd/open.cmd.js"
   open(["/index.html", "/42/test.js"])
@@ -107,7 +120,7 @@
     },
   })
 
-  open(["/index.html", "/42/test.js"])
+  // open(["/index.html", "/42/test.js"])
   // open("/home/anonymous/theme.cbor")
   // explorer("/")
   // explorer("/home/anonymous/")

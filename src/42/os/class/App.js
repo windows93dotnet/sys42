@@ -101,6 +101,11 @@ export default class App extends UI {
 
     data.openedFiles ??= [{ dirty: false, path: undefined }]
 
+    // TODO: test openedFile
+    Object.defineProperty(data, "openedFile", {
+      get: () => this.data.openedFiles[0],
+    })
+
     super({
       type: ".box-fit.box-h",
       content: [{ type: "ui-menubar", content: menubar }, content],
@@ -109,7 +114,7 @@ export default class App extends UI {
 
       actions: {
         new() {
-          this.openedFiles = [{ dirty: false, path: undefined }]
+          this.openedFiles.push({ dirty: false, path: undefined })
         },
 
         async open() {
@@ -117,9 +122,7 @@ export default class App extends UI {
             .then((m) => m.default)
           const res = await explorer.pick(this.path)
           if (res) {
-            this.path = res.selection[0]
-            this.text = await res.files[0].text()
-            this.dirty = false
+            this.openedFiles.push({ dirty: false, path: res.selection[0] })
           }
         },
 

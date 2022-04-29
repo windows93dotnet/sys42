@@ -26,7 +26,7 @@ export default function setAction(el, { run, args }, ctx) {
 
       if (!action.fn) throw new Error(`action not found: "${run}"`)
 
-      const locals = ctx.global.state.getThisArg(ctx.scope)
+      const locals = ctx.global.state.getProxy(ctx.scope)
       action.fn = action.fn.bind(locals)
 
       const { signal } = ctx.cancel

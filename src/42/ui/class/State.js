@@ -5,6 +5,8 @@ import allocate from "../../fabric/locator/allocate.js"
 import locate from "../../fabric/locator/locate.js"
 import Emitter from "../../fabric/class/Emitter.js"
 
+let i = 0
+
 export default class State extends Emitter {
   #update
 
@@ -17,6 +19,7 @@ export default class State extends Emitter {
     this.queue = new Set()
 
     this.#update = paintThrottle(() => {
+      if (this.queue.size === 0) return
       this.emit("update", this.queue)
 
       const keys = Object.keys(this.renderers)
@@ -25,6 +28,11 @@ export default class State extends Emitter {
       // console.log(this.queue)
       // console.log(keys)
       // console.groupEnd()
+
+      if (i++ > 20) {
+        console.warn("MAX", this.queue)
+        return
+      }
 
       for (const path of this.queue) {
         if (path.array !== undefined) {
@@ -103,7 +111,12 @@ export default class State extends Emitter {
     return this.rack.get(path)
   }
 
-  getThisArg(path) {
+  getProxy(path) {
     return locate(this.proxy, path)
+  }
+
+  getTarget(path) {
+    const proxy = locate(this.proxy, path)
+    return proxy["@target"] ?? proxy
   }
 }

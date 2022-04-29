@@ -377,7 +377,7 @@ export default class Component extends HTMLElement {
                 enumerable: true,
                 configurable: true,
                 get: () => (key in _.originals ? _.originals[key] : this[key]),
-                set: (val) => {
+                set(val) {
                   this[key] = val
                 },
               }

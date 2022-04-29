@@ -43,7 +43,7 @@ registerRenderer.fromTemplate = async (ctx, el, parsedTemplate, render) => {
   await 0 // queueMicrotask
 
   const filters = { ...ctx.global.filters.value }
-  const locals = ctx.global.state.getThisArg(ctx.scope)
+  const locals = ctx.global.state.getProxy(ctx.scope)
 
   const vars = []
   for (const tokens of parsedTemplate.substitutions) {
@@ -69,7 +69,7 @@ registerRenderer.fromTemplate = async (ctx, el, parsedTemplate, render) => {
 
   const fn = render
   render = async () => {
-    const locals = ctx.global.state.getThisArg(ctx.scope)
+    const locals = ctx.global.state.getProxy(ctx.scope)
     fn(await renderTemplate(locals))
     return "registerRenderer.fromTemplate"
   }
