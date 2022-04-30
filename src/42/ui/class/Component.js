@@ -248,6 +248,7 @@ function setProperties(properties, out, el) {
         } else if (item.render) el._.repaint()
       },
       get() {
+        // console.log(444, key)
         return out.properties[key]
       },
     })
@@ -378,8 +379,9 @@ export default class Component extends HTMLElement {
                 enumerable: true,
                 configurable: true,
                 get: () => (key in _.originals ? _.originals[key] : this[key]),
-                set(val) {
-                  this[key] = val
+                set: (val) => {
+                  // this[key] = val
+                  this._.properties[key] = val
                 },
               }
               Object.defineProperty(data, key, descriptor)

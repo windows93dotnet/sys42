@@ -824,13 +824,32 @@ button[type="submit"]:not(:active),
 /* pictos
 --------- */
 
+.btn-picto {
+  padding-inline: 0;
+  margin-inline: 0;
+  /* padding: 0;
+  margin: 0; */
+  /* margin-left: calc(-1 * var(--ctrl-px));
+  margin-right: calc(-1 * var(--ctrl-px)); */
+}
+
+/* .button > .btn-picto > ui-picto:first-child {
+  margin-left: calc(-1 * var(--ctrl-px));
+} */
+
+/* .button > .btn-picto > ui-picto:last-child {
+  margin-right: calc(-1 * var(--ctrl-px));
+} */
+
+/* .btn-picto > ui-picto:first-child,
 .btn-picto > .picto:first-child {
   margin-left: calc(-1 * var(--ctrl-px));
 }
 
+.btn-picto > ui-picto:last-child,
 .btn-picto > .picto:last-child {
   margin-right: calc(-1 * var(--ctrl-px));
-}
+} */
 
 /* select
 ========= */

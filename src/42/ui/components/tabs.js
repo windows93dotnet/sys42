@@ -20,12 +20,17 @@ class Tabs extends Component {
   }
 
   setCurrent(index) {
-    this.currentTab = index
+    // this.currentTab = index
+    const proxy = this._.ctx.global.state.getProxy(this._.ctx.scope)
+    proxy.currentTab = index
   }
 
   closeTab(index) {
-    this.items.splice(index, 1)
-    this.currentTab = 0
+    const proxy = this._.ctx.global.state.getProxy(this._.ctx.scope)
+    proxy.items.splice(index, 1)
+    proxy.currentTab = 0
+    // this.items.splice(index, 1)
+    // this.currentTab = 0
     return false
   }
 
@@ -39,8 +44,8 @@ class Tabs extends Component {
     const tab = [repeat?.label ?? "{{label|render}}"]
 
     tab.push({
+      tabindex: -1,
       type: "button.btn-clear.btn-picto.close",
-      tabIndex: -1,
       picto: "close",
       run: "closeTab",
       args: ["@index"],
@@ -51,6 +56,7 @@ class Tabs extends Component {
       content: [
         {
           role: "tablist",
+          tabindex: 0,
           repeat: {
             type: ".button",
             role: "tab",

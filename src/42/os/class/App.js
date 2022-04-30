@@ -114,6 +114,7 @@ export default class App extends UI {
 
       actions: {
         new() {
+          this.currentTab = this.openedFiles.length
           this.openedFiles.push({ dirty: false, path: undefined })
         },
 
@@ -122,6 +123,7 @@ export default class App extends UI {
             .then((m) => m.default)
           const res = await explorer.pick(this.path)
           if (res) {
+            this.currentTab = this.openedFiles.length
             this.openedFiles.push({ dirty: false, path: res.selection[0] })
           }
         },
