@@ -2,7 +2,7 @@
 import test from "../../../42/test.js"
 import ui from "../../../42/ui.js"
 import Component from "../../../42/ui/class/Component2.js"
-// import repaint from "../../../42/fabric/type/promise/repaint.js"
+import repaint from "../../../42/fabric/type/promise/repaint.js"
 
 const elements = []
 function div({ connect } = { connect: true }) {
@@ -66,7 +66,7 @@ test.tasks(
     },
 
     {
-      // only: true,
+      only: true,
       component: class extends Component {
         static definition = {
           tag: "ui-t-props",
@@ -80,7 +80,29 @@ test.tasks(
         content: { type: "ui-t-props" },
         data: { foo: 1 },
       },
-      expected: "<ui-t-props>foo: 1, bar: 2</ui-t-props>",
+      expected: '<ui-t-props bar="2">foo: 1, bar: 2</ui-t-props>',
+      async check(t, app) {
+        const el = app.get("ui-t-props")
+
+        t.is(app.state.get("bar"), 2)
+
+        app.state.set("bar", 3)
+        await repaint()
+
+        t.is(
+          app.el.innerHTML,
+          '<ui-t-props bar="3">foo: 1, bar: 3</ui-t-props>'
+        )
+
+        el.bar = 4
+        t.is(app.state.get("bar"), 4)
+        await repaint()
+
+        t.is(
+          app.el.innerHTML,
+          '<ui-t-props bar="4">foo: 1, bar: 4</ui-t-props>'
+        )
+      },
     },
   ],
 
