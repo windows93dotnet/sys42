@@ -1,13 +1,14 @@
+/* eslint-disable unicorn/no-object-as-default-parameter */
 import test from "../../../42/test.js"
 import ui from "../../../42/ui.js"
 import Component from "../../../42/ui/class/Component2.js"
 // import repaint from "../../../42/fabric/type/promise/repaint.js"
 
 const elements = []
-function div() {
+function div({ connect } = { connect: true }) {
   const el = document.createElement("div")
   elements.push(el)
-  document.body.append(el)
+  if (connect) document.body.append(el)
   return el
 }
 
@@ -16,41 +17,96 @@ test.afterEach(() => {
   elements.length = 0
 })
 
-// Component.define(
-//   class extends Component {
-//     static definition = {
-//       tag: "ui-test1",
-//       class: "derp",
-//     }
-//   }
-// )
+test.tasks(
+  [
+    {
+      component: class extends Component {
+        static definition = { tag: "ui-t-basic" }
+      },
+      html: "<ui-t-basic></ui-t-basic>",
+      def: { type: "ui-t-basic" },
+      expected: "<ui-t-basic></ui-t-basic>",
+    },
 
-// test("render definition attributes", async (t) => {
-//   const app = await ui(div(), {
-//     type: "ui-test1",
-//   })
+    {
+      component: class extends Component {
+        static definition = { tag: "ui-t-string" }
+        $render() {
+          return "hello"
+        }
+      },
+      html: "<ui-t-string></ui-t-string>",
+      def: { type: "ui-t-string" },
+      expected: "<ui-t-string>hello</ui-t-string>",
+    },
 
-//   t.is(app.el.innerHTML, '<ui-test1 class="derp"></ui-test1>')
-// })
+    {
+      component: class extends Component {
+        static definition = { tag: "ui-t-attr", class: "derp" }
+        $render() {
+          return "hello"
+        }
+      },
+      def: { type: "ui-t-attr" },
+      expected: '<ui-t-attr class="derp">hello</ui-t-attr>',
+    },
 
-Component.define(
-  class extends Component {
-    static definition = {
-      tag: "ui-test2",
-    }
+    {
+      component: class extends Component {
+        static definition = {
+          tag: "ui-t-data",
+          content: "foo: {{foo}}",
+        }
+      },
+      def: {
+        content: { type: "ui-t-data" },
+        data: { foo: 1 },
+      },
+      expected: "<ui-t-data>foo: 1</ui-t-data>",
+    },
 
-    $render() {
-      return {
-        content: "hello",
+    {
+      // only: true,
+      component: class extends Component {
+        static definition = {
+          tag: "ui-t-props",
+          properties: {
+            bar: 2,
+          },
+          content: "foo: {{foo}}, bar: {{bar}}",
+        }
+      },
+      def: {
+        content: { type: "ui-t-props" },
+        data: { foo: 1 },
+      },
+      expected: "<ui-t-props>foo: 1, bar: 2</ui-t-props>",
+    },
+  ],
+
+  ({ title, component, args, html, def, check, expected }) => {
+    test(title ?? def, async (t) => {
+      if (component) {
+        const fn = await (/^\s*class/.test(component.toString())
+          ? Component.define(component)
+          : Component.define(component(t)))
+
+        if (args) {
+          const el = fn(...args)
+          if (expected) t.is(el.outerHTML, expected)
+        }
       }
-    }
+
+      const app = await ui(div(), def)
+
+      if (expected) t.is(app.el.innerHTML, expected)
+      if (check) await check(t, app)
+
+      if (html) {
+        const el = div()
+        el.innerHTML = html
+        t.is(el.innerHTML, expected)
+      }
+    })
   }
 )
-
-test("render using $create", async (t) => {
-  const app = await ui(div(), {
-    type: "ui-test2",
-  })
-
-  t.is(app.el.innerHTML, "<ui-test2>hello</ui-test2>")
-})

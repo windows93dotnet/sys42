@@ -1,10 +1,12 @@
 import render from "../render.js"
+import normalizeDefinition from "../utils/normalizeDefinition.js"
 import makeNewContext from "../utils/makeNewContext.js"
+import renderAttributes from "../renderers/renderAttributes.js"
 
 export default class Component extends HTMLElement {
   static async define(Class) {
     const tagName = Class.definition.tag ?? `ui-${Class.name.toLowerCase()}`
-    if (!customElements.get(tagName)) customElements.define(tagName, Class)
+    customElements.define(tagName, Class)
     return (...args) => new Class(...args)
   }
 
@@ -18,19 +20,23 @@ export default class Component extends HTMLElement {
 
   connectedCallback() {
     if (!this.isConnected) return
-
-    if (!this.#rendered) {
-      this.removeAttribute("data-lazy-init")
-      const def = this.$render(this._)
-      if (def) render(def, this._.ctx, this)
-      this.#rendered = true
+    if (!this.#rendered && !this.hasAttribute("data-lazy-init")) {
+      this.$init()
     }
   }
 
-  $init(def, ctx) {
-    // console.log(args)
-    this._.ctx = makeNewContext(ctx)
-  }
+  $init(...args) {
+    this.removeAttribute("data-lazy-init")
+    const { definition } = this.constructor
+    const out = normalizeDefinition(definition, ...args)
+    this._.ctx = makeNewContext(out.ctx)
 
-  $render() {}
+    if (out.attrs) renderAttributes(this, this._.ctx, out.attrs)
+
+    // console.log(out)
+
+    const def = "$render" in this ? this.$render(this._) : out.def.content
+    if (def) render(def, this._.ctx, this)
+    this.#rendered = true
+  }
 }

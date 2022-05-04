@@ -11,7 +11,14 @@ export default function renderComponent(type, def, ctx) {
 
   const initComponent = () => {
     ctx.undones = undefined
-    el.$init(def, ctx)
+
+    try {
+      el.$init(def, ctx)
+    } catch (err) {
+      deferred.reject(err)
+      return
+    }
+
     ctx.undones.then((x) => deferred.resolve([`component ${tag}`, ...x]))
   }
 
