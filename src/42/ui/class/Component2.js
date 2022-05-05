@@ -14,7 +14,7 @@ const DEFAULTS = {
 const DEFAULTS_ATTRIBUTES = Object.keys(DEFAULTS.properties)
 
 function setProps(el, props, _) {
-  const { ctx } = el._
+  const { ctx, observed } = el._
 
   for (let [key, item] of Object.entries(props)) {
     const type = typeof item
@@ -27,10 +27,10 @@ function setProps(el, props, _) {
 
     const attribute = item.attribute ?? toKebabCase(key)
     const converter = item.converter ?? CONVERTERS[item.type ?? "string"]
-    let { /* fromView, */ toView, reflect } = item
+    let { fromView, toView, reflect } = item
 
     if (reflect) {
-      // fromView = true
+      fromView = true
       toView = true
     }
 
@@ -38,13 +38,33 @@ function setProps(el, props, _) {
       toView = typeof toView === "function" ? toView : converter.toView
     }
 
+    if (fromView) {
+      fromView = typeof fromView === "function" ? fromView : converter.fromView
+    }
+
     const scope = joinScope(ctx.scope, key)
 
     ctx.global.state.set(scope, _.props[key])
 
-    if (toView) {
-      registerRenderer(ctx, scope, () => {
-        const value = ctx.global.rack.get(scope)
+    let setFromRenderer = false
+
+    if (fromView) {
+      observed[attribute] = (val) => {
+        if (setFromRenderer) return
+        ctx.global.state.set(scope, fromView(val, attribute, el, item))
+      }
+    }
+
+    registerRenderer(ctx, scope, () => {
+      const value = ctx.global.rack.get(scope)
+
+      if (item.css) {
+        const cssVar = `--${typeof item.css === "string" ? item.css : key}`
+        el.style.setProperty(cssVar, value)
+      }
+
+      if (toView) {
+        setFromRenderer = true
         if (
           item.type === "boolean" ||
           (item.type === "any" && typeof value === "boolean")
@@ -53,8 +73,9 @@ function setProps(el, props, _) {
             el.setAttribute(attribute, "false")
           } else el.toggleAttribute(attribute, value)
         } else el.setAttribute(attribute, toView(value, key, el, item))
-      })
-    }
+        setFromRenderer = false
+      }
+    })
 
     Object.defineProperty(el, key, {
       configurable: true,
@@ -92,30 +113,40 @@ export default class Component extends HTMLElement {
 
   constructor(...args) {
     super()
-    if (args.length > 0) this.$init(...args)
+    this.$init = this.init // TODO: remove this
+    if (args.length > 0) this.init(...args)
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    this._?.observed[name]?.(newValue, oldValue)
   }
 
   connectedCallback() {
     if (!this.isConnected) return
     if (!this.#rendered && !this.hasAttribute("data-lazy-init")) {
-      this.$init()
+      this.init()
     }
   }
 
-  $init(...args) {
+  init(...args) {
     this.removeAttribute("data-lazy-init")
     const { definition } = this.constructor
     const { properties } = definition
 
     const _ = normalizeDefinition(definition, ...args)
 
+    this._.observed = {}
     this._.ctx = makeNewContext(_.ctx)
+    this._.ctx.cancel = this._.ctx.cancel?.fork(this.localName)
+    Object.defineProperty(this._, "signal", {
+      get: () => this._.ctx.cancel.signal,
+    })
 
     if (properties) setProps(this, properties, _)
 
     if (_.attrs) renderAttributes(this, this._.ctx, _.attrs)
 
-    const def = "$render" in this ? this.$render(this._) : _.def.content
+    const def = this.render?.(this._) ?? _.def.content
     if (def) render(def, this._.ctx, this)
     this.#rendered = true
   }

@@ -31,7 +31,7 @@ test.tasks(
     {
       component: class extends Component {
         static definition = { tag: "ui-t-string" }
-        $render() {
+        render() {
           return "hello"
         }
       },
@@ -43,7 +43,7 @@ test.tasks(
     {
       component: class extends Component {
         static definition = { tag: "ui-t-attr", class: "derp" }
-        $render() {
+        render() {
           return "hello"
         }
       },
@@ -66,7 +66,7 @@ test.tasks(
     },
 
     {
-      only: true,
+      // only: true,
       component: class extends Component {
         static definition = {
           tag: "ui-t-props",
@@ -102,6 +102,27 @@ test.tasks(
           app.el.innerHTML,
           '<ui-t-props bar="4">foo: 1, bar: 4</ui-t-props>'
         )
+
+        el.setAttribute("bar", "5")
+        t.is(app.state.get("bar"), 5)
+        await repaint()
+
+        t.is(
+          app.el.innerHTML,
+          '<ui-t-props bar="5">foo: 1, bar: 5</ui-t-props>'
+        )
+      },
+    },
+
+    {
+      skip: true,
+      component: class extends Component {
+        static definition = {
+          tag: "ui-t-signal",
+        }
+      },
+      def: {
+        content: { type: "ui-t-signal" },
       },
     },
   ],
