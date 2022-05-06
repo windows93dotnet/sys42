@@ -1,4 +1,7 @@
 import render from "../render.js"
+import defer from "../../fabric/type/promise/defer.js"
+import Undones from "../../fabric/class/Undones.js"
+import omit from "../../fabric/type/object/omit.js"
 import normalizeDefinition from "../utils/normalizeDefinition.js"
 import makeNewContext from "../utils/makeNewContext.js"
 import renderAttributes from "../renderers/renderAttributes.js"
@@ -126,7 +129,6 @@ export default class Component extends HTMLElement {
 
   constructor(...args) {
     super()
-    this.$init = this.init // TODO: remove this
     if (args.length > 0) this.init(...args)
   }
 
@@ -146,7 +148,7 @@ export default class Component extends HTMLElement {
     this.#rendered = false
   }
 
-  init(...args) {
+  async init(...args) {
     this.removeAttribute("data-lazy-init")
     const { definition } = this.constructor
     const { properties } = definition
@@ -155,6 +157,7 @@ export default class Component extends HTMLElement {
 
     this._.observed = {}
     this._.ctx = makeNewContext(_.ctx)
+    this._.ctx.undones = new Undones()
     this._.ctx.cancel = this._.ctx.cancel?.fork(this.localName)
     Object.defineProperty(this._, "signal", {
       configurable: true,
@@ -165,10 +168,11 @@ export default class Component extends HTMLElement {
 
     if (_.attrs) renderAttributes(this, this._.ctx, _.attrs)
 
-    const def = this.render?.(this._) ?? _.def.content
+    const def = this.render?.(this._) ?? omit(_.def, "type")
     if (def) render(def, this._.ctx, this)
-    this.#rendered = true
 
-    this.ready?.(this._)
+    await this._.ctx.undones
+    await this.ready?.(this._)
+    this.#rendered = true
   }
 }

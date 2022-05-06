@@ -89,7 +89,7 @@ test.tasks(
       def: {
         content: { type: "ui-t-signal" },
       },
-      check(t, app) {
+      async check(t, app) {
         const el = app.get("ui-t-signal")
         const [stub] = t.stubs
         t.is(stub.count, 0)
@@ -105,6 +105,7 @@ test.tasks(
         t.is(stub.count, 2)
 
         app.el.append(el)
+        await repaint()
         el.click()
         t.is(stub.count, 3)
 
@@ -165,6 +166,7 @@ test.tasks(
     },
 
     {
+      // only: true,
       component(t) {
         t.plan(2)
         return class extends Component {
@@ -187,10 +189,25 @@ test.tasks(
         }
       },
       def: {
-        content: { type: "ui-t-filter" },
+        content: { type: "ui-t-filter" /* , bar: 3 */ },
         data: { foo: 1 },
       },
       expected: '<ui-t-filter bar="2">foo: 6, bar: 12</ui-t-filter>',
+    },
+
+    {
+      // only: true,
+      component: class extends Component {
+        static definition = {
+          tag: "ui-t-ready",
+          content: "ext: {{foo|extname}}",
+        }
+      },
+      def: {
+        content: { type: "ui-t-ready" },
+        data: { foo: "/42/index.html" },
+      },
+      expected: "<ui-t-ready>ext: .html</ui-t-ready>",
     },
   ],
 

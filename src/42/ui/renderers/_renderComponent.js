@@ -9,13 +9,17 @@ export default function renderComponent(type, def, ctx) {
   const deferred = defer()
   ctx.undones.push(deferred)
 
-  const initComponent = async () => {
+  const initComponent = () => {
+    ctx.undones = undefined
+
     try {
-      await el.init(def, ctx)
-      deferred.resolve(`component ${tag}`)
+      el.$init(def, ctx)
     } catch (err) {
       deferred.reject(err)
+      return
     }
+
+    ctx.undones.then((x) => deferred.resolve([`component ${tag}`, ...x]))
   }
 
   if (el.constructor === HTMLElement) {

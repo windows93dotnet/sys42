@@ -19,7 +19,7 @@ class Icon extends Component {
   }
 
   parseFilename(path) {
-    console.log(path)
+    console.warn(path)
   }
 }
 
