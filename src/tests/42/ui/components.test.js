@@ -39,7 +39,7 @@ test.tasks(
     {
       component: class extends Component {
         static definition = { tag: "ui-t-string" }
-        render() {
+        prerender() {
           return "hello"
         }
       },
@@ -51,7 +51,7 @@ test.tasks(
     {
       component: class extends Component {
         static definition = { tag: "ui-t-attr", class: "derp" }
-        render() {
+        prerender() {
           return "hello"
         }
       },
@@ -81,7 +81,7 @@ test.tasks(
             tag: "ui-t-signal",
           }
 
-          ready({ signal }) {
+          postrender({ signal }) {
             this.addEventListener("click", stub, { signal })
           }
         }
@@ -105,7 +105,7 @@ test.tasks(
         t.is(stub.count, 2)
 
         app.el.append(el)
-        await repaint()
+        await el.ready
         el.click()
         t.is(stub.count, 3)
 
@@ -166,7 +166,6 @@ test.tasks(
     },
 
     {
-      // only: true,
       component(t) {
         t.plan(2)
         return class extends Component {
@@ -189,14 +188,13 @@ test.tasks(
         }
       },
       def: {
-        content: { type: "ui-t-filter" /* , bar: 3 */ },
+        content: { type: "ui-t-filter" },
         data: { foo: 1 },
       },
       expected: '<ui-t-filter bar="2">foo: 6, bar: 12</ui-t-filter>',
     },
 
     {
-      // only: true,
       component: class extends Component {
         static definition = {
           tag: "ui-t-ready",

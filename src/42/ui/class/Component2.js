@@ -129,6 +129,7 @@ export default class Component extends HTMLElement {
 
   constructor(...args) {
     super()
+    this.ready = defer()
     if (args.length > 0) this.init(...args)
   }
 
@@ -145,10 +146,11 @@ export default class Component extends HTMLElement {
 
   disconnectedCallback() {
     this._?.ctx.cancel()
+    this.ready = defer()
     this.#rendered = false
   }
 
-  async init(...args) {
+  async #init(...args) {
     this.removeAttribute("data-lazy-init")
     const { definition } = this.constructor
     const { properties } = definition
@@ -168,11 +170,19 @@ export default class Component extends HTMLElement {
 
     if (_.attrs) renderAttributes(this, this._.ctx, _.attrs)
 
-    const def = this.render?.(this._) ?? omit(_.def, "type")
-    if (def) render(def, this._.ctx, this)
+    const def = this.prerender?.(this._) ?? omit(_.def, "type")
 
-    await this._.ctx.undones
-    await this.ready?.(this._)
+    if (def) render(def, this._.ctx, this)
+    const undonesTokens = await this._.ctx.undones
+
+    await this.postrender?.(this._)
     this.#rendered = true
+    return [`component ${this.localName}`, ...undonesTokens]
+  }
+
+  async init(...args) {
+    await this.#init(...args)
+      .then((tokens) => this.ready.resolve(tokens))
+      .catch((err) => this.ready.reject(err))
   }
 }
