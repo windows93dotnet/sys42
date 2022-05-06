@@ -94,8 +94,8 @@ export default class Assert {
   #pending = 0
   #planned = false
 
-  #spies = []
-  #stubs = []
+  spies = []
+  stubs = []
   #stayings = []
 
   #timeoutDelay
@@ -144,9 +144,9 @@ export default class Assert {
     this.#count = 0
     this.#pending = 0
     this.#planned = false
-    for (const spy of this.#spies) spy.restore()
-    this.#spies.length = 0
-    this.#stubs.length = 0
+    for (const spy of this.spies) spy.restore()
+    this.spies.length = 0
+    this.stubs.length = 0
     this.#stayings.length = 0
   }
 
@@ -207,13 +207,13 @@ export default class Assert {
 
   stub(fn) {
     const stub = new Stub(fn)
-    this.#stubs.push(stub)
+    this.stubs.push(stub)
     return stub
   }
 
   spy(object, method, fn, thisArg) {
     const spy = new Spy(object, method, fn, thisArg)
-    this.#spies.push(spy)
+    this.spies.push(spy)
     return spy
   }
 

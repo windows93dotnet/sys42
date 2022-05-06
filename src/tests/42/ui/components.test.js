@@ -17,6 +17,14 @@ test.afterEach(() => {
   elements.length = 0
 })
 
+Component.define({
+  tag: "ui-t-props",
+  properties: {
+    bar: 2,
+  },
+  content: "foo: {{foo}}, bar: {{bar}}",
+})
+
 test.tasks(
   [
     {
@@ -66,16 +74,58 @@ test.tasks(
     },
 
     {
-      // only: true,
-      component: class extends Component {
-        static definition = {
-          tag: "ui-t-props",
-          properties: {
-            bar: 2,
-          },
-          content: "foo: {{foo}}, bar: {{bar}}",
+      component(t) {
+        const stub = t.stub()
+        return class extends Component {
+          static definition = {
+            tag: "ui-t-signal",
+          }
+
+          ready({ signal }) {
+            this.addEventListener("click", stub, { signal })
+          }
         }
       },
+      def: {
+        content: { type: "ui-t-signal" },
+      },
+      check(t, app) {
+        const el = app.get("ui-t-signal")
+        const [stub] = t.stubs
+        t.is(stub.count, 0)
+
+        el.click()
+        t.is(stub.count, 1)
+
+        el.click()
+        t.is(stub.count, 2)
+
+        el.remove()
+        el.click()
+        t.is(stub.count, 2)
+
+        app.el.append(el)
+        el.click()
+        t.is(stub.count, 3)
+
+        el.click()
+        t.is(stub.count, 4)
+
+        app.destroy()
+        el.click()
+        t.is(stub.count, 4)
+      },
+    },
+
+    {
+      def: {
+        content: { type: "ui-t-props" },
+        data: { foo: 1, bar: 0 },
+      },
+      expected: '<ui-t-props bar="0">foo: 1, bar: 0</ui-t-props>',
+    },
+
+    {
       def: {
         content: { type: "ui-t-props" },
         data: { foo: 1 },
@@ -111,18 +161,6 @@ test.tasks(
           app.el.innerHTML,
           '<ui-t-props bar="5">foo: 1, bar: 5</ui-t-props>'
         )
-      },
-    },
-
-    {
-      skip: true,
-      component: class extends Component {
-        static definition = {
-          tag: "ui-t-signal",
-        }
-      },
-      def: {
-        content: { type: "ui-t-signal" },
       },
     },
   ],

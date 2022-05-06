@@ -1,6 +1,7 @@
 import observe from "../../fabric/locator/observe.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 import allocate from "../../fabric/locator/allocate.js"
+import exists from "../../fabric/locator/exists.js"
 import locate from "../../fabric/locator/locate.js"
 import Emitter from "../../fabric/class/Emitter.js"
 
@@ -111,6 +112,10 @@ export default class State extends Emitter {
   assign(path, value) {
     const proxy = locate(this.proxy, path)
     Object.assign(proxy, value)
+  }
+
+  has(path) {
+    return exists(this.proxy, path)
   }
 
   set(path, value) {

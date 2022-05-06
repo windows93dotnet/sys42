@@ -23,8 +23,7 @@ export default function renderComponent(type, def, ctx) {
   }
 
   if (el.constructor === HTMLElement) {
-    import(`../components/${tag.slice(3)}.js`).catch((err) => {
-      console.log(err)
+    import(`../components/${tag.slice(3)}.js`).catch(() => {
       deferred.reject(new Error(`Unknown component: ${tag}`))
     })
 

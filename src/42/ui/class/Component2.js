@@ -17,13 +17,13 @@ function setProps(el, props, _) {
   const { ctx, observed } = el._
 
   for (let [key, item] of Object.entries(props)) {
+    const scope = joinScope(ctx.scope, key)
+
     const type = typeof item
 
     if (type !== "object") {
       item = { type, default: item, reflect: true }
     }
-
-    if (item.default) _.props[key] ??= item.default
 
     const attribute = item.attribute ?? toKebabCase(key)
     const converter = item.converter ?? CONVERTERS[item.type ?? "string"]
@@ -42,15 +42,17 @@ function setProps(el, props, _) {
       fromView = typeof fromView === "function" ? fromView : converter.fromView
     }
 
-    const scope = joinScope(ctx.scope, key)
+    if (key in _.props) {
+      ctx.global.state.set(scope, _.props[key])
+    } else if (!ctx.global.state.has(scope)) {
+      ctx.global.state.set(scope, item.default)
+    }
 
-    ctx.global.state.set(scope, _.props[key])
-
-    let setFromRenderer = false
+    let fromRenderer = false
 
     if (fromView) {
       observed[attribute] = (val) => {
-        if (setFromRenderer) return
+        if (fromRenderer) return
         ctx.global.state.set(scope, fromView(val, attribute, el, item))
       }
     }
@@ -64,7 +66,7 @@ function setProps(el, props, _) {
       }
 
       if (toView) {
-        setFromRenderer = true
+        fromRenderer = true
         if (
           item.type === "boolean" ||
           (item.type === "any" && typeof value === "boolean")
@@ -73,7 +75,7 @@ function setProps(el, props, _) {
             el.setAttribute(attribute, "false")
           } else el.toggleAttribute(attribute, value)
         } else el.setAttribute(attribute, toView(value, key, el, item))
-        setFromRenderer = false
+        fromRenderer = false
       }
     })
 
@@ -91,7 +93,18 @@ function setProps(el, props, _) {
 
 export default class Component extends HTMLElement {
   static async define(Class) {
-    const tagName = Class.definition.tag ?? `ui-${Class.name.toLowerCase()}`
+    if (typeof Class === "object") {
+      Class = class extends Component {
+        static definition = Class
+      }
+    }
+
+    let tagName = Class.definition.tag
+    if (tagName === undefined) {
+      if (Class.name === "Class") throw new Error(`missing Component "tag"`)
+      tagName = `ui-${Class.name.toLowerCase()}`
+    }
+
     customElements.define(tagName, Class)
     return (...args) => new Class(...args)
   }
@@ -128,6 +141,11 @@ export default class Component extends HTMLElement {
     }
   }
 
+  disconnectedCallback() {
+    this._?.ctx.cancel()
+    this.#rendered = false
+  }
+
   init(...args) {
     this.removeAttribute("data-lazy-init")
     const { definition } = this.constructor
@@ -139,6 +157,7 @@ export default class Component extends HTMLElement {
     this._.ctx = makeNewContext(_.ctx)
     this._.ctx.cancel = this._.ctx.cancel?.fork(this.localName)
     Object.defineProperty(this._, "signal", {
+      configurable: true,
       get: () => this._.ctx.cancel.signal,
     })
 
@@ -149,5 +168,7 @@ export default class Component extends HTMLElement {
     const def = this.render?.(this._) ?? _.def.content
     if (def) render(def, this._.ctx, this)
     this.#rendered = true
+
+    this.ready?.(this._)
   }
 }
