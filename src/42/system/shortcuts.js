@@ -8,7 +8,7 @@ import setup from "./setup.js"
 import listen from "../fabric/dom/listen.js"
 import signature from "../fabric/dom/signature.js"
 import serializeArgs from "../ui/utils/serializeArgs.js"
-import getParentMethod from "../fabric/dom/getParentMethod.js"
+import getInheritedMethod from "../fabric/dom/getInheritedMethod.js"
 import expr from "./expr.js"
 import locate from "../fabric/locator/locate.js"
 import arrify from "../fabric/type/any/arrify.js"
@@ -272,7 +272,7 @@ export class Shortcuts {
     const type = typeof rule.run
 
     if (type === "string") {
-      const parentMethod = getParentMethod(this.el, rule.run)
+      const parentMethod = getInheritedMethod(this.el, rule.run)
       // console.log(rule.run, parentMethod)
       if (parentMethod) {
         rule.run = parentMethod

@@ -1,6 +1,7 @@
-export default function getParentMethod(el, method) {
-  while (el?.nodeType === Node.ELEMENT_NODE) {
+export default function getInheritedMethod(el, method) {
+  while (el) {
     if (
+      el.nodeType === Node.ELEMENT_NODE &&
       typeof el[method] === "function" &&
       method in Element.prototype === false
     ) {

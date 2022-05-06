@@ -163,10 +163,39 @@ test.tasks(
         )
       },
     },
+
+    {
+      component(t) {
+        t.plan(2)
+        return class extends Component {
+          static definition = {
+            tag: "ui-t-filter",
+            properties: {
+              bar: 2,
+            },
+            content: "foo: {{foo|add5}}, bar: {{bar|add10}}",
+          }
+
+          add5(val) {
+            return val + 5
+          }
+
+          add10(val) {
+            t.is(val, 2)
+            return val + 10
+          }
+        }
+      },
+      def: {
+        content: { type: "ui-t-filter" },
+        data: { foo: 1 },
+      },
+      expected: '<ui-t-filter bar="2">foo: 6, bar: 12</ui-t-filter>',
+    },
   ],
 
   ({ title, component, args, html, def, check, expected }) => {
-    test(title ?? def, async (t) => {
+    test(title ?? expected ?? def, async (t) => {
       if (component) {
         const fn = await (/^\s*class/.test(component.toString())
           ? Component.define(component)

@@ -1,6 +1,6 @@
 import template from "../../system/formats/template.js"
 import getFilter from "../../fabric/getFilter.js"
-import getParentMethod from "../../fabric/dom/getParentMethod.js"
+import getInheritedMethod from "../../fabric/dom/getInheritedMethod.js"
 import resolveScope from "./resolveScope.js"
 import isLength from "../../fabric/type/any/is/isLength.js"
 
@@ -53,7 +53,7 @@ registerRenderer.fromTemplate = async (ctx, el, parsedTemplate, render) => {
         vars.push(token.value)
       } else if (token.type === "function") {
         const { value } = token
-        filters[value] ??= getParentMethod(el, value) ?? getFilter(value)
+        filters[value] ??= getInheritedMethod(el, value) ?? getFilter(value)
       }
     }
   }

@@ -2,7 +2,7 @@ import arrify from "../../fabric/type/any/arrify.js"
 import joinScope from "./joinScope.js"
 import cancelEvent from "../../fabric/dom/cancelEvent.js"
 import serializeArgs from "./serializeArgs.js"
-import getParentMethod from "../../fabric/dom/getParentMethod.js"
+import getInheritedMethod from "../../fabric/dom/getInheritedMethod.js"
 
 export default function setAction(el, { run, args }, ctx) {
   ctx.undones.push(
@@ -12,7 +12,7 @@ export default function setAction(el, { run, args }, ctx) {
       let action
 
       if (type === "string") {
-        let fn = getParentMethod(el, run)
+        let fn = getInheritedMethod(el, run)
 
         fn ??= ctx.global.actions.get(joinScope(ctx.scope, run))
 
