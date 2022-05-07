@@ -5,7 +5,8 @@ import omit from "../../fabric/type/object/omit.js"
 import normalizeDefinition from "../utils/normalizeDefinition.js"
 import makeNewContext from "../utils/makeNewContext.js"
 import renderAttributes from "../renderers/renderAttributes.js"
-import registerRenderer from "../utils/registerRenderer.js"
+// import registerRenderer from "../utils/registerRenderer.js"
+import renderKeyVal from "../renderers/renderKeyVal.js"
 import joinScope from "../utils/joinScope.js"
 import { toKebabCase } from "../../fabric/type/string/letters.js"
 import CONVERTERS from "./Component/CONVERTERS.js"
@@ -39,11 +40,17 @@ function setProps(el, props, _) {
       fromView = typeof fromView === "function" ? fromView : converter.fromView
     }
 
+    let initialValue
+
     if (key in _.props) {
-      ctx.global.state.set(scope, _.props[key])
+      initialValue = _.props[key]
     } else if ("default" in item && !ctx.global.state.has(scope)) {
-      ctx.global.state.set(scope, item.default)
+      initialValue = item.default
+    } else {
+      initialValue = ctx.global.rack.get(scope)
     }
+
+    let currentValue = initialValue
 
     let fromRenderer = false
 
@@ -54,8 +61,10 @@ function setProps(el, props, _) {
       }
     }
 
-    registerRenderer(ctx, scope, () => {
-      const value = ctx.global.rack.get(scope)
+    renderKeyVal(el, ctx, key, initialValue, (_, __, value) => {
+      // console.log(111, key, value)
+
+      currentValue = value
 
       if (item.css) {
         const cssVar = `--${typeof item.css === "string" ? item.css : key}`
@@ -88,7 +97,7 @@ function setProps(el, props, _) {
         ctx.global.state.set(scope, value)
       },
       get() {
-        return ctx.global.state.getProxy(scope)
+        return currentValue // ?? ctx.global.state.getProxy(scope)
       },
     })
   }
@@ -168,7 +177,9 @@ export default class Component extends HTMLElement {
 
     if (_.attrs) renderAttributes(this, this._.ctx, _.attrs)
 
-    const def = this.prerender?.(this._) ?? omit(_.def, "type")
+    // TODO: remove omit
+    const def =
+      this.prerender?.(this._) ?? omit(_.def, ["type", "data", "schema"])
 
     if (def) render(def, this._.ctx, this)
     const undonesTokens = await this._.ctx.undones

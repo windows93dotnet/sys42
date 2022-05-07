@@ -1,7 +1,9 @@
-import create from "../create.js"
+import parseAbbreviation from "../utils/parseAbbreviation.js"
 
 export default function renderComponent(type, def, ctx) {
-  const el = create(type)
+  const parsed = parseAbbreviation(type, def)
+
+  const el = document.createElement(parsed.tag)
   el.setAttribute("data-lazy-init", "true")
   const tag = el.localName
 

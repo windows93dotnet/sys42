@@ -28,5 +28,9 @@ export default function renderKeyVal(el, ctx, key, val, renderer = setVal) {
     })
   }
 
-  renderer(el, key, val)
+  const scope = joinScope(ctx.scope, key)
+  if (!ctx.global.state.has(scope)) ctx.global.state.set(scope, val)
+  registerRenderer(ctx, scope, () => {
+    renderer(el, key, ctx.global.rack.get(scope))
+  })
 }
