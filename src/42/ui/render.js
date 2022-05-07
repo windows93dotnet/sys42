@@ -395,6 +395,7 @@ export default function render(def, ctx = {}, parent = frag(), textMaker) {
       el.append(label)
     } else {
       el = create(ctx, "div", { class: "check-cont" })
+      console.log(1, ctx, el.className)
       append(el, def, ctx, checkbox)
       if (label) el.append(create(ctx, "label", { for: id }, label))
     }

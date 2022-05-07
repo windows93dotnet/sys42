@@ -10,8 +10,11 @@ function setVal(el, key, val) {
   el[key] = val
 }
 
-export default function renderKeyVal(el, ctx, key, val, renderer = setVal) {
+// TODO: refactor "dynamic" boolean trap
+export default function renderKeyVal(el, ctx, key, val, dynamic, renderer) {
   const type = typeof val
+
+  renderer ??= dynamic ?? setVal
 
   if (type === "string") {
     const parsed = template.parse(val)
@@ -22,15 +25,19 @@ export default function renderKeyVal(el, ctx, key, val, renderer = setVal) {
     }
   } else if (type === "object" && "watch" in val) {
     // const scope = resolveScope(ctx, val.watch)
-    const scope = joinScope(ctx.scope, val.watch)
+    const scope = joinScope(ctx?.scope ?? "", val.watch)
     return void registerRenderer(ctx, scope, () => {
       renderer(el, key, ctx.global.rack.get(scope))
     })
   }
 
-  const scope = joinScope(ctx.scope, key)
-  if (!ctx.global.state.has(scope)) ctx.global.state.set(scope, val)
-  registerRenderer(ctx, scope, () => {
-    renderer(el, key, ctx.global.rack.get(scope))
-  })
+  if (ctx && dynamic === true) {
+    const scope = joinScope(ctx?.scope ?? "", key)
+    if (!ctx.global.state.has(scope)) ctx.global.state.set(scope, val)
+    return void registerRenderer(ctx, scope, () => {
+      renderer(el, key, ctx.global.rack.get(scope))
+    })
+  }
+
+  renderer(el, key, val)
 }

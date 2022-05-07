@@ -44,8 +44,10 @@ function setProps(el, props, _) {
 
     if (key in _.props) {
       initialValue = _.props[key]
+      // ctx.global.state.set(scope, initialValue)
     } else if ("default" in item && !ctx.global.state.has(scope)) {
       initialValue = item.default
+      // ctx.global.state.set(scope, initialValue)
     } else {
       initialValue = ctx.global.rack.get(scope)
     }
@@ -61,9 +63,7 @@ function setProps(el, props, _) {
       }
     }
 
-    renderKeyVal(el, ctx, key, initialValue, (_, __, value) => {
-      // console.log(111, key, value)
-
+    renderKeyVal(el, ctx, key, initialValue, true, (_, __, value) => {
       currentValue = value
 
       if (item.css) {

@@ -1155,7 +1155,7 @@ test.skip("components", "define properties via template", async (t) => {
   app.el.remove()
 })
 
-test.only("components", "filters", async (t) => {
+test("components", "filters", async (t) => {
   const app = await ui(div(), {
     type: "ui-testcomponent",
     value: "{{foo|customFilter}}",

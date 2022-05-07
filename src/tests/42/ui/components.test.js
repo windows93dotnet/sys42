@@ -260,7 +260,7 @@ test.tasks(
   ],
 
   ({ title, component, args, html, def, check, expected }) => {
-    test.only(title ?? expected ?? def, async (t) => {
+    test(title ?? expected ?? def, async (t) => {
       if (component) {
         const fn = await (typeof component === "object" ||
         /^\s*class/.test(component.toString())
