@@ -13,7 +13,7 @@ export default function parseAbbreviation(source, attrs = {}) {
   let lastCharEscaped = false
 
   const flush = () => {
-    if (type === "id") out.attrs.id = buffer
+    if (type === "id") out.attrs.id ??= buffer
     else if (type === "class") {
       if ("class" in out.attrs === false) out.attrs.class = [buffer]
       else if (typeof out.attrs.class === "string") {

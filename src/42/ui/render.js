@@ -271,7 +271,7 @@ export default function render(def, ctx = {}, parent = frag(), textMaker) {
   /* button
   --------- */
 
-  if ((def.run || def.popup || def.dialog) && !def.type) def.type = "button"
+  if (!def.type && (def.run || def.popup || def.dialog)) def.type = "button"
 
   if (BUTTON_TYPES.has(def.type)) {
     const { value, type } = def

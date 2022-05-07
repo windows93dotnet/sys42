@@ -57,10 +57,10 @@ test.tasks(
       def: { type: "span#foo.bar" },
       expected: '<span id="foo" class="bar"></span>',
     },
-    // {
-    //   def: { type: "span#foo.bar", id: "x" },
-    //   expected: '<span id="x" class="bar"></span>',
-    // },
+    {
+      def: { type: "span#foo.bar", id: "x" },
+      expected: '<span id="x" class="bar"></span>',
+    },
     {
       def: { type: "span#foo.bar", class: "baz" },
       expected: '<span class="baz bar" id="foo"></span>',

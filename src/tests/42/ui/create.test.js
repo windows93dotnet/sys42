@@ -1,56 +1,46 @@
 import test from "../../../42/test.js"
 import create from "../../../42/ui/create.js"
+import makeNewContext from "../../../42/ui/utils/makeNewContext.js"
+import repaint from "../../../42/fabric/type/promise/repaint.js"
 import setAttributes from "../../../42/fabric/dom/setAttributes.js"
 
 test("simple", (t) => {
-  const actual = create(
-    "div",
-    { class: "foo" },
-    "hello",
-    create("strong", "world")
-  )
-  t.true(actual instanceof HTMLDivElement)
-  t.is(actual.outerHTML, '<div class="foo">hello<strong>world</strong></div>')
+  const el = create("div", { class: "foo" }, "hello", create("strong", "world"))
+  t.true(el instanceof HTMLDivElement)
+  t.is(el.outerHTML, '<div class="foo">hello<strong>world</strong></div>')
 })
 
 test("arguments order matter only for child nodes", (t) => {
-  const actual = create("div", "hello", create("strong", "world"), {
+  const el = create("div", "hello", create("strong", "world"), {
     class: "foo",
   })
-  t.is(actual.outerHTML, '<div class="foo">hello<strong>world</strong></div>')
+  t.is(el.outerHTML, '<div class="foo">hello<strong>world</strong></div>')
 })
 
 test("accept arrays of child nodes", (t) => {
-  let actual = create("div", { class: "foo" }, [
-    "hello",
-    create("strong", "world"),
-  ])
-  t.is(actual.outerHTML, '<div class="foo">hello<strong>world</strong></div>')
+  let el = create("div", { class: "foo" }, ["hello", create("strong", "world")])
+  t.is(el.outerHTML, '<div class="foo">hello<strong>world</strong></div>')
 
-  actual = create(
+  el = create(
     "div",
     { class: "foo" },
     ["hello", create("strong", "world")],
     "what's up?"
   )
   t.is(
-    actual.outerHTML,
+    el.outerHTML,
     `<div class="foo">hello<strong>world</strong>what's up?</div>`
   )
 })
 
 test("arguments are deeply merged", (t) => {
-  const actual = create(
-    "div",
-    { class: "foo", title: "hello" },
-    { class: "bar" }
-  )
-  t.is(actual.outerHTML, '<div class="bar" title="hello"></div>')
+  const el = create("div", { class: "foo", title: "hello" }, { class: "bar" })
+  t.is(el.outerHTML, '<div class="bar" title="hello"></div>')
 })
 
 test("dynamic id", (t) => {
-  const actual = create("div", { id: true })
-  t.match(actual.id, /^[a-z][\da-z]{7}$/)
+  const el = create("div", { id: true })
+  t.match(el.id, /^[a-z][\da-z]{7}$/)
 })
 
 test("classes", (t) => {
@@ -74,4 +64,28 @@ test("classes", 2, (t) => {
   t.is(el.className, "three")
   el = setAttributes(el, { class: { "x y z": true } })
   t.is(el.className, "three x y z")
+})
+
+test("ctx", async (t) => {
+  const ctx = makeNewContext()
+  ctx.global.state.set("foo", "bar")
+  const child = create(ctx, "span", { class: "{{foo}}" })
+  const el = create(ctx, "div", { class: "derp" }, child)
+  el.append(child)
+  await repaint()
+
+  t.is(el.outerHTML, '<div class="derp"><span class="bar"></span></div>')
+
+  ctx.global.state.set("foo", "baz")
+  await repaint()
+
+  t.is(el.outerHTML, '<div class="derp"><span class="baz"></span></div>')
+})
+
+test("ctx", "renderKeyVal 'dynamic' bug", async (t) => {
+  const ctx = makeNewContext()
+  const child = create(ctx, "span", { class: "bar" })
+  const el = create(ctx, "div", { class: "derp" }, child)
+
+  t.is(el.outerHTML, '<div class="derp"><span class="bar"></span></div>')
 })
