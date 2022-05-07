@@ -10,12 +10,6 @@ import joinScope from "../utils/joinScope.js"
 import { toKebabCase } from "../../fabric/type/string/letters.js"
 import CONVERTERS from "./Component/CONVERTERS.js"
 
-const DEFAULTS = {
-  properties: {},
-}
-
-const DEFAULTS_ATTRIBUTES = Object.keys(DEFAULTS.properties)
-
 function setProps(el, props, _) {
   const { ctx, observed } = el._
 
@@ -47,7 +41,7 @@ function setProps(el, props, _) {
 
     if (key in _.props) {
       ctx.global.state.set(scope, _.props[key])
-    } else if (!ctx.global.state.has(scope)) {
+    } else if ("default" in item && !ctx.global.state.has(scope)) {
       ctx.global.state.set(scope, item.default)
     }
 
@@ -65,11 +59,17 @@ function setProps(el, props, _) {
 
       if (item.css) {
         const cssVar = `--${typeof item.css === "string" ? item.css : key}`
-        el.style.setProperty(cssVar, value)
+        if (value == null) el.style.removeProperty(cssVar)
+        else el.style.setProperty(cssVar, value)
       }
 
       if (toView) {
         fromRenderer = true
+        if (value == null) {
+          el.removeAttribute(attribute)
+          return
+        }
+
         if (
           item.type === "boolean" ||
           (item.type === "any" && typeof value === "boolean")
@@ -113,11 +113,9 @@ export default class Component extends HTMLElement {
   }
 
   static get observedAttributes() {
-    const observed = [...DEFAULTS_ATTRIBUTES]
-    if (!this.definition?.properties) return observed
-    const { properties } = this.definition
-
-    for (const [key, item] of Object.entries(properties)) {
+    const observed = []
+    if (!this.definition?.props) return observed
+    for (const [key, item] of Object.entries(this.definition.props)) {
       observed.push(item.attribute ?? toKebabCase(key))
     }
 
@@ -153,7 +151,7 @@ export default class Component extends HTMLElement {
   async #init(...args) {
     this.removeAttribute("data-lazy-init")
     const { definition } = this.constructor
-    const { properties } = definition
+    const { props } = definition
 
     const _ = normalizeDefinition(definition, ...args)
 
@@ -166,7 +164,7 @@ export default class Component extends HTMLElement {
       get: () => this._.ctx.cancel.signal,
     })
 
-    if (properties) setProps(this, properties, _)
+    if (props) setProps(this, props, _)
 
     if (_.attrs) renderAttributes(this, this._.ctx, _.attrs)
 

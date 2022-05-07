@@ -1,11 +1,10 @@
-/* eslint-disable unicorn/no-object-as-default-parameter */
 import test from "../../../42/test.js"
 import ui from "../../../42/ui.js"
 import Component from "../../../42/ui/class/Component2.js"
 import repaint from "../../../42/fabric/type/promise/repaint.js"
 
 const elements = []
-function div({ connect } = { connect: true }) {
+function div(connect = true) {
   const el = document.createElement("div")
   elements.push(el)
   if (connect) document.body.append(el)
@@ -19,7 +18,7 @@ test.afterEach(() => {
 
 Component.define({
   tag: "ui-t-props",
-  properties: {
+  props: {
     bar: 2,
   },
   content: "foo: {{foo}}, bar: {{bar}}",
@@ -60,11 +59,9 @@ test.tasks(
     },
 
     {
-      component: class extends Component {
-        static definition = {
-          tag: "ui-t-data",
-          content: "foo: {{foo}}",
-        }
+      component: {
+        tag: "ui-t-data",
+        content: "foo: {{foo}}",
       },
       def: {
         content: { type: "ui-t-data" },
@@ -171,7 +168,7 @@ test.tasks(
         return class extends Component {
           static definition = {
             tag: "ui-t-filter",
-            properties: {
+            props: {
               bar: 2,
             },
             content: "foo: {{foo|add5}}, bar: {{bar|add10}}",
@@ -195,11 +192,9 @@ test.tasks(
     },
 
     {
-      component: class extends Component {
-        static definition = {
-          tag: "ui-t-ready",
-          content: "ext: {{foo|extname}}",
-        }
+      component: {
+        tag: "ui-t-ready",
+        content: "ext: {{foo|extname}}",
       },
       def: {
         content: { type: "ui-t-ready" },
@@ -207,12 +202,67 @@ test.tasks(
       },
       expected: "<ui-t-ready>ext: .html</ui-t-ready>",
     },
+
+    {
+      component: {
+        tag: "ui-t-noprops",
+        content: "foo: {{foo}}",
+        props: {
+          foo: {
+            type: "string",
+            reflect: true,
+          },
+        },
+      },
+      def: {
+        content: { type: "ui-t-noprops" },
+      },
+      expected: "<ui-t-noprops>foo: </ui-t-noprops>",
+    },
+
+    {
+      component: {
+        tag: "ui-t-css",
+        props: {
+          foo: {
+            type: "string",
+            css: true,
+          },
+        },
+      },
+      def: {
+        content: { type: "ui-t-css" /* , foo: "red" */ },
+      },
+      expected: "<ui-t-css></ui-t-css>",
+      async check(t, app) {
+        app.state.set("foo", "red")
+        await repaint()
+
+        t.is(app.el.innerHTML, '<ui-t-css style="--foo:red;"></ui-t-css>')
+
+        app.state.set("foo", undefined)
+        await repaint()
+
+        t.is(app.el.innerHTML, '<ui-t-css style=""></ui-t-css>')
+
+        app.state.set("foo", "blue")
+        await repaint()
+
+        t.is(app.el.innerHTML, '<ui-t-css style="--foo:blue;"></ui-t-css>')
+
+        app.state.delete("foo")
+        await repaint()
+
+        t.is(app.el.innerHTML, '<ui-t-css style=""></ui-t-css>')
+      },
+    },
   ],
 
   ({ title, component, args, html, def, check, expected }) => {
     test(title ?? expected ?? def, async (t) => {
       if (component) {
-        const fn = await (/^\s*class/.test(component.toString())
+        const fn = await (typeof component === "object" ||
+        /^\s*class/.test(component.toString())
           ? Component.define(component)
           : Component.define(component(t)))
 

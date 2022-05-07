@@ -86,6 +86,7 @@ const setRule = (rule, types, eventsToListen) =>
 
 const normalizeRule = (run, chords, types, eventsToListen, options = {}) => {
   if (typeof run === "object") {
+    if ("run" in run) run.down = run.run
     const { up, down, ...options } = run
     if (down) {
       const rule = { chords, run: down, options }
@@ -108,7 +109,7 @@ export const normalizeRules = (rules) => {
     throw new TypeError('The "rules" argument must be an object or an array')
   }
 
-  const eventsToListen = {} // Object.create(null)
+  const eventsToListen = {}
 
   if (Array.isArray(rules)) {
     rules.forEach(({ key, run, type, ...options }) => {
@@ -195,7 +196,14 @@ export class Shortcuts {
 
       if (pass) {
         rule.result = rule.options.serializeArgs
-          ? rule.run(...serializeArgs(e, target, rule.options.args))
+          ? rule.run(
+              ...serializeArgs(
+                e,
+                target,
+                rule.options.args,
+                rule.options.thisArg
+              )
+            )
           : rule.run(e, target)
 
         if (rule.result === false || rule.options.preventDefault) {
@@ -273,7 +281,6 @@ export class Shortcuts {
 
     if (type === "string") {
       const parentMethod = getInheritedMethod(this.el, rule.run)
-      // console.log(rule.run, parentMethod)
       if (parentMethod) {
         rule.run = parentMethod
         return

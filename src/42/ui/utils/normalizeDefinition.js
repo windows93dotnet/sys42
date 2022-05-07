@@ -1,10 +1,9 @@
 /* eslint-disable max-depth */
-import { toKebabCase } from "../../fabric/type/string/letters.js"
-
 import { TRAITS } from "../renderers/renderTraits.js"
 import ATTRIBUTES_ALLOW_LIST from "../../fabric/constants/ATTRIBUTES_ALLOW_LIST.js"
 
 const ATTRIBUTES = new Set(ATTRIBUTES_ALLOW_LIST.concat(["dataset", "aria"]))
+const ATTRIBUTES_WITHDASH = new Set(["acceptCharset", "httpEquiv"])
 
 const DEF_KEYWORDS = new Set([
   "actions",
@@ -29,7 +28,7 @@ const DEF_KEYWORDS = new Set([
 ])
 
 export default function normalizeDefinition(...args) {
-  const { properties, defaults } = args[0]
+  const { props: properties, defaults } = args[0]
 
   let ctx = {}
   const def = { traits: {} }
@@ -53,7 +52,12 @@ export default function normalizeDefinition(...args) {
           else content.push(val)
         } else if (key === "ctx") ctx = val
         else if (DEF_KEYWORDS.has(key)) def[key] = val
-        else if (ATTRIBUTES.has(toKebabCase(key))) attrs[key] = val
+        else if (
+          ATTRIBUTES.has(key.toLowerCase()) ||
+          ATTRIBUTES_WITHDASH.has(key)
+        ) {
+          attrs[key] = val
+        }
       }
     }
   }

@@ -1,4 +1,5 @@
 import Component from "../class/Component2.js"
+import basename from "../../fabric/type/path/extract/basename.js"
 // import parseFilename from "../../fabric/type/path/parseFilename.js"
 // import theme from "../../os/theme.js"
 // import create from "../create.js"
@@ -8,18 +9,25 @@ import Component from "../class/Component2.js"
 class Icon extends Component {
   static definition = {
     tag: "ui-icon",
-    // tabIndex: 0,
-    properties: {
+    tabIndex: 0,
+    props: {
       path: {
         type: "string",
         reflect: true,
       },
     },
     content: "hello {{path|parseFilename}}",
+    // shortcuts: [{ key: "[click]", run: "ok", args: ["path"] }],
+    shortcuts: { "[click]": { run: "ok", args: ["path"] } },
   }
 
   parseFilename(path) {
     console.warn(path)
+    return basename(path)
+  }
+
+  ok(path) {
+    console.log(888, path)
   }
 }
 

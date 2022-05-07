@@ -171,6 +171,7 @@ function append(parent, def, ctx, el) {
   if ("shortcuts" in def) {
     shortcutsConfig = {
       agent: ctx.global.actions.get(ctx.scope),
+      thisArg: ctx.global.state.getProxy(ctx.scope),
       signal: ctx.cancel.signal,
       preventDefault: true,
       serializeArgs: true,

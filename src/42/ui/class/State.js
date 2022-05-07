@@ -1,6 +1,7 @@
 import observe from "../../fabric/locator/observe.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 import allocate from "../../fabric/locator/allocate.js"
+import deallocate from "../../fabric/locator/deallocate.js"
 import exists from "../../fabric/locator/exists.js"
 import locate from "../../fabric/locator/locate.js"
 import Emitter from "../../fabric/class/Emitter.js"
@@ -124,6 +125,10 @@ export default class State extends Emitter {
 
   get(path) {
     return this.rack.get(path)
+  }
+
+  delete(path) {
+    deallocate(this.proxy, path)
   }
 
   getProxy(path) {

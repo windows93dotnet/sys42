@@ -2,7 +2,7 @@ import test from "../../42/test.js"
 import ui from "../../42/ui.js"
 
 import repaint from "../../42/fabric/type/promise/repaint.js"
-import Component from "../../42/ui/class/Component.js"
+import Component from "../../42/ui/class/Component2.js"
 
 const uppercase = (str) => str.toUpperCase()
 
@@ -10,8 +10,7 @@ class Testcomponent extends Component {
   static definition = {
     tag: "ui-testcomponent",
     class: "derp",
-    // id: true,
-    properties: {
+    props: {
       value: {
         type: "string",
       },
@@ -29,9 +28,18 @@ class Testcomponent extends Component {
 
 await Component.define(Testcomponent)
 
-function div() {
-  return document.createElement("div")
+const elements = []
+function div(connect = false) {
+  const el = document.createElement("div")
+  elements.push(el)
+  if (connect) document.body.append(el)
+  return el
 }
+
+test.afterEach(() => {
+  for (const el of elements) el.remove()
+  elements.length = 0
+})
 
 async function change(input, value) {
   input.value = value
@@ -42,6 +50,39 @@ async function change(input, value) {
 function removeUid(html) {
   return html.replace(/(for|id)="([^"]+)"/g, '$1="uid"')
 }
+
+test.tasks(
+  [
+    {
+      def: { type: "span#foo.bar" },
+      expected: '<span id="foo" class="bar"></span>',
+    },
+    // {
+    //   def: { type: "span#foo.bar", id: "x" },
+    //   expected: '<span id="x" class="bar"></span>',
+    // },
+    {
+      def: { type: "span#foo.bar", class: "baz" },
+      expected: '<span class="baz bar" id="foo"></span>',
+    },
+    {
+      def: { type: "checkbox#foo.bar", class: "baz" },
+      expected:
+        '<div class="check-cont"><input class="baz bar" id="foo" type="checkbox"></div>',
+    },
+    {
+      def: { type: "ui-testcomponent#foo.bar", class: "baz" },
+      expected:
+        '<ui-testcomponent id="foo" class="baz bar"></ui-testcomponent>',
+    },
+  ],
+  ({ def, expected }) => {
+    test(`expand abbreviations`, def, async (t) => {
+      const app = await ui(div(), def)
+      t.is(app.el.innerHTML, expected)
+    })
+  }
+)
 
 test("template", async (t) => {
   const el = div()
@@ -67,28 +108,6 @@ test("template", async (t) => {
   await repaint()
 
   t.is(app.el.textContent, "Hello ")
-})
-
-test("expand abbreviations", async (t) => {
-  const el = div()
-  const app = await ui(el, [
-    { type: "span#foo.bar", class: "baz" },
-    { type: "checkbox#foo.bar", class: "baz" },
-    { type: "ui-testcomponent#foo.bar", class: "baz" },
-  ])
-
-  t.is(
-    app.el.children[0].outerHTML, //
-    '<span class="baz bar" id="foo"></span>'
-  )
-  t.is(
-    app.el.children[1].outerHTML,
-    '<div class="check-cont"><input class="baz bar" id="foo" type="checkbox"></div>'
-  )
-  t.is(
-    app.el.children[2].outerHTML,
-    '<ui-testcomponent id="foo" class="bar"></ui-testcomponent>'
-  )
 })
 
 test("2-way data binding", async (t) => {
