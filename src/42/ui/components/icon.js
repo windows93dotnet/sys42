@@ -1,4 +1,4 @@
-import Component from "../class/Component2.js"
+import Component from "../class/Component.js"
 import basename from "../../fabric/type/path/extract/basename.js"
 // import parseFilename from "../../fabric/type/path/parseFilename.js"
 // import theme from "../../os/theme.js"

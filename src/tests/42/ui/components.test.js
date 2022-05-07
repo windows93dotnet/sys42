@@ -1,6 +1,6 @@
 import test from "../../../42/test.js"
 import ui from "../../../42/ui.js"
-import Component from "../../../42/ui/class/Component2.js"
+import Component from "../../../42/ui/class/Component.js"
 import repaint from "../../../42/fabric/type/promise/repaint.js"
 
 const elements = []

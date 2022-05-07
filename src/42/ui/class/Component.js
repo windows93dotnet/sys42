@@ -1,178 +1,26 @@
-// @related https://www.fast.design/docs/fast-element/defining-elements/
-
+import render from "../render.js"
+import defer from "../../fabric/type/promise/defer.js"
+import Undones from "../../fabric/class/Undones.js"
+import omit from "../../fabric/type/object/omit.js"
 import normalizeDefinition from "../utils/normalizeDefinition.js"
-import noop from "../../fabric/type/function/noop.js"
-import configure from "../../fabric/configure.js"
 import makeNewContext from "../utils/makeNewContext.js"
-import populateContext from "../utils/populateContext.js"
-import shortcuts from "../../system/shortcuts.js"
-import Canceller from "../../fabric/class/Canceller.js"
-import paintDebounce from "../../fabric/type/function/paintDebounce.js"
-import { toKebabCase } from "../../fabric/type/string/letters.js"
-import joinScope from "../utils/joinScope.js"
-import observe from "../../fabric/locator/observe.js"
-
 import renderAttributes from "../renderers/renderAttributes.js"
+// import registerRenderer from "../utils/registerRenderer.js"
 import renderKeyVal from "../renderers/renderKeyVal.js"
-import { renderTrait, TRAITS } from "../renderers/renderTraits.js"
+import joinScope from "../utils/joinScope.js"
+import { toKebabCase } from "../../fabric/type/string/letters.js"
+import CONVERTERS from "./Component/CONVERTERS.js"
 
-const DEFAULTS = {
-  shadow: false,
-  theme: true,
-  properties: Object.assign(
-    Object.fromEntries(
-      TRAITS.map((trait) => [
-        trait,
-        {
-          type: "any",
-          fromView: true,
-          adapt(value) {
-            renderTrait(this, trait, value, this._.ctx)
-          },
-        },
-      ])
-    ),
-    {
-      shortcuts: {
-        type: "any",
-        fromView: true,
-        adapt(value, oldValue) {
-          oldValue?.destroy?.()
-          const { ctx } = this._
-          return shortcuts(this, value, {
-            agent: ctx.global.actions.get(ctx.scope),
-            signal: ctx.cancel.signal,
-            preventDefault: true,
-            serializeArgs: true,
-          })
-        },
-      },
-    }
-  ),
-}
+function setProps(el, props, _) {
+  const { ctx, observed } = el._
 
-const _INSTANCES = Symbol.for("Trait.INSTANCES")
-const _IS_COMPONENT = Symbol.for("Component.IS_COMPONENT")
+  for (let [key, item] of Object.entries(props)) {
+    const scope = joinScope(ctx.scope, key)
 
-const DEFAULTS_ATTRIBUTES = Object.keys(DEFAULTS.properties)
-
-const BOOLEAN_TRUE = new Set(["", "on", "true"])
-const BOOLEAN_FALSE = new Set(["none", "off", "false"])
-
-const CONVERTERS = {
-  string: {
-    toView: (val) => String(val),
-    fromView: (val) => String(val),
-  },
-  number: {
-    toView: (val) => String(val),
-    fromView(val, key) {
-      const out = Number(val)
-      if (Number.isNaN(out)) {
-        throw new TypeError(`"${key}" must be a valid number`)
-      }
-
-      return out
-    },
-  },
-  boolean: {
-    toView: noop,
-    fromView(val) {
-      if (BOOLEAN_TRUE.has(val)) return true
-      if (BOOLEAN_FALSE.has(val)) return false
-      return Boolean(val)
-    },
-  },
-  object: {
-    toView: (val) => JSON.stringify(val),
-    fromView: (val) => JSON.parse(val),
-  },
-  tokens: {
-    fromView: (val) => String(val).split(" "),
-    toView: (val) => val.join(" "),
-  },
-  any: {
-    toView(val) {
-      if (typeof val === "string") return val
-      try {
-        return JSON.stringify(val)
-      } catch {
-        return val
-      }
-    },
-    fromView(val) {
-      if (BOOLEAN_TRUE.has(val)) return true
-      if (BOOLEAN_FALSE.has(val)) return false
-      try {
-        return JSON.parse(val)
-      } catch {
-        return val
-      }
-    },
-  },
-}
-
-CONVERTERS.array = CONVERTERS.object
-
-function normalizeComponentDef(el, args) {
-  let { definition } = el.constructor
-
-  definition = configure(DEFAULTS, definition)
-
-  const { properties, defaults } = definition
-
-  const out = normalizeDefinition(definition, ...args)
-
-  out.properties = {}
-  out.originals = {}
-  out.observed = {}
-
-  out.content = out.def.content ?? []
-  out.repeat = out.def.repeat
-  out.label = out.def.label
-
-  out.initial = {
-    properties: out.props,
-    attributes: out.attrs,
-  }
-
-  out.ctx = makeNewContext(out.ctx)
-
-  populateContext(out.ctx, out.def)
-
-  out.ctx.cancel =
-    out.ctx.cancel?.fork(el.localName) ?? new Canceller(el.localName)
-
-  out.cancel = out.ctx.cancel
-
-  Object.defineProperty(out, "signal", { get: () => out.cancel.signal })
-
-  out.config = configure(defaults, out.options)
-
-  // define value from content
-  // usefull when component is called as a function
-  // e.g. picto("puzzle") -> out.content === ["puzzle"] -> el.value === "puzzle"
-  if (
-    "value" in properties &&
-    "value" in out.initial.attributes === false &&
-    out.content.length === 1
-  ) {
-    out.initial.properties.value = out.content[0]
-  }
-
-  if (properties) setProperties(properties, out, el)
-
-  return out
-}
-
-function setProperties(properties, out, el) {
-  const { signal } = out
-
-  for (let [key, item] of Object.entries(properties)) {
     const type = typeof item
 
     if (type !== "object") {
-      item = { type, default: item, reflect: true, render: true }
+      item = { type, default: item, reflect: true }
     }
 
     const attribute = item.attribute ?? toKebabCase(key)
@@ -184,224 +32,166 @@ function setProperties(properties, out, el) {
       toView = true
     }
 
-    const scope = joinScope(out.ctx.scope, key)
-
-    const assignProp = (item, value) => {
-      const targetValue = value
-      if (item.adapt) {
-        const res = item.adapt.call(el, value, out.properties[key])
-        if (res !== undefined) value = res
-      }
-
-      if (
-        item.state &&
-        out.ctx.global.state &&
-        value &&
-        typeof value === "object"
-      ) {
-        out.originals[key] = value
-        value = observe(value, { signal }, (path, val, oldVal) => {
-          out.ctx.global.state.update(joinScope(scope, path), val, oldVal)
-        })
-      }
-
-      out.properties[key] = value === null ? item.default : value
-
-      if (item.css) {
-        el.style.setProperty(
-          `--${typeof item.css === "string" ? item.css : key}`,
-          value
-        )
-      }
-
-      if (item.state && out.ctx.global.state && el._.render !== noop) {
-        out.ctx.global.state.update(scope, targetValue)
-      }
-    }
-
-    if (fromView) {
-      fromView = typeof fromView === "function" ? fromView : converter.fromView
-      out.observed[attribute] = (value) => {
-        assignProp(item, fromView(value, attribute, el, item))
-        if (item.render) el._.repaint()
-      }
-    }
-
     if (toView) {
       toView = typeof toView === "function" ? toView : converter.toView
     }
 
+    if (fromView) {
+      fromView = typeof fromView === "function" ? fromView : converter.fromView
+    }
+
+    let initialValue
+
+    if (key in _.props) {
+      initialValue = _.props[key]
+    } else if ("default" in item && !ctx.global.state.has(scope)) {
+      initialValue = item.default
+    } else {
+      initialValue = ctx.global.rack.get(scope)
+    }
+
+    let currentValue = initialValue
+
+    let fromRenderer = false
+
+    if (fromView) {
+      observed[attribute] = (val) => {
+        if (fromRenderer) return
+        ctx.global.state.set(scope, fromView(val, attribute, el, item))
+      }
+    }
+
+    renderKeyVal(el, ctx, key, initialValue, (_, __, value) => {
+      // console.log(111, key, value)
+
+      currentValue = value
+
+      if (item.css) {
+        const cssVar = `--${typeof item.css === "string" ? item.css : key}`
+        if (value == null) el.style.removeProperty(cssVar)
+        else el.style.setProperty(cssVar, value)
+      }
+
+      if (toView) {
+        fromRenderer = true
+        if (value == null) {
+          el.removeAttribute(attribute)
+          return
+        }
+
+        if (
+          item.type === "boolean" ||
+          (item.type === "any" && typeof value === "boolean")
+        ) {
+          if (item.default === true && value === false) {
+            el.setAttribute(attribute, "false")
+          } else el.toggleAttribute(attribute, value)
+        } else el.setAttribute(attribute, toView(value, key, el, item))
+        fromRenderer = false
+      }
+    })
+
     Object.defineProperty(el, key, {
       configurable: true,
       set(value) {
-        assignProp(item, value)
-
-        if (toView) {
-          if (
-            item.type === "boolean" ||
-            (item.type === "any" && typeof value === "boolean")
-          ) {
-            if (item.default === true && value === false) {
-              el.setAttribute(attribute, "false")
-            } else el.toggleAttribute(attribute, value)
-          } else el.setAttribute(attribute, toView(value, key, el, item))
-        } else if (item.render) el._.repaint()
+        ctx.global.state.set(scope, value)
       },
       get() {
-        // console.log(444, key)
-        return out.properties[key]
+        return currentValue // ?? ctx.global.state.getProxy(scope)
       },
     })
-
-    if (!el.hasAttribute(attribute) && "default" in item) {
-      if (toView) out.initial.attributes[key] = item.default
-      else out.initial.properties[key] ??= item.default
-    } else if (item.type === "boolean" || item.type === "any") {
-      out.properties[key] = false
-    }
   }
 }
 
 export default class Component extends HTMLElement {
-  static IS_COMPONENT = _IS_COMPONENT
-
-  static isComponent(el) {
-    return el && typeof el === "object" && el[_IS_COMPONENT] === true
-  }
-
   static async define(Class) {
-    const tagName = Class.definition.tag ?? `ui-${Class.name.toLowerCase()}`
-    if (!customElements.get(tagName)) customElements.define(tagName, Class)
+    if (typeof Class === "object") {
+      Class = class extends Component {
+        static definition = Class
+      }
+    }
+
+    let tagName = Class.definition.tag
+    if (tagName === undefined) {
+      if (Class.name === "Class") throw new Error(`missing Component "tag"`)
+      tagName = `ui-${Class.name.toLowerCase()}`
+    }
+
+    customElements.define(tagName, Class)
     return (...args) => new Class(...args)
   }
 
   static get observedAttributes() {
-    const observed = [...DEFAULTS_ATTRIBUTES]
-    if (!this.definition?.properties) return observed
-    const { properties } = this.definition
-
-    for (const [key, item] of Object.entries(properties)) {
+    const observed = []
+    if (!this.definition?.props) return observed
+    for (const [key, item] of Object.entries(this.definition.props)) {
       observed.push(item.attribute ?? toKebabCase(key))
     }
 
     return observed
   }
 
+  _ = {}
+  #rendered = false
+
   constructor(...args) {
     super()
-    this[_IS_COMPONENT] = true
-    if (args.length > 0) this.$init(...args)
+    this.ready = defer()
+    if (args.length > 0) this.init(...args)
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if (this._?.observed[name]) {
-      this._.observed[name](newValue, oldValue)
-    }
+    this._?.observed[name]?.(newValue, oldValue)
   }
 
   connectedCallback() {
     if (!this.isConnected) return
-
-    if (this._) this._.init()
-    else if (!this.hasAttribute("data-lazy-init")) this.$init()
+    if (!this.#rendered && !this.hasAttribute("data-lazy-init")) {
+      this.init()
+    }
   }
 
   disconnectedCallback() {
-    this._?.cancel()
-
-    this._.initial = this._.initialBackup
-
-    if (_INSTANCES in this) {
-      // Iterate over Trait instances in reverse order
-      // to try to restaure originals attributes
-      for (const instance of Object.values(this[_INSTANCES]).reverse()) {
-        instance.destroy?.()
-      }
-    }
+    this._?.ctx.cancel()
+    this.ready = defer()
+    this.#rendered = false
   }
 
-  // adoptedCallback() {
-  //   console.log("adoptedCallback", this.localName)
-  // }
-
-  // public methods
-  // --------------
-
-  $init(...args) {
+  async #init(...args) {
     this.removeAttribute("data-lazy-init")
-    this._ = normalizeComponentDef(this, args)
-    this._.render = noop
-    this._.repaint = noop
-
-    if (this.constructor.formAssociated) {
-      this._.internals = this.attachInternals()
-    }
-
     const { definition } = this.constructor
+    const { props } = definition
 
-    this._.root = definition?.shadow
-      ? this.attachShadow({ mode: "open" })
-      : this
+    const _ = normalizeDefinition(definition, ...args)
 
-    if (definition && definition.shadow && definition.theme !== false) {
-      const { theme } = definition
-      const link = document.createElement("link")
-      link.toggleAttribute("data-steady", true)
-      link.rel = "stylesheet"
-      link.href = typeof theme === "string" ? theme : "/style.css"
-      this._.root.append(link)
-    }
+    this._.observed = {}
+    this._.ctx = makeNewContext(_.ctx)
+    this._.ctx.undones = new Undones()
+    this._.ctx.cancel = this._.ctx.cancel?.fork(this.localName)
+    Object.defineProperty(this._, "signal", {
+      configurable: true,
+      get: () => this._.ctx.cancel.signal,
+    })
 
-    this._.init = () => {
-      if (this._.initial) {
-        const { initial } = this._
-        this._.initialBackup = initial
-        delete this._.initial
+    if (props) setProps(this, props, _)
 
-        renderAttributes(this, this._.ctx, initial.attributes)
-        for (const [key, val] of Object.entries(initial.properties)) {
-          renderKeyVal(this, this._.ctx, key, val)
-        }
+    if (_.attrs) renderAttributes(this, this._.ctx, _.attrs)
 
-        for (const { name, value } of this.attributes) {
-          if (this._.observed[name]) {
-            this._.observed[name](value, null)
-          }
-        }
+    // TODO: remove omit
+    const def =
+      this.prerender?.(this._) ?? omit(_.def, ["type", "data", "schema"])
 
-        // Add element properties as data getter/setter
-        const { _ } = this
-        const data = _.ctx.global.rack.get(_.ctx.scope)
-        if (data && typeof data === "object" && definition.properties) {
-          for (const [key, val] of Object.entries(definition.properties)) {
-            if (val.state === true) {
-              const descriptor = {
-                enumerable: true,
-                configurable: true,
-                get: () => (key in _.originals ? _.originals[key] : this[key]),
-                set: (val) => {
-                  // this[key] = val
-                  this._.properties[key] = val
-                },
-              }
-              Object.defineProperty(data, key, descriptor)
-            }
-          }
-        }
+    if (def) render(def, this._.ctx, this)
+    const undonesTokens = await this._.ctx.undones
 
-        this.$create(this._)
-      }
-
-      this._.render = () => this.$render(this._)
-      this._.repaint = paintDebounce(() => this._.render())
-
-      this._.render()
-    }
-
-    if (this.isConnected) this._.init()
+    await this.postrender?.(this._)
+    this.#rendered = true
+    return [`component ${this.localName}`, ...undonesTokens]
   }
 
-  $create() {}
-
-  $render() {}
+  async init(...args) {
+    await this.#init(...args)
+      .then((tokens) => this.ready.resolve(tokens))
+      .catch((err) => this.ready.reject(err))
+  }
 }
