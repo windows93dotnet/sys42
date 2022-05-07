@@ -39,9 +39,6 @@ registerRenderer.fromDots = (ctx, arr, render) => {
   if (scopes.length > 0) registerRenderer(ctx, scopes, render)
 }
 
-// registerRenderer.fromTemplate = async (ctx, el, parsedTemplate, render) => {
-//   await 0 // queueMicrotask
-
 registerRenderer.fromTemplate = (ctx, el, parsedTemplate, render) => {
   const filters = { ...ctx.global.filters.value }
   const locals = ctx.global.state.getProxy(ctx.scope)
@@ -54,11 +51,9 @@ registerRenderer.fromTemplate = (ctx, el, parsedTemplate, render) => {
         vars.push(token.value)
       } else if (token.type === "function") {
         const { value } = token
-        // filters[value] ??= getInheritedMethod(el, value) ?? getFilter(value)
         let filter
-        filters[value] = async (...args) => {
+        filters[value] ??= async (...args) => {
           filter ??= getInheritedMethod(el, value) ?? (await getFilter(value))
-          // console.log(111, filter)
           return filter(...args)
         }
       }
