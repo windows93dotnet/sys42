@@ -19,20 +19,11 @@ export default function renderControl(el, def, ctx) {
     }
   }
 
-  if (def.registerControl === undefined) {
-    registerRenderer(ctx, el.name, () => setControlData(el, ctx.global.rack))
-  } else {
-    let registered
-    renderKeyVal(el, ctx, "value", def.registerControl, (el, key, val) => {
-      if (!registered) {
-        ctx.global.rack.set(el.name, val)
-        registerRenderer(ctx, el.name, () =>
-          setControlData(el, ctx.global.rack)
-        )
-        registered = true
-      }
+  const renderer = () => setControlData(el, ctx.global.rack)
 
-      el.value = val
-    })
+  if (def.registerControl === undefined) {
+    registerRenderer(ctx, el.name, renderer)
+  } else {
+    renderKeyVal(el, ctx, "value", def.registerControl, true, renderer)
   }
 }

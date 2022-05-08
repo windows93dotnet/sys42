@@ -44,10 +44,8 @@ function setProps(el, props, _) {
 
     if (key in _.props) {
       initialValue = _.props[key]
-      // ctx.global.state.set(scope, initialValue)
     } else if ("default" in item && !ctx.global.state.has(scope)) {
       initialValue = item.default
-      // ctx.global.state.set(scope, initialValue)
     } else {
       initialValue = ctx.global.rack.get(scope)
     }
@@ -63,38 +61,38 @@ function setProps(el, props, _) {
       }
     }
 
-    renderKeyVal(el, ctx, key, initialValue, true, (_, __, value) => {
-      currentValue = value
+    renderKeyVal(el, ctx, key, initialValue, true, (el, key, val) => {
+      currentValue = val
 
       if (item.css) {
         const cssVar = `--${typeof item.css === "string" ? item.css : key}`
-        if (value == null) el.style.removeProperty(cssVar)
-        else el.style.setProperty(cssVar, value)
+        if (val == null) el.style.removeProperty(cssVar)
+        else el.style.setProperty(cssVar, val)
       }
 
       if (toView) {
         fromRenderer = true
-        if (value == null) {
+        if (val == null) {
           el.removeAttribute(attribute)
           return
         }
 
         if (
           item.type === "boolean" ||
-          (item.type === "any" && typeof value === "boolean")
+          (item.type === "any" && typeof val === "boolean")
         ) {
-          if (item.default === true && value === false) {
+          if (item.default === true && val === false) {
             el.setAttribute(attribute, "false")
-          } else el.toggleAttribute(attribute, value)
-        } else el.setAttribute(attribute, toView(value, key, el, item))
+          } else el.toggleAttribute(attribute, val)
+        } else el.setAttribute(attribute, toView(val, key, el, item))
         fromRenderer = false
       }
     })
 
     Object.defineProperty(el, key, {
       configurable: true,
-      set(value) {
-        ctx.global.state.set(scope, value)
+      set(val) {
+        ctx.global.state.set(scope, val)
       },
       get() {
         return currentValue // ?? ctx.global.state.getProxy(scope)

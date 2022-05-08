@@ -111,8 +111,7 @@ test("template", async (t) => {
 })
 
 test("2-way data binding", async (t) => {
-  const el = div()
-  const app = await ui(el, [
+  const app = await ui(div(), [
     `Hello {{world}}`, //
     { type: "input", name: "world" },
   ])
@@ -144,6 +143,22 @@ test("2-way data binding", async (t) => {
 
   t.is(app.data.world, "Bar")
   t.is(text.textContent, "Hello Bar")
+})
+
+test.skip("form control", async (t) => {
+  const app = await ui(div(), [
+    `Hello {{world}}`, //
+    { type: "input", name: "world", value: "foo", label: false },
+  ])
+
+  const text = app.el.firstChild
+  const input = app.get("input")
+
+  // await repaint()
+
+  t.is(input.value, "foo")
+  t.is(app.data.world, "foo")
+  t.is(text.textContent, "Hello foo")
 })
 
 test("data in definition", "Throws on non-object data", async (t) => {

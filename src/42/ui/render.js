@@ -103,7 +103,7 @@ function getNameAndLabel(def, ctx, required) {
 
   if (typeof def.label === "string") {
     label = def.label ? render(def.label, ctx, undefined, "span") : undefined
-  } else if (def.name) {
+  } else if (def.label !== false && def.name) {
     const nameAsLabel = toTitleCase(parseDotNotation(def.name).at(-1))
     if (nameAsLabel !== ".") label = render(nameAsLabel, ctx)
   }

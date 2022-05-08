@@ -14,7 +14,7 @@ function setVal(el, key, val) {
 export default function renderKeyVal(el, ctx, key, val, dynamic, renderer) {
   const type = typeof val
 
-  renderer ??= dynamic ?? setVal
+  renderer ??= typeof dynamic === "function" ? dynamic : setVal
 
   if (type === "string") {
     const parsed = template.parse(val)
