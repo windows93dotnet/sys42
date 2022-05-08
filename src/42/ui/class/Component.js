@@ -5,7 +5,6 @@ import omit from "../../fabric/type/object/omit.js"
 import normalizeDefinition from "../utils/normalizeDefinition.js"
 import makeNewContext from "../utils/makeNewContext.js"
 import renderAttributes from "../renderers/renderAttributes.js"
-// import registerRenderer from "../utils/registerRenderer.js"
 import renderKeyVal from "../renderers/renderKeyVal.js"
 import joinScope from "../utils/joinScope.js"
 import { toKebabCase } from "../../fabric/type/string/letters.js"
@@ -42,12 +41,16 @@ function setProps(el, props, _) {
 
     let initialValue
 
-    if (key in _.props) {
+    if (key in el) {
+      initialValue = el[key]
+    } else if (fromView && el.hasAttribute(attribute)) {
+      initialValue = fromView(el.getAttribute(attribute), attribute, el, item)
+    } else if (key in _.props) {
       initialValue = _.props[key]
-    } else if ("default" in item && !ctx.global.state.has(scope)) {
-      initialValue = item.default
-    } else {
+    } else if (ctx.global.state.has(scope)) {
       initialValue = ctx.global.rack.get(scope)
+    } else if ("default" in item) {
+      initialValue = item.default
     }
 
     let currentValue = initialValue
@@ -74,10 +77,7 @@ function setProps(el, props, _) {
         fromRenderer = true
         if (val == null) {
           el.removeAttribute(attribute)
-          return
-        }
-
-        if (
+        } else if (
           item.type === "boolean" ||
           (item.type === "any" && typeof val === "boolean")
         ) {
@@ -95,7 +95,7 @@ function setProps(el, props, _) {
         ctx.global.state.set(scope, val)
       },
       get() {
-        return currentValue // ?? ctx.global.state.getProxy(scope)
+        return currentValue
       },
     })
   }
@@ -139,7 +139,7 @@ export default class Component extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    this._?.observed[name]?.(newValue, oldValue)
+    this._?.observed?.[name]?.(newValue, oldValue)
   }
 
   connectedCallback() {

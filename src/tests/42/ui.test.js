@@ -36,6 +36,11 @@ function div(connect = false) {
   return el
 }
 
+function append(el) {
+  elements.push(el)
+  document.body.append(el)
+}
+
 test.afterEach(() => {
   for (const el of elements) el.remove()
   elements.length = 0
@@ -606,10 +611,10 @@ test("repeat", "div", "render index 0 bug", async (t) => {
   t.is(el.textContent, "XY")
 })
 
-test.skip("repeat", "ui-icon", "render index 0 bug", async (t) => {
+test("repeat", "ui-icon", "render index 0 bug", async (t) => {
   t.timeout(1000)
-  const el = div()
-  document.body.append(el)
+  const el = div(true)
+
   const app = await ui(el, {
     content: {
       scope: "arr",
@@ -630,17 +635,15 @@ test.skip("repeat", "ui-icon", "render index 0 bug", async (t) => {
 
   app.data.arr = [{ path: "Z" }]
   await repaint()
-  await repaint()
+
   t.is(el.children.length, 1)
   t.is(el.textContent, "Z")
 
   app.data.arr = [{ path: "X" }, { path: "Y" }]
   await repaint()
-  await repaint()
+
   t.is(el.children.length, 2)
   t.is(el.textContent, "XY")
-
-  el.remove() // TODO: add test teardown
 })
 
 test("repeat", "innerHTML", async (t) => {
@@ -1129,29 +1132,28 @@ test.skip("components", "unknown", async (t) => {
   )
 })
 
-test.skip(
+test(
   "components",
   "define properties and id/class as selector notation",
   async (t) => {
-    const app = await ui(div(), {
-      type: "ui-swatch#foo.ma.pa",
-      value: "tan",
-    })
+    await import("../../42/ui/components/swatch.js")
 
-    t.is(app.el.innerHTML, '<ui-swatch id="foo" class="ma pa"></ui-swatch>')
+    const el = document.createElement("ui-swatch")
 
-    document.body.append(app.el)
+    t.is(el.outerHTML, "<ui-swatch></ui-swatch>")
+
+    el.setAttribute("value", "red")
+
+    append(el)
 
     t.is(
-      app.el.innerHTML,
-      '<ui-swatch id="foo" class="ma pa" value="tan" style="--color:tan;"></ui-swatch>'
+      el.outerHTML,
+      '<ui-swatch value="red" style="--color:red;"></ui-swatch>'
     )
-
-    app.el.remove()
   }
 )
 
-test.skip("components", "define properties via template", async (t) => {
+test("components", "define properties via template", async (t) => {
   const app = await ui(div(), {
     type: "ui-swatch",
     value: "{{foo}}",
@@ -1371,7 +1373,7 @@ test("filters", "pluralize", async (t) => {
   t.is(app.el.innerHTML, "apples, oranges")
 })
 
-// test.only("filters", "input", async (t) => {
+// test("filters", "input", async (t) => {
 //   const app = await ui(div(), {
 //     type: "input",
 //     name: "foo",

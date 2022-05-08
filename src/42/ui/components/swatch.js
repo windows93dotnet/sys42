@@ -5,11 +5,10 @@ import Component from "../class/Component.js"
 class Swatch extends Component {
   static definition = {
     tag: "ui-swatch",
-    properties: {
+    props: {
       value: {
         type: "string",
         reflect: true,
-        render: true,
         css: "color",
       },
     },

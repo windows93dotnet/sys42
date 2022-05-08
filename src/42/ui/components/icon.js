@@ -16,9 +16,9 @@ class Icon extends Component {
         reflect: true,
       },
     },
-    content: "hello {{path|parseFilename}}",
+    content: "{{path|parseFilename}}",
     // shortcuts: [{ key: "[click]", run: "ok", args: ["path"] }],
-    shortcuts: { "[click]": { run: "ok", args: ["path"] } },
+    // shortcuts: { "[click]": { run: "ok", args: ["path"] } },
   }
 
   parseFilename(path) {
@@ -26,9 +26,9 @@ class Icon extends Component {
     return basename(path)
   }
 
-  ok(path) {
-    console.log(888, path)
-  }
+  // ok(path) {
+  //   console.log(888, path)
+  // }
 }
 
 export default await Component.define(Icon)
