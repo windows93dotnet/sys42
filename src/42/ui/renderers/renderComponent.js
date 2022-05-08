@@ -1,3 +1,4 @@
+import defer from "../../fabric/type/promise/defer.js"
 import parseAbbreviation from "../utils/parseAbbreviation.js"
 
 export default function renderComponent(type, def, ctx) {
@@ -7,22 +8,26 @@ export default function renderComponent(type, def, ctx) {
   el.setAttribute("data-lazy-init", "true")
   const tag = el.localName
 
-  ctx.undones.push(el.ready)
+  const deferred = defer()
+  ctx.undones.push(deferred)
 
   if (el.constructor === HTMLElement) {
-    import(`../components/${tag.slice(3)}.js`).catch(() => {
-      el.ready.reject(new Error(`Unknown component: ${tag}`))
-    })
+    const stem = tag.slice(3)
+    if (!stem.startsWith("t-")) {
+      import(`../components/${stem}.js`).catch(() => {
+        deferred.reject(new Error(`Unknown component: ${tag}`))
+      })
+    }
 
     customElements
       .whenDefined(tag)
       .then(() => {
         customElements.upgrade(el)
-        el.init(def, ctx)
+        el.init(def, ctx).then(() => deferred.resolve())
       })
-      .catch((err) => el.ready.reject(err))
+      .catch((err) => deferred.reject(err))
   } else {
-    queueMicrotask(() => el.init(def, ctx))
+    queueMicrotask(() => el.init(def, ctx).then(() => deferred.resolve()))
   }
 
   return el

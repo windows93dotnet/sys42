@@ -257,20 +257,46 @@ test.tasks(
         t.is(app.el.innerHTML, '<ui-t-css style=""></ui-t-css>')
       },
     },
+
+    {
+      // only: true,
+      title: "update throttle bug",
+      defer: true,
+      component(t) {
+        t.plan(2)
+        return class extends Component {
+          static definition = {
+            tag: "ui-t-throttle",
+            props: {
+              path: {
+                type: "string",
+                reflect: true,
+              },
+            },
+            content: "hello {{path|customFilter}}",
+          }
+
+          customFilter(path) {
+            t.is(path, "world")
+            return path.toUpperCase()
+          }
+        }
+      },
+      def: {
+        content: { type: "ui-t-throttle", path: "world" },
+      },
+      expected: '<ui-t-throttle path="world">hello WORLD</ui-t-throttle>',
+    },
   ],
 
-  ({ title, component, args, html, def, check, expected }) => {
+  ({ title, defer, component, args, html, def, check, expected }) => {
     test(title ?? expected ?? def, async (t) => {
       if (component) {
-        const fn = await (typeof component === "object" ||
-        /^\s*class/.test(component.toString())
-          ? Component.define(component)
-          : Component.define(component(t)))
-
-        if (args) {
-          const el = fn(...args)
-          if (expected) t.is(el.outerHTML, expected)
-        }
+        if (defer) {
+          defer = t
+            .sleep(20)
+            .then(() => checkDefine(component, t, args, expected))
+        } else await checkDefine(component, t, args, expected)
       }
 
       const app = await ui(div(), def)
@@ -283,6 +309,24 @@ test.tasks(
         el.innerHTML = html
         t.is(el.innerHTML, expected)
       }
+
+      if (defer) {
+        await Promise.all([defer, t.sleep(0)])
+      }
     })
   }
 )
+
+async function checkDefine(component, t, args, expected) {
+  const fn = await (typeof component === "object" ||
+  /^\s*class/.test(component.toString())
+    ? Component.define(component)
+    : Component.define(component(t)))
+
+  if (args) {
+    const el = fn(...args)
+    if (expected) {
+      t.is(el.outerHTML, expected)
+    }
+  }
+}

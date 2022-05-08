@@ -36,6 +36,7 @@ export default class UI extends DOMQuery {
     await this.ctx.undones
 
     this.state = this.ctx.global.state
+    this.state.throttle = true
 
     this.run = this.ctx.global.actions.value
 

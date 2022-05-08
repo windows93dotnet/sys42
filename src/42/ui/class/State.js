@@ -8,6 +8,7 @@ import Emitter from "../../fabric/class/Emitter.js"
 
 export default class State extends Emitter {
   #update
+  #updateFn
 
   constructor(ctx) {
     super()
@@ -21,7 +22,7 @@ export default class State extends Emitter {
       objects: new Set(),
     }
 
-    this.#update = paintThrottle(() => {
+    this.#updateFn = () => {
       const changes = new Set()
 
       for (const { path, val, oldVal } of this.queue.lengths) {
@@ -67,7 +68,9 @@ export default class State extends Emitter {
       this.queue.paths.clear()
       this.queue.lengths.clear()
       this.queue.objects.clear()
-    })
+    }
+
+    this.#update = this.#updateFn
 
     this.proxy = observe(
       this.rack.value, //
@@ -81,6 +84,13 @@ export default class State extends Emitter {
       },
       (path, val, oldVal) => this.update(path, val, oldVal)
     )
+  }
+
+  get throttle() {
+    return this.#update !== this.#updateFn
+  }
+  set throttle(value) {
+    this.#update = value ? paintThrottle(this.#updateFn) : this.#updateFn
   }
 
   update(path, val, oldVal) {
