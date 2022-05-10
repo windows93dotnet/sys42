@@ -19,14 +19,16 @@ export default function compileTemplate(parsed, options = {}) {
 
   return options.async
     ? async (locals) => {
-        const out = [strings[0]]
+        let out = strings[0] ? [strings[0]] : []
 
         for (let i = 0, l = substitutions.length; i < l; i++) {
-          const res = substitutions[i](locals) ?? ""
-          out.push(res, strings[i + 1])
+          const res = substitutions[i](locals)
+          if (res !== undefined) out.push(res)
+          if (strings[i + 1]) out.push(strings[i + 1])
         }
 
-        return (await Promise.all(out)).join("")
+        out = await Promise.all(out)
+        return out.length === 1 ? out[0] : out.join("")
       }
     : (locals) => {
         let out = strings[0]

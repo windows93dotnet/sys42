@@ -1,6 +1,8 @@
 import schemaToContent from "./schemaToContent.js"
 import generateSchema from "../../fabric/type/json/generateSchema.js"
 import getBoundSchema from "../../fabric/type/json/getBoundSchema.js"
+import joinScope from "./joinScope.js"
+import renderKeyVal from "../renderers/renderKeyVal.js"
 
 export default function populateContext(ctx, def) {
   if ("scope" in def) ctx.scope = def.scope
@@ -50,6 +52,17 @@ export default function populateContext(ctx, def) {
       ctx.scope,
       assignFunctions(ctx, ctx.scope, def.filters)
     )
+  }
+
+  if (def.computed) {
+    for (const [key, val] of Object.entries(def.computed)) {
+      const scope = joinScope(ctx.scope, key)
+      if (typeof val === "string") {
+        renderKeyVal(undefined, ctx, key, val, true, (_, __, val) => {
+          ctx.global.state.set(scope, val)
+        })
+      }
+    }
   }
 }
 

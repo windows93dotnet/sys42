@@ -611,7 +611,7 @@ test("repeat", "div", "render index 0 bug", async (t) => {
   t.is(el.textContent, "XY")
 })
 
-test("repeat", "ui-icon", "render index 0 bug", async (t) => {
+test.skip("repeat", "ui-icon", "render index 0 bug", async (t) => {
   t.timeout(1000)
   const el = div(true)
 
@@ -1551,4 +1551,32 @@ test("schema", 2, async (t) => {
     removeUid(app.el.innerHTML),
     '<input id="uid" type="number" required="" step="2" autocomplete="off">'
   )
+})
+
+/* computed
+=========== */
+
+test("computed", async (t) => {
+  const app = await ui(div(), {
+    content: {
+      scope: "parsed",
+      content: [{ content: "foo: {{0}}, bar: {{1}}" }],
+    },
+
+    data: {
+      formated: "FOO/BAR",
+    },
+
+    computed: {
+      parsed: "{{formated|split('/')}}",
+    },
+  })
+
+  t.is(app.el.innerHTML, "foo: FOO, bar: BAR")
+
+  app.data.formated = "HELLO/WORLD"
+  await repaint()
+  await repaint()
+
+  t.is(app.el.innerHTML, "foo: HELLO, bar: WORLD")
 })

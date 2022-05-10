@@ -26,6 +26,7 @@ filters.string = {
   snake: STRING_FILTER,
   title: STRING_FILTER,
   upper: STRING_FILTER,
+  split: (str, sep) => str.split(sep),
 }
 
 filters.number = {
@@ -43,7 +44,7 @@ filters.number = {
 filters.array = {
   difference: "array/difference",
   groupBy: "array/groupBy",
-  join: (arr, separator) => arr.join(separator),
+  join: (arr, sep) => arr.join(sep),
   at: (arr, index) => arr.at(index),
   removeItem: "array/removeItem",
   shuffle: "array/shuffle",

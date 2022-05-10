@@ -1,6 +1,6 @@
 import Component from "../class/Component.js"
-import basename from "../../fabric/type/path/extract/basename.js"
-// import parseFilename from "../../fabric/type/path/parseFilename.js"
+// import basename from "../../fabric/type/path/extract/basename.js"
+import parseFilename from "../../fabric/type/path/parseFilename.js"
 // import theme from "../../os/theme.js"
 // import create from "../create.js"
 
@@ -16,14 +16,30 @@ class Icon extends Component {
         reflect: true,
       },
     },
-    content: "{{path|parseFilename}}",
+    // content: "{{path|parseFilename}}",
+
+    computed: {
+      parsed: "{{path|parseFilename}}",
+    },
+
+    content: [
+      {
+        type: "div.ui-icon__figure",
+        aria: { hidden: true },
+        content: "figure",
+      },
+      {
+        type: "div.ui-icon__label", //
+        content: "label",
+      },
+    ],
     // shortcuts: [{ key: "[click]", run: "ok", args: ["path"] }],
     // shortcuts: { "[click]": { run: "ok", args: ["path"] } },
   }
 
   parseFilename(path) {
-    console.warn(path)
-    return basename(path)
+    console.warn(parseFilename(path))
+    // return basename(path)
   }
 
   // ok(path) {
