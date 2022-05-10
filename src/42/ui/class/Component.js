@@ -4,6 +4,7 @@ import Undones from "../../fabric/class/Undones.js"
 import omit from "../../fabric/type/object/omit.js"
 import normalizeDefinition from "../utils/normalizeDefinition.js"
 import makeNewContext from "../utils/makeNewContext.js"
+import populateContext from "../utils/populateContext.js"
 import renderAttributes from "../renderers/renderAttributes.js"
 import renderKeyVal from "../renderers/renderKeyVal.js"
 import joinScope from "../utils/joinScope.js"
@@ -162,8 +163,10 @@ export default class Component extends HTMLElement {
 
     const _ = normalizeDefinition(definition, ...args)
 
+    _.def.component = this
     this._.observed = {}
     this._.ctx = makeNewContext(_.ctx)
+    populateContext(this._.ctx, _.def)
     this._.ctx.undones = new Undones()
     this._.ctx.cancel = this._.ctx.cancel?.fork(this.localName)
     Object.defineProperty(this._, "signal", {
@@ -175,9 +178,12 @@ export default class Component extends HTMLElement {
 
     if (_.attrs) renderAttributes(this, this._.ctx, _.attrs)
 
-    // TODO: remove omit
-    const def =
-      this.prerender?.(this._) ?? omit(_.def, ["type", "data", "schema"])
+    const def = this.prerender
+      ? await this.prerender?.(this._)
+      : omit(_.def, ["type", "data", "schema"])
+
+    await this._.ctx.undones
+    this._.ctx.undones.length = 0
 
     if (def) render(def, this._.ctx, this)
     const undonesTokens = await this._.ctx.undones

@@ -16,23 +16,26 @@ class Icon extends Component {
         reflect: true,
       },
     },
-    // content: "{{path|parseFilename}}",
 
     computed: {
       parsed: "{{path|parseFilename}}",
     },
 
-    content: [
-      {
-        type: "div.ui-icon__figure",
-        aria: { hidden: true },
-        content: "figure",
-      },
-      {
-        type: "div.ui-icon__label", //
-        content: "label",
-      },
-    ],
+    content: {
+      scope: "parsed",
+      content: [
+        {
+          type: "div.ui-icon__figure",
+          aria: { hidden: true },
+          content: "figure",
+        },
+        {
+          type: "div.ui-icon__label", //
+          content: "label",
+        },
+      ],
+    },
+
     // shortcuts: [{ key: "[click]", run: "ok", args: ["path"] }],
     // shortcuts: { "[click]": { run: "ok", args: ["path"] } },
   }

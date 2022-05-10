@@ -6,27 +6,27 @@ import Component from "../../42/ui/class/Component.js"
 
 const uppercase = (str) => str.toUpperCase()
 
-class Testcomponent extends Component {
-  static definition = {
-    tag: "ui-testcomponent",
-    class: "derp",
-    props: {
-      value: {
-        type: "string",
+await Component.define(
+  class extends Component {
+    static definition = {
+      tag: "ui-t-component",
+      class: "derp",
+      props: {
+        value: {
+          type: "string",
+        },
+        foo: {
+          type: "string",
+          reflect: true,
+        },
       },
-      foo: {
-        type: "string",
-        reflect: true,
-      },
-    },
-  }
+    }
 
-  customFilter(str) {
-    return str.toUpperCase()
+    customFilter(str) {
+      return str.toUpperCase()
+    }
   }
-}
-
-await Component.define(Testcomponent)
+)
 
 const elements = []
 function div(connect = false) {
@@ -76,9 +76,8 @@ test.tasks(
         '<div class="check-cont"><input class="baz bar" id="foo" type="checkbox"></div>',
     },
     {
-      def: { type: "ui-testcomponent#foo.bar", class: "baz" },
-      expected:
-        '<ui-testcomponent class="baz bar" id="foo"></ui-testcomponent>',
+      def: { type: "ui-t-component#foo.bar", class: "baz" },
+      expected: '<ui-t-component class="baz bar" id="foo"></ui-t-component>',
     },
   ],
   ({ def, expected }) => {
@@ -1174,7 +1173,7 @@ test("components", "define properties via template", async (t) => {
 
 test("components", "filters", async (t) => {
   const app = await ui(div(), {
-    type: "ui-testcomponent",
+    type: "ui-t-component",
     value: "{{foo|customFilter}}",
     data: { foo: "hello" },
   })
@@ -1186,7 +1185,7 @@ test("components", "filters", async (t) => {
   t.is(app.el.firstChild.value, "HELLO")
   t.is(
     app.el.innerHTML,
-    '<ui-testcomponent foo="hello" class="derp"></ui-testcomponent>'
+    '<ui-t-component foo="hello" class="derp"></ui-t-component>'
   )
 
   app.el.remove()
@@ -1194,7 +1193,7 @@ test("components", "filters", async (t) => {
 
 test("components", "filters", async (t) => {
   const app = await ui(div(), {
-    type: "ui-testcomponent",
+    type: "ui-t-component",
     foo: "{{foo|customFilter}}",
     data: { foo: "hello" },
   })
@@ -1206,7 +1205,7 @@ test("components", "filters", async (t) => {
   t.is(app.el.firstChild.foo, "HELLO")
   t.is(
     app.el.innerHTML,
-    '<ui-testcomponent class="derp" foo="HELLO"></ui-testcomponent>'
+    '<ui-t-component class="derp" foo="HELLO"></ui-t-component>'
   )
 
   app.el.remove()
@@ -1556,11 +1555,73 @@ test("schema", 2, async (t) => {
 /* computed
 =========== */
 
+await Component.define(
+  class extends Component {
+    static definition = {
+      tag: "ui-t-computed",
+      props: {
+        formated: {
+          type: "string",
+        },
+      },
+      computed: {
+        parsed: "{{formated|split('/')}}",
+      },
+      // content: "foo: {{parsed.0}}, bar: {{parsed.1}}",
+      content: {
+        scope: "parsed",
+        content: "foo: {{0}}, bar: {{1}}",
+      },
+    }
+  }
+)
+
+// test.only("computed", "component", async (t) => {
+//   // t.plan(4)
+
+//   const app = await ui(div(), {
+//     content: {
+//       type: "ui-t-computed",
+//       formated: "FOO/BAR",
+//     },
+//   })
+// })
+
+test("computed", "component", async (t) => {
+  // t.plan(4)
+
+  const app = await ui(div(), {
+    content: {
+      type: "ui-t-computed",
+      formated: "FOO/BAR",
+    },
+  })
+
+  const updates = ["formated", "parsed"]
+  app.state.on("update", (changes) => {
+    console.log("-+-")
+    t.is(updates.shift(), [...changes][0])
+  })
+
+  t.is(app.el.innerHTML, "<ui-t-computed>foo: FOO, bar: BAR</ui-t-computed>")
+
+  // app.data.formated = "HELLO/WORLD"
+  // await repaint()
+  // await repaint()
+
+  // t.is(
+  //   app.el.innerHTML,
+  //   "<ui-t-computed>foo: HELLO, bar: WORLD</ui-t-computed>"
+  // )
+})
+
 test("computed", async (t) => {
+  t.plan(4)
+
   const app = await ui(div(), {
     content: {
       scope: "parsed",
-      content: [{ content: "foo: {{0}}, bar: {{1}}" }],
+      content: "foo: {{0}}, bar: {{1}}",
     },
 
     data: {
@@ -1570,6 +1631,11 @@ test("computed", async (t) => {
     computed: {
       parsed: "{{formated|split('/')}}",
     },
+  })
+
+  const updates = ["formated", "parsed"]
+  app.state.on("update", (changes) => {
+    t.is(updates.shift(), [...changes][0])
   })
 
   t.is(app.el.innerHTML, "foo: FOO, bar: BAR")

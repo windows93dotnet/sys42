@@ -24,6 +24,20 @@ Component.define({
   content: "foo: {{foo}}, bar: {{bar}}",
 })
 
+async function checkDefine(component, t, args, expected) {
+  const fn = await (typeof component === "object" ||
+  /^\s*class/.test(component.toString())
+    ? Component.define(component)
+    : Component.define(component(t)))
+
+  if (args) {
+    const el = fn(...args)
+    if (expected) {
+      t.is(el.outerHTML, expected)
+    }
+  }
+}
+
 test.tasks(
   [
     {
@@ -307,6 +321,7 @@ test.tasks(
       if (html) {
         const el = div()
         el.innerHTML = html
+        await el.firstChild.ready
         t.is(el.innerHTML, expected)
       }
 
@@ -316,17 +331,3 @@ test.tasks(
     })
   }
 )
-
-async function checkDefine(component, t, args, expected) {
-  const fn = await (typeof component === "object" ||
-  /^\s*class/.test(component.toString())
-    ? Component.define(component)
-    : Component.define(component(t)))
-
-  if (args) {
-    const el = fn(...args)
-    if (expected) {
-      t.is(el.outerHTML, expected)
-    }
-  }
-}

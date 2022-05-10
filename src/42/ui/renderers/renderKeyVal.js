@@ -19,24 +19,22 @@ export default function renderKeyVal(el, ctx, key, val, dynamic, renderer) {
   if (type === "string") {
     const parsed = template.parse(val)
     if (parsed.substitutions.length > 0) {
-      return void fromTemplate(ctx, el, parsed, async (value) => {
-        renderer(el, key, value)
-      })
+      return void fromTemplate(ctx, el, parsed, (val) => renderer(el, key, val))
     }
   } else if (type === "object" && "watch" in val) {
     // const scope = resolveScope(ctx, val.watch)
     const scope = joinScope(ctx?.scope ?? "", val.watch)
-    return void registerRenderer(ctx, scope, () => {
+    return void registerRenderer(ctx, scope, () =>
       renderer(el, key, ctx.global.rack.get(scope))
-    })
+    )
   }
 
   if (ctx && dynamic === true) {
     const scope = joinScope(ctx?.scope ?? "", key)
     if (!ctx.global.state.has(scope)) ctx.global.state.set(scope, val)
-    return void registerRenderer(ctx, scope, () => {
+    return void registerRenderer(ctx, scope, () =>
       renderer(el, key, ctx.global.rack.get(scope))
-    })
+    )
   }
 
   renderer(el, key, val)

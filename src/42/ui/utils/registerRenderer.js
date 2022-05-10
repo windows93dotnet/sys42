@@ -29,7 +29,11 @@ export default function registerRenderer(ctx, scope, render) {
     else for (const s of scope) register(ctx, s, render)
   }
 
-  ctx.undones.push(render())
+  const res = render()
+  console.log(res)
+  if (res !== undefined) {
+    ctx.undones.push(res)
+  }
 }
 
 const resolveScopes = (ctx, arr) => arr.map((loc) => resolveScope(ctx, loc))
@@ -54,7 +58,11 @@ registerRenderer.fromTemplate = (ctx, el, parsedTemplate, render) => {
         let filter
         filters[value] ??= async (...args) => {
           filter ??= getInheritedMethod(el, value) ?? (await getFilter(value))
-          return filter(...args)
+          try {
+            return await filter(...args)
+          } catch (err) {
+            console.log(err)
+          }
         }
       }
     }
