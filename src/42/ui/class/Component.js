@@ -40,21 +40,21 @@ function setProps(el, props, _) {
       fromView = typeof fromView === "function" ? fromView : converter.fromView
     }
 
-    let initialValue
+    let val
 
     if (key in el) {
-      initialValue = el[key]
+      val = el[key]
     } else if (fromView && el.hasAttribute(attribute)) {
-      initialValue = fromView(el.getAttribute(attribute), attribute, el, item)
+      val = fromView(el.getAttribute(attribute), attribute, el, item)
     } else if (key in _.props) {
-      initialValue = _.props[key]
+      val = _.props[key]
     } else if (ctx.global.state.has(scope)) {
-      initialValue = ctx.global.rack.get(scope)
+      val = ctx.global.rack.get(scope)
     } else if ("default" in item) {
-      initialValue = item.default
+      val = item.default
     }
 
-    let currentValue = initialValue
+    let currentVal = val
 
     let fromRenderer = false
 
@@ -65,8 +65,8 @@ function setProps(el, props, _) {
       }
     }
 
-    renderKeyVal(el, ctx, key, initialValue, true, (val) => {
-      currentValue = val
+    renderKeyVal({ el, ctx, key, val, dynamic: true }, (val) => {
+      currentVal = val
 
       if (item.css) {
         const cssVar = `--${typeof item.css === "string" ? item.css : key}`
@@ -96,7 +96,7 @@ function setProps(el, props, _) {
         ctx.global.state.set(scope, val)
       },
       get() {
-        return currentValue
+        return currentVal
       },
     })
   }

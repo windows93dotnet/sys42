@@ -24,6 +24,9 @@ export default function renderControl(el, def, ctx) {
   if (def.registerControl === undefined) {
     registerRenderer(ctx, el.name, renderer)
   } else {
-    renderKeyVal(el, ctx, "value", def.registerControl, true, renderer)
+    renderKeyVal(
+      { el, ctx, key: "value", val: def.registerControl, dynamic: true },
+      renderer
+    )
   }
 }

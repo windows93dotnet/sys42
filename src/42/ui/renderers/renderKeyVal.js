@@ -1,4 +1,3 @@
-/* eslint-disable max-params */
 import registerRenderer from "../utils/registerRenderer.js"
 import template from "../../system/formats/template.js"
 import joinScope from "../utils/joinScope.js"
@@ -10,11 +9,12 @@ function setVal(val, key, el) {
   el[key] = val
 }
 
-// TODO: refactor "dynamic" boolean trap
-export default function renderKeyVal(el, ctx, key, val, dynamic, renderer) {
-  const type = typeof val
+export default function renderKeyVal(options, renderer = setVal) {
+  if (typeof options === "string") options = { val: options }
 
-  renderer ??= typeof dynamic === "function" ? dynamic : setVal
+  let { ctx, key, val, el, dynamic } = options
+  val ??= options.value
+  const type = typeof val
 
   if (type === "string") {
     const parsed = template.parse(val)

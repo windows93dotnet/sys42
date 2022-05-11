@@ -19,7 +19,7 @@ export function renderTrait(el, key, val, ctx) {
     .then((m) => {
       if (key === "positionable") el.style.display = originalOpacity
 
-      renderKeyVal(el, ctx, undefined, val, (val) => {
+      renderKeyVal({ el, ctx, val }, (val) => {
         if (val) {
           val = val === true ? {} : { ...val }
           val.signal = ctx.cancel.signal

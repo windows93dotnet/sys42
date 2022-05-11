@@ -58,9 +58,12 @@ export default function populateContext(ctx, def) {
     for (const [key, val] of Object.entries(def.computed)) {
       const scope = joinScope(ctx.scope, key)
       if (typeof val === "string") {
-        renderKeyVal(def.component, ctx, key, val, true, (val) => {
-          ctx.global.state.set(scope, val)
-        })
+        renderKeyVal(
+          { el: def.component, ctx, key, val, dynamic: true },
+          (val) => {
+            ctx.global.state.set(scope, val)
+          }
+        )
       }
     }
   }

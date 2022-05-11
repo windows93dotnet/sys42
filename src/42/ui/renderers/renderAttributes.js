@@ -10,7 +10,7 @@ export default function renderAttributes(el, ctx, attrs, prefix = "") {
     else if (key === "style") renderStyles(el, ctx, val)
     else {
       key = prefix + key
-      renderKeyVal(el, ctx, key, val, (val) => setAttribute(el, key, val))
+      renderKeyVal({ el, ctx, key, val }, (val) => setAttribute(el, key, val))
     }
   }
 }
