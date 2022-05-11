@@ -30,10 +30,7 @@ export default function registerRenderer(ctx, scope, render) {
   }
 
   const res = render()
-  console.log(res)
-  if (res !== undefined) {
-    ctx.undones.push(res)
-  }
+  if (res !== undefined) ctx.undones.push(res)
 }
 
 const resolveScopes = (ctx, arr) => arr.map((loc) => resolveScope(ctx, loc))

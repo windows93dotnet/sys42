@@ -6,7 +6,7 @@ import joinScope from "../utils/joinScope.js"
 
 const { fromTemplate } = registerRenderer
 
-function setVal(el, key, val) {
+function setVal(val, key, el) {
   el[key] = val
 }
 
@@ -19,13 +19,13 @@ export default function renderKeyVal(el, ctx, key, val, dynamic, renderer) {
   if (type === "string") {
     const parsed = template.parse(val)
     if (parsed.substitutions.length > 0) {
-      return void fromTemplate(ctx, el, parsed, (val) => renderer(el, key, val))
+      return void fromTemplate(ctx, el, parsed, (val) => renderer(val, key, el))
     }
   } else if (type === "object" && "watch" in val) {
     // const scope = resolveScope(ctx, val.watch)
     const scope = joinScope(ctx?.scope ?? "", val.watch)
     return void registerRenderer(ctx, scope, () =>
-      renderer(el, key, ctx.global.rack.get(scope))
+      renderer(ctx.global.rack.get(scope), key, el)
     )
   }
 
@@ -33,9 +33,9 @@ export default function renderKeyVal(el, ctx, key, val, dynamic, renderer) {
     const scope = joinScope(ctx?.scope ?? "", key)
     if (!ctx.global.state.has(scope)) ctx.global.state.set(scope, val)
     return void registerRenderer(ctx, scope, () =>
-      renderer(el, key, ctx.global.rack.get(scope))
+      renderer(ctx.global.rack.get(scope), key, el)
     )
   }
 
-  renderer(el, key, val)
+  renderer(val, key, el)
 }

@@ -65,7 +65,7 @@ function setProps(el, props, _) {
       }
     }
 
-    renderKeyVal(el, ctx, key, initialValue, true, (el, key, val) => {
+    renderKeyVal(el, ctx, key, initialValue, true, (val) => {
       currentValue = val
 
       if (item.css) {

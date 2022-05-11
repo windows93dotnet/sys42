@@ -8,6 +8,9 @@ export default function renderAttributes(el, ctx, attrs, prefix = "") {
     if (key === "dataset") renderAttributes(el, ctx, val, "data-")
     else if (key === "aria") renderAttributes(el, ctx, val, "aria-")
     else if (key === "style") renderStyles(el, ctx, val)
-    else renderKeyVal(el, ctx, prefix + key, val, setAttribute)
+    else {
+      key = prefix + key
+      renderKeyVal(el, ctx, key, val, (val) => setAttribute(el, key, val))
+    }
   }
 }
