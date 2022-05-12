@@ -519,7 +519,7 @@ test("repeat", async (t) => {
   t.is(app.el.textContent, "")
 })
 
-test("repeat", async (t) => {
+test("repeat", "splice", async (t) => {
   const el = div()
   const app = await ui(el, {
     content: { scope: "arr", repeat: "{{.}}" },
@@ -1191,7 +1191,7 @@ test("components", "filters", async (t) => {
   app.el.remove()
 })
 
-test("components", "filters", async (t) => {
+test("components", "filters", "attribute defined by data", async (t) => {
   const app = await ui(div(), {
     type: "ui-t-component",
     foo: "{{foo|customFilter}}",
@@ -1555,31 +1555,36 @@ test("schema", 2, async (t) => {
 /* computed
 =========== */
 
-await Component.define(
-  class extends Component {
-    static definition = {
-      tag: "ui-t-computed",
-
-      props: {
-        formated: {
-          type: "string",
-        },
-      },
-
-      computed: {
-        parsed: "{{formated|split('/')}}",
-      },
-
-      content: {
-        scope: "parsed",
-        content: "foo: {{0}}, bar: {{1}}",
-      },
-    }
-  }
-)
-
 test("computed", "component", async (t) => {
-  t.plan(4)
+  let cnt = 0
+
+  await Component.define(
+    class extends Component {
+      static definition = {
+        tag: "ui-t-computed",
+
+        props: {
+          formated: {
+            type: "string",
+          },
+        },
+
+        computed: {
+          parsed: "{{formated|split('/')}}",
+        },
+
+        content: {
+          scope: "parsed",
+          content: "foo: {{0}}, bar: {{1}}",
+        },
+      }
+
+      split(formated, sep) {
+        cnt++
+        return formated.split(sep)
+      }
+    }
+  )
 
   const app = await ui(div(), {
     content: {
@@ -1587,6 +1592,9 @@ test("computed", "component", async (t) => {
       formated: "FOO/BAR",
     },
   })
+
+  t.is(app.el.innerHTML, "<ui-t-computed>foo: FOO, bar: BAR</ui-t-computed>")
+  t.is(cnt, 1)
 
   const updates = ["formated", "parsed"]
   app.state.on("update", (changes) => {
@@ -1603,6 +1611,7 @@ test("computed", "component", async (t) => {
     app.el.innerHTML,
     "<ui-t-computed>foo: HELLO, bar: WORLD</ui-t-computed>"
   )
+  t.is(cnt, 2)
 })
 
 test("computed", async (t) => {

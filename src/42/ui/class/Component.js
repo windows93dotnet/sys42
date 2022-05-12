@@ -185,7 +185,14 @@ export default class Component extends HTMLElement {
 
     const def = this.prerender
       ? await this.prerender?.(this._)
-      : omit(_.def, ["type", "data", "schema"])
+      : omit(_.def, [
+          "type",
+          "data",
+          "schema",
+          "computed",
+          "filters",
+          "actions",
+        ])
 
     if (def) render(def, this._.ctx, this)
     const undonesTokens = await this._.ctx.undones.done()
