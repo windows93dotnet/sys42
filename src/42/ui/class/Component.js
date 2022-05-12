@@ -166,27 +166,29 @@ export default class Component extends HTMLElement {
     _.def.component = this
     this._.observed = {}
     this._.ctx = makeNewContext(_.ctx)
-    populateContext(this._.ctx, _.def)
     this._.ctx.undones = new Undones()
     this._.ctx.cancel = this._.ctx.cancel?.fork(this.localName)
+
+    if (props) setProps(this, props, _)
+    if (_.attrs) renderAttributes(this, this._.ctx, _.attrs)
+
+    await this._.ctx.undones.done()
+
+    populateContext(this._.ctx, _.def)
+
+    await this._.ctx.undones.done()
+
     Object.defineProperty(this._, "signal", {
       configurable: true,
       get: () => this._.ctx.cancel.signal,
     })
 
-    if (props) setProps(this, props, _)
-
-    if (_.attrs) renderAttributes(this, this._.ctx, _.attrs)
-
     const def = this.prerender
       ? await this.prerender?.(this._)
       : omit(_.def, ["type", "data", "schema"])
 
-    await this._.ctx.undones
-    this._.ctx.undones.length = 0
-
     if (def) render(def, this._.ctx, this)
-    const undonesTokens = await this._.ctx.undones
+    const undonesTokens = await this._.ctx.undones.done()
 
     await this.postrender?.(this._)
     this.#rendered = true

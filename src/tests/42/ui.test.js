@@ -1559,15 +1559,17 @@ await Component.define(
   class extends Component {
     static definition = {
       tag: "ui-t-computed",
+
       props: {
         formated: {
           type: "string",
         },
       },
+
       computed: {
         parsed: "{{formated|split('/')}}",
       },
-      // content: "foo: {{parsed.0}}, bar: {{parsed.1}}",
+
       content: {
         scope: "parsed",
         content: "foo: {{0}}, bar: {{1}}",
@@ -1576,19 +1578,8 @@ await Component.define(
   }
 )
 
-// test.only("computed", "component", async (t) => {
-//   // t.plan(4)
-
-//   const app = await ui(div(), {
-//     content: {
-//       type: "ui-t-computed",
-//       formated: "FOO/BAR",
-//     },
-//   })
-// })
-
 test("computed", "component", async (t) => {
-  // t.plan(4)
+  t.plan(4)
 
   const app = await ui(div(), {
     content: {
@@ -1599,20 +1590,19 @@ test("computed", "component", async (t) => {
 
   const updates = ["formated", "parsed"]
   app.state.on("update", (changes) => {
-    console.log("-+-")
     t.is(updates.shift(), [...changes][0])
   })
 
   t.is(app.el.innerHTML, "<ui-t-computed>foo: FOO, bar: BAR</ui-t-computed>")
 
-  // app.data.formated = "HELLO/WORLD"
-  // await repaint()
-  // await repaint()
+  app.data.formated = "HELLO/WORLD"
+  await repaint()
+  await repaint()
 
-  // t.is(
-  //   app.el.innerHTML,
-  //   "<ui-t-computed>foo: HELLO, bar: WORLD</ui-t-computed>"
-  // )
+  t.is(
+    app.el.innerHTML,
+    "<ui-t-computed>foo: HELLO, bar: WORLD</ui-t-computed>"
+  )
 })
 
 test("computed", async (t) => {
