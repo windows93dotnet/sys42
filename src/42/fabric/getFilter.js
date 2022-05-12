@@ -27,6 +27,8 @@ filters.string = {
   title: STRING_FILTER,
   upper: STRING_FILTER,
   split: (str, sep) => str.split(sep),
+  endsWith: (str, search) => str.endsWith(search),
+  startsWith: (str, search) => str.startsWith(search),
 }
 
 filters.number = {

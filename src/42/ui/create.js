@@ -1,20 +1,6 @@
 import renderAttributes from "./renderers/renderAttributes.js"
 import parseAbbreviation from "./utils/parseAbbreviation.js"
-
-const svgTags = new Set([
-  "circle",
-  "desc",
-  "ellipse",
-  "g",
-  "glyph",
-  "path",
-  "polygon",
-  "rect",
-  "svg",
-  "symbol",
-  "text",
-  "use",
-])
+import SVG_TAGS from "../fabric/constants/SVG_TAGS.js"
 
 export default function create(ctx, tagName, ...args) {
   if (typeof ctx === "string") {
@@ -26,7 +12,7 @@ export default function create(ctx, tagName, ...args) {
   const parsed = parseAbbreviation(tagName)
   tagName = parsed.tag
 
-  const el = svgTags.has(tagName)
+  const el = SVG_TAGS.includes(tagName)
     ? document.createElementNS("http://www.w3.org/2000/svg", tagName)
     : document.createElement(tagName)
 

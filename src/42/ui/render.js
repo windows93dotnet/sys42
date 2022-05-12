@@ -5,6 +5,7 @@ import isEmptyObject from "../fabric/type/any/is/isEmptyObject.js"
 import uid from "../fabric/uid.js"
 import parseDotNotation from "../fabric/locator/parseDotNotation.js"
 import ELEMENTS_ALLOW_LIST from "../fabric/constants/ELEMENTS_ALLOW_LIST.js"
+import SVG_TAGS from "../fabric/constants/SVG_TAGS.js"
 import shortcuts from "../system/shortcuts.js"
 
 import arrify from "../fabric/type/any/arrify.js"
@@ -445,7 +446,8 @@ export default function render(def, ctx = {}, parent = frag(), textMaker) {
   if (
     def.type &&
     ctx.trusted !== true &&
-    !ELEMENTS_ALLOW_LIST.includes(def.type)
+    !ELEMENTS_ALLOW_LIST.includes(def.type) &&
+    !SVG_TAGS.includes(def.type)
   ) {
     return parent
   }
