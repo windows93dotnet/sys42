@@ -17,7 +17,7 @@ export default function populateContext(ctx, def) {
         })()
       )
     } else if (type === "object") {
-      ctx.global.rack.assign(ctx.scope, def.data)
+      ctx.global.store.assign(ctx.scope, def.data)
     } else throw new TypeError(`data must be an array or object: ${type}`)
 
     if (
@@ -66,10 +66,7 @@ export default function populateContext(ctx, def) {
           { el: def.component, ctx, key, val, dynamic: true },
           (val) => {
             ctx.global.scopes.set(scope, val)
-            const { throttle } = ctx.global.state
-            ctx.global.state.throttle = false
-            ctx.global.state.update(scope, val)
-            ctx.global.state.throttle = throttle
+            ctx.global.state.updateNow(scope, val)
           }
         )
       }

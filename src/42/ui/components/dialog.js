@@ -43,7 +43,7 @@ export class Dialog extends Component {
 
   async apply() {
     if (this._.parentCtx) {
-      const clone = structuredClone(this._.ctx.global.rack.value)
+      const clone = structuredClone(this._.ctx.global.store.value)
       this._.parentCtx.global.state.set(this._.parentCtx.scope, clone)
     }
   }
@@ -65,7 +65,7 @@ export class Dialog extends Component {
   $create({ root, content, label, config, ctx }) {
     if (config.live === false) {
       this._.parentCtx = ctx
-      const data = this._.parentCtx.global.rack.get(this._.parentCtx.scope)
+      const data = this._.parentCtx.global.store.get(this._.parentCtx.scope)
 
       ctx = makeNewContext()
       ctx.cancel = this._.parentCtx.cancel.fork()

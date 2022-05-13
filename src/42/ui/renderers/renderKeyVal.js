@@ -23,14 +23,14 @@ export default function renderKeyVal(options, renderer = setVal) {
   } else if (type === "object" && "watch" in val) {
     const scope = joinScope(ctx?.scope ?? "", val.watch)
     return void registerRenderer(ctx, scope, () =>
-      renderer(ctx.global.rack.get(scope), key, el)
+      renderer(ctx.global.store.get(scope), key, el)
     )
   }
 
   if (ctx && dynamic === true) {
     const scope = joinScope(ctx?.scope ?? "", key)
     return void registerRenderer(ctx, scope, () =>
-      renderer(ctx.global.rack.get(scope), key, el)
+      renderer(ctx.global.store.get(scope), key, el)
     )
   }
 

@@ -7,13 +7,14 @@ import locate from "../../fabric/locator/locate.js"
 import Emitter from "../../fabric/class/Emitter.js"
 
 export default class State extends Emitter {
-  #update
-  #updateFn
+  #update = {
+    throttle: false,
+  }
 
   constructor(ctx) {
     super()
     this.renderers = ctx.global.renderers
-    this.rack = ctx.global.rack
+    this.store = ctx.global.store
     this.ctx = ctx
 
     this.queue = {
@@ -22,7 +23,7 @@ export default class State extends Emitter {
       objects: new Set(),
     }
 
-    this.#updateFn = () => {
+    this.#update.now = () => {
       const changes = new Set()
 
       for (const { path, val, oldVal } of this.queue.lengths) {
@@ -70,13 +71,14 @@ export default class State extends Emitter {
       this.queue.objects.clear()
     }
 
-    this.#update = this.#updateFn
+    this.#update.onrepaint = paintThrottle(this.#update.now)
+    this.#update.fn = this.#update.now
 
     this.proxy = observe(
-      this.rack.value, //
+      this.store.value, //
       {
-        signal: ctx.cancel.signal,
         recursive: true,
+        signal: ctx.cancel.signal,
         scopes: ctx.global.scopes,
       },
       (path, val, oldVal) => this.update(path, val, oldVal)
@@ -84,10 +86,11 @@ export default class State extends Emitter {
   }
 
   get throttle() {
-    return this.#update !== this.#updateFn
+    return this.#update.fn === this.#update.onrepaint
   }
   set throttle(value) {
-    this.#update = value ? paintThrottle(this.#updateFn) : this.#updateFn
+    this.#update.throttle = value
+    this.#update.fn = value ? this.#update.onrepaint : this.#update.now
   }
 
   update(path, val, oldVal) {
@@ -101,11 +104,18 @@ export default class State extends Emitter {
       this.queue.paths.add(path)
     }
 
-    this.#update()
+    this.#update.fn()
+  }
+
+  updateNow(path, val, oldVal) {
+    const { throttle } = this
+    this.throttle = false
+    this.update(path, val, oldVal)
+    this.throttle = throttle
   }
 
   get value() {
-    return this.rack.value
+    return this.store.value
   }
   set value(value) {
     for (const key in this.proxy) {
@@ -131,7 +141,7 @@ export default class State extends Emitter {
   }
 
   get(path) {
-    return this.rack.get(path)
+    return this.store.get(path)
   }
 
   delete(path) {

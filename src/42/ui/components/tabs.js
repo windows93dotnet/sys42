@@ -39,7 +39,7 @@ class Tabs extends Component {
       this.items.push(item)
     }
 
-    const scopeIsArray = Array.isArray(ctx.global.rack.get(ctx.scope))
+    const scopeIsArray = Array.isArray(ctx.global.store.get(ctx.scope))
 
     const tab = [repeat?.label ?? "{{label|render}}"]
 

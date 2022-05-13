@@ -1638,7 +1638,7 @@ test("computed", async (t) => {
   })
 
   t.eq(app.data.parsed, ["FOO", "BAR"])
-  t.eq(app.state.rack.value, {
+  t.eq(app.state.store.value, {
     formated: "FOO/BAR",
   })
 

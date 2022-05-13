@@ -112,7 +112,7 @@ if (inTop) {
           if (instance.pause) return
 
           const data = new Map()
-          for (const path of queue) data.set(path, ctx.global.rack.get(path))
+          for (const path of queue) data.set(path, ctx.global.store.get(path))
 
           send("layer->data", { id, data })
         })
@@ -201,13 +201,13 @@ export default async function layerManager(layerName, options) {
                   const pathMinusScope = scope
                     ? path.slice(scope.length + 1)
                     : path
-                  data.set(pathMinusScope, ctx.global.rack.get(path))
+                  data.set(pathMinusScope, ctx.global.store.get(path))
                 }
 
                 bus.send("layer<-data", { layerName, id, data })
               })
 
-              if (ctx.global.rack.value) def.data = ctx.global.rack.get(scope)
+              if (ctx.global.store.value) def.data = ctx.global.store.get(scope)
             } else off = noop
 
             instance.off = () => {

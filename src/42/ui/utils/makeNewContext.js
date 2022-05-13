@@ -10,9 +10,9 @@ export default function makeNewContext(ctx = {}) {
 
   ctx.global ??= {}
   ctx.global.renderers ??= {}
-  ctx.global.rack ??= new Locator()
   ctx.global.actions ??= new Locator()
   ctx.global.filters ??= new Locator()
+  ctx.global.store ??= new Locator()
   ctx.global.scopes ??= new Map()
   ctx.global.state ??= new State(ctx)
 

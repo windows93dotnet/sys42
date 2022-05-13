@@ -50,7 +50,7 @@ function setProps(el, props, _) {
     } else if (key in _.props) {
       val = _.props[key]
     } else if (ctx.global.state.has(scope)) {
-      val = ctx.global.rack.get(scope)
+      val = ctx.global.store.get(scope)
     } else if ("default" in item) {
       val = item.default
     }
@@ -59,12 +59,12 @@ function setProps(el, props, _) {
 
     let fromRenderer = false
 
-    if (item.state) ctx.global.rack.set(scope, val)
+    if (item.state) ctx.global.store.set(scope, val)
 
     const render = (val) => {
       currentVal = val
 
-      if (item.state) ctx.global.rack.set(scope, val)
+      if (item.state) ctx.global.store.set(scope, val)
 
       if (item.css) {
         const cssVar = `--${typeof item.css === "string" ? item.css : key}`

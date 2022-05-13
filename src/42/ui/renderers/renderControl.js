@@ -10,7 +10,7 @@ export default function renderControl(el, def, ctx) {
   if (def.bind !== false) {
     const { signal } = ctx.cancel
     const handler = () => {
-      getControlData(el, ctx.global.rack)
+      getControlData(el, ctx.global.store)
       ctx.global.state.update(el.name)
     }
 
@@ -19,7 +19,7 @@ export default function renderControl(el, def, ctx) {
     }
   }
 
-  const renderer = () => setControlData(el, ctx.global.rack)
+  const renderer = () => setControlData(el, ctx.global.store)
 
   if (def.registerControl === undefined) {
     registerRenderer(ctx, el.name, renderer)
