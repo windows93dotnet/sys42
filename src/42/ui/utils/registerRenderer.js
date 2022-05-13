@@ -1,7 +1,8 @@
 import template from "../../system/formats/template.js"
 import getFilter from "../../fabric/getFilter.js"
 import getInheritedMethod from "../../fabric/dom/getInheritedMethod.js"
-import resolveScope from "./resolveScope.js"
+// import resolveScope from "./resolveScope.js"
+import joinScope from "./joinScope.js"
 import isLength from "../../fabric/type/any/is/isLength.js"
 
 function register(ctx, scope, render) {
@@ -33,7 +34,8 @@ export default function registerRenderer(ctx, scope, render) {
   if (res !== undefined) ctx.undones.push(res)
 }
 
-const resolveScopes = (ctx, arr) => arr.map((loc) => resolveScope(ctx, loc))
+// const resolveScopes = (ctx, arr) => arr.map((loc) => resolveScope(ctx, loc))
+const resolveScopes = (ctx, arr) => arr.map((loc) => joinScope(ctx.scope, loc))
 
 registerRenderer.fromDots = (ctx, arr, render) => {
   const scopes = resolveScopes(ctx, arr)

@@ -77,10 +77,11 @@ export default class State extends Emitter {
       {
         signal: ctx.cancel.signal,
         recursive: true,
-        commons: {
-          $ui: this.ui,
-          $run: this.ctx.global.actions,
-        },
+        scopes: ctx.global.components,
+        // commons: {
+        //   $ui: this.ui,
+        //   $run: this.ctx.global.actions,
+        // },
       },
       (path, val, oldVal) => this.update(path, val, oldVal)
     )

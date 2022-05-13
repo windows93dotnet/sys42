@@ -3,6 +3,7 @@
 
 import equal from "../type/any/equal.js"
 import exists from "./exists.js"
+import joinScope from "../../ui/utils/joinScope.js"
 
 function escapeDotNotation(key) {
   return key.replaceAll(".", "\\.")
@@ -28,6 +29,17 @@ export default function observe(root, options, fn) {
           if (typeof prop !== "string") return false
 
           if (prop.startsWith("@") || prop.startsWith("#")) return true
+
+          if (options?.scopes) {
+            let scope = path.join(".")
+            if (options.scopes.has(scope)) {
+              const component = options.scopes.get(scope)
+              if (prop in component) return true
+            }
+
+            scope = joinScope(scope, prop)
+            if (options.scopes.has(scope)) return true
+          }
 
           if (options?.recursive) {
             let prev = parent
@@ -105,6 +117,19 @@ export default function observe(root, options, fn) {
             }
           }
 
+          if (options?.scopes) {
+            let scope = path.join(".")
+            if (options.scopes.has(scope)) {
+              const component = options.scopes.get(scope)
+              if (prop in component) return component[prop]
+            }
+
+            scope = joinScope(scope, prop)
+            if (options.scopes.has(scope)) {
+              return options.scopes.get(scope)
+            }
+          }
+
           if (options?.recursive && !Reflect.has(target, prop, receiver)) {
             let prev = parent
             let i = 0
@@ -116,9 +141,9 @@ export default function observe(root, options, fn) {
             if (prev && prop in prev) return prev[prop]
           }
 
-          if (options?.commons && prop in options.commons) {
-            return options.commons[prop]
-          }
+          // if (options?.commons && prop in options.commons) {
+          //   return options.commons[prop]
+          // }
 
           return
         }

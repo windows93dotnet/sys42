@@ -8,6 +8,7 @@ import populateContext from "../utils/populateContext.js"
 import renderAttributes from "../renderers/renderAttributes.js"
 import renderKeyVal from "../renderers/renderKeyVal.js"
 import joinScope from "../utils/joinScope.js"
+// import uid from "../../fabric/uid.js"
 import { toKebabCase } from "../../fabric/type/string/letters.js"
 import CONVERTERS from "./Component/CONVERTERS.js"
 
@@ -65,8 +66,10 @@ function setProps(el, props, _) {
       }
     }
 
-    renderKeyVal({ el, ctx, key, val, dynamic: true }, (val) => {
+    renderKeyVal({ el, ctx, key, val }, (val) => {
       currentVal = val
+
+      if (item.state) ctx.global.rack.set(scope, val)
 
       if (item.css) {
         const cssVar = `--${typeof item.css === "string" ? item.css : key}`
@@ -166,6 +169,7 @@ export default class Component extends HTMLElement {
     _.def.component = this
     this._.observed = {}
     this._.ctx = makeNewContext(_.ctx)
+    this._.ctx.global.components.set(this._.ctx.scope, this)
     this._.ctx.undones = new Undones()
     this._.ctx.cancel = this._.ctx.cancel?.fork(this.localName)
 
@@ -193,7 +197,10 @@ export default class Component extends HTMLElement {
       "actions",
     ])
 
-    if (def) render(def, this._.ctx, this)
+    if (def) {
+      render(def, this._.ctx, this)
+    }
+
     const undonesTokens = await this._.ctx.undones.done()
 
     await this.postrender?.(this._)
