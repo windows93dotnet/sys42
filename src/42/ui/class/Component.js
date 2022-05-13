@@ -59,14 +59,9 @@ function setProps(el, props, _) {
 
     let fromRenderer = false
 
-    if (fromView) {
-      observed[attribute] = (val) => {
-        if (fromRenderer) return
-        ctx.global.state.set(scope, fromView(val, attribute, el, item))
-      }
-    }
+    if (item.state) ctx.global.rack.set(scope, val)
 
-    renderKeyVal({ el, ctx, key, val }, (val) => {
+    const render = (val) => {
       currentVal = val
 
       if (item.state) ctx.global.rack.set(scope, val)
@@ -91,12 +86,23 @@ function setProps(el, props, _) {
         } else el.setAttribute(attribute, toView(val, key, el, item))
         fromRenderer = false
       }
-    })
+    }
+
+    renderKeyVal({ el, ctx, key, val, dynamic: item.state }, render)
+
+    if (fromView) {
+      observed[attribute] = (val) => {
+        if (fromRenderer) return
+        render(fromView(val, attribute, el, item))
+        ctx.global.state.update(scope)
+      }
+    }
 
     Object.defineProperty(el, key, {
       configurable: true,
       set(val) {
-        ctx.global.state.set(scope, val)
+        render(val)
+        ctx.global.state.update(scope)
       },
       get() {
         return currentVal

@@ -24,6 +24,19 @@ Component.define({
   content: "foo: {{foo}}, bar: {{bar}}",
 })
 
+Component.define({
+  tag: "ui-t-props-state",
+  props: {
+    bar: {
+      type: "number",
+      default: 2,
+      state: true,
+      reflect: true,
+    },
+  },
+  content: "foo: {{foo}}, bar: {{bar}}",
+})
+
 async function checkDefine(component, t, args, expected) {
   const fn = await (typeof component === "object" ||
   /^\s*class/.test(component.toString())
@@ -138,7 +151,6 @@ test.tasks(
     },
 
     {
-      // only: true,
       def: {
         content: { type: "ui-t-props" },
         data: { foo: 1 },
@@ -147,9 +159,9 @@ test.tasks(
       async check(t, app) {
         const el = app.get("ui-t-props")
 
-        t.is(app.state.get("bar"), 2)
+        t.is(el.bar, 2)
 
-        app.state.set("bar", 3)
+        el.bar = 3
         await repaint()
 
         t.is(
@@ -158,7 +170,6 @@ test.tasks(
         )
 
         el.bar = 4
-        t.is(app.state.get("bar"), 4)
         await repaint()
 
         t.is(
@@ -167,12 +178,50 @@ test.tasks(
         )
 
         el.setAttribute("bar", "5")
-        t.is(app.state.get("bar"), 5)
         await repaint()
 
         t.is(
           app.el.innerHTML,
           '<ui-t-props bar="5">foo: 1, bar: 5</ui-t-props>'
+        )
+      },
+    },
+
+    {
+      def: {
+        content: { type: "ui-t-props-state" },
+        data: { foo: 1 },
+      },
+      expected: '<ui-t-props-state bar="2">foo: 1, bar: 2</ui-t-props-state>',
+      async check(t, app) {
+        const el = app.get("ui-t-props-state")
+
+        t.is(app.state.get("bar"), 2)
+
+        app.state.set("bar", 3)
+        await repaint()
+
+        t.is(
+          app.el.innerHTML,
+          '<ui-t-props-state bar="3">foo: 1, bar: 3</ui-t-props-state>'
+        )
+
+        el.bar = 4
+        t.is(app.state.get("bar"), 4)
+        await repaint()
+
+        t.is(
+          app.el.innerHTML,
+          '<ui-t-props-state bar="4">foo: 1, bar: 4</ui-t-props-state>'
+        )
+
+        el.setAttribute("bar", "5")
+        t.is(app.state.get("bar"), 5)
+        await repaint()
+
+        t.is(
+          app.el.innerHTML,
+          '<ui-t-props-state bar="5">foo: 1, bar: 5</ui-t-props-state>'
         )
       },
     },
@@ -250,25 +299,70 @@ test.tasks(
       },
       expected: "<ui-t-css></ui-t-css>",
       async check(t, app) {
-        app.state.set("foo", "red")
+        const el = app.el.firstChild
+        el.foo = "red"
         await repaint()
 
         t.is(app.el.innerHTML, '<ui-t-css style="--foo:red;"></ui-t-css>')
 
-        app.state.set("foo", undefined)
+        el.foo = undefined
         await repaint()
 
         t.is(app.el.innerHTML, '<ui-t-css style=""></ui-t-css>')
 
-        app.state.set("foo", "blue")
+        el.foo = "blue"
         await repaint()
 
         t.is(app.el.innerHTML, '<ui-t-css style="--foo:blue;"></ui-t-css>')
 
-        app.state.delete("foo")
+        el.foo = undefined
         await repaint()
 
         t.is(app.el.innerHTML, '<ui-t-css style=""></ui-t-css>')
+      },
+    },
+
+    {
+      component: {
+        tag: "ui-t-css-state",
+        props: {
+          foo: {
+            type: "string",
+            css: true,
+            state: true,
+          },
+        },
+      },
+      def: {
+        content: { type: "ui-t-css-state" /* , foo: "red" */ },
+      },
+      expected: "<ui-t-css-state></ui-t-css-state>",
+      async check(t, app) {
+        app.state.set("foo", "red")
+        await repaint()
+
+        t.is(
+          app.el.innerHTML,
+          '<ui-t-css-state style="--foo:red;"></ui-t-css-state>'
+        )
+
+        app.state.set("foo", undefined)
+        await repaint()
+
+        t.is(app.el.innerHTML, '<ui-t-css-state style=""></ui-t-css-state>')
+
+        app.state.set("foo", "blue")
+        await repaint()
+
+        t.is(
+          app.el.innerHTML,
+          '<ui-t-css-state style="--foo:blue;"></ui-t-css-state>'
+        )
+
+        app.state.delete("foo")
+        await repaint()
+
+        t.is(app.el.innerHTML, '<ui-t-css-state style=""></ui-t-css-state>')
       },
     },
 
