@@ -175,7 +175,7 @@ export default class Component extends HTMLElement {
     _.def.component = this
     this._.observed = {}
     this._.ctx = makeNewContext(_.ctx)
-    this._.ctx.global.components.set(this._.ctx.scope, this)
+    this._.ctx.global.scopes.set(this._.ctx.scope, this)
     this._.ctx.undones = new Undones()
     this._.ctx.cancel = this._.ctx.cancel?.fork(this.localName)
 

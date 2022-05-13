@@ -2,7 +2,7 @@
 /* eslint-disable complexity */
 
 import equal from "../type/any/equal.js"
-import exists from "./exists.js"
+// import exists from "./exists.js"
 import joinScope from "../../ui/utils/joinScope.js"
 
 function escapeDotNotation(key) {
@@ -87,34 +87,34 @@ export default function observe(root, options, fn) {
               return (prop) => Reflect.has(target, prop, receiver)
             }
 
-            if (prop === "@findPath") {
-              return (prop) => {
-                prop = String(prop)
+            // if (prop === "@findPath") {
+            //   return (prop) => {
+            //     prop = String(prop)
 
-                if (prop.startsWith("@") || prop.startsWith("#")) {
-                  return path.join(".")
-                }
+            //     if (prop.startsWith("@") || prop.startsWith("#")) {
+            //       return path.join(".")
+            //     }
 
-                let prev = target
-                let i = 0
+            //     let prev = target
+            //     let i = 0
 
-                const tokens = exists.parse(prop)
+            //     const tokens = exists.parse(prop)
 
-                if (tokens.length === 1) {
-                  while (prev && prop in prev === false) {
-                    if (i++ > WHILE_LIMIT) throw new Error(WHILE_LIMIT_ERROR)
-                    prev = proxies.get(prev)?.["@parent"]?.["@target"]
-                  }
-                } else {
-                  while (prev && exists.evaluate(prev, tokens) === false) {
-                    if (i++ > WHILE_LIMIT) throw new Error(WHILE_LIMIT_ERROR)
-                    prev = proxies.get(prev)?.["@parent"]?.["@target"]
-                  }
-                }
+            //     if (tokens.length === 1) {
+            //       while (prev && prop in prev === false) {
+            //         if (i++ > WHILE_LIMIT) throw new Error(WHILE_LIMIT_ERROR)
+            //         prev = proxies.get(prev)?.["@parent"]?.["@target"]
+            //       }
+            //     } else {
+            //       while (prev && exists.evaluate(prev, tokens) === false) {
+            //         if (i++ > WHILE_LIMIT) throw new Error(WHILE_LIMIT_ERROR)
+            //         prev = proxies.get(prev)?.["@parent"]?.["@target"]
+            //       }
+            //     }
 
-                return proxies.get(prev)?.["@path"] ?? ""
-              }
-            }
+            //     return proxies.get(prev)?.["@path"] ?? ""
+            //   }
+            // }
           }
 
           if (options?.scopes) {
@@ -140,10 +140,6 @@ export default function observe(root, options, fn) {
 
             if (prev && prop in prev) return prev[prop]
           }
-
-          // if (options?.commons && prop in options.commons) {
-          //   return options.commons[prop]
-          // }
 
           return
         }

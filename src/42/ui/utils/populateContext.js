@@ -65,7 +65,11 @@ export default function populateContext(ctx, def) {
         renderKeyVal(
           { el: def.component, ctx, key, val, dynamic: true },
           (val) => {
-            ctx.global.state.set(scope, val)
+            ctx.global.scopes.set(scope, val)
+            const { throttle } = ctx.global.state
+            ctx.global.state.throttle = false
+            ctx.global.state.update(scope, val)
+            ctx.global.state.throttle = throttle
           }
         )
       }
