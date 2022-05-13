@@ -20,7 +20,11 @@ export default function populateContext(ctx, def) {
       ctx.global.rack.assign(ctx.scope, def.data)
     } else throw new TypeError(`data must be an array or object: ${type}`)
 
-    if ("schema" in def === false && "content" in def === false) {
+    if (
+      "schema" in def === false &&
+      "content" in def === false &&
+      "repeat" in def === false
+    ) {
       def.schema = generateSchema(def.data)
     }
   }

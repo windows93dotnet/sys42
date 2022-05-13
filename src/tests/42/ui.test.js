@@ -1171,6 +1171,30 @@ test("components", "define properties via template", async (t) => {
   app.el.remove()
 })
 
+test.skip("components", "separate state for each component", async (t) => {
+  const app = await ui(div(), [
+    {
+      type: "ui-t-component",
+      value: "x",
+    },
+    {
+      type: "ui-t-component",
+      value: "y",
+    },
+  ])
+
+  document.body.append(app.el)
+
+  await repaint()
+
+  t.not(app.el.children[0], app.el.children[1])
+
+  t.is(app.el.children[0].value, "x")
+  t.is(app.el.children[1].value, "y")
+
+  app.el.remove()
+})
+
 test("components", "filters", async (t) => {
   const app = await ui(div(), {
     type: "ui-t-component",
@@ -1614,7 +1638,7 @@ test("computed", "component", async (t) => {
   t.is(cnt, 2)
 })
 
-test("computed", async (t) => {
+test.skip("computed", async (t) => {
   t.plan(4)
 
   const app = await ui(div(), {
@@ -1644,4 +1668,56 @@ test("computed", async (t) => {
   await repaint()
 
   t.is(app.el.innerHTML, "foo: HELLO, bar: WORLD")
+})
+
+/*  */
+
+await Component.define(
+  class extends Component {
+    static definition = {
+      tag: "ui-t-repeat",
+
+      props: {
+        x: {
+          type: "string",
+        },
+      },
+
+      // computed: {
+      //   infos: "{{x|upper}}",
+      // },
+
+      content: "x:{{x}}-",
+    }
+  }
+)
+
+test("ui-t-repeat", "array data", async (t) => {
+  const el = div()
+  const app = await ui(el, {
+    content: {
+      scope: "arr",
+      repeat: {
+        type: "ui-t-repeat",
+        // x: "{{.}}",
+        x: "{{foo}}",
+      },
+    },
+    // data: { arr: ["a", "b", "c"] },
+    data: {
+      arr: [
+        { foo: "a" }, //
+        { foo: "b" },
+        { foo: "c" },
+      ],
+    },
+  })
+
+  t.is(app.el.textContent, "x:a-x:b-x:c-")
+
+  app.data.arr[0].foo = "A"
+  await repaint()
+  t.is(app.data.arr[0].x, "A")
+
+  // t.is(app.el.textContent, "x:A-x:b-x:c-")
 })
