@@ -1743,7 +1743,7 @@ test("ui-t-repeat", "multiple scopes", async (t) => {
   t.is(app.el.textContent, "x:a-x:b-")
 })
 
-test("ui-t-repeat", "single scopes", async (t) => {
+test.skip("ui-t-repeat", "single scopes", async (t) => {
   const el = div()
   const app = await ui(el, {
     content: [
@@ -1782,6 +1782,7 @@ test("ui-t-repeat", "array data", async (t) => {
   t.is(app.el.textContent, "x:a-x:b-")
 
   app.data.arr[0].foo = "A"
+  await repaint()
   await repaint()
 
   t.is(app.el.textContent, "x:A-x:b-")

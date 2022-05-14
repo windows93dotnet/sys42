@@ -8,9 +8,9 @@ import populateContext from "../utils/populateContext.js"
 import renderAttributes from "../renderers/renderAttributes.js"
 import renderKeyVal from "../renderers/renderKeyVal.js"
 import joinScope from "../utils/joinScope.js"
-// import uid from "../../fabric/uid.js"
 import { toKebabCase } from "../../fabric/type/string/letters.js"
 import CONVERTERS from "./Component/CONVERTERS.js"
+// import uid from "../../fabric/uid.js"
 
 function setProps(el, props, _) {
   const { ctx, observed } = el._
@@ -88,13 +88,21 @@ function setProps(el, props, _) {
       }
     }
 
-    renderKeyVal({ el, ctx, key, val, dynamic: item.state }, render)
+    renderKeyVal(
+      { el, ctx, key, val, dynamic: item.state },
+      (val, changedScope) => {
+        render(val)
+        if (!item.state && changedScope && scope !== changedScope) {
+          ctx.global.state.updateNow(scope, val)
+        }
+      }
+    )
 
     if (fromView) {
       observed[attribute] = (val) => {
         if (fromRenderer) return
         render(fromView(val, attribute, el, item))
-        ctx.global.state.update(scope)
+        ctx.global.state.update(scope, val)
       }
     }
 
@@ -102,7 +110,7 @@ function setProps(el, props, _) {
       configurable: true,
       set(val) {
         render(val)
-        ctx.global.state.update(scope)
+        ctx.global.state.update(scope, val)
       },
       get() {
         return currentVal
@@ -172,9 +180,15 @@ export default class Component extends HTMLElement {
 
     const _ = normalizeDefinition(definition, ...args)
 
+    // if (_.def.scope === undefined) {
+    //   _.def.scope = joinScope(_.ctx.scope, uid())
+    //   _.ctx.scope = _.def.scope
+    // }
+
     _.def.component = this
     this._.observed = {}
     this._.ctx = makeNewContext(_.ctx)
+
     this._.ctx.global.scopes.set(this._.ctx.scope, this)
     this._.ctx.undones = new Undones()
     this._.ctx.cancel = this._.ctx.cancel?.fork(this.localName)

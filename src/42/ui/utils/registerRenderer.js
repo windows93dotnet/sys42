@@ -76,12 +76,9 @@ registerRenderer.fromTemplate = (ctx, el, parsedTemplate, render) => {
     thisArg: { el, ctx },
   })
 
-  const fn = render
-  render = async () => {
+  registerRenderer(ctx, scopes, async (key) => {
     const locals = ctx.global.state.getProxy(ctx.scope)
-    fn(await renderTemplate(locals))
+    render(await renderTemplate(locals), key)
     return "registerRenderer.fromTemplate"
-  }
-
-  registerRenderer(ctx, scopes, render)
+  })
 }
