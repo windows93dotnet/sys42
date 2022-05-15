@@ -1205,7 +1205,7 @@ test("components", "filters", "attribute defined by data", async (t) => {
   t.is(app.el.firstChild.foo, "HELLO")
   t.is(
     app.el.innerHTML,
-    '<ui-t-component class="derp" foo="HELLO"></ui-t-component>'
+    '<ui-t-component foo="HELLO" class="derp"></ui-t-component>'
   )
 
   app.el.remove()

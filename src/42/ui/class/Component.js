@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import render from "../render.js"
 import defer from "../../fabric/type/promise/defer.js"
 import omit from "../../fabric/type/object/omit.js"
@@ -10,8 +11,10 @@ import joinScope from "../utils/joinScope.js"
 import { toKebabCase } from "../../fabric/type/string/letters.js"
 import CONVERTERS from "./Component/CONVERTERS.js"
 
-function setProps(el, props, _) {
+async function setProps(el, props, _) {
   const { ctx, observed } = el._
+
+  const pending = []
 
   for (let [key, item] of Object.entries(props)) {
     const scope = joinScope(ctx.scope, key)
@@ -105,9 +108,27 @@ function setProps(el, props, _) {
       },
     })
 
+    if (item.computed) {
+      pending.push({ el, ctx, key, val: item.computed, item, scope })
+    } else {
+      renderKeyVal(
+        { el, ctx, key, val, dynamic: item.state },
+        (val, key, el, changedScope) => {
+          render(val)
+          if (!item.state && changedScope && scope !== changedScope) {
+            ctx.global.state.updateNow(scope, val)
+          }
+        }
+      )
+    }
+  }
+
+  await ctx.undones.done()
+
+  for (const { el, ctx, key, val, item, scope } of pending) {
     renderKeyVal(
       { el, ctx, key, val, dynamic: item.state },
-      (val, changedScope) => {
+      (val, key, el, changedScope) => {
         render(val)
         if (!item.state && changedScope && scope !== changedScope) {
           ctx.global.state.updateNow(scope, val)
@@ -115,6 +136,8 @@ function setProps(el, props, _) {
       }
     )
   }
+
+  await ctx.undones.done()
 }
 
 export default class Component extends HTMLElement {
@@ -180,25 +203,26 @@ export default class Component extends HTMLElement {
 
     _.def.component = this
     this._.observed = {}
-    const ctx = { ..._.ctx }
-    ctx.global = { ..._.ctx.global }
-    ctx.cancel = _.ctx.cancel?.fork(this.localName)
+
+    let { ctx } = _
+    ctx = { ...ctx }
+    ctx.global = { ...ctx.global }
+    ctx.cancel = ctx.cancel?.fork(this.localName)
     ctx.undones = undefined
     ctx.global.state = undefined
-    this._.ctx = makeNewContext(ctx, this)
+    ctx = makeNewContext(ctx, this)
 
-    if (props) setProps(this, props, _)
-    if (_.attrs) renderAttributes(this, this._.ctx, _.attrs)
+    this._.ctx = ctx
 
-    await this._.ctx.undones.done()
+    if (props) await setProps(this, props, _)
+    if (_.attrs) renderAttributes(this, ctx, _.attrs)
 
-    populateContext(this._.ctx, _.def)
-
-    await this._.ctx.undones.done()
+    populateContext(ctx, _.def)
+    await ctx.undones.done()
 
     Object.defineProperty(this._, "signal", {
       configurable: true,
-      get: () => this._.ctx.cancel.signal,
+      get: () => ctx.cancel.signal,
     })
 
     let def = await this.prerender?.(this._)
@@ -211,11 +235,9 @@ export default class Component extends HTMLElement {
       "actions",
     ])
 
-    if (def) {
-      render(def, this._.ctx, this)
-    }
+    render(def, ctx, this)
 
-    const undonesTokens = await this._.ctx.undones.done()
+    const undonesTokens = await ctx.undones.done()
 
     await this.postrender?.(this._)
     this.#rendered = true

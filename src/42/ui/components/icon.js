@@ -7,15 +7,16 @@ const TREEITEM_PARENTS = new Set(["tree", "treegrid", "group"])
 class Icon extends Component {
   static definition = {
     tag: "ui-icon",
+
     props: {
       path: {
         type: "string",
         reflect: true,
       },
-      infos: {
-        type: "object",
-        computed: "{{path|getInfos}}",
-      },
+      // infos: {
+      //   type: "object",
+      //   computed: "{{path|getInfos}}",
+      // },
     },
 
     tabIndex: 0,
@@ -36,7 +37,7 @@ class Icon extends Component {
           aria: { hidden: true },
           content: [
             {
-              type: "img.ui-icon__image", //
+              type: "img.ui-icon__image",
               src: "{{image}}",
             },
             {
@@ -46,7 +47,7 @@ class Icon extends Component {
           ],
         },
         {
-          type: ".ui-icon__label", //
+          type: ".ui-icon__label",
           content: [
             { type: "svg", content: { type: "rect" } },
             { type: "span", content: "{{stem}}" },
@@ -68,6 +69,7 @@ class Icon extends Component {
   }
 
   getInfos(path) {
+    console.log(111, path)
     const parsed = parseFilename(path)
     parsed.image = theme.getIconImage(parsed)
     parsed.isFile = parsed.protocol === "file:"

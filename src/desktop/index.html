@@ -6,6 +6,7 @@
 
 <script type="module">
   import ui from "../42/ui.js"
+
   // ui([
   //   {
   //     type: "ui-icon",
@@ -16,6 +17,18 @@
   //     path: "/42/os/cmd/",
   //   },
   // ])
+
+  ui({
+    content: [
+      {
+        type: "ui-icon",
+        path: "{{x}}",
+      },
+    ],
+    data: {
+      x: "/42/os/cmd/open.cmd.js",
+    },
+  })
 
   // ui({
   //   content: {
@@ -33,21 +46,21 @@
   //   },
   // })
 
-  ui({
-    content: {
-      scope: "arr",
-      repeat: {
-        type: "ui-icon",
-        path: "{{.}}",
-      },
-    },
-    data: {
-      arr: [
-        "/42/os/cmd/open.cmd.js", //
-        "/42/os/cmd/",
-      ],
-    },
-  })
+  // ui({
+  //   content: {
+  //     scope: "arr",
+  //     repeat: {
+  //       type: "ui-icon",
+  //       path: "{{.}}",
+  //     },
+  //   },
+  //   data: {
+  //     arr: [
+  //       "/42/os/cmd/open.cmd.js", //
+  //       "/42/os/cmd/",
+  //     ],
+  //   },
+  // })
 </script>
 
 <script type="_module">

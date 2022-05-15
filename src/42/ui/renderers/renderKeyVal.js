@@ -18,21 +18,21 @@ export default function renderKeyVal(options, renderer = setVal) {
   if (type === "string") {
     const parsed = template.parse(val)
     if (parsed.substitutions.length > 0) {
-      return void fromTemplate(ctx, el, parsed, (val, key) =>
-        renderer(val, key, el)
+      return void fromTemplate(ctx, el, parsed, (val, changedScope) =>
+        renderer(val, key, el, changedScope)
       )
     }
   } else if (type === "object" && "watch" in val) {
     const scope = joinScope(ctx?.scope ?? "", val.watch)
-    return void registerRenderer(ctx, scope, (key) =>
-      renderer(ctx.global.store.get(scope), key, el)
+    return void registerRenderer(ctx, scope, (changedScope) =>
+      renderer(ctx.global.store.get(scope), key, el, changedScope)
     )
   }
 
   if (ctx && dynamic === true) {
     const scope = joinScope(ctx?.scope ?? "", key)
-    return void registerRenderer(ctx, scope, (key) =>
-      renderer(ctx.global.store.get(scope), key, el)
+    return void registerRenderer(ctx, scope, (changedScope) =>
+      renderer(ctx.global.store.get(scope), key, el, changedScope)
     )
   }
 
