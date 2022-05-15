@@ -30,6 +30,8 @@ export default function observe(root, options, fn) {
 
           if (prop.startsWith("@") || prop.startsWith("#")) return true
 
+          if (options?.component && prop in options.component) return true
+
           if (options?.scopes) {
             let scope = path.join(".")
             if (options.scopes.has(scope)) {
@@ -115,6 +117,10 @@ export default function observe(root, options, fn) {
             //     return proxies.get(prev)?.["@path"] ?? ""
             //   }
             // }
+          }
+
+          if (options?.component && prop in options.component) {
+            return options.component[prop]
           }
 
           if (options?.scopes) {

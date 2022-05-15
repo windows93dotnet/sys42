@@ -1653,44 +1653,44 @@ test("computed", async (t) => {
 /* components states
 ==================== */
 
-// test.only("components", "separate state for each component", async (t) => {
-//   await Component.define({
-//     tag: "ui-t-cpn-state",
-//     props: {
-//       value: {
-//         type: "string",
-//         reflect: true,
-//       },
-//     },
-//     content: "value: {{value}} - ",
-//   })
+test("components", "separate state for each component", async (t) => {
+  await Component.define({
+    tag: "ui-t-cpn-state",
+    props: {
+      value: {
+        type: "string",
+        reflect: true,
+      },
+    },
+    content: "value: {{value}} - ",
+  })
 
-//   const app = await ui(div(), [
-//     {
-//       type: "ui-t-cpn-state",
-//       value: "x",
-//     },
-//     {
-//       type: "ui-t-cpn-state",
-//       value: "y",
-//     },
-//   ])
+  const app = await ui(div(), [
+    {
+      type: "ui-t-cpn-state",
+      value: "x",
+    },
+    {
+      type: "ui-t-cpn-state",
+      value: "y",
+    },
+  ])
 
-//   document.body.append(app.el)
+  document.body.append(app.el)
 
-//   await repaint()
+  await repaint()
 
-//   t.not(app.el.children[0], app.el.children[1])
+  t.not(app.el.children[0], app.el.children[1])
 
-//   t.is(app.el.children[0].value, "x")
-//   t.is(app.el.children[0].getAttribute("value"), "x")
-//   t.is(app.el.children[1].value, "y")
-//   t.is(app.el.children[1].getAttribute("value"), "y")
+  t.is(app.el.children[0].value, "x")
+  t.is(app.el.children[0].getAttribute("value"), "x")
+  t.is(app.el.children[1].value, "y")
+  t.is(app.el.children[1].getAttribute("value"), "y")
 
-//   t.is(app.el.textContent, "value: x - value: y - ")
+  t.is(app.el.textContent, "value: x - value: y - ")
 
-//   app.el.remove()
-// })
+  app.el.remove()
+})
 
 await Component.define(
   class extends Component {
@@ -1721,6 +1721,34 @@ test("ui-t-repeat", async (t) => {
   })
 
   t.is(app.el.textContent, "x:a-")
+
+  app.get("ui-t-repeat").x = "A"
+  await repaint()
+
+  t.is(app.el.textContent, "x:A-")
+})
+
+test("ui-t-repeat", async (t) => {
+  const el = div()
+  const app = await ui(el, {
+    content: [
+      {
+        type: "ui-t-repeat",
+        x: "{{foo}}",
+      },
+    ],
+
+    data: {
+      foo: "bar",
+    },
+  })
+
+  t.is(app.el.textContent, "x:bar-")
+
+  app.data.foo = "baz"
+  await repaint()
+
+  t.is(app.el.textContent, "x:baz-")
 })
 
 test("ui-t-repeat", "multiple scopes", async (t) => {
@@ -1743,22 +1771,27 @@ test("ui-t-repeat", "multiple scopes", async (t) => {
   t.is(app.el.textContent, "x:a-x:b-")
 })
 
-test.skip("ui-t-repeat", "single scopes", async (t) => {
+test("ui-t-repeat", "single scopes", async (t) => {
   const el = div()
   const app = await ui(el, {
     content: [
       {
-        type: "ui-t-repeat",
+        type: "ui-t-repeat#a",
         x: "a",
       },
       {
-        type: "ui-t-repeat",
+        type: "ui-t-repeat#b",
         x: "b",
       },
     ],
   })
 
   t.is(app.el.textContent, "x:a-x:b-")
+
+  app.get("#b").x = "B"
+  await repaint()
+
+  t.is(app.el.textContent, "x:a-x:B-")
 })
 
 test("ui-t-repeat", "array data", async (t) => {

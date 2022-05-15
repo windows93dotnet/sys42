@@ -1,6 +1,5 @@
 import render from "../render.js"
 import defer from "../../fabric/type/promise/defer.js"
-import Undones from "../../fabric/class/Undones.js"
 import omit from "../../fabric/type/object/omit.js"
 import normalizeDefinition from "../utils/normalizeDefinition.js"
 import makeNewContext from "../utils/makeNewContext.js"
@@ -10,7 +9,6 @@ import renderKeyVal from "../renderers/renderKeyVal.js"
 import joinScope from "../utils/joinScope.js"
 import { toKebabCase } from "../../fabric/type/string/letters.js"
 import CONVERTERS from "./Component/CONVERTERS.js"
-// import uid from "../../fabric/uid.js"
 
 function setProps(el, props, _) {
   const { ctx, observed } = el._
@@ -88,16 +86,6 @@ function setProps(el, props, _) {
       }
     }
 
-    renderKeyVal(
-      { el, ctx, key, val, dynamic: item.state },
-      (val, changedScope) => {
-        render(val)
-        if (!item.state && changedScope && scope !== changedScope) {
-          ctx.global.state.updateNow(scope, val)
-        }
-      }
-    )
-
     if (fromView) {
       observed[attribute] = (val) => {
         if (fromRenderer) return
@@ -116,6 +104,16 @@ function setProps(el, props, _) {
         return currentVal
       },
     })
+
+    renderKeyVal(
+      { el, ctx, key, val, dynamic: item.state },
+      (val, changedScope) => {
+        render(val)
+        if (!item.state && changedScope && scope !== changedScope) {
+          ctx.global.state.updateNow(scope, val)
+        }
+      }
+    )
   }
 }
 
@@ -180,18 +178,14 @@ export default class Component extends HTMLElement {
 
     const _ = normalizeDefinition(definition, ...args)
 
-    // if (_.def.scope === undefined) {
-    //   _.def.scope = joinScope(_.ctx.scope, uid())
-    //   _.ctx.scope = _.def.scope
-    // }
-
     _.def.component = this
     this._.observed = {}
-    this._.ctx = makeNewContext(_.ctx)
-
-    this._.ctx.global.scopes.set(this._.ctx.scope, this)
-    this._.ctx.undones = new Undones()
-    this._.ctx.cancel = this._.ctx.cancel?.fork(this.localName)
+    const ctx = { ..._.ctx }
+    ctx.global = { ..._.ctx.global }
+    ctx.cancel = _.ctx.cancel?.fork(this.localName)
+    ctx.undones = undefined
+    ctx.global.state = undefined
+    this._.ctx = makeNewContext(ctx, this)
 
     if (props) setProps(this, props, _)
     if (_.attrs) renderAttributes(this, this._.ctx, _.attrs)

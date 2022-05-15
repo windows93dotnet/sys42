@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import schemaToContent from "./schemaToContent.js"
 import generateSchema from "../../fabric/type/json/generateSchema.js"
 import getBoundSchema from "../../fabric/type/json/getBoundSchema.js"
@@ -61,6 +62,7 @@ export default function populateContext(ctx, def) {
   if (def.computed) {
     for (const [key, val] of Object.entries(def.computed)) {
       const scope = joinScope(ctx.scope, key)
+      ctx.global.scopes.set(scope, undefined)
       if (typeof val === "string") {
         renderKeyVal(
           { el: def.component, ctx, key, val, dynamic: true },
@@ -71,6 +73,14 @@ export default function populateContext(ctx, def) {
         )
       }
     }
+  }
+
+  if (
+    def.scope &&
+    !ctx.global.state.has(def.scope) &&
+    !ctx.global.scopes.has(def.scope)
+  ) {
+    ctx.global.state.set(def.scope, {})
   }
 }
 

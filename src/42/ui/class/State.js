@@ -11,7 +11,7 @@ export default class State extends Emitter {
     throttle: false,
   }
 
-  constructor(ctx) {
+  constructor(ctx, component) {
     super()
     this.renderers = ctx.global.renderers
     this.store = ctx.global.store
@@ -80,6 +80,7 @@ export default class State extends Emitter {
         recursive: true,
         signal: ctx.cancel.signal,
         scopes: ctx.global.scopes,
+        component,
       },
       (path, val, oldVal) => this.update(path, val, oldVal)
     )
