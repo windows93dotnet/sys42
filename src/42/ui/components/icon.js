@@ -17,17 +17,21 @@ class Icon extends Component {
         type: "object",
         computed: "{{path|getInfos}}",
       },
+      small: {
+        type: "boolean",
+        reflect: true,
+      },
+      label: {
+        type: "boolean",
+        reflect: true,
+        default: true,
+      },
     },
 
     tabIndex: 0,
     aria: {
-      // selected: true,
       description: "{{endsWith(path, '/') ?  'folder' : 'file'}}",
     },
-
-    // computed: {
-    //   infos: "{{path|getInfos}}",
-    // },
 
     content: {
       scope: "infos",
@@ -48,10 +52,15 @@ class Icon extends Component {
         },
         {
           type: ".ui-icon__label",
+          when: "{{label}}",
           content: [
             { type: "svg", content: { type: "rect" } },
             { type: "span", content: "{{stem}}" },
-            { type: "span", when: "isFile && ext", content: "\u200B{{ext}}" },
+            {
+              type: "span",
+              when: "{{isFile && ext}}",
+              content: "\u200B{{ext}}",
+            },
           ],
         },
       ],

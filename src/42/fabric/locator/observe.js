@@ -11,6 +11,7 @@ function escapeDotNotation(key) {
 
 const WHILE_LIMIT = 64
 const WHILE_LIMIT_ERROR = "Max parent recursion"
+export const PROXY_REVOKE = Symbol.for("PROXY_REVOKE")
 
 export default function observe(root, options, fn) {
   if (typeof options === "function") fn = options
@@ -25,7 +26,7 @@ export default function observe(root, options, fn) {
 
         if (!has) {
           if (prop === Symbol.toStringTag) return true
-          if (prop === observe.REVOKE) return true
+          if (prop === PROXY_REVOKE) return true
           if (typeof prop !== "string") return false
 
           if (prop.startsWith("@") || prop.startsWith("#")) return true
@@ -63,7 +64,7 @@ export default function observe(root, options, fn) {
 
         if (val === undefined) {
           if (prop === Symbol.toStringTag) return "Proxy"
-          if (prop === observe.REVOKE) return destroy
+          if (prop === PROXY_REVOKE) return destroy
           if (typeof prop !== "string") return
 
           if (prop.startsWith("#")) {
@@ -202,4 +203,4 @@ export default function observe(root, options, fn) {
   return proxy
 }
 
-observe.REVOKE = Symbol.for("observe.REVOKE")
+observe.REVOKE = PROXY_REVOKE

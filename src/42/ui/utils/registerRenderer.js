@@ -5,6 +5,7 @@ import getFilter from "../../fabric/getFilter.js"
 import getInheritedMethod from "../../fabric/dom/getInheritedMethod.js"
 import joinScope from "./joinScope.js"
 import isLength from "../../fabric/type/any/is/isLength.js"
+import componentProxy from "./componentProxy.js"
 
 function register(ctx, scope, render) {
   ctx.global.renderers[scope] ??= new Set()
@@ -82,23 +83,13 @@ registerRenderer.fromTemplate = (ctx, el, parsedTemplate, render) => {
     let revoke
     if (el && typeof locals === "string") {
       await 0 // queueMicrotask
-      const cpn = el.nodeType === Node.ELEMENT_NODE ? el : el.parentElement
-      // TODO: find a better way
-      const revocable = Proxy.revocable(new String(locals), {
-        has(target, prop, receiver) {
-          const val = Reflect.has(target, prop, receiver)
-          if (!val && prop in cpn) return true
-          return val
-        },
-        get(target, prop, receiver) {
-          if (prop === "then") return (resolve) => resolve(target.toString())
-          const has = Reflect.has(target, prop, receiver)
-          if (!has && prop in cpn) return cpn[prop]
-          return Reflect.get(target, prop, receiver)
-        },
-      })
-      locals = revocable.proxy
-      revoke = revocable.revoke
+      const component =
+        el.nodeType === Node.ELEMENT_NODE ? el : el.parentElement
+
+      if ("definition" in component.constructor) {
+        locals = componentProxy(new String(locals), component)
+        revoke = locals[componentProxy.REVOKE]
+      }
     }
 
     render(await renderTemplate(locals), key)

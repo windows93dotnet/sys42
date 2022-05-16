@@ -8,6 +8,7 @@ import populateContext from "../utils/populateContext.js"
 import renderAttributes from "../renderers/renderAttributes.js"
 import renderKeyVal from "../renderers/renderKeyVal.js"
 import joinScope from "../utils/joinScope.js"
+import componentProxy from "../utils/componentProxy.js"
 import { toKebabCase } from "../../fabric/type/string/letters.js"
 import CONVERTERS from "./Component/CONVERTERS.js"
 
@@ -129,10 +130,13 @@ async function setProps(el, props, _) {
     renderKeyVal(
       { el, ctx, key, val, dynamic: item.state },
       (val, key, el, changedScope) => {
+        val = componentProxy(val, el)
         render(val)
         if (!item.state && changedScope && scope !== changedScope) {
           ctx.global.state.updateNow(scope, val)
         }
+
+        requestAnimationFrame(() => val[componentProxy.REVOKE]())
       }
     )
   }

@@ -4,6 +4,7 @@ import generateSchema from "../../fabric/type/json/generateSchema.js"
 import getBoundSchema from "../../fabric/type/json/getBoundSchema.js"
 import joinScope from "./joinScope.js"
 import renderKeyVal from "../renderers/renderKeyVal.js"
+import componentProxy from "./componentProxy.js"
 
 export default function populateContext(ctx, def) {
   if ("scope" in def) ctx.scope = def.scope
@@ -67,8 +68,12 @@ export default function populateContext(ctx, def) {
         renderKeyVal(
           { el: def.component, ctx, key, val, dynamic: true },
           (val) => {
+            if (def.component) val = componentProxy(val, def.component)
             ctx.global.scopes.set(scope, val)
             ctx.global.state.updateNow(scope, val)
+            if (def.component) {
+              requestAnimationFrame(() => val[componentProxy.REVOKE]())
+            }
           }
         )
       }

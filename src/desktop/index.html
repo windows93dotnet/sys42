@@ -30,37 +30,39 @@
   //   },
   // })
 
-  ui({
-    content: {
-      scope: "arr",
-      repeat: {
-        type: "ui-icon",
-        path: "{{x}}",
-      },
-    },
-    data: {
-      arr: [
-        { x: "/42/os/cmd/open.cmd.js" }, //
-        { x: "/42/os/cmd/" },
-      ],
-    },
-  })
-
   // ui({
   //   content: {
   //     scope: "arr",
   //     repeat: {
   //       type: "ui-icon",
-  //       path: "{{.}}",
+  //       path: "{{x}}",
+  //       // label: false,
   //     },
   //   },
   //   data: {
   //     arr: [
-  //       "/42/os/cmd/open.cmd.js", //
-  //       "/42/os/cmd/",
+  //       { x: "/42/os/cmd/open.cmd.js" }, //
+  //       { x: "/42/os/cmd/" },
   //     ],
   //   },
   // })
+
+  ui({
+    content: {
+      scope: "arr",
+      repeat: {
+        type: "ui-icon",
+        path: "{{.}}",
+        // label: false,
+      },
+    },
+    data: {
+      arr: [
+        "/42/os/cmd/open.cmd.js", //
+        "/42/os/cmd/",
+      ],
+    },
+  })
 </script>
 
 <script type="_module">
