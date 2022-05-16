@@ -1700,7 +1700,7 @@ test("computed", "component", async (t) => {
   t.eq(app.state.store.value, { formated: "HELLO/WORLD" })
 })
 
-test("computed", "component", async (t) => {
+test("computed", "component props", async (t) => {
   let cnt = 0
 
   await Component.define(
@@ -1996,29 +1996,17 @@ test("components states", "strings array", async (t) => {
   })
 
   t.is(app.el.textContent, "x:a-x:b-")
-  // t.eq(app.data, { arr: [{ foo: "a" }, { foo: "b" }] })
+  t.eq(app.data, { arr: ["a", "b"] })
 
-  // app.data.arr[0].foo = "A"
-  // await repaint()
+  app.data.arr[0] = "A"
+  await repaint()
 
-  // t.is(app.el.textContent, "x:A-x:b-")
-  // t.eq(app.data, { arr: [{ foo: "A" }, { foo: "b" }] })
+  t.is(app.el.textContent, "x:A-x:b-")
+  t.eq(app.data, { arr: ["A", "b"] })
 
-  // app.data.x = "X"
-  // await repaint()
+  app.data.arr.length = 1
+  await repaint()
 
-  // t.is(app.el.textContent, "x:A-x:b-")
-  // t.eq(app.data, { arr: [{ foo: "A" }, { foo: "b" }], x: "X" })
-
-  // app.data.foo = "bar"
-  // await repaint()
-
-  // t.is(app.el.textContent, "x:A-x:b-")
-  // t.eq(app.data, { arr: [{ foo: "A" }, { foo: "b" }], x: "X", foo: "bar" })
-
-  // app.data.arr.length = 1
-  // await repaint()
-
-  // t.is(app.el.textContent, "x:A-")
-  // t.eq(app.data, { arr: [{ foo: "A" }], x: "X", foo: "bar" })
+  t.is(app.el.textContent, "x:A-")
+  t.eq(app.data, { arr: ["A"] })
 })

@@ -1,7 +1,8 @@
+/* eslint-disable unicorn/new-for-builtins */
+/* eslint-disable no-new-wrappers */
 import template from "../../system/formats/template.js"
 import getFilter from "../../fabric/getFilter.js"
 import getInheritedMethod from "../../fabric/dom/getInheritedMethod.js"
-// import resolveScope from "./resolveScope.js"
 import joinScope from "./joinScope.js"
 import isLength from "../../fabric/type/any/is/isLength.js"
 
@@ -34,7 +35,6 @@ export default function registerRenderer(ctx, scope, render) {
   if (res !== undefined) ctx.undones.push(res)
 }
 
-// const resolveScopes = (ctx, arr) => arr.map((loc) => resolveScope(ctx, loc))
 const resolveScopes = (ctx, arr) => arr.map((loc) => joinScope(ctx.scope, loc))
 
 registerRenderer.fromDots = (ctx, arr, render) => {
@@ -77,8 +77,32 @@ registerRenderer.fromTemplate = (ctx, el, parsedTemplate, render) => {
   })
 
   registerRenderer(ctx, scopes, async (key) => {
-    const locals = ctx.global.state.getProxy(ctx.scope)
+    let locals = ctx.global.state.getProxy(ctx.scope)
+
+    let revoke
+    if (el && typeof locals === "string") {
+      await 0 // queueMicrotask
+      const cpn = el.nodeType === Node.ELEMENT_NODE ? el : el.parentElement
+      // TODO: find a better way
+      const revocable = Proxy.revocable(new String(locals), {
+        has(target, prop, receiver) {
+          const val = Reflect.has(target, prop, receiver)
+          if (!val && prop in cpn) return true
+          return val
+        },
+        get(target, prop, receiver) {
+          if (prop === "then") return (resolve) => resolve(target.toString())
+          const has = Reflect.has(target, prop, receiver)
+          if (!has && prop in cpn) return cpn[prop]
+          return Reflect.get(target, prop, receiver)
+        },
+      })
+      locals = revocable.proxy
+      revoke = revocable.revoke
+    }
+
     render(await renderTemplate(locals), key)
+    revoke?.()
     return "registerRenderer.fromTemplate"
   })
 }
