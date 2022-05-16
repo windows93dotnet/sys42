@@ -519,6 +519,53 @@ test("repeat", async (t) => {
   t.is(app.el.textContent, "")
 })
 
+test("repeat", "def", async (t) => {
+  const el = div()
+  const app = await ui(el, {
+    content: {
+      scope: "arr",
+      repeat: {
+        type: "span",
+        content: "{{.}}",
+      },
+    },
+    data: { arr: ["a", "b"] },
+  })
+
+  t.is(app.el.textContent, "ab")
+  t.is(
+    app.el.innerHTML,
+    "<!--[repeat]--><span>a</span><!--[#]--><span>b</span><!--[#]-->"
+  )
+
+  app.data.arr.push("c")
+  await repaint()
+
+  t.is(app.el.textContent, "abc")
+  t.is(
+    app.el.innerHTML,
+    "<!--[repeat]--><span>a</span><!--[#]--><span>b</span><!--[#]--><span>c</span><!--[#]-->"
+  )
+
+  app.data.arr.length = 1
+  await repaint()
+
+  t.is(app.el.textContent, "a")
+  t.is(app.el.innerHTML, "<!--[repeat]--><span>a</span><!--[#]-->")
+
+  app.data.arr.length = 0
+  await repaint()
+
+  t.is(app.el.textContent, "")
+  t.is(app.el.innerHTML, "<!--[repeat]-->")
+
+  app.data.arr.push("x")
+  await repaint()
+
+  t.is(app.el.textContent, "x")
+  t.is(app.el.innerHTML, "<!--[repeat]--><span>x</span><!--[#]-->")
+})
+
 test("repeat", "splice", async (t) => {
   const el = div()
   const app = await ui(el, {
@@ -1928,4 +1975,50 @@ test("components states", "array data", async (t) => {
 
   t.is(app.el.textContent, "x:A-")
   t.eq(app.data, { arr: [{ foo: "A" }], x: "X", foo: "bar" })
+})
+
+test("components states", "strings array", async (t) => {
+  const el = div()
+  const app = await ui(el, {
+    content: {
+      scope: "arr",
+      repeat: {
+        type: "ui-t-repeat",
+        x: "{{.}}",
+      },
+    },
+    data: {
+      arr: [
+        "a", //
+        "b",
+      ],
+    },
+  })
+
+  t.is(app.el.textContent, "x:a-x:b-")
+  // t.eq(app.data, { arr: [{ foo: "a" }, { foo: "b" }] })
+
+  // app.data.arr[0].foo = "A"
+  // await repaint()
+
+  // t.is(app.el.textContent, "x:A-x:b-")
+  // t.eq(app.data, { arr: [{ foo: "A" }, { foo: "b" }] })
+
+  // app.data.x = "X"
+  // await repaint()
+
+  // t.is(app.el.textContent, "x:A-x:b-")
+  // t.eq(app.data, { arr: [{ foo: "A" }, { foo: "b" }], x: "X" })
+
+  // app.data.foo = "bar"
+  // await repaint()
+
+  // t.is(app.el.textContent, "x:A-x:b-")
+  // t.eq(app.data, { arr: [{ foo: "A" }, { foo: "b" }], x: "X", foo: "bar" })
+
+  // app.data.arr.length = 1
+  // await repaint()
+
+  // t.is(app.el.textContent, "x:A-")
+  // t.eq(app.data, { arr: [{ foo: "A" }], x: "X", foo: "bar" })
 })
