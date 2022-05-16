@@ -2,7 +2,14 @@
 import { TRAITS } from "../renderers/renderTraits.js"
 import ATTRIBUTES_ALLOW_LIST from "../../fabric/constants/ATTRIBUTES_ALLOW_LIST.js"
 
-const ATTRIBUTES = new Set(ATTRIBUTES_ALLOW_LIST.concat(["dataset", "aria"]))
+const ATTRIBUTES = new Set(
+  ATTRIBUTES_ALLOW_LIST.concat([
+    "dataset",
+    "aria",
+    // TODO: add SVG_ATTRIBUTES_ALLOW_LIST
+    "viewbox",
+  ])
+)
 const ATTRIBUTES_WITHDASH = new Set(["acceptCharset", "httpEquiv"])
 
 const DEF_KEYWORDS = new Set([

@@ -13,10 +13,10 @@ class Icon extends Component {
         type: "string",
         reflect: true,
       },
-      // infos: {
-      //   type: "object",
-      //   computed: "{{path|getInfos}}",
-      // },
+      infos: {
+        type: "object",
+        computed: "{{path|getInfos}}",
+      },
     },
 
     tabIndex: 0,
@@ -25,9 +25,9 @@ class Icon extends Component {
       description: "{{endsWith(path, '/') ?  'folder' : 'file'}}",
     },
 
-    computed: {
-      infos: "{{path|getInfos}}",
-    },
+    // computed: {
+    //   infos: "{{path|getInfos}}",
+    // },
 
     content: {
       scope: "infos",
@@ -69,7 +69,6 @@ class Icon extends Component {
   }
 
   getInfos(path) {
-    console.log(111, path)
     const parsed = parseFilename(path)
     parsed.image = theme.getIconImage(parsed)
     parsed.isFile = parsed.protocol === "file:"

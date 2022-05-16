@@ -109,7 +109,7 @@ async function setProps(el, props, _) {
     })
 
     if (item.computed) {
-      pending.push({ el, ctx, key, val: item.computed, item, scope })
+      pending.push({ el, ctx, key, val: item.computed, item, scope, render })
     } else {
       renderKeyVal(
         { el, ctx, key, val, dynamic: item.state },
@@ -125,7 +125,7 @@ async function setProps(el, props, _) {
 
   await ctx.undones.done()
 
-  for (const { el, ctx, key, val, item, scope } of pending) {
+  for (const { el, ctx, key, val, item, scope, render } of pending) {
     renderKeyVal(
       { el, ctx, key, val, dynamic: item.state },
       (val, key, el, changedScope) => {

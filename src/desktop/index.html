@@ -18,33 +18,33 @@
   //   },
   // ])
 
-  ui({
-    content: [
-      {
-        type: "ui-icon",
-        path: "{{x}}",
-      },
-    ],
-    data: {
-      x: "/42/os/cmd/open.cmd.js",
-    },
-  })
-
   // ui({
-  //   content: {
-  //     scope: "arr",
-  //     repeat: {
+  //   content: [
+  //     {
   //       type: "ui-icon",
   //       path: "{{x}}",
   //     },
-  //   },
+  //   ],
   //   data: {
-  //     arr: [
-  //       { x: "/42/os/cmd/open.cmd.js" }, //
-  //       { x: "/42/os/cmd/" },
-  //     ],
+  //     x: "/42/os/cmd/open.cmd.js",
   //   },
   // })
+
+  ui({
+    content: {
+      scope: "arr",
+      repeat: {
+        type: "ui-icon",
+        path: "{{x}}",
+      },
+    },
+    data: {
+      arr: [
+        { x: "/42/os/cmd/open.cmd.js" }, //
+        { x: "/42/os/cmd/" },
+      ],
+    },
+  })
 
   // ui({
   //   content: {
