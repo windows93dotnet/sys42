@@ -31,10 +31,11 @@ async function serializeTest(test, config) {
     let tmpDiff
 
     const { details } = test.error
+
     if (
       "actual" in details &&
       "expected" in details &&
-      details.actual instanceof Error !== false
+      !(details.actual instanceof Error)
     ) {
       if (
         typeof details.actual === "string" &&
