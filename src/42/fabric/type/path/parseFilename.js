@@ -31,7 +31,7 @@ const parseFilename = memoize((filename, options) => {
       : out.pathname
   )
 
-  const parsed = parsePath(out.filename)
+  const parsed = parsePath(out.protocol === "file:" ? out.filename : "")
   out.dir = parsed.dir
   out.base = parsed.base
   out.ext = parsed.ext
@@ -41,7 +41,9 @@ const parseFilename = memoize((filename, options) => {
   out.mimetype =
     EXTENSIONS.mimetype[out.ext] ||
     NAMES.mimetype[out.name] ||
-    "application/octet-stream"
+    parsed.protocol === "file:"
+      ? "application/octet-stream"
+      : "text/x-uri"
 
   if (options?.headers) {
     out.headers = {}

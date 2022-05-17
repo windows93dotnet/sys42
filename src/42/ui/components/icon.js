@@ -58,7 +58,7 @@ class Icon extends Component {
             { type: "span", content: "{{stem}}" },
             {
               type: "span",
-              when: "{{isFile && ext}}",
+              when: "{{ext}}",
               content: "\u200B{{ext}}",
             },
           ],
@@ -80,16 +80,16 @@ class Icon extends Component {
   getInfos(path) {
     const parsed = parseFilename(path)
     parsed.image = theme.getIconImage(parsed)
-    parsed.isFile = parsed.protocol === "file:"
-    parsed.stem = parsed.isFile
-      ? parsed.name
-      : parsed.host
-          .replace(/^www\./, "")
-          .split(".")
-          .join("\u200B.") +
-        (parsed.pathname !== "/" || parsed.search
-          ? parsed.pathname + parsed.search
-          : "")
+    parsed.stem =
+      parsed.protocol === "file:"
+        ? parsed.name
+        : parsed.host
+            .replace(/^www\./, "")
+            .split(".")
+            .join("\u200B.") +
+          (parsed.pathname !== "/" || parsed.query
+            ? parsed.pathname + parsed.query
+            : "")
     return parsed
   }
 }
