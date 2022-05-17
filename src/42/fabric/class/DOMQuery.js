@@ -20,8 +20,10 @@ export default class DOMQuery {
       get(target, prop) {
         if (Reflect.has(target, prop)) return Reflect.get(target, prop)
 
-        if (typeof HTMLElement.prototype[prop] === "function") {
-          return (...args) => target.map((item) => item[prop](...args))
+        if (target.length === 0) return target
+
+        if (target.some((x) => typeof x[prop] === "function")) {
+          return (...args) => target.map((item) => item[prop]?.(...args))
         }
 
         return target.map((item) => item[prop])

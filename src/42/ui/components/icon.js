@@ -30,7 +30,7 @@ class Icon extends Component {
 
     tabIndex: 0,
     aria: {
-      description: "{{endsWith(path, '/') ?  'folder' : 'file'}}",
+      description: "{{infos.description}}",
     },
 
     content: {
@@ -58,7 +58,7 @@ class Icon extends Component {
             { type: "span", content: "{{stem}}" },
             {
               type: "span",
-              when: "{{ext}}",
+              when: "{{isFile && ext}}",
               content: "\u200B{{ext}}",
             },
           ],
@@ -78,19 +78,18 @@ class Icon extends Component {
   }
 
   getInfos(path) {
-    const parsed = parseFilename(path)
-    parsed.image = theme.getIconImage(parsed)
-    parsed.stem =
-      parsed.protocol === "file:"
-        ? parsed.name
-        : parsed.host
-            .replace(/^www\./, "")
-            .split(".")
-            .join("\u200B.") +
-          (parsed.pathname !== "/" || parsed.query
-            ? parsed.pathname + parsed.query
+    const infos = parseFilename(path)
+    infos.image = theme.getIconImage(infos)
+    infos.description = infos.isDir ? "folder" : infos.isURI ? "uri" : "file"
+    infos.stem = (
+      infos.isURI
+        ? infos.host.replace(/^www\./, "") +
+          (infos.pathname !== "/" || infos.query
+            ? infos.pathname + infos.query
             : "")
-    return parsed
+        : infos.name
+    ).replaceAll(".", "\u200B.")
+    return infos
   }
 }
 

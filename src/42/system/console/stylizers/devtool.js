@@ -14,22 +14,46 @@ const DEFAULTS = {
     // Visual Studio Code colors
     // @src https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit
     dim: "rgba(160,160,160,0.8)", // should work on light and dark theme
-    black: "rgb(0,0,0)",
-    red: "rgb(205,49,49)",
-    green: "rgb(13,188,121)",
-    yellow: "rgb(229,229,16)",
-    blue: "rgb(36,114,200)",
-    magenta: "rgb(188,63,188)",
-    cyan: "rgb(17,168,205)",
-    white: "rgb(229,229,229)",
-    blackBright: "rgb(102,102,102)",
-    redBright: "rgb(241,76,76)",
-    greenBright: "rgb(35,209,139)",
-    yellowBright: "rgb(245,245,67)",
-    blueBright: "rgb(59,142,234)",
-    magentaBright: "rgb(214,112,214)",
-    cyanBright: "rgb(41,184,219)",
-    whiteBright: "rgb(229,229,229)",
+    // black: "rgb(0,0,0)",
+    // red: "rgb(205,49,49)",
+    // green: "rgb(13,188,121)",
+    // yellow: "rgb(229,229,16)",
+    // blue: "rgb(36,114,200)",
+    // magenta: "rgb(188,63,188)",
+    // cyan: "rgb(17,168,205)",
+    // white: "rgb(229,229,229)",
+    // blackBright: "rgb(102,102,102)",
+    // redBright: "rgb(241,76,76)",
+    // greenBright: "rgb(35,209,139)",
+    // yellowBright: "rgb(245,245,67)",
+    // blueBright: "rgb(59,142,234)",
+    // magentaBright: "rgb(214,112,214)",
+    // cyanBright: "rgb(41,184,219)",
+    // whiteBright: "rgb(229,229,229)",
+
+    black: "#232634",
+    blackBright: "#616673",
+
+    red: "#ff5c57",
+    redBright: "#f0562c",
+
+    green: "#5af78e",
+    greenBright: "#00ff9a",
+
+    yellow: "#f3f99d",
+    yellowBright: "#ffd751",
+
+    blue: "#57c7ff",
+    blueBright: "#2a9bff",
+
+    magenta: "#ff6ac1",
+    magentaBright: "#b280f6",
+
+    cyan: "#9aedfe",
+    cyanBright: "#0ff",
+
+    white: "#f1f1f0",
+    whiteBright: "#fff",
   },
 }
 

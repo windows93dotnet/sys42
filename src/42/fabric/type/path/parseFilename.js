@@ -25,25 +25,31 @@ const parseFilename = memoize((filename, options) => {
   const out = pick(url, urlKeys)
   out.query = url.search
 
+  out.isURI = out.protocol !== "file:"
+  out.isDir = !out.isURI && out.pathname.endsWith("/")
+  out.isFile = !out.isURI && !out.isDir
+
   out.filename = decodeURI(
-    index && out.pathname.endsWith("/")
-      ? `${out.pathname}${index}`
-      : out.pathname
+    index && out.isDir ? `${out.pathname}${index}` : out.pathname
   )
 
-  const parsed = parsePath(out.protocol === "file:" ? out.filename : "")
+  const parsed = parsePath(out.filename)
   out.dir = parsed.dir
   out.base = parsed.base
-  out.ext = parsed.ext
-  out.name = parsed.name
+  out.ext = out.isDir ? "" : parsed.ext
+  out.name = out.isDir ? parsed.base : parsed.name
 
-  out.charset = EXTENSIONS.charset[out.ext] ?? NAMES.charset[out.name]
-  out.mimetype =
-    EXTENSIONS.mimetype[out.ext] ||
-    NAMES.mimetype[out.name] ||
-    parsed.protocol === "file:"
-      ? "application/octet-stream"
-      : "text/x-uri"
+  if (out.isFile) {
+    out.charset = EXTENSIONS.charset[out.ext] ?? NAMES.charset[out.name]
+    out.mimetype =
+      EXTENSIONS.mimetype[out.ext] ||
+      NAMES.mimetype[out.name] ||
+      "application/octet-stream"
+  } else if (out.isDir) {
+    out.mimetype = "inode/directory"
+  } else {
+    out.mimetype = "text/x-uri"
+  }
 
   if (options?.headers) {
     out.headers = {}

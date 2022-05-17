@@ -45,32 +45,98 @@ test("html", async (t) => {
   )
 })
 
-// test("infos", async (t) => {
-//   const app = await ui(div(), [
-//     {
-//       type: "ui-icon",
-//       path: "/42/os/cmd/open.cmd.js",
-//     },
-//     {
-//       type: "ui-icon",
-//       path: "/42/os/cmd/",
-//     },
-//     {
-//       type: "ui-icon",
-//       path: "https://www.windows93.net/",
-//     },
-//     {
-//       type: "ui-icon",
-//       path: "https://www.windows93.net/script.js",
-//     },
-//   ])
+test("infos", async (t) => {
+  const app = await ui(div(), [
+    {
+      type: "ui-icon",
+      path: "/derp/foo.js",
+    },
+    {
+      type: "ui-icon",
+      path: "/derp/foo/",
+    },
+    {
+      type: "ui-icon",
+      path: "/derp/foo.bar/",
+    },
+    {
+      type: "ui-icon",
+      path: "https://www.windows93.net/",
+    },
+    {
+      type: "ui-icon",
+      path: "https://www.windows93.net/script.js",
+    },
+  ])
 
-//   const icons = app.batch("ui-icon")
+  const icons = app.batch("ui-icon")
+  const { infos } = icons
 
-//   // t.eq(icons.path, [
-//   //   "/42/os/cmd/open.cmd.js",
-//   //   "/42/os/cmd/",
-//   //   "https://www.windows93.net/",
-//   // ])
-//   t.eq(icons.infos)
-// })
+  t.eq(icons.ariaDescription, [
+    "file", //
+    "folder",
+    "folder",
+    "uri",
+    "uri",
+  ])
+
+  t.eq(icons.textContent, [
+    "foo\u200b.js",
+    "foo",
+    "foo\u200b.bar",
+    "windows93\u200b.net",
+    "windows93\u200b.net/script\u200b.js",
+  ])
+
+  t.eq(
+    infos.map(({ name, ext, stem }) => ({ name, ext, stem })),
+    [
+      { name: "foo", ext: ".js", stem: "foo" },
+      { name: "foo", ext: "", stem: "foo" },
+      { name: "foo.bar", ext: "", stem: "foo\u200b.bar" },
+      { name: "", ext: "", stem: "windows93\u200b.net" },
+      {
+        name: "script",
+        ext: ".js",
+        stem: "windows93\u200b.net/script\u200b.js",
+      },
+    ]
+  )
+
+  t.eq(
+    infos.map(({ isURI, isDir, isFile }) => ({
+      isURI,
+      isDir,
+      isFile,
+    })),
+    [
+      { isURI: false, isDir: false, isFile: true },
+      { isURI: false, isDir: true, isFile: false },
+      { isURI: false, isDir: true, isFile: false },
+      { isURI: true, isDir: false, isFile: false },
+      { isURI: true, isDir: false, isFile: false },
+    ]
+  )
+
+  t.eq(
+    infos.map(({ mimetype }) => mimetype),
+    [
+      "text/javascript",
+      "inode/directory",
+      "inode/directory",
+      "text/x-uri",
+      "text/x-uri",
+    ]
+  )
+
+  t.eq(
+    infos.map(({ image }) => image),
+    [
+      "/42/themes/default/icons/subtype/javascript.png",
+      "/42/themes/default/icons/places/folder.png",
+      "/42/themes/default/icons/places/folder.png",
+      "/42/themes/default/icons/ext/url.png",
+      "/42/themes/default/icons/ext/url.png",
+    ]
+  )
+})
