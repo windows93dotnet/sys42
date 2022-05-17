@@ -28,7 +28,7 @@ const NUMBER_PLACEHOLDER = `#NUMBER_${42}`
 const REGEX_PLACEHOLDER = `#REGEX_${42}`
 const STRING_PLACEHOLDER = `#STRING_${42}`
 const FUNCTION_PLACEHOLDER = `#FUNCTION_${42}`
-const BACKSLASH_PLACEHOLDER = `#BACKSLASH_${42}`
+// const BACKSLASH_PLACEHOLDER = `#BACKSLASH_${42}`
 
 const REGEX_PLACEHOLDER_REGEX = new RegExp(`${REGEX_PLACEHOLDER}(\\d+)`, "g")
 const STRING_PLACEHOLDER_REGEX = new RegExp(`${STRING_PLACEHOLDER}(\\d+)`, "g")
@@ -177,7 +177,7 @@ export default function highlight(js, options) {
         let str = _number.list[_number.i++]
         str = str.replace(
           /([Ee][+-]|(0)([BOXbox])|_|n$)/g,
-          (_, a) => `}{grey ${a}}{${colors.number} `
+          (_, a) => `}{dim.${colors.number} ${a}}{${colors.number} `
         )
         return `{${colors.number} ${str}}`
       }
@@ -186,14 +186,14 @@ export default function highlight(js, options) {
       STRING_PLACEHOLDER_REGEX, //
       (_, i) => {
         const str = _string.list[i] ?? ""
-        const quote = `{bright.${colors.string}.dim ${str[0]}}`
-        const body = str
-          .slice(1, -1)
-          .replace(/\\\\/g, BACKSLASH_PLACEHOLDER) // TODO: fix escaped backslash in parseLogTemplate
-          .replace(/\\(u([a-f]|\d){4}|[^\\])/g, `{bright.${colors.regex} $&}`)
-          .replaceAll(BACKSLASH_PLACEHOLDER, `\\\\`)
+        const quote = `{${colors.string}.dim ${str[0]}}`
+        const body = str.slice(1, -1)
+        // .replace(/\\\\/g, BACKSLASH_PLACEHOLDER) // TODO: fix escaped backslash in parseLogTemplate
+        // // .replace(/\\(u([a-f]|\d){4}|[^\\{}])/g, `{bright.${colors.regex} $&}`)
+        // .replace(/\\(u([A-Fa-f]|\d){4}|[^\\{}])/g, `{${colors.regex} $&}`)
+        // .replaceAll(BACKSLASH_PLACEHOLDER, `\\\\`)
 
-        return `${quote}{bright.${colors.string} ${body}}${quote}`
+        return `${quote}{${colors.string} ${body}}${quote}`
       }
     )
     .replaceAll(
