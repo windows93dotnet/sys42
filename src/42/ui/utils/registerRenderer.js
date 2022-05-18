@@ -81,14 +81,23 @@ registerRenderer.fromTemplate = (ctx, el, parsedTemplate, render) => {
     let locals = ctx.global.state.getProxy(ctx.scope)
 
     let revoke
-    if (el && typeof locals === "string") {
+    const type = typeof locals
+
+    if (el && (type !== "object" || locals === null)) {
       await 0 // queueMicrotask
       const component =
         el.nodeType === Node.ELEMENT_NODE ? el : el.parentElement
 
-      if ("definition" in component.constructor) {
-        locals = componentProxy(new String(locals), component)
-        revoke = locals[componentProxy.REVOKE]
+      if (component && "definition" in component.constructor) {
+        if (type === "string") {
+          locals = componentProxy(new String(locals), component)
+          revoke = locals[componentProxy.REVOKE]
+        } else if (type === "number") {
+          locals = componentProxy(new Number(locals), component)
+          revoke = locals[componentProxy.REVOKE]
+        } else {
+          locals = component
+        }
       }
     }
 

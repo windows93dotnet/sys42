@@ -2,7 +2,6 @@
 /* eslint-disable complexity */
 
 import equal from "../type/any/equal.js"
-// import exists from "./exists.js"
 import joinScope from "../../ui/utils/joinScope.js"
 
 function escapeDotNotation(key) {
@@ -23,8 +22,6 @@ export default function observe(root, options, fn) {
     return {
       has(target, prop, receiver) {
         const has = Reflect.has(target, prop, receiver)
-
-        // console.log(path, prop)
 
         if (!has) {
           if (prop === Symbol.toStringTag) return true
@@ -47,6 +44,15 @@ export default function observe(root, options, fn) {
           }
 
           if (options?.recursive) {
+            if (options?.component) {
+              let { parentElement } = options.component
+              while (parentElement && prop in parentElement === false) {
+                parentElement = parentElement.parentElement
+              }
+
+              if (parentElement && prop in parentElement) return true
+            }
+
             let prev = parent
             let i = 0
             while (prev && prop in prev === false) {
@@ -62,9 +68,10 @@ export default function observe(root, options, fn) {
       },
 
       get(target, prop, receiver) {
-        const val = Reflect.get(target, prop, receiver)
+        let val = Reflect.get(target, prop, receiver)
 
-        if (val === undefined) {
+        // eslint-disable-next-line no-unreachable-loop
+        while (val === undefined) {
           if (prop === Symbol.toStringTag) return "Proxy"
           if (prop === PROXY_REVOKE) return destroy
           if (typeof prop !== "string") return
@@ -91,55 +98,43 @@ export default function observe(root, options, fn) {
             if (prop === "@has") {
               return (prop) => Reflect.has(target, prop, receiver)
             }
-
-            // if (prop === "@findPath") {
-            //   return (prop) => {
-            //     prop = String(prop)
-
-            //     if (prop.startsWith("@") || prop.startsWith("#")) {
-            //       return path.join(".")
-            //     }
-
-            //     let prev = target
-            //     let i = 0
-
-            //     const tokens = exists.parse(prop)
-
-            //     if (tokens.length === 1) {
-            //       while (prev && prop in prev === false) {
-            //         if (i++ > WHILE_LIMIT) throw new Error(WHILE_LIMIT_ERROR)
-            //         prev = proxies.get(prev)?.["@parent"]?.["@target"]
-            //       }
-            //     } else {
-            //       while (prev && exists.evaluate(prev, tokens) === false) {
-            //         if (i++ > WHILE_LIMIT) throw new Error(WHILE_LIMIT_ERROR)
-            //         prev = proxies.get(prev)?.["@parent"]?.["@target"]
-            //       }
-            //     }
-
-            //     return proxies.get(prev)?.["@path"] ?? ""
-            //   }
-            // }
           }
 
           if (options?.component && prop in options.component) {
-            return options.component[prop]
+            val = options.component[prop]
+            break
           }
 
           if (options?.scopes) {
             let scope = path.join(".")
             if (options.scopes.has(scope)) {
               const component = options.scopes.get(scope)
-              if (prop in component) return component[prop]
+              if (prop in component) {
+                val = component[prop]
+                break
+              }
             }
 
             scope = joinScope(scope, prop)
             if (options.scopes.has(scope)) {
-              return options.scopes.get(scope)
+              val = options.scopes.get(scope)
+              break
             }
           }
 
           if (options?.recursive && !Reflect.has(target, prop, receiver)) {
+            if (options?.component) {
+              let { parentElement } = options.component
+              while (parentElement && prop in parentElement === false) {
+                parentElement = parentElement.parentElement
+              }
+
+              if (parentElement && prop in parentElement) {
+                val = parentElement[prop]
+                break
+              }
+            }
+
             let prev = parent
             let i = 0
             while (prev && prop in prev === false) {

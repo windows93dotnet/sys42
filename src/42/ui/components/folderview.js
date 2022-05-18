@@ -43,10 +43,10 @@ export class FolderView extends Component {
     content: {
       scope: "items",
       repeat: {
-        type: "div",
-        content: "{{xxx}}",
-        // type: "ui-icon",
-        // path: "{{xxx}}",
+        // type: "div",
+        // content: "{{xxx}}",
+        type: "ui-icon",
+        path: "{{xxx}}",
         // aria: { selected: "{{selection|includes(path)}}" },
       },
     },
