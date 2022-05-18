@@ -8,6 +8,11 @@ class Icon extends Component {
   static definition = {
     tag: "ui-icon",
 
+    tabIndex: 0,
+    aria: {
+      description: "{{infos.description}}",
+    },
+
     props: {
       path: {
         type: "string",
@@ -26,11 +31,6 @@ class Icon extends Component {
         reflect: true,
         default: true,
       },
-    },
-
-    tabIndex: 0,
-    aria: {
-      description: "{{infos.description}}",
     },
 
     content: {

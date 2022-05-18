@@ -48,6 +48,7 @@ filters.array = {
   groupBy: "array/groupBy",
   join: (arr, sep) => arr.join(sep),
   at: (arr, index) => arr.at(index),
+  includes: (arr, search) => arr.includes(search),
   removeItem: "array/removeItem",
   shuffle: "array/shuffle",
   slice: STRING_FILTER,

@@ -4,12 +4,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" href="/style.css" id="theme" />
 
-<script type="_module">
+<script type="module">
   import ui from "../42/ui.js"
-  ui({
-    type: "ui-explorer",
+  const app = await ui({
+    type: "ui-folderview",
     path: "/",
+    selection: ["/favicon.ico"],
   })
+
+  const el = app.get("ui-folderview")
+  el.path = "/42/"
+  // el.selection.push("/42.sw.js")
 </script>
 
 <script type="_module">
