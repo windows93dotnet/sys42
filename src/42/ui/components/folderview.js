@@ -29,7 +29,7 @@ export class FolderView extends Component {
         default: [],
       },
       items: {
-        state: true,
+        // state: true,
         type: "array",
         default: [],
         computed: "{{path|getItems}}",
@@ -37,15 +37,17 @@ export class FolderView extends Component {
     },
 
     // computed: {
-    //   items: "{{path|go}}",
+    //   items: "{{path|getItems}}",
     // },
 
     content: {
       scope: "items",
       repeat: {
-        type: "ui-icon",
-        path: "{{path}}",
-        aria: { selected: "{{selection|includes(path)}}" },
+        type: "div",
+        content: "{{xxx}}",
+        // type: "ui-icon",
+        // path: "{{xxx}}",
+        // aria: { selected: "{{selection|includes(path)}}" },
       },
     },
   }
@@ -68,8 +70,11 @@ export class FolderView extends Component {
       return []
     }
 
-    console.log(111, dir)
-    return dir.map((path) => ({ path }))
+    console.group("getItems")
+    console.log(dir.join("\n"))
+    console.groupEnd()
+
+    return dir.map((xxx) => ({ xxx }))
 
     // return dir
 

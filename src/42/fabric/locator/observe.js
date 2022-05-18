@@ -24,6 +24,8 @@ export default function observe(root, options, fn) {
       has(target, prop, receiver) {
         const has = Reflect.has(target, prop, receiver)
 
+        // console.log(path, prop)
+
         if (!has) {
           if (prop === Symbol.toStringTag) return true
           if (prop === PROXY_REVOKE) return true

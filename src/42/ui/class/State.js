@@ -61,10 +61,10 @@ export default class State extends Emitter {
 
       this.emit("update", changes)
 
-      console.group("--- update")
-      console.log(changes)
-      console.log(Object.keys(this.renderers))
-      console.groupEnd()
+      // console.group("--- update")
+      // console.log(changes)
+      // console.log(Object.keys(this.renderers))
+      // console.groupEnd()
 
       this.queue.paths.clear()
       this.queue.lengths.clear()

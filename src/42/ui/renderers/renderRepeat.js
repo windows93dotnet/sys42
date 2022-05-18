@@ -25,7 +25,9 @@ export default function renderRepeat(def, ctx, parent, textMaker) {
   container.append(placeholder)
 
   registerRenderer(ctx, ctx.scope, () => {
-    const array = ctx.global.store.get(ctx.scope)
+    const array = ctx.global.state.getProxy(ctx.scope)
+
+    // console.log(444, ctx.scope, [...array])
 
     if (!array || !Array.isArray(array) || array.length === 0) {
       if (lastChild) {

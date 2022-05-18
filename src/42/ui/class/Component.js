@@ -130,6 +130,7 @@ async function setProps(el, props, _) {
     renderKeyVal(
       { el, ctx, key, val, dynamic: item.state },
       (val, key, el, changedScope) => {
+        console.log(val)
         val = componentProxy(val, el)
         render(val)
         if (!item.state && changedScope && scope !== changedScope) {
@@ -239,6 +240,7 @@ export default class Component extends HTMLElement {
       "actions",
     ])
 
+    // console.log("--- render:", this.localName)
     render(def, ctx, this)
 
     const undonesTokens = await ctx.undones.done()

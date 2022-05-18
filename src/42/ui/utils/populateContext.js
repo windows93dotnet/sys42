@@ -64,18 +64,21 @@ export default function populateContext(ctx, def) {
     for (const [key, val] of Object.entries(def.computed)) {
       const scope = joinScope(ctx.scope, key)
       ctx.global.scopes.set(scope, undefined)
-      if (typeof val === "string") {
+      const type = typeof val
+      if (type === "string") {
         renderKeyVal(
           { el: def.component, ctx, key, val, dynamic: true },
           (val) => {
             if (def.component) val = componentProxy(val, def.component)
-            ctx.global.scopes.set(scope, val)
+            ctx.global.scopes.set(scope, val) // TODO: cleanup this on signal abort
             ctx.global.state.updateNow(scope, val)
             if (def.component) {
               requestAnimationFrame(() => val[componentProxy.REVOKE]())
             }
           }
         )
+      } else {
+        console.warn(`computed as "${type}" not implemented`)
       }
     }
   }
