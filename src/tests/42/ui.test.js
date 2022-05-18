@@ -1822,8 +1822,7 @@ await Component.define(
 )
 
 test("components states", "component as source of truth", async (t) => {
-  const el = div()
-  const app = await ui(el, {
+  const app = await ui(div(), {
     content: [
       {
         type: "ui-t-state",
@@ -1849,8 +1848,7 @@ test("components states", "component as source of truth", async (t) => {
 })
 
 test("components states", "data as source of truth", async (t) => {
-  const el = div()
-  const app = await ui(el, {
+  const app = await ui(div(), {
     content: [
       {
         type: "ui-t-state",
@@ -1874,8 +1872,7 @@ test("components states", "data as source of truth", async (t) => {
 })
 
 test("components states", "multiple scopes", async (t) => {
-  const el = div()
-  const app = await ui(el, {
+  const app = await ui(div(), {
     content: [
       {
         scope: "A",
@@ -1901,8 +1898,7 @@ test("components states", "multiple scopes", async (t) => {
 })
 
 test("components states", "single scope", async (t) => {
-  const el = div()
-  const app = await ui(el, {
+  const app = await ui(div(), {
     content: [
       {
         type: "ui-t-state#a",
@@ -1932,8 +1928,7 @@ test("components states", "single scope", async (t) => {
 })
 
 test("components states", "array data", async (t) => {
-  const el = div()
-  const app = await ui(el, {
+  const app = await ui(div(), {
     content: {
       scope: "arr",
       repeat: {
@@ -1978,8 +1973,7 @@ test("components states", "array data", async (t) => {
 })
 
 test("components states", "strings array", async (t) => {
-  const el = div()
-  const app = await ui(el, {
+  const app = await ui(div(), {
     content: {
       scope: "arr",
       repeat: {
@@ -2066,8 +2060,7 @@ await Component.define({
 })
 
 test("components states", "nested components", "fixed", async (t) => {
-  const el = div()
-  const app = await ui(el, {
+  const app = await ui(div(), {
     content: {
       type: "ui-t-nested-fixed",
       array: [
@@ -2081,8 +2074,7 @@ test("components states", "nested components", "fixed", async (t) => {
 })
 
 test("components states", "nested components", "dynamic", async (t) => {
-  const el = div()
-  const app = await ui(el, {
+  const app = await ui(div(), {
     content: {
       type: "ui-t-nested-dynamic",
       array: [
@@ -2093,11 +2085,27 @@ test("components states", "nested components", "dynamic", async (t) => {
   })
 
   t.is(app.el.textContent, "x:a-x:b-")
+
+  const el = app.get("ui-t-nested-dynamic")
+
+  el.array = [{ foo: "A" }]
+  await repaint()
+
+  t.is(app.el.textContent, "x:A-")
+
+  el.array.push({ foo: "B" })
+  await repaint()
+
+  t.is(app.el.textContent, "x:A-x:B-")
+
+  el.array[0] = { foo: "foo" }
+  await repaint()
+
+  t.is(app.el.textContent, "x:foo-x:B-")
 })
 
 test("components states", "nested components", "string array", async (t) => {
-  const el = div()
-  const app = await ui(el, {
+  const app = await ui(div(), {
     content: {
       type: "ui-t-nested-string-array",
       array: "{{arr}}",
@@ -2112,4 +2120,22 @@ test("components states", "nested components", "string array", async (t) => {
   })
 
   t.is(app.el.textContent, "x:a-x:b-")
+
+  app.data.arr = ["A"]
+  await repaint()
+
+  t.is(app.el.textContent, "x:A-")
+
+  app.data.arr.push("B")
+  await repaint()
+  await repaint()
+
+  t.is(app.el.textContent, "x:A-x:B-")
+
+  // console.log(app.data.arr)
+
+  // app.data.arr[0] = "foo"
+  // await repaint()
+
+  // t.is(app.el.textContent, "x:foo-x:B-")
 })

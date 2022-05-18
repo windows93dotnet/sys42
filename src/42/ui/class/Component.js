@@ -2,6 +2,7 @@
 import render from "../render.js"
 import defer from "../../fabric/type/promise/defer.js"
 import omit from "../../fabric/type/object/omit.js"
+import observe from "../../fabric/locator/observe.js"
 import normalizeDefinition from "../utils/normalizeDefinition.js"
 import makeNewContext from "../utils/makeNewContext.js"
 import populateContext from "../utils/populateContext.js"
@@ -64,6 +65,7 @@ async function setProps(el, props, _) {
     if (item.state) ctx.global.store.set(scope, val)
 
     const render = (val) => {
+      if (proxyMap.has(currentVal)) proxyMap.delete(currentVal)
       currentVal = val
 
       if (item.state) ctx.global.store.set(scope, val)
@@ -98,6 +100,9 @@ async function setProps(el, props, _) {
       }
     }
 
+    const proxyMap = new WeakMap()
+    const { signal } = ctx.cancel
+
     Object.defineProperty(el, key, {
       configurable: true,
       set(val) {
@@ -105,6 +110,18 @@ async function setProps(el, props, _) {
         ctx.global.state.update(scope, val)
       },
       get() {
+        if (
+          typeof currentVal === "object" &&
+          (currentVal?.constructor === Object || Array.isArray(currentVal))
+        ) {
+          if (proxyMap.has(currentVal)) return proxyMap.get(currentVal)
+          const proxy = observe(currentVal, { signal }, (path, val, oldVal) => {
+            ctx.global.state.update(joinScope(scope, path), val, oldVal)
+          })
+          proxyMap.set(currentVal, proxy)
+          return proxy
+        }
+
         return currentVal
       },
     })

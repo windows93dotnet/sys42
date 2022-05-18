@@ -111,6 +111,7 @@ export default function observe(root, options, fn) {
               const component = options.scopes.get(scope)
               if (prop in component) {
                 val = component[prop]
+                // return val
                 break
               }
             }
@@ -131,6 +132,7 @@ export default function observe(root, options, fn) {
 
               if (parentElement && prop in parentElement) {
                 val = parentElement[prop]
+                // return val
                 break
               }
             }
