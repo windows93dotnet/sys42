@@ -140,3 +140,45 @@ test("infos", async (t) => {
     ]
   )
 })
+
+test("repeat", async (t) => {
+  const app = await ui(div(), {
+    content: {
+      scope: "arr",
+      repeat: {
+        type: "ui-icon",
+        path: "{{x}}",
+      },
+    },
+    data: {
+      arr: [
+        { x: "/derp/foo.js" }, //
+        { x: "/derp/" },
+      ],
+    },
+  })
+
+  const icons = app.batch("ui-icon")
+  t.eq(icons.textContent, ["foo\u200b.js", "derp"])
+})
+
+test("repeat", 2, async (t) => {
+  const app = await ui(div(), {
+    content: {
+      scope: "arr",
+      repeat: {
+        type: "ui-icon",
+        path: "{{.}}",
+      },
+    },
+    data: {
+      arr: [
+        "/derp/foo.js", //
+        "/derp/",
+      ],
+    },
+  })
+
+  const icons = app.batch("ui-icon")
+  t.eq(icons.textContent, ["foo\u200b.js", "derp"])
+})
