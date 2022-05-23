@@ -466,6 +466,44 @@ test("when", "element", async (t) => {
   t.is(app.el.innerHTML, "<!--[when]-->")
 })
 
+test("when", "bug using state.update", async (t) => {
+  const app = await ui(div(), {
+    content: [
+      {
+        type: "div",
+        when: "a && b",
+        content: "{{b}}",
+      },
+    ],
+    data: {
+      a: false,
+      b: false,
+    },
+  })
+
+  t.is(app.el.textContent, "")
+
+  app.data.a = true
+  await repaint()
+
+  t.is(app.el.textContent, "")
+
+  app.data.b = true
+  await repaint()
+
+  t.is(app.el.textContent, "true")
+
+  app.ctx.global.state.update("a")
+  await repaint()
+
+  t.is(app.el.textContent, "true")
+
+  app.data.a = false
+  await repaint()
+
+  t.is(app.el.textContent, "")
+})
+
 /* repeat
 ========= */
 

@@ -7,6 +7,23 @@
 <script type="module">
   import ui from "../42/ui.js"
   const app = await ui({
+    type: "ui-icon",
+    path: "/42/fabric/",
+  })
+
+  setTimeout(() => {
+    const el = app.get("ui-icon")
+    el.path = "/42/script.js"
+    // console.clear()
+    // const el = app.get("ui-folderview")
+    // el.path = "/"
+    // // el.selection.push("/42.sw.js")
+  }, 300)
+</script>
+
+<script type="_module">
+  import ui from "../42/ui.js"
+  const app = await ui({
     type: "ui-folderview",
     // path: "/42/os/",
     path: "/42/fabric/",
@@ -18,7 +35,7 @@
     const el = app.get("ui-folderview")
     el.path = "/"
     // el.selection.push("/42.sw.js")
-  }, 1000)
+  }, 300)
 </script>
 
 <script type="_module">

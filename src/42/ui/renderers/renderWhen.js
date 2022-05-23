@@ -40,7 +40,7 @@ export default function renderWhen(def, ctx, parent, textMaker) {
       const fragment = render(def, ctx, undefined, textMaker)
       lastChild = fragment.lastChild
       placeholder.after(fragment)
-    } else if (lastChild) {
+    } else if (!res && lastChild) {
       const range = createRange()
       range.setStartAfter(placeholder)
       range.setEndAfter(lastChild)

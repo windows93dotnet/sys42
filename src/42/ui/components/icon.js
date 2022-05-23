@@ -53,7 +53,7 @@ class Icon extends Component {
         },
         {
           type: ".ui-icon__label",
-          when: "{{label}}",
+          // when: "{{label}}",
           content: [
             { type: "svg", content: { type: "rect" } },
             { type: "span", content: "{{stem}}" },
@@ -79,7 +79,6 @@ class Icon extends Component {
   }
 
   getInfos(path) {
-    // console.log(path, this)
     const infos = parseFilename(path)
     infos.image = theme.getIconImage(infos)
     infos.description = infos.isDir ? "folder" : infos.isURI ? "uri" : "file"
@@ -91,6 +90,7 @@ class Icon extends Component {
             : "")
         : infos.name
     ).replaceAll(".", "\u200B.")
+    // console.log(path, infos.isFile, infos.ext)
     return infos
   }
 }
