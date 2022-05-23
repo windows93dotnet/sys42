@@ -7,18 +7,30 @@
 <script type="module">
   import ui from "../42/ui.js"
   const app = await ui({
-    type: "ui-icon",
-    path: "/42/fabric/",
+    content: {
+      scope: "arr",
+      repeat: {
+        type: "ui-icon",
+        path: "{{x}}",
+      },
+    },
+    data: {
+      arr: [{ x: "/42/fabric/" }, { x: "/42/script.js" }],
+    },
   })
 
   setTimeout(() => {
-    const el = app.get("ui-icon")
-    el.path = "/42/script.js"
-    // console.clear()
-    // const el = app.get("ui-folderview")
-    // el.path = "/"
-    // // el.selection.push("/42.sw.js")
+    app.data.arr = [{ x: "/derp.txt" }]
   }, 300)
+
+  // setTimeout(() => {
+  //   const el = app.get("ui-icon")
+  //   el.path = "/42/script.js"
+  //   // console.clear()
+  //   // const el = app.get("ui-folderview")
+  //   // el.path = "/"
+  //   // // el.selection.push("/42.sw.js")
+  // }, 300)
 </script>
 
 <script type="_module">

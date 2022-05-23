@@ -695,7 +695,7 @@ test("repeat", "div", "render index 0 bug", async (t) => {
   t.is(el.textContent, "XY")
 })
 
-test.skip("repeat", "ui-icon", "render index 0 bug", async (t) => {
+test.only("repeat", "ui-icon", "render index 0 bug", async (t) => {
   t.timeout(1000)
   const el = div(true)
 
