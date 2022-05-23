@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import schemaToContent from "./schemaToContent.js"
 import generateSchema from "../../fabric/type/json/generateSchema.js"
 import getBoundSchema from "../../fabric/type/json/getBoundSchema.js"
@@ -7,7 +6,11 @@ import renderKeyVal from "../renderers/renderKeyVal.js"
 import componentProxy from "./componentProxy.js"
 
 export default function populateContext(ctx, def) {
-  if ("scope" in def) ctx.scope = def.scope
+  if ("scope" in def) {
+    ctx.scope = def.scope.startsWith("#")
+      ? def.scope.slice(1)
+      : joinScope(ctx.scope, def.scope)
+  }
 
   if (def.data) {
     const type = typeof def.data
@@ -83,13 +86,14 @@ export default function populateContext(ctx, def) {
     }
   }
 
-  if (
-    def.scope &&
-    !ctx.global.state.has(def.scope) &&
-    !ctx.global.scopes.has(def.scope)
-  ) {
-    ctx.global.state.set(def.scope, {})
-  }
+  // if (
+  //   def.scope &&
+  //   !ctx.global.state.has(ctx.scope) &&
+  //   !ctx.global.scopes.has(ctx.scope)
+  // ) {
+  //   console.log(ctx.scope, def.component, ctx.global.state.get(ctx.scope))
+  //   ctx.global.state.set(ctx.scope, {})
+  // }
 }
 
 function assignFunctions(ctx, scope, actions) {

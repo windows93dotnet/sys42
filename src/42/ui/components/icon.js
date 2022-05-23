@@ -34,7 +34,6 @@ class Icon extends Component {
     },
 
     content: {
-      // content: "{{path|getInfos|locate('stem')}}",
       scope: "infos",
       content: [
         {
@@ -53,7 +52,7 @@ class Icon extends Component {
         },
         {
           type: ".ui-icon__label",
-          // when: "{{label}}",
+          when: "{{label}}",
           content: [
             { type: "svg", content: { type: "rect" } },
             { type: "span", content: "{{stem}}" },
@@ -90,7 +89,6 @@ class Icon extends Component {
             : "")
         : infos.name
     ).replaceAll(".", "\u200B.")
-    // console.log(path, infos.isFile, infos.ext)
     return infos
   }
 }

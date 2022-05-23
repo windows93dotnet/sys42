@@ -248,10 +248,10 @@ test("scopes", async (t) => {
         scope: "b",
         content: [
           " + {{c.d}} & ",
-          { type: "input", scope: "", name: "a" },
+          { type: "input", scope: "#", name: "a" },
           { type: "input", name: "c.d" },
           {
-            scope: "",
+            scope: "#",
             content: [
               "{{a}} _ {{b.c.d}}", //
               { type: "input", name: "b.c.d" },
@@ -691,41 +691,6 @@ test("repeat", "div", "render index 0 bug", async (t) => {
     app.el.innerHTML,
     "<!--[repeat]--><div>X</div><!--[#]--><div>Y</div><!--[#]-->"
   )
-  t.is(el.children.length, 2)
-  t.is(el.textContent, "XY")
-})
-
-test.only("repeat", "ui-icon", "render index 0 bug", async (t) => {
-  t.timeout(1000)
-  const el = div(true)
-
-  const app = await ui(el, {
-    content: {
-      scope: "arr",
-      repeat: {
-        type: "ui-icon",
-        path: "{{path}}",
-      },
-    },
-    data: {
-      arr: [{ path: "A" }],
-    },
-  })
-
-  await repaint()
-
-  t.is(el.children.length, 1)
-  t.is(el.textContent, "A")
-
-  app.data.arr = [{ path: "Z" }]
-  await repaint()
-
-  t.is(el.children.length, 1)
-  t.is(el.textContent, "Z")
-
-  app.data.arr = [{ path: "X" }, { path: "Y" }]
-  await repaint()
-
   t.is(el.children.length, 2)
   t.is(el.textContent, "XY")
 })
@@ -1909,31 +1874,31 @@ test("components states", "data as source of truth", async (t) => {
   t.eq(app.data, { foo: "baz" })
 })
 
-test("components states", "multiple scopes", async (t) => {
-  const app = await ui(div(), {
-    content: [
-      {
-        scope: "A",
-        type: "ui-t-state",
-        x: "a",
-      },
-      {
-        scope: "B",
-        type: "ui-t-state",
-        x: "b",
-      },
-    ],
-  })
+// test("components states", "multiple scopes", async (t) => {
+//   const app = await ui(div(), {
+//     content: [
+//       {
+//         scope: "A",
+//         type: "ui-t-state",
+//         x: "a",
+//       },
+//       {
+//         scope: "B",
+//         type: "ui-t-state",
+//         x: "b",
+//       },
+//     ],
+//   })
 
-  t.is(app.el.textContent, "x:a-x:b-")
-  t.eq(app.data, { A: {}, B: {} })
+//   t.is(app.el.textContent, "x:a-x:b-")
+//   t.eq(app.data, { A: {}, B: {} })
 
-  app.data.B.x = "B"
-  await repaint()
+//   app.data.B.x = "B"
+//   await repaint()
 
-  t.is(app.el.textContent, "x:a-x:B-")
-  t.eq(app.data, { A: {}, B: { x: "B" } })
-})
+//   t.is(app.el.textContent, "x:a-x:B-")
+//   t.eq(app.data, { A: {}, B: { x: "B" } })
+// })
 
 test("components states", "single scope", async (t) => {
   const app = await ui(div(), {

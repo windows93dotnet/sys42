@@ -15,9 +15,15 @@ export default class DOMQuery {
     return [...this.el.querySelectorAll(`:scope ${selector}`)]
   }
 
-  batch(selector) {
-    return new Proxy(this.getAll(selector), {
-      get(target, prop) {
+  batch(selector, options) {
+    const init = options?.live ? [] : this.getAll(selector)
+    return new Proxy(init, {
+      get: (target, prop) => {
+        if (options?.live) {
+          target.length = 0
+          target.push(...this.el.querySelectorAll(`:scope ${selector}`))
+        }
+
         if (Reflect.has(target, prop)) return Reflect.get(target, prop)
 
         if (target.length === 0) return target
