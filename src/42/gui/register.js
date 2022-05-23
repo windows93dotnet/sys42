@@ -1,16 +1,5 @@
 import isLength from "../fabric/type/any/is/isLength.js"
-
-export function joinScope(scope, ...keys) {
-  if (keys.length === 1 && keys[0] === ".") return scope
-
-  let out = scope
-
-  for (const key of keys) {
-    out += (out && out !== "." ? "." : "") + key
-  }
-
-  return out
-}
+import resolvePath from "../fabric/type/path/core/resolvePath.js"
 
 export default function register(def, ctx, render) {
   const keys = []
@@ -25,7 +14,7 @@ export default function register(def, ctx, render) {
   }
 
   for (const key of keys) {
-    const scope = joinScope(ctx.scope, key)
+    const scope = resolvePath(ctx.scope, key).replaceAll(".", "/")
     ctx.renderers[scope] ??= new Set()
     ctx.renderers[scope].add(render)
     ctx.cancel.signal.addEventListener(

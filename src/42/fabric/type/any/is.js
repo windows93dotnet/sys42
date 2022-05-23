@@ -11,6 +11,7 @@ import isLength from "./is/isLength.js"
 // TODO: move usefull is* functions in 'any' folder
 export { default as isEmptyObject } from "./is/isEmptyObject.js"
 export { default as isLength } from "./is/isLength.js"
+export { default as isProxy } from "./is/isProxy.js"
 
 const { toString } = Object.prototype
 

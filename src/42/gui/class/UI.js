@@ -1,6 +1,6 @@
 // import create from "../create.js"
 import render from "../render.js"
-import observe from "../observe.js"
+import State from "./State.js"
 import traverse from "../../fabric/type/object/traverse.js"
 import template from "../../system/formats/template.js"
 import Canceller from "../../fabric/class/Canceller.js"
@@ -10,20 +10,10 @@ export default class UI {
     this.ctx = {
       scope: "",
       renderers: {},
-      state: observe(
-        {},
-        {
-          change: (prop) => {
-            if (prop in this.ctx.renderers) {
-              for (const renderer of this.ctx.renderers[prop]) {
-                renderer()
-              }
-            }
-          },
-        }
-      ),
       cancel: new Canceller(),
     }
+
+    this.ctx.state = new State(this.ctx)
 
     traverse(def, (key, val, obj) => {
       if (typeof val === "string") {
@@ -35,7 +25,7 @@ export default class UI {
       }
 
       if (key === "data") {
-        Object.assign(this.ctx.state, val)
+        Object.assign(this.ctx.state.value, val)
       }
     })
 
@@ -43,6 +33,6 @@ export default class UI {
   }
 
   get state() {
-    return this.ctx.state
+    return this.ctx.state.proxy
   }
 }
