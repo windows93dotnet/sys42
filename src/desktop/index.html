@@ -13,9 +13,12 @@
     selection: ["/favicon.ico"],
   })
 
-  const el = app.get("ui-folderview")
-  el.path = "/"
-  // el.selection.push("/42.sw.js")
+  setTimeout(() => {
+    console.clear()
+    const el = app.get("ui-folderview")
+    el.path = "/"
+    // el.selection.push("/42.sw.js")
+  }, 1000)
 </script>
 
 <script type="_module">

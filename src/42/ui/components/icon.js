@@ -34,6 +34,7 @@ class Icon extends Component {
     },
 
     content: {
+      // content: "{{path|getInfos|locate('stem')}}",
       scope: "infos",
       content: [
         {
@@ -78,6 +79,7 @@ class Icon extends Component {
   }
 
   getInfos(path) {
+    // console.log(path, this)
     const infos = parseFilename(path)
     infos.image = theme.getIconImage(infos)
     infos.description = infos.isDir ? "folder" : infos.isURI ? "uri" : "file"

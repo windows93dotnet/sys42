@@ -12,14 +12,15 @@ export default function componentProxy(val, cpn) {
       return has
     },
     get(target, prop, receiver) {
-      if (prop === "then") return (resolve) => resolve(target.toString())
-      const has = Reflect.has(target, prop, receiver)
-      if (!has) {
+      const val = Reflect.get(target, prop, receiver)
+
+      if (val === undefined) {
+        if (prop === "then") return (resolve) => resolve(target)
         if (prop === PROXY_REVOKE) return revoke
         if (prop in cpn) return cpn[prop]
       }
 
-      return Reflect.get(target, prop, receiver)
+      return val
     },
   })
 

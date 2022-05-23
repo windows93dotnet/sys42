@@ -17,6 +17,9 @@ async function setProps(el, props, _) {
   const { ctx, observed } = el._
 
   const pending = []
+  const proxyMap = new WeakMap()
+
+  const { signal } = ctx.cancel
 
   for (let [key, item] of Object.entries(props)) {
     const scope = joinScope(ctx.scope, key)
@@ -100,9 +103,6 @@ async function setProps(el, props, _) {
       }
     }
 
-    const proxyMap = new WeakMap()
-    const { signal } = ctx.cancel
-
     Object.defineProperty(el, key, {
       configurable: true,
       set(val) {
@@ -153,7 +153,7 @@ async function setProps(el, props, _) {
           ctx.global.state.updateNow(scope, val)
         }
 
-        requestAnimationFrame(() => val[componentProxy.REVOKE]())
+        // requestAnimationFrame(() => val[componentProxy.REVOKE]())
       }
     )
   }

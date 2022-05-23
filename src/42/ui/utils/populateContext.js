@@ -72,9 +72,9 @@ export default function populateContext(ctx, def) {
             if (def.component) val = componentProxy(val, def.component)
             ctx.global.scopes.set(scope, val) // TODO: cleanup this on signal abort
             ctx.global.state.updateNow(scope, val)
-            if (def.component) {
-              requestAnimationFrame(() => val[componentProxy.REVOKE]())
-            }
+            // if (def.component) {
+            //   requestAnimationFrame(() => val[componentProxy.REVOKE]())
+            // }
           }
         )
       } else {
