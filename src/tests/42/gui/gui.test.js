@@ -6,8 +6,14 @@ test("tag", (t) => {
   t.is(app.el.outerHTML, "<em></em>")
 })
 
+test("attributes", (t) => {
+  const app = new UI({ tag: "em", class: "foo" })
+  t.is(app.el.outerHTML, '<em class="foo"></em>')
+})
+
 test("content", (t) => {
   const app = new UI({ tag: "em", content: "hello" })
+
   t.is(app.el.outerHTML, "<em>hello</em>")
 })
 
@@ -16,14 +22,16 @@ test("content", "array", (t) => {
     tag: "em",
     content: ["hello ", { tag: "strong", content: "world" }],
   })
+
   t.is(app.el.outerHTML, "<em>hello <strong>world</strong></em>")
 })
 
-test("content", "shortcuts", (t) => {
+test("content", "special strings", (t) => {
   const app = new UI({
     tag: "h1",
     content: ["\n", "hello", "\n\n", "world", "---", "\n"],
   })
+
   t.is(
     app.el.outerHTML,
     `\
@@ -33,34 +41,25 @@ hello<br>world<hr>
   )
 })
 
-test("data", (t) => {
+test("reactive data", (t) => {
   const app = new UI({
     tag: "em",
     content: "{{foo}}",
+    class: "{{foo}}",
+    style: "color:{{foo}}",
     data: {
-      foo: "hi",
-    },
-  })
-  t.is(app.el.outerHTML, "<em>hi</em>")
-})
-
-test("data", "reactive", (t) => {
-  const app = new UI({
-    tag: "em",
-    content: "{{foo}}",
-    data: {
-      foo: "hi",
+      foo: "red",
     },
   })
 
-  t.is(app.el.outerHTML, "<em>hi</em>")
+  t.is(app.el.outerHTML, '<em class="red" style="color: red;">red</em>')
 
-  app.state.foo = "bye"
+  app.state.foo = "tan"
 
-  t.is(app.el.outerHTML, "<em>bye</em>")
+  t.is(app.el.outerHTML, '<em class="tan" style="color: tan;">tan</em>')
 })
 
-test("data", "reactive", "nested", (t) => {
+test("reactive data", "nested", (t) => {
   const app = new UI({
     tag: "em",
     content: "{{foo.bar}}",
@@ -76,6 +75,31 @@ test("data", "reactive", "nested", (t) => {
   app.state.foo.bar = "bye"
 
   t.is(app.el.outerHTML, "<em>bye</em>")
+})
+
+test("reactive data", "styles", (t) => {
+  const app = new UI({
+    style: {
+      color: "{{foo}}",
+      display: "flex",
+      flex: 1,
+    },
+    data: {
+      foo: "red",
+    },
+  })
+
+  t.is(
+    app.el.outerHTML,
+    '<div style="color: red; display: flex; flex: 1 1 0%;"></div>'
+  )
+
+  app.state.foo = "tan"
+
+  t.is(
+    app.el.outerHTML,
+    '<div style="color: tan; display: flex; flex: 1 1 0%;"></div>'
+  )
 })
 
 test("scope", (t) => {
