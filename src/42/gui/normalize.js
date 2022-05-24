@@ -30,7 +30,7 @@ const DEF_KEYWORDS = new Set([
 ])
 
 function resolve(scope, path) {
-  return resolvePath(scope, path).replaceAll(".", "/")
+  return resolvePath(scope, String(path)).replaceAll(".", "/")
 }
 
 function normaliseString(def, ctx) {

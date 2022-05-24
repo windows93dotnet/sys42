@@ -1,19 +1,18 @@
-import resolvePath from "../fabric/type/path/core/resolvePath.js"
-
 export const PROXY_REVOKE = Symbol.for("PROXY_REVOKE")
 
 export default function observe(root, options = {}) {
   const proxies = new WeakMap()
   const revokes = new Set()
 
-  function createHander(path /* , parent */) {
+  function createHander(path) {
+    const scope = "/" + (path.length > 0 ? path.join("/") + "/" : "")
     return {
       has(target, prop, receiver) {
         const has = Reflect.has(target, prop, receiver)
 
         if (!has) {
           if (prop === PROXY_REVOKE) return true
-          if (options.has) return options.has(target, prop, path)
+          return options.has?.(target, prop, path) ?? false
         }
 
         return has
@@ -23,9 +22,8 @@ export default function observe(root, options = {}) {
         const val = Reflect.get(target, prop, receiver)
 
         if (val === undefined) {
-          // if (prop === "then") return (resolve) => resolve(target)
           if (prop === PROXY_REVOKE) return revoke
-          if (options.get) return options.get(target, prop, path)
+          return options.get?.(target, prop, path)
         }
 
         if (
@@ -50,16 +48,20 @@ export default function observe(root, options = {}) {
         const oldVal = Reflect.get(target, prop, receiver)
         const allow = options.set ? options.set(target, prop, path) : true
         const out = allow && Reflect.set(target, prop, val, receiver)
-        if (options.change) {
-          options.change(resolvePath(path.join("/"), prop), val, oldVal)
-        }
-
+        options.change?.(scope + prop, val, oldVal)
         return out
+      },
+
+      deleteProperty(target, prop) {
+        const allow = options.delete ? options.delete(target, prop, path) : true
+        const ret = allow && Reflect.deleteProperty(target, prop)
+        options.change?.(scope + prop)
+        return ret
       },
     }
   }
 
-  const { proxy, revoke } = Proxy.revocable(root, createHander([], root))
+  const { proxy, revoke } = Proxy.revocable(root, createHander([]))
 
   proxies.set(root, proxy)
   revokes.add(revoke)

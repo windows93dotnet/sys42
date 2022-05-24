@@ -57,6 +57,31 @@ test("reactive data", (t) => {
   app.state.foo = "tan"
 
   t.is(app.el.outerHTML, '<em class="tan" style="color: tan;">tan</em>')
+
+  delete app.state.foo
+
+  t.is(app.el.outerHTML, '<em class="" style=""></em>')
+})
+
+test("reactive data", "array", (t) => {
+  const app = new UI({
+    tag: "em",
+    scope: "arr",
+    content: ["{{0}}", "{{1}}"],
+    data: { arr: ["a", "b"] },
+  })
+
+  t.is(app.el.outerHTML, "<em>ab</em>")
+})
+
+test.skip("reactive data", "array", (t) => {
+  const app = new UI({
+    tag: "em",
+    content: ["{{/0}}", "{{/1}}"],
+    data: ["a", "b"],
+  })
+
+  t.is(app.el.outerHTML, "<em>ab</em>")
 })
 
 test("reactive data", "nested", (t) => {
