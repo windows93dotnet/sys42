@@ -13,7 +13,7 @@ export default function observe(root, options = {}) {
 
         if (!has) {
           if (prop === PROXY_REVOKE) return true
-          if (options.has) return options.has(target, prop, receiver)
+          if (options.has) return options.has(target, prop, path)
         }
 
         return has
@@ -23,9 +23,9 @@ export default function observe(root, options = {}) {
         const val = Reflect.get(target, prop, receiver)
 
         if (val === undefined) {
-          if (prop === "then") return (resolve) => resolve(target)
+          // if (prop === "then") return (resolve) => resolve(target)
           if (prop === PROXY_REVOKE) return revoke
-          if (options.get) return options.get(target, prop, receiver)
+          if (options.get) return options.get(target, prop, path)
         }
 
         if (
@@ -48,12 +48,13 @@ export default function observe(root, options = {}) {
 
       set(target, prop, val, receiver) {
         const oldVal = Reflect.get(target, prop, receiver)
-        const ret = Reflect.set(target, prop, val, receiver)
+        const allow = options.set ? options.set(target, prop, path) : true
+        const out = allow && Reflect.set(target, prop, val, receiver)
         if (options.change) {
           options.change(resolvePath(path.join("/"), prop), val, oldVal)
         }
 
-        return ret
+        return out
       },
     }
   }

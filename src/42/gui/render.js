@@ -1,23 +1,21 @@
 import create from "./create.js"
 import register from "./register.js"
-import resolvePath from "../fabric/type/path/core/resolvePath.js"
+import normalize from "./normalize.js"
 
-function forkContext(ctx) {
-  return { ...ctx }
+const SHORTCUTS = {
+  "\n\n": () => document.createElement("br"),
+  "---": () => document.createElement("hr"),
 }
 
-export default function render(def, ctx) {
-  const type = typeof def
+export default function render(...args) {
+  const { type, def, ctx } = normalize(...args)
 
-  if (type === "string") return def
-
-  ctx = forkContext(ctx)
-  if (def.scope) ctx.scope = resolvePath(ctx.scope, def.scope)
+  if (type === "string") return SHORTCUTS[def]?.() ?? def
 
   if (type === "function") {
     const textNode = document.createTextNode("")
-    register(def, ctx, () => {
-      textNode.textContent = def(ctx.state.get(ctx.scope))
+    register(def.keys, ctx, () => {
+      textNode.textContent = def(ctx.state.proxy)
     })
     return textNode
   }

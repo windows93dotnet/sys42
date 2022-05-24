@@ -5,7 +5,7 @@ const PIPE = Symbol("pipe")
 
 function compileToken(i, list, tokens, options) {
   const { type, value, negated } = tokens[i]
-  const { locate, filters, locals: compileLocals } = options
+  const { locate, filters, locals: compileLocals, sep } = options
 
   if (type === "function") {
     let argTokens = []
@@ -26,7 +26,7 @@ function compileToken(i, list, tokens, options) {
       i = end
     }
 
-    const fn = locate(filters, value)
+    const fn = locate(filters, value, sep)
 
     if (fn) {
       if (!options.async && typeof fn !== "function") {
@@ -64,8 +64,8 @@ function compileToken(i, list, tokens, options) {
   else if (type === "key") {
     list.push(
       negated
-        ? (locals) => !locate(locals, value)
-        : (locals) => locate(locals, value)
+        ? (locals) => !locate(locals, value, sep)
+        : (locals) => locate(locals, value, sep)
     )
   } else if (type === "arg") {
     if (!negated && isLength(value)) {

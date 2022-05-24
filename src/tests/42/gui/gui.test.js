@@ -19,6 +19,20 @@ test("content", "array", (t) => {
   t.is(app.el.outerHTML, "<em>hello <strong>world</strong></em>")
 })
 
+test("content", "shortcuts", (t) => {
+  const app = new UI({
+    tag: "h1",
+    content: ["\n", "hello", "\n\n", "world", "---", "\n"],
+  })
+  t.is(
+    app.el.outerHTML,
+    `\
+<h1>
+hello<br>world<hr>
+</h1>`
+  )
+})
+
 test("data", (t) => {
   const app = new UI({
     tag: "em",
@@ -46,7 +60,7 @@ test("data", "reactive", (t) => {
   t.is(app.el.outerHTML, "<em>bye</em>")
 })
 
-test("data", "reactive nested", (t) => {
+test("data", "reactive", "nested", (t) => {
   const app = new UI({
     tag: "em",
     content: "{{foo.bar}}",
@@ -81,4 +95,161 @@ test("scope", (t) => {
   app.state.foo.bar = "bye"
 
   t.is(app.el.outerHTML, "<em>bye</em>")
+})
+
+test("scope", "relative scopes", (t) => {
+  const app = new UI({
+    scope: "a/b/c",
+    content: [
+      "{{d}}",
+      "\n",
+      {
+        scope: "../",
+        content: "{{foo}}",
+      },
+      "\n",
+      {
+        scope: "../c",
+        content: "{{d}}",
+      },
+      "\n",
+      {
+        scope: "../../bar",
+        content: "{{.}}",
+      },
+      "\n",
+      {
+        scope: "/",
+        content: "{{baz}}",
+      },
+      "\n",
+      {
+        scope: "/",
+        content: "?{{d}}",
+      },
+    ],
+    data: {
+      a: {
+        b: {
+          c: {
+            d: 4,
+          },
+          foo: 3,
+        },
+        bar: 2,
+      },
+      baz: 1,
+    },
+  })
+
+  t.eq(
+    Object.entries(app.ctx.renderers).map(([key, val]) => [key, val.size]),
+    [
+      ["/a/b/c/d", 2],
+      ["/a/b/foo", 1],
+      ["/a/bar", 1],
+      ["/baz", 1],
+      ["/d", 1],
+    ]
+  )
+
+  t.is(
+    app.el.outerHTML,
+    `\
+<div>4
+<div>3</div>
+<div>4</div>
+<div>2</div>
+<div>1</div>
+<div>?</div></div>`
+  )
+
+  app.state.a.b.c.d = "#"
+
+  t.is(
+    app.el.outerHTML,
+    `\
+<div>#
+<div>3</div>
+<div>#</div>
+<div>2</div>
+<div>1</div>
+<div>?</div></div>`
+  )
+})
+
+test("scope", "relative template keys", (t) => {
+  const app = new UI({
+    scope: "a/b/c",
+    content: [
+      "{{/a.b.c.d}}",
+      "\n",
+      {
+        content: "{{../foo}}",
+      },
+      "\n",
+      {
+        content: "{{../c/d}}",
+      },
+      "\n",
+      {
+        content: "{{../../bar}}",
+      },
+      "\n",
+      {
+        content: "{{/baz}}",
+      },
+      "\n",
+      {
+        content: "?{{/d}}",
+      },
+    ],
+    data: {
+      a: {
+        b: {
+          c: {
+            d: 4,
+          },
+          foo: 3,
+        },
+        bar: 2,
+      },
+      baz: 1,
+    },
+  })
+
+  t.eq(
+    Object.entries(app.ctx.renderers).map(([key, val]) => [key, val.size]),
+    [
+      ["/a/b/c/d", 2],
+      ["/a/b/foo", 1],
+      ["/a/bar", 1],
+      ["/baz", 1],
+      ["/d", 1],
+    ]
+  )
+
+  t.is(
+    app.el.outerHTML,
+    `\
+<div>4
+<div>3</div>
+<div>4</div>
+<div>2</div>
+<div>1</div>
+<div>?</div></div>`
+  )
+
+  app.state.a.b.c.d = "#"
+
+  t.is(
+    app.el.outerHTML,
+    `\
+<div>#
+<div>3</div>
+<div>#</div>
+<div>2</div>
+<div>1</div>
+<div>?</div></div>`
+  )
 })

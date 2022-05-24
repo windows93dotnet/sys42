@@ -3,7 +3,7 @@ import locate from "../../fabric/locator/locate.js"
 
 export default class State {
   constructor(ctx) {
-    this.value = ctx.data ?? {}
+    this.value = {}
     this.proxy = observe(this.value, {
       change(prop) {
         if (prop in ctx.renderers) {
@@ -15,5 +15,10 @@ export default class State {
 
   get(path) {
     return locate(this.proxy, path, "/")
+  }
+
+  assign(path, value) {
+    const proxy = locate(this.proxy, path, "/")
+    Object.assign(proxy, value)
   }
 }
