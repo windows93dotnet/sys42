@@ -2,7 +2,9 @@ import State from "./class/State.js"
 import template from "../system/formats/template.js"
 import Canceller from "../fabric/class/Canceller.js"
 import resolvePath from "../fabric/type/path/core/resolvePath.js"
+import dirname from "../fabric/type/path/extract/dirname.js"
 import isLength from "../fabric/type/any/is/isLength.js"
+import isArrayLike from "../fabric/type/any/is/isArrayLike.js"
 import ATTRIBUTES_ALLOW_LIST from "../fabric/constants/ATTRIBUTES_ALLOW_LIST.js"
 
 const DEF_KEYWORDS = new Set([
@@ -40,16 +42,17 @@ function normaliseString(def, ctx) {
     const keys = []
     for (const tokens of parsed.substitutions) {
       for (const token of tokens) {
+        const loc = resolve(ctx.scope, token.value)
         if (token.type === "key") {
-          token.value = resolve(ctx.scope, token.value)
+          token.value = loc
           keys.push(token.value)
         } else if (
           token.type === "arg" &&
           isLength(token.value) &&
-          Array.isArray(ctx.state.get(ctx.scope))
+          isArrayLike(ctx.state.get(dirname(loc)))
         ) {
           token.type = "key"
-          token.value = resolve(ctx.scope, token.value)
+          token.value = loc
           keys.push(token.value)
         }
       }

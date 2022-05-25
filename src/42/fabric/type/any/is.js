@@ -8,10 +8,11 @@
 import isEmptyObject from "./is/isEmptyObject.js"
 import isLength from "./is/isLength.js"
 
-// TODO: move usefull is* functions in 'any' folder
+// TODO: move more usefull is* functions in 'any' folder
 export { default as isEmptyObject } from "./is/isEmptyObject.js"
 export { default as isLength } from "./is/isLength.js"
 export { default as isProxy } from "./is/isProxy.js"
+export { default as isArrayLike } from "./is/isArrayLike.js"
 
 const { toString } = Object.prototype
 
@@ -25,7 +26,7 @@ export const isFloat = (x) => isFinite(x) && isInteger(x) === false
 
 export const isNil = (x) => x == undefined
 export const isNull = (x) => x === null
-export const isUndefined = (x) => x === void 0
+export const isUndefined = (x) => x === undefined
 export const isFalsy = (x) => Boolean(x) === false
 export const isTruthy = (x) => Boolean(x) === true
 
@@ -85,9 +86,6 @@ export const isPlainObjectOrHashmap = (x) =>
   x !== null &&
   typeof x === "object" &&
   (Object.getPrototypeOf(x) === null || x.constructor === Object)
-
-export const isArrayLike = (x) =>
-  x != undefined && typeof x !== "function" && isLength(x.length)
 
 export const isEmptyArray = (x) => x?.length === 0
 
