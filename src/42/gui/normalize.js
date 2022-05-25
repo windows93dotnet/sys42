@@ -1,6 +1,7 @@
 import State from "./class/State.js"
 import template from "../system/formats/template.js"
 import Canceller from "../fabric/class/Canceller.js"
+import Undones from "../fabric/class/Undones.js"
 import resolvePath from "../fabric/type/path/core/resolvePath.js"
 import dirname from "../fabric/type/path/extract/dirname.js"
 import isLength from "../fabric/type/any/is/isLength.js"
@@ -98,10 +99,11 @@ function normalizeAttrs(def, ctx) {
   return attrs
 }
 
-export default function normalize(def, ctx) {
+export default function normalize(def, ctx = {}) {
   ctx.scope ??= "/"
   ctx.renderers ??= {}
   ctx.cancel ??= new Canceller()
+  ctx.undones ??= new Undones()
   ctx.state ??= new State(ctx)
   ctx = { ...ctx }
 
