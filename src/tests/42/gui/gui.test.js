@@ -55,7 +55,8 @@ hello<br>world<hr>
 })
 
 test("reactive data", async (t) => {
-  const app = await ui(div(), {
+  const el = div()
+  let app = ui(el, {
     tag: "em",
     content: "{{foo}}",
     class: "{{foo}}",
@@ -64,6 +65,40 @@ test("reactive data", async (t) => {
       foo: "red",
     },
   })
+
+  t.is(el.innerHTML, '<em class="red" style="color: red;">red</em>')
+
+  app = await app
+
+  t.is(app.el.innerHTML, '<em class="red" style="color: red;">red</em>')
+
+  app.data.foo = "tan"
+
+  t.is(app.el.innerHTML, '<em class="tan" style="color: tan;">tan</em>')
+
+  delete app.data.foo
+
+  t.is(app.el.innerHTML, '<em class="" style=""></em>')
+})
+
+test("reactive async data", async (t) => {
+  const el = div()
+  let app = ui(el, {
+    tag: "em",
+    content: "{{foo}}",
+    class: "{{foo}}",
+    style: "color:{{foo}}",
+    async data() {
+      await t.sleep(100)
+      return {
+        foo: "red",
+      }
+    },
+  })
+
+  t.is(el.innerHTML, '<em class="" style=""></em>')
+
+  app = await app
 
   t.is(app.el.innerHTML, '<em class="red" style="color: red;">red</em>')
 

@@ -118,7 +118,17 @@ export default function normalize(def, ctx = {}) {
   } else if (Array.isArray(def)) {
     type = "array"
   } else {
-    if (def.data) ctx.state.assign(ctx.scope, def.data)
+    if (def.data) {
+      if (typeof def.data === "function") {
+        ctx.undones.push(
+          (async () => {
+            const res = await def.data()
+            ctx.state.assign(ctx.scope, res)
+          })()
+        )
+      } else ctx.state.assign(ctx.scope, def.data)
+    }
+
     if (def.scope) ctx.scope = resolvePath(ctx.scope, def.scope)
 
     const attrs = normalizeAttrs(def, ctx)
