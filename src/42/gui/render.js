@@ -17,8 +17,8 @@ export default function render(...args) {
 
   if (type === "function") {
     const textNode = document.createTextNode("")
-    register(def.keys, ctx, () => {
-      textNode.textContent = def(ctx.state.proxy)
+    register(def.keys, ctx, async () => {
+      textNode.textContent = await def(ctx.state.proxy)
     })
     return textNode
   }

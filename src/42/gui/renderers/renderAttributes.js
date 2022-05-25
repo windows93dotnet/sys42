@@ -12,8 +12,8 @@ export default function renderAttributes(el, ctx, attrs, prefix = "") {
     else {
       key = prefix + key
       if (typeof val === "function") {
-        register(val.keys, ctx, () =>
-          setAttribute(el, key, val(ctx.state.proxy))
+        register(val.keys, ctx, async () =>
+          setAttribute(el, key, await val(ctx.state.proxy))
         )
       } else {
         setAttribute(el, key, val)

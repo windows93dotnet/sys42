@@ -14,5 +14,6 @@ export default function register(keys, ctx, render) {
     )
   }
 
-  render()
+  const res = render()
+  if (res !== undefined) ctx.undones.push(res)
 }

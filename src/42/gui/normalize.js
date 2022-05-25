@@ -55,11 +55,17 @@ function normaliseString(def, ctx) {
           token.type = "key"
           token.value = loc
           keys.push(token.value)
+        } else if (token.type === "function") {
+          console.log(token)
         }
       }
     }
 
-    def = template.compile(parsed, { sep: "/" })
+    def = template.compile(parsed, {
+      // async: true,
+      sep: "/",
+    })
+
     def.keys = keys
     return def
   }

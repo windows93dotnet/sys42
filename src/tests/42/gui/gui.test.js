@@ -54,7 +54,7 @@ hello<br>world<hr>
   )
 })
 
-test("reactive data", async (t) => {
+test.only("reactive data", async (t) => {
   const el = div()
   let app = ui(el, {
     tag: "em",
@@ -66,6 +66,8 @@ test("reactive data", async (t) => {
     },
   })
 
+  await 0
+
   t.is(el.innerHTML, '<em class="red" style="color: red;">red</em>')
 
   app = await app
@@ -73,10 +75,12 @@ test("reactive data", async (t) => {
   t.is(app.el.innerHTML, '<em class="red" style="color: red;">red</em>')
 
   app.data.foo = "tan"
+  await 0
 
   t.is(app.el.innerHTML, '<em class="tan" style="color: tan;">tan</em>')
 
   delete app.data.foo
+  await 0
 
   t.is(app.el.innerHTML, '<em class="" style=""></em>')
 })
@@ -351,5 +355,17 @@ test("scope", "relative template keys", async (t) => {
   )
 })
 
-// test("filters", async (t) => {
-// })
+/* filters
+========== */
+
+const uppercase = (str) => str.toUpperCase()
+
+test("filters", async (t) => {
+  const app = await ui(div(), {
+    content: "a {{foo|uppercase}}",
+    data: { foo: "b" },
+    filters: { uppercase },
+  })
+
+  t.is(app.el.innerHTML, "a B")
+})
