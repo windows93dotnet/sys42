@@ -64,8 +64,10 @@ module.exports = {
     // @read https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/void#non-leaking_arrow_functions
     "no-void": 0,
 
-    // make use of Object.create(null) easier
-    "guard-for-in": 0,
+    "getter-return": [2, { allowImplicit: true }],
+
+    // // make use of Object.create(null) easier
+    // "guard-for-in": 0,
 
     // can't ignore performance gain
     "unicorn/prefer-math-trunc": 0,

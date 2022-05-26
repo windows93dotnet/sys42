@@ -62,7 +62,7 @@ function normaliseString(def, ctx) {
     }
 
     def = template.compile(parsed, {
-      // async: true,
+      async: true,
       sep: "/",
     })
 

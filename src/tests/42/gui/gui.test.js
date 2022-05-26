@@ -14,24 +14,24 @@ test.afterEach(() => {
   elements.length = 0
 })
 
-test("tag", async (t) => {
-  const app = await ui(div(), { tag: "em" })
+test("tag", (t) => {
+  const app = ui(div(), { tag: "em" })
   t.is(app.el.innerHTML, "<em></em>")
 })
 
-test("attributes", async (t) => {
-  const app = await ui(div(), { tag: "em", class: "foo" })
+test("attributes", (t) => {
+  const app = ui(div(), { tag: "em", class: "foo" })
   t.is(app.el.innerHTML, '<em class="foo"></em>')
 })
 
-test("content", async (t) => {
-  const app = await ui(div(), { tag: "em", content: "hello" })
+test("content", (t) => {
+  const app = ui(div(), { tag: "em", content: "hello" })
 
   t.is(app.el.innerHTML, "<em>hello</em>")
 })
 
-test("content", "array", async (t) => {
-  const app = await ui(div(), {
+test("content", "array", (t) => {
+  const app = ui(div(), {
     tag: "em",
     content: ["hello ", { tag: "strong", content: "world" }],
   })
@@ -39,8 +39,8 @@ test("content", "array", async (t) => {
   t.is(app.el.innerHTML, "<em>hello <strong>world</strong></em>")
 })
 
-test("content", "special strings", async (t) => {
-  const app = await ui(div(), {
+test("content", "special strings", (t) => {
+  const app = ui(div(), {
     tag: "h1",
     content: ["\n", "hello", "\n\n", "world", "---", "\n"],
   })
@@ -54,9 +54,34 @@ hello<br>world<hr>
   )
 })
 
-test.only("reactive data", async (t) => {
-  const el = div()
-  let app = ui(el, {
+test("reactive data", async (t) => {
+  const app = ui(div(), {
+    tag: "em",
+    content: "{{foo}}",
+    data: {
+      foo: "red",
+    },
+  })
+
+  t.is(app.el.innerHTML, "<em></em>")
+
+  await app
+
+  t.is(app.el.innerHTML, "<em>red</em>")
+
+  app.data.foo = "tan"
+  await app
+
+  t.is(app.el.innerHTML, "<em>tan</em>")
+
+  delete app.data.foo
+  await app
+
+  t.is(app.el.innerHTML, "<em></em>")
+})
+
+test("reactive data", "attributes", async (t) => {
+  const app = ui(div(), {
     tag: "em",
     content: "{{foo}}",
     class: "{{foo}}",
@@ -66,28 +91,25 @@ test.only("reactive data", async (t) => {
     },
   })
 
-  await 0
+  t.is(app.el.innerHTML, "<em></em>")
 
-  t.is(el.innerHTML, '<em class="red" style="color: red;">red</em>')
-
-  app = await app
+  await app
 
   t.is(app.el.innerHTML, '<em class="red" style="color: red;">red</em>')
 
   app.data.foo = "tan"
-  await 0
+  await app
 
   t.is(app.el.innerHTML, '<em class="tan" style="color: tan;">tan</em>')
 
   delete app.data.foo
-  await 0
+  await app
 
   t.is(app.el.innerHTML, '<em class="" style=""></em>')
 })
 
 test("reactive async data", async (t) => {
-  const el = div()
-  let app = ui(el, {
+  const app = ui(div(), {
     tag: "em",
     content: "{{foo}}",
     class: "{{foo}}",
@@ -100,17 +122,19 @@ test("reactive async data", async (t) => {
     },
   })
 
-  t.is(el.innerHTML, '<em class="" style=""></em>')
+  t.is(app.el.innerHTML, "<em></em>")
 
-  app = await app
+  await app
 
   t.is(app.el.innerHTML, '<em class="red" style="color: red;">red</em>')
 
   app.data.foo = "tan"
+  await app
 
   t.is(app.el.innerHTML, '<em class="tan" style="color: tan;">tan</em>')
 
   delete app.data.foo
+  await app
 
   t.is(app.el.innerHTML, '<em class="" style=""></em>')
 })
@@ -126,15 +150,15 @@ test("reactive data", "array", async (t) => {
   t.is(app.el.innerHTML, "<em>ab</em>")
 })
 
-test.skip("reactive data", "array", async (t) => {
-  const app = await ui(div(), {
-    tag: "em",
-    content: ["{{/0}}", "{{/1}}"],
-    data: ["a", "b"],
-  })
+// test.skip("reactive data", "array", async (t) => {
+//   const app = await ui(div(), {
+//     tag: "em",
+//     content: ["{{/0}}", "{{/1}}"],
+//     data: ["a", "b"],
+//   })
 
-  t.is(app.el.innerHTML, "<em>ab</em>")
-})
+//   t.is(app.el.innerHTML, "<em>ab</em>")
+// })
 
 test("reactive data", "nested", async (t) => {
   const app = await ui(div(), {
@@ -150,6 +174,7 @@ test("reactive data", "nested", async (t) => {
   t.is(app.el.innerHTML, "<em>hi</em>")
 
   app.data.foo.bar = "bye"
+  await app
 
   t.is(app.el.innerHTML, "<em>bye</em>")
 })
@@ -172,6 +197,7 @@ test("reactive data", "styles", async (t) => {
   )
 
   app.data.foo = "tan"
+  await app
 
   t.is(
     app.el.innerHTML,
@@ -194,6 +220,7 @@ test("scope", async (t) => {
   t.is(app.el.innerHTML, "<em>hi</em>")
 
   app.data.foo.bar = "bye"
+  await app
 
   t.is(app.el.innerHTML, "<em>bye</em>")
 })
@@ -266,6 +293,7 @@ test("scope", "relative scopes", async (t) => {
   )
 
   app.data.a.b.c.d = "#"
+  await app
 
   t.is(
     app.el.innerHTML,
@@ -342,6 +370,7 @@ test("scope", "relative template keys", async (t) => {
   )
 
   app.data.a.b.c.d = "#"
+  await app
 
   t.is(
     app.el.innerHTML,
@@ -358,14 +387,14 @@ test("scope", "relative template keys", async (t) => {
 /* filters
 ========== */
 
-const uppercase = (str) => str.toUpperCase()
+// const uppercase = (str) => str.toUpperCase()
 
-test("filters", async (t) => {
-  const app = await ui(div(), {
-    content: "a {{foo|uppercase}}",
-    data: { foo: "b" },
-    filters: { uppercase },
-  })
+// test("filters", async (t) => {
+//   const app = await ui(div(), {
+//     content: "a {{foo|uppercase}}",
+//     data: { foo: "b" },
+//     filters: { uppercase },
+//   })
 
-  t.is(app.el.innerHTML, "a B")
-})
+//   t.is(app.el.innerHTML, "a B")
+// })

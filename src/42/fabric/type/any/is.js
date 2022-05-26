@@ -13,6 +13,7 @@ export { default as isEmptyObject } from "./is/isEmptyObject.js"
 export { default as isLength } from "./is/isLength.js"
 export { default as isProxy } from "./is/isProxy.js"
 export { default as isArrayLike } from "./is/isArrayLike.js"
+export { default as isPromiseLike } from "./is/isPromiseLike.js"
 
 const { toString } = Object.prototype
 
@@ -51,15 +52,10 @@ export const isErrorLike = (x) =>
   (x instanceof Error || (x.constructor && x.constructor.name === "ErrorEvent"))
 
 // @thanks https://github.com/tc39/ecmascript-asyncawait/issues/78#issuecomment-167162901
-const GeneratorFunction = Reflect.getPrototypeOf(function* () {})
-const AsyncFunction = Reflect.getPrototypeOf(async () => {})
-export const isGeneratorFunction = (x) => x instanceof GeneratorFunction
-export const isAsyncFunction = (x) => x instanceof AsyncFunction
-
-export const isPromiseLike = (x, type = typeof x) =>
-  x !== null &&
-  (type === "object" || type === "function") &&
-  typeof x.then === "function"
+// const GeneratorFunction = Reflect.getPrototypeOf(function* () {})
+// const AsyncFunction = Reflect.getPrototypeOf(async () => {})
+// export const isGeneratorFunction = (x) => x instanceof GeneratorFunction
+// export const isAsyncFunction = (x) => x instanceof AsyncFunction
 
 export const isIterable = (x) =>
   Boolean(x) && typeof x[Symbol.iterator] === "function"

@@ -7,7 +7,7 @@ export default class State {
     this.proxy = observe(this.value, {
       change(prop) {
         if (prop in ctx.renderers) {
-          for (const renderer of ctx.renderers[prop]) renderer()
+          for (const render of ctx.renderers[prop]) render()
         }
       },
     })

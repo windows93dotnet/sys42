@@ -18,7 +18,7 @@ export default function setStyles(el, styles) {
     if (type === "string") {
       el.style.cssText = styles
     } else if (type === "object") {
-      for (const key in styles) setStyle(el, key, styles[key])
+      for (const key of Object.keys(styles)) setStyle(el, key, styles[key])
     }
   } else {
     el.removeAttribute("style")
