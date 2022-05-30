@@ -5,9 +5,9 @@ export default class State {
   constructor(ctx) {
     this.value = {}
     this.proxy = observe(this.value, {
-      change(prop) {
-        if (prop in ctx.renderers) {
-          for (const render of ctx.renderers[prop]) render()
+      change(path) {
+        if (path in ctx.renderers) {
+          for (const render of ctx.renderers[path]) render()
         }
       },
     })

@@ -231,30 +231,15 @@ test("scope", "relative scopes", async (t) => {
     content: [
       "{{d}}",
       "\n",
-      {
-        scope: "../",
-        content: "{{foo}}",
-      },
+      { scope: "../", content: "{{foo}}" },
       "\n",
-      {
-        scope: "../c",
-        content: "{{d}}",
-      },
+      { scope: "../c", content: "{{d}}" },
       "\n",
-      {
-        scope: "../../bar",
-        content: "{{.}}",
-      },
+      { scope: "../../bar", content: "{{.}}" },
       "\n",
-      {
-        scope: "/",
-        content: "{{baz}}",
-      },
+      { scope: "/", content: "{{baz}}" },
       "\n",
-      {
-        scope: "/",
-        content: "?{{d}}",
-      },
+      { scope: "/", content: "?{{d}}" },
     ],
     data: {
       a: {
@@ -313,25 +298,15 @@ test("scope", "relative template keys", async (t) => {
     content: [
       "{{/a.b.c.d}}",
       "\n",
-      {
-        content: "{{../foo}}",
-      },
+      { content: "{{../foo}}" },
       "\n",
-      {
-        content: "{{../c/d}}",
-      },
+      { content: "{{../c/d}}" },
       "\n",
-      {
-        content: "{{../../bar}}",
-      },
+      { content: "{{../../bar}}" },
       "\n",
-      {
-        content: "{{/baz}}",
-      },
+      { content: "{{/baz}}" },
       "\n",
-      {
-        content: "?{{/d}}",
-      },
+      { content: "?{{/d}}" },
     ],
     data: {
       a: {

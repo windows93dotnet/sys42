@@ -1,19 +1,17 @@
-import isPromiseLike from "../fabric/type/any/is/isPromiseLike.js"
-
 export default function register(ctx, get, render) {
-  const exec = () => {
+  const renderer = async () => {
     const res = get(ctx.state.proxy)
-    if (isPromiseLike(res)) ctx.undones.push(res.then(render))
-    else render(res)
+    if (res !== undefined) ctx.undones.push(res)
+    render(await res)
   }
 
   for (const scope of get.keys) {
     ctx.renderers[scope] ??= new Set()
-    ctx.renderers[scope].add(exec)
+    ctx.renderers[scope].add(renderer)
     ctx.cancel.signal.addEventListener(
       "abort",
       () => {
-        ctx.global.renderers[scope].delete(exec)
+        ctx.global.renderers[scope].delete(renderer)
         if (ctx.global.renderers[scope].size === 0) {
           delete ctx.global.renderers[scope]
         }
@@ -22,5 +20,5 @@ export default function register(ctx, get, render) {
     )
   }
 
-  exec()
+  renderer()
 }

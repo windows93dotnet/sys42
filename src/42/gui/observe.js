@@ -4,26 +4,28 @@ export default function observe(root, options = {}) {
   const proxies = new WeakMap()
   const revokes = new Set()
 
-  function createHander(path) {
-    const scope = "/" + (path.length > 0 ? path.join("/") + "/" : "")
+  function handler(parents) {
+    const scope = "/" + (parents.length > 0 ? parents.join("/") + "/" : "")
+
     return {
-      has(target, prop, receiver) {
-        const has = Reflect.has(target, prop, receiver)
+      has(target, key, receiver) {
+        const has = Reflect.has(target, key, receiver)
 
         if (!has) {
-          if (prop === PROXY_REVOKE) return true
-          return options.has?.(target, prop, path) ?? false
+          if (key === PROXY_REVOKE) return true
+          return options.has?.(target, key, parents) ?? false
         }
 
         return has
       },
 
-      get(target, prop, receiver) {
-        const val = Reflect.get(target, prop, receiver)
+      get(target, key, receiver) {
+        const val = Reflect.get(target, key, receiver)
 
         if (val === undefined) {
-          if (prop === PROXY_REVOKE) return revoke
-          return options.get?.(target, prop, path)
+          if (key === PROXY_REVOKE) return revoke
+          if (typeof key !== "string") return
+          return options.get?.(scope + key)
         }
 
         if (
@@ -31,10 +33,9 @@ export default function observe(root, options = {}) {
           (val?.constructor === Object || Array.isArray(val))
         ) {
           if (proxies.has(val)) return proxies.get(val)
-          const newPath = [...path, prop]
           const { proxy, revoke } = Proxy.revocable(
             val,
-            createHander(newPath, target)
+            handler([...parents, key])
           )
           proxies.set(val, proxy)
           revokes.add(revoke)
@@ -44,24 +45,41 @@ export default function observe(root, options = {}) {
         return val
       },
 
-      set(target, prop, val, receiver) {
-        const oldVal = Reflect.get(target, prop, receiver)
-        const allow = options.set ? options.set(target, prop, path) : true
-        const out = allow && Reflect.set(target, prop, val, receiver)
-        options.change?.(scope + prop, val, oldVal)
+      set(target, key, val, receiver) {
+        const oldVal = Reflect.get(target, key, receiver)
+
+        let out
+
+        if (typeof key === "string") {
+          const allow = options.set
+            ? options.set(scope + key, val, oldVal)
+            : true
+          out = allow && Reflect.set(target, key, val, receiver)
+          options.change?.(scope + key, val, oldVal)
+        } else {
+          out = Reflect.set(target, key, val, receiver)
+        }
+
         return out
       },
 
-      deleteProperty(target, prop) {
-        const allow = options.delete ? options.delete(target, prop, path) : true
-        const ret = allow && Reflect.deleteProperty(target, prop)
-        options.change?.(scope + prop)
-        return ret
+      deleteProperty(target, key) {
+        let out
+
+        if (typeof key === "string") {
+          const allow = options.delete ? options.delete(scope + key) : true
+          out = allow && Reflect.deleteProperty(target, key)
+          options.change?.(scope + key)
+        } else {
+          out = Reflect.deleteProperty(target, key)
+        }
+
+        return out
       },
     }
   }
 
-  const { proxy, revoke } = Proxy.revocable(root, createHander([]))
+  const { proxy, revoke } = Proxy.revocable(root, handler([]))
 
   proxies.set(root, proxy)
   revokes.add(revoke)
