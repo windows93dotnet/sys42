@@ -18,6 +18,8 @@ export default class UI extends DOMQuery {
       this.ctx = args[1] ?? {}
     }
 
+    this.ctx.el = this.el
+
     clearElement(this.el)
     this.el.append(render(this.def, this.ctx))
     this.state = this.ctx.state

@@ -1,7 +1,10 @@
+/* eslint-disable max-depth */
 import State from "./class/State.js"
+import Locator from "../fabric/class/Locator.js"
 import template from "../system/formats/template.js"
 import Canceller from "../fabric/class/Canceller.js"
 import Undones from "../fabric/class/Undones.js"
+import getFilter from "../fabric/getFilter.js"
 import resolvePath from "../fabric/type/path/core/resolvePath.js"
 import dirname from "../fabric/type/path/extract/dirname.js"
 import isLength from "../fabric/type/any/is/isLength.js"
@@ -9,25 +12,13 @@ import isArrayLike from "../fabric/type/any/is/isArrayLike.js"
 import ATTRIBUTES_ALLOW_LIST from "../fabric/constants/ATTRIBUTES_ALLOW_LIST.js"
 
 const DEF_KEYWORDS = new Set([
-  // "actions",
-  // "args",
-  // "bind",
-  // "compact",
+  "actions",
   "computed",
   "content",
   "data",
-  // "dialog",
-  "filters",
-  // "label",
-  // "name",
-  // "picto",
-  // "popup",
-  // "prose",
   "repeat",
-  // "run",
   "schema",
   "scope",
-  // "shortcuts",
   "tag",
   "when",
 ])
@@ -38,6 +29,8 @@ function resolve(scope, path) {
 
 function normaliseString(def, ctx) {
   const parsed = template.parse(def)
+
+  const filters = { ...ctx.actions.value }
 
   if (parsed.substitutions.length > 0) {
     const keys = []
@@ -56,7 +49,17 @@ function normaliseString(def, ctx) {
           token.value = loc
           keys.push(token.value)
         } else if (token.type === "function") {
-          console.log(token)
+          if (ctx.actions.has(loc) === false) {
+            let filter
+            filters[token.value] = async (...args) => {
+              filter ??= await getFilter(token.value)
+              try {
+                return await filter(...args)
+              } catch (err) {
+                console.log(err)
+              }
+            }
+          } else token.value = loc
         }
       }
     }
@@ -64,6 +67,8 @@ function normaliseString(def, ctx) {
     def = template.compile(parsed, {
       async: true,
       sep: "/",
+      filters,
+      thisArg: ctx,
     })
 
     def.keys = keys
@@ -108,8 +113,9 @@ function normalizeAttrs(def, ctx) {
 export default function normalize(def, ctx = {}) {
   ctx.scope ??= "/"
   ctx.renderers ??= {}
-  ctx.cancel ??= new Canceller()
   ctx.undones ??= new Undones()
+  ctx.actions ??= new Locator({}, { sep: "/" })
+  ctx.cancel ??= new Canceller()
   ctx.state ??= new State(ctx)
   ctx = { ...ctx }
 
@@ -124,6 +130,8 @@ export default function normalize(def, ctx = {}) {
   } else if (Array.isArray(def)) {
     type = "array"
   } else {
+    if (def.actions) ctx.actions.assign(ctx.scope, def.actions)
+
     if (def.data) {
       if (typeof def.data === "function") {
         ctx.undones.push(

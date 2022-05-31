@@ -29,18 +29,26 @@ export default function render(...args) {
     return fragment
   }
 
-  const el = create(def.tag)
-  const { localName } = el
+  let el
 
-  if (
-    ctx.trusted !== true &&
-    !ELEMENTS_ALLOW_LIST.includes(localName) &&
-    !SVG_TAGS.includes(localName)
-  ) {
-    return document.createComment(`[disallowed tag: ${localName}]`)
+  if (def.tag || def.attrs) {
+    el = create(def.tag)
+    ctx.el = el
+    const { localName } = el
+
+    if (
+      localName &&
+      ctx.trusted !== true &&
+      !ELEMENTS_ALLOW_LIST.includes(localName) &&
+      !SVG_TAGS.includes(localName)
+    ) {
+      return document.createComment(`[disallowed tag: ${localName}]`)
+    }
+
+    if (def.attrs) renderAttributes(el, ctx, def.attrs)
+  } else {
+    el = document.createDocumentFragment()
   }
-
-  if (def.attrs) renderAttributes(el, ctx, def.attrs)
 
   if (def.content) el.append(render(def.content, ctx))
 
