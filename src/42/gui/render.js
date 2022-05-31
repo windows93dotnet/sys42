@@ -37,7 +37,6 @@ export default function render(...args) {
     const { localName } = el
 
     if (
-      localName &&
       ctx.trusted !== true &&
       !ELEMENTS_ALLOW_LIST.includes(localName) &&
       !SVG_TAGS.includes(localName)

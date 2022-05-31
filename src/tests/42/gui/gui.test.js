@@ -177,6 +177,9 @@ test("reactive data", "nested", async (t) => {
   await app
 
   t.is(app.el.innerHTML, "<em>bye</em>")
+
+  app.ctx.cancel()
+  t.eq(Object.keys(app.ctx.renderers), [])
 })
 
 test("reactive data", "styles", async (t) => {
