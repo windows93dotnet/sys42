@@ -106,9 +106,6 @@ test("reactive data", "attributes", async (t) => {
   await app
 
   t.is(app.el.innerHTML, '<em style=""></em>')
-
-  // await test.utils.repaint()
-  // t.is(app.el.innerHTML, "<em></em>")
 })
 
 test("reactive async data", async (t) => {
@@ -140,9 +137,6 @@ test("reactive async data", async (t) => {
   await app
 
   t.is(app.el.innerHTML, '<em style=""></em>')
-
-  // await test.utils.repaint()
-  // t.is(app.el.innerHTML, "<em></em>")
 })
 
 test("reactive data", "array", async (t) => {
