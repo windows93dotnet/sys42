@@ -1,22 +1,22 @@
 import parseDotNotation from "./parseDotNotation.js"
 
-export default function allocate(obj, loc, value, sep = ".") {
-  return allocate.evaluate(obj, parseDotNotation(loc, sep), value)
+export default function allocate(obj, loc, val, sep = ".") {
+  return allocate.evaluate(obj, parseDotNotation(loc, sep), val)
 }
 
 allocate.parse = parseDotNotation
 
-allocate.evaluate = (obj, tokens, value) => {
+allocate.evaluate = (obj, tokens, val) => {
   let current = obj
 
   if (tokens.length === 0) {
-    for (const key in obj) delete obj[key]
-    return Object.assign(obj, value)
+    for (const key of Object.keys(obj)) delete obj[key]
+    return Object.assign(obj, val)
   }
 
   for (let i = 0, l = tokens.length; i < l; i++) {
     const key = tokens[i]
-    current[key] = tokens.length - 1 === i ? value : current[key] ?? {}
+    current[key] = tokens.length - 1 === i ? val : current[key] ?? {}
     current = current[key]
   }
 

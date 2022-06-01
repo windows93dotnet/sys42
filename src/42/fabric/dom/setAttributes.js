@@ -30,7 +30,7 @@ export function setClasses(el, val) {
     const type = typeof val
     if (type === "string") {
       el.setAttribute("class", val) // needed for svg
-    } else if (type === "object") {
+    } else if (val && type === "object") {
       for (const [keys, value] of Object.entries(val)) {
         const op = value ? "add" : "remove"
         for (const key of keys.split(" ")) el.classList[op](key)
@@ -43,15 +43,19 @@ export function setClasses(el, val) {
 
 export function setAttribute(el, key, val) {
   if (key === "class" || key === "className") {
-    setClasses(el, val)
+    if (val) setClasses(el, val)
+    else el.removeAttribute("class")
   } else if (key === "style") {
-    setStyles(el, val)
+    if (val) setStyles(el, val)
+    else el.removeAttribute(key)
   } else if (key === "dataset") {
     setDataset(el, val)
   } else if (key === "role") {
-    el.setAttribute(key, val)
+    if (val === undefined) el.removeAttribute(key)
+    else el.setAttribute(key, val)
   } else if (key === "id") {
-    el.setAttribute("id", val === true && !el.id ? uid() : val)
+    if (val) el.setAttribute(key, val === true && !el.id ? uid() : val)
+    else el.removeAttribute(key)
   } else if (key === "value") {
     if (el.localName === "textarea" || el.localName === "select") {
       el.value = val == null ? null : val

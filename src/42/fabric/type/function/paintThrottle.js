@@ -2,15 +2,12 @@
 
 export default function paintThrottle(fn) {
   let pending = false
-
-  function paint(...args) {
+  return (...args) => {
     if (pending) return
     pending = true
     requestAnimationFrame(() => {
-      pending = false
       fn(...args)
+      pending = false
     })
   }
-
-  return paint
 }

@@ -88,12 +88,12 @@ function normalizeStyles(def, ctx) {
   return styles
 }
 
-function normalizeAttrs(def, ctx) {
+export function normalizeAttrs(def, ctx) {
   const attrs = []
   for (const [key, val] of Object.entries(def)) {
     if (
       !DEF_KEYWORDS.has(key) &&
-      (ctx.trusted || ATTRIBUTES_ALLOW_LIST.includes(key))
+      (ctx?.trusted || ATTRIBUTES_ALLOW_LIST.includes(key))
     ) {
       const type = typeof val
       if (key === "style" && val && type === "object") {
@@ -110,7 +110,7 @@ function normalizeAttrs(def, ctx) {
   return attrs
 }
 
-export default function normalize(def, ctx = {}) {
+export default function normalize(def = {}, ctx = {}) {
   ctx.scope ??= "/"
   ctx.renderers ??= {}
   ctx.undones ??= new Undones()

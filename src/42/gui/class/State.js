@@ -1,5 +1,6 @@
 import observe from "../observe.js"
 import locate from "../../fabric/locator/locate.js"
+import allocate from "../../fabric/locator/allocate.js"
 
 export default class State {
   constructor(ctx) {
@@ -11,6 +12,10 @@ export default class State {
         }
       },
     })
+  }
+
+  set(path, val) {
+    return allocate(this.proxy, path, val, "/")
   }
 
   get(path) {
