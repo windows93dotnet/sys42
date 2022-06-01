@@ -67,8 +67,8 @@ function normaliseString(def, ctx) {
     def = template.compile(parsed, {
       async: true,
       sep: "/",
-      filters,
       thisArg: ctx,
+      filters,
     })
 
     def.keys = keys
@@ -76,7 +76,7 @@ function normaliseString(def, ctx) {
   }
 }
 
-function normalizeStyles(def, ctx) {
+function normalizeObject(def, ctx) {
   const styles = []
   for (const [key, val] of Object.entries(def)) {
     styles.push([
@@ -96,8 +96,12 @@ export function normalizeAttrs(def, ctx) {
       (ctx?.trusted || ATTRIBUTES_ALLOW_LIST.includes(key))
     ) {
       const type = typeof val
-      if (key === "style" && val && type === "object") {
-        attrs.push([key, normalizeStyles(val, ctx)])
+      if (val && type === "object") {
+        if (key === "class" && Array.isArray(val)) {
+          attrs.push([key, normaliseString(val.join(" "), ctx)])
+        } else {
+          attrs.push([key, normalizeObject(val, ctx)])
+        }
       } else {
         attrs.push([
           key,

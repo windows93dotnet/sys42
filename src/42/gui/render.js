@@ -32,7 +32,7 @@ export default function render(...args) {
   let el
 
   if (def.tag || def.attrs) {
-    el = create(def.tag)
+    el = create(ctx, def.tag)
     ctx.el = el
     const { localName } = el
 

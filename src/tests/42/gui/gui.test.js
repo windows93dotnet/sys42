@@ -54,6 +54,9 @@ hello<br>world<hr>
   )
 })
 
+/* reactivity
+============= */
+
 test("reactive data", async (t) => {
   const app = ui(tmp(), {
     tag: "em",
@@ -208,6 +211,9 @@ test("reactive data", "styles", async (t) => {
   )
 })
 
+/* scope
+======== */
+
 test("scope", async (t) => {
   const app = await ui(tmp(), {
     tag: "em",
@@ -360,6 +366,128 @@ test("scope", "relative template keys", async (t) => {
 1
 ?`
   )
+})
+
+/* class
+======== */
+
+test("class", "string", async (t) => {
+  const app = await ui(tmp(), {
+    tag: "em",
+    class: "{{a}} {{b}}",
+    data: {
+      a: "x",
+      b: "y",
+    },
+  })
+
+  t.is(app.el.innerHTML, '<em class="x y"></em>')
+
+  app.data.a = "a"
+  await app
+
+  t.is(app.el.innerHTML, '<em class="a y"></em>')
+
+  delete app.data.b
+  await app
+
+  t.is(app.el.innerHTML, '<em class="a "></em>')
+})
+
+test("class", "array", async (t) => {
+  const app = await ui(tmp(), {
+    tag: "em",
+    class: ["{{a}}", "{{b}}"],
+    data: {
+      a: "x",
+      b: "y",
+    },
+  })
+
+  t.is(app.el.innerHTML, '<em class="x y"></em>')
+
+  app.data.a = "a"
+  await app
+
+  t.is(app.el.innerHTML, '<em class="a y"></em>')
+
+  delete app.data.b
+  await app
+
+  t.is(app.el.innerHTML, '<em class="a "></em>')
+})
+
+test("class", "object", async (t) => {
+  const app = await ui(tmp(), {
+    tag: "em",
+    class: { a: "{{a}}", b: "{{b}}" },
+    data: {
+      a: true,
+      b: true,
+    },
+  })
+
+  t.is(app.el.innerHTML, '<em class="a b"></em>')
+
+  app.data.a = false
+  await app
+
+  t.is(app.el.innerHTML, '<em class="b"></em>')
+
+  app.data.b = undefined
+  await app
+
+  t.is(app.el.innerHTML, '<em class=""></em>')
+
+  app.data.b = true
+  await app
+
+  t.is(app.el.innerHTML, '<em class="b"></em>')
+
+  app.data.a = 1
+  await app
+
+  t.is(app.el.innerHTML, '<em class="b a"></em>')
+})
+
+/* abbreviations
+================ */
+
+test("abbr", (t) => {
+  const app = ui(tmp(), { tag: "em#uniq" })
+  t.is(app.el.innerHTML, '<em id="uniq"></em>')
+})
+
+test("abbr", "reactive", async (t) => {
+  const app = ui(tmp(), {
+    tag: "em#{{foo}}",
+    data: {
+      foo: "bar",
+    },
+  })
+
+  t.is(app.el.innerHTML, "<em></em>")
+
+  await app
+
+  t.is(app.el.innerHTML, '<em id="bar"></em>')
+})
+
+test("abbr", "reactive", 2, async (t) => {
+  const app = ui(tmp(), {
+    tag: "em#{{foo}}.{{a}}.{{b}}",
+    data: {
+      foo: "bar",
+      a: "x",
+      b: "y",
+    },
+  })
+
+  t.is(app.el.innerHTML, "<em></em>")
+
+  await app
+
+  t.is(app.el.innerHTML, '<em id="bar" class="x y"></em>')
 })
 
 /* filters

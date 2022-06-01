@@ -91,8 +91,6 @@ test("classes", (t) => {
   t.is(el.className, "one")
   el = create("div", { class: "one two" })
   t.is(el.className, "one two")
-  el = create("div", { class: ["one", "two"] })
-  t.is(el.className, "one two")
   el = create("div", { class: { one: true, two: true } })
   t.is(el.className, "one two")
 })
