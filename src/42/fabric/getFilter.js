@@ -126,20 +126,16 @@ filters.file = {
 
 const { TEXT_NODE } = Node
 let render
-let clearElement
 
 filters.ui = {
   async render(item) {
     if (typeof item === "string") return item
     render ??= await import("../ui/render.js") //
       .then((m) => m.default)
-    clearElement ??= await import("../ui/utils/clearElement.js") //
-      .then((m) => m.default)
     queueMicrotask(() => {
       const el = this.el.nodeType === TEXT_NODE ? this.el.parentNode : this.el
       if (!el) return
-      clearElement(el)
-      render(item, this.ctx, el)
+      el.replaceChildren(render(item, this))
     })
   },
 }
