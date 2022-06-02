@@ -57,13 +57,23 @@ export default class Component extends HTMLElement {
 
     ctx = { ...ctx }
     ctx.el = this
-    ctx.cancel = ctx.cancel?.fork(this.localName)
+    ctx.cancel = ctx.cancel?.fork()
+    ctx.state = ctx.state?.fork(ctx)
     ctx.undones = undefined
-    ctx.state = undefined
     const _ = normalize(definition, ctx)
+    this.ctx = _.ctx
     delete _.def.tag
 
-    this.ctx = _.ctx
+    const { props } = definition
+    for (const [key, val] of Object.entries(props)) {
+      Object.defineProperty(this, key, {
+        configurable: true,
+        get() {
+          return val
+        },
+      })
+    }
+
     this.append(render(_.def, _.ctx))
     await ctx.undones.done()
   }

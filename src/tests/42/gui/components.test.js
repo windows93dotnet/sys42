@@ -23,7 +23,25 @@ Component.define({
   content: "foo: {{foo}}, bar: {{bar}}",
 })
 
-test("tag", async (t) => {
-  const app = await ui(tmp(), { tag: "ui-t-props" })
-  t.is(app.el.innerHTML, "<ui-t-props>foo: , bar: 2</ui-t-props>")
+test("render props", async (t) => {
+  const app = await ui(tmp(), {
+    tag: "ui-t-props",
+    data: {
+      foo: 1,
+    },
+  })
+
+  t.is(app.el.innerHTML, "<ui-t-props>foo: 1, bar: 2</ui-t-props>")
+})
+
+test("render props", "data before props", async (t) => {
+  const app = await ui(tmp(), {
+    tag: "ui-t-props",
+    data: {
+      foo: 1,
+      bar: 3,
+    },
+  })
+
+  t.is(app.el.innerHTML, "<ui-t-props>foo: 1, bar: 3</ui-t-props>")
 })

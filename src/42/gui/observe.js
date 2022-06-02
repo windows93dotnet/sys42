@@ -1,10 +1,8 @@
-export const PROXY_REVOKE = Symbol.for("PROXY_REVOKE")
-
 export default function observe(root, options = {}) {
   const proxies = new WeakMap()
   const revokes = new Set()
 
-  function handler(parents) {
+  const handler = (parents) => {
     const scope = "/" + (parents.length > 0 ? parents.join("/") + "/" : "")
 
     return {
@@ -12,8 +10,8 @@ export default function observe(root, options = {}) {
         const has = Reflect.has(target, key, receiver)
 
         if (!has) {
-          if (key === PROXY_REVOKE) return true
-          return options.has?.(target, key, parents) ?? false
+          if (typeof key !== "string") return false
+          return options.has?.(scope + key) ?? false
         }
 
         return has
@@ -23,7 +21,6 @@ export default function observe(root, options = {}) {
         const val = Reflect.get(target, key, receiver)
 
         if (val === undefined) {
-          if (key === PROXY_REVOKE) return revoke
           if (typeof key !== "string") return
           return options.get?.(scope + key)
         }
@@ -51,9 +48,7 @@ export default function observe(root, options = {}) {
         let out
 
         if (typeof key === "string") {
-          const allow = options.set
-            ? options.set(scope + key, val, oldVal)
-            : true
+          const allow = options.set?.(scope + key, val, oldVal) ?? true
           out = allow && Reflect.set(target, key, val, receiver)
           options.change?.(scope + key, val, oldVal)
         } else {
@@ -67,7 +62,7 @@ export default function observe(root, options = {}) {
         let out
 
         if (typeof key === "string") {
-          const allow = options.delete ? options.delete(scope + key) : true
+          const allow = options.delete?.(scope + key) ?? true
           out = allow && Reflect.deleteProperty(target, key)
           options.change?.(scope + key)
         } else {
@@ -80,7 +75,6 @@ export default function observe(root, options = {}) {
   }
 
   const { proxy, revoke } = Proxy.revocable(root, handler([]))
-
   proxies.set(root, proxy)
   revokes.add(revoke)
 
@@ -89,9 +83,7 @@ export default function observe(root, options = {}) {
     revokes.clear()
   }
 
-  options?.signal?.addEventListener("abort", destroy, { once: true })
+  options.signal?.addEventListener("abort", destroy, { once: true })
 
   return proxy
 }
-
-observe.REVOKE = PROXY_REVOKE
