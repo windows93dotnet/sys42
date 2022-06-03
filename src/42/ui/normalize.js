@@ -1,11 +1,11 @@
 /* eslint-disable max-depth */
 import State from "./class/State.js"
+import resolve from "./resolve.js"
 import Locator from "../fabric/class/Locator.js"
 import template from "../system/formats/template.js"
 import Canceller from "../fabric/class/Canceller.js"
 import Undones from "../fabric/class/Undones.js"
 import getFilter from "../fabric/getFilter.js"
-import resolvePath from "../fabric/type/path/core/resolvePath.js"
 import dirname from "../fabric/type/path/extract/dirname.js"
 import isLength from "../fabric/type/any/is/isLength.js"
 import isArrayLike from "../fabric/type/any/is/isArrayLike.js"
@@ -22,10 +22,6 @@ const DEF_KEYWORDS = new Set([
   "tag",
   "when",
 ])
-
-function resolve(scope, path) {
-  return resolvePath(scope, String(path)).replaceAll(".", "/")
-}
 
 function normaliseString(def, ctx) {
   const parsed = template.parse(def)

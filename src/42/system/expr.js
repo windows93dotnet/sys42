@@ -14,7 +14,12 @@ export default function expr(target, str, options) {
 expr.parse = (source) => parseExpression(source, jsonParse)
 
 expr.compile = (parsed, options) => {
-  const compiled = compileExpression(parsed, { locate, jsonParse })[0]
+  const compiled = compileExpression(parsed, {
+    locate,
+    jsonParse,
+    sep: options?.sep,
+  })[0]
+
   return options?.boolean
     ? (target) => Boolean(compiled(target))
     : (target) => compiled(target)

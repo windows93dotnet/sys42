@@ -5,6 +5,7 @@ import ELEMENTS_ALLOW_LIST from "../fabric/constants/ELEMENTS_ALLOW_LIST.js"
 import SVG_TAGS from "../fabric/constants/SVG_TAGS.js"
 import renderAttributes from "./renderers/renderAttributes.js"
 import renderComponent from "./renderers/renderComponent.js"
+import renderWhen from "./renderers/renderWhen.js"
 import renderRepeat from "./renderers/renderRepeat.js"
 
 const SPECIAL_STRINGS = {
@@ -14,18 +15,14 @@ const SPECIAL_STRINGS = {
 
 export default function render(...args) {
   const { type, def, ctx } = normalize(...args)
-  return renderNormalized(type, def, ctx)
-}
-
-export function renderNormalized(type, def, ctx) {
   if (type === "string") return SPECIAL_STRINGS[def]?.() ?? def
 
   if (type === "function") {
-    const textNode = document.createTextNode("")
+    const el = document.createTextNode("")
     register(ctx, def, (val) => {
-      textNode.textContent = val
+      el.textContent = val
     })
-    return textNode
+    return el
   }
 
   if (type === "array") {
@@ -34,6 +31,7 @@ export function renderNormalized(type, def, ctx) {
     return fragment
   }
 
+  if (def.when) return renderWhen(def, ctx)
   if (def.repeat) return renderRepeat(def, ctx)
 
   let el

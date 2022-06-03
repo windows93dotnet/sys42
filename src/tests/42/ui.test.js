@@ -154,7 +154,7 @@ test("reactive data", "array", async (t) => {
 })
 
 // test.skip("reactive data", "array", async (t) => {
-//   const app = await ui(div(), {
+//   const app = await ui(tmp(), {
 //     tag: "em",
 //     content: ["{{/0}}", "{{/1}}"],
 //     data: ["a", "b"],
@@ -618,6 +618,205 @@ test("filters", "buildin filters locate", async (t) => {
   t.is(app.el.innerHTML, "<pre>{a:1}</pre>")
 })
 
+/* when
+======= */
+
+test("when", async (t) => {
+  const app = await ui(tmp(), {
+    content: { when: "a.b", content: "x" },
+    data: {
+      a: { b: false },
+    },
+  })
+
+  t.is(app.el.textContent, "")
+
+  app.data.a.b = true
+  await app
+
+  t.is(app.el.textContent, "x")
+
+  app.data.a.b = false
+  await app
+
+  t.is(app.el.textContent, "")
+})
+
+test("when", "array", async (t) => {
+  const app = await ui(tmp(), {
+    content: {
+      scope: "arr",
+      content: [{ when: "0", content: "x" }],
+    },
+    data: {
+      arr: [false],
+    },
+  })
+
+  t.is(app.el.textContent, "")
+
+  app.data.arr[0] = true
+  await app
+
+  t.is(app.el.textContent, "x")
+
+  app.data.arr[0] = false
+  await app
+
+  t.is(app.el.textContent, "")
+})
+
+test("when", "else", async (t) => {
+  const app = await ui(tmp(), {
+    content: [
+      { when: "a.b", content: "x" },
+      { when: "!a.b", content: "y" },
+    ],
+    data: {
+      a: { b: true },
+    },
+  })
+
+  t.is(app.el.textContent, "x")
+
+  app.data.a.b = false
+  await app
+
+  t.is(app.el.textContent, "y")
+
+  app.data.a.b = true
+  await app
+
+  t.is(app.el.textContent, "x")
+})
+
+test("when", "else with empty content", async (t) => {
+  const app = await ui(tmp(), {
+    content: [
+      { when: "a.b", content: "x" }, //
+      { when: "!a.b", content: [] },
+    ],
+    data: {
+      a: { b: true },
+    },
+  })
+
+  t.is(app.el.textContent, "x")
+
+  app.data.a.b = false
+  await app
+
+  t.is(app.el.textContent, "")
+
+  app.data.a.b = true
+  await app
+
+  t.is(app.el.textContent, "x")
+})
+
+test("when", "nodes", async (t) => {
+  const app = await ui(tmp(), {
+    content: [
+      {
+        when: "a.b",
+        content: [
+          "x", //
+          { tag: "em", content: "y" },
+        ],
+      },
+    ],
+    data: {
+      a: { b: false },
+    },
+  })
+
+  t.is(app.el.textContent, "")
+  t.is(app.el.innerHTML, "<!--[when]-->")
+
+  app.data.a.b = true
+  await app
+
+  t.is(app.el.textContent, "xy")
+  t.is(app.el.innerHTML, "<!--[when]-->x<em>y</em>")
+
+  app.data.a.b = false
+  await app
+
+  t.is(app.el.textContent, "")
+  t.is(app.el.innerHTML, "<!--[when]-->")
+})
+
+test("when", "element", async (t) => {
+  const app = await ui(tmp(), {
+    content: [
+      {
+        when: "a.b",
+        tag: "div",
+        content: [
+          "x", //
+          { tag: "em", content: "y" },
+        ],
+      },
+    ],
+    data: {
+      a: { b: false },
+    },
+  })
+
+  t.is(app.el.textContent, "")
+  t.is(app.el.innerHTML, "<!--[when]-->")
+
+  app.data.a.b = true
+  await app
+
+  t.is(app.el.textContent, "xy")
+  t.is(app.el.innerHTML, "<!--[when]--><div>x<em>y</em></div>")
+
+  app.data.a.b = false
+  await app
+
+  t.is(app.el.textContent, "")
+  t.is(app.el.innerHTML, "<!--[when]-->")
+})
+
+test("when", "bug using state.update", async (t) => {
+  const app = await ui(tmp(), {
+    content: [
+      {
+        tag: "div",
+        when: "a && b",
+        content: "{{b}}",
+      },
+    ],
+    data: {
+      a: false,
+      b: false,
+    },
+  })
+
+  t.is(app.el.textContent, "")
+
+  app.data.a = true
+  await app
+
+  t.is(app.el.textContent, "")
+
+  app.data.b = true
+  await app
+
+  t.is(app.el.textContent, "true")
+
+  app.ctx.state.update("/a")
+  await app
+
+  t.is(app.el.textContent, "true")
+
+  app.data.a = false
+  await app
+
+  t.is(app.el.textContent, "")
+})
+
 /* repeat
 ========= */
 
@@ -767,9 +966,8 @@ test("repeat", "array with objects", async (t) => {
   t.is(app.el.innerHTML, '<!--[repeat]--><span class="9">Z</span><!--[#]-->')
 })
 
-test("repeat", "div", "render index 0 bug", async (t) => {
-  const el = tmp()
-  const app = await ui(el, {
+test("repeat", "render index 0 bug", async (t) => {
+  const app = await ui(tmp(), {
     content: {
       scope: "arr",
       repeat: {
@@ -784,14 +982,14 @@ test("repeat", "div", "render index 0 bug", async (t) => {
 
   await app
 
-  t.is(el.children.length, 1)
-  t.is(el.textContent, "A")
+  t.is(app.el.children.length, 1)
+  t.is(app.el.textContent, "A")
 
   app.data.arr = [{ path: "Z" }]
   await app
 
-  t.is(el.children.length, 1)
-  t.is(el.textContent, "Z")
+  t.is(app.el.children.length, 1)
+  t.is(app.el.textContent, "Z")
   t.is(app.el.innerHTML, "<!--[repeat]--><div>Z</div><!--[#]-->")
 
   app.data.arr = [{ path: "X" }, { path: "Y" }]
@@ -801,8 +999,8 @@ test("repeat", "div", "render index 0 bug", async (t) => {
     app.el.innerHTML,
     "<!--[repeat]--><div>X</div><!--[#]--><div>Y</div><!--[#]-->"
   )
-  t.is(el.children.length, 2)
-  t.is(el.textContent, "XY")
+  t.is(app.el.children.length, 2)
+  t.is(app.el.textContent, "XY")
 })
 
 test("repeat", "innerHTML", async (t) => {
@@ -1095,7 +1293,7 @@ test("repeat", "@last", async (t) => {
   t.is(app.el.textContent, "00 x, 01 y")
 })
 
-test.skip("repeat", "@last element", async (t) => {
+test("repeat", "@last element", async (t) => {
   const app = await ui(tmp(), {
     content: {
       scope: "arr",
