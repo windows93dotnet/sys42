@@ -7,6 +7,7 @@ import Canceller from "../fabric/class/Canceller.js"
 import Undones from "../fabric/class/Undones.js"
 import getFilter from "../fabric/getFilter.js"
 import dirname from "../fabric/type/path/extract/dirname.js"
+import isEmptyObject from "../fabric/type/any/is/isEmptyObject.js"
 import isLength from "../fabric/type/any/is/isLength.js"
 import isArrayLike from "../fabric/type/any/is/isArrayLike.js"
 import ATTRIBUTES_ALLOW_LIST from "../fabric/constants/ATTRIBUTES_ALLOW_LIST.js"
@@ -26,9 +27,8 @@ const DEF_KEYWORDS = new Set([
 function normaliseString(def, ctx) {
   const parsed = template.parse(def)
 
-  const filters = { ...ctx.actions.value }
-
   if (parsed.substitutions.length > 0) {
+    const filters = { ...ctx.actions.value }
     const keys = []
     for (const tokens of parsed.substitutions) {
       for (const token of tokens) {
@@ -70,22 +70,23 @@ function normaliseString(def, ctx) {
     def.keys = keys
     return def
   }
+
+  return def
 }
 
 function normalizeObject(def, ctx) {
-  const styles = []
+  const out = {}
+
   for (const [key, val] of Object.entries(def)) {
-    styles.push([
-      key,
-      typeof val === "string" ? normaliseString(val, ctx) ?? val : val,
-    ])
+    out[key] = typeof val === "string" ? normaliseString(val, ctx) : val
   }
 
-  return styles
+  return out
 }
 
 export function normalizeAttrs(def, ctx) {
-  const attrs = []
+  const attrs = {}
+
   for (const [key, val] of Object.entries(def)) {
     if (
       !DEF_KEYWORDS.has(key) &&
@@ -94,15 +95,12 @@ export function normalizeAttrs(def, ctx) {
       const type = typeof val
       if (val && type === "object") {
         if (key === "class" && Array.isArray(val)) {
-          attrs.push([key, normaliseString(val.join(" "), ctx)])
+          attrs[key] = normaliseString(val.join(" "), ctx)
         } else {
-          attrs.push([key, normalizeObject(val, ctx)])
+          attrs[key] = normalizeObject(val, ctx)
         }
       } else {
-        attrs.push([
-          key,
-          type === "string" ? normaliseString(val, ctx) ?? val : val,
-        ])
+        attrs[key] = type === "string" ? normaliseString(val, ctx) : val
       }
     }
   }
@@ -123,10 +121,8 @@ export default function normalize(def = {}, ctx = {}) {
 
   if (type === "string") {
     const fn = normaliseString(def, ctx)
-    if (fn) {
-      def = fn
-      type = "function"
-    }
+    type = typeof fn
+    if (type === "function") def = fn
   } else if (Array.isArray(def)) {
     type = "array"
   } else {
@@ -134,10 +130,11 @@ export default function normalize(def = {}, ctx = {}) {
 
     if (def.data) {
       if (typeof def.data === "function") {
+        const { scope } = ctx
         ctx.undones.push(
           (async () => {
             const res = await def.data()
-            ctx.state.assign(ctx.scope, res)
+            ctx.state.assign(scope, res)
           })()
         )
       } else ctx.state.assign(ctx.scope, def.data)
@@ -146,12 +143,8 @@ export default function normalize(def = {}, ctx = {}) {
     if (def.scope) ctx.scope = resolve(ctx.scope, def.scope)
 
     const attrs = normalizeAttrs(def, ctx)
-    if (attrs.length > 0) def.attrs = attrs
+    if (!isEmptyObject(attrs)) def.attrs = attrs
   }
 
-  return {
-    type,
-    def,
-    ctx,
-  }
+  return { type, def, ctx }
 }

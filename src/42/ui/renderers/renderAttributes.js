@@ -3,7 +3,11 @@ import { setStyle } from "../../fabric/dom/setStyles.js"
 import register from "../register.js"
 
 function renderClasses(el, ctx, classes) {
-  for (const [keys, val] of classes) {
+  if (Array.isArray(classes)) {
+    return void el.setAttribute("class", classes.join(" "))
+  }
+
+  for (const [keys, val] of Object.entries(classes)) {
     if (typeof val === "function") {
       register(ctx, val, (val) => {
         const op = val ? "add" : "remove"
@@ -25,7 +29,7 @@ function renderStyles(el, ctx, styles) {
       el.style.cssText = val
     })
   } else {
-    for (const [key, val] of styles) {
+    for (const [key, val] of Object.entries(styles)) {
       if (typeof val === "function") {
         setStyle(el, key, "unset") // placeholder to keep style order
         register(ctx, val, (val) => setStyle(el, key, val))
@@ -37,20 +41,18 @@ function renderStyles(el, ctx, styles) {
 }
 
 export default function renderAttributes(el, ctx, attrs, prefix = "") {
-  for (let [key, val] of attrs) {
+  for (let [key, val] of Object.entries(attrs)) {
     if (key === "autofocus") key = "data-autofocus" // prevent use of restricted autofocus attribute
 
     if (key === "dataset") renderAttributes(el, ctx, val, "data-")
     else if (key === "aria") renderAttributes(el, ctx, val, "aria-")
     else if (key === "style") renderStyles(el, ctx, val)
-    else if (key === "class" && Array.isArray(val)) {
+    else if (key === "class" && val && typeof val === "object") {
       renderClasses(el, ctx, val)
     } else {
       key = prefix + key
       if (typeof val === "function") {
-        register(ctx, val, (val) => {
-          setAttribute(el, key, val)
-        })
+        register(ctx, val, (val) => setAttribute(el, key, val))
       } else {
         setAttribute(el, key, val)
       }

@@ -453,10 +453,37 @@ test("class", "object", async (t) => {
 /* abbreviations
 ================ */
 
-test("abbr", (t) => {
-  const app = ui(tmp(), { tag: "em#uniq" })
-  t.is(app.el.innerHTML, '<em id="uniq"></em>')
-})
+test.tasks(
+  [
+    {
+      def: { tag: "span#foo.bar" },
+      expected: '<span id="foo" class="bar"></span>',
+    },
+    {
+      def: { tag: "span#foo.bar", id: "x" },
+      expected: '<span id="x" class="bar"></span>',
+    },
+    {
+      def: { tag: "span#foo.bar", class: "baz" },
+      expected: '<span id="foo" class="baz bar"></span>',
+    },
+    // {
+    //   def: { tag: "checkbox#foo.bar", class: "baz" },
+    //   expected:
+    //     '<div class="check-cont"><input class="baz bar" id="foo" type="checkbox"></div>',
+    // },
+    // {
+    //   def: { tag: "ui-t-component#foo.bar", class: "baz" },
+    //   expected: '<ui-t-component class="baz bar" id="foo"></ui-t-component>',
+    // },
+  ],
+  ({ def, expected }) => {
+    test("abbr", `expand`, def, async (t) => {
+      const app = await ui(tmp(), def)
+      t.is(app.el.innerHTML, expected)
+    })
+  }
+)
 
 test("abbr", "reactive", async (t) => {
   const app = ui(tmp(), {
@@ -471,6 +498,11 @@ test("abbr", "reactive", async (t) => {
   await app
 
   t.is(app.el.innerHTML, '<em id="bar"></em>')
+
+  app.data.foo = "baz"
+  await app
+
+  t.is(app.el.innerHTML, '<em id="baz"></em>')
 })
 
 test("abbr", "reactive", 2, async (t) => {
@@ -488,6 +520,27 @@ test("abbr", "reactive", 2, async (t) => {
   await app
 
   t.is(app.el.innerHTML, '<em id="bar" class="x y"></em>')
+
+  app.data.foo = "baz"
+  app.data.b = "z"
+  await app
+
+  t.is(app.el.innerHTML, '<em id="baz" class="x z"></em>')
+
+  delete app.data.b
+  await app
+
+  t.is(app.el.innerHTML, '<em id="baz" class="x "></em>')
+
+  delete app.data.foo
+  await app
+
+  t.is(app.el.innerHTML, '<em class="x "></em>')
+
+  delete app.data.a
+  await app
+
+  t.is(app.el.innerHTML, '<em class=" "></em>')
 })
 
 /* filters
