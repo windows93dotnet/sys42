@@ -217,6 +217,14 @@ test.tasks(
       ],
     },
     {
+      source: "foo ?? ../foo",
+      parsed: [
+        { type: "key", value: "foo" },
+        { type: "operator", value: "??" },
+        { type: "key", value: "../foo" },
+      ],
+    },
+    {
       source: "!a || a > 1",
       parsed: [
         { type: "key", value: "a", negated: true },

@@ -11,11 +11,11 @@ export default function renderRepeat(def, ctx) {
 
   def = omit(def, ["repeat"])
 
-  const container = render(def, ctx)
+  const el = render(def, ctx)
 
   let lastChild
   const placeholder = document.createComment(PLACEHOLDER)
-  container.append(placeholder)
+  el.append(placeholder)
 
   register(ctx, ctx.scope, (array) => {
     if (!array || !Array.isArray(array) || array.length === 0) {
@@ -88,5 +88,5 @@ export default function renderRepeat(def, ctx) {
     else placeholder.after(fragment)
   })
 
-  return container
+  return el
 }

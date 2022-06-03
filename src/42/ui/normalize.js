@@ -37,7 +37,6 @@ function normaliseString(def, ctx) {
     for (const tokens of parsed.substitutions) {
       for (const token of tokens) {
         const loc = resolve(ctx.scope, token.value)
-        // console.log(loc)
         if (token.type === "key") {
           token.value = loc
           keys.push(token.value)

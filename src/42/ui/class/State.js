@@ -1,4 +1,4 @@
-import observe from "../observe.js"
+import observe from "../../fabric/locator/observe.js"
 import exists from "../../fabric/locator/exists.js"
 import locate from "../../fabric/locator/locate.js"
 import allocate from "../../fabric/locator/allocate.js"
@@ -70,11 +70,16 @@ export default class State {
       change: (path, val, oldVal) => {
         this.update(path, val, oldVal)
       },
-      has(path) {
-        return exists(ctx.el, path, sep)
+      has(path, { key }) {
+        if (key.startsWith("@") || key.startsWith("#")) return true
+        return exists(ctx.el, key, sep)
       },
-      get(path) {
-        return locate(ctx.el, path, sep)
+      get(path, { key, chain, parent }) {
+        if (key === "@index") return chain.at(-1)
+        if (key === "@first") return Number(chain.at(-1)) === 0
+        if (key === "@last") return Number(chain.at(-1)) === parent.length - 1
+        if (key.startsWith("#")) return chain.at(-1).padStart(key.length, "0")
+        return locate(ctx.el, key, sep)
       },
     })
   }

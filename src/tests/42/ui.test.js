@@ -945,7 +945,7 @@ test("repeat", "access data in previous level", async (t) => {
   const app = await ui(tmp(), {
     content: {
       scope: "baz.arr",
-      repeat: "{{a}} {{foo ?? ../foo}} {{/x}} {{../hello}} - ",
+      repeat: "{{a}} {{foo ?? ../../foo}} {{/x}} {{../../hello}} - ",
     },
     data: {
       foo: "bar",
@@ -959,4 +959,184 @@ test("repeat", "access data in previous level", async (t) => {
   })
 
   t.is(app.el.textContent, "1 derp y world - 2 baz y world - ")
+})
+
+test("repeat", "lastChild bug", async (t) => {
+  const app = await ui(tmp(), {
+    content: {
+      scope: "arr",
+      content: [{ repeat: [{ content: "{{a}}" }] }, { content: "z" }],
+    },
+    data: {
+      arr: [{ a: "x" }, { a: "y" }],
+    },
+  })
+
+  t.is(app.el.innerHTML, "<!--[repeat]-->x<!--[#]-->y<!--[#]-->z")
+
+  app.data.arr.push({ a: "a" })
+  await app
+
+  t.is(app.el.innerHTML, "<!--[repeat]-->x<!--[#]-->y<!--[#]-->a<!--[#]-->z")
+
+  app.data.arr.length = 1
+  await app
+
+  t.is(app.el.innerHTML, "<!--[repeat]-->x<!--[#]-->z")
+
+  delete app.data.arr
+  await app
+
+  t.is(app.el.innerHTML, "<!--[repeat]-->z")
+})
+
+test("repeat", "range bug", async (t) => {
+  const app = await ui(tmp(), {
+    content: {
+      scope: "arr",
+      content: [
+        { repeat: "{{a}}" }, //
+        { content: "+" },
+        { repeat: "{{a}}" },
+      ],
+    },
+
+    data: {
+      arr: [{ a: 1 }, { a: 2 }],
+    },
+  })
+
+  t.is(
+    app.el.innerHTML,
+    "<!--[repeat]-->1<!--[#]-->2<!--[#]-->+<!--[repeat]-->1<!--[#]-->2<!--[#]-->"
+  )
+
+  app.data.arr.push({ a: 3 })
+  await app
+
+  t.is(
+    app.el.innerHTML,
+    "<!--[repeat]-->1<!--[#]-->2<!--[#]-->3<!--[#]-->+<!--[repeat]-->1<!--[#]-->2<!--[#]-->3<!--[#]-->"
+  )
+
+  app.data.arr.length = 1
+  await app
+
+  t.is(
+    app.el.innerHTML,
+    "<!--[repeat]-->1<!--[#]-->+<!--[repeat]-->1<!--[#]-->"
+  )
+})
+
+test("repeat", "@parent & @root", async (t) => {
+  const app = await ui(tmp(), {
+    content: {
+      scope: "baz.arr",
+      repeat: "{{a}} {{foo ?? ../../foo}} {{../../foo}} {{/foo}} - ",
+    },
+    data: {
+      foo: "bar",
+      baz: {
+        foo: "baz",
+        arr: [{ a: 1, foo: "derp" }, { a: 2 }],
+      },
+    },
+  })
+
+  t.is(app.el.textContent, "1 derp baz bar - 2 baz baz bar - ")
+})
+
+test("repeat", "@index", async (t) => {
+  const app = await ui(tmp(), {
+    content: { scope: "arr", repeat: "{{@index}} {{a}} " },
+    data: {
+      foo: "bar",
+      arr: [{ a: "x" }, { a: "y" }],
+    },
+  })
+
+  t.is(app.el.textContent, "0 x 1 y ")
+})
+
+test("repeat", "#", async (t) => {
+  const app = await ui(tmp(), {
+    content: {
+      scope: "arr",
+      repeat: ["{{#}} {{a}}\n", "{{##}} {{a}}\n", "{{###}} {{a}}\n"],
+    },
+    data: {
+      foo: "bar",
+      arr: [{ a: "x" }, { a: "y" }],
+    },
+  })
+
+  t.is(
+    app.el.textContent,
+    `\
+0 x
+00 x
+000 x
+1 y
+01 y
+001 y
+`
+  )
+})
+
+test("repeat", "@last", async (t) => {
+  const app = await ui(tmp(), {
+    content: { scope: "arr", repeat: "{{##}} {{a}}{{@last ? '' : ', '}}" },
+    data: {
+      foo: "bar",
+      arr: [{ a: "x" }, { a: "y" }],
+    },
+  })
+
+  t.is(app.el.textContent, "00 x, 01 y")
+})
+
+test.skip("repeat", "@last element", async (t) => {
+  const app = await ui(tmp(), {
+    content: {
+      scope: "arr",
+      repeat: ["{{@index}} {{a}}", { tag: "br", when: "{{!@last}}" }],
+    },
+    data: {
+      foo: "bar",
+      arr: [{ a: "x" }, { a: "y" }],
+    },
+  })
+
+  t.is(
+    app.el.innerHTML,
+    "<!--[repeat]-->0 x<!--[when]--><br><!--[#]-->1 y<!--[when]--><!--[#]-->"
+  )
+})
+
+test.skip("repeat", "input element", async (t) => {
+  const app = await ui(tmp(), {
+    content: {
+      scope: "arr",
+      repeat: [{ tag: "textarea", name: "./a" }],
+    },
+    data: {
+      arr: [{ a: "x" }, { a: "y" }],
+    },
+  })
+
+  let ta = app.getAll("textarea")
+  t.is(ta.length, 2)
+  t.is(ta[0].name, "arr.0.a")
+  t.is(ta[0].value, "x")
+  t.is(ta[1].name, "arr.1.a")
+  t.is(ta[1].value, "y")
+
+  // app.data.arr.pop()
+  app.data.arr = [{ a: "z" }]
+  await app
+
+  ta = app.getAll("textarea")
+  t.is(ta.length, 1)
+  t.is(ta[0].name, "arr.0.a")
+  t.is(ta[0].value, "z")
 })
