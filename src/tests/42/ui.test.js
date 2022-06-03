@@ -1336,14 +1336,26 @@ test("repeat", "#", async (t) => {
 
 test("repeat", "@last", async (t) => {
   const app = await ui(tmp(), {
-    content: { scope: "arr", repeat: "{{##}} {{a}}{{@last ? '' : ', '}}" },
+    content: { scope: "arr", repeat: "{{##}}:{{a}}{{@last ? '' : ', '}}" },
     data: {
       foo: "bar",
       arr: [{ a: "x" }, { a: "y" }],
     },
   })
 
-  t.is(app.el.textContent, "00 x, 01 y")
+  t.is(app.el.textContent, "00:x, 01:y")
+})
+
+test("repeat", "@first", async (t) => {
+  const app = await ui(tmp(), {
+    content: { scope: "arr", repeat: "{{@first ? ' - ' : ''}}{{##}}:{{a}} " },
+    data: {
+      foo: "bar",
+      arr: [{ a: "x" }, { a: "y" }, { a: "z" }],
+    },
+  })
+
+  t.is(app.el.textContent, " - 00:x 01:y 02:z ")
 })
 
 test("repeat", "@last element", async (t) => {
@@ -1361,6 +1373,24 @@ test("repeat", "@last element", async (t) => {
   t.is(
     app.el.innerHTML,
     "<!--[repeat]-->0 x<!--[when]--><br><!--[#]-->1 y<!--[when]--><!--[#]-->"
+  )
+})
+
+test("repeat", "@first element", async (t) => {
+  const app = await ui(tmp(), {
+    content: {
+      scope: "arr",
+      repeat: [{ tag: "hr", when: "{{!@last}}" }, "{{@index}} {{a}}"],
+    },
+    data: {
+      foo: "bar",
+      arr: [{ a: "x" }, { a: "y" }],
+    },
+  })
+
+  t.is(
+    app.el.innerHTML,
+    "<!--[repeat]--><!--[when]--><hr>0 x<!--[#]--><!--[when]-->1 y<!--[#]-->"
   )
 })
 

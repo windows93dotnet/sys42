@@ -6,14 +6,11 @@ const IGNORE = new Set([
   "fieldset",
   "form",
   "iframe",
-  // "input",
   "map",
   "meta",
   "object",
   "output",
   "param",
-  // "select",
-  // "textarea",
 ])
 
 export function getControlData(el, locator, prefix, index) {
@@ -69,7 +66,7 @@ export default function getFormData(parent, data, prefix, index) {
   const list =
     parent instanceof NodeList
       ? parent
-      : parent.elements ?? parent.querySelectorAll("[name]")
+      : parent.elements ?? parent.querySelectorAll(":scope [name]")
   for (const el of list) getControlData(el, locator, prefix, index)
   return locator.value
 }
