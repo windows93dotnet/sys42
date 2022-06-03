@@ -37,6 +37,7 @@ function normaliseString(def, ctx) {
     for (const tokens of parsed.substitutions) {
       for (const token of tokens) {
         const loc = resolve(ctx.scope, token.value)
+        // console.log(loc)
         if (token.type === "key") {
           token.value = loc
           keys.push(token.value)
@@ -147,7 +148,7 @@ export default function normalize(def = {}, ctx = {}) {
       } else ctx.state.assign(ctx.scope, def.data)
     }
 
-    if (def.scope) ctx.scope = resolvePath(ctx.scope, def.scope)
+    if (def.scope) ctx.scope = resolve(ctx.scope, def.scope)
 
     const attrs = normalizeAttrs(def, ctx)
     if (attrs.length > 0) def.attrs = attrs

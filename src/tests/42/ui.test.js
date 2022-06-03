@@ -617,3 +617,346 @@ test("filters", "buildin filters locate", async (t) => {
 
   t.is(app.el.innerHTML, "<pre>{a:1}</pre>")
 })
+
+/* repeat
+========= */
+
+test("repeat", async (t) => {
+  const app = await ui(tmp(), {
+    content: { scope: "arr", repeat: "{{.}}" },
+  })
+
+  t.is(app.el.textContent, "")
+  t.is(app.el.innerHTML, "<!--[repeat]-->")
+
+  app.data.arr = [1, 2, 3]
+  await app
+
+  t.is(app.el.textContent, "123")
+  const childNodes = [...app.el.childNodes]
+  t.is(childNodes[1].textContent, "1")
+
+  app.data.arr.push(4)
+  await app
+
+  t.is(app.el.textContent, "1234")
+  t.is(childNodes[1], app.el.childNodes[1])
+  t.is(childNodes[2], app.el.childNodes[2])
+  t.is(childNodes[3], app.el.childNodes[3])
+
+  app.data.arr.length = 2
+  await app
+
+  t.is(app.el.textContent, "12")
+  t.is(childNodes[1], app.el.childNodes[1])
+  t.is(childNodes[2], app.el.childNodes[2])
+
+  app.data.arr[0] = "a"
+  await app
+
+  t.is(app.el.textContent, "a2")
+  t.is(childNodes[1], app.el.childNodes[1])
+  t.is(childNodes[2], app.el.childNodes[2])
+
+  app.data.arr[1] = "b"
+  await app
+
+  t.is(app.el.textContent, "ab")
+  t.is(childNodes[1], app.el.childNodes[1])
+  t.is(childNodes[2], app.el.childNodes[2])
+
+  app.data.arr.length = 0
+  await app
+  t.is(app.el.textContent, "")
+})
+
+test("repeat", "def", async (t) => {
+  const app = await ui(tmp(), {
+    content: {
+      scope: "arr",
+      repeat: {
+        tag: "span",
+        content: "{{.}}",
+      },
+    },
+    data: { arr: ["a", "b"] },
+  })
+
+  t.is(app.el.textContent, "ab")
+  t.is(
+    app.el.innerHTML,
+    "<!--[repeat]--><span>a</span><!--[#]--><span>b</span><!--[#]-->"
+  )
+
+  app.data.arr.push("c")
+  await app
+
+  t.is(app.el.textContent, "abc")
+  t.is(
+    app.el.innerHTML,
+    "<!--[repeat]--><span>a</span><!--[#]--><span>b</span><!--[#]--><span>c</span><!--[#]-->"
+  )
+
+  app.data.arr.length = 1
+  await app
+
+  t.is(app.el.textContent, "a")
+  t.is(app.el.innerHTML, "<!--[repeat]--><span>a</span><!--[#]-->")
+
+  app.data.arr.length = 0
+  await app
+
+  t.is(app.el.textContent, "")
+  t.is(app.el.innerHTML, "<!--[repeat]-->")
+
+  app.data.arr.push("x")
+  await app
+
+  t.is(app.el.textContent, "x")
+  t.is(app.el.innerHTML, "<!--[repeat]--><span>x</span><!--[#]-->")
+})
+
+test("repeat", "splice", async (t) => {
+  const app = await ui(tmp(), {
+    content: { scope: "arr", repeat: "{{.}}" },
+  })
+
+  app.data.arr = [1, 2, 3]
+  await app
+
+  t.is(app.el.textContent, "123")
+
+  app.data.arr.splice(1, 1)
+  await app
+
+  t.is(app.el.textContent, "13")
+})
+
+test("repeat", "array with objects", async (t) => {
+  const app = await ui(tmp(), {
+    content: {
+      scope: "arr",
+      repeat: {
+        tag: "span",
+        content: "{{x}}",
+        class: "{{y}}",
+      },
+    },
+    data: {
+      arr: [
+        { x: "A", y: "1" },
+        { x: "B", y: "2" },
+      ],
+    },
+  })
+
+  t.is(
+    app.el.innerHTML,
+    '<!--[repeat]--><span class="1">A</span><!--[#]--><span class="2">B</span><!--[#]-->'
+  )
+
+  app.data.arr[0].x = "foo"
+  await app
+  t.is(
+    app.el.innerHTML,
+    '<!--[repeat]--><span class="1">foo</span><!--[#]--><span class="2">B</span><!--[#]-->'
+  )
+
+  app.data.arr = [{ x: "Z", y: "9" }]
+  await app
+  t.is(app.el.innerHTML, '<!--[repeat]--><span class="9">Z</span><!--[#]-->')
+})
+
+test("repeat", "div", "render index 0 bug", async (t) => {
+  const el = tmp()
+  const app = await ui(el, {
+    content: {
+      scope: "arr",
+      repeat: {
+        tag: "div",
+        content: "{{path}}",
+      },
+    },
+    data: {
+      arr: [{ path: "A" }],
+    },
+  })
+
+  await app
+
+  t.is(el.children.length, 1)
+  t.is(el.textContent, "A")
+
+  app.data.arr = [{ path: "Z" }]
+  await app
+
+  t.is(el.children.length, 1)
+  t.is(el.textContent, "Z")
+  t.is(app.el.innerHTML, "<!--[repeat]--><div>Z</div><!--[#]-->")
+
+  app.data.arr = [{ path: "X" }, { path: "Y" }]
+  await app
+
+  t.is(
+    app.el.innerHTML,
+    "<!--[repeat]--><div>X</div><!--[#]--><div>Y</div><!--[#]-->"
+  )
+  t.is(el.children.length, 2)
+  t.is(el.textContent, "XY")
+})
+
+test("repeat", "innerHTML", async (t) => {
+  const app = await ui(tmp(), {
+    content: [
+      {
+        scope: "arr",
+        tag: "ul",
+        repeat: { tag: "li", content: "{{.}}" },
+      },
+    ],
+    data: { arr: [1, 2, 3] },
+  })
+
+  t.is(app.el.textContent, "123")
+  t.is(
+    app.el.innerHTML,
+    "<ul><!--[repeat]--><li>1</li><!--[#]--><li>2</li><!--[#]--><li>3</li><!--[#]--></ul>"
+  )
+
+  app.data.arr.push(4)
+  await app
+
+  t.is(app.el.textContent, "1234")
+  t.is(
+    app.el.innerHTML,
+    "<ul><!--[repeat]--><li>1</li><!--[#]--><li>2</li><!--[#]--><li>3</li><!--[#]--><li>4</li><!--[#]--></ul>"
+  )
+
+  app.data.arr.length = 2
+  await app
+
+  t.is(app.el.textContent, "12")
+  t.is(
+    app.el.innerHTML,
+    "<ul><!--[repeat]--><li>1</li><!--[#]--><li>2</li><!--[#]--></ul>"
+  )
+})
+
+test("repeat", "element", "scopped", async (t) => {
+  const app = await ui(tmp(), {
+    content: {
+      tag: "ul",
+      scope: "a.b",
+      repeat: { tag: "li", content: "{{.}}" },
+    },
+    data: { a: { b: ["foo", "bar"] } },
+  })
+
+  t.is(
+    app.el.innerHTML,
+    "<ul><!--[repeat]--><li>foo</li><!--[#]--><li>bar</li><!--[#]--></ul>"
+  )
+
+  app.data.a.b.push("baz")
+  await app
+
+  t.is(
+    app.el.innerHTML,
+    "<ul><!--[repeat]--><li>foo</li><!--[#]--><li>bar</li><!--[#]--><li>baz</li><!--[#]--></ul>"
+  )
+
+  app.data.a.b.length = 0
+  // app.data.a.b = []
+  await app
+
+  t.is(app.el.innerHTML, "<ul><!--[repeat]--></ul>")
+})
+
+test("repeat", "array of objects", async (t) => {
+  const app = await ui(tmp(), {
+    content: { scope: "arr", repeat: "{{a}} - {{b}} - " },
+    data: {
+      arr: [
+        { a: 1, b: 2 },
+        { a: 3, b: 4 },
+      ],
+    },
+  })
+
+  t.is(app.el.textContent, "1 - 2 - 3 - 4 - ")
+})
+
+test("repeat", "array of objects", "scopped", async (t) => {
+  const app = await ui(tmp(), {
+    content: { scope: "arr", repeat: "{{a}} - {{b}} - " },
+    data: {
+      arr: [
+        { a: 1, b: 2 },
+        { a: 3, b: 4 },
+      ],
+    },
+  })
+
+  t.is(app.el.innerHTML, "<!--[repeat]-->1 - 2 - <!--[#]-->3 - 4 - <!--[#]-->")
+  t.is(app.el.textContent, "1 - 2 - 3 - 4 - ")
+
+  app.data.arr.length = 1
+  await app
+
+  t.is(app.el.innerHTML, "<!--[repeat]-->1 - 2 - <!--[#]-->")
+  t.is(app.el.textContent, "1 - 2 - ")
+
+  app.data.arr = undefined
+  await app
+
+  t.is(app.el.innerHTML, "<!--[repeat]-->")
+  t.is(app.el.textContent, "")
+
+  app.data.arr = [{ a: "a", b: "b" }]
+  await app
+
+  t.is(app.el.textContent, "a - b - ")
+
+  app.data.arr[0].a = "x"
+  delete app.data.arr[0].b
+  await app
+
+  t.is(app.el.textContent, "x -  - ")
+
+  delete app.data.arr
+  await app
+
+  t.is(app.el.textContent, "")
+})
+
+test("repeat", "access root data", async (t) => {
+  const app = await ui(tmp(), {
+    content: { scope: "arr", repeat: "{{a}} {{/foo}} " },
+    data: {
+      foo: "bar",
+      arr: [{ a: 1 }, { a: 2 }],
+    },
+  })
+
+  t.is(app.el.textContent, "1 bar 2 bar ")
+})
+
+test("repeat", "access data in previous level", async (t) => {
+  const app = await ui(tmp(), {
+    content: {
+      scope: "baz.arr",
+      repeat: "{{a}} {{foo ?? ../foo}} {{/x}} {{../hello}} - ",
+    },
+    data: {
+      foo: "bar",
+      x: "y",
+      baz: {
+        foo: "baz",
+        hello: "world",
+        arr: [{ a: 1, foo: "derp" }, { a: 2 }],
+      },
+    },
+  })
+
+  t.is(app.el.textContent, "1 derp y world - 2 baz y world - ")
+})

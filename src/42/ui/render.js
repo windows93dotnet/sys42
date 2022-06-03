@@ -5,6 +5,7 @@ import ELEMENTS_ALLOW_LIST from "../fabric/constants/ELEMENTS_ALLOW_LIST.js"
 import SVG_TAGS from "../fabric/constants/SVG_TAGS.js"
 import renderAttributes from "./renderers/renderAttributes.js"
 import renderComponent from "./renderers/renderComponent.js"
+import renderRepeat from "./renderers/renderRepeat.js"
 
 const SPECIAL_STRINGS = {
   "\n\n": () => document.createElement("br"),
@@ -13,7 +14,10 @@ const SPECIAL_STRINGS = {
 
 export default function render(...args) {
   const { type, def, ctx } = normalize(...args)
+  return renderNormalized(type, def, ctx)
+}
 
+export function renderNormalized(type, def, ctx) {
   if (type === "string") return SPECIAL_STRINGS[def]?.() ?? def
 
   if (type === "function") {
@@ -29,6 +33,8 @@ export default function render(...args) {
     for (const content of def) fragment.append(render(content, ctx))
     return fragment
   }
+
+  if (def.repeat) return renderRepeat(def, ctx)
 
   let el
 

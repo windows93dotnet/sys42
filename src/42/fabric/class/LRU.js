@@ -8,10 +8,7 @@ export default class LRU extends Map {
   }
 
   set(key, val) {
-    if (this.size >= this.max) {
-      super.delete(this.recency.shift())
-    }
-
+    if (this.size >= this.max) super.delete(this.recency.shift())
     removeItem(this.recency, key)
     this.recency.push(key)
     super.set(key, val)

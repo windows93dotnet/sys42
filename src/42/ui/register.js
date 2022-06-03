@@ -1,13 +1,24 @@
+import arrify from "../fabric/type/any/arrify.js"
+
 const options = { once: true }
 
-export default function register(ctx, get, render) {
-  const renderer = async () => {
-    const res = get(ctx.state.proxy)
-    if (res !== undefined) ctx.undones.push(res)
-    render(await res)
+export default function register(ctx, loc, render) {
+  let scopes
+  let renderer
+
+  if (typeof loc === "function") {
+    scopes = loc.keys
+    renderer = async () => {
+      const res = loc(ctx.state.proxy)
+      if (res !== undefined) ctx.undones.push(res)
+      render(await res)
+    }
+  } else {
+    scopes = arrify(loc)
+    renderer = () => render(ctx.state.get(scopes[0]))
   }
 
-  for (const scope of get.keys) {
+  for (const scope of scopes) {
     ctx.renderers[scope] ??= new Set()
     ctx.renderers[scope].add(renderer)
     const onabort = () => {
