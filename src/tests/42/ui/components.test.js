@@ -59,6 +59,51 @@ Component.define({
 //   t.is(app.el.innerHTML, "<ui-t-props>foo: 1, bar: 3</ui-t-props>")
 // })
 
+test.skip("lifecycle", async (t) => {
+  await Component.define(
+    class extends Component {
+      static definition = {
+        tag: "ui-t-lifecycle",
+        props: {
+          cnt: 0,
+        },
+      }
+
+      render() {
+        return ["{{cnt}}", { tag: "button#incr", content: "+" }]
+      }
+
+      setup({ signal }) {
+        console.log(777)
+        const btn = this.querySelector("#incr")
+
+        btn.addEventListener(
+          "click",
+          () => {
+            console.log("click")
+          },
+          { signal }
+        )
+      }
+    }
+  )
+
+  const app = await ui(tmp(true), { tag: "ui-t-lifecycle" })
+
+  const cpn = app.get("ui-t-lifecycle")
+
+  t.is(
+    app.el.innerHTML,
+    '<ui-t-lifecycle>0<button id="incr">+</button></ui-t-lifecycle>'
+  )
+
+  cpn.remove()
+
+  await t.sleep(10)
+
+  app.el.append(cpn)
+})
+
 async function checkDefine(component, t, args, expected) {
   const fn = await (typeof component === "object" ||
   /^\s*class/.test(component.toString())
@@ -85,10 +130,9 @@ test.tasks(
     },
 
     {
-      // only: true,
       component: class extends Component {
         static definition = { tag: "ui-t-string" }
-        prerender() {
+        render() {
           return "hello"
         }
       },
@@ -100,7 +144,7 @@ test.tasks(
     {
       component: class extends Component {
         static definition = { tag: "ui-t-attr", class: "derp" }
-        prerender() {
+        render() {
           return "hello"
         }
       },
@@ -121,6 +165,8 @@ test.tasks(
     },
 
     {
+      // only: true,
+      connect: true,
       component(t) {
         const stub = t.stub()
         return class extends Component {
@@ -128,7 +174,10 @@ test.tasks(
             tag: "ui-t-signal",
           }
 
-          postrender({ signal }) {
+          setup({ signal }) {
+            signal.addEventListener("abort", () => {
+              console.log(887, signal.reason)
+            })
             this.addEventListener("click", stub, { signal })
           }
         }
@@ -148,6 +197,7 @@ test.tasks(
         t.is(stub.count, 2)
 
         el.remove()
+        await t.sleep(50)
         el.click()
         t.is(stub.count, 2)
 
@@ -420,7 +470,7 @@ test.tasks(
     },
   ],
 
-  ({ title, defer, component, args, html, def, check, expected }) => {
+  ({ title, defer, connect, component, args, html, def, check, expected }) => {
     test(title ?? expected ?? def, async (t) => {
       if (component) {
         if (defer) {
@@ -430,16 +480,16 @@ test.tasks(
         } else await checkDefine(component, t, args, expected)
       }
 
-      const app = await ui(tmp(), def)
+      const app = await ui(tmp(connect), def)
 
-      if (expected) t.is(app.el.innerHTML, expected)
+      if (expected) t.is(app.el.innerHTML, expected, "ui declaration error")
       if (check) await check(t, app)
 
       if (html) {
-        const el = tmp()
+        const el = tmp(connect)
         el.innerHTML = html
         await el.firstChild.ready
-        t.is(el.innerHTML, expected)
+        t.is(el.innerHTML, expected, "html declaration error")
       }
 
       if (defer) {

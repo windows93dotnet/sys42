@@ -32,4 +32,16 @@ export default class UI extends DOMQuery {
   get data() {
     return this.state.proxy
   }
+
+  destroy() {
+    this.ctx.cancel("ui destroyed")
+    delete this.state
+    delete this.ctx
+    delete this.def
+    delete this.el
+  }
+
+  get [Symbol.toStringTag]() {
+    return "UI"
+  }
 }

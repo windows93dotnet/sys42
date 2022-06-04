@@ -1,11 +1,18 @@
 import { toKebabCase } from "../../fabric/type/string/letters.js"
 import configure from "../../fabric/configure.js"
+import defer from "../../fabric/type/promise/defer.js"
+import renderAttributes from "../renderers/renderAttributes.js"
 import { normalizeCtx, normalizeDef } from "../normalize.js"
 import render from "../render.js"
 
+const CREATE = 0
+const INIT = 1
+const RENDER = 2
+const SETUP = 3
+
 function objectify(def) {
   if (def != null) {
-    if (typeof def === "object") return def
+    if (typeof def === "object" && !Array.isArray(def)) return def
     return { content: def }
   }
 }
@@ -38,38 +45,66 @@ export default class Component extends HTMLElement {
     return observed
   }
 
-  #rendered = false
+  #timeout
   #observed = {}
+  #lifecycle = CREATE
 
   constructor(...args) {
     super()
-    if (args.length > 0) this.init(...args)
+    this.ready = defer()
+    if (args.length > 0 || this.parentElement !== null) this.init(...args)
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
     this.#observed[name]?.(newValue, oldValue)
   }
 
+  adoptedCallback() {
+    if (!this.isConnected) return
+    cancelIdleCallback(this.#timeout)
+    this.adopted?.(this.ctx)
+  }
+
   connectedCallback() {
     if (!this.isConnected) return
-    if (!this.#rendered) this.init()
+    cancelIdleCallback(this.#timeout)
+    this.ready ??= defer()
+    if (this.#lifecycle === RENDER) this.#setup()
+    else if (this.#lifecycle === INIT) this.ready.then(() => this.#setup())
+    else if (this.#lifecycle === CREATE) this.init().then(() => this.#setup())
   }
 
   disconnectedCallback() {
-    this.ctx.cancel(`${this.localName} disconnected`)
-    this.#rendered = false
+    this.#timeout = requestIdleCallback(() => {
+      this.ctx.cancel(`${this.localName} disconnected`)
+      this.ready = undefined
+      this.#lifecycle = CREATE
+    })
   }
 
-  async init(def, ctx) {
+  #setup() {
+    if (this.#lifecycle === SETUP) return
+    this.#lifecycle = SETUP
+    this.setup?.(this.ctx)
+  }
+
+  async #init(def, ctx) {
+    this.#lifecycle = INIT
+
     const { definition } = this.constructor
 
     ctx = { ...ctx }
     ctx.el = this
-    ctx.cancel = ctx.cancel?.fork()
-    ctx.state = ctx.state?.fork(ctx)
     ctx.undones = undefined
+    ctx.state = ctx.state?.fork(ctx)
+    ctx.cancel = ctx.cancel?.fork()
 
     ctx = normalizeCtx(ctx)
+    Object.defineProperty(ctx, "signal", {
+      configurable: true,
+      get: () => ctx.cancel.signal,
+    })
+
     this.ctx = ctx
 
     if (definition.props) {
@@ -83,18 +118,24 @@ export default class Component extends HTMLElement {
       }
     }
 
-    const prerender = await this.prerender?.(ctx)
+    const prerender = await this.render?.(ctx)
     def = configure(definition, objectify(prerender), objectify(def))
     def = normalizeDef(def, ctx)
-    delete def.tag
-    await ctx.undones.done()
+    this.def = def
 
-    this.append(render(def, ctx))
-    await ctx.undones.done()
+    if (def.attrs) renderAttributes(this, ctx, def.attrs)
 
-    await this.postrender?.(ctx)
-    await ctx.undones.done()
+    this.replaceChildren(render(this.def.content, this.ctx))
+    await this.ctx.undones.done()
+    if (this.#lifecycle === INIT) this.#lifecycle = RENDER
+  }
 
-    this.#rendered = true
+  async init(...args) {
+    await this.#init(...args)
+      .then(() => {
+        if (this.isConnected) this.#setup()
+        this.ready.resolve()
+      })
+      .catch((err) => this.ready.reject(err))
   }
 }
