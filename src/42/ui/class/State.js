@@ -1,3 +1,4 @@
+import Emitter from "../../fabric/class/Emitter.js"
 import observe from "../../fabric/locator/observe.js"
 import exists from "../../fabric/locator/exists.js"
 import locate from "../../fabric/locator/locate.js"
@@ -6,12 +7,13 @@ import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 
 const sep = "/"
 
-export default class State {
+export default class State extends Emitter {
   #update = {
     throttle: false,
   }
 
   constructor(ctx, val = {}) {
+    super()
     this.value = val
 
     this.queue = {
@@ -50,8 +52,6 @@ export default class State {
         }
       }
 
-      // this.emit("update", changes)
-
       // console.group("--- update")
       // console.log(changes)
       // console.log(Object.keys(ctx.renderers))
@@ -60,6 +60,8 @@ export default class State {
       this.queue.paths.clear()
       this.queue.lengths.clear()
       this.queue.objects.clear()
+
+      this.emit("update", changes)
     }
 
     this.#update.onrepaint = paintThrottle(this.#update.now)
@@ -72,14 +74,14 @@ export default class State {
       },
       has(path, { key }) {
         if (key.startsWith("@") || key.startsWith("#")) return true
-        return exists(ctx.el, key, sep)
+        return exists(ctx.el, key, sep) || ctx.computeds.has(path)
       },
       get(path, { key, chain, parent }) {
         if (key === "@index") return chain.at(-1)
         if (key === "@first") return Number(chain.at(-1)) === 0
         if (key === "@last") return Number(chain.at(-1)) === parent.length - 1
         if (key.startsWith("#")) return chain.at(-1).padStart(key.length, "0")
-        return locate(ctx.el, key, sep)
+        return locate(ctx.el, key, sep) ?? ctx.computeds.get(path)
       },
     })
   }

@@ -1,4 +1,5 @@
 import create from "./create.js"
+import resolve from "./resolve.js"
 import register from "./register.js"
 import normalize from "./normalize.js"
 import ELEMENTS_ALLOW_LIST from "../fabric/constants/ELEMENTS_ALLOW_LIST.js"
@@ -39,6 +40,13 @@ export default function render(...args) {
     el = create(ctx, def.tag, def.attrs)
     ctx.el = el
     const { localName } = el
+
+    if (el.form !== undefined && el.name) {
+      el.name = resolve(ctx.scope, el.name)
+      register(ctx, el.name, (val) => {
+        el.value = val
+      })
+    }
 
     const isComponent = localName.startsWith("ui-")
 

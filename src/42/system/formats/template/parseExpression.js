@@ -38,11 +38,19 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
       } else if (state === "arg" || state === "key") {
         negated = buffer.startsWith("!")
         if (negated) buffer = buffer.slice(1)
-        try {
-          buffer = jsonParse(buffer)
-          state = "arg"
-        } catch {
+        if (
+          buffer.startsWith("/") ||
+          buffer.startsWith("./") ||
+          buffer.startsWith("../")
+        ) {
           state = "key"
+        } else {
+          try {
+            buffer = jsonParse(buffer)
+            state = "arg"
+          } catch {
+            state = "key"
+          }
         }
 
         if (state === "key" && tokens.at(-1)?.type === "pipe") {

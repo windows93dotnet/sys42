@@ -4,8 +4,8 @@ import operators from "./operators.js"
 const PIPE = Symbol("pipe")
 
 function compileToken(i, list, tokens, options) {
-  const { type, value, negated } = tokens[i]
-  const { locate, filters, locals: compileLocals, sep } = options
+  const { type, value, negated, loc } = tokens[i]
+  const { locate, filters, sep } = options
 
   if (type === "function") {
     let argTokens = []
@@ -69,13 +69,7 @@ function compileToken(i, list, tokens, options) {
     )
   } else if (type === "arg") {
     if (!negated && isLength(value)) {
-      if (compileLocals) {
-        list.push(
-          Array.isArray(compileLocals) ? (locals) => locals[value] : () => value
-        )
-      } else {
-        list.push((locals) => (Array.isArray(locals) ? locals[value] : value))
-      }
+      list.push((locals) => locate(locals, loc ?? value, sep) ?? value)
     } else list.push(negated ? () => !value : () => value)
   }
 

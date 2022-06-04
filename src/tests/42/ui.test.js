@@ -57,6 +57,31 @@ hello<br>world<hr>
 /* reactivity
 ============= */
 
+test("template", async (t) => {
+  const app = await ui(tmp(), `Hello {{world}}`)
+  t.is(app.el.textContent, "Hello ")
+
+  app.data.world = "World"
+  await app
+
+  t.is(app.el.textContent, "Hello World")
+
+  app.data.world = "Derp"
+  await app
+
+  t.is(app.el.textContent, "Hello Derp")
+
+  app.data.world = 0
+  await app
+
+  t.is(app.el.textContent, "Hello 0")
+
+  app.data.world = undefined
+  await app
+
+  t.is(app.el.textContent, "Hello ")
+})
+
 test("reactive data", async (t) => {
   const app = ui(tmp(), {
     tag: "em",
@@ -153,15 +178,23 @@ test("reactive data", "array", async (t) => {
   t.is(app.el.innerHTML, "<em>ab</em>")
 })
 
-// test.skip("reactive data", "array", async (t) => {
-//   const app = await ui(tmp(), {
-//     tag: "em",
-//     content: ["{{/0}}", "{{/1}}"],
-//     data: ["a", "b"],
-//   })
+test("reactive data", "array as data", async (t) => {
+  let app = await ui(tmp(), {
+    tag: "em",
+    content: ["{{/0}}", "{{/1}}"],
+    data: ["a", "b"],
+  })
 
-//   t.is(app.el.innerHTML, "<em>ab</em>")
-// })
+  t.is(app.el.innerHTML, "<em>ab</em>")
+
+  app = await ui(tmp(), {
+    tag: "em",
+    content: ["{{./0}}", "{{./1}}"],
+    data: ["a", "b"],
+  })
+
+  t.is(app.el.innerHTML, "<em>ab</em>")
+})
 
 test("reactive data", "nested", async (t) => {
   const app = await ui(tmp(), {
@@ -1394,7 +1427,7 @@ test("repeat", "@first element", async (t) => {
   )
 })
 
-test.skip("repeat", "input element", async (t) => {
+test("repeat", "input element", async (t) => {
   const app = await ui(tmp(), {
     content: {
       scope: "arr",
@@ -1407,9 +1440,9 @@ test.skip("repeat", "input element", async (t) => {
 
   let ta = app.getAll("textarea")
   t.is(ta.length, 2)
-  t.is(ta[0].name, "arr.0.a")
+  t.is(ta[0].name, "/arr/0/a")
   t.is(ta[0].value, "x")
-  t.is(ta[1].name, "arr.1.a")
+  t.is(ta[1].name, "/arr/1/a")
   t.is(ta[1].value, "y")
 
   // app.data.arr.pop()
@@ -1418,6 +1451,45 @@ test.skip("repeat", "input element", async (t) => {
 
   ta = app.getAll("textarea")
   t.is(ta.length, 1)
-  t.is(ta[0].name, "arr.0.a")
+  t.is(ta[0].name, "/arr/0/a")
   t.is(ta[0].value, "z")
+})
+
+/* computed
+=========== */
+
+test("computed", async (t) => {
+  t.plan(6)
+
+  const app = await ui(tmp(), {
+    content: {
+      scope: "parsed",
+      content: "foo: {{0}}, bar: {{1}}",
+    },
+
+    data: {
+      formated: "FOO/BAR",
+    },
+
+    computed: {
+      parsed: "{{formated|split('/')}}",
+    },
+  })
+
+  const updates = ["/formated", "/parsed"]
+  app.state.on("update", (changes) => {
+    t.is(updates.shift(), [...changes][0])
+  })
+
+  t.eq(app.data.parsed, ["FOO", "BAR"])
+  t.eq(app.state.value, {
+    formated: "FOO/BAR",
+  })
+
+  t.is(app.el.innerHTML, "foo: FOO, bar: BAR")
+
+  app.data.formated = "HELLO/WORLD"
+  await app
+
+  t.is(app.el.innerHTML, "foo: HELLO, bar: WORLD")
 })

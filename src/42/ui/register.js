@@ -8,14 +8,14 @@ export default function register(ctx, loc, render) {
 
   if (typeof loc === "function") {
     scopes = loc.keys
-    renderer = async () => {
+    renderer = async (changed) => {
       const res = loc(ctx.state.proxy)
       if (res !== undefined) ctx.undones.push(res)
-      render(await res)
+      render(await res, changed)
     }
   } else {
     scopes = arrify(loc)
-    renderer = () => render(ctx.state.get(scopes[0]))
+    renderer = (changed) => render(ctx.state.get(scopes[0]), changed)
   }
 
   for (const scope of scopes) {

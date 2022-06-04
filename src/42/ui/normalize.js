@@ -1,6 +1,7 @@
 /* eslint-disable max-depth */
 import State from "./class/State.js"
 import resolve from "./resolve.js"
+import register from "./register.js"
 import Locator from "../fabric/class/Locator.js"
 import template from "../system/formats/template.js"
 import Canceller from "../fabric/class/Canceller.js"
@@ -33,17 +34,18 @@ function normaliseString(def, ctx) {
     for (const tokens of parsed.substitutions) {
       for (const token of tokens) {
         const loc = resolve(ctx.scope, token.value)
+
         if (token.type === "key") {
           token.value = loc
           keys.push(token.value)
-        } else if (
-          token.type === "arg" &&
-          isLength(token.value) &&
-          isArrayLike(ctx.state.get(dirname(loc)))
-        ) {
-          token.type = "key"
-          token.value = loc
-          keys.push(token.value)
+        } else if (token.type === "arg" && isLength(token.value)) {
+          keys.push(loc)
+          if (isArrayLike(ctx.state.get(dirname(loc)))) {
+            token.type = "key"
+            token.value = loc
+          } else {
+            token.loc = loc
+          }
         } else if (token.type === "function") {
           if (ctx.actions.has(loc) === false) {
             let filter
@@ -108,11 +110,25 @@ export function normalizeAttrs(def, ctx) {
   return attrs
 }
 
+function normalizeComputed(computed, ctx) {
+  for (const [key, val] of Object.entries(computed)) {
+    const scope = resolve(ctx.scope, key)
+    const fn = typeof val === "string" ? normaliseString(val, ctx) : val
+    if (fn.keys) {
+      register(ctx, fn, (val, changed) => {
+        ctx.computeds.set(scope, val)
+        if (changed !== scope) ctx.state.update(scope, val)
+      })
+    }
+  }
+}
+
 export default function normalize(def = {}, ctx = {}) {
   ctx.scope ??= "/"
   ctx.renderers ??= {}
   ctx.undones ??= new Undones()
   ctx.actions ??= new Locator({}, { sep: "/" })
+  ctx.computeds ??= new Locator({}, { sep: "/" })
   ctx.cancel ??= new Canceller()
   ctx.state ??= new State(ctx)
   ctx = { ...ctx }
@@ -139,6 +155,8 @@ export default function normalize(def = {}, ctx = {}) {
         )
       } else ctx.state.assign(ctx.scope, def.data)
     }
+
+    if (def.computed) normalizeComputed(def.computed, ctx)
 
     if (def.scope) ctx.scope = resolve(ctx.scope, def.scope)
 
