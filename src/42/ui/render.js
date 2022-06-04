@@ -14,10 +14,11 @@ const SPECIAL_STRINGS = {
 }
 
 export default function render(...args) {
-  const { type, def, ctx } = normalize(...args)
-  if (type === "string") return SPECIAL_STRINGS[def]?.() ?? def
+  const { def, ctx } = normalize(...args)
 
-  if (type === "function") {
+  if (ctx.type === "string") return SPECIAL_STRINGS[def]?.() ?? def
+
+  if (ctx.type === "function") {
     const el = document.createTextNode("")
     register(ctx, def, (val) => {
       el.textContent = val
@@ -25,7 +26,7 @@ export default function render(...args) {
     return el
   }
 
-  if (type === "array") {
+  if (ctx.type === "array") {
     const fragment = document.createDocumentFragment()
     for (const content of def) fragment.append(render(content, ctx))
     return fragment

@@ -123,7 +123,7 @@ function normalizeComputed(computed, ctx) {
   }
 }
 
-export default function normalize(def = {}, ctx = {}) {
+export function normalizeCtx(ctx = {}) {
   ctx.scope ??= "/"
   ctx.renderers ??= {}
   ctx.undones ??= new Undones()
@@ -131,16 +131,18 @@ export default function normalize(def = {}, ctx = {}) {
   ctx.computeds ??= new Locator({}, { sep: "/" })
   ctx.cancel ??= new Canceller()
   ctx.state ??= new State(ctx)
-  ctx = { ...ctx }
+  return { ...ctx }
+}
 
-  let type = typeof def
+export function normalizeDef(def = {}, ctx = normalizeCtx()) {
+  ctx.type = typeof def
 
-  if (type === "string") {
+  if (ctx.type === "string") {
     const fn = normaliseString(def, ctx)
-    type = typeof fn
-    if (type === "function") def = fn
+    ctx.type = typeof fn
+    if (ctx.type === "function") def = fn
   } else if (Array.isArray(def)) {
-    type = "array"
+    ctx.type = "array"
   } else {
     if (def.actions) ctx.actions.assign(ctx.scope, def.actions)
 
@@ -164,5 +166,11 @@ export default function normalize(def = {}, ctx = {}) {
     if (!isEmptyObject(attrs)) def.attrs = attrs
   }
 
-  return { type, def, ctx }
+  return def
+}
+
+export default function normalize(def, ctx) {
+  ctx = normalizeCtx(ctx)
+  def = normalizeDef(def, ctx)
+  return { def, ctx }
 }

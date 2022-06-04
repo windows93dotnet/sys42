@@ -1,6 +1,14 @@
 import { toKebabCase } from "../../fabric/type/string/letters.js"
-import normalize from "../normalize.js"
+import configure from "../../fabric/configure.js"
+import { normalizeCtx, normalizeDef } from "../normalize.js"
 import render from "../render.js"
+
+function objectify(def) {
+  if (def != null) {
+    if (typeof def === "object") return def
+    return { content: def }
+  }
+}
 
 export default class Component extends HTMLElement {
   static async define(Class) {
@@ -48,7 +56,7 @@ export default class Component extends HTMLElement {
   }
 
   disconnectedCallback() {
-    this.ctx.cancel()
+    this.ctx.cancel(`${this.localName} disconnected`)
     this.#rendered = false
   }
 
@@ -60,21 +68,33 @@ export default class Component extends HTMLElement {
     ctx.cancel = ctx.cancel?.fork()
     ctx.state = ctx.state?.fork(ctx)
     ctx.undones = undefined
-    const _ = normalize(definition, ctx)
-    this.ctx = _.ctx
-    delete _.def.tag
 
-    const { props } = definition
-    for (const [key, val] of Object.entries(props)) {
-      Object.defineProperty(this, key, {
-        configurable: true,
-        get() {
-          return val
-        },
-      })
+    ctx = normalizeCtx(ctx)
+    this.ctx = ctx
+
+    if (definition.props) {
+      for (const [key, val] of Object.entries(definition.props)) {
+        Object.defineProperty(this, key, {
+          configurable: true,
+          get() {
+            return val
+          },
+        })
+      }
     }
 
-    this.append(render(_.def, _.ctx))
+    const prerender = await this.prerender?.(ctx)
+    def = configure(definition, objectify(prerender), objectify(def))
+    def = normalizeDef(def, ctx)
+    delete def.tag
     await ctx.undones.done()
+
+    this.append(render(def, ctx))
+    await ctx.undones.done()
+
+    await this.postrender?.(ctx)
+    await ctx.undones.done()
+
+    this.#rendered = true
   }
 }
