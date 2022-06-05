@@ -56,8 +56,6 @@ export default class State extends Emitter {
       this.queue.lengths.clear()
       this.queue.objects.clear()
 
-      this.deferred?.resolve()
-
       this.emit("update", changes)
     }
 
@@ -69,7 +67,11 @@ export default class State extends Emitter {
       await ctx.undones.done()
       const { paths, lengths, objects } = this.queue
       const hasQueue = paths.size > 0 || lengths.size > 0 || objects.size > 0
-      if (hasQueue) await this.once("update")
+      if (hasQueue) {
+        await this.once("update")
+        while (ctx.undones.length > 0) await this.update.done()
+      }
+
       if (updateDone) return
       updateDone = true
       this.throttle = true
@@ -121,6 +123,7 @@ export default class State extends Emitter {
     } else if (val && typeof val === "object") {
       this.queue.objects.add(path)
     } else this.queue.paths.add(path)
+
     this.#update.fn()
   }
 

@@ -1,3 +1,5 @@
+import normalizeError from "../error/normalizeError.js"
+
 export default async function when(
   target,
   events,
@@ -16,13 +18,13 @@ export default async function when(
           }
 
           function onerror(e) {
-            reject(e)
+            reject(normalizeError(e))
             controller.abort()
           }
 
           target.addEventListener(event, onevent, options)
           if (error) target.addEventListener(error, onerror, options)
-          if (signal) target.addEventListener("abort", onerror, options)
+          signal?.addEventListener("abort", onerror, options)
         })
     )
   )
