@@ -1,3 +1,6 @@
+// @read https://developer.salesforce.com/blogs/2020/01/accessibility-for-web-components
+// @read https://github.com/webcomponents/gold-standard/wiki
+
 import { toKebabCase } from "../../fabric/type/string/letters.js"
 import defer from "../../fabric/type/promise/defer.js"
 import renderAttributes from "../renderers/renderAttributes.js"

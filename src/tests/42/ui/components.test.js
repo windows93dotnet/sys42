@@ -268,7 +268,7 @@ test.tasks(
     },
 
     {
-      // only: true,
+      only: true,
       def: {
         content: { tag: "ui-t-props-state" },
         data: { foo: 1 },

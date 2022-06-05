@@ -12,6 +12,7 @@ const CONVERTERS = {
     toView: (val) => String(val),
     fromView: (val) => String(val),
   },
+
   number: {
     toView: (val) => String(val),
     fromView(val, key) {
@@ -23,6 +24,7 @@ const CONVERTERS = {
       return out
     },
   },
+
   boolean: {
     toView: noop,
     fromView(val) {
@@ -31,14 +33,17 @@ const CONVERTERS = {
       return Boolean(val)
     },
   },
+
   object: {
     toView: (val) => JSON.stringify(val),
     fromView: (val) => JSON.parse(val),
   },
+
   tokens: {
     fromView: (val) => String(val).split(" "),
     toView: (val) => val.join(" "),
   },
+
   any: {
     toView(val) {
       if (typeof val === "string") return val

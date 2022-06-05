@@ -23,10 +23,7 @@ export default class UI extends DOMQuery {
     this.state = this.ctx.state
     this.getAll("[data-autofocus]").at(-1)?.focus()
 
-    asyncable(this, async () => {
-      await this.ctx.undones.done()
-      // this.state.throttle = true
-    })
+    asyncable(this, async () => this.ctx.state.update.done())
   }
 
   get data() {

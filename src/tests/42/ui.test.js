@@ -244,6 +244,144 @@ test("reactive data", "styles", async (t) => {
   )
 })
 
+/* update throttle
+==================
+One update every animation frame */
+
+test("update throttle", async (t) => {
+  const app = await ui(tmp(), {
+    content: "{{a}}{{b}}{{c}}",
+    data: { a: "a", b: "b", c: "c" },
+  })
+
+  t.is(app.state.throttle, true)
+
+  const stub = t.stub()
+
+  app.state.on("update", stub)
+
+  t.is(app.el.innerHTML, "abc")
+  t.is(stub.count, 0)
+
+  app.data.a = "A"
+  app.data.b = "B"
+  app.data.c = "C"
+
+  await app
+
+  t.is(app.el.innerHTML, "ABC")
+  t.is(stub.count, 1)
+  t.eq(stub.calls, [
+    {
+      args: [new Set(["/a", "/b", "/c"])],
+    },
+  ])
+
+  t.is(app.state.throttle, true)
+})
+
+test("update throttle", "using throttle:false", async (t) => {
+  const app = await ui(tmp(), {
+    content: "{{a}}{{b}}{{c}}",
+    data: { a: "a", b: "b", c: "c" },
+  })
+
+  app.state.throttle = false
+
+  const stub = t.stub()
+
+  app.state.on("update", stub)
+
+  t.is(app.el.innerHTML, "abc")
+  t.is(stub.count, 0)
+
+  app.data.a = "A"
+  app.data.b = "B"
+  app.data.c = "C"
+
+  await app
+
+  t.is(app.el.innerHTML, "ABC")
+  t.is(stub.count, 3)
+  t.eq(stub.calls, [
+    { args: [new Set(["/a"])] },
+    { args: [new Set(["/b"])] },
+    { args: [new Set(["/c"])] },
+  ])
+
+  t.is(app.state.throttle, false)
+})
+
+test("update throttle", "using update.now", async (t) => {
+  const app = await ui(tmp(), {
+    content: "{{a}}{{b}}{{c}}",
+    data: { a: "a", b: "b", c: "c" },
+  })
+
+  t.is(app.state.throttle, true)
+
+  const stub = t.stub()
+
+  app.state.on("update", stub)
+
+  t.is(app.el.innerHTML, "abc")
+  t.is(stub.count, 0)
+
+  app.state.value.a = "A"
+  app.state.value.b = "B"
+  app.state.value.c = "C"
+  app.state.update.now("/a")
+  app.state.update.now("/b")
+  app.state.update.now("/c")
+
+  await app
+
+  t.is(app.el.innerHTML, "ABC")
+  t.is(stub.count, 3)
+  t.eq(stub.calls, [
+    { args: [new Set(["/a"])] },
+    { args: [new Set(["/b"])] },
+    { args: [new Set(["/c"])] },
+  ])
+
+  t.is(app.state.throttle, true)
+})
+
+test("update throttle", "using silent:true", async (t) => {
+  const app = await ui(tmp(), {
+    content: "{{a}}{{b}}{{c}}",
+    data: { a: "a", b: "b", c: "c" },
+  })
+
+  t.is(app.state.throttle, true)
+
+  const stub = t.stub()
+
+  app.state.on("update", stub)
+
+  t.is(app.el.innerHTML, "abc")
+  t.is(stub.count, 0)
+
+  app.state.set("/a", "A", { silent: true })
+  app.state.set("/b", "B", { silent: true })
+  app.state.set("/c", "C", { silent: true })
+  app.state.update.now("/a")
+  app.state.update.now("/b")
+  app.state.update.now("/c")
+
+  await app
+
+  t.is(app.el.innerHTML, "ABC")
+  t.is(stub.count, 3)
+  t.eq(stub.calls, [
+    { args: [new Set(["/a"])] },
+    { args: [new Set(["/b"])] },
+    { args: [new Set(["/c"])] },
+  ])
+
+  t.is(app.state.throttle, true)
+})
+
 /* scope
 ======== */
 
