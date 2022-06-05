@@ -1,6 +1,7 @@
 import { toKebabCase } from "../../fabric/type/string/letters.js"
 import defer from "../../fabric/type/promise/defer.js"
 import renderAttributes from "../renderers/renderAttributes.js"
+import renderProps from "../renderers/renderProps.js"
 import { normalizeCtx, normalizeDef } from "../normalize.js"
 import render from "../render.js"
 
@@ -34,6 +35,7 @@ export default class Component extends HTMLElement {
     return (...args) => new Class(...args)
   }
 
+  // TODO: put this in define
   static get observedAttributes() {
     const observed = []
     if (!this.definition?.props) return observed
@@ -107,14 +109,7 @@ export default class Component extends HTMLElement {
       this.ctx = ctx
 
       if (definition.props) {
-        for (const [key, val] of Object.entries(definition.props)) {
-          Object.defineProperty(this, key, {
-            configurable: true,
-            get() {
-              return val
-            },
-          })
-        }
+        this.#observed = await renderProps(this, definition.props, def)
       }
 
       const prerender = await this.render?.(this.ctx)

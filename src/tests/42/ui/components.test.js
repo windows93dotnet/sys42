@@ -36,28 +36,28 @@ Component.define({
   content: "foo: {{foo}}, bar: {{bar}}",
 })
 
-// test("render props", async (t) => {
-//   const app = await ui(tmp(), {
-//     tag: "ui-t-props",
-//     data: {
-//       foo: 1,
-//     },
-//   })
+test("render props", async (t) => {
+  const app = await ui(tmp(), {
+    tag: "ui-t-props",
+    data: {
+      foo: 1,
+    },
+  })
 
-//   t.is(app.el.innerHTML, "<ui-t-props>foo: 1, bar: 2</ui-t-props>")
-// })
+  t.is(app.el.innerHTML, '<ui-t-props bar="2">foo: 1, bar: 2</ui-t-props>')
+})
 
-// test("render props", "data before props", async (t) => {
-//   const app = await ui(tmp(), {
-//     tag: "ui-t-props",
-//     data: {
-//       foo: 1,
-//       bar: 3,
-//     },
-//   })
+test("render props", "data before props", async (t) => {
+  const app = await ui(tmp(), {
+    tag: "ui-t-props",
+    data: {
+      foo: 1,
+      bar: 3,
+    },
+  })
 
-//   t.is(app.el.innerHTML, "<ui-t-props>foo: 1, bar: 3</ui-t-props>")
-// })
+  t.is(app.el.innerHTML, '<ui-t-props bar="3">foo: 1, bar: 3</ui-t-props>')
+})
 
 test.skip("lifecycle", async (t) => {
   await Component.define(
@@ -268,6 +268,7 @@ test.tasks(
     },
 
     {
+      // only: true,
       def: {
         content: { tag: "ui-t-props-state" },
         data: { foo: 1 },
@@ -277,8 +278,10 @@ test.tasks(
         const el = app.get("ui-t-props-state")
 
         t.is(app.state.get("bar"), 2)
+        t.is(el.bar, 2)
 
         app.state.set("bar", 3)
+        t.is(el.bar, 3)
         await app
 
         t.is(
