@@ -165,10 +165,14 @@ test.tasks(
     },
 
     {
-      // only: true,
       connect: true,
       component(t) {
+        t.plan(9)
         const stub = t.stub()
+        const reasons = [
+          "ui-t-signal disconnected", //
+          "ui destroyed",
+        ]
         return class extends Component {
           static definition = {
             tag: "ui-t-signal",
@@ -176,7 +180,7 @@ test.tasks(
 
           setup({ signal }) {
             signal.addEventListener("abort", () => {
-              console.log(887, signal.reason)
+              t.is(signal.reason, reasons.shift())
             })
             this.addEventListener("click", stub, { signal })
           }
@@ -192,6 +196,9 @@ test.tasks(
 
         el.click()
         t.is(stub.count, 1)
+
+        el.remove()
+        app.el.append(el)
 
         el.click()
         t.is(stub.count, 2)

@@ -13,12 +13,19 @@ export default class Canceller extends Callable {
   }
 
   fork(token) {
+    if (this.signal.aborted) {
+      throw new Error("Impossible to fork an aborted signal")
+    }
+
     const fork = new Canceller(token)
+    fork.parent = this
+
     this.signal.addEventListener(
       "abort",
       () => fork.cancel(this.signal.reason),
       { once: true }
     )
+
     return fork
   }
 }

@@ -1,5 +1,4 @@
 import { toKebabCase } from "../../fabric/type/string/letters.js"
-import configure from "../../fabric/configure.js"
 import defer from "../../fabric/type/promise/defer.js"
 import renderAttributes from "../renderers/renderAttributes.js"
 import { normalizeCtx, normalizeDef } from "../normalize.js"
@@ -91,51 +90,54 @@ export default class Component extends HTMLElement {
   async #init(def, ctx) {
     this.#lifecycle = INIT
 
-    const { definition } = this.constructor
+    if (this.ctx === undefined) {
+      const { definition } = this.constructor
 
-    ctx = { ...ctx }
-    ctx.el = this
-    ctx.undones = undefined
-    ctx.state = ctx.state?.fork(ctx)
-    ctx.cancel = ctx.cancel?.fork()
+      ctx = { ...ctx }
+      ctx.el = this
+      ctx.undones = undefined
+      ctx.state = ctx.state?.fork(ctx)
+      ctx.cancel = ctx.cancel?.fork()
 
-    ctx = normalizeCtx(ctx)
-    Object.defineProperty(ctx, "signal", {
-      configurable: true,
-      get: () => ctx.cancel.signal,
-    })
+      ctx = normalizeCtx(ctx)
+      Object.defineProperty(ctx, "signal", {
+        configurable: true,
+        get: () => ctx.cancel.signal,
+      })
+      this.ctx = ctx
 
-    this.ctx = ctx
-
-    if (definition.props) {
-      for (const [key, val] of Object.entries(definition.props)) {
-        Object.defineProperty(this, key, {
-          configurable: true,
-          get() {
-            return val
-          },
-        })
+      if (definition.props) {
+        for (const [key, val] of Object.entries(definition.props)) {
+          Object.defineProperty(this, key, {
+            configurable: true,
+            get() {
+              return val
+            },
+          })
+        }
       }
+
+      const prerender = await this.render?.(this.ctx)
+      this.def = normalizeDef(
+        { ...definition, ...objectify(prerender), ...objectify(def) },
+        ctx
+      )
+    } else {
+      this.ctx.cancel = this.ctx.cancel.parent?.fork() ?? this.ctx.cancel.fork()
     }
 
-    const prerender = await this.render?.(ctx)
-    def = configure(definition, objectify(prerender), objectify(def))
-    def = normalizeDef(def, ctx)
-    this.def = def
-
-    if (def.attrs) renderAttributes(this, ctx, def.attrs)
-
+    if (this.def.attrs) renderAttributes(this, this.ctx, this.def.attrs)
     this.replaceChildren(render(this.def.content, this.ctx))
+
     await this.ctx.undones.done()
+
     if (this.#lifecycle === INIT) this.#lifecycle = RENDER
+    if (this.isConnected) this.#setup()
   }
 
   async init(...args) {
     await this.#init(...args)
-      .then(() => {
-        if (this.isConnected) this.#setup()
-        this.ready.resolve()
-      })
+      .then(this.ready.resolve)
       .catch((err) => this.ready.reject(err))
   }
 }
