@@ -1,5 +1,5 @@
 import renderAttributes from "./renderers/renderAttributes.js"
-import parseAbbreviation from "./utils/parseAbbreviation.js"
+import parseTagSelector from "../system/formats/emmet/parseTagSelector.js"
 import { normalizeAttrs } from "./normalize.js"
 import SVG_TAGS from "../fabric/constants/SVG_TAGS.js"
 
@@ -21,7 +21,7 @@ export default function create(ctx, tag, ...args) {
     }
   }
 
-  const parsed = parseAbbreviation(tag, attrs)
+  const parsed = parseTagSelector(tag, attrs)
   tag = parsed.tag
   attrs = ctx === undefined ? parsed.attrs : normalizeAttrs(parsed.attrs, ctx)
 

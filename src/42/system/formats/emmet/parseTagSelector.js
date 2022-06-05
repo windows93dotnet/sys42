@@ -1,4 +1,4 @@
-export default function parseAbbreviation(source, attrs = {}) {
+export default function parseTagSelector(source, attrs = {}) {
   const out = {
     tag: "div",
     attrs,
