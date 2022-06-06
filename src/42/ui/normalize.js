@@ -50,7 +50,9 @@ function normaliseString(def, ctx) {
           if (ctx.actions.has(loc) === false) {
             let filter
             filters[token.value] = async (...args) => {
-              filter ??= await getFilter(token.value)
+              filter ??=
+                ctx.el[token.value]?.bind(ctx.el) ??
+                (await getFilter(token.value))
               try {
                 return await filter(...args)
               } catch (err) {

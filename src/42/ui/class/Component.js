@@ -98,27 +98,23 @@ export default class Component extends HTMLElement {
     if (this.ctx === undefined) {
       const { definition } = this.constructor
 
-      ctx = { ...ctx }
-      ctx.el = this
-      ctx.undones = undefined
-      ctx.state = ctx.state?.fork(ctx)
-      ctx.cancel = ctx.cancel?.fork()
-
-      ctx = normalizeCtx(ctx)
-      Object.defineProperty(ctx, "signal", {
-        configurable: true,
-        get: () => ctx.cancel.signal,
-      })
-      this.ctx = ctx
+      let tmp = { ...ctx }
+      tmp.el = this
+      tmp.undones = undefined
+      tmp.state = ctx?.state?.fork(ctx)
+      tmp.cancel = ctx?.cancel?.fork()
+      tmp = normalizeCtx(tmp)
+      Object.defineProperty(tmp, "signal", { get: () => tmp.cancel.signal })
+      this.ctx = tmp
 
       if (definition.props) {
         this.#observed = await renderProps(this, definition.props, def)
       }
 
-      const prerender = await this.render?.(this.ctx)
+      const content = await this.render?.(this.ctx)
       this.def = normalizeDef(
-        { ...definition, ...objectify(prerender), ...objectify(def) },
-        ctx
+        { ...definition, ...objectify(content), ...objectify(def) },
+        this.ctx
       )
     } else {
       this.ctx.cancel = this.ctx.cancel.parent?.fork() ?? this.ctx.cancel.fork()

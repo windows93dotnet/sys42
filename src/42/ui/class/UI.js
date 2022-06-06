@@ -21,7 +21,8 @@ export default class UI extends DOMQuery {
 
     this.el.append(render(this.def, this.ctx))
     this.state = this.ctx.state
-    this.getAll("[data-autofocus]").at(-1)?.focus()
+
+    // this.getAll("[data-autofocus]").at(-1)?.focus()
 
     asyncable(this, async () => this.ctx.state.update.done())
   }

@@ -1,7 +1,6 @@
 import noop from "../../fabric/type/function/noop.js"
 import resolve from "../resolve.js"
 import register from "../register.js"
-import allocate from "../../fabric/locator/allocate.js"
 import { toKebabCase } from "../../fabric/type/string/letters.js"
 
 const BOOLEAN_TRUE = new Set(["", "on", "true"])
@@ -111,13 +110,13 @@ export default async function renderProps(el, props, def) {
       val = item.default
     }
 
-    if (item.state) ctx.state.set(scope, val)
+    if (item.state) ctx.state.set(scope, val /* , { silent: true } */)
 
     let fromRenderer = false
     const render = (arg) => {
       val = arg
 
-      if (item.state) allocate(ctx.state.value, scope, val)
+      if (item.state) ctx.state.set(scope, val, { silent: true })
 
       if (item.css) {
         const cssVar = `--${typeof item.css === "string" ? item.css : key}`

@@ -268,7 +268,6 @@ test.tasks(
     },
 
     {
-      only: true,
       def: {
         content: { tag: "ui-t-props-state" },
         data: { foo: 1 },
@@ -450,7 +449,6 @@ test.tasks(
     },
 
     {
-      // only: true,
       title: "update throttle bug",
       defer: true,
       component(t) {

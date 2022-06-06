@@ -7,19 +7,21 @@ export default function renderComponent(el, def, ctx) {
 
   if (el.constructor === HTMLElement) {
     const module = tag.slice(3)
-    import(`../components/${module}.js`).catch(() => {
-      deferred.reject(new Error(`Unknown component: ${tag}`))
-    })
+    if (!module.startsWith("t-")) {
+      import(`../components/${module}.js`).catch(() => {
+        deferred.reject(new Error(`Unknown component: ${tag}`))
+      })
+    }
 
     customElements
       .whenDefined(tag)
       .then(() => {
         customElements.upgrade(el)
-        el.init(def, ctx).then(() => deferred.resolve())
+        return el.init(def, ctx).then(deferred.resolve)
       })
       .catch((err) => deferred.reject(err))
   } else {
-    el.init(def, ctx).then(() => deferred.resolve())
+    el.init(def, ctx).then(deferred.resolve)
   }
 
   return el
