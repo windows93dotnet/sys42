@@ -1,14 +1,12 @@
 import arrify from "../../../fabric/type/any/arrify.js"
 import allKeys from "../../../fabric/type/object/allKeys.js"
-// import cast from "../../type/cast.js"
 import clone from "../../../fabric/type/any/clone.js"
 import hashmap from "../../../fabric/type/object/hashmap.js"
 import http from "../../../fabric/http.js"
-// import load from "../../load.js"
 import noop from "../../../fabric/type/function/noop.js"
 import parallel from "../../../fabric/type/promise/parallel.js"
-// import path from "../../path.js"
 import repaint from "../../../fabric/type/promise/repaint.js"
+import idle from "../../../fabric/type/promise/idle.js"
 import serial from "../../../fabric/type/promise/serial.js"
 import shell from "../../shell.js"
 import sleep from "../../../fabric/type/promise/sleep.js"
@@ -22,9 +20,15 @@ import log, { Log, CONSOLE_KEYS } from "../../log.js"
 import filterTasks from "../filterTasks.js"
 import env from "../../env.js"
 
-const tasks = (list, cb) => {
+const tasks = (list, cb, item) => {
   list = filterTasks(list)
-  if (typeof cb === "function") list.forEach(cb)
+  if (typeof cb === "function") {
+    list.forEach((data) => {
+      if (cb.length > 1) cb(data.only ? item.only : item, data)
+      else cb(data)
+    })
+  }
+
   return list
 }
 
@@ -48,22 +52,20 @@ export default function addUtilities(item, isExecutionContext) {
     item.onlyIf = (condition) => (condition ? item.only : item)
     item.sleep = sleep
     item.env = env
-    item.tasks = (list, cb) => tasks(list, cb)
+    item.tasks = (list, cb) => tasks(list, cb, item)
   }
 
   item.utils = {
     arrify,
     allKeys,
-    // cast,
     clone,
     hashmap,
     http,
-    // load,
     log,
     noop,
     parallel,
-    // path,
     repaint,
+    idle,
     serial,
     shell,
     sleep,

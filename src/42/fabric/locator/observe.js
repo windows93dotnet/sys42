@@ -24,7 +24,9 @@ export default function observe(root, options = {}) {
 
         if (val === undefined) {
           if (typeof key !== "string") return
-          return options.get?.(scope + key, { key, chain, parent, root })
+          return Reflect.has(target, key, receiver)
+            ? undefined
+            : options.get?.(scope + key, { key, chain, parent, root })
         }
 
         if (

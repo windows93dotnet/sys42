@@ -292,9 +292,9 @@ test.tasks(
         t.is(el.bar, 2)
 
         app.state.set("bar", 3)
-        t.is(el.bar, 3)
         await app
 
+        t.is(el.bar, 3)
         t.is(
           app.el.innerHTML,
           '<ui-t-props-state bar="3">foo: 1, bar: 3</ui-t-props-state>'
@@ -490,7 +490,10 @@ test.tasks(
     },
   ],
 
-  ({ title, defer, connect, component, args, html, def, check, expected }) => {
+  (
+    test,
+    { title, defer, connect, component, args, html, def, check, expected }
+  ) => {
     test(title ?? expected ?? def, async (t) => {
       if (component) {
         if (defer) {

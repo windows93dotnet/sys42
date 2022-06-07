@@ -110,7 +110,12 @@ export default async function renderProps(el, props, def) {
       val = item.default
     }
 
-    if (item.state) ctx.state.set(scope, val /* , { silent: true } */)
+    if (item.state) {
+      ctx.state.set(scope, val)
+      ctx.state.root.on("delete", (deletedKey) => {
+        if (deletedKey === key) val = undefined
+      })
+    }
 
     let fromRenderer = false
     const render = (arg) => {

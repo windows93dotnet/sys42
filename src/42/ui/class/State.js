@@ -3,6 +3,7 @@ import observe from "../../fabric/locator/observe.js"
 import exists from "../../fabric/locator/exists.js"
 import locate from "../../fabric/locator/locate.js"
 import allocate from "../../fabric/locator/allocate.js"
+import deallocate from "../../fabric/locator/deallocate.js"
 import defer from "../../fabric/type/promise/defer.js"
 import idleThrottle from "../../fabric/type/function/idleThrottle.js"
 
@@ -80,6 +81,9 @@ export default class State extends Emitter {
       change: (path, val, oldVal) => {
         this.update(path, val, oldVal)
       },
+      delete: (path, { key }) => {
+        this.emit("delete", key)
+      },
       has(path, { key }) {
         if (key.startsWith("@") || key.startsWith("#")) return true
         return exists(ctx.el, key, sep) || ctx.computeds.has(path)
@@ -105,7 +109,10 @@ export default class State extends Emitter {
   }
 
   fork(ctx) {
-    return new State(ctx, this.value)
+    const fork = new State(ctx, this.value)
+    fork.parent = this
+    fork.root = this.root ?? this
+    return fork
   }
 
   get throttle() {
@@ -147,6 +154,10 @@ export default class State extends Emitter {
 
   set(path, val, options) {
     return allocate(options?.silent ? this.value : this.proxy, path, val, sep)
+  }
+
+  delete(path, options) {
+    return deallocate(options?.silent ? this.value : this.proxy, path, sep)
   }
 
   assign(path, value, options) {
