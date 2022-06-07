@@ -4,9 +4,8 @@ import exists from "../../fabric/locator/exists.js"
 import locate from "../../fabric/locator/locate.js"
 import allocate from "../../fabric/locator/allocate.js"
 import defer from "../../fabric/type/promise/defer.js"
-import repaint from "../../fabric/type/promise/repaint.js"
-// import idleThrottle from "../../fabric/type/function/idleThrottle.js"
-import paintThrottle from "../../fabric/type/function/paintThrottle.js"
+import idleThrottle from "../../fabric/type/function/idleThrottle.js"
+// import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 
 const FPS = 1000 / 60
 const sep = "/"
@@ -64,7 +63,7 @@ export default class State extends Emitter {
       this.queue.objects.clear()
 
       Promise.all(undones).then(() => {
-        this.#update.ready.resolve()
+        this.#update.ready?.resolve?.()
         this.#update.ready = 0
       })
 
@@ -73,15 +72,13 @@ export default class State extends Emitter {
       } catch {}
     }
 
-    this.#update.onrepaint = paintThrottle(this.#update.now, FPS)
+    this.#update.onrepaint = idleThrottle(this.#update.now, FPS)
     this.#update.fn = this.#update.now
     this.#update.ready = false
 
     this.update.done = async () => {
       await ctx.undones.done()
-      if (this.throttle) {
-        await (this.#update.ready ? this.#update.ready : repaint())
-      }
+      await this.#update.ready
     }
 
     this.update.now = (path, val, oldVal) => {

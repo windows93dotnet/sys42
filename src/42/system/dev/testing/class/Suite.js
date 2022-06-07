@@ -105,6 +105,7 @@ export default class Suite {
     oneach(test)
 
     if (this.afterEach) await this.warnOnThrow(this.afterEach, "afterEach")
+    await 0
   }
 
   async runSuite(suite, options) {
