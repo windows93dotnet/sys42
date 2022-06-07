@@ -101,7 +101,7 @@ export default class Component extends HTMLElement {
       let tmp = { ...ctx }
       tmp.el = this
       tmp.undones = undefined
-      tmp.state = ctx?.state?.fork(ctx)
+      tmp.state = ctx?.state?.fork(tmp)
       tmp.cancel = ctx?.cancel?.fork()
       tmp = normalizeCtx(tmp)
       Object.defineProperty(tmp, "signal", { get: () => tmp.cancel.signal })

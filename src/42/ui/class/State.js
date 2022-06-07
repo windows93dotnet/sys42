@@ -3,8 +3,12 @@ import observe from "../../fabric/locator/observe.js"
 import exists from "../../fabric/locator/exists.js"
 import locate from "../../fabric/locator/locate.js"
 import allocate from "../../fabric/locator/allocate.js"
+import defer from "../../fabric/type/promise/defer.js"
+import repaint from "../../fabric/type/promise/repaint.js"
+// import idleThrottle from "../../fabric/type/function/idleThrottle.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 
+const FPS = 1000 / 60
 const sep = "/"
 
 export default class State extends Emitter {
@@ -13,11 +17,14 @@ export default class State extends Emitter {
   constructor(ctx, val = {}) {
     super()
     this.value = val
+    this.ctx = ctx
 
     this.queue = { paths: new Set(), lengths: new Set(), objects: new Set() }
 
     this.#update.now = () => {
       const changes = new Set()
+
+      const undones = []
 
       for (const { path, val, oldVal } of this.queue.lengths) {
         let i = val
@@ -26,7 +33,7 @@ export default class State extends Emitter {
           const key = `${path}/${i}`
           changes.add(key)
           if (key in ctx.renderers) {
-            for (const render of ctx.renderers[key]) render(key)
+            for (const render of ctx.renderers[key]) undones.push(render(key))
           }
         }
       }
@@ -35,7 +42,7 @@ export default class State extends Emitter {
         changes.add(path)
         for (const key of Object.keys(ctx.renderers)) {
           if (key.startsWith(path) && key in ctx.renderers) {
-            for (const render of ctx.renderers[key]) render(key)
+            for (const render of ctx.renderers[key]) undones.push(render(key))
           }
         }
       }
@@ -43,7 +50,7 @@ export default class State extends Emitter {
       for (const path of this.queue.paths) {
         changes.add(path)
         if (path in ctx.renderers) {
-          for (const render of ctx.renderers[path]) render(path)
+          for (const render of ctx.renderers[path]) undones.push(render(path))
         }
       }
 
@@ -56,25 +63,25 @@ export default class State extends Emitter {
       this.queue.lengths.clear()
       this.queue.objects.clear()
 
-      this.emit("update", changes)
+      Promise.all(undones).then(() => {
+        this.#update.ready.resolve()
+        this.#update.ready = 0
+      })
+
+      try {
+        this.emit("update", changes)
+      } catch {}
     }
 
-    this.#update.onrepaint = paintThrottle(this.#update.now)
+    this.#update.onrepaint = paintThrottle(this.#update.now, FPS)
     this.#update.fn = this.#update.now
+    this.#update.ready = false
 
-    let updateDone = false
     this.update.done = async () => {
       await ctx.undones.done()
-      const { paths, lengths, objects } = this.queue
-      const hasQueue = paths.size > 0 || lengths.size > 0 || objects.size > 0
-      if (hasQueue) {
-        await this.once("update")
-        while (ctx.undones.length > 0) await this.update.done()
+      if (this.throttle) {
+        await (this.#update.ready ? this.#update.ready : repaint())
       }
-
-      if (updateDone) return
-      updateDone = true
-      this.throttle = true
     }
 
     this.update.now = (path, val, oldVal) => {
@@ -116,6 +123,8 @@ export default class State extends Emitter {
   }
 
   update(path, val, oldVal) {
+    this.#update.ready ||= defer()
+
     if (path.endsWith("/length")) {
       path = path.slice(0, -7)
       this.queue.objects.add(path)

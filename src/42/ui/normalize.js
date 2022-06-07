@@ -133,7 +133,7 @@ export function normalizeCtx(ctx = {}) {
   ctx.computeds ??= new Locator({}, { sep: "/" })
   ctx.cancel ??= new Canceller()
   ctx.state ??= new State(ctx)
-  return { ...ctx }
+  return ctx
 }
 
 export function normalizeDef(def = {}, ctx = normalizeCtx()) {
@@ -172,7 +172,7 @@ export function normalizeDef(def = {}, ctx = normalizeCtx()) {
 }
 
 export default function normalize(def, ctx) {
-  ctx = normalizeCtx(ctx)
+  ctx = { ...normalizeCtx(ctx) }
   def = normalizeDef(def, ctx)
   return { def, ctx }
 }

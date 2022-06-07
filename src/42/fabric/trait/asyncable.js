@@ -8,21 +8,23 @@ export default function asyncable(obj, options, fn) {
 
   obj[_RESOLVED] = false
 
-  let promise = fn()
+  let init = fn()
 
-  const then = (resolve, reject) =>
-    (options?.once ? promise : promise ?? fn())
+  const then = (resolve, reject) => {
+    const promise = init ?? fn()
+    if (!options?.once) init = undefined
+
+    promise
       .then(() => {
-        promise = undefined
         obj[_RESOLVED] = true
         resolve(obj)
         obj[_RESOLVED] = false
       })
       .catch((err) => {
-        promise = undefined
         reject(err)
         obj[_RESOLVED] = false
       })
+  }
 
   Object.defineProperty(obj, "then", {
     get: () => (obj[_RESOLVED] ? undefined : then),
