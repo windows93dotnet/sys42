@@ -25,11 +25,11 @@ export default class UI extends DOMQuery {
     let firstUpdateDone = false
 
     asyncable(this, async () => {
-      await this.ctx.state.update.done()
+      await this.ctx.state.ready()
       if (firstUpdateDone) return
+      firstUpdateDone = true
       this.ctx.state.throttle = true
       this.getAll("[data-autofocus]").at(-1)?.focus()
-      firstUpdateDone = true
     })
   }
 

@@ -119,7 +119,7 @@ function normalizeComputed(computed, ctx) {
     if (fn.keys) {
       register(ctx, fn, (val, changed) => {
         ctx.computeds.set(scope, val)
-        if (changed !== scope) ctx.state.update.now(scope, val)
+        if (changed !== scope) ctx.state.updateNow(scope, val)
       })
     }
   }

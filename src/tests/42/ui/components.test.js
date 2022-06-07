@@ -2,8 +2,6 @@ import test from "../../../42/test.js"
 import ui from "../../../42/ui.js"
 import Component from "../../../42/ui/class/Component.js"
 
-test.suite.serial()
-
 const elements = []
 function tmp(connect = false) {
   const el = document.createElement("main")
@@ -12,7 +10,7 @@ function tmp(connect = false) {
   return el
 }
 
-test.afterEach(() => {
+test.teardown(() => {
   for (const el of elements) el.remove()
   elements.length = 0
 })

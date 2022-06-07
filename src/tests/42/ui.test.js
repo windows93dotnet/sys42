@@ -1,8 +1,6 @@
 import test from "../../42/test.js"
 import ui from "../../42/ui.js"
 
-test.suite.serial()
-
 const elements = []
 function tmp(connect = false) {
   const el = document.createElement("section")
@@ -11,7 +9,7 @@ function tmp(connect = false) {
   return el
 }
 
-test.afterEach(() => {
+test.teardown(() => {
   for (const el of elements) el.remove()
   elements.length = 0
 })
@@ -60,7 +58,8 @@ hello<br>world<hr>
 ============= */
 
 test("template", async (t) => {
-  const app = await ui(tmp(), `Hello {{world}}`)
+  const app = ui(tmp(), `Hello {{world}}`)
+  await app
   t.is(app.el.textContent, "Hello ")
 
   app.data.world = "World"
@@ -314,7 +313,7 @@ test("update throttle", "using throttle:false", async (t) => {
   t.is(app.state.throttle, false)
 })
 
-test("update throttle", "using update.now", async (t) => {
+test("update throttle", "using updateNow", async (t) => {
   const app = await ui(tmp(), {
     content: "{{a}}{{b}}{{c}}",
     data: { a: "a", b: "b", c: "c" },
@@ -332,9 +331,9 @@ test("update throttle", "using update.now", async (t) => {
   app.state.value.a = "A"
   app.state.value.b = "B"
   app.state.value.c = "C"
-  app.state.update.now("/a")
-  app.state.update.now("/b")
-  app.state.update.now("/c")
+  app.state.updateNow("/a")
+  app.state.updateNow("/b")
+  app.state.updateNow("/c")
 
   await app
 
@@ -367,9 +366,9 @@ test("update throttle", "using silent:true", async (t) => {
   app.state.set("/a", "A", { silent: true })
   app.state.set("/b", "B", { silent: true })
   app.state.set("/c", "C", { silent: true })
-  app.state.update.now("/a")
-  app.state.update.now("/b")
-  app.state.update.now("/c")
+  app.state.updateNow("/a")
+  app.state.updateNow("/b")
+  app.state.updateNow("/c")
 
   await app
 

@@ -5,7 +5,6 @@ import locate from "../../fabric/locator/locate.js"
 import allocate from "../../fabric/locator/allocate.js"
 import defer from "../../fabric/type/promise/defer.js"
 import idleThrottle from "../../fabric/type/function/idleThrottle.js"
-// import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 
 const FPS = 1000 / 60
 const sep = "/"
@@ -76,18 +75,6 @@ export default class State extends Emitter {
     this.#update.fn = this.#update.now
     this.#update.ready = false
 
-    this.update.done = async () => {
-      await ctx.undones.done()
-      await this.#update.ready
-    }
-
-    this.update.now = (path, val, oldVal) => {
-      const { throttle } = this
-      this.throttle = false
-      this.update(path, val, oldVal)
-      this.throttle = throttle
-    }
-
     this.proxy = observe(this.value, {
       signal: ctx.cancel.signal,
       change: (path, val, oldVal) => {
@@ -105,6 +92,16 @@ export default class State extends Emitter {
         return locate(ctx.el, key, sep) ?? ctx.computeds.get(path)
       },
     })
+  }
+
+  async ready(n = 10) {
+    await this.ctx.undones.done()
+    await this.#update.ready
+
+    if (this.ctx.undones.length > 0) {
+      if (n < 0) throw new Error("Too much recursion")
+      await this.ready(n--)
+    }
   }
 
   fork(ctx) {
@@ -131,6 +128,13 @@ export default class State extends Emitter {
     } else this.queue.paths.add(path)
 
     this.#update.fn()
+  }
+
+  updateNow(path, val, oldVal) {
+    const { throttle } = this
+    this.throttle = false
+    this.update(path, val, oldVal)
+    this.throttle = throttle
   }
 
   has(path) {
