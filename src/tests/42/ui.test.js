@@ -4,6 +4,7 @@ import ui from "../../42/ui.js"
 const elements = []
 function tmp(connect = false) {
   const el = document.createElement("section")
+  el.id = "ui-tests"
   elements.push(el)
   if (connect) document.body.append(el)
   return el

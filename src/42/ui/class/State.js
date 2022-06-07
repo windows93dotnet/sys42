@@ -23,8 +23,6 @@ export default class State extends Emitter {
     this.#update.now = () => {
       const changes = new Set()
 
-      const undones = []
-
       for (const { path, val, oldVal } of this.queue.lengths) {
         let i = val
         const l = oldVal
@@ -32,7 +30,7 @@ export default class State extends Emitter {
           const key = `${path}/${i}`
           changes.add(key)
           if (key in ctx.renderers) {
-            for (const render of ctx.renderers[key]) undones.push(render(key))
+            for (const render of ctx.renderers[key]) render(key)
           }
         }
       }
@@ -41,7 +39,7 @@ export default class State extends Emitter {
         changes.add(path)
         for (const key of Object.keys(ctx.renderers)) {
           if (key.startsWith(path) && key in ctx.renderers) {
-            for (const render of ctx.renderers[key]) undones.push(render(key))
+            for (const render of ctx.renderers[key]) render(key)
           }
         }
       }
@@ -49,7 +47,7 @@ export default class State extends Emitter {
       for (const path of this.queue.paths) {
         changes.add(path)
         if (path in ctx.renderers) {
-          for (const render of ctx.renderers[path]) undones.push(render(path))
+          for (const render of ctx.renderers[path]) render(path)
         }
       }
 
@@ -62,14 +60,14 @@ export default class State extends Emitter {
       this.queue.lengths.clear()
       this.queue.objects.clear()
 
-      Promise.all(undones).then(() => {
-        this.#update.ready?.resolve?.()
-        this.#update.ready = 0
-      })
+      this.#update.ready?.resolve?.()
+      this.#update.ready = 0
 
       try {
         this.emit("update", changes)
-      } catch {}
+      } catch (err) {
+        console.log(err)
+      }
     }
 
     this.#update.onrepaint = idleThrottle(this.#update.now, FPS)

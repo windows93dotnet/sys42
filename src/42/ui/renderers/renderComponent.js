@@ -16,6 +16,7 @@ export default function renderComponent(el, def, ctx) {
     customElements
       .whenDefined(tag)
       .then(() => {
+        el.setAttribute("data-no-init", true)
         customElements.upgrade(el)
         return el.init(def, ctx).then(deferred.resolve)
       })

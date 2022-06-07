@@ -4,7 +4,8 @@ import Component from "../../../42/ui/class/Component.js"
 
 const elements = []
 function tmp(connect = false) {
-  const el = document.createElement("main")
+  const el = document.createElement("section")
+  el.id = "component-tests"
   elements.push(el)
   if (connect) document.body.append(el)
   return el
@@ -36,85 +37,50 @@ Component.define({
   content: "foo: {{foo}}, bar: {{bar}}",
 })
 
-test("render props", async (t) => {
-  const app = await ui(tmp(), {
-    tag: "ui-t-props",
-    data: {
-      foo: 1,
-    },
-  })
+test.skip("lifecycle", async (t) => {
+  await Component.define(
+    class extends Component {
+      static definition = {
+        tag: "ui-t-lifecycle",
+        props: {
+          cnt: 0,
+        },
+      }
 
-  t.is(app.el.innerHTML, '<ui-t-props bar="2">foo: 1, bar: 2</ui-t-props>')
+      render() {
+        return ["{{cnt}}", { tag: "button#incr", content: "+" }]
+      }
+
+      setup({ signal }) {
+        console.log(777)
+        const btn = this.querySelector("#incr")
+
+        btn.addEventListener(
+          "click",
+          () => {
+            console.log("click")
+          },
+          { signal }
+        )
+      }
+    }
+  )
+
+  const app = await ui(tmp(true), { tag: "ui-t-lifecycle" })
+
+  const cpn = app.get("ui-t-lifecycle")
+
+  t.is(
+    app.el.innerHTML,
+    '<ui-t-lifecycle>0<button id="incr">+</button></ui-t-lifecycle>'
+  )
+
+  cpn.remove()
+
+  await t.sleep(10)
+
+  app.el.append(cpn)
 })
-
-test("render props", async (t) => {
-  const app = await ui(tmp(), {
-    tag: "div",
-    content: "foo: {{foo}}, bar: {{bar}}",
-    data: {
-      foo: 1,
-    },
-  })
-
-  t.is(app.el.innerHTML, "<div>foo: 1, bar: </div>")
-})
-
-test("render props", "data before props", async (t) => {
-  const app = await ui(tmp(), {
-    tag: "ui-t-props",
-    data: {
-      foo: 1,
-      bar: 3,
-    },
-  })
-
-  t.is(app.el.innerHTML, '<ui-t-props bar="3">foo: 1, bar: 3</ui-t-props>')
-})
-
-// test.skip("lifecycle", async (t) => {
-//   await Component.define(
-//     class extends Component {
-//       static definition = {
-//         tag: "ui-t-lifecycle",
-//         props: {
-//           cnt: 0,
-//         },
-//       }
-
-//       render() {
-//         return ["{{cnt}}", { tag: "button#incr", content: "+" }]
-//       }
-
-//       setup({ signal }) {
-//         console.log(777)
-//         const btn = this.querySelector("#incr")
-
-//         btn.addEventListener(
-//           "click",
-//           () => {
-//             console.log("click")
-//           },
-//           { signal }
-//         )
-//       }
-//     }
-//   )
-
-//   const app = await ui(tmp(true), { tag: "ui-t-lifecycle" })
-
-//   const cpn = app.get("ui-t-lifecycle")
-
-//   t.is(
-//     app.el.innerHTML,
-//     '<ui-t-lifecycle>0<button id="incr">+</button></ui-t-lifecycle>'
-//   )
-
-//   cpn.remove()
-
-//   await t.sleep(10)
-
-//   app.el.append(cpn)
-// })
 
 async function checkDefine(component, t, args, expected) {
   const fn = await (typeof component === "object" ||
@@ -216,7 +182,7 @@ test.tasks(
         t.is(stub.count, 2)
 
         el.remove()
-        await t.sleep(50)
+        await t.sleep(100)
         el.click()
         t.is(stub.count, 2)
 

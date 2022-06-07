@@ -56,7 +56,12 @@ export default class Component extends HTMLElement {
   constructor(...args) {
     super()
     this.ready = defer()
-    if (args.length > 0 || this.parentElement !== null) this.init(...args)
+    if (
+      args.length > 0 ||
+      (this.parentElement !== null && !this.hasAttribute("data-no-init"))
+    ) {
+      this.init(...args)
+    }
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -64,9 +69,7 @@ export default class Component extends HTMLElement {
   }
 
   adoptedCallback() {
-    if (!this.isConnected) return
-    cancelIdleCallback(this.#timeout)
-    this.adopted?.(this.ctx)
+    // TODO: test adoptedCallback usage
   }
 
   connectedCallback() {
@@ -93,6 +96,7 @@ export default class Component extends HTMLElement {
   }
 
   async #init(def, ctx) {
+    this.removeAttribute("data-no-init")
     this.#lifecycle = INIT
 
     if (this.ctx === undefined) {
