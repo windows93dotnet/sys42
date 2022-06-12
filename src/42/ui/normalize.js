@@ -166,6 +166,14 @@ export function normalizeDef(def = {}, ctx = normalizeCtx()) {
 
     const attrs = normalizeAttrs(def, ctx)
     if (!isEmptyObject(attrs)) def.attrs = attrs
+
+    if (def.props) {
+      for (const key of Object.keys(def.props)) {
+        if (key in def && typeof def[key] === "string") {
+          def[key] = normaliseString(def[key], ctx)
+        }
+      }
+    }
   }
 
   return def

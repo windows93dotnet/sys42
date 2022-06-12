@@ -5,6 +5,7 @@ import { toKebabCase } from "../../fabric/type/string/letters.js"
 import defer from "../../fabric/type/promise/defer.js"
 import renderAttributes from "../renderers/renderAttributes.js"
 import renderProps from "../renderers/renderProps.js"
+import configure from "../../fabric/configure.js"
 import { normalizeCtx, normalizeDef } from "../normalize.js"
 import render from "../render.js"
 
@@ -111,15 +112,10 @@ export default class Component extends HTMLElement {
       Object.defineProperty(tmp, "signal", { get: () => tmp.cancel.signal })
       this.ctx = tmp
 
-      if (definition.props) {
-        this.#observed = await renderProps(this, definition.props, def)
-      }
-
       const content = await this.render?.(this.ctx)
-      this.def = normalizeDef(
-        { ...definition, ...objectify(content), ...objectify(def) },
-        this.ctx
-      )
+      const config = configure(definition, objectify(content), objectify(def))
+      this.def = normalizeDef(config, this.ctx)
+      if (this.def.props) this.#observed = await renderProps(this, this.def)
     } else {
       this.ctx.cancel = this.ctx.cancel.parent?.fork() ?? this.ctx.cancel.fork()
     }

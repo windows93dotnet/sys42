@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import noop from "../../fabric/type/function/noop.js"
 import resolve from "../resolve.js"
 import register from "../register.js"
@@ -66,8 +67,9 @@ const CONVERTERS = {
 
 CONVERTERS.array = CONVERTERS.object
 
-export default async function renderProps(el, props, def) {
+export default async function renderProps(el, def) {
   const { ctx } = el
+  const { props } = def
   const observed = {}
 
   for (let [key, item] of Object.entries(props)) {
@@ -88,12 +90,12 @@ export default async function renderProps(el, props, def) {
       toView = true
     }
 
-    if (toView) {
-      toView = typeof toView === "function" ? toView : converter.toView
-    }
-
     if (fromView) {
       fromView = typeof fromView === "function" ? fromView : converter.fromView
+    }
+
+    if (toView) {
+      toView = typeof toView === "function" ? toView : converter.toView
     }
 
     let val
@@ -164,8 +166,15 @@ export default async function renderProps(el, props, def) {
       },
     })
 
-    register(ctx, scope, render)
+    if (typeof val === "function") {
+      register(ctx, val, render)
+      val = undefined
+    } else {
+      register(ctx, scope, render)
+    }
   }
+
+  await ctx.undones.done()
 
   return observed
 }
