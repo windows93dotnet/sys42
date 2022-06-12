@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import noop from "../../fabric/type/function/noop.js"
 import resolve from "../resolve.js"
 import register from "../register.js"
@@ -76,13 +77,15 @@ export default async function renderProps(el) {
   }
 
   for (let [key, item] of Object.entries(props)) {
-    const scope = resolve(ctx.scope, key)
-
     const type = typeof item
 
     if (type !== "object") {
       item = { type, default: item, reflect: true }
     }
+
+    const scope = item.state
+      ? resolve(ctx.stateScope, key)
+      : resolve(ctx.scope, key)
 
     const attribute = item.attribute ?? toKebabCase(key)
     const converter = item.converter ?? CONVERTERS[item.type ?? "string"]
@@ -160,12 +163,11 @@ export default async function renderProps(el) {
     })
 
     if (typeof val === "function") {
-      const fn = val
-      register(ctx, fn, (val, changed) => {
-        render(val, changed !== scope)
-      })
+      register(ctx, val, (val, changed) => render(val, changed !== scope))
     } else {
       render(val)
+      if (!item.state) continue
+      register(ctx, scope, (val, changed) => render(val, changed !== scope))
     }
   }
 

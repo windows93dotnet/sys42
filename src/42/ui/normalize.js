@@ -128,10 +128,11 @@ function normalizeComputed(computed, ctx) {
 export function normalizeCtx(ctx = {}) {
   ctx.scope ??= "/"
   ctx.renderers ??= {}
+  ctx.componentsIndexes ??= {}
+  ctx.components ??= new Undones()
   ctx.undones ??= new Undones()
   ctx.actions ??= new Locator({}, { sep: "/" })
   ctx.computeds ??= new Locator({}, { sep: "/" })
-  ctx.components ??= {}
   ctx.cancel ??= new Canceller()
   ctx.state ??= new State(ctx)
   return ctx

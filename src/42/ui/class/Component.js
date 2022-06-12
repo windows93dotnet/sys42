@@ -106,7 +106,7 @@ export default class Component extends HTMLElement {
 
       let tmp = { ...ctx }
       tmp.el = this
-      tmp.undones = undefined
+      tmp.components = undefined
       tmp.cancel = ctx?.cancel?.fork()
       tmp = normalizeCtx(tmp)
       Object.defineProperty(tmp, "signal", { get: () => tmp.cancel.signal })
@@ -117,12 +117,13 @@ export default class Component extends HTMLElement {
       this.def = normalizeDef(config, this.ctx)
 
       if (this.def.props) {
-        const cpn = resolve(this.ctx.scope, this.localName)
-        let cnt = this.ctx.components[cpn] ?? 0
-        this.ctx.components[cpn] = ++cnt
+        const cpnScope = resolve(this.ctx.scope, this.localName)
+        let i = this.ctx.componentsIndexes[cpnScope] ?? 0
+        this.ctx.componentsIndexes[cpnScope] = ++i
+        this.ctx.stateScope = this.ctx.scope
         this.ctx.scope = resolve(
           this.localName,
-          resolve(String(cnt), this.ctx.scope.slice(1)).slice(1)
+          resolve(String(i), this.ctx.scope.slice(1)).slice(1)
         )
         this.#observed = await renderProps(this)
       }
@@ -133,6 +134,7 @@ export default class Component extends HTMLElement {
     if (this.def.attrs) renderAttributes(this, this.ctx, this.def.attrs)
     this.replaceChildren(render(this.def.content, this.ctx))
 
+    await this.ctx.components.done()
     await this.ctx.undones.done()
 
     if (this.#lifecycle === INIT) this.#lifecycle = RENDER

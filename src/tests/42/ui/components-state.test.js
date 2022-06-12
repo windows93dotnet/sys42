@@ -84,6 +84,7 @@ test("nested components", "template", async (t) => {
 
   app.data.y = "bar"
   await app
+
   t.is(app.el.textContent, "x:bar-")
 })
 
@@ -178,7 +179,7 @@ Component.define({
   },
 })
 
-test.only("nested components", "dynamic", async (t) => {
+test("nested components", "dynamic", async (t) => {
   const app = await ui(tmp(), {
     content: {
       tag: "ui-t-nested-dynamic",
@@ -210,72 +211,69 @@ test.only("nested components", "dynamic", async (t) => {
 
   t.is(app.el.textContent, "x:a-x:b-x:c-")
 
-  // el.array = [{ foo: "A" }]
-  // await app
+  el.array = [{ foo: "A" }]
+  await app
 
-  // t.is(app.el.textContent, "x:A-")
+  t.is(app.el.textContent, "x:A-")
 
-  // el.array.push({ foo: "B" })
-  // await app
+  el.array.push({ foo: "B" })
+  await app
 
-  // t.is(app.el.textContent, "x:A-x:B-")
+  t.is(app.el.textContent, "x:A-x:B-")
 
-  // el.array[0] = { foo: "foo" }
+  el.array[0] = { foo: "foo" }
+  await app
+
+  t.is(app.el.textContent, "x:foo-x:B-")
+})
+
+Component.define({
+  tag: "ui-t-nested-string-array",
+
+  props: {
+    array: {
+      type: "array",
+    },
+  },
+
+  content: {
+    scope: "array",
+    repeat: {
+      tag: "ui-t-state",
+      x: "{{.}}",
+    },
+  },
+})
+
+test("nested components", "string array", async (t) => {
+  const app = await ui(tmp(), {
+    content: {
+      tag: "ui-t-nested-string-array",
+      array: "{{arr}}",
+    },
+
+    data: {
+      arr: [
+        "a", //
+        "b",
+      ],
+    },
+  })
+
+  t.is(app.el.textContent, "x:a-x:b-")
+
+  app.data.arr = ["A"]
+  await app
+
+  t.is(app.el.textContent, "x:A-")
+
+  app.data.arr.push("B")
+  await app
+
+  t.is(app.el.textContent, "x:A-x:B-")
+
+  // app.data.arr[0] = "foo"
   // await app
 
   // t.is(app.el.textContent, "x:foo-x:B-")
 })
-
-// Component.define({
-//   tag: "ui-t-nested-string-array",
-
-//   props: {
-//     array: {
-//       type: "array",
-//     },
-//   },
-
-//   content: {
-//     scope: "array",
-//     repeat: {
-//       tag: "ui-t-state",
-//       x: "{{.}}",
-//     },
-//   },
-// })
-
-// test("nested components", "string array", async (t) => {
-//   const app = await ui(tmp(), {
-//     content: {
-//       tag: "ui-t-nested-string-array",
-//       array: "{{arr}}",
-//     },
-
-//     data: {
-//       arr: [
-//         "a", //
-//         "b",
-//       ],
-//     },
-//   })
-
-//   t.is(app.el.textContent, "x:a-x:b-")
-
-//   app.data.arr = ["A"]
-//   await app
-
-//   t.is(app.el.textContent, "x:A-")
-
-//   app.data.arr.push("B")
-//   await app
-//   await app
-
-//   t.is(app.el.textContent, "x:A-x:B-")
-
-//   // console.log(app.data.arr)
-
-//   // app.data.arr[0] = "foo"
-//   // await app
-
-//   // t.is(app.el.textContent, "x:foo-x:B-")
-// })

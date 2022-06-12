@@ -104,8 +104,6 @@ export default class State extends Emitter {
       if (n < 0) throw new Error("Too much recursion")
       await this.ready(n--)
     }
-
-    await 0 // queueMicrotask
   }
 
   get throttle() {

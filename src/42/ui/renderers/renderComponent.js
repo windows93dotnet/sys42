@@ -2,7 +2,7 @@ import defer from "../../fabric/type/promise/defer.js"
 
 export default function renderComponent(el, def, ctx) {
   const deferred = defer()
-  ctx.undones.push(deferred)
+  ctx.components.push(deferred)
   const tag = el.localName
 
   if (el.constructor === HTMLElement) {
