@@ -113,7 +113,7 @@ export default async function renderProps(el, def) {
     }
 
     if (item.state) {
-      ctx.state.set(scope, val)
+      ctx.state.set(scope, val, { silent: true })
       ctx.state.root.on("delete", (deletedKey) => {
         if (deletedKey === key) val = undefined
       })
