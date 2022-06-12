@@ -131,6 +131,7 @@ export function normalizeCtx(ctx = {}) {
   ctx.undones ??= new Undones()
   ctx.actions ??= new Locator({}, { sep: "/" })
   ctx.computeds ??= new Locator({}, { sep: "/" })
+  ctx.components ??= {}
   ctx.cancel ??= new Canceller()
   ctx.state ??= new State(ctx)
   return ctx

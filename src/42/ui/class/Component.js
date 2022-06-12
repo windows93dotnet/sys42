@@ -7,6 +7,7 @@ import renderAttributes from "../renderers/renderAttributes.js"
 import renderProps from "../renderers/renderProps.js"
 import configure from "../../fabric/configure.js"
 import { normalizeCtx, normalizeDef } from "../normalize.js"
+import resolve from "../resolve.js"
 import render from "../render.js"
 
 const CREATE = 0
@@ -106,7 +107,6 @@ export default class Component extends HTMLElement {
       let tmp = { ...ctx }
       tmp.el = this
       tmp.undones = undefined
-      tmp.state = ctx?.state?.fork(tmp)
       tmp.cancel = ctx?.cancel?.fork()
       tmp = normalizeCtx(tmp)
       Object.defineProperty(tmp, "signal", { get: () => tmp.cancel.signal })
@@ -115,7 +115,17 @@ export default class Component extends HTMLElement {
       const content = await this.render?.(this.ctx)
       const config = configure(definition, objectify(content), objectify(def))
       this.def = normalizeDef(config, this.ctx)
-      if (this.def.props) this.#observed = await renderProps(this, this.def)
+
+      if (this.def.props) {
+        const cpn = resolve(this.ctx.scope, this.localName)
+        let cnt = this.ctx.components[cpn] ?? 0
+        this.ctx.components[cpn] = ++cnt
+        this.ctx.scope = resolve(
+          this.localName,
+          resolve(String(cnt), this.ctx.scope.slice(1)).slice(1)
+        )
+        this.#observed = await renderProps(this)
+      }
     } else {
       this.ctx.cancel = this.ctx.cancel.parent?.fork() ?? this.ctx.cancel.fork()
     }

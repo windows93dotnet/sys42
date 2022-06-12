@@ -84,14 +84,14 @@ export default class State extends Emitter {
       },
       has(path, { key }) {
         if (key.startsWith("@") || key.startsWith("#")) return true
-        return exists(ctx.el, key, sep) || ctx.computeds.has(path)
+        return ctx.computeds.has(path)
       },
       get(path, { key, chain, parent }) {
         if (key === "@index") return chain.at(-1)
         if (key === "@first") return Number(chain.at(-1)) === 0
         if (key === "@last") return Number(chain.at(-1)) === parent.length - 1
         if (key.startsWith("#")) return chain.at(-1).padStart(key.length, "0")
-        return locate(ctx.el, key, sep) ?? ctx.computeds.get(path)
+        return ctx.computeds.get(path)
       },
     })
   }
@@ -104,13 +104,8 @@ export default class State extends Emitter {
       if (n < 0) throw new Error("Too much recursion")
       await this.ready(n--)
     }
-  }
 
-  fork(ctx) {
-    const fork = new State(ctx, this.value)
-    fork.parent = this
-    fork.root = this.root ?? this
-    return fork
+    await 0 // queueMicrotask
   }
 
   get throttle() {
@@ -119,6 +114,13 @@ export default class State extends Emitter {
   set throttle(value) {
     this.#update.throttle = value
     this.#update.fn = value ? this.#update.onrepaint : this.#update.now
+  }
+
+  batch(cb) {
+    const { throttle } = this
+    this.throttle = false
+    cb()
+    this.throttle = throttle
   }
 
   update(path, val, oldVal) {

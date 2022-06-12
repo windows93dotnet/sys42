@@ -16,8 +16,12 @@ allocate.evaluate = (obj, tokens, val) => {
 
   for (let i = 0, l = tokens.length; i < l; i++) {
     const key = tokens[i]
-    current[key] = tokens.length - 1 === i ? val : current[key] ?? {}
-    current = current[key]
+    if (tokens.length - 1 === i) {
+      current[key] = val
+    } else {
+      current[key] ??= {}
+      current = current[key]
+    }
   }
 
   return obj

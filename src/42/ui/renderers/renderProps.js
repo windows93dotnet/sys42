@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import noop from "../../fabric/type/function/noop.js"
 import resolve from "../resolve.js"
 import register from "../register.js"
@@ -67,10 +66,14 @@ const CONVERTERS = {
 
 CONVERTERS.array = CONVERTERS.object
 
-export default async function renderProps(el, def) {
-  const { ctx } = el
+export default async function renderProps(el) {
+  const { ctx, def } = el
   const { props } = def
   const observed = {}
+
+  if (!ctx.state.has(ctx.scope)) {
+    ctx.state.set(ctx.scope, {}, { silent: true })
+  }
 
   for (let [key, item] of Object.entries(props)) {
     const scope = resolve(ctx.scope, key)
@@ -106,24 +109,16 @@ export default async function renderProps(el, def) {
       val = fromView(el.getAttribute(attribute), attribute, el, item)
     } else if (def && key in def) {
       val = def[key]
-    } else if (ctx.state.has(scope)) {
-      val = ctx.state.get(scope)
     } else if ("default" in item) {
       val = item.default
     }
 
-    if (item.state) {
-      ctx.state.set(scope, val, { silent: true })
-      ctx.state.root.on("delete", (deletedKey) => {
-        if (deletedKey === key) val = undefined
-      })
-    }
-
     let fromRenderer = false
-    const render = (arg) => {
-      val = arg
 
-      if (item.state) ctx.state.set(scope, val, { silent: true })
+    const render = (val, update) => {
+      ctx.state.batch(() => {
+        ctx.state.set(scope, val, { silent: !update })
+      })
 
       if (item.css) {
         const cssVar = `--${typeof item.css === "string" ? item.css : key}`
@@ -150,27 +145,27 @@ export default async function renderProps(el, def) {
     if (fromView) {
       observed[attribute] = (val) => {
         if (fromRenderer) return
-        render(fromView(val, attribute, el, item))
-        ctx.state.update(scope, val)
+        render(fromView(val, attribute, el, item), true)
       }
     }
 
     Object.defineProperty(el, key, {
       configurable: true,
       set(val) {
-        render(val)
-        ctx.state.update(scope, val)
+        render(val, true)
       },
       get() {
-        return val
+        return ctx.state.get(scope)
       },
     })
 
     if (typeof val === "function") {
-      register(ctx, val, render)
-      val = undefined
+      const fn = val
+      register(ctx, fn, (val, changed) => {
+        render(val, changed !== scope)
+      })
     } else {
-      register(ctx, scope, render)
+      render(val)
     }
   }
 
