@@ -8,6 +8,7 @@ import Canceller from "../fabric/class/Canceller.js"
 import Undones from "../fabric/class/Undones.js"
 import getFilter from "../fabric/getFilter.js"
 import dirname from "../fabric/type/path/extract/dirname.js"
+import emit from "../fabric/dom/emit.js"
 import isEmptyObject from "../fabric/type/any/is/isEmptyObject.js"
 import isLength from "../fabric/type/any/is/isLength.js"
 import isArrayLike from "../fabric/type/any/is/isArrayLike.js"
@@ -53,10 +54,11 @@ function normaliseString(def, ctx) {
               filter ??=
                 ctx.el[token.value]?.bind(ctx.el) ??
                 (await getFilter(token.value))
+
               try {
                 return await filter(...args)
               } catch (err) {
-                console.log(err)
+                emit(ctx.el, err)
               }
             }
           } else token.value = loc

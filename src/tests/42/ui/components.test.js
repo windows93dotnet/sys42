@@ -785,3 +785,131 @@ test("state", "string array", "using transfers and async data", async (t) => {
 
   t.eq(app.state.value["ui-t-nested-string-array"], {})
 })
+
+/* computed
+=========== */
+
+test.only("computed", "component", async (t) => {
+  let cnt = 0
+
+  await Component.define(
+    class extends Component {
+      static definition = {
+        tag: "ui-t-computed",
+
+        props: {
+          formated: {
+            type: "string",
+          },
+        },
+
+        computed: {
+          parsed: "{{formated|split('/')}}",
+        },
+
+        content: {
+          scope: "parsed",
+          content: "foo: {{0}}, bar: {{1}}",
+        },
+      }
+
+      split(formated, sep) {
+        cnt++
+        return formated.split(sep)
+      }
+    }
+  )
+
+  const app = await ui(tmp(), {
+    content: {
+      tag: "ui-t-computed",
+      formated: "FOO/BAR",
+    },
+  })
+
+  t.is(app.el.innerHTML, "<ui-t-computed>foo: FOO, bar: BAR</ui-t-computed>")
+  t.is(cnt, 1)
+  t.eq(app.data, {})
+  t.eq(app.state.store.value, {})
+
+  const updates = ["formated", "parsed"]
+  app.state.on("update", (changes) => {
+    t.is(updates.shift(), [...changes][0])
+  })
+
+  t.is(app.el.innerHTML, "<ui-t-computed>foo: FOO, bar: BAR</ui-t-computed>")
+
+  app.data.formated = "HELLO/WORLD"
+  await app
+
+  t.is(
+    app.el.innerHTML,
+    "<ui-t-computed>foo: HELLO, bar: WORLD</ui-t-computed>"
+  )
+  t.is(cnt, 2)
+  t.eq(app.data, { formated: "HELLO/WORLD" })
+  t.eq(app.state.store.value, { formated: "HELLO/WORLD" })
+})
+
+test("computed", "component props", async (t) => {
+  let cnt = 0
+
+  await Component.define(
+    class extends Component {
+      static definition = {
+        tag: "ui-t-computed2",
+
+        props: {
+          formated: {
+            type: "string",
+          },
+          parsed: {
+            type: "string",
+            computed: "{{formated|split('/')}}",
+          },
+        },
+
+        content: {
+          scope: "parsed",
+          content: "foo: {{0}}, bar: {{1}}",
+        },
+      }
+
+      split(formated, sep) {
+        cnt++
+        return formated.split(sep)
+      }
+    }
+  )
+
+  const app = await ui(tmp(), {
+    content: {
+      tag: "ui-t-computed2",
+      formated: "FOO/BAR",
+    },
+  })
+
+  t.is(app.el.innerHTML, "<ui-t-computed2>foo: FOO, bar: BAR</ui-t-computed2>")
+  t.is(cnt, 1)
+  t.eq(app.data, {})
+  t.eq(app.state.store.value, {})
+
+  const updates = ["formated", "parsed"]
+  app.state.on("update", (changes) => {
+    t.is(updates.shift(), [...changes][0])
+  })
+
+  t.is(app.el.innerHTML, "<ui-t-computed2>foo: FOO, bar: BAR</ui-t-computed2>")
+
+  app.data.formated = "HELLO/WORLD"
+  await app
+  // await app
+
+  t.is(
+    app.el.innerHTML,
+    "<ui-t-computed2>foo: HELLO, bar: WORLD</ui-t-computed2>"
+  )
+  t.is(cnt, 2)
+  t.eq(app.data, { formated: "HELLO/WORLD" })
+  t.eq(app.state.store.value, { formated: "HELLO/WORLD" })
+})
