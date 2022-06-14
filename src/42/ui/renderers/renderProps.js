@@ -93,8 +93,8 @@ export default async function renderProps(el) {
     let { fromView, toView, reflect } = item
 
     if (reflect) {
-      fromView = true
-      toView = true
+      fromView ??= true
+      toView ??= true
     }
 
     if (fromView) {
@@ -117,12 +117,10 @@ export default async function renderProps(el) {
       val = item.default
     }
 
-    let fromRenderer = false
+    let fromRender = false
 
     const render = (val, update) => {
-      ctx.state.now(() => {
-        ctx.state.set(scope, val, { silent: !update })
-      })
+      ctx.state.now(() => ctx.state.set(scope, val, { silent: !update }))
 
       if (item.css) {
         const cssVar = `--${typeof item.css === "string" ? item.css : key}`
@@ -131,7 +129,7 @@ export default async function renderProps(el) {
       }
 
       if (toView) {
-        fromRenderer = true
+        fromRender = true
         if (val == null) {
           el.removeAttribute(attribute)
         } else if (
@@ -142,13 +140,13 @@ export default async function renderProps(el) {
             el.setAttribute(attribute, "false")
           } else el.toggleAttribute(attribute, val)
         } else el.setAttribute(attribute, toView(val, key, el, item))
-        fromRenderer = false
+        fromRender = false
       }
     }
 
     if (fromView) {
       observed[attribute] = (val) => {
-        if (fromRenderer) return
+        if (fromRender) return
         render(fromView(val, attribute, el, item), true)
       }
     }
@@ -164,7 +162,8 @@ export default async function renderProps(el) {
     })
 
     if (typeof val === "function") {
-      for (const loc of val.keys) {
+      const fn = val
+      for (const loc of fn.scopes) {
         // Add transfers to listen object nested changes
         const target = locate(ctx.state.value, loc, "/")
         if (target && typeof target === "object") {
@@ -173,9 +172,7 @@ export default async function renderProps(el) {
         }
       }
 
-      register(ctx, val, (val, changed) => {
-        render(val, changed !== scope)
-      })
+      register(ctx, fn, (val, changed) => render(val, changed !== scope))
     } else {
       render(val)
       if (!item.state) continue

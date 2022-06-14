@@ -844,6 +844,14 @@ test("filters", "buildin filters locate", async (t) => {
   t.is(app.el.innerHTML, "<pre>{a:1}</pre>")
 })
 
+test("filters", "pluralize", async (t) => {
+  const app = await ui(tmp(), {
+    content: "{{'apple'|pluralize}}, {{'orange'|pluralize(5)}}",
+  })
+
+  t.is(app.el.innerHTML, "apples, oranges")
+})
+
 /* when
 ======= */
 

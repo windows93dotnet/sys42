@@ -7,7 +7,7 @@ export default function register(ctx, loc, render) {
   let renderer
 
   if (typeof loc === "function") {
-    scopes = loc.keys
+    scopes = loc.scopes
     renderer = async (changed) => {
       const res = loc(ctx.state.proxy)
       if (res !== undefined) ctx.undones.push(res)

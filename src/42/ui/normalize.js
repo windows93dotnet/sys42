@@ -30,16 +30,16 @@ function normaliseString(def, ctx) {
 
   if (parsed.substitutions.length > 0) {
     const filters = { ...ctx.actions.value }
-    const keys = []
+    const scopes = []
     for (const tokens of parsed.substitutions) {
       for (const token of tokens) {
         const loc = resolve(ctx.scope, token.value)
 
         if (token.type === "key") {
           token.value = loc
-          keys.push(token.value)
+          scopes.push(token.value)
         } else if (token.type === "arg" && isLength(token.value)) {
-          keys.push(loc)
+          scopes.push(loc)
           if (isArrayLike(ctx.state.get(dirname(loc)))) {
             token.type = "key"
             token.value = loc
@@ -71,7 +71,7 @@ function normaliseString(def, ctx) {
       filters,
     })
 
-    def.keys = keys
+    def.scopes = scopes
     return def
   }
 
@@ -116,7 +116,7 @@ function normalizeComputed(computed, ctx) {
   for (const [key, val] of Object.entries(computed)) {
     const scope = resolve(ctx.scope, key)
     const fn = typeof val === "string" ? normaliseString(val, ctx) : val
-    if (fn.keys) {
+    if (fn.scopes) {
       register(ctx, fn, (val, changed) => {
         ctx.computeds.set(scope, val)
         if (changed !== scope) ctx.state.updateNow(scope, val)
