@@ -111,7 +111,7 @@ test.tasks(
         t.plan(9)
         const stub = t.stub()
         const reasons = [
-          "ui-t-signal disconnected", //
+          "ui-t-signal destroyed", //
           "ui destroyed",
         ]
         return class extends Component {
@@ -121,7 +121,8 @@ test.tasks(
 
           setup({ signal }) {
             signal.addEventListener("abort", () => {
-              t.is(signal.reason, reasons.shift())
+              const expected = reasons.shift()
+              t.is(signal.reason, expected)
             })
             this.addEventListener("click", stub, { signal })
           }
@@ -695,6 +696,25 @@ Component.define({
   },
 })
 
+async function testStringArray(t, app) {
+  t.is(app.el.textContent, "x:a-x:b-")
+
+  app.data.arr = ["A"]
+  await app
+
+  t.is(app.el.textContent, "x:A-")
+
+  app.data.arr.push("B")
+  await app
+
+  t.is(app.el.textContent, "x:A-x:B-")
+
+  app.data.arr[0] = "foo"
+  await app
+
+  t.is(app.el.textContent, "x:foo-x:B-")
+}
+
 test("state", "string array", async (t) => {
   const app = await ui(tmp(), {
     content: {
@@ -710,22 +730,7 @@ test("state", "string array", async (t) => {
     },
   })
 
-  t.is(app.el.textContent, "x:a-x:b-")
-
-  app.data.arr = ["A"]
-  await app
-
-  t.is(app.el.textContent, "x:A-")
-
-  app.data.arr.push("B")
-  await app
-
-  t.is(app.el.textContent, "x:A-x:B-")
-
-  app.data.arr[0] = "foo"
-  await app
-
-  t.is(app.el.textContent, "x:foo-x:B-")
+  await testStringArray(t, app)
 })
 
 test("state", "string array", "using transfers", async (t) => {
@@ -740,20 +745,43 @@ test("state", "string array", "using transfers", async (t) => {
     },
   })
 
-  t.is(app.el.textContent, "x:a-x:b-")
+  await testStringArray(t, app)
 
-  app.data.arr = ["A"]
-  await app
+  const el = app.get("ui-t-nested-string-array")
 
-  t.is(app.el.textContent, "x:A-")
+  t.eq(app.state.value["ui-t-nested-string-array"], {
+    1: { array: ["foo", "B"] },
+  })
 
-  app.data.arr.push("B")
-  await app
+  el.destroy()
 
-  t.is(app.el.textContent, "x:A-x:B-")
+  t.eq(app.state.value["ui-t-nested-string-array"], {})
+})
 
-  app.data.arr[0] = "foo"
-  await app
+test("state", "string array", "using transfers and async data", async (t) => {
+  const app = await ui(tmp(), {
+    content: {
+      tag: "ui-t-nested-string-array",
+      array: "{{arr}}",
+    },
 
-  t.is(app.el.textContent, "x:foo-x:B-")
+    async data() {
+      await t.sleep(100)
+      return {
+        arr: ["a", "b"],
+      }
+    },
+  })
+
+  await testStringArray(t, app)
+
+  const el = app.get("ui-t-nested-string-array")
+
+  t.eq(app.state.value["ui-t-nested-string-array"], {
+    1: { array: ["foo", "B"] },
+  })
+
+  el.destroy()
+
+  t.eq(app.state.value["ui-t-nested-string-array"], {})
 })

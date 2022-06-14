@@ -52,7 +52,7 @@ export default class Component extends HTMLElement {
   }
 
   #timeout
-  #observed = {}
+  #observed
   #lifecycle = CREATE
 
   constructor(...args) {
@@ -67,7 +67,7 @@ export default class Component extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    this.#observed[name]?.(newValue, oldValue)
+    this.#observed?.[name]?.(newValue, oldValue)
   }
 
   adoptedCallback() {
@@ -84,11 +84,7 @@ export default class Component extends HTMLElement {
   }
 
   disconnectedCallback() {
-    this.#timeout = requestIdleCallback(() => {
-      this.ctx.cancel(`${this.localName} disconnected`)
-      this.ready = undefined
-      this.#lifecycle = CREATE
-    })
+    this.#timeout = requestIdleCallback(() => this.destroy())
   }
 
   #setup() {
@@ -101,34 +97,31 @@ export default class Component extends HTMLElement {
     this.removeAttribute("data-no-init")
     this.#lifecycle = INIT
 
-    if (this.ctx === undefined) {
-      const { definition } = this.constructor
+    const { definition } = this.constructor
 
-      let tmp = { ...ctx }
-      tmp.el = this
-      tmp.components = undefined
-      tmp.cancel = ctx?.cancel?.fork()
-      tmp = normalizeCtx(tmp)
-      Object.defineProperty(tmp, "signal", { get: () => tmp.cancel.signal })
-      this.ctx = tmp
+    let tmp = { ...ctx }
+    tmp.el = this
+    tmp.components = undefined
+    tmp.cancel = this.cancelParent?.fork() ?? ctx?.cancel?.fork()
+    delete this.cancelParent
+    tmp = normalizeCtx(tmp)
+    Object.defineProperty(tmp, "signal", { get: () => tmp.cancel.signal })
+    this.ctx = tmp
 
-      const content = await this.render?.(this.ctx)
-      const config = configure(definition, objectify(content), objectify(def))
-      this.def = normalizeDef(config, this.ctx)
+    const content = await this.render?.(this.ctx)
+    const config = configure(definition, objectify(content), objectify(def))
+    this.def = normalizeDef(config, this.ctx)
 
-      if (this.def.props) {
-        const cpnScope = resolve(this.ctx.scope, this.localName)
-        let i = this.ctx.componentsIndexes[cpnScope] ?? 0
-        this.ctx.componentsIndexes[cpnScope] = ++i
-        this.ctx.stateScope = this.ctx.scope
-        this.ctx.scope = resolve(
-          this.localName,
-          resolve(String(i), this.ctx.scope.slice(1)).slice(1)
-        )
-        this.#observed = await renderProps(this)
-      }
-    } else {
-      this.ctx.cancel = this.ctx.cancel.parent?.fork() ?? this.ctx.cancel.fork()
+    if (this.def.props) {
+      const cpnScope = resolve(this.ctx.scope, this.localName)
+      let i = this.ctx.componentsIndexes[cpnScope] ?? 0
+      this.ctx.componentsIndexes[cpnScope] = ++i
+      this.ctx.stateScope = this.ctx.scope
+      this.ctx.scope = resolve(
+        this.localName,
+        resolve(String(i), this.ctx.scope.slice(1)).slice(1)
+      )
+      this.#observed = await renderProps(this)
     }
 
     if (this.def.attrs) renderAttributes(this, this.ctx, this.def.attrs)
@@ -145,5 +138,24 @@ export default class Component extends HTMLElement {
     await this.#init(...args)
       .then(this.ready.resolve)
       .catch((err) => this.ready.reject(err))
+  }
+
+  destroy() {
+    if (this.ctx.cancel.signal.aborted === false) {
+      this.ctx.cancel(`${this.localName} destroyed`)
+    }
+
+    this.cancelParent = this.ctx.cancel.parent
+    this.#lifecycle = CREATE
+    this.ready = undefined
+    this.#observed = undefined
+
+    if (this.def.props) this.ctx.state.delete(this.ctx.scope)
+
+    delete this.ctx.el
+    delete this.ctx
+    delete this.def
+
+    this.remove()
   }
 }
