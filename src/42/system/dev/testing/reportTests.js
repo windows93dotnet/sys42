@@ -181,6 +181,12 @@ function displaySuite(current, config) {
       current.filename,
     ])
   }
+
+  if (current.uncaughts.length > 0) {
+    for (const err of current.uncaughts) {
+      warnings.push([config.icon, "Uncaught error", "", err])
+    }
+  }
 }
 
 function displayFailedTests(failed, config) {
@@ -223,7 +229,7 @@ function displayLogs(logs) {
 function displayWarnings(warnings) {
   for (const [icon, context, stackframe, err] of warnings) {
     const file = stackframe ? ` ${log.format.file(stackframe)}` : ""
-    log(`${icon}{yellow ⚠ ${context}}${file}`)
+    log(`\n${icon}{yellow ⚠ ${context}}${file}`)
     if (err) {
       if (isBackend) log.hr()
       log(formatError(err))
@@ -246,6 +252,7 @@ export default function reportTests(results, options) {
   displaySuite(results, config)
 
   const footer = getFooter(results, config)
+
   if (config.returnInfos) return [footer, failed, logs, warnings]
 
   if (failed.length > 0) {

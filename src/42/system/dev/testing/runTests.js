@@ -1,5 +1,6 @@
 import system from "../../../system.js"
 import trap from "../../../fabric/type/error/trap.js"
+import idle from "../../../fabric/type/promise/idle.js"
 import stackTrace from "../../../fabric/type/error/stackTrace.js"
 import configure from "../../../fabric/configure.js"
 
@@ -7,6 +8,8 @@ const DEFAULTS = {
   serial: 0,
   keepIframes: false,
 }
+
+const uncaughts = []
 
 const listen = () =>
   trap((err) => {
@@ -43,7 +46,8 @@ const listen = () =>
         return false
       })
 
-    if (caughtByTest === true) return false
+    if (caughtByTest === false) uncaughts.push(err)
+    return false
   })
 
 export default async function runTests(options = {}) {
@@ -52,7 +56,12 @@ export default async function runTests(options = {}) {
 
   const forget = listen()
   await system.testing.root.init().runTests(config)
+  await idle()
   forget()
+  if (uncaughts.length > 0) {
+    system.testing.root.ok = false
+    system.testing.root.uncaughts.push(...uncaughts)
+  }
 
   if (!config.keepIframes) system.testing.iframes.forEach((el) => el.remove())
 }

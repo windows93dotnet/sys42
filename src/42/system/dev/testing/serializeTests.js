@@ -27,6 +27,7 @@ async function serializeTest(test, config) {
       .filter((x) => x !== undefined)
       .map((x) => castTestTitleParts(x, config))
   )
+
   if (test.error) {
     let tmpDiff
 

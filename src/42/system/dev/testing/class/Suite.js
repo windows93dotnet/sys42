@@ -17,6 +17,7 @@ export default class Suite {
     this.setups = []
     this.teardowns = []
     this.warnings = []
+    this.uncaughts = []
     this.timeout = 200
     this.only = false
     this.skip = false
@@ -33,6 +34,7 @@ export default class Suite {
     this.stats.failed = 0
     this.stats.skipped = 0
     this.stats.onlies = 0
+    this.uncaughts.length = 0
     for (const test of this.tests) test.init()
     for (const suite of this.suites) suite.init()
     return this
@@ -209,6 +211,7 @@ export default class Suite {
       stats: this.stats,
       suites: this.suites.map((suite) => suite.toJSON()),
       tests: this.tests.map((test) => test.toJSON()),
+      uncaughts: this.uncaughts.map((err) => serializeError(err)),
       warnings: this.warnings.map(([context, originErr, err]) => [
         context,
         serializeError(originErr).stack.find(({ filename }) =>
