@@ -11,7 +11,7 @@ const FPS = 1000 / 60
 const sep = "/"
 
 export default class State extends Emitter {
-  #update = { throttle: false }
+  #update = {}
 
   constructor(ctx, val = {}) {
     super()
@@ -20,7 +20,7 @@ export default class State extends Emitter {
 
     this.queue = { paths: new Set(), lengths: new Set(), objects: new Set() }
 
-    this.#update.now = () => {
+    const updateFn = () => {
       const changes = new Set()
 
       for (const { path, val, oldVal } of this.queue.lengths) {
@@ -51,9 +51,9 @@ export default class State extends Emitter {
         }
       }
 
-      // console.group("--- update")
-      // console.log(changes)
-      // console.log(Object.keys(ctx.renderers))
+      // console.group("State Update")
+      // console.log([...changes].join("\n"))
+      // console.log("%c" + Object.keys(ctx.renderers).join("\n"), "color:#999")
       // console.groupEnd()
 
       this.queue.paths.clear()
@@ -70,7 +70,9 @@ export default class State extends Emitter {
       }
     }
 
-    this.#update.onrepaint = idleThrottle(this.#update.now, FPS)
+    this.#update.onrepaint = idleThrottle(updateFn, FPS)
+    // this.#update.now = idleThrottle(updateFn)
+    this.#update.now = updateFn
     this.#update.fn = this.#update.now
     this.#update.ready = false
 
@@ -110,14 +112,20 @@ export default class State extends Emitter {
     return this.#update.fn === this.#update.onrepaint
   }
   set throttle(value) {
-    this.#update.throttle = value
     this.#update.fn = value ? this.#update.onrepaint : this.#update.now
   }
 
-  batch(cb) {
+  now(cb) {
     const { throttle } = this
     this.throttle = false
     cb()
+    this.throttle = throttle
+  }
+
+  updateNow(path, val, oldVal) {
+    const { throttle } = this
+    this.throttle = false
+    this.update(path, val, oldVal)
     this.throttle = throttle
   }
 
@@ -133,13 +141,6 @@ export default class State extends Emitter {
     } else this.queue.paths.add(path)
 
     this.#update.fn()
-  }
-
-  updateNow(path, val, oldVal) {
-    const { throttle } = this
-    this.throttle = false
-    this.update(path, val, oldVal)
-    this.throttle = throttle
   }
 
   has(path) {

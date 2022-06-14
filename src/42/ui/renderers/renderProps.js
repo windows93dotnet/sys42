@@ -2,6 +2,7 @@
 import noop from "../../fabric/type/function/noop.js"
 import resolve from "../resolve.js"
 import register from "../register.js"
+import locate from "../../fabric/locator/locate.js"
 import { toKebabCase } from "../../fabric/type/string/letters.js"
 
 const BOOLEAN_TRUE = new Set(["", "on", "true"])
@@ -119,7 +120,7 @@ export default async function renderProps(el) {
     let fromRenderer = false
 
     const render = (val, update) => {
-      ctx.state.batch(() => {
+      ctx.state.now(() => {
         ctx.state.set(scope, val, { silent: !update })
       })
 
@@ -163,7 +164,18 @@ export default async function renderProps(el) {
     })
 
     if (typeof val === "function") {
-      register(ctx, val, (val, changed) => render(val, changed !== scope))
+      for (const loc of val.keys) {
+        // Add transfers to listen object nested changes
+        const target = locate(ctx.state.value, loc, "/")
+        if (target && typeof target === "object") {
+          ctx.transfers[scope] ??= []
+          ctx.transfers[scope].push(loc)
+        }
+      }
+
+      register(ctx, val, (val, changed) => {
+        render(val, changed !== scope)
+      })
     } else {
       render(val)
       if (!item.state) continue
