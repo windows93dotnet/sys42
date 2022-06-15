@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 import noop from "../../fabric/type/function/noop.js"
-import resolve from "../resolve.js"
+import resolveScope from "../resolveScope.js"
 import register from "../register.js"
 import { toKebabCase } from "../../fabric/type/string/letters.js"
 
@@ -84,8 +84,8 @@ export default async function renderProps(el) {
     }
 
     const scope = item.state //
-      ? resolve(ctx.stateScope, key)
-      : resolve(ctx.scope, key)
+      ? resolveScope(ctx.stateScope, key, ctx)
+      : resolveScope(ctx.scope, key, ctx)
 
     const attribute = item.attribute ?? toKebabCase(key)
     const converter = item.converter ?? CONVERTERS[item.type ?? "string"]
@@ -118,8 +118,10 @@ export default async function renderProps(el) {
 
     let fromRender = false
 
-    const render = (val, update) => {
-      ctx.state.now(() => ctx.state.set(scope, val, { silent: !update }))
+    const render = (val, update, ref) => {
+      if (ctx.cancel.signal.aborted === true) return
+
+      ctx.state.now(() => ctx.state.set(scope, ref ?? val, { silent: !update }))
 
       if (item.css) {
         const cssVar = `--${typeof item.css === "string" ? item.css : key}`
@@ -162,14 +164,9 @@ export default async function renderProps(el) {
 
     if (typeof val === "function") {
       const fn = val
+      const ref = fn.scopes.length === 1 ? { $ref: fn.scopes[0] } : undefined
       register(ctx, fn, (val, changed) => {
-        // Add transfers to listen object nested changes
-        if (!item.state && val && typeof val === "object") {
-          ctx.transfers[scope] ??= new Set()
-          for (const x of fn.scopes) ctx.transfers[scope].add(x)
-        }
-
-        render(val, changed !== scope)
+        render(val, changed !== scope, ref)
       })
     } else {
       render(val)

@@ -18,17 +18,6 @@ export default function register(ctx, loc, render) {
     renderer = (changed) => render(ctx.state.get(scopes[0]), changed)
   }
 
-  // Check if transfers are needed
-  for (const [key, transfers] of Object.entries(ctx.transfers)) {
-    for (const scope of scopes) {
-      if (scope.length > key.length && scope.startsWith(key)) {
-        for (const transfer of transfers) {
-          scopes.push(transfer + scope.slice(key.length))
-        }
-      }
-    }
-  }
-
   for (const scope of scopes) {
     ctx.renderers[scope] ??= new Set()
     ctx.renderers[scope].add(renderer)

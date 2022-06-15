@@ -1,5 +1,5 @@
 import create from "./create.js"
-import resolve from "./resolve.js"
+import resolveScope from "./resolveScope.js"
 import register from "./register.js"
 import normalize from "./normalize.js"
 import ELEMENTS_ALLOW_LIST from "../fabric/constants/ELEMENTS_ALLOW_LIST.js"
@@ -43,7 +43,7 @@ export default function render(...args) {
     const { localName } = el
 
     if (el.form !== undefined && el.name) {
-      el.name = resolve(ctx, el.name)
+      el.name = resolveScope(ctx, el.name)
       register(ctx, el.name, (val) => {
         el.value = val
       })

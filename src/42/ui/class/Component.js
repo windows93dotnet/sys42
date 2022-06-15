@@ -7,13 +7,15 @@ import renderAttributes from "../renderers/renderAttributes.js"
 import renderProps from "../renderers/renderProps.js"
 import configure from "../../fabric/configure.js"
 import { normalizeCtx, normalizeDef, normalizeComputed } from "../normalize.js"
-import resolve from "../resolve.js"
+import resolveScope from "../resolveScope.js"
 import render from "../render.js"
 
 const CREATE = 0
 const INIT = 1
 const RENDER = 2
 const SETUP = 3
+const RECYCLE = 4
+const DESTROY = 5
 
 function objectify(def) {
   if (def != null) {
@@ -51,7 +53,6 @@ export default class Component extends HTMLElement {
     return observed
   }
 
-  #timeout
   #observed
   #lifecycle = CREATE
 
@@ -76,15 +77,21 @@ export default class Component extends HTMLElement {
 
   connectedCallback() {
     if (!this.isConnected) return
-    cancelIdleCallback(this.#timeout)
-    this.ready ??= defer()
     if (this.#lifecycle === RENDER) this.#setup()
     else if (this.#lifecycle === INIT) this.ready.then(() => this.#setup())
     else if (this.#lifecycle === CREATE) this.init().then(() => this.#setup())
+    else if (this.#lifecycle === RECYCLE) this.#lifecycle = SETUP
   }
 
   disconnectedCallback() {
-    this.#timeout = requestIdleCallback(() => this.destroy())
+    if (this.#lifecycle >= RECYCLE) return
+    this.destroy()
+  }
+
+  recycle() {
+    this.#lifecycle = RECYCLE
+    this.remove()
+    return this
   }
 
   #setup() {
@@ -102,7 +109,7 @@ export default class Component extends HTMLElement {
     let tmp = { ...ctx }
     tmp.el = this
     tmp.components = undefined
-    tmp.cancel = this.cancelParent?.fork() ?? ctx?.cancel?.fork()
+    tmp.cancel = ctx?.cancel?.fork()
     delete this.cancelParent
     tmp = normalizeCtx(tmp)
     Object.defineProperty(tmp, "signal", { get: () => tmp.cancel.signal })
@@ -113,18 +120,15 @@ export default class Component extends HTMLElement {
     const { computed } = config
     delete config.computed
 
+    // this.def = config
     this.def = normalizeDef(config, this.ctx)
 
     if (this.def.props || this.def.computed) {
-      const cpnScope = resolve(this.ctx, this.localName)
-      let i = this.ctx.componentsIndexes[cpnScope] ?? 0
-      this.ctx.componentsIndexes[cpnScope] = ++i
+      const { localName } = this
+      let i = this.ctx.componentsIndexes[localName] ?? -1
+      this.ctx.componentsIndexes[localName] = ++i
       this.ctx.stateScope = this.ctx.scope
-      this.ctx.scope = resolve(
-        this.localName,
-        resolve(String(i), this.ctx.scope.slice(1)).slice(1)
-      )
-      ctx.nesteds[this.ctx.scope] = this.ctx.stateScope
+      this.ctx.scope = resolveScope(this.localName, String(i), ctx)
     }
 
     this.#observed = config.props ? await renderProps(this) : undefined
@@ -141,30 +145,34 @@ export default class Component extends HTMLElement {
   }
 
   async init(...args) {
+    this.ready ??= defer()
     await this.#init(...args)
       .then(this.ready.resolve)
       .catch((err) => this.ready.reject(err))
   }
 
   destroy() {
+    if (this.#lifecycle === DESTROY || this.#lifecycle === CREATE) return
+    this.#lifecycle = DESTROY
+
+    this.remove()
+
     if (this.ctx.cancel.signal.aborted === false) {
       this.ctx.cancel(`${this.localName} destroyed`)
     }
 
-    this.cancelParent = this.ctx.cancel.parent
-    this.#lifecycle = CREATE
+    if (this.def.props || this.def.computed) {
+      this.ctx.componentsIndexes[this.localName]--
+      this.ctx.state.delete(this.ctx.scope, { silent: true })
+    }
+
     this.ready = undefined
     this.#observed = undefined
-
-    if (this.def.props || this.def.computed) {
-      this.ctx.state.delete(this.ctx.scope)
-      delete this.ctx.nesteds[this.ctx.scope]
-    }
 
     delete this.ctx.el
     delete this.ctx
     delete this.def
 
-    this.remove()
+    this.#lifecycle = CREATE
   }
 }

@@ -201,7 +201,7 @@ test("reactive data", "array as data", async (t) => {
 test("reactive data", "nested", async (t) => {
   const app = await ui(tmp(), {
     tag: "em",
-    content: "{{foo.bar}}",
+    content: "{{foo/bar}}",
     data: {
       foo: { bar: "hi" },
     },
@@ -248,7 +248,7 @@ test("reactive data", "styles", async (t) => {
 
 /* update throttle
 ==================
-One update every animation frame */
+One update on idle or every animation frame */
 
 test("update throttle", async (t) => {
   const app = await ui(tmp(), {
@@ -268,6 +268,8 @@ test("update throttle", async (t) => {
   app.data.a = "A"
   app.data.b = "B"
   app.data.c = "C"
+
+  t.is(stub.count, 0)
 
   await app
 
@@ -300,6 +302,8 @@ test("update throttle", "using throttle:false", async (t) => {
   app.data.a = "A"
   app.data.b = "B"
   app.data.c = "C"
+
+  t.is(stub.count, 3)
 
   await app
 
@@ -478,7 +482,7 @@ test("scope", "relative template keys", async (t) => {
   const app = await ui(tmp(), {
     scope: "a/b/c",
     content: [
-      "{{/a.b.c.d}}",
+      "{{/a/b/c/d}}",
       "\n",
       { content: "{{../foo}}" },
       "\n",
@@ -857,7 +861,7 @@ test("filters", "pluralize", async (t) => {
 
 test("when", async (t) => {
   const app = await ui(tmp(), {
-    content: { when: "a.b", content: "x" },
+    content: { when: "a/b", content: "x" },
     data: {
       a: { b: false },
     },
@@ -903,8 +907,8 @@ test("when", "array", async (t) => {
 test("when", "else", async (t) => {
   const app = await ui(tmp(), {
     content: [
-      { when: "a.b", content: "x" },
-      { when: "!a.b", content: "y" },
+      { when: "a/b", content: "x" },
+      { when: "!a/b", content: "y" },
     ],
     data: {
       a: { b: true },
@@ -927,8 +931,8 @@ test("when", "else", async (t) => {
 test("when", "else with empty content", async (t) => {
   const app = await ui(tmp(), {
     content: [
-      { when: "a.b", content: "x" }, //
-      { when: "!a.b", content: [] },
+      { when: "a/b", content: "x" }, //
+      { when: "!a/b", content: [] },
     ],
     data: {
       a: { b: true },
@@ -952,7 +956,7 @@ test("when", "nodes", async (t) => {
   const app = await ui(tmp(), {
     content: [
       {
-        when: "a.b",
+        when: "a/b",
         content: [
           "x", //
           { tag: "em", content: "y" },
@@ -984,7 +988,7 @@ test("when", "element", async (t) => {
   const app = await ui(tmp(), {
     content: [
       {
-        when: "a.b",
+        when: "a/b",
         tag: "div",
         content: [
           "x", //
@@ -1049,6 +1053,39 @@ test("when", "bug using state.update", async (t) => {
   await app
 
   t.is(app.el.textContent, "")
+})
+
+/* data array
+============= */
+
+test("array", async (t) => {
+  const app = await ui(tmp(), {
+    tag: "em",
+    content: [
+      "{{arr/0}}", //
+      "{{arr/1}}",
+    ],
+    data: {
+      arr: ["a", "b"],
+    },
+  })
+
+  t.is(app.el.innerHTML, "<em>ab</em>")
+
+  app.data.arr.push("c")
+  await app
+
+  t.is(app.el.innerHTML, "<em>ab</em>")
+
+  app.data.arr[0] = "A"
+  await app
+
+  t.is(app.el.innerHTML, "<em>Ab</em>")
+
+  app.data.arr.length = 1
+  await app
+
+  t.is(app.el.innerHTML, "<em>A</em>")
 })
 
 /* repeat
@@ -1278,7 +1315,7 @@ test("repeat", "element", "scopped", async (t) => {
   const app = await ui(tmp(), {
     content: {
       tag: "ul",
-      scope: "a.b",
+      scope: "a/b",
       repeat: { tag: "li", content: "{{.}}" },
     },
     data: { a: { b: ["foo", "bar"] } },
@@ -1376,7 +1413,7 @@ test("repeat", "access root data", async (t) => {
 test("repeat", "access data in previous level", async (t) => {
   const app = await ui(tmp(), {
     content: {
-      scope: "baz.arr",
+      scope: "baz/arr",
       repeat: "{{a}} {{foo ?? ../../foo}} {{/x}} {{../../hello}} - ",
     },
     data: {
@@ -1460,10 +1497,10 @@ test("repeat", "range bug", async (t) => {
   )
 })
 
-test("repeat", "@parent & @root", async (t) => {
+test("repeat", "relative paths", async (t) => {
   const app = await ui(tmp(), {
     content: {
-      scope: "baz.arr",
+      scope: "baz/arr",
       repeat: "{{a}} {{foo ?? ../../foo}} {{../../foo}} {{/foo}} - ",
     },
     data: {
@@ -1490,6 +1527,18 @@ test("repeat", "@index", async (t) => {
   t.is(app.el.textContent, "0 x 1 y ")
 })
 
+test("repeat", "@index", "string array", async (t) => {
+  const app = await ui(tmp(), {
+    content: { scope: "arr", repeat: "{{@index}} {{.}} " },
+    data: {
+      foo: "bar",
+      arr: ["x", "y"],
+    },
+  })
+
+  t.is(app.el.textContent, "0 x 1 y ")
+})
+
 test("repeat", "#", async (t) => {
   const app = await ui(tmp(), {
     content: {
@@ -1499,6 +1548,31 @@ test("repeat", "#", async (t) => {
     data: {
       foo: "bar",
       arr: [{ a: "x" }, { a: "y" }],
+    },
+  })
+
+  t.is(
+    app.el.textContent,
+    `\
+0 x
+00 x
+000 x
+1 y
+01 y
+001 y
+`
+  )
+})
+
+test("repeat", "#", "string array", async (t) => {
+  const app = await ui(tmp(), {
+    content: {
+      scope: "arr",
+      repeat: ["{{#}} {{.}}\n", "{{##}} {{.}}\n", "{{###}} {{.}}\n"],
+    },
+    data: {
+      foo: "bar",
+      arr: ["x", "y"],
     },
   })
 

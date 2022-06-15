@@ -33,6 +33,7 @@ export default function observe(root, options = {}) {
           typeof val === "object" &&
           (val?.constructor === Object || Array.isArray(val))
         ) {
+          if (options.locate && "$ref" in val) return options.locate(val.$ref)
           if (proxies.has(val)) return proxies.get(val)
           const { proxy, revoke } = Proxy.revocable(
             val,

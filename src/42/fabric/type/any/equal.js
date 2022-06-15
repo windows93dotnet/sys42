@@ -7,6 +7,9 @@
 const { hasOwnProperty } = Object.prototype
 const PRIMITIVES = new Set(["boolean", "number", "string"])
 
+const checkNode = "Node" in globalThis
+const checkBlob = "Blob" in globalThis
+
 const compareObjects = (a, b, config) => {
   const keysA = Reflect.ownKeys(a)
   const l = keysA.length
@@ -118,14 +121,14 @@ function walk(a, b, config) {
         if (typeA && typeB) return deep(compareTypedArrays, a, b, config)
         if (typeA !== typeB) return false
 
-        if ("Node" in globalThis) {
+        if (checkNode) {
           typeA = a instanceof Node
           typeB = b instanceof Node
           if (typeA && typeB && a.isEqualNode(b) === false) return false
           if (typeA !== typeB) return false
         }
 
-        if ("Blob" in globalThis) {
+        if (checkBlob) {
           typeA = a instanceof Blob
           typeB = b instanceof Blob
           if (typeA && typeB && compareBlob(a, b) === false) return false

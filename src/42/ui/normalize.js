@@ -1,6 +1,6 @@
 /* eslint-disable max-depth */
 import State from "./class/State.js"
-import resolve from "./resolve.js"
+import resolveScope from "./resolveScope.js"
 import register from "./register.js"
 import Locator from "../fabric/class/Locator.js"
 import template from "../system/formats/template.js"
@@ -34,7 +34,7 @@ function normaliseString(def, ctx) {
     const scopes = []
     for (const tokens of parsed.substitutions) {
       for (const token of tokens) {
-        const loc = resolve(ctx, token.value)
+        const loc = resolveScope(ctx, token.value)
 
         if (token.type === "key") {
           token.value = loc
@@ -116,7 +116,7 @@ export function normalizeAttrs(def, ctx) {
 
 export function normalizeComputed(computed, ctx) {
   for (const [key, val] of Object.entries(computed)) {
-    const scope = resolve(ctx.scope, key)
+    const scope = resolveScope(ctx.scope, key, ctx)
     const fn = typeof val === "string" ? normaliseString(val, ctx) : val
     if (fn.scopes) {
       register(ctx, fn, (val, changed) => {
@@ -130,8 +130,6 @@ export function normalizeComputed(computed, ctx) {
 export function normalizeCtx(ctx = {}) {
   ctx.scope ??= "/"
   ctx.renderers ??= {}
-  ctx.nesteds ??= {}
-  ctx.transfers ??= {}
   ctx.componentsIndexes ??= {}
   ctx.components ??= new Undones()
   ctx.undones ??= new Undones()
@@ -169,8 +167,10 @@ export function normalizeDef(def = {}, ctx = normalizeCtx()) {
     if (def.computed) normalizeComputed(def.computed, ctx)
 
     if (def.scope) {
-      ctx.scope = resolve(ctx.scope, def.scope)
-      if (ctx.stateScope) ctx.stateScope = resolve(ctx.stateScope, def.scope)
+      ctx.scope = resolveScope(ctx.scope, def.scope, ctx)
+      if (ctx.stateScope) {
+        ctx.stateScope = resolveScope(ctx.stateScope, def.scope, ctx)
+      }
     }
 
     const attrs = normalizeAttrs(def, ctx)

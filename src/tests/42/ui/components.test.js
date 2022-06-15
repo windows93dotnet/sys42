@@ -139,17 +139,17 @@ test.tasks(
         el.click()
         t.is(stub.count, 1)
 
-        el.remove()
+        el.recycle()
         app.el.append(el)
 
         el.click()
         t.is(stub.count, 2)
 
         el.remove()
-        await t.sleep(100)
         el.click()
         t.is(stub.count, 2)
 
+        await el.init({}, app.ctx)
         app.el.append(el)
         await el.ready
         el.click()
@@ -483,13 +483,13 @@ Component.define({
   tag: "ui-t-nested-fixed",
 
   props: {
-    array: {
+    list: {
       type: "array",
     },
   },
 
   content: {
-    scope: "array",
+    scope: "list",
     repeat: {
       tag: "ui-t-state",
       x: "fixed",
@@ -508,7 +508,7 @@ test("state", async (t) => {
   t.is(app.el.textContent, "x:foo-")
   t.eq(app.state.value, {
     "ui-t-state": {
-      1: { x: "foo" },
+      0: { x: "foo" },
     },
   })
 })
@@ -528,7 +528,7 @@ test("state", "template", async (t) => {
   t.eq(app.state.value, {
     "y": "foo",
     "ui-t-state": {
-      1: { x: "foo" },
+      0: { x: { $ref: "/y" } },
     },
   })
   t.is(app.el.textContent, "x:foo-")
@@ -556,8 +556,8 @@ test("state", "multiple", async (t) => {
   t.is(app.el.textContent, "x:foo-x:bar-")
   t.eq(app.state.value, {
     "ui-t-state": {
-      1: { x: "foo" },
-      2: { x: "bar" },
+      0: { x: "foo" },
+      1: { x: "bar" },
     },
   })
 })
@@ -580,8 +580,8 @@ test("state", "scopped", async (t) => {
   t.is(app.el.textContent, "x:foo-x:bar-")
   t.eq(app.state.value, {
     "ui-t-state": {
-      1: { a: { x: "foo" } },
-      2: { a: { x: "bar" } },
+      0: { x: "foo" },
+      1: { x: "bar" },
     },
   })
 })
@@ -590,7 +590,7 @@ test("state", "fixed", async (t) => {
   const app = await ui(tmp(), {
     content: {
       tag: "ui-t-nested-fixed",
-      array: [
+      list: [
         { foo: "a" }, //
         { foo: "b" },
       ],
@@ -599,16 +599,8 @@ test("state", "fixed", async (t) => {
 
   t.is(app.el.textContent, "x:fixed-x:fixed-")
   t.eq(app.state.value, {
-    "ui-t-nested-fixed": {
-      1: { array: [{ foo: "a" }, { foo: "b" }] },
-    },
-    "ui-t-state": {
-      1: {
-        "ui-t-nested-fixed": {
-          1: { array: { 0: { x: "fixed" }, 1: { x: "fixed" } } },
-        },
-      },
-    },
+    "ui-t-nested-fixed": { 0: { list: [{ foo: "a" }, { foo: "b" }] } },
+    "ui-t-state": { 0: { x: "fixed" }, 1: { x: "fixed" } },
   })
 })
 
@@ -616,13 +608,13 @@ Component.define({
   tag: "ui-t-nested-dynamic",
 
   props: {
-    array: {
+    list: {
       type: "array",
     },
   },
 
   content: {
-    scope: "array",
+    scope: "list",
     repeat: {
       tag: "ui-t-state",
       x: "{{foo}}",
@@ -634,45 +626,40 @@ test("state", "dynamic", async (t) => {
   const app = await ui(tmp(), {
     content: {
       tag: "ui-t-nested-dynamic",
-      array: [
+      list: [
         { foo: "a" }, //
         { foo: "b" },
       ],
     },
   })
 
-  t.is(app.el.textContent, "x:a-x:b-")
   t.eq(app.state.value, {
-    "ui-t-nested-dynamic": {
-      1: { array: [{ foo: "a" }, { foo: "b" }] },
-    },
+    "ui-t-nested-dynamic": { 0: { list: [{ foo: "a" }, { foo: "b" }] } },
     "ui-t-state": {
-      1: {
-        "ui-t-nested-dynamic": {
-          1: { array: { 0: { x: "a" }, 1: { x: "b" } } },
-        },
-      },
+      0: { x: { $ref: "/ui-t-nested-dynamic/0/list/0/foo" } },
+      1: { x: { $ref: "/ui-t-nested-dynamic/0/list/1/foo" } },
     },
   })
+  t.is(app.el.textContent, "x:a-x:b-")
 
   const el = app.get("ui-t-nested-dynamic")
 
-  el.array.push({ foo: "c" })
+  el.list.push({ foo: "c" })
   await app
 
   t.is(app.el.textContent, "x:a-x:b-x:c-")
 
-  el.array = [{ foo: "A" }]
+  el.list = [{ foo: "A" }]
   await app
 
   t.is(app.el.textContent, "x:A-")
 
-  el.array.push({ foo: "B" })
+  el.list.push({ foo: "B" })
   await app
 
   t.is(app.el.textContent, "x:A-x:B-")
 
-  el.array[0] = { foo: "foo" }
+  el.list[0] = { foo: "foo" }
   await app
 
   t.is(app.el.textContent, "x:foo-x:B-")
@@ -682,13 +669,13 @@ Component.define({
   tag: "ui-t-nested-string-array",
 
   props: {
-    array: {
+    list: {
       type: "array",
     },
   },
 
   content: {
-    scope: "array",
+    scope: "list",
     repeat: {
       tag: "ui-t-state",
       x: "{{.}}",
@@ -733,11 +720,41 @@ test("state", "string array", async (t) => {
   await testStringArray(t, app)
 })
 
+async function testStringArrayWithTransfers(t, app) {
+  t.eq(app.state.value, {
+    "arr": ["a", "b"],
+    "ui-t-nested-string-array": { 0: { list: { $ref: "/arr" } } },
+    "ui-t-state": {
+      0: { x: { $ref: "/arr/0" } },
+      1: { x: { $ref: "/arr/1" } },
+    },
+  })
+
+  await testStringArray(t, app)
+
+  t.eq(app.state.value, {
+    "arr": ["foo", "B"],
+    "ui-t-nested-string-array": { 0: { list: { $ref: "/arr" } } },
+    "ui-t-state": {
+      0: { x: { $ref: "/arr/0" } },
+      1: { x: { $ref: "/arr/1" } },
+    },
+  })
+
+  app.get("ui-t-nested-string-array").destroy()
+
+  t.eq(app.state.value, {
+    "arr": ["foo", "B"],
+    "ui-t-nested-string-array": {},
+    "ui-t-state": {},
+  })
+}
+
 test("state", "string array", "using transfers", async (t) => {
-  const app = await ui(tmp(), {
+  const app = await ui(tmp(true), {
     content: {
       tag: "ui-t-nested-string-array",
-      array: "{{arr}}",
+      list: "{{arr}}",
     },
 
     data: {
@@ -745,24 +762,14 @@ test("state", "string array", "using transfers", async (t) => {
     },
   })
 
-  await testStringArray(t, app)
-
-  const el = app.get("ui-t-nested-string-array")
-
-  t.eq(app.state.value["ui-t-nested-string-array"], {
-    1: { array: ["foo", "B"] },
-  })
-
-  el.destroy()
-
-  t.eq(app.state.value["ui-t-nested-string-array"], {})
+  await testStringArrayWithTransfers(t, app)
 })
 
 test("state", "string array", "using transfers and async data", async (t) => {
-  const app = await ui(tmp(), {
+  const app = await ui(tmp(true), {
     content: {
       tag: "ui-t-nested-string-array",
-      array: "{{arr}}",
+      list: "{{arr}}",
     },
 
     async data() {
@@ -773,23 +780,13 @@ test("state", "string array", "using transfers and async data", async (t) => {
     },
   })
 
-  await testStringArray(t, app)
-
-  const el = app.get("ui-t-nested-string-array")
-
-  t.eq(app.state.value["ui-t-nested-string-array"], {
-    1: { array: ["foo", "B"] },
-  })
-
-  el.destroy()
-
-  t.eq(app.state.value["ui-t-nested-string-array"], {})
+  await testStringArrayWithTransfers(t, app)
 })
 
 /* computed
 =========== */
 
-test("computed", async (t) => {
+test.skip("computed", async (t) => {
   t.plan(8)
   let cnt = 0
 
@@ -848,7 +845,7 @@ test("computed", async (t) => {
   t.eq(app.state.value, { "ui-t-computed": { 1: { formated: "HELLO/WORLD" } } })
 })
 
-test("computed", "state prop", async (t) => {
+test.skip("computed", "state prop", async (t) => {
   t.plan(8)
   let cnt = 0
 
@@ -865,7 +862,7 @@ test("computed", "state prop", async (t) => {
         },
 
         computed: {
-          parsed: "{{formated|split('/')}}",
+          parsed: "{{./formated|split('/')}}",
         },
 
         content: {

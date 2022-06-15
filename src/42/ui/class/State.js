@@ -4,9 +4,9 @@ import exists from "../../fabric/locator/exists.js"
 import locate from "../../fabric/locator/locate.js"
 import allocate from "../../fabric/locator/allocate.js"
 import deallocate from "../../fabric/locator/deallocate.js"
-import dirname from "../../fabric/type/path/extract/dirname.js"
 import defer from "../../fabric/type/promise/defer.js"
 import dispatch from "../../fabric/dom/dispatch.js"
+import equal from "../../fabric/type/any/equal.js"
 import idleThrottle from "../../fabric/type/function/idleThrottle.js"
 
 const FPS = 1000 / 60
@@ -20,22 +20,13 @@ export default class State extends Emitter {
     this.value = val
     this.ctx = ctx
 
-    this.queue = { paths: new Set(), lengths: new Set(), objects: new Set() }
+    this.queue = {
+      paths: new Set(),
+      objects: new Set(),
+    }
 
     const update = () => {
       const changes = new Set()
-
-      for (const { path, val, oldVal } of this.queue.lengths) {
-        let i = val
-        const l = oldVal
-        for (; i < l; i++) {
-          const key = `${path}/${i}`
-          changes.add(key)
-          if (key in ctx.renderers) {
-            for (const render of ctx.renderers[key]) render(key)
-          }
-        }
-      }
 
       for (const path of this.queue.objects) {
         changes.add(path)
@@ -59,7 +50,6 @@ export default class State extends Emitter {
       // console.groupEnd()
 
       this.queue.paths.clear()
-      this.queue.lengths.clear()
       this.queue.objects.clear()
 
       this.#update.ready?.resolve?.()
@@ -79,34 +69,34 @@ export default class State extends Emitter {
 
     this.proxy = observe(this.value, {
       signal: ctx.cancel.signal,
-      change: (path, val, oldVal) => {
-        this.update(path, val, oldVal)
+      change: (path, val, oldVal, detail) => {
+        this.update(path, val, oldVal, detail)
       },
       delete: (path, { key }) => {
         this.emit("delete", key)
       },
-      has: (path, { key }) => {
+      locate: (ref) => locate(this.proxy, ref, sep),
+      has(path, { key }) {
         if (key.startsWith("@") || key.startsWith("#")) return true
-        // console.log(444, path, ctx.computeds.has(path))
         if (ctx.computeds.has(path)) return true
-        const d = dirname(path)
-        if (d in ctx.nesteds) {
-          return exists(this.value, ctx.nesteds[d] + key, sep)
-        }
-
         return false
       },
-      get: (path, { key, chain, parent }) => {
-        if (key === "@index") return Number(chain.at(-1))
-        if (key === "@first") return Number(chain.at(-1)) === 0
-        if (key === "@last") return Number(chain.at(-1)) === parent.length - 1
-        if (key.startsWith("#")) return chain.at(-1).padStart(key.length, "0")
-        // console.log(path, ctx.computeds.has(path), ctx.computeds.get(path))
-        if (ctx.computeds.has(path)) return ctx.computeds.get(path)
-        const d = dirname(path)
-        if (d in ctx.nesteds) {
-          return locate(this.value, ctx.nesteds[d] + key, sep)
+      get(path, { key, chain, parent }) {
+        if (key.startsWith("@") || key.startsWith("#")) {
+          const parts = key.split(":")
+          if (key.startsWith("#")) {
+            return parts[1].padStart(parts[0].length, "0")
+          }
+
+          const index = Number(parts[1])
+          if (key.startsWith("@index")) return index
+          if (key.startsWith("@first")) return index === 0
+          if (key.startsWith("@last")) {
+            return index === parent[chain.at(-1)].length - 1
+          }
         }
+
+        if (ctx.computeds.has(path)) return ctx.computeds.get(path)
       },
     })
   }
@@ -135,24 +125,32 @@ export default class State extends Emitter {
     this.throttle = throttle
   }
 
-  updateNow(path, val, oldVal) {
+  updateNow(path, val) {
     const { throttle } = this
     this.throttle = false
-    this.update(path, val, oldVal)
+    this.update(path, val)
     this.throttle = throttle
   }
 
   update(path, val, oldVal) {
-    this.#update.ready ||= defer()
-
     if (path.endsWith("/length")) {
-      path = path.slice(0, -7)
-      this.queue.objects.add(path)
-      this.queue.lengths.add({ path, val, oldVal })
+      this.queue.objects.add(path.slice(0, -7))
     } else if (val && typeof val === "object") {
-      this.queue.objects.add(path)
-    } else this.queue.paths.add(path)
+      if (
+        oldVal !== undefined &&
+        "$ref" in val === false &&
+        equal(val, oldVal)
+      ) {
+        return
+      }
 
+      this.queue.objects.add(path)
+    } else {
+      if (oldVal !== undefined && equal(val, oldVal)) return
+      this.queue.paths.add(path)
+    }
+
+    this.#update.ready ||= defer()
     this.#update.fn()
   }
 
@@ -160,8 +158,8 @@ export default class State extends Emitter {
     return exists(this.proxy, path, sep)
   }
 
-  get(path) {
-    return locate(this.proxy, path, sep)
+  get(path, options) {
+    return locate(options?.silent ? this.value : this.proxy, path, sep)
   }
 
   set(path, val, options) {

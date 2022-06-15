@@ -4,7 +4,7 @@ import render from "../render.js"
 import omit from "../../fabric/type/object/omit.js"
 import createRange from "../../fabric/dom/createRange.js"
 import register from "../register.js"
-import resolve from "../resolve.js"
+import resolveScope from "../resolveScope.js"
 import expr from "../../system/expr.js"
 import isLength from "../../fabric/type/any/is/isLength.js"
 
@@ -31,7 +31,7 @@ export default function renderWhen(def, ctx) {
   const keys = []
 
   for (const token of parsed) {
-    const loc = resolve(ctx, token.value)
+    const loc = resolveScope(ctx, token.value)
     if (token.type === "key") {
       token.value = loc
       keys.push(token.value)
