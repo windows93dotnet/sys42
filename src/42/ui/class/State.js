@@ -5,6 +5,7 @@ import locate from "../../fabric/locator/locate.js"
 import allocate from "../../fabric/locator/allocate.js"
 import deallocate from "../../fabric/locator/deallocate.js"
 import defer from "../../fabric/type/promise/defer.js"
+import dispatch from "../../fabric/dom/dispatch.js"
 import idleThrottle from "../../fabric/type/function/idleThrottle.js"
 
 const FPS = 1000 / 60
@@ -20,7 +21,7 @@ export default class State extends Emitter {
 
     this.queue = { paths: new Set(), lengths: new Set(), objects: new Set() }
 
-    const updateFn = () => {
+    const update = () => {
       const changes = new Set()
 
       for (const { path, val, oldVal } of this.queue.lengths) {
@@ -66,13 +67,12 @@ export default class State extends Emitter {
       try {
         this.emit("update", changes)
       } catch (err) {
-        console.log(err)
+        dispatch(ctx.el, err)
       }
     }
 
-    this.#update.onrepaint = idleThrottle(updateFn, FPS)
-    // this.#update.now = idleThrottle(updateFn)
-    this.#update.now = updateFn
+    this.#update.onrepaint = idleThrottle(update, FPS)
+    this.#update.now = update
     this.#update.fn = this.#update.now
     this.#update.ready = false
 

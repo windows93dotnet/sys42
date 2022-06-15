@@ -8,7 +8,7 @@ import Canceller from "../fabric/class/Canceller.js"
 import Undones from "../fabric/class/Undones.js"
 import getFilter from "../fabric/getFilter.js"
 import dirname from "../fabric/type/path/extract/dirname.js"
-import emit from "../fabric/dom/emit.js"
+import dispatch from "../fabric/dom/dispatch.js"
 import isEmptyObject from "../fabric/type/any/is/isEmptyObject.js"
 import isLength from "../fabric/type/any/is/isLength.js"
 import isArrayLike from "../fabric/type/any/is/isArrayLike.js"
@@ -58,7 +58,7 @@ function normaliseString(def, ctx) {
               try {
                 return await filter(...args)
               } catch (err) {
-                emit(ctx.el, err)
+                dispatch(ctx.el, err)
               }
             }
           } else token.value = loc
@@ -114,7 +114,7 @@ export function normalizeAttrs(def, ctx) {
   return attrs
 }
 
-function normalizeComputed(computed, ctx) {
+export function normalizeComputed(computed, ctx) {
   for (const [key, val] of Object.entries(computed)) {
     const scope = resolve(ctx.scope, key)
     const fn = typeof val === "string" ? normaliseString(val, ctx) : val

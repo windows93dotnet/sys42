@@ -6,7 +6,7 @@ import defer from "../../fabric/type/promise/defer.js"
 import renderAttributes from "../renderers/renderAttributes.js"
 import renderProps from "../renderers/renderProps.js"
 import configure from "../../fabric/configure.js"
-import { normalizeCtx, normalizeDef } from "../normalize.js"
+import { normalizeCtx, normalizeDef, normalizeComputed } from "../normalize.js"
 import resolve from "../resolve.js"
 import render from "../render.js"
 
@@ -110,9 +110,12 @@ export default class Component extends HTMLElement {
 
     const content = await this.render?.(this.ctx)
     const config = configure(definition, objectify(content), objectify(def))
+    const { computed } = config
+    delete config.computed
+
     this.def = normalizeDef(config, this.ctx)
 
-    if (this.def.props) {
+    if (this.def.props || this.def.computed) {
       const cpnScope = resolve(this.ctx.scope, this.localName)
       let i = this.ctx.componentsIndexes[cpnScope] ?? 0
       this.ctx.componentsIndexes[cpnScope] = ++i
@@ -121,8 +124,10 @@ export default class Component extends HTMLElement {
         this.localName,
         resolve(String(i), this.ctx.scope.slice(1)).slice(1)
       )
-      this.#observed = await renderProps(this)
     }
+
+    this.#observed = config.props ? await renderProps(this) : undefined
+    if (computed) normalizeComputed(computed, this.ctx)
 
     if (this.def.attrs) renderAttributes(this, this.ctx, this.def.attrs)
     this.replaceChildren(render(this.def.content, this.ctx))
@@ -150,7 +155,9 @@ export default class Component extends HTMLElement {
     this.ready = undefined
     this.#observed = undefined
 
-    if (this.def.props) this.ctx.state.delete(this.ctx.scope)
+    if (this.def.props || this.def.computed) {
+      this.ctx.state.delete(this.ctx.scope)
+    }
 
     delete this.ctx.el
     delete this.ctx
