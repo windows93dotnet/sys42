@@ -34,7 +34,7 @@ function normaliseString(def, ctx) {
     const scopes = []
     for (const tokens of parsed.substitutions) {
       for (const token of tokens) {
-        const loc = resolve(ctx.scope, token.value)
+        const loc = resolve(ctx, token.value)
 
         if (token.type === "key") {
           token.value = loc
@@ -130,6 +130,7 @@ export function normalizeComputed(computed, ctx) {
 export function normalizeCtx(ctx = {}) {
   ctx.scope ??= "/"
   ctx.renderers ??= {}
+  ctx.nesteds ??= {}
   ctx.transfers ??= {}
   ctx.componentsIndexes ??= {}
   ctx.components ??= new Undones()
@@ -167,7 +168,10 @@ export function normalizeDef(def = {}, ctx = normalizeCtx()) {
 
     if (def.computed) normalizeComputed(def.computed, ctx)
 
-    if (def.scope) ctx.scope = resolve(ctx.scope, def.scope)
+    if (def.scope) {
+      ctx.scope = resolve(ctx.scope, def.scope)
+      if (ctx.stateScope) ctx.stateScope = resolve(ctx.stateScope, def.scope)
+    }
 
     const attrs = normalizeAttrs(def, ctx)
     if (!isEmptyObject(attrs)) def.attrs = attrs

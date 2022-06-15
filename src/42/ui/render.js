@@ -43,7 +43,7 @@ export default function render(...args) {
     const { localName } = el
 
     if (el.form !== undefined && el.name) {
-      el.name = resolve(ctx.scope, el.name)
+      el.name = resolve(ctx, el.name)
       register(ctx, el.name, (val) => {
         el.value = val
       })

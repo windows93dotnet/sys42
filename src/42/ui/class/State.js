@@ -4,6 +4,7 @@ import exists from "../../fabric/locator/exists.js"
 import locate from "../../fabric/locator/locate.js"
 import allocate from "../../fabric/locator/allocate.js"
 import deallocate from "../../fabric/locator/deallocate.js"
+import dirname from "../../fabric/type/path/extract/dirname.js"
 import defer from "../../fabric/type/promise/defer.js"
 import dispatch from "../../fabric/dom/dispatch.js"
 import idleThrottle from "../../fabric/type/function/idleThrottle.js"
@@ -84,16 +85,28 @@ export default class State extends Emitter {
       delete: (path, { key }) => {
         this.emit("delete", key)
       },
-      has(path, { key }) {
+      has: (path, { key }) => {
         if (key.startsWith("@") || key.startsWith("#")) return true
-        return ctx.computeds.has(path)
+        // console.log(444, path, ctx.computeds.has(path))
+        if (ctx.computeds.has(path)) return true
+        const d = dirname(path)
+        if (d in ctx.nesteds) {
+          return exists(this.value, ctx.nesteds[d] + key, sep)
+        }
+
+        return false
       },
-      get(path, { key, chain, parent }) {
-        if (key === "@index") return chain.at(-1)
+      get: (path, { key, chain, parent }) => {
+        if (key === "@index") return Number(chain.at(-1))
         if (key === "@first") return Number(chain.at(-1)) === 0
         if (key === "@last") return Number(chain.at(-1)) === parent.length - 1
         if (key.startsWith("#")) return chain.at(-1).padStart(key.length, "0")
-        return ctx.computeds.get(path)
+        // console.log(path, ctx.computeds.has(path), ctx.computeds.get(path))
+        if (ctx.computeds.has(path)) return ctx.computeds.get(path)
+        const d = dirname(path)
+        if (d in ctx.nesteds) {
+          return locate(this.value, ctx.nesteds[d] + key, sep)
+        }
       },
     })
   }

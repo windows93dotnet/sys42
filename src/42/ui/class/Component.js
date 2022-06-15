@@ -116,7 +116,7 @@ export default class Component extends HTMLElement {
     this.def = normalizeDef(config, this.ctx)
 
     if (this.def.props || this.def.computed) {
-      const cpnScope = resolve(this.ctx.scope, this.localName)
+      const cpnScope = resolve(this.ctx, this.localName)
       let i = this.ctx.componentsIndexes[cpnScope] ?? 0
       this.ctx.componentsIndexes[cpnScope] = ++i
       this.ctx.stateScope = this.ctx.scope
@@ -124,6 +124,7 @@ export default class Component extends HTMLElement {
         this.localName,
         resolve(String(i), this.ctx.scope.slice(1)).slice(1)
       )
+      ctx.nesteds[this.ctx.scope] = this.ctx.stateScope
     }
 
     this.#observed = config.props ? await renderProps(this) : undefined
@@ -157,6 +158,7 @@ export default class Component extends HTMLElement {
 
     if (this.def.props || this.def.computed) {
       this.ctx.state.delete(this.ctx.scope)
+      delete this.ctx.nesteds[this.ctx.scope]
     }
 
     delete this.ctx.el

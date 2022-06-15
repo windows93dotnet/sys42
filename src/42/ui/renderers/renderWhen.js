@@ -31,7 +31,7 @@ export default function renderWhen(def, ctx) {
   const keys = []
 
   for (const token of parsed) {
-    const loc = resolve(ctx.scope, token.value)
+    const loc = resolve(ctx, token.value)
     if (token.type === "key") {
       token.value = loc
       keys.push(token.value)

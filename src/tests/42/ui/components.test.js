@@ -21,7 +21,7 @@ Component.define({
   props: {
     bar: 2,
   },
-  content: "foo: {{/foo}}, bar: {{bar}}",
+  content: "foo: {{foo}}, bar: {{bar}}",
 })
 
 async function checkDefine(component, t, args, expected) {
@@ -220,7 +220,7 @@ test.tasks(
             reflect: true,
           },
         },
-        content: "foo: {{/foo}}, bar: {{/bar}}",
+        content: "foo: {{foo}}, bar: {{bar}}",
       },
       def: {
         content: { tag: "ui-t-props-state" },
@@ -865,7 +865,7 @@ test("computed", "state prop", async (t) => {
         },
 
         computed: {
-          parsed: "{{/formated|split('/')}}",
+          parsed: "{{formated|split('/')}}",
         },
 
         content: {
@@ -888,11 +888,11 @@ test("computed", "state prop", async (t) => {
     },
   })
 
-  t.is(cnt, 1)
   t.eq(app.state.value, {
     "ui-t-compu-sta": { 1: {} },
     "formated": "FOO/BAR",
   })
+  t.is(cnt, 1)
   t.is(app.el.innerHTML, "<ui-t-compu-sta>foo: FOO, bar: BAR</ui-t-compu-sta>")
 
   const updates = ["/formated", "/ui-t-compu-sta/1/parsed"]
@@ -900,16 +900,16 @@ test("computed", "state prop", async (t) => {
     t.is(updates.shift(), [...changes][0])
   })
 
-  app.get("ui-t-compu-sta").formated = "HELLO/WORLD"
+  app.data.formated = "HELLO/WORLD"
   await app
 
-  t.is(
-    app.el.innerHTML,
-    "<ui-t-compu-sta>foo: HELLO, bar: WORLD</ui-t-compu-sta>"
-  )
-  t.is(cnt, 2)
   t.eq(app.state.value, {
     "ui-t-compu-sta": { 1: {} },
     "formated": "HELLO/WORLD",
   })
+  t.is(cnt, 2)
+  t.is(
+    app.el.innerHTML,
+    "<ui-t-compu-sta>foo: HELLO, bar: WORLD</ui-t-compu-sta>"
+  )
 })

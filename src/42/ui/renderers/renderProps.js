@@ -83,7 +83,7 @@ export default async function renderProps(el) {
       item = { type, default: item, reflect: true }
     }
 
-    const scope = item.state
+    const scope = item.state //
       ? resolve(ctx.stateScope, key)
       : resolve(ctx.scope, key)
 
@@ -164,7 +164,7 @@ export default async function renderProps(el) {
       const fn = val
       register(ctx, fn, (val, changed) => {
         // Add transfers to listen object nested changes
-        if (val && typeof val === "object") {
+        if (!item.state && val && typeof val === "object") {
           ctx.transfers[scope] ??= new Set()
           for (const x of fn.scopes) ctx.transfers[scope].add(x)
         }
