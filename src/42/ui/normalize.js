@@ -35,6 +35,8 @@ function normaliseString(def, ctx) {
     let hasFilter = false
     for (const tokens of parsed.substitutions) {
       for (const token of tokens) {
+        if (token.value === undefined) continue
+
         const loc = resolveScope(ctx, token.value)
 
         if (token.type === "key") {
@@ -170,10 +172,11 @@ export function normalizeDef(def = {}, ctx = normalizeCtx()) {
     if (def.computed) normalizeComputed(def.computed, ctx)
 
     if (def.scope) {
-      ctx.scope = resolveScope(ctx.scope, def.scope, ctx)
       if (ctx.stateScope) {
         ctx.stateScope = resolveScope(ctx.stateScope, def.scope, ctx)
       }
+
+      ctx.scope = resolveScope(ctx.scope, def.scope, ctx)
     }
 
     const attrs = normalizeAttrs(def, ctx)

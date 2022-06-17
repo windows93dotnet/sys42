@@ -786,8 +786,8 @@ test("state", "string array", "using transfers and async data", async (t) => {
 /* computed
 =========== */
 
-test.skip("computed", async (t) => {
-  t.plan(8)
+test("computed", async (t) => {
+  t.plan(9)
   let cnt = 0
 
   await Component.define(
@@ -825,11 +825,18 @@ test.skip("computed", async (t) => {
     },
   })
 
+  t.eq(Object.keys(app.ctx.renderers), [
+    "/ui-t-computed/0/formated",
+    "/ui-t-computed/0/parsed/0",
+    "/ui-t-computed/0/parsed/1",
+  ])
   t.is(cnt, 1)
-  t.eq(app.state.value, { "ui-t-computed": { 1: { formated: "FOO/BAR" } } })
+  t.eq(app.state.value, {
+    "ui-t-computed": { 0: { formated: "FOO/BAR" } },
+  })
   t.is(app.el.innerHTML, "<ui-t-computed>foo: FOO, bar: BAR</ui-t-computed>")
 
-  const updates = ["/ui-t-computed/1/formated", "/ui-t-computed/1/parsed"]
+  const updates = ["/ui-t-computed/0/formated", "/ui-t-computed/0/parsed"]
   app.state.on("update", (changes) => {
     t.is(updates.shift(), [...changes][0])
   })
@@ -842,11 +849,13 @@ test.skip("computed", async (t) => {
     "<ui-t-computed>foo: HELLO, bar: WORLD</ui-t-computed>"
   )
   t.is(cnt, 2)
-  t.eq(app.state.value, { "ui-t-computed": { 1: { formated: "HELLO/WORLD" } } })
+  t.eq(app.state.value, {
+    "ui-t-computed": { 0: { formated: "HELLO/WORLD" } },
+  })
 })
 
-test.skip("computed", "state prop", async (t) => {
-  t.plan(8)
+test("computed", "state prop", async (t) => {
+  t.plan(9)
   let cnt = 0
 
   await Component.define(
@@ -862,7 +871,7 @@ test.skip("computed", "state prop", async (t) => {
         },
 
         computed: {
-          parsed: "{{./formated|split('/')}}",
+          parsed: "{{formated|split('/')}}",
         },
 
         content: {
@@ -885,14 +894,19 @@ test.skip("computed", "state prop", async (t) => {
     },
   })
 
+  t.eq(Object.keys(app.ctx.renderers), [
+    "/formated",
+    "/ui-t-compu-sta/0/parsed/0",
+    "/ui-t-compu-sta/0/parsed/1",
+  ])
+  t.is(cnt, 1)
   t.eq(app.state.value, {
-    "ui-t-compu-sta": { 1: {} },
+    "ui-t-compu-sta": { 0: {} },
     "formated": "FOO/BAR",
   })
-  t.is(cnt, 1)
   t.is(app.el.innerHTML, "<ui-t-compu-sta>foo: FOO, bar: BAR</ui-t-compu-sta>")
 
-  const updates = ["/formated", "/ui-t-compu-sta/1/parsed"]
+  const updates = ["/formated", "/ui-t-compu-sta/0/parsed"]
   app.state.on("update", (changes) => {
     t.is(updates.shift(), [...changes][0])
   })
@@ -901,7 +915,7 @@ test.skip("computed", "state prop", async (t) => {
   await app
 
   t.eq(app.state.value, {
-    "ui-t-compu-sta": { 1: {} },
+    "ui-t-compu-sta": { 0: {} },
     "formated": "HELLO/WORLD",
   })
   t.is(cnt, 2)

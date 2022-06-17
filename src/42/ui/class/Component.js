@@ -118,9 +118,9 @@ export default class Component extends HTMLElement {
     const content = await this.render?.(this.ctx)
     const config = configure(definition, objectify(content), objectify(def))
     const { computed } = config
+    this.ctx.computed = computed
     delete config.computed
 
-    // this.def = config
     this.def = normalizeDef(config, this.ctx)
 
     if (this.def.props || this.def.computed) {
@@ -139,6 +139,7 @@ export default class Component extends HTMLElement {
 
     await this.ctx.components.done()
     await this.ctx.undones.done()
+    delete this.ctx.computed
 
     if (this.#lifecycle === INIT) this.#lifecycle = RENDER
     if (this.isConnected) this.#setup()

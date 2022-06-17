@@ -1,24 +1,33 @@
 import resolvePath from "../fabric/type/path/core/resolvePath.js"
 import basename from "../fabric/type/path/extract/basename.js"
+import locate from "../fabric/locator/locate.js"
+import exists from "../fabric/locator/exists.js"
+
+const sep = "/"
+
+function checkProps(ctx, path) {
+  const prop = locate(ctx.el.def.props, path, sep)
+  if (prop && prop.state !== true) return ctx.scope
+  if (ctx.computed && exists(ctx.computed, path, sep)) return ctx.scope
+}
 
 export default function resolveScope(scope, path, ctx) {
+  if (path == null) throw new Error("Undefined path")
   path = String(path)
 
-  if (typeof scope !== "string") {
+  if (typeof scope === "string") {
+    if (ctx.el.def) scope = checkProps(ctx, path) ?? scope
+  } else {
     ctx ??= scope
+    scope = ctx.scope
 
-    // TODO: rewrite as readable version
-    scope = ctx.stateScope
-      ? path.startsWith("./") || path.startsWith("../")
-        ? ctx.scope
-        : ctx.el.def
-        ? path in ctx.el.def.props && ctx.el.def.props[path].state !== true
-          ? ctx.scope
-          : ctx.stateScope
-        : ctx.stateScope
-        ? ctx.scope
-        : ctx.stateScope
-      : ctx.scope
+    if (ctx.stateScope) {
+      if (path.startsWith("./") || path.startsWith("../")) {
+        scope = ctx.stateScope
+      } else if (ctx.el.def) {
+        scope = checkProps(ctx, path) ?? ctx.stateScope
+      }
+    }
   }
 
   if (path.startsWith("@") || path.startsWith("#")) {
@@ -27,11 +36,5 @@ export default function resolveScope(scope, path, ctx) {
 
   const out = resolvePath(scope, path)
 
-  const pre = ctx.state.get(out, { silent: true })
-  if (pre && typeof pre === "object" && "$ref" in pre) {
-    // console.log(1, pre)
-    return pre.$ref
-  }
-
-  return out
+  return locate(ctx.state.value, `${out}/$ref`, sep) ?? out
 }
