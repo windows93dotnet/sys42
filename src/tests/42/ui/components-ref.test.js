@@ -116,40 +116,79 @@ test("props", 3, async (t) => {
 test("props", 4, async (t) => {
   const app = await ui(tmp(), {
     content: { tag: "ui-a", bar: "{{foo}}" },
-    data: { foo: 1 },
+    data: { foo: "a" },
   })
 
   t.eq(app.state.value, {
-    "foo": 1,
+    "foo": "a",
     "ui-a": { 0: { bar: { $ref: "/foo" } } },
   })
 
-  t.is(app.el.innerHTML, '<ui-a bar="1">foo: 1, bar: 1</ui-a>')
+  t.is(app.el.innerHTML, '<ui-a bar="a">foo: a, bar: a</ui-a>')
 
-  app.data.foo = 2
+  app.data.foo = "b"
   await app
 
-  t.is(app.el.innerHTML, '<ui-a bar="2">foo: 2, bar: 2</ui-a>')
+  t.is(app.el.innerHTML, '<ui-a bar="b">foo: b, bar: b</ui-a>')
 
-  app.get("ui-a").bar = 3
-  await app
-
-  t.eq(app.state.value, {
-    "foo": 2,
-    "ui-a": { 0: { bar: 3 } },
-  })
-
-  t.is(app.el.innerHTML, '<ui-a bar="3">foo: 2, bar: 3</ui-a>')
-
-  app.data.foo = 4
+  app.get("ui-a").bar = "c"
   await app
 
   t.eq(app.state.value, {
-    "foo": 4,
+    "foo": "c",
     "ui-a": { 0: { bar: { $ref: "/foo" } } },
   })
 
-  t.is(app.el.innerHTML, '<ui-a bar="4">foo: 4, bar: 4</ui-a>')
+  t.is(app.el.innerHTML, '<ui-a bar="c">foo: c, bar: c</ui-a>')
+
+  app.data.foo = "d"
+  await app
+
+  t.eq(app.state.value, {
+    "foo": "d",
+    "ui-a": { 0: { bar: { $ref: "/foo" } } },
+  })
+
+  t.is(app.el.innerHTML, '<ui-a bar="d">foo: d, bar: d</ui-a>')
+})
+
+test("props", 5, async (t) => {
+  const app = await ui(tmp(), {
+    content: { tag: "ui-a", bar: "{{foo|upper}}" },
+    data: { foo: "a" },
+  })
+
+  t.eq(app.state.value, {
+    "foo": "a",
+    "ui-a": { 0: { bar: "A" } },
+  })
+
+  t.is(app.el.innerHTML, '<ui-a bar="A">foo: a, bar: A</ui-a>')
+
+  app.data.foo = "b"
+  await app
+
+  t.is(app.el.innerHTML, '<ui-a bar="B">foo: b, bar: B</ui-a>')
+
+  app.get("ui-a").bar = "c"
+  await app
+
+  t.eq(app.state.value, {
+    "foo": "b",
+    "ui-a": { 0: { bar: "c" } },
+  })
+
+  t.is(app.el.innerHTML, '<ui-a bar="c">foo: b, bar: c</ui-a>')
+
+  app.data.foo = "d"
+  await app
+
+  t.eq(app.state.value, {
+    "foo": "d",
+    "ui-a": { 0: { bar: "D" } },
+  })
+
+  t.is(app.el.innerHTML, '<ui-a bar="D">foo: d, bar: D</ui-a>')
 })
 
 Component.define({

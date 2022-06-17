@@ -32,6 +32,7 @@ function normaliseString(def, ctx) {
   if (parsed.substitutions.length > 0) {
     const filters = { ...ctx.actions.value }
     const scopes = []
+    let hasFilter = false
     for (const tokens of parsed.substitutions) {
       for (const token of tokens) {
         const loc = resolveScope(ctx, token.value)
@@ -48,6 +49,7 @@ function normaliseString(def, ctx) {
             token.loc = loc
           }
         } else if (token.type === "function") {
+          hasFilter = true
           if (ctx.actions.has(loc) === false) {
             let filter
             filters[token.value] = async (...args) => {
@@ -74,6 +76,7 @@ function normaliseString(def, ctx) {
     })
 
     def.scopes = scopes
+    def.hasFilter = hasFilter
     return def
   }
 

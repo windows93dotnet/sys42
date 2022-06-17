@@ -116,9 +116,10 @@ export default async function renderProps(el) {
       val = item.default
     }
 
+    let ref
     let fromRender = false
 
-    const render = (val, update, ref) => {
+    const render = (val, update) => {
       if (ctx.cancel.signal.aborted === true) return
 
       ctx.state.now(() => ctx.state.set(scope, ref ?? val, { silent: !update }))
@@ -155,19 +156,21 @@ export default async function renderProps(el) {
     Object.defineProperty(el, key, {
       configurable: true,
       set(val) {
-        render(val, true)
+        if (ref) ctx.state.now(() => ctx.state.set(ref.$ref, val))
+        else render(val, true)
       },
       get() {
-        return ctx.state.get(scope)
+        return ctx.state.get(ref ? ref.$ref : scope)
       },
     })
 
     if (typeof val === "function") {
       const fn = val
-      const ref = fn.scopes.length === 1 ? { $ref: fn.scopes[0] } : undefined
-      register(ctx, fn, (val, changed) => {
-        render(val, changed !== scope, ref)
-      })
+      ref =
+        !fn.hasFilter && fn.scopes.length === 1 && fn.scopes[0] !== scope
+          ? { $ref: fn.scopes[0] }
+          : undefined
+      register(ctx, fn, (val, changed) => render(val, changed !== scope))
     } else {
       render(val)
       if (!item.state) continue
