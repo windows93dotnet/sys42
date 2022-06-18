@@ -12,6 +12,7 @@ import dispatch from "../fabric/dom/dispatch.js"
 import isEmptyObject from "../fabric/type/any/is/isEmptyObject.js"
 import isLength from "../fabric/type/any/is/isLength.js"
 import isArrayLike from "../fabric/type/any/is/isArrayLike.js"
+import noop from "../fabric/type/function/noop.js"
 import ATTRIBUTES_ALLOW_LIST from "../fabric/constants/ATTRIBUTES_ALLOW_LIST.js"
 
 const DEF_KEYWORDS = new Set([
@@ -26,7 +27,7 @@ const DEF_KEYWORDS = new Set([
   "when",
 ])
 
-function normaliseString(def, ctx) {
+export function normalizeString(def, ctx) {
   const parsed = template.parse(def)
 
   if (parsed.substitutions.length > 0) {
@@ -89,7 +90,7 @@ function normalizeObject(def, ctx) {
   const out = {}
 
   for (const [key, val] of Object.entries(def)) {
-    out[key] = typeof val === "string" ? normaliseString(val, ctx) : val
+    out[key] = typeof val === "string" ? normalizeString(val, ctx) : val
   }
 
   return out
@@ -106,12 +107,12 @@ export function normalizeAttrs(def, ctx) {
       const type = typeof val
       if (val && type === "object") {
         if (key === "class" && Array.isArray(val)) {
-          attrs[key] = normaliseString(val.join(" "), ctx)
+          attrs[key] = normalizeString(val.join(" "), ctx)
         } else {
           attrs[key] = normalizeObject(val, ctx)
         }
       } else {
-        attrs[key] = type === "string" ? normaliseString(val, ctx) : val
+        attrs[key] = type === "string" ? normalizeString(val, ctx) : val
       }
     }
   }
@@ -119,16 +120,20 @@ export function normalizeAttrs(def, ctx) {
   return attrs
 }
 
-export function normalizeComputed(computed, ctx) {
+export function normalizeComputeds(computed, ctx) {
   for (const [key, val] of Object.entries(computed)) {
-    const scope = resolveScope(ctx.scope, key, ctx)
-    const fn = typeof val === "string" ? normaliseString(val, ctx) : val
-    if (fn.scopes) {
-      register(ctx, fn, (val, changed) => {
-        ctx.computeds.set(scope, val)
-        if (changed !== scope) ctx.state.updateNow(scope, val)
-      })
-    }
+    normalizeComputed(resolveScope(ctx.scope, key, ctx), val, ctx)
+  }
+}
+
+export function normalizeComputed(scope, val, ctx, cb = noop) {
+  const fn = typeof val === "string" ? normalizeString(val, ctx) : val
+  if (fn.scopes) {
+    register(ctx, fn, (val, changed) => {
+      ctx.computeds.set(scope, val)
+      if (changed !== scope) ctx.state.updateNow(scope, val)
+      cb(val)
+    })
   }
 }
 
@@ -149,7 +154,7 @@ export function normalizeDef(def = {}, ctx = normalizeCtx()) {
   ctx.type = typeof def
 
   if (ctx.type === "string") {
-    const fn = normaliseString(def, ctx)
+    const fn = normalizeString(def, ctx)
     ctx.type = typeof fn
     if (ctx.type === "function") def = fn
   } else if (Array.isArray(def)) {
@@ -169,7 +174,7 @@ export function normalizeDef(def = {}, ctx = normalizeCtx()) {
       } else ctx.state.assign(ctx.scope, def.data)
     }
 
-    if (def.computed) normalizeComputed(def.computed, ctx)
+    if (def.computed) normalizeComputeds(def.computed, ctx)
 
     if (def.scope) {
       if (ctx.stateScope) {
@@ -185,7 +190,7 @@ export function normalizeDef(def = {}, ctx = normalizeCtx()) {
     if (def.props) {
       for (const key of Object.keys(def.props)) {
         if (key in def && typeof def[key] === "string") {
-          def[key] = normaliseString(def[key], ctx)
+          def[key] = normalizeString(def[key], ctx)
         }
       }
     }

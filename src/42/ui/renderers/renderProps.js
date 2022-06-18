@@ -2,6 +2,7 @@
 import noop from "../../fabric/type/function/noop.js"
 import resolveScope from "../resolveScope.js"
 import register from "../register.js"
+import { normalizeComputed } from "../normalize.js"
 import { toKebabCase } from "../../fabric/type/string/letters.js"
 
 const BOOLEAN_TRUE = new Set(["", "on", "true"])
@@ -122,7 +123,11 @@ export default async function renderProps(el) {
     const render = (val, update) => {
       if (ctx.cancel.signal.aborted === true) return
 
-      ctx.state.now(() => ctx.state.set(scope, ref ?? val, { silent: !update }))
+      if (!item.computed) {
+        ctx.state.now(() =>
+          ctx.state.set(scope, ref ?? val, { silent: !update })
+        )
+      }
 
       if (item.css) {
         const cssVar = `--${typeof item.css === "string" ? item.css : key}`
@@ -151,6 +156,22 @@ export default async function renderProps(el) {
         if (fromRender) return
         render(fromView(val, attribute, el, item), true)
       }
+    }
+
+    if (item.computed) {
+      let computed
+
+      Object.defineProperty(el, key, {
+        configurable: true,
+        get: () => computed,
+      })
+
+      normalizeComputed(scope, item.computed, ctx, (val) => {
+        computed = val
+        render(val)
+      })
+
+      continue
     }
 
     Object.defineProperty(el, key, {

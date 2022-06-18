@@ -117,6 +117,10 @@ test.tasks(
         return class extends Component {
           static definition = {
             tag: "ui-t-signal",
+
+            props: {
+              foo: "bar",
+            },
           }
 
           setup({ signal }) {
@@ -854,7 +858,7 @@ test("computed", async (t) => {
   })
 })
 
-test("computed", "state prop", async (t) => {
+test("computed", "from prop with state:true", async (t) => {
   t.plan(9)
   let cnt = 0
 
@@ -923,4 +927,86 @@ test("computed", "state prop", async (t) => {
     app.el.innerHTML,
     "<ui-t-compu-sta>foo: HELLO, bar: WORLD</ui-t-compu-sta>"
   )
+})
+
+test("computed", "computed prop", async (t) => {
+  t.plan(12)
+  let cnt = 0
+
+  await Component.define(
+    class extends Component {
+      static definition = {
+        tag: "ui-t-compu-prop",
+
+        props: {
+          formated: {
+            type: "string",
+          },
+          parsed: {
+            type: "array",
+            computed: "{{formated|split('/')}}",
+          },
+        },
+
+        content: {
+          scope: "parsed",
+          content: "foo: {{0}}, bar: {{1}}",
+        },
+      }
+
+      split(formated, sep) {
+        cnt++
+        return formated.split(sep)
+      }
+    }
+  )
+
+  const app = await ui(tmp(true), {
+    content: {
+      tag: "ui-t-compu-prop",
+      formated: "FOO/BAR",
+    },
+  })
+
+  const el = app.get("ui-t-compu-prop")
+
+  t.eq(Object.keys(app.ctx.renderers), [
+    "/ui-t-compu-prop/0/formated",
+    "/ui-t-compu-prop/0/parsed/0",
+    "/ui-t-compu-prop/0/parsed/1",
+  ])
+  t.is(cnt, 1)
+  t.eq(app.state.value, {
+    "ui-t-compu-prop": { 0: { formated: "FOO/BAR" } },
+  })
+
+  t.eq(el.parsed, ["FOO", "BAR"])
+
+  t.is(
+    app.el.innerHTML,
+    "<ui-t-compu-prop>foo: FOO, bar: BAR</ui-t-compu-prop>"
+  )
+
+  const updates = ["/ui-t-compu-prop/0/formated", "/ui-t-compu-prop/0/parsed"]
+  app.state.on("update", (changes) => {
+    t.is(updates.shift(), [...changes][0])
+  })
+
+  el.formated = "HELLO/WORLD"
+  await app
+
+  t.is(
+    app.el.innerHTML,
+    "<ui-t-compu-prop>foo: HELLO, bar: WORLD</ui-t-compu-prop>"
+  )
+  t.is(cnt, 2)
+  t.eq(app.state.value, {
+    "ui-t-compu-prop": { 0: { formated: "HELLO/WORLD" } },
+  })
+
+  t.eq(el.parsed, ["HELLO", "WORLD"])
+
+  t.throws(() => {
+    el.parsed = "fail"
+  })
 })

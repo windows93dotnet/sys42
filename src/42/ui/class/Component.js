@@ -6,7 +6,7 @@ import defer from "../../fabric/type/promise/defer.js"
 import renderAttributes from "../renderers/renderAttributes.js"
 import renderProps from "../renderers/renderProps.js"
 import configure from "../../fabric/configure.js"
-import { normalizeCtx, normalizeDef, normalizeComputed } from "../normalize.js"
+import { normalizeCtx, normalizeDef, normalizeComputeds } from "../normalize.js"
 import resolveScope from "../resolveScope.js"
 import render from "../render.js"
 
@@ -132,7 +132,7 @@ export default class Component extends HTMLElement {
     }
 
     this.#observed = config.props ? await renderProps(this) : undefined
-    if (computed) normalizeComputed(computed, this.ctx)
+    if (computed) normalizeComputeds(computed, this.ctx)
 
     if (this.def.attrs) renderAttributes(this, this.ctx, this.def.attrs)
     this.replaceChildren(render(this.def.content, this.ctx))
