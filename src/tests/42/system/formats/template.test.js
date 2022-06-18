@@ -89,6 +89,12 @@ test.tasks(
       data: [],
       expected: "a ",
     },
+    {
+      title: "ignore numeric arg when data is an array",
+      source: "a {{0}}",
+      data: ["b"],
+      expected: "a b",
+    },
 
     {
       source: "a {{0}} b {{1}}",

@@ -69,7 +69,12 @@ function compileToken(i, list, tokens, options) {
     )
   } else if (type === "arg") {
     if (!negated && isLength(value)) {
-      list.push((locals) => locate(locals, loc ?? value, sep) ?? value)
+      if (loc) list.push((locals) => locate(locals, loc, sep))
+      else {
+        list.push((locals) =>
+          Array.isArray(locals) ? locate(locals, value, sep) : value
+        )
+      }
     } else list.push(negated ? () => !value : () => value)
   }
 

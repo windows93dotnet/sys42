@@ -1,5 +1,6 @@
 export default function parseDotNotation(source, sep = ".") {
   const tokens = []
+  source = String(source)
 
   if (!source || source === sep) return tokens
 
