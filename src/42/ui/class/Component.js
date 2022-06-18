@@ -6,14 +6,14 @@ import defer from "../../fabric/type/promise/defer.js"
 import renderAttributes from "../renderers/renderAttributes.js"
 import renderProps from "../renderers/renderProps.js"
 import configure from "../../fabric/configure.js"
+import resolveScope from "../resolveScope.js"
+import render from "../render.js"
 import {
   normalizeCtx,
   normalizeDef,
   normalizeComputeds,
   normalizeAttrs,
 } from "../normalize.js"
-import resolveScope from "../resolveScope.js"
-import render from "../render.js"
 
 const CREATE = 0
 const INIT = 1
@@ -37,25 +37,21 @@ export default class Component extends HTMLElement {
       }
     }
 
-    let tagName = Class.definition.tag
-    if (tagName === undefined) {
+    let tag = Class.definition?.tag
+    if (tag === undefined) {
       if (Class.name === "Class") throw new Error(`missing Component "tag"`)
-      tagName = `ui-${Class.name.toLowerCase()}`
+      tag = `ui-${Class.name.toLowerCase()}`
     }
 
-    customElements.define(tagName, Class)
+    if (Class.definition?.props) {
+      Class.observedAttributes = []
+      for (const [key, item] of Object.entries(Class.definition.props)) {
+        Class.observedAttributes.push(item.attribute ?? toKebabCase(key))
+      }
+    }
+
+    customElements.define(tag, Class)
     return (...args) => new Class(...args)
-  }
-
-  // TODO: put this in define
-  static get observedAttributes() {
-    const observed = []
-    if (!this.definition?.props) return observed
-    for (const [key, item] of Object.entries(this.definition.props)) {
-      observed.push(item.attribute ?? toKebabCase(key))
-    }
-
-    return observed
   }
 
   #observed
@@ -64,12 +60,10 @@ export default class Component extends HTMLElement {
   constructor(...args) {
     super()
     this.ready = defer()
-    if (
+    const shouldInit =
       args.length > 0 ||
       (this.parentElement !== null && !this.hasAttribute("data-no-init"))
-    ) {
-      this.init(...args)
-    }
+    if (shouldInit) this.init(...args)
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
