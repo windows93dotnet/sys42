@@ -14,6 +14,7 @@ import stream from "../../../fabric/stream.js"
 import stringify from "../../../fabric/type/any/stringify.js"
 import system from "../../../system.js"
 import uid from "../../../fabric/uid.js"
+import prettify from "../../../fabric/type/markup/prettify.js"
 
 import log, { Log, CONSOLE_KEYS } from "../../log.js"
 
@@ -73,5 +74,6 @@ export default function addUtilities(item, isExecutionContext) {
     stringify,
     system,
     uid,
+    prettify,
   }
 }

@@ -166,7 +166,7 @@ export default async function renderProps(el) {
         get: () => computed,
       })
 
-      normalizeComputed(ctx.scope, item.computed, ctx, (val) => {
+      normalizeComputed(scope, item.computed, ctx, (val) => {
         computed = val
         render(val)
       })

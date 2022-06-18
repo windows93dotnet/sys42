@@ -6,6 +6,7 @@ import exists from "../fabric/locator/exists.js"
 const sep = "/"
 
 function checkProps(ctx, path) {
+  path = path.split("/")[0] // TODO: optimise this
   const prop = locate(ctx.el.def.props, path, sep)
   if (prop && prop.state !== true) return ctx.scope
   if (ctx.computed && exists(ctx.computed, path, sep)) return ctx.scope

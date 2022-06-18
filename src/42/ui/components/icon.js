@@ -52,7 +52,7 @@ class Icon extends Component {
         },
         {
           tag: ".ui-icon__label",
-          when: "{{label}}",
+          when: "{{../label}}",
           content: [
             { tag: "svg", content: { tag: "rect" } },
             { tag: "span", content: "{{stem}}" },
@@ -78,7 +78,7 @@ class Icon extends Component {
   }
 
   getInfos(path) {
-    console.log(path)
+    if (path === undefined) return
     const infos = parseFilename(path)
     infos.image = theme.getIconImage(infos)
     infos.description = infos.isDir ? "folder" : infos.isURI ? "uri" : "file"

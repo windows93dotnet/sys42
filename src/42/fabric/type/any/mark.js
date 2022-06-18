@@ -59,5 +59,9 @@ export default function mark(value) {
     return `${value.constructor?.name}#${value.toString()}`
   }
 
+  if (typeof value.toJSON === "function") {
+    return `${value.constructor?.name}#${value.toJSON()}`
+  }
+
   return "<unknown>"
 }

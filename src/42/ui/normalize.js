@@ -15,6 +15,16 @@ import isArrayLike from "../fabric/type/any/is/isArrayLike.js"
 import noop from "../fabric/type/function/noop.js"
 import ATTRIBUTES_ALLOW_LIST from "../fabric/constants/ATTRIBUTES_ALLOW_LIST.js"
 
+const ATTRIBUTES = new Set(
+  ATTRIBUTES_ALLOW_LIST.concat([
+    "dataset",
+    "aria",
+    // TODO: add SVG_ATTRIBUTES_ALLOW_LIST
+    "viewbox",
+  ])
+)
+const ATTRIBUTES_WITHDASH = new Set(["acceptCharset", "httpEquiv"])
+
 const DEF_KEYWORDS = new Set([
   "actions",
   "computed",
@@ -102,7 +112,9 @@ export function normalizeAttrs(def, ctx) {
   for (const [key, val] of Object.entries(def)) {
     if (
       !DEF_KEYWORDS.has(key) &&
-      (ctx?.trusted || ATTRIBUTES_ALLOW_LIST.includes(key))
+      (ctx?.trusted ||
+        ATTRIBUTES.has(key.toLowerCase()) ||
+        ATTRIBUTES_WITHDASH.has(key))
     ) {
       const type = typeof val
       if (val && type === "object") {
@@ -150,7 +162,7 @@ export function normalizeCtx(ctx = {}) {
   return ctx
 }
 
-export function normalizeDef(def = {}, ctx = normalizeCtx()) {
+export function normalizeDef(def = {}, ctx = normalizeCtx(), options) {
   ctx.type = typeof def
 
   if (ctx.type === "string") {
@@ -176,23 +188,25 @@ export function normalizeDef(def = {}, ctx = normalizeCtx()) {
 
     if (def.computed) normalizeComputeds(def.computed, ctx)
 
+    if (options?.attrs !== false) {
+      const attrs = normalizeAttrs(def, ctx)
+      if (!isEmptyObject(attrs)) def.attrs = attrs
+    }
+
+    if (options?.props !== false && def.props) {
+      for (const key of Object.keys(def.props)) {
+        if (key in def && typeof def[key] === "string") {
+          def[key] = normalizeString(def[key], ctx)
+        }
+      }
+    }
+
     if (def.scope) {
       if (ctx.stateScope) {
         ctx.stateScope = resolveScope(ctx.stateScope, def.scope, ctx)
       }
 
       ctx.scope = resolveScope(ctx.scope, def.scope, ctx)
-    }
-
-    const attrs = normalizeAttrs(def, ctx)
-    if (!isEmptyObject(attrs)) def.attrs = attrs
-
-    if (def.props) {
-      for (const key of Object.keys(def.props)) {
-        if (key in def && typeof def[key] === "string") {
-          def[key] = normalizeString(def[key], ctx)
-        }
-      }
     }
   }
 

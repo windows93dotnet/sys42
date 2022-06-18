@@ -1,4 +1,5 @@
 import memoize from "../function/memoize.js"
+import assertPath from "./assertPath.js"
 import pick from "../object/pick.js"
 import parseMimetype from "../file/parseMimetype.js"
 import parsePath from "./core/parsePath.js"
@@ -19,6 +20,7 @@ const urlKeys = [
 ]
 
 const parseFilename = memoize((filename, options) => {
+  assertPath(filename)
   const index = options?.index // ?? "index.html"
 
   const url = new URL(filename, "file:")

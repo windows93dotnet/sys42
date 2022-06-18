@@ -104,6 +104,7 @@ export default class State extends Emitter {
   async ready(n = 10) {
     await this.ctx.undones.done()
     await this.#update.ready
+    await 0 // queueMicrotask
 
     if (this.ctx.undones.length > 0) {
       if (n < 0) throw new Error("Too much recursion")
