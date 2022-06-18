@@ -120,8 +120,8 @@ export function normalizeAttrs(def, ctx) {
   return attrs
 }
 
-export function normalizeComputeds(computed, ctx) {
-  for (const [key, val] of Object.entries(computed)) {
+export function normalizeComputeds(computeds, ctx) {
+  for (const [key, val] of Object.entries(computeds)) {
     normalizeComputed(resolveScope(ctx.scope, key, ctx), val, ctx)
   }
 }

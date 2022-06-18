@@ -25,7 +25,7 @@ function objectify(def) {
 }
 
 export default class Component extends HTMLElement {
-  static async define(Class) {
+  static define(Class) {
     if (typeof Class === "object") {
       Class = class extends Component {
         static definition = Class
@@ -76,7 +76,7 @@ export default class Component extends HTMLElement {
   }
 
   connectedCallback() {
-    if (!this.isConnected) return
+    if (!this.isConnected || this.hasAttribute("data-no-init")) return
     if (this.#lifecycle === RENDER) this.#setup()
     else if (this.#lifecycle === INIT) this.ready.then(() => this.#setup())
     else if (this.#lifecycle === CREATE) this.init().then(() => this.#setup())
@@ -128,7 +128,7 @@ export default class Component extends HTMLElement {
       let i = this.ctx.componentsIndexes[localName] ?? -1
       this.ctx.componentsIndexes[localName] = ++i
       this.ctx.stateScope = this.ctx.scope
-      this.ctx.scope = resolveScope(this.localName, String(i), ctx)
+      this.ctx.scope = resolveScope(this.localName, String(i))
     }
 
     this.#observed = config.props ? await renderProps(this) : undefined
@@ -147,9 +147,13 @@ export default class Component extends HTMLElement {
 
   async init(...args) {
     this.ready ??= defer()
-    await this.#init(...args)
-      .then(this.ready.resolve)
-      .catch((err) => this.ready.reject(err))
+    try {
+      await this.#init(...args)
+      this.ready.resolve()
+    } catch (err) {
+      this.ready.reject(err)
+      throw err
+    }
   }
 
   destroy() {

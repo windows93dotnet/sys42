@@ -16,7 +16,7 @@ export default function resolveScope(scope, path, ctx) {
   path = String(path)
 
   if (typeof scope === "string") {
-    if (ctx.el.def) scope = checkProps(ctx, path) ?? scope
+    if (ctx?.el.def) scope = checkProps(ctx, path) ?? scope
   } else {
     ctx ??= scope
     scope = ctx.scope
@@ -35,6 +35,6 @@ export default function resolveScope(scope, path, ctx) {
   }
 
   const out = resolvePath(scope, path)
-
+  if (ctx === undefined) return out
   return locate(ctx.state.value, `${out}/$ref`, sep) ?? out
 }

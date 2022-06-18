@@ -5,7 +5,9 @@ export default function renderComponent(el, def, ctx) {
   ctx.components.push(deferred)
   const tag = el.localName
 
-  if (el.constructor === HTMLElement) {
+  if (customElements.get(tag) === undefined) {
+    el.toggleAttribute("data-no-init", true)
+
     const module = tag.slice(3)
     if (!module.startsWith("t-")) {
       import(`../components/${module}.js`).catch(() => {
@@ -16,13 +18,15 @@ export default function renderComponent(el, def, ctx) {
     customElements
       .whenDefined(tag)
       .then(() => {
-        el.setAttribute("data-no-init", true)
         customElements.upgrade(el)
-        return el.init(def, ctx).then(deferred.resolve)
+        return el.init(def, ctx)
       })
-      .catch((err) => deferred.reject(err))
+      .then(deferred.resolve)
+      .catch(deferred.reject)
   } else {
-    el.init(def, ctx).then(deferred.resolve)
+    el.init(def, ctx) //
+      .then(deferred.resolve)
+      .catch(deferred.reject)
   }
 
   return el
