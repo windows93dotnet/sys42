@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>desktop</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/style.css" id="theme" />
+
+<script type="module">
+  import ui from "../42/ui.js"
+  const app = await ui({
+    tag: "ui-folderview",
+    path: "/42/fabric/",
+    selection: ["/42/fabric/mainloop.js"],
+  })
+
+  setTimeout(() => {
+    // console.clear()
+    const el = app.get("ui-folderview")
+    el.path = "/"
+    el.selection.push("/42.sw.js")
+  }, 300)
+</script>
+
+<script type="_module">
+  import explorer from "../42/ui/components/explorer.js"
+  explorer()
+</script>
+
+<script type="_module">
+  import "../42/os.js"
+  import open from "../42/os/cmd/open.cmd.js"
+  open(["/index.html", "/42/test.js"])
+</script>
+
+<script type="_module">
+  import "../42/os.js"
+  import "../42/ui/components/enclose.js"
+  import ui from "../42/ui.js"
+  import explorer from "../42/ui/components/explorer.js"
+  import open from "../42/os/cmd/open.cmd.js"
+
+  // navigator.serviceWorker?.register("/42.sw.js", { type: "module" })
+
+  window.app = await ui.trusted({
+    type: "body.box-fit.box-h._debug",
+    content: [
+      {
+        type: "main#desktop.desktop",
+        content: [
+          {
+            type: "ui-folderview.scroll-auto",
+            // path: "/tests/fixtures/formats/",
+            shortcuts: [
+              {
+                key: "[dblclick]",
+                selector: 'ui-icon[aria-description="folder"]',
+                run: "openFolder",
+                args: ["target.path"],
+              },
+              {
+                key: "[dblclick]",
+                selector: 'ui-icon[aria-description="file"]',
+                run: "openFile",
+                args: ["target.path"],
+              },
+            ],
+          },
+          // { type: "ui-workspaces" },
+        ],
+      },
+      // {
+      //   type: "ui-tabs",
+      //   // scope: "openedFiles",
+      //   // data: [{ path: "ok" }],
+      //   data: {
+      //     currentTab: 0,
+      //     openedFiles: [],
+      //   },
+
+      //   label: "{{path|basename}}{{dirty ? '*' : ''}}",
+      //   content: {
+      //     type: "textarea.w-full",
+      //     name: "text",
+      //     label: "{{openedFiles|at(currentTab)|locate('path')}}",
+      //     value: "{{openedFiles|at(currentTab)|locate('file')|text}}",
+      //     class: "{{monospace ? 'font-mono' : ''}}",
+      //     spellcheck: "{{spellcheck}}",
+      //     wrap: "{{wrap ? 'soft' : 'off'}}",
+      //     prose: false,
+      //     compact: true,
+      //     autofocus: true,
+      //   },
+      // },
+      // {
+      //   type: "ui-enclose.pa-xxl.bd.desktop",
+      //   permissions: "app",
+      //   // permissions: "trusted",
+      //   // permissions: ["scripts"],
+      //   check: false,
+      //   // src: "../demos/ui/components/menu.demo.html",
+      //   // src: "../demos/ui/components/dialog.demo.html",
+      //   src: "../42/os/apps/TextEdit/index.html",
+      //   // src: "../demos/os/exec.demo.html",
+      //   // src: "../demos/ui/traits/selectable.demo.html",
+      // },
+      {
+        type: "footer#taskbar.outset.pa-xs",
+        scope: "desktop",
+        content: {
+          type: "button",
+          label: "Start",
+          picto: "puzzle",
+          popup: {
+            picto: false,
+            type: "ui-menu",
+            content: [{ label: "Test" }],
+          },
+        },
+      },
+    ],
+
+    actions: {
+      openFolder(path) {
+        explorer(path)
+      },
+      openFile(path) {
+        open(path)
+      },
+    },
+  })
+
+  // open("/home/anonymous/theme.cbor")
+  open(["/index.html", "/42/test.js", "/42/ui.js"])
+  // explorer("/42/")
+  // explorer("/home/anonymous/")
+
+  // explorer("/42/", { selection: ["/42/ui.js", "/42/test.js"] })
+  // explorer("/42/../ui.js")
+  // explorer("/42/../style.css")
+  // explorer("/42/fabric/../ui.js")
+</script>

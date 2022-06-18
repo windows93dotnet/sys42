@@ -32,7 +32,10 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: -1;
+    pointer-events: none;
+  }
+  main a {
+    pointer-events: auto;
   }
 </style>
 
@@ -57,9 +60,6 @@
       "/tests/42/ui/components.test.js",
       "/tests/42/ui/components-ref.test.js",
       "/tests/42/ui/components/icon.test.js",
-      // "/tests/42/ui.test.js",
-      // "/tests/42/ui/components.test.js",
-      // "/tests/42/ui/create.test.js",
       // "/tests/42/system/console/parseLogTemplate.test.js",
       // "/tests/42/system/console/formats/highlight.test.js",
       // "/tests/42/fabric/type/any/stringify.test.js",
