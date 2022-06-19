@@ -49,7 +49,7 @@ test("html", async (t) => {
 
   t.is(app.el.textContent, "script\u200b.js")
 
-  app.get("ui-icon").path = "/derp/foo.bar/"
+  app.query("ui-icon").path = "/derp/foo.bar/"
   await app
 
   t.is(app.el.textContent, "foo\u200b.bar")
@@ -93,7 +93,7 @@ test("infos", async (t) => {
     },
   })
 
-  const icons = app.batch("ui-icon")
+  const icons = app.each("ui-icon")
   const { infos } = icons
 
   t.eq(
@@ -199,7 +199,7 @@ test("repeat", async (t) => {
     "/ui-icon/0/infos/description",
   ])
 
-  const icons = app.batch("ui-icon", { live: true })
+  const icons = app.each("ui-icon", { live: true })
   t.eq(icons.textContent, ["foo\u200b.js", "derp"])
 
   app.data.arr = [{ x: "bar.txt" }]
@@ -242,7 +242,7 @@ test("repeat", 2, async (t) => {
     "/ui-icon/0/infos/description",
   ])
 
-  const icons = app.batch("ui-icon", { live: true })
+  const icons = app.each("ui-icon", { live: true })
   t.eq(icons.textContent, ["foo\u200b.js", "derp"])
 
   app.data.arr = ["bar.txt"]

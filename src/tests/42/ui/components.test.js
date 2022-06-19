@@ -124,7 +124,7 @@ test.tasks(
         content: { tag: "ui-t-signal" },
       },
       async check(t, app) {
-        const el = app.get("ui-t-signal")
+        const el = app.query("ui-t-signal")
         const [stub] = t.stubs
         t.is(stub.count, 0)
 
@@ -171,7 +171,7 @@ test.tasks(
       },
       expected: '<ui-t-props bar="2">foo: 1, bar: 2</ui-t-props>',
       async check(t, app) {
-        const el = app.get("ui-t-props")
+        const el = app.query("ui-t-props")
 
         t.is(el.bar, 2)
 
@@ -220,7 +220,7 @@ test.tasks(
       },
       expected: '<ui-t-props-state bar="2">foo: 1, bar: 2</ui-t-props-state>',
       async check(t, app) {
-        const el = app.get("ui-t-props-state")
+        const el = app.query("ui-t-props-state")
 
         t.is(app.state.get("bar"), 2)
         t.is(el.bar, 2)
@@ -634,7 +634,7 @@ test("state", "dynamic", async (t) => {
   })
   t.is(app.el.textContent, "x:a-x:b-")
 
-  const el = app.get("ui-t-nested-dynamic")
+  const el = app.query("ui-t-nested-dynamic")
 
   el.list.push({ foo: "c" })
   await app
@@ -733,7 +733,7 @@ async function testStringArrayWithTransfers(t, app) {
     },
   })
 
-  app.get("ui-t-nested-string-array").destroy()
+  app.query("ui-t-nested-string-array").destroy()
 
   t.eq(app.state.value, {
     "arr": ["foo", "B"],
@@ -833,7 +833,7 @@ test("computed", async (t) => {
     t.is(updates.shift(), [...changes][0])
   })
 
-  app.get("ui-t-computed").formated = "HELLO/WORLD"
+  app.query("ui-t-computed").formated = "HELLO/WORLD"
   await app
 
   t.is(
@@ -956,7 +956,7 @@ test("computed", "computed prop", async (t) => {
     },
   })
 
-  const el = app.get("ui-t-compu-prop")
+  const el = app.query("ui-t-compu-prop")
 
   t.eq(Object.keys(app.ctx.renderers), [
     "/ui-t-compu-prop/0/formated",

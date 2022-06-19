@@ -7,16 +7,16 @@ export default class DOMQuery {
     this.el = ensureElement(el)
   }
 
-  get(selector) {
+  query(selector) {
     return this.el.querySelector(`:scope ${selector}`)
   }
 
-  getAll(selector) {
+  queryAll(selector) {
     return [...this.el.querySelectorAll(`:scope ${selector}`)]
   }
 
-  batch(selector, options) {
-    const init = options?.live ? [] : this.getAll(selector)
+  each(selector, options) {
+    const init = options?.live ? [] : this.queryAll(selector)
     return new Proxy(init, {
       get: (target, prop) => {
         if (options?.live) {
@@ -28,7 +28,7 @@ export default class DOMQuery {
 
         if (target.length === 0) return target
 
-        if (target.some((x) => typeof x[prop] === "function")) {
+        if (target.some((item) => typeof item[prop] === "function")) {
           return (...args) => target.map((item) => item[prop]?.(...args))
         }
 
@@ -37,3 +37,5 @@ export default class DOMQuery {
     })
   }
 }
+
+DOMQuery.prototype.$ = DOMQuery.prototype.each

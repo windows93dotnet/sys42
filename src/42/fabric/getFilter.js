@@ -3,6 +3,7 @@
 
 import locate from "./locator/locate.js"
 import fileSize from "./type/file/fileSize.js"
+import dispatch from "./dom/dispatch.js"
 
 const filters = {}
 
@@ -102,9 +103,8 @@ filters.file = {
     fs ??= await import("../system/fs.js").then((m) => m.default)
     try {
       return await fs.open(path)
-    } catch (error) {
-      console.log(0, path, error)
-      this.el.dispatchEvent(new ErrorEvent("error", { error, bubbles: true }))
+    } catch (err) {
+      dispatch(this.el, err)
       return fallback
     }
   },
@@ -113,9 +113,8 @@ filters.file = {
     fs ??= await import("../system/fs.js").then((m) => m.default)
     try {
       return await fs.readText(path)
-    } catch (error) {
-      console.log(0, path, error)
-      this.el.dispatchEvent(new ErrorEvent("error", { error, bubbles: true }))
+    } catch (err) {
+      dispatch(this.el, err)
       return fallback
     }
   },

@@ -1648,7 +1648,7 @@ test("repeat", "input element", async (t) => {
     },
   })
 
-  let ta = app.getAll("textarea")
+  let ta = app.queryAll("textarea")
   t.is(ta.length, 2)
   t.is(ta[0].name, "/arr/0/a")
   t.is(ta[0].value, "x")
@@ -1659,7 +1659,7 @@ test("repeat", "input element", async (t) => {
   app.data.arr = [{ a: "z" }]
   await app
 
-  ta = app.getAll("textarea")
+  ta = app.queryAll("textarea")
   t.is(ta.length, 1)
   t.is(ta[0].name, "/arr/0/a")
   t.is(ta[0].value, "z")

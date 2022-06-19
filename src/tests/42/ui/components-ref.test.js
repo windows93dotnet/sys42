@@ -25,7 +25,7 @@ test("props", 1, async (t) => {
 
   t.is(app.el.innerHTML, '<ui-a bar="-">foo: 1, bar: -</ui-a>')
 
-  app.get("ui-a").bar = 0
+  app.query("ui-a").bar = 0
   await app
 
   t.is(app.el.innerHTML, '<ui-a bar="0">foo: 1, bar: 0</ui-a>')
@@ -80,7 +80,7 @@ test("props", 3, async (t) => {
 <ui-a id="a2" bar="-2">foo: 1, bar: -2</ui-a>`
   )
 
-  app.get("#a1").bar = -3
+  app.query("#a1").bar = -3
   await app
 
   t.is(
@@ -119,7 +119,7 @@ test("props", 4, async (t) => {
 
   t.is(app.el.innerHTML, '<ui-a bar="b">foo: b, bar: b</ui-a>')
 
-  app.get("ui-a").bar = "c"
+  app.query("ui-a").bar = "c"
   await app
 
   t.eq(app.state.value, {
@@ -158,7 +158,7 @@ test("props", 5, async (t) => {
 
   t.is(app.el.innerHTML, '<ui-a bar="B">foo: b, bar: B</ui-a>')
 
-  app.get("ui-a").bar = "c"
+  app.query("ui-a").bar = "c"
   await app
 
   t.eq(app.state.value, {
@@ -321,7 +321,7 @@ test("scopped", 2, async (t) => {
 <ui-a bar="3">foo: , bar: 3</ui-a>`
   )
 
-  app.get("ui-a:last-of-type").destroy()
+  app.query("ui-a:last-of-type").destroy()
 
   t.eq(app.state.value, {
     "foo": 1,

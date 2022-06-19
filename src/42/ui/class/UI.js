@@ -30,7 +30,7 @@ export default class UI extends DOMQuery {
       if (firstUpdateDone) return
       firstUpdateDone = true
       this.ctx.state.throttle = true
-      this.getAll("[data-autofocus]").at(-1)?.focus()
+      this.queryAll("[data-autofocus]").at(-1)?.focus()
     })
   }
 
