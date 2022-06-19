@@ -10,8 +10,9 @@ export default function renderComponent(el, def, ctx) {
 
     const module = tag.slice(3)
     if (!module.startsWith("t-")) {
-      import(`../components/${module}.js`).catch(() => {
-        deferred.reject(new Error(`Unknown component: ${tag}`))
+      import(`../components/${module}.js`).catch((err) => {
+        err.tag = tag
+        deferred.reject(err)
       })
     }
 

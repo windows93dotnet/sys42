@@ -1,4 +1,4 @@
-ui-folderview {
+ui-folder {
   flex: 1;
   display: block;
   overflow-y: auto;
@@ -8,7 +8,7 @@ ui-folderview {
   padding: var(--unit-md) 0;
 }
 
-ui-folderview:focus {
+ui-folder:focus {
   outline: none;
 }
 

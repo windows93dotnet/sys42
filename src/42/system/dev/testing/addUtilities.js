@@ -56,6 +56,23 @@ export default function addUtilities(item, isExecutionContext) {
     item.tasks = (list, cb) => tasks(list, cb, item)
   }
 
+  function container(options = {}) {
+    const elements = []
+
+    item.teardown(() => {
+      for (const el of elements) el.remove()
+      elements.length = 0
+    })
+
+    return function (connect = options.connect) {
+      const el = document.createElement(options.tag ?? "section")
+      if (options.id) el.id = options.id
+      elements.push(el)
+      if (connect) document.body.append(el)
+      return el
+    }
+  }
+
   item.utils = {
     arrify,
     allKeys,
@@ -75,5 +92,6 @@ export default function addUtilities(item, isExecutionContext) {
     system,
     uid,
     prettify,
+    container,
   }
 }

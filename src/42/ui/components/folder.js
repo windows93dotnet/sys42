@@ -5,9 +5,9 @@ import disk from "../../system/fs/disk.js"
 // import selectable from "../trait/selectable.js"
 // import listen from "../../fabric/dom/listen.js"
 
-export class FolderView extends Component {
+export class Folder extends Component {
   static definition = {
-    tag: "ui-folderview",
+    tag: "ui-folder",
 
     tabIndex: -1,
 
@@ -38,11 +38,14 @@ export class FolderView extends Component {
 
     content: {
       scope: "items",
-      repeat: {
-        tag: "ui-icon",
-        path: "{{.}}",
-        aria: { selected: "{{../../selection|includes(.)}}" },
-      },
+      repeat: [
+        {
+          tag: "ui-icon",
+          path: "{{.}}",
+          aria: { selected: "{{../../selection|includes(.)}}" },
+        },
+        "\n",
+      ],
     },
   }
 
@@ -61,4 +64,4 @@ export class FolderView extends Component {
   }
 }
 
-export default Component.define(FolderView)
+export default Component.define(Folder)

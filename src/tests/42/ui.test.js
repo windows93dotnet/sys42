@@ -1,19 +1,7 @@
 import test from "../../42/test.js"
 import ui from "../../42/ui.js"
 
-const elements = []
-function tmp(connect = false) {
-  const el = document.createElement("section")
-  el.id = "ui-tests"
-  elements.push(el)
-  if (connect) document.body.append(el)
-  return el
-}
-
-test.teardown(() => {
-  for (const el of elements) el.remove()
-  elements.length = 0
-})
+const tmp = test.utils.container({ id: "ui-tests" })
 
 test("tag", (t) => {
   const app = ui(tmp(), { tag: "em" })

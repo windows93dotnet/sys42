@@ -5,6 +5,7 @@ import highlight from "../../console/formats/highlight.js"
 import formatFilename from "../../console/formats/formatFilename.js"
 import formatError from "../../console/formats/formatError.js"
 import truncate from "../../../fabric/type/string/truncate.js"
+import equal from "../../../fabric/type/any/equal.js"
 import __p from "../../../fabric/type/string/pluralize.js"
 import { escapeLog } from "../../console/logUtils.js"
 
@@ -183,8 +184,16 @@ function displaySuite(current, config) {
   }
 
   if (current.uncaughts.length > 0) {
+    const uncaughts = []
+
     for (const err of current.uncaughts) {
-      warnings.push([config.icon, "Uncaught error", "", err])
+      if (equal(uncaughts.at(-1)?.err, err)) uncaughts.at(-1).cnt++
+      else uncaughts.push({ err, cnt: 0 })
+    }
+
+    for (const { err, cnt } of uncaughts) {
+      const title = "Uncaught error" + (cnt > 0 ? ` {dim x${cnt}}` : "")
+      warnings.push([config.icon, title, "", err])
     }
   }
 }

@@ -2,19 +2,7 @@ import test from "../../../42/test.js"
 import ui from "../../../42/ui.js"
 import Component from "../../../42/ui/class/Component.js"
 
-const elements = []
-function tmp(connect = false) {
-  const el = document.createElement("section")
-  el.id = "component-tests"
-  elements.push(el)
-  if (connect) document.body.append(el)
-  return el
-}
-
-test.teardown(() => {
-  for (const el of elements) el.remove()
-  elements.length = 0
-})
+const tmp = test.utils.container({ id: "component-ref-tests" })
 
 Component.define({
   tag: "ui-a",

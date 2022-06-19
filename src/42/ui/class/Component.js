@@ -50,7 +50,7 @@ export default class Component extends HTMLElement {
       }
     }
 
-    customElements.define(tag, Class)
+    if (!customElements.get(tag)) customElements.define(tag, Class)
     return (...args) => new Class(...args)
   }
 

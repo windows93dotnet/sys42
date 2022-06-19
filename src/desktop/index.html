@@ -7,14 +7,14 @@
 <script type="module">
   import ui from "../42/ui.js"
   const app = await ui({
-    tag: "ui-folderview",
+    tag: "ui-folder",
     path: "/42/fabric/",
     selection: ["/42/fabric/mainloop.js"],
   })
 
   setTimeout(() => {
     // console.clear()
-    const el = app.get("ui-folderview")
+    const el = app.get("ui-folder")
     el.path = "/"
     el.selection.push("/42.sw.js")
   }, 300)
@@ -47,7 +47,7 @@
         type: "main#desktop.desktop",
         content: [
           {
-            type: "ui-folderview.scroll-auto",
+            type: "ui-folder.scroll-auto",
             // path: "/tests/fixtures/formats/",
             shortcuts: [
               {
