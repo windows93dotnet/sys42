@@ -38,7 +38,9 @@ export default function render(...args) {
   let el
 
   if (def.tag || def.attrs) {
-    el = create(ctx, def.tag, def.attrs)
+    const isComponent = def.tag?.startsWith("ui-")
+
+    el = create(ctx, def.tag, isComponent ? undefined : def.attrs)
     ctx.el = el
     const { localName } = el
 
@@ -48,8 +50,6 @@ export default function render(...args) {
         el.value = val
       })
     }
-
-    const isComponent = localName.startsWith("ui-")
 
     if (
       !isComponent &&

@@ -136,6 +136,8 @@ export default class Component extends HTMLElement {
     const attrs = normalizeAttrs(config, this.ctx)
     if (attrs) renderAttributes(this, this.ctx, attrs)
 
+    await 0 // queueMicrotask
+
     this.replaceChildren(render(this.def.content, this.ctx))
 
     await this.ctx.components.done()

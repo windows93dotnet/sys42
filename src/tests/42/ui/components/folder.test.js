@@ -5,7 +5,7 @@ const tmp = test.utils.container({ id: "ui-folder-tests", connect: true })
 
 test.suite.timeout(1000)
 
-test("html", async (t) => {
+test("generate icon list", async (t) => {
   const app = await ui(tmp(), {
     tag: "ui-folder",
     path: "/tests/fixtures/folder/",
@@ -39,14 +39,47 @@ test("html", async (t) => {
     },
   })
 
-  t.is(
-    app.el.textContent,
-    `\
-subfolder
-script\u200b.js
-style\u200b.css
-`
-  )
+  const el = app.query("ui-folder")
+  const icons = app.each("ui-icon", { live: true })
 
-  // t.is(app.el.innerHTML)
+  t.eq(el.selection, ["/tests/fixtures/folder/script.js"])
+
+  t.eq(icons.textContent, [
+    "subfolder", //
+    "script\u200b.js",
+    "style\u200b.css",
+  ])
+
+  t.eq(icons.getAttribute("aria-selected"), [
+    "false", //
+    "true",
+    "false",
+  ])
+
+  el.selection.push("/tests/fixtures/folder/style.css")
+  await app
+
+  t.eq(icons.getAttribute("aria-selected"), [
+    "false", //
+    "true",
+    "true",
+  ])
+
+  el.selection = ["/tests/fixtures/folder/subfolder/"]
+  await app
+
+  t.eq(icons.getAttribute("aria-selected"), [
+    "true", //
+    "false",
+    "false",
+  ])
+
+  // el.path = "/tests/fixtures/folder/subfolder/"
+  // await app
+
+  // t.eq(el.selection, [])
+
+  // t.eq(icons.textContent, [
+  //   "file\u200b.txt", //
+  // ])
 })

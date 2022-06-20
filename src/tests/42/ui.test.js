@@ -632,15 +632,6 @@ test.tasks(
       def: { tag: "span#foo.bar", class: "baz" },
       expected: '<span id="foo" class="baz bar"></span>',
     },
-    // {
-    //   def: { tag: "checkbox#foo.bar", class: "baz" },
-    //   expected:
-    //     '<div class="check-cont"><input class="baz bar" id="foo" type="checkbox"></div>',
-    // },
-    // {
-    //   def: { tag: "ui-t-component#foo.bar", class: "baz" },
-    //   expected: '<ui-t-component class="baz bar" id="foo"></ui-t-component>',
-    // },
   ],
   ({ def, expected }) => {
     test("abbr", `expand`, def, async (t) => {

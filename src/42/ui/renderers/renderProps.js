@@ -124,9 +124,10 @@ export default async function renderProps(el) {
       if (ctx.cancel.signal.aborted === true) return
 
       if (!item.computed) {
-        ctx.state.now(() =>
-          ctx.state.set(scope, ref ?? val, { silent: !update })
-        )
+        ctx.state.now(() => {
+          const value = ref ?? val
+          ctx.state.set(scope, value, { silent: !update })
+        })
       }
 
       if (item.css) {
