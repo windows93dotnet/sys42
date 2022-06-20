@@ -8,16 +8,16 @@ test.suite.timeout(1000)
 test("generate icon list", async (t) => {
   const app = await ui(tmp(), {
     tag: "ui-folder",
-    path: "/tests/fixtures/folder/",
-    selection: ["/tests/fixtures/folder/script.js"],
+    path: "/tests/fixtures/components/folder/",
+    selection: ["/tests/fixtures/components/folder/script.js"],
   })
 
   t.eq(app.state.value, {
     "ui-folder": {
       0: {
-        path: "/tests/fixtures/folder/",
+        path: "/tests/fixtures/components/folder/",
         glob: undefined,
-        selection: ["/tests/fixtures/folder/script.js"],
+        selection: ["/tests/fixtures/components/folder/script.js"],
       },
     },
     "ui-icon": {
@@ -42,7 +42,7 @@ test("generate icon list", async (t) => {
   const el = app.query("ui-folder")
   const icons = app.each("ui-icon", { live: true })
 
-  t.eq(el.selection, ["/tests/fixtures/folder/script.js"])
+  t.eq(el.selection, ["/tests/fixtures/components/folder/script.js"])
 
   t.eq(icons.textContent, [
     "subfolder", //
@@ -56,7 +56,7 @@ test("generate icon list", async (t) => {
     "false",
   ])
 
-  el.selection.push("/tests/fixtures/folder/style.css")
+  el.selection.push("/tests/fixtures/components/folder/style.css")
   await app
 
   t.eq(icons.getAttribute("aria-selected"), [
@@ -65,7 +65,7 @@ test("generate icon list", async (t) => {
     "true",
   ])
 
-  el.selection = ["/tests/fixtures/folder/subfolder/"]
+  el.selection = ["/tests/fixtures/components/folder/subfolder/"]
   await app
 
   t.eq(icons.getAttribute("aria-selected"), [
@@ -74,7 +74,7 @@ test("generate icon list", async (t) => {
     "false",
   ])
 
-  // el.path = "/tests/fixtures/folder/subfolder/"
+  // el.path = "/tests/fixtures/components/folder/subfolder/"
   // await app
 
   // t.eq(el.selection, [])
