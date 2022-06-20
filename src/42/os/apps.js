@@ -102,7 +102,7 @@ class AppManager extends ConfigFile {
       label: appName,
       content: {
         style: { width: "400px", height: "350px" },
-        type: "ui-enclose",
+        type: "ui-sandbox",
         permissions: "app",
         // src: "/42/os/apps/TextEdit/index.html",
         srcdoc: `\

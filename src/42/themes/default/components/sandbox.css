@@ -1,4 +1,4 @@
-ui-enclose {
+ui-sandbox {
   --zoom: 100;
 
   display: block;
@@ -10,12 +10,12 @@ ui-enclose {
   position: relative;
 }
 
-ui-enclose > * {
+ui-sandbox > * {
   position: absolute;
   inset: 0;
 }
 
-.ui-enclose__scene {
+.ui-sandbox__scene {
   --_zoom: calc(var(--zoom) / 100);
   width: calc(100% / var(--_zoom));
   height: calc(100% / var(--_zoom));
@@ -23,14 +23,14 @@ ui-enclose > * {
   transform-origin: top left;
 }
 
-.ui-enclose__scene > iframe {
+.ui-sandbox__scene > iframe {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
 }
 
-.ui-enclose__message {
+.ui-sandbox__message {
   display: grid;
   justify-items: center;
   align-content: center;
@@ -38,6 +38,6 @@ ui-enclose > * {
   pointer-events: none;
 }
 
-.ui-enclose__message > * {
+.ui-sandbox__message > * {
   pointer-events: auto;
 }

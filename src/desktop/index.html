@@ -6,10 +6,17 @@
 
 <script type="module">
   import ui from "../42/ui.js"
-  await ui({
+  const app = await ui({
     tag: "ui-sandbox",
-    scr: "",
+    check: true,
+    permissions: "app",
+    src: "/tests/fixtures/components/sandbox/hello.html",
+    zoom: 100,
   })
+
+  setTimeout(() => {
+    app.query("ui-sandbox").go("/tests/fixtures/components/sandbox/script.html")
+  }, 300)
 </script>
 
 <script type="_module">
@@ -107,7 +114,7 @@
       //   },
       // },
       // {
-      //   type: "ui-enclose.pa-xxl.bd.desktop",
+      //   type: "ui-sandbox.pa-xxl.bd.desktop",
       //   permissions: "app",
       //   // permissions: "trusted",
       //   // permissions: ["scripts"],

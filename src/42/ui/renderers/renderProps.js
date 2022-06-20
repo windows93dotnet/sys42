@@ -123,12 +123,21 @@ export default async function renderProps(el) {
     const render = (val, update) => {
       if (ctx.cancel.signal.aborted === true) return
 
-      if (!item.computed) {
-        ctx.state.now(() => {
-          const value = ref ?? val
-          ctx.state.set(scope, value, { silent: !update })
-        })
-      }
+      ctx.state.now(() => {
+        if (!item.computed) {
+          ctx.state.set(scope, ref ?? val, { silent: !update })
+        }
+
+        if (item.update && !el.ready.isPending) {
+          if (typeof item.update === "function") {
+            item.update.call(el, ref ? ctx.state.get(ref.$ref) : val)
+          }
+
+          if (el.update) {
+            el.update(key, ref ? ctx.state.get(ref.$ref) : val)
+          }
+        }
+      })
 
       if (item.css) {
         const cssVar = `--${typeof item.css === "string" ? item.css : key}`

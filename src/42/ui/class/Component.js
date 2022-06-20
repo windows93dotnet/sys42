@@ -55,11 +55,14 @@ export default class Component extends HTMLElement {
   }
 
   #observed
+  #destroyCallback
   #lifecycle = CREATE
 
   constructor(...args) {
     super()
     this.ready = defer()
+    this.#destroyCallback = this.destroy
+    this.destroy = this.#destroy
     const shouldInit =
       args.length > 0 ||
       (this.parentElement !== null && !this.hasAttribute("data-no-init"))
@@ -84,7 +87,7 @@ export default class Component extends HTMLElement {
 
   disconnectedCallback() {
     if (this.#lifecycle >= RECYCLE) return
-    this.destroy()
+    this.#destroy()
   }
 
   recycle() {
@@ -138,7 +141,7 @@ export default class Component extends HTMLElement {
 
     await 0 // queueMicrotask
 
-    this.replaceChildren(render(this.def.content, this.ctx))
+    this.append(render(this.def.content, this.ctx))
 
     await this.ctx.components.done()
     await this.ctx.undones.done()
@@ -159,10 +162,12 @@ export default class Component extends HTMLElement {
     }
   }
 
-  destroy() {
+  #destroy() {
     if (this.#lifecycle === DESTROY || this.#lifecycle === CREATE) return
     this.#lifecycle = DESTROY
 
+    this.#destroyCallback?.()
+    this.replaceChildren()
     this.remove()
 
     if (this.ctx.cancel.signal.aborted === false) {
