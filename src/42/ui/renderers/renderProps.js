@@ -68,9 +68,8 @@ const CONVERTERS = {
 
 CONVERTERS.array = CONVERTERS.object
 
-export default async function renderProps(el) {
-  const { ctx, def } = el
-  const { props } = def
+export default async function renderProps(el, props, def) {
+  const { ctx } = el
   const observed = {}
 
   if (!ctx.state.has(ctx.scope)) {
@@ -111,7 +110,7 @@ export default async function renderProps(el) {
       val = el[key]
     } else if (fromView && el.hasAttribute(attribute)) {
       val = fromView(el.getAttribute(attribute), attribute, el, item)
-    } else if (def && key in def) {
+    } else if (key in def) {
       val = def[key]
     } else if ("default" in item) {
       val = item.default

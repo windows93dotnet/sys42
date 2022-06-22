@@ -2,9 +2,9 @@ export default function bisect(obj, arr) {
   const a = {}
   const b = {}
 
-  for (const key of Object.keys(obj)) {
-    if (arr.includes(key)) b[key] = obj[key]
-    else a[key] = obj[key]
+  for (const [key, val] of Object.entries(obj)) {
+    if (arr.includes(key)) b[key] = val
+    else a[key] = val
   }
 
   return [a, b]

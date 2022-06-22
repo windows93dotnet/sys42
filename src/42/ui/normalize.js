@@ -193,14 +193,6 @@ export function normalizeDef(def = {}, ctx = normalizeCtx(), options) {
       if (!isEmptyObject(attrs)) def.attrs = attrs
     }
 
-    if (options?.props !== false && def.props) {
-      for (const key of Object.keys(def.props)) {
-        if (key in def && typeof def[key] === "string") {
-          def[key] = normalizeString(def[key], ctx)
-        }
-      }
-    }
-
     if (def.scope) {
       if (ctx.stateScope) {
         ctx.stateScope = resolveScope(ctx.stateScope, def.scope, ctx)

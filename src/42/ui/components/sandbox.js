@@ -1,7 +1,7 @@
 import Component from "../class/Component.js"
 import Resource from "../../fabric/class/Resource.js"
 import create from "../create.js"
-import ipc from "../../system/ipc.js"
+// import ipc from "../../system/ipc.js"
 
 export class Sandbox extends Component {
   static definition = {
@@ -24,6 +24,10 @@ export class Sandbox extends Component {
         type: "any",
         fromView: true,
         // update: true, // TODO: allow permissions update
+      },
+      content: {
+        type: "any",
+        update: true,
       },
       zoom: {
         type: "number",
@@ -69,9 +73,14 @@ export class Sandbox extends Component {
     this.cancel()
     this.message()
 
+    if (this.content) {
+      return void this.resource.module(`\
+import ui from "/42/ui.js"
+ui(${JSON.stringify(this.content)})`)
+    }
+
     if (this.srcdoc) {
-      this.resource.fill(this.srcdoc)
-      return
+      return void this.resource.fill(this.srcdoc)
     }
 
     if (!this.src) return
@@ -86,7 +95,7 @@ export class Sandbox extends Component {
 
     try {
       await this.resource.go(this.src, { signal })
-      this.channel ??= ipc.to(this.resource.el)
+      // this.channel ??= ipc.to(this.resource.el)
       this.message()
     } catch {
       this.message(

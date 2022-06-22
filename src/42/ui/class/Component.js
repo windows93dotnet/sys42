@@ -5,12 +5,12 @@ import { toKebabCase } from "../../fabric/type/string/letters.js"
 import defer from "../../fabric/type/promise/defer.js"
 import renderAttributes from "../renderers/renderAttributes.js"
 import renderProps from "../renderers/renderProps.js"
-import configure from "../../fabric/configure.js"
 import resolveScope from "../resolveScope.js"
 import render from "../render.js"
 import {
   normalizeCtx,
   normalizeDef,
+  normalizeString,
   normalizeComputeds,
   normalizeAttrs,
 } from "../normalize.js"
@@ -118,14 +118,31 @@ export default class Component extends HTMLElement {
     this.ctx = tmp
 
     const content = await this.render?.(this.ctx)
-    const config = configure(definition, objectify(content), objectify(def))
+
+    def = objectify(def)
+
+    let props
+    if (definition.props) {
+      const propsKeys = Object.keys(definition.props)
+      const entries = Object.entries(def)
+      props = {}
+      def = {}
+      for (const [key, val] of entries) {
+        if (propsKeys.includes(key)) {
+          props[key] =
+            typeof val === "string" ? normalizeString(val, this.ctx) : val
+        } else def[key] = val
+      }
+    }
+
+    const config = { ...definition, ...objectify(content), ...def }
     const { computed } = config
     this.ctx.computed = computed
     delete config.computed
 
     this.def = normalizeDef(config, this.ctx, { attrs: false })
 
-    if (this.def.props || this.def.computed) {
+    if (props || config.computed) {
       const { localName } = this
       let i = this.ctx.componentsIndexes[localName] ?? -1
       this.ctx.componentsIndexes[localName] = ++i
@@ -133,7 +150,10 @@ export default class Component extends HTMLElement {
       this.ctx.scope = resolveScope(this.localName, String(i))
     }
 
-    this.#observed = config.props ? await renderProps(this) : undefined
+    this.#observed = props
+      ? await renderProps(this, definition.props, props)
+      : undefined
+
     if (computed) normalizeComputeds(computed, this.ctx)
 
     const attrs = normalizeAttrs(config, this.ctx)
@@ -174,7 +194,7 @@ export default class Component extends HTMLElement {
       this.ctx.cancel(`${this.localName} destroyed`)
     }
 
-    if (this.def.props || this.def.computed) {
+    if (this.constructor.definition?.props || this.def.computed) {
       this.ctx.componentsIndexes[this.localName]--
       this.ctx.state.delete(this.ctx.scope, { silent: true })
     }

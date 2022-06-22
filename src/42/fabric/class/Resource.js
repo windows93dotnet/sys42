@@ -143,6 +143,18 @@ export default class Resource {
     this.el.srcdoc = doc
   }
 
+  async module(script) {
+    delete this.el.src
+    this.el.srcdoc = `\
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="/style.css" id="theme" />
+<script type="module">
+  ${script}
+</script>
+`
+  }
+
   async go(url, { signal } = this.config) {
     url = new URL(url, location.href)
 
