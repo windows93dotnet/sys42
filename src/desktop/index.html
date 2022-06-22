@@ -6,6 +6,36 @@
 
 <script type="module">
   import ui from "../42/ui.js"
+  const app = await ui({
+    tag: ".box-fit.box-center",
+    content: {
+      tag: "button.txt-xxl.pa.px-xxl",
+      content: "go",
+      on: {
+        click: "{{incr(cnt, e/target)}}",
+      },
+    },
+
+    data: {
+      cnt: 42,
+    },
+
+    actions: {
+      incr(cnt, e) {
+        console.log(777, cnt, e)
+        this.state.proxy.cnt++
+      },
+    },
+  })
+
+  setTimeout(() => {
+    app.query("button").click()
+    app.query("button").click()
+  }, 300)
+</script>
+
+<script type="_module">
+  import ui from "../42/ui.js"
   await ui({
     tag: "ui-sandbox",
     check: true,

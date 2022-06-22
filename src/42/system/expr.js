@@ -18,6 +18,8 @@ expr.compile = (parsed, options) => {
     locate,
     jsonParse,
     sep: options?.sep,
+    filters: options?.filters,
+    thisArg: options?.thisArg,
   })[0]
 
   return options?.boolean

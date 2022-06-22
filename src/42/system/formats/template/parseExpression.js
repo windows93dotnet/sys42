@@ -1,5 +1,7 @@
 /* eslint-disable max-depth */
 /* eslint-disable complexity */
+/* eslint-disable no-useless-concat */
+
 import parseRegexLiteral from "../../../fabric/type/regex/parseRegexLiteral.js"
 import operators from "./operators.js"
 
@@ -17,6 +19,10 @@ const regexFlags = new Set(["d", "g", "i", "m", "s", "u", "y"])
 const pairsKeys = new Set(Object.keys(pairs))
 
 export default function parseExpression(source, jsonParse = JSON.parse) {
+  if (source.startsWith("{" + "{") && source.endsWith("}" + "}")) {
+    source = source.slice(2, -2)
+  }
+
   let buffer = ""
   let current = 0
 

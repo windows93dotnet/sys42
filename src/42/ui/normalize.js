@@ -1,4 +1,3 @@
-/* eslint-disable max-depth */
 import State from "./class/State.js"
 import resolveScope from "./resolveScope.js"
 import register from "./register.js"
@@ -37,6 +36,51 @@ const DEF_KEYWORDS = new Set([
   "when",
 ])
 
+export function normalizeTokens(tokens, ctx, filters = {}) {
+  let hasFilter = false
+  const scopes = []
+
+  for (const token of tokens) {
+    if (token.value === undefined) continue
+
+    const loc = resolveScope(ctx, token.value)
+
+    if (token.type === "key") {
+      token.value = loc
+      scopes.push(token.value)
+    } else if (
+      token.type === "arg" &&
+      !token.negated &&
+      isLength(token.value)
+    ) {
+      scopes.push(loc)
+      if (isArrayLike(ctx.state.get(dirname(loc)))) {
+        token.type = "key"
+        token.value = loc
+      } else {
+        token.loc = loc
+      }
+    } else if (token.type === "function") {
+      hasFilter = true
+      if (ctx.actions.has(loc) === false) {
+        let filter
+        filters[token.value] = async (...args) => {
+          filter ??=
+            ctx.el[token.value]?.bind(ctx.el) ?? (await getFilter(token.value))
+
+          try {
+            return await filter(...args)
+          } catch (err) {
+            dispatch(ctx.el, err)
+          }
+        }
+      } else token.value = loc
+    }
+  }
+
+  return { hasFilter, scopes }
+}
+
 export function normalizeString(def, ctx) {
   const parsed = template.parse(def)
 
@@ -45,40 +89,9 @@ export function normalizeString(def, ctx) {
     const scopes = []
     let hasFilter = false
     for (const tokens of parsed.substitutions) {
-      for (const token of tokens) {
-        if (token.value === undefined) continue
-
-        const loc = resolveScope(ctx, token.value)
-
-        if (token.type === "key") {
-          token.value = loc
-          scopes.push(token.value)
-        } else if (token.type === "arg" && isLength(token.value)) {
-          scopes.push(loc)
-          if (isArrayLike(ctx.state.get(dirname(loc)))) {
-            token.type = "key"
-            token.value = loc
-          } else {
-            token.loc = loc
-          }
-        } else if (token.type === "function") {
-          hasFilter = true
-          if (ctx.actions.has(loc) === false) {
-            let filter
-            filters[token.value] = async (...args) => {
-              filter ??=
-                ctx.el[token.value]?.bind(ctx.el) ??
-                (await getFilter(token.value))
-
-              try {
-                return await filter(...args)
-              } catch (err) {
-                dispatch(ctx.el, err)
-              }
-            }
-          } else token.value = loc
-        }
-      }
+      const res = normalizeTokens(tokens, ctx, filters)
+      hasFilter ||= res.hasFilter
+      scopes.push(...res.scopes)
     }
 
     def = template.compile(parsed, {

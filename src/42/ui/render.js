@@ -7,6 +7,7 @@ import SVG_TAGS from "../fabric/constants/SVG_TAGS.js"
 import renderComponent from "./renderers/renderComponent.js"
 import renderWhen from "./renderers/renderWhen.js"
 import renderRepeat from "./renderers/renderRepeat.js"
+import renderListen from "./renderers/renderListen.js"
 
 const SPECIAL_STRINGS = {
   "\n\n": () => document.createElement("br"),
@@ -61,6 +62,8 @@ export default function render(...args) {
     }
 
     if (isComponent) return renderComponent(el, def, ctx)
+
+    if (def.on) renderListen(el, def.on, ctx)
   } else {
     el = document.createDocumentFragment()
   }
