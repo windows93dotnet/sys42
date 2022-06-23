@@ -3,9 +3,10 @@
 /* eslint-disable no-useless-concat */
 
 import parseRegexLiteral from "../../../fabric/type/regex/parseRegexLiteral.js"
-import operators from "./operators.js"
+import { operators, assignments } from "./operators.js"
 
 const operatorsKeys = Object.keys(operators)
+const assignmentsKeys = Object.keys(assignments)
 
 const pairs = {
   '"': '"',
@@ -179,6 +180,7 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
       continue
     }
 
+    // TODO: test parsing "??="
     if (char === "?" && source[current + 1] !== "?") {
       flush()
       tokens.push({ type: "ternary", value: true })
@@ -187,12 +189,28 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
       continue
     }
 
-    for (const operator of operatorsKeys) {
-      if (source.startsWith(operator, current)) {
+    for (const value of assignmentsKeys) {
+      if (source.startsWith(value, current)) {
+        if (value === "=") {
+          const next = source[current + 1]
+          if (next === "=" || next === "~") continue
+        }
+
         flush()
-        tokens.push({ type: "operator", value: operator })
-        state = operator === "=~" ? "regex" : "arg"
-        current += operator.length
+        tokens.push({ type: "assignment", value })
+        state = "arg"
+        current += value.length
+        continue main
+      }
+    }
+
+    for (const value of operatorsKeys) {
+      if (source.startsWith(value, current)) {
+        if (value === "/" && source[current + 1] !== " ") continue
+        flush()
+        tokens.push({ type: "operator", value })
+        state = value === "=~" ? "regex" : "arg"
+        current += value.length
         continue main
       }
     }

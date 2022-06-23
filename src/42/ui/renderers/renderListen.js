@@ -15,6 +15,7 @@ export default function renderListen(el, def, ctx) {
     const fn = expr.compile(parsed, {
       sep: "/",
       filters,
+      assignment: true,
       thisArg: ctx.state.proxy,
     })
 

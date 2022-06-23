@@ -284,9 +284,25 @@ test.tasks(
         { type: "functionEnd" },
       ],
     },
+    {
+      source: "a = 1",
+      parsed: [
+        { type: "key", value: "a" },
+        { type: "assignment", value: "=" },
+        { type: "arg", value: 1 },
+      ],
+    },
+    {
+      source: "a += 1",
+      parsed: [
+        { type: "key", value: "a" },
+        { type: "assignment", value: "+=" },
+        { type: "arg", value: 1 },
+      ],
+    },
   ],
 
-  ({ source, parsed }) => {
+  (test, { source, parsed }) => {
     for (const str of test.utils.arrify(source)) {
       test(str, (t) => {
         const actual = parseExpression(str).map((x) => {

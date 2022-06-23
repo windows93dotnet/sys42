@@ -11,6 +11,28 @@
     content: {
       tag: "button.txt-xxl.pa.px-xxl",
       content: "{{cnt}}",
+      // on: { click: "{{cnt = add(cnt, 2)}}" },
+      on: { click: "{{cnt += 1}}" },
+    },
+
+    data: {
+      cnt: 42,
+    },
+  })
+
+  setTimeout(() => {
+    app.query("button").click()
+    app.query("button").click()
+  }, 300)
+</script>
+
+<script type="_module">
+  import ui from "../42/ui.js"
+  const app = await ui({
+    tag: ".box-fit.box-center",
+    content: {
+      tag: "button.txt-xxl.pa.px-xxl",
+      content: "{{cnt}}",
       on: {
         click: "{{incr(cnt, 1)}}",
       },

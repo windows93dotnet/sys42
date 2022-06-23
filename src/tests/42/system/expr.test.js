@@ -65,3 +65,13 @@ test.tasks(
     })
   }
 )
+
+test("assignment", "error", (t) => {
+  t.throws(() => expr({ a: 1, b: 2 }, "a = b"), "Assignment not allowed")
+})
+
+test("assignment", "+=", (t) => {
+  const target = { a: 1, b: 2 }
+  expr(target, "a += b", { assignment: true })
+  t.eq(target, { a: 3, b: 2 })
+})

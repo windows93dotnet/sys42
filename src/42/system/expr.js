@@ -18,6 +18,7 @@ expr.compile = (parsed, options) => {
     locate,
     jsonParse,
     sep: options?.sep,
+    assignment: options?.assignment,
     filters: options?.filters,
     thisArg: options?.thisArg,
   })[0]
