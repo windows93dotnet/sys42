@@ -1,4 +1,5 @@
 import resolvePath from "../fabric/type/path/core/resolvePath.js"
+import parseDotNotation from "../fabric/locator/parseDotNotation.js"
 import basename from "../fabric/type/path/extract/basename.js"
 import locate from "../fabric/locator/locate.js"
 import exists from "../fabric/locator/exists.js"
@@ -35,7 +36,7 @@ export default function resolveScope(scope, path, ctx) {
     path = `../${path}:${basename(scope)}`
   }
 
-  const out = resolvePath(scope, path)
+  const out = parseDotNotation(resolvePath(scope, path)).join("/")
   if (ctx === undefined) return out
   return locate(ctx.state.value, `${out}/$ref`, sep) ?? out
 }

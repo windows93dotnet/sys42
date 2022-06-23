@@ -1,4 +1,3 @@
-import isLength from "../../../fabric/type/any/is/isLength.js"
 import operators from "./operators.js"
 
 const PIPE = Symbol("pipe")
@@ -68,9 +67,14 @@ function compileToken(i, list, tokens, options) {
         : (locals) => locate(locals, value, sep)
     )
   } else if (type === "arg") {
-    if (!negated && isLength(value)) {
-      if (loc) list.push((locals) => locate(locals, loc, sep))
-      else {
+    if (!negated && Number.isInteger(value)) {
+      if (loc) {
+        const baseLoc = loc.replace(new RegExp(`${sep}${value}$`), "")
+        list.push((locals) => {
+          const base = locate(locals, baseLoc, sep)
+          return Array.isArray(base) ? base.at(value) : value
+        })
+      } else {
         list.push((locals) =>
           Array.isArray(locals) ? locate(locals, value, sep) : value
         )

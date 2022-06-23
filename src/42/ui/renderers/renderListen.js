@@ -9,9 +9,14 @@ export default function renderListen(el, def, ctx) {
 
   for (const [key, val] of Object.entries(def)) {
     const parsed = expr.parse(val)
+    console.table(parsed)
     normalizeTokens(parsed, ctx, filters)
 
-    const fn = expr.compile(parsed, { sep: "/", filters, thisArg: ctx })
+    const fn = expr.compile(parsed, {
+      sep: "/",
+      filters,
+      thisArg: ctx.state.proxy,
+    })
 
     events[key] = (e) => {
       const { proxy } = Proxy.revocable(ctx.state.proxy, {

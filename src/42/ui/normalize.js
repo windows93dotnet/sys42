@@ -9,7 +9,6 @@ import getFilter from "../fabric/getFilter.js"
 import dirname from "../fabric/type/path/extract/dirname.js"
 import dispatch from "../fabric/dom/dispatch.js"
 import isEmptyObject from "../fabric/type/any/is/isEmptyObject.js"
-import isLength from "../fabric/type/any/is/isLength.js"
 import isArrayLike from "../fabric/type/any/is/isArrayLike.js"
 import noop from "../fabric/type/function/noop.js"
 import ATTRIBUTES_ALLOW_LIST from "../fabric/constants/ATTRIBUTES_ALLOW_LIST.js"
@@ -51,7 +50,7 @@ export function normalizeTokens(tokens, ctx, filters = {}) {
     } else if (
       token.type === "arg" &&
       !token.negated &&
-      isLength(token.value)
+      Number.isInteger(token.value)
     ) {
       scopes.push(loc)
       if (isArrayLike(ctx.state.get(dirname(loc)))) {

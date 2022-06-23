@@ -10,9 +10,9 @@
     tag: ".box-fit.box-center",
     content: {
       tag: "button.txt-xxl.pa.px-xxl",
-      content: "go",
+      content: "{{cnt}}",
       on: {
-        click: "{{incr(cnt, e/target)}}",
+        click: "{{incr(cnt, 1)}}",
       },
     },
 
@@ -23,7 +23,7 @@
     actions: {
       incr(cnt, e) {
         console.log(777, cnt, e)
-        this.state.proxy.cnt++
+        this.cnt++
       },
     },
   })
