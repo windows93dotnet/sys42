@@ -21,7 +21,9 @@ expr.compile = (parsed, options) => {
   })[0]
 
   return options?.boolean
-    ? (target) => Boolean(compiled(target))
+    ? options?.async
+      ? async (target) => Boolean(await compiled(target))
+      : (target) => Boolean(compiled(target))
     : (target) => compiled(target)
 }
 

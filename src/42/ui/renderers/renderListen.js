@@ -17,7 +17,7 @@ export default function renderListen(el, def, ctx) {
     })
 
     events[key] = (e) => {
-      const { proxy } = Proxy.revocable(ctx.state.proxy, {
+      const proxy = new Proxy(ctx.state.proxy, {
         has(target, key, receiver) {
           const has = Reflect.has(target, key, receiver)
           if (

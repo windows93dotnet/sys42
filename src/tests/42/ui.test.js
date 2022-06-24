@@ -1011,6 +1011,7 @@ test("when", "bug using state.update", async (t) => {
     },
   })
 
+  t.is(app.el.innerHTML, "<!--[when]-->")
   t.is(app.el.textContent, "")
 
   app.data.a = true

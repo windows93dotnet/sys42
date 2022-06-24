@@ -29,8 +29,8 @@ export default function renderWhen(def, ctx) {
     filters,
   })
 
-  register(ctx, scopes, () => {
-    const res = check(ctx.state.proxy)
+  register(ctx, scopes, async () => {
+    const res = await check(ctx.state.proxy)
 
     if (res && !lastChild) {
       const el = render(def, ctx)

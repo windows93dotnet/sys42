@@ -10,15 +10,13 @@
   trap(log)
 </script>
 
-<script type="_module">
+<script type="module">
   import ui from "../42/ui.js"
   const app = await ui({
     tag: ".box-fit.box-center",
     content: {
       tag: "button.pa.px-xxl.txt-xxl",
-      // content: "{{round(cnt, 2)}} - {{round(b, 2)}}",
-      // content: "{{cnt / 39 | round(2)}}",
-      content: "{{cnt | round(2)}}",
+      content: "{{cnt}} - {{b}}",
       on: { click: "{{cnt = add(cnt, 2) b = add(b, 5)}}" },
     },
 
