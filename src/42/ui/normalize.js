@@ -35,9 +35,10 @@ const DEF_KEYWORDS = new Set([
   "when",
 ])
 
-export function normalizeTokens(tokens, ctx, filters = {}) {
+export function normalizeTokens(tokens, ctx, filters) {
   let hasFilter = false
   const scopes = []
+  filters ??= { ...ctx.actions.value }
 
   for (const token of tokens) {
     if (token.value === undefined) continue
@@ -77,7 +78,7 @@ export function normalizeTokens(tokens, ctx, filters = {}) {
     }
   }
 
-  return { hasFilter, scopes }
+  return { hasFilter, scopes, filters }
 }
 
 export function normalizeString(def, ctx) {
@@ -171,6 +172,7 @@ export function normalizeCtx(ctx = {}) {
   ctx.computeds ??= new Locator({}, { sep: "/" })
   ctx.cancel ??= new Canceller()
   ctx.state ??= new State(ctx)
+  ctx.data ??= ctx.state.proxy
   return ctx
 }
 

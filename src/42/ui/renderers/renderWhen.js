@@ -20,8 +20,14 @@ export default function renderWhen(def, ctx) {
   el.append(placeholder)
 
   const parsed = expr.parse(when)
-  const { scopes } = normalizeTokens(parsed, ctx)
-  const check = expr.compile(parsed, { boolean: true, sep: "/" })
+  const { scopes, filters } = normalizeTokens(parsed, ctx)
+  const check = expr.compile(parsed, {
+    boolean: true,
+    async: true,
+    sep: "/",
+    thisArg: ctx,
+    filters,
+  })
 
   register(ctx, scopes, () => {
     const res = check(ctx.state.proxy)

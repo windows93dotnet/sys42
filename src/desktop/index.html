@@ -10,19 +10,42 @@
     tag: ".box-fit.box-center",
     content: {
       tag: "button.txt-xxl.pa.px-xxl",
-      content: "{{cnt}}",
-      // on: { click: "{{cnt = add(cnt, 2)}}" },
-      on: { click: "{{cnt += 1}}" },
+      content: "{{round(cnt, 2)}} - {{round(b, 2)}}",
+      on: { click: "{{cnt = add(cnt, 2); b = add(b, 5)}}" },
     },
 
     data: {
       cnt: 42,
+      b: 1,
     },
   })
 
   setTimeout(() => {
     app.query("button").click()
+  }, 300)
+</script>
+
+<script type="_module">
+  import ui from "../42/ui.js"
+  const app = await ui({
+    tag: ".box-fit.box-center",
+    content: {
+      tag: "button.txt-xxl.pa.px-xxl",
+      // content: "{{round(cnt / 3, 2, false)}}",
+      content: "{{cnt}}",
+      on: { click: "{{cnt = add(cnt ?? 5, 2)}}" },
+      // on: { click: "{{cnt += 1}}" },
+    },
+
+    // data: {
+    //   cnt: 42,
+    // },
+  })
+
+  setTimeout(() => {
     app.query("button").click()
+    console.log(app.data.cnt)
+    // app.query("button").click()
   }, 300)
 </script>
 
@@ -45,7 +68,7 @@
     actions: {
       incr(cnt, e) {
         console.log(777, cnt, e)
-        this.cnt++
+        this.data.cnt++
       },
     },
   })

@@ -17,10 +17,7 @@ expr.compile = (parsed, options) => {
   const compiled = compileExpression(parsed, {
     locate,
     jsonParse,
-    sep: options?.sep,
-    assignment: options?.assignment,
-    filters: options?.filters,
-    thisArg: options?.thisArg,
+    ...options,
   })[0]
 
   return options?.boolean

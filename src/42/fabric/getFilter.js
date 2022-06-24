@@ -4,6 +4,7 @@
 import locate from "./locator/locate.js"
 import fileSize from "./type/file/fileSize.js"
 import dispatch from "./dom/dispatch.js"
+import { round, floor, ceil } from "./type/number/precision.js"
 
 const filters = {}
 
@@ -30,12 +31,20 @@ filters.string = {
   split: (str, sep) => str.split(sep),
   endsWith: (str, search) => str.endsWith(search),
   startsWith: (str, search) => str.startsWith(search),
+  padStart: (str, length, padString) => str.padStart(length, padString),
+  padEnd: (str, length, padString) => str.padEnd(length, padString),
+}
+
+function padding(num, precision, pad) {
+  num = String(num)
+  if (!pad || precision === 0 || num.includes(".")) return num
+  return `${num}.${"0".repeat(precision)}`
 }
 
 filters.number = {
-  ceil: { url: "number/precision", key: true },
-  floor: { url: "number/precision", key: true },
-  round: { url: "number/precision", key: true },
+  ceil: (num, preci = 0, pad = true) => padding(ceil(num, preci), preci, pad),
+  floor: (num, preci = 0, pad = true) => padding(floor(num, preci), preci, pad),
+  round: (num, preci = 0, pad = true) => padding(round(num, preci), preci, pad),
   add: (a, b) => a + b,
   minus: (a, b) => a - b,
   multiply: (a, b) => a * b,

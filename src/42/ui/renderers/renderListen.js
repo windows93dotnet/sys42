@@ -1,22 +1,19 @@
-import { normalizeTokens } from "../normalize.js"
 import listen from "../../fabric/dom/listen.js"
+import { normalizeTokens } from "../normalize.js"
 import expr from "../../system/expr.js"
 
 export default function renderListen(el, def, ctx) {
   const events = {}
 
-  const filters = { ...ctx.actions.value }
-
   for (const [key, val] of Object.entries(def)) {
     const parsed = expr.parse(val)
-    console.table(parsed)
-    normalizeTokens(parsed, ctx, filters)
-
+    const { filters } = normalizeTokens(parsed, ctx)
     const fn = expr.compile(parsed, {
-      sep: "/",
-      filters,
       assignment: true,
-      thisArg: ctx.state.proxy,
+      async: true,
+      sep: "/",
+      thisArg: ctx,
+      filters,
     })
 
     events[key] = (e) => {
@@ -51,5 +48,5 @@ export default function renderListen(el, def, ctx) {
     }
   }
 
-  listen(el, events)
+  listen(el, events, { signal: ctx.cancel.signal })
 }
