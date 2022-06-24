@@ -885,10 +885,7 @@ test("when", "array", async (t) => {
 
 test("when", "else", async (t) => {
   const app = await ui(tmp(), {
-    content: [
-      { when: "a/b", content: "x" },
-      { when: "!a/b", content: "y" },
-    ],
+    content: [{ when: "a/b", content: "x", else: "y" }],
     data: {
       a: { b: true },
     },
@@ -909,10 +906,7 @@ test("when", "else", async (t) => {
 
 test("when", "else with empty content", async (t) => {
   const app = await ui(tmp(), {
-    content: [
-      { when: "a/b", content: "x" }, //
-      { when: "!a/b", content: [] },
-    ],
+    content: [{ when: "a/b", content: "x", else: [] }],
     data: {
       a: { b: true },
     },

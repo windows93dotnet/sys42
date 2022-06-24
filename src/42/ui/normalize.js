@@ -28,6 +28,7 @@ const DEF_KEYWORDS = new Set([
   "computed",
   "content",
   "data",
+  "else",
   "repeat",
   "schema",
   "scope",
