@@ -4,7 +4,8 @@ import inNode from "../../../system/env/runtime/inNode.js"
 
 export const queue = []
 
-// Error.stackTraceLimit = Infinity
+let isListening = false
+const { stackTraceLimit } = Error
 
 const traceErrorsInTrap = (message, object, originStack) => {
   console.group(`❗ trap: ${message}`)
@@ -25,7 +26,12 @@ const handleError = (type, e, cb, originStack) => {
     const title =
       type === "rejection" ? "Unhandled Rejection" : "Uncaught Error"
 
-    const res = cb(error, title, e)
+    const res = // allow to write `trap(log)`
+      cb.length <= 1
+        ? cb(error)
+        : cb.length < 3
+        ? cb(error, title)
+        : cb(error, title, e)
 
     if (res === false) {
       if (!e.filename?.startsWith("blob:")) e.preventDefault?.()
@@ -52,15 +58,16 @@ const handler = (type, e, handlerStack) => {
 const errorHandler = (e) => handler("error", e)
 const rejectionHandler = (e) => handler("rejection", e)
 
-let isListening = false
 export const forget = inNode
   ? () => {
       isListening = false
+      Error.stackTraceLimit = Infinity
       process.off("uncaughtException", errorHandler)
       process.off("unhandledRejection", rejectionHandler)
     }
   : () => {
       isListening = false
+      Error.stackTraceLimit = stackTraceLimit
       globalThis.removeEventListener("error", errorHandler)
       globalThis.removeEventListener("unhandledrejection", rejectionHandler)
     }
@@ -68,11 +75,13 @@ export const forget = inNode
 export const listen = inNode
   ? () => {
       isListening = true
+      Error.stackTraceLimit = Infinity
       process.on("uncaughtException", errorHandler)
       process.on("unhandledRejection", rejectionHandler)
     }
   : () => {
       isListening = true
+      Error.stackTraceLimit = stackTraceLimit
       globalThis.addEventListener("error", errorHandler)
       globalThis.addEventListener("unhandledrejection", rejectionHandler)
     }
@@ -81,7 +90,10 @@ export default function trap(cb) {
   const instance = [cb, new Error().stack]
   queue.push(instance)
   if (!isListening) listen()
-  return () => removeItem(queue, instance)
+  return () => {
+    removeItem(queue, instance)
+    if (queue.length === 0) forget()
+  }
 }
 
 trap.handle =

@@ -5,18 +5,26 @@
 <link rel="stylesheet" href="/style.css" id="theme" />
 
 <script type="module">
+  import trap from "../42/fabric/type/error/trap.js"
+  import log from "../42/system/log.js"
+  trap(log)
+</script>
+
+<script type="_module">
   import ui from "../42/ui.js"
   const app = await ui({
     tag: ".box-fit.box-center",
     content: {
-      tag: "button.txt-xxl.pa.px-xxl",
-      content: "{{round(cnt, 2)}} - {{round(b, 2)}}",
-      on: { click: "{{cnt = add(cnt, 2); b = add(b, 5)}}" },
+      tag: "button.pa.px-xxl.txt-xxl",
+      // content: "{{round(cnt, 2)}} - {{round(b, 2)}}",
+      // content: "{{cnt / 39 | round(2)}}",
+      content: "{{cnt | round(2)}}",
+      on: { click: "{{cnt = add(cnt, 2) b = add(b, 5)}}" },
     },
 
     data: {
       cnt: 42,
-      b: 1,
+      b: 2,
     },
   })
 

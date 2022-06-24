@@ -2,6 +2,7 @@
 // @read https://ansible-docs.readthedocs.io/zh/stable-2.0/rst/playbooks_filters.html
 
 import locate from "./locator/locate.js"
+// import locate from "./locator/allocate.js"
 import fileSize from "./type/file/fileSize.js"
 import dispatch from "./dom/dispatch.js"
 import { round, floor, ceil } from "./type/number/precision.js"
@@ -36,15 +37,16 @@ filters.string = {
 }
 
 function padding(num, precision, pad) {
-  num = String(num)
-  if (!pad || precision === 0 || num.includes(".")) return num
-  return `${num}.${"0".repeat(precision)}`
+  if (!pad || precision === 0) return num
+  const [a, b] = String(num).split(".")
+  return a + "." + (b ?? "0").padEnd(precision, "0")
 }
 
+// prettier-ignore
 filters.number = {
-  ceil: (num, preci = 0, pad = true) => padding(ceil(num, preci), preci, pad),
-  floor: (num, preci = 0, pad = true) => padding(floor(num, preci), preci, pad),
-  round: (num, preci = 0, pad = true) => padding(round(num, preci), preci, pad),
+  ceil: (num, decimals = 0, pad = true) => padding(ceil(num, decimals), decimals, pad),
+  floor: (num, decimals = 0, pad = true) => padding(floor(num, decimals), decimals, pad),
+  round: (num, decimals = 0, pad = true) => padding(round(num, decimals), decimals, pad),
   add: (a, b) => a + b,
   minus: (a, b) => a - b,
   multiply: (a, b) => a * b,
@@ -54,14 +56,14 @@ filters.number = {
 
 // TODO: find a way to register globstar renderer when using filters.array or filters.object
 filters.array = {
-  difference: "array/difference",
-  groupBy: "array/groupBy",
   join: (arr, sep) => arr.join(sep),
   at: (arr, index) => arr.at(index),
   includes: (arr, search) => arr.includes(search),
+  slice: STRING_FILTER,
+  difference: "array/difference",
+  groupBy: "array/groupBy",
   removeItem: "array/removeItem",
   shuffle: "array/shuffle",
-  slice: STRING_FILTER,
   union: "array/union",
   uniq: "array/uniq",
 }
