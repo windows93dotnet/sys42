@@ -31,7 +31,7 @@ export class Folder extends Component {
 
     content: {
       scope: "items",
-      repeat: {
+      each: {
         tag: "ui-icon",
         path: "{{.}}",
         aria: { selected: "{{../../selection|includes(.)}}" },

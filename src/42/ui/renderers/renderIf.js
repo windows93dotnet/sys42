@@ -5,10 +5,10 @@ import register from "../register.js"
 import { normalizeTokens } from "../normalize.js"
 import expr from "../../system/expr.js"
 
-const PLACEHOLDER = "[when]"
+const PLACEHOLDER = "[if]"
 const { DOCUMENT_FRAGMENT_NODE } = Node
 
-export default function renderWhen(def, ctx) {
+export default function renderIf(def, ctx) {
   const el = document.createDocumentFragment()
 
   let lastChild
@@ -16,7 +16,7 @@ export default function renderWhen(def, ctx) {
   const placeholder = document.createComment(PLACEHOLDER)
   el.append(placeholder)
 
-  const parsed = expr.parse(def.when)
+  const parsed = expr.parse(def.if)
   const { scopes, filters } = normalizeTokens(parsed, ctx)
   const check = expr.compile(parsed, {
     boolean: true,
@@ -26,7 +26,7 @@ export default function renderWhen(def, ctx) {
     filters,
   })
 
-  def = omit(def, ["when"])
+  def = omit(def, ["if"])
 
   register(ctx, scopes, async () => {
     const res = await check(ctx.state.proxy)

@@ -350,7 +350,7 @@ test("array", 1, async (t) => {
   const app = await ui(tmp(true), {
     content: {
       scope: "arr",
-      repeat: [
+      each: [
         "\n",
         {
           tag: "ui-a",
@@ -364,7 +364,7 @@ test("array", 1, async (t) => {
   t.is(
     app.el.innerHTML,
     `\
-<!--[repeat]-->
+<!--[each]-->
 <ui-a bar="a">foo: , bar: a</ui-a><!--[#]-->
 <ui-a bar="b">foo: , bar: b</ui-a><!--[#]-->`
   )
@@ -384,7 +384,7 @@ test("array", 1, async (t) => {
   t.is(
     app.el.innerHTML,
     `\
-<!--[repeat]-->
+<!--[each]-->
 <ui-a bar="a">foo: , bar: a</ui-a><!--[#]-->
 <ui-a bar="b">foo: , bar: b</ui-a><!--[#]-->
 <ui-a bar="c">foo: , bar: c</ui-a><!--[#]-->`
@@ -406,7 +406,7 @@ test("array", 1, async (t) => {
   t.is(
     app.el.innerHTML,
     `\
-<!--[repeat]-->
+<!--[each]-->
 <ui-a bar="A">foo: , bar: A</ui-a><!--[#]-->
 <ui-a bar="b">foo: , bar: b</ui-a><!--[#]-->
 <ui-a bar="c">foo: , bar: c</ui-a><!--[#]-->`
@@ -438,7 +438,7 @@ test("array", 1, async (t) => {
   t.is(
     app.el.innerHTML,
     `\
-<!--[repeat]-->
+<!--[each]-->
 <ui-a bar="A">foo: , bar: A</ui-a><!--[#]-->`
   )
 
@@ -462,7 +462,7 @@ test("array", 1, async (t) => {
   t.is(
     app.el.innerHTML,
     `\
-<!--[repeat]-->
+<!--[each]-->
 <ui-a bar="A">foo: , bar: A</ui-a><!--[#]-->
 <ui-a bar="B">foo: , bar: B</ui-a><!--[#]-->`
   )
@@ -481,7 +481,7 @@ test("array", 2, async (t) => {
   const app = await ui(tmp(true), {
     content: {
       scope: "arr",
-      repeat: [
+      each: [
         "\n",
         {
           tag: "ui-a",
@@ -495,7 +495,7 @@ test("array", 2, async (t) => {
   t.is(
     app.el.innerHTML,
     `\
-<!--[repeat]-->
+<!--[each]-->
 <ui-a bar="0 - a">foo: , bar: 0 - a</ui-a><!--[#]-->
 <ui-a bar="1 - b">foo: , bar: 1 - b</ui-a><!--[#]-->`
   )

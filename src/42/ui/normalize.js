@@ -28,12 +28,12 @@ const DEF_KEYWORDS = new Set([
   "computed",
   "content",
   "data",
+  "each",
   "else",
-  "repeat",
+  "if",
   "schema",
   "scope",
   "tag",
-  "when",
 ])
 
 export function normalizeTokens(tokens, ctx, filters) {

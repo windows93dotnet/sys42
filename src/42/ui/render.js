@@ -5,8 +5,8 @@ import normalize from "./normalize.js"
 import ELEMENTS_ALLOW_LIST from "../fabric/constants/ELEMENTS_ALLOW_LIST.js"
 import SVG_TAGS from "../fabric/constants/SVG_TAGS.js"
 import renderComponent from "./renderers/renderComponent.js"
-import renderWhen from "./renderers/renderWhen.js"
-import renderRepeat from "./renderers/renderRepeat.js"
+import renderIf from "./renderers/renderIf.js"
+import renderEach from "./renderers/renderEach.js"
 import renderListen from "./renderers/renderListen.js"
 
 const SPECIAL_STRINGS = {
@@ -35,8 +35,8 @@ export default function render(...args) {
     return fragment
   }
 
-  if (def.when) return renderWhen(def, ctx)
-  if (def.repeat) return renderRepeat(def, ctx)
+  if (def.if) return renderIf(def, ctx)
+  if (def.each) return renderEach(def, ctx)
 
   let el
 

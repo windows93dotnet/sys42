@@ -25,7 +25,7 @@ export default {
     {
       type: "ui-tabs",
       items: { watch: "openedFiles" },
-      repeat: {
+      each: {
         label: "{{path ?? 'Untitled'|basename}}{{dirty ? '*' : ''}}",
         content: {
           type: "textarea.w-full",

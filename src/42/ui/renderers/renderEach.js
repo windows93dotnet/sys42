@@ -3,13 +3,13 @@ import omit from "../../fabric/type/object/omit.js"
 import createRange from "../../fabric/dom/createRange.js"
 import register from "../register.js"
 
-const PLACEHOLDER = "[repeat]"
+const PLACEHOLDER = "[each]"
 const ITEM = "[#]"
 
-export default function renderRepeat(def, ctx) {
-  const { repeat } = def
+export default function renderEach(def, ctx) {
+  const { each } = def
 
-  def = omit(def, ["repeat"])
+  def = omit(def, ["each"])
 
   const el = render(def, ctx)
 
@@ -79,7 +79,7 @@ export default function renderRepeat(def, ctx) {
     for (; i < length; i++) {
       const newCtx = { ...ctx }
       newCtx.scope += `/${i}`
-      fragment.append(render(repeat, newCtx))
+      fragment.append(render(each, newCtx))
       lastChild = document.createComment(ITEM)
       fragment.append(lastChild)
     }

@@ -482,7 +482,7 @@ Component.define({
 
   content: {
     scope: "list",
-    repeat: {
+    each: {
       tag: "ui-t-state",
       x: "fixed",
     },
@@ -607,7 +607,7 @@ Component.define({
 
   content: {
     scope: "list",
-    repeat: {
+    each: {
       tag: "ui-t-state",
       x: "{{foo}}",
     },
@@ -668,7 +668,7 @@ Component.define({
 
   content: {
     scope: "list",
-    repeat: {
+    each: {
       tag: "ui-t-state",
       x: "{{.}}",
     },
@@ -698,7 +698,7 @@ test("state", "string array", async (t) => {
   const app = await ui(tmp(), {
     content: {
       scope: "arr",
-      repeat: {
+      each: {
         tag: "ui-t-state",
         x: "{{.}}",
       },

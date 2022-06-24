@@ -34,14 +34,14 @@ test("html", async (t) => {
     <div class="ui-icon__mask" style="-webkit-mask-image: url(&quot;/42/themes/default/icons/subtype/javascript.png&quot;);">
     </div>
   </div>
-  <!--[when]-->
+  <!--[if]-->
   <div class="ui-icon__label">
     <svg>
       <rect>
       </rect>
     </svg>
     <span>script</span>
-    <!--[when]-->
+    <!--[if]-->
     <span>\u200b.js</span>
   </div>
 </ui-icon>`
@@ -165,11 +165,11 @@ test("infos", async (t) => {
   ])
 })
 
-test("repeat", async (t) => {
+test("each", async (t) => {
   const app = await ui(tmp(), {
     content: {
       scope: "arr",
-      repeat: {
+      each: {
         tag: "ui-icon",
         path: "{{x}}",
       },
@@ -208,11 +208,11 @@ test("repeat", async (t) => {
   t.eq(icons.textContent, ["bar\u200b.txt"])
 })
 
-test("repeat", 2, async (t) => {
+test("each", 2, async (t) => {
   const app = await ui(tmp(), {
     content: {
       scope: "arr",
-      repeat: {
+      each: {
         tag: "ui-icon",
         path: "{{.}}",
       },
