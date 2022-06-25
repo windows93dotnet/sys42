@@ -69,6 +69,7 @@ ALLOW_PRESETS.game = [
   "focus-without-user-activation",
   "fullscreen",
   "gamepad",
+  "pointer-lock",
 ]
 ALLOW_PRESETS.app = [
   "scripts",
