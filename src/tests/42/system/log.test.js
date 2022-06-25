@@ -65,6 +65,10 @@ test("ansi and devtool have the same list of chainable getters and methods", (t)
   t.eq(ansiMethods, devtoolMethods)
 })
 
+test("bug", () => {
+  log.red("{i:false}")
+})
+
 test.tasks(
   [
     {
