@@ -1,5 +1,5 @@
 ui-sandbox {
-  --zoom: 100;
+  --zoom: 1;
 
   display: block;
   min-width: 310px;
@@ -16,7 +16,7 @@ ui-sandbox > * {
 }
 
 .ui-sandbox__scene {
-  --_zoom: calc(var(--zoom) / 100);
+  --_zoom: calc(var(--zoom));
   width: calc(100% / var(--_zoom));
   height: calc(100% / var(--_zoom));
   transform: scale(var(--_zoom));
