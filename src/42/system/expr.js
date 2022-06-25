@@ -14,11 +14,22 @@ export default function expr(target, str, options) {
 expr.parse = (source) => parseExpression(source, jsonParse)
 
 expr.compile = (parsed, options) => {
-  const compiled = compileExpression(parsed, {
+  const list = compileExpression(parsed, {
     locate,
     jsonParse,
     ...options,
-  })[0]
+  })
+
+  if (options?.assignment) {
+    return options?.boolean
+      ? options?.async
+        ? async (target) =>
+            Boolean((await Promise.all(list.map((fn) => fn(target)))).at(-1))
+        : (target) => Boolean(list.map((fn) => fn(target)).at(-1))
+      : (target) => list.map((fn) => fn(target)).at(-1)
+  }
+
+  const compiled = list.at(-1)
 
   return options?.boolean
     ? options?.async

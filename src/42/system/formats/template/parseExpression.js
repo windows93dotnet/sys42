@@ -165,7 +165,7 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
       continue
     }
 
-    if (char === ",") {
+    if (char === "," || char === ";") {
       flush()
       state = "arg"
       current++

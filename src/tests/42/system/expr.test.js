@@ -70,8 +70,32 @@ test("assignment", "error", (t) => {
   t.throws(() => expr({ a: 1, b: 2 }, "a = b"), "Assignment not allowed")
 })
 
-test("assignment", "+=", (t) => {
+test("assignment", 1, (t) => {
   const target = { a: 1, b: 2 }
   expr(target, "a += b", { assignment: true })
   t.eq(target, { a: 3, b: 2 })
+})
+
+test("assignment", 2, (t) => {
+  const target = { a: 1, b: 2 }
+  expr(target, "a += b; b = 5", { assignment: true })
+  t.eq(target, { a: 3, b: 5 })
+})
+
+test("assignment", 3, (t) => {
+  const target = { a: 1, b: 2 }
+  expr(target, "b = 5; a += b", { assignment: true })
+  t.eq(target, { a: 6, b: 5 })
+})
+
+test("assignment", 4, (t) => {
+  const target = { a: 1, b: 2 }
+  expr(target, "x = 5; a += x; b += x", { assignment: true })
+  t.eq(target, { a: 6, b: 7, x: 5 })
+})
+
+test("assignment", 5, (t) => {
+  const target = { a: 1, b: 2 }
+  expr(target, 'a = "x;y"; b = 5', { assignment: true })
+  t.eq(target, { a: "x;y", b: 5 })
 })
