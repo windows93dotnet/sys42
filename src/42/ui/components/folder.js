@@ -26,7 +26,7 @@ export class Folder extends Component {
     },
 
     computed: {
-      items: "{{path|getItems}}",
+      items: "{{getItems(path)}}",
     },
 
     content: {
@@ -34,7 +34,7 @@ export class Folder extends Component {
       each: {
         tag: "ui-icon",
         path: "{{.}}",
-        aria: { selected: "{{../../selection|includes(.)}}" },
+        aria: { selected: "{{includes(../../selection, .)}}" },
       },
     },
   }

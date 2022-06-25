@@ -20,7 +20,7 @@ class Icon extends Component {
       },
       infos: {
         type: "object",
-        computed: "{{path|getInfos}}",
+        computed: "{{getInfos(path)}}",
       },
       small: {
         type: "boolean",

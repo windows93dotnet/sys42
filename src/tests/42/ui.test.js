@@ -706,7 +706,7 @@ const uppercase = (str) => str.toUpperCase()
 
 test("filters", async (t) => {
   const app = await ui(tmp(), {
-    content: "a {{foo|uppercase}}",
+    content: "a {{foo|>uppercase}}",
     data: { foo: "b" },
     actions: { uppercase },
   })
@@ -736,7 +736,7 @@ test("filters", "as function", async (t) => {
 
 test("filters", "inline variable", async (t) => {
   const app = await ui(tmp(), {
-    content: "a {{'b'|uppercase}}",
+    content: "a {{'b'|>uppercase}}",
     actions: { uppercase },
   })
 
@@ -755,7 +755,7 @@ test("filters", "inline variable", "as function", async (t) => {
 test("filters", "buildin filters", async (t) => {
   const app = await ui(tmp(), {
     tag: "pre",
-    content: "{{foo|stringify}}",
+    content: "{{foo|>stringify}}",
     data: { foo: { a: 1 } },
   })
 
@@ -772,7 +772,7 @@ test("filters", "thisArg", async (t) => {
   t.plan(3)
   const app = await ui(tmp(), {
     tag: "em",
-    content: "a {{foo|uppercase}}",
+    content: "a {{foo|>uppercase}}",
     data: { foo: "b" },
     actions: {
       uppercase(str) {
@@ -794,9 +794,9 @@ test("filters", "thisArg", "nested", async (t) => {
 
   const app = await ui(tmp(), {
     content: [
-      "{{foo|uppercase}}",
-      { tag: "em", content: "{{foo|uppercase}}" },
-      { tag: "strong", content: "{{foo|uppercase}}" },
+      "{{foo|>uppercase}}",
+      { tag: "em", content: "{{foo|>uppercase}}" },
+      { tag: "strong", content: "{{foo|>uppercase}}" },
     ],
     data: { foo: "b" },
     actions: {
@@ -819,8 +819,8 @@ test("filters", "thisArg", "nested", async (t) => {
 test("filters", "buildin filters locate", async (t) => {
   const app = await ui(tmp(), {
     tag: "pre",
-    content: "{{foo|stringify('min')}}",
-    // content: "{{foo|stringify.min}}",
+    content: "{{foo|>stringify('min')}}",
+    // content: "{{foo|>stringify.min}}",
     data: { foo: { a: 1 } },
   })
 
@@ -829,7 +829,7 @@ test("filters", "buildin filters locate", async (t) => {
 
 test("filters", "pluralize", async (t) => {
   const app = await ui(tmp(), {
-    content: "{{'apple'|pluralize}}, {{'orange'|pluralize(5)}}",
+    content: "{{'apple'|>pluralize}}, {{'orange'|>pluralize(5)}}",
   })
 
   t.is(app.el.innerHTML, "apples, oranges")
@@ -1665,7 +1665,7 @@ test("computed", async (t) => {
     },
 
     computed: {
-      parsed: "{{formated|split('/')}}",
+      parsed: "{{formated|>split('/')}}",
     },
   })
 

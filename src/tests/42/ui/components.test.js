@@ -263,7 +263,7 @@ test.tasks(
             props: {
               bar: 2,
             },
-            content: "foo: {{/foo|add5}}, bar: {{bar|add10}}",
+            content: "foo: {{/foo |> add5}}, bar: {{bar |> add10}}",
           }
 
           add5(val) {
@@ -286,7 +286,7 @@ test.tasks(
     {
       component: {
         tag: "ui-t-ready",
-        content: "ext: {{/foo|extname}}",
+        content: "ext: {{/foo |> extname}}",
       },
       def: {
         content: { tag: "ui-t-ready" },
@@ -408,7 +408,7 @@ test.tasks(
                 reflect: true,
               },
             },
-            content: "hello {{path|customFilter}}",
+            content: "hello {{customFilter(path)}}",
           }
 
           customFilter(path) {
@@ -794,7 +794,7 @@ test("computed", async (t) => {
         },
 
         computed: {
-          parsed: "{{formated|split('/')}}",
+          parsed: "{{formated |> split('/')}}",
         },
 
         content: {
@@ -863,7 +863,7 @@ test("computed", "from prop with state:true", async (t) => {
         },
 
         computed: {
-          parsed: "{{formated|split('/')}}",
+          parsed: "{{formated |> split('/')}}",
         },
 
         content: {
@@ -932,7 +932,7 @@ test("computed", "computed prop", async (t) => {
           },
           parsed: {
             type: "array",
-            computed: "{{formated|split('/')}}",
+            computed: "{{formated|>split('/')}}",
           },
         },
 

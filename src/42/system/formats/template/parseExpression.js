@@ -158,10 +158,10 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
       continue
     }
 
-    if (char === "|" && source[current + 1] !== "|") {
+    if (char === "|" && source[current + 1] === ">") {
       flush()
       tokens.push({ type: "pipe" })
-      current++
+      current += 2
       continue
     }
 

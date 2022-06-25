@@ -142,7 +142,7 @@ test("props", 4, async (t) => {
 
 test("props", 5, async (t) => {
   const app = await ui(tmp(), {
-    content: { tag: "ui-a", bar: "{{foo|upper}}" },
+    content: { tag: "ui-a", bar: "{{foo |> upper}}" },
     data: { foo: "a" },
   })
 

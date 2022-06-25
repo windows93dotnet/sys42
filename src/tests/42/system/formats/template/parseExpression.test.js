@@ -82,7 +82,7 @@ test.tasks(
       parsed: [{ type: "arg", value: "[1],2" }],
     },
     {
-      source: "a|filter",
+      source: "a|>filter",
       parsed: [
         { type: "key", value: "a" },
         { type: "pipe" },
@@ -91,7 +91,7 @@ test.tasks(
       ],
     },
     {
-      source: "a|filter1|filter2",
+      source: "a|>filter1|>filter2",
       parsed: [
         { type: "key", value: "a" },
         { type: "pipe" },
@@ -103,7 +103,7 @@ test.tasks(
       ],
     },
     {
-      source: "a|filter(b)",
+      source: "a|>filter(b)",
       parsed: [
         { type: "key", value: "a" },
         { type: "pipe" },
@@ -113,7 +113,7 @@ test.tasks(
       ],
     },
     {
-      source: "a|filter(b)|filter2",
+      source: "a|>filter(b)|>filter2",
       parsed: [
         { type: "key", value: "a" },
         { type: "pipe" },
@@ -235,7 +235,7 @@ test.tasks(
       ],
     },
     {
-      source: "a | b(!a || a > 1) ? c : d",
+      source: "a |> b(!a || a > 1) ? c : d",
       parsed: [
         { type: "key", value: "a" },
         { type: "pipe" },

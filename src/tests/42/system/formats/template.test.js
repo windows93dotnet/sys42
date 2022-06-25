@@ -155,7 +155,7 @@ test.tasks(
     },
 
     {
-      source: ["a {{x|uppercase}}", "a {{ x | uppercase }}"],
+      source: ["a {{x|>uppercase}}", "a {{ x |> uppercase }}"],
       data: { x: "b" },
       filters: {
         uppercase,
@@ -175,7 +175,7 @@ test.tasks(
     },
 
     {
-      source: 'a {{ "b" | uppercase }}',
+      source: 'a {{ "b" |> uppercase }}',
       data: { x: "b" },
       filters: { uppercase },
       expected: "a B",
@@ -189,7 +189,7 @@ test.tasks(
     },
 
     {
-      source: ["a {{uppercase(x)|double}}"],
+      source: ["a {{uppercase(x)|>double}}"],
       data: { x: "b" },
       filters: {
         uppercase,
@@ -199,8 +199,8 @@ test.tasks(
     },
 
     {
-      source: ["a {{foo\\|bar}}"],
-      data: { "foo|bar": "b" },
+      source: ["a {{foo\\|\\>bar}}"],
+      data: { "foo|>bar": "b" },
       expected: "a b",
     },
 
@@ -212,7 +212,7 @@ test.tasks(
     },
 
     {
-      source: ["a {{x|add(y)}}", "a {{x|add(2)}}", "a {{1|add(2)}}"],
+      source: ["a {{x|>add(y)}}", "a {{x|>add(2)}}", "a {{1|>add(2)}}"],
       data: { x: 1, y: 2 },
       filters: {
         add: (a, b) => a + b,
@@ -222,9 +222,9 @@ test.tasks(
 
     {
       source: [
-        "a {{x|add(y)|binary}}",
-        "a {{ x | add(y) | binary }}",
-        "a {{ x | add ( y )  | binary }}",
+        "a {{x|>add(y)|>binary}}",
+        "a {{ x |> add(y) |> binary }}",
+        "a {{ x |> add ( y )  |> binary }}",
         "a {{ binary(3) }}",
       ],
       data: { x: 1, y: 2 },
@@ -280,13 +280,13 @@ test.tasks(
 
     {
       source: [
-        "a {{foo ? x : y|uppercase}}",
-        "a {{foo() ? x() : y()|uppercase}}",
-        'a {{foo ? "b" : y|uppercase}}',
-        'a {{true ? "b" : y|uppercase}}',
-        'a {{1 ? "b" : y|uppercase}}',
-        'a {{"foo" ? "b" : y|uppercase}}',
-        'a {{[] ? "b" : y|uppercase}}',
+        "a {{foo ? x : y |> uppercase}}",
+        "a {{foo() ? x() : y() |> uppercase}}",
+        'a {{foo ? "b" : y |> uppercase}}',
+        'a {{true ? "b" : y |> uppercase}}',
+        'a {{1 ? "b" : y |> uppercase}}',
+        'a {{"foo" ? "b" : y |> uppercase}}',
+        'a {{[] ? "b" : y |> uppercase}}',
       ],
       data: { x: "b", y: "c", foo: true },
       filters: { x: () => "b", y: () => "c", foo: () => true, uppercase },
@@ -327,7 +327,7 @@ test.tasks(
     },
 
     {
-      source: "{{a > 1|foo}}",
+      source: "{{a > 1|>foo}}",
       data: { a: 2 },
       filters: { foo: (arg) => (arg ? "more" : "less") },
       title: "more",
@@ -335,7 +335,7 @@ test.tasks(
     },
 
     {
-      source: "{{a > 1|foo}}",
+      source: "{{a > 1|>foo}}",
       data: { a: 0 },
       filters: { foo: (arg) => (arg ? "more" : "less") },
       title: "less",
@@ -403,7 +403,7 @@ test.tasks(
     },
 
     {
-      source: ["{{foo()|uppercaseAsync}}"],
+      source: ["{{foo()|>uppercaseAsync}}"],
       filters: {
         foo: async () => "foo",
         uppercaseAsync,
@@ -413,7 +413,7 @@ test.tasks(
     },
 
     {
-      source: ["{{zero() > one() ? a() : b()|uppercaseAsync}}"],
+      source: ["{{zero() > one() ? a() : b()|>uppercaseAsync}}"],
       filters: {
         zero: async () => 0,
         one: async () => 1,
@@ -426,7 +426,7 @@ test.tasks(
     },
 
     {
-      source: ["{{zero() < one() ? a() : b()|uppercaseAsync}}"],
+      source: ["{{zero() < one() ? a() : b()|>uppercaseAsync}}"],
       filters: {
         zero: async () => 0,
         one: async () => 1,
