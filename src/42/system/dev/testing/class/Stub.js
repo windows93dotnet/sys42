@@ -9,11 +9,11 @@ export default class Stub extends Callable {
 
     super(function (...args) {
       const call = { args }
-      if (thisArg !== false && this !== undefined) {
-        call.thisArg = thisArg ?? this
-      }
 
-      const result = fn.call(call.thisArg, ...args)
+      const that = thisArg === false ? this : thisArg ?? this
+      if (thisArg !== false && that !== undefined) call.thisArg = that
+
+      const result = fn.call(that, ...args)
       if (result !== undefined) call.result = result
       calls.push(call)
       return result

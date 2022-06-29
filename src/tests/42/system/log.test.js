@@ -4,17 +4,19 @@ import log from "../../../42/system/log.js"
 import ansi from "../../../42/system/console/stylizers/ansi.js"
 import devtool from "../../../42/system/console/stylizers/devtool.js"
 
-const print = 0
+const print = 1
 
-function makeConsoleSpy(t, type = "log") {
-  return t.spy(
+function makeConsoleSpy(t, key = "log") {
+  const spy = t.spy(
     globalThis.console,
-    type,
-    function (...args) {
-      if (print) this.original.method(...args)
+    key,
+    (...args) => {
+      if (print) spy.original.method(...args)
     },
     false
   )
+
+  return spy
 }
 
 const originalDevtoolConfig = devtool.config
@@ -23,7 +25,7 @@ const originalStylizer = log.stylizer
 
 test.setup(() => {
   // Force devtool stylizer in automated browser test context
-  log.stylizer = test.env.runtime.isFrontend ? devtool : ansi
+  log.stylizer = test.env.runtime.inFrontend ? devtool : ansi
   devtool.configure({
     css: "font-size:12px; ",
     colors: {
@@ -65,8 +67,9 @@ test("ansi and devtool have the same list of chainable getters and methods", (t)
   t.eq(ansiMethods, devtoolMethods)
 })
 
-test("bug", () => {
-  log.red("{i:false}")
+test.only("bug", (t) => {
+  log("{ i:false }")
+  t.pass()
 })
 
 test.tasks(
@@ -317,7 +320,7 @@ test.tasks(
     },
   ],
 
-  ({ description, fn, calls, args }) => {
+  (test, { description, fn, calls, args }) => {
     test(description ?? fn.toString(), (t) => {
       const spy = makeConsoleSpy(t)
 
@@ -325,15 +328,15 @@ test.tasks(
       // t.pass()
 
       if (calls) {
-        if (test.env.runtime.isBackend && calls.backend) {
+        if (test.env.runtime.inBackend && calls.backend) {
           t.eq(spy.calls, calls.backend)
-        } else if (test.env.runtime.isFrontend && calls.frontend) {
+        } else if (test.env.runtime.inFrontend && calls.frontend) {
           t.eq(spy.calls, calls.frontend)
         } else t.pass()
       } else if (args) {
-        if (test.env.runtime.isBackend && args.backend) {
+        if (test.env.runtime.inBackend && args.backend) {
           t.eq(spy.calls[0].args, args.backend)
-        } else if (test.env.runtime.isFrontend && args.frontend) {
+        } else if (test.env.runtime.inFrontend && args.frontend) {
           t.eq(spy.calls[0].args, args.frontend)
         } else t.pass()
       } else t.pass()

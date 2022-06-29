@@ -11,6 +11,33 @@
 </script>
 
 <script type="module">
+  import log from "../42/system/log.js"
+  import stringify from "../42/fabric/type/any/stringify.js"
+
+  log(stringify(globalThis, { ignoreGlobalThis: false }))
+</script>
+
+<script type="_module">
+  import ui from "../42/ui.js"
+  const app = await ui({
+    tag: ".box-fit.box-center",
+    content: {
+      tag: "button.pa.px-xxl.txt-xxl",
+      content: "{{cnt}}",
+      on: { click: "{{cnt = cnt + 10}}" },
+    },
+
+    data: {
+      cnt: 42,
+    },
+  })
+
+  setTimeout(() => {
+    app.query("button").click()
+  }, 300)
+</script>
+
+<script type="_module">
   import ui from "../42/ui.js"
   const app = await ui({
     tag: ".box-fit.box-center",
