@@ -51,6 +51,12 @@
 
 <script type="module">
   import testRunner from "./42/system/dev/testRunner.js"
+  import system from "./42/system.js"
+  // import disk from "./42/system/fs/disk.js"
+
+  // await disk.reinstall()
+  system.DEV = true
+
   testRunner(
     // prettier-ignore
     // await import("./42/system/fs/disk.js").then((m) => m.default.glob("**/*.test.js")),

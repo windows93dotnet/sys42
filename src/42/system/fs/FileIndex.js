@@ -29,9 +29,9 @@ export default class FileIndex extends Storable {
     const dir = this.get(path)
 
     if (dir === undefined) {
-      throw new FileSystemError(FileSystemError.ENOENT)
+      throw new FileSystemError(FileSystemError.ENOENT, path)
     } else if (typeof dir !== "object") {
-      throw new FileSystemError(FileSystemError.ENOTDIR)
+      throw new FileSystemError(FileSystemError.ENOTDIR, path)
     }
 
     const names = []

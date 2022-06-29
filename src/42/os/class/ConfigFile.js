@@ -11,23 +11,37 @@ export class ConfigFile {
   constructor(filename, defaults) {
     this.filename = `${system.HOME}/${basename(filename)}`
     const ext = extname(this.filename)
-    this.type = (VALID_TYPES.has(ext) ? ext : ".cbor").slice(1)
+    if (!VALID_TYPES.has(ext)) {
+      throw new Error(
+        `Config file must have a .json, .json5 or .cbor extension: ${ext}`
+      )
+    }
+
+    this.type = ext.slice(1)
     this.defaults = configure({ version: -1 * Date.now() }, defaults)
-    this.ready = defer()
   }
 
-  async init() {
+  async #init() {
     await (system.DEV || (await fs.access(this.filename)) === false //
       ? this.reset()
       : this.open())
-
-    this.ready.resolve()
 
     // fs.on(this.name, async () => {
     //   this.ready = defer()
     //   await this.open()
     //   this.ready.resolve()
     // })
+  }
+
+  async init(...args) {
+    this.ready ??= defer()
+    try {
+      await this.#init(...args)
+      this.ready.resolve()
+    } catch (err) {
+      this.ready.reject(err)
+      throw err
+    }
   }
 
   async open() {

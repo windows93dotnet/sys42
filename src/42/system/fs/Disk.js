@@ -30,10 +30,13 @@ export default class Disk extends FileIndex {
 
     super(getFiles)
 
-    this.HOME = system.HOME
     this.MASKS = MASKS
     this.RESERVED_BYTES = RESERVED_BYTES
     instance = this
+  }
+
+  get HOME() {
+    return system.HOME
   }
 
   getIdAndMask(filename) {

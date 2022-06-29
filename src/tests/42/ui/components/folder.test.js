@@ -3,7 +3,7 @@ import ui from "../../../../42/ui.js"
 
 const tmp = test.utils.container({ id: "ui-folder-tests", connect: true })
 
-test.suite.timeout(1000)
+test.suite.timeout(5000)
 
 test("generate icon list", async (t) => {
   const app = await ui(tmp(), {

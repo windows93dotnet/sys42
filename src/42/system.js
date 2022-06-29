@@ -5,6 +5,6 @@ const system = globalThis.system42
 
 system.polyfills = []
 system.HOME ??= "/home/anonymous"
-system.DEV = true
+system.DEV = false
 
 export default system
