@@ -4,17 +4,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" href="/style.css" id="theme" />
 
-<script type="module">
+<script type="_module">
   import trap from "../42/fabric/type/error/trap.js"
   import log from "../42/system/log.js"
   trap(log)
-</script>
-
-<script type="module">
-  import log from "../42/system/log.js"
-  import stringify from "../42/fabric/type/any/stringify.js"
-
-  log(stringify(globalThis, { ignoreGlobalThis: false }))
 </script>
 
 <script type="_module">

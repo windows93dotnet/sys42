@@ -4,7 +4,7 @@ import log from "../../../42/system/log.js"
 import ansi from "../../../42/system/console/stylizers/ansi.js"
 import devtool from "../../../42/system/console/stylizers/devtool.js"
 
-const print = 1
+const print = 0
 
 function makeConsoleSpy(t, key = "log") {
   const spy = t.spy(
@@ -65,11 +65,6 @@ test("ansi and devtool have the same list of chainable getters and methods", (t)
   const ansiMethods = [...Object.keys(ansi[METHODS])].sort()
   const devtoolMethods = [...Object.keys(ansi[METHODS])].sort()
   t.eq(ansiMethods, devtoolMethods)
-})
-
-test.only("bug", (t) => {
-  log("{ i:false }")
-  t.pass()
 })
 
 test.tasks(
@@ -261,6 +256,121 @@ test.tasks(
           "%cA %%c %cD C",
           "font-size:12px; color:red;",
           "font-size:12px; color:red;color:lime;",
+        ],
+      },
+    },
+
+    {
+      description: "object",
+      fn() {
+        log("{ a:false }")
+      },
+      args: {
+        frontend: [
+          "%c{ a:false }", //
+          "font-size:12px; ",
+        ],
+      },
+    },
+
+    {
+      description: "object (2)",
+      fn() {
+        log("{a: false}")
+      },
+      args: {
+        frontend: [
+          "%c{a: false}", //
+          "font-size:12px; ",
+        ],
+      },
+    },
+
+    {
+      description: "object (3)",
+      fn() {
+        log("{abc: false}")
+      },
+      args: {
+        frontend: [
+          "%c{abc: false}", //
+          "font-size:12px; ",
+        ],
+      },
+    },
+
+    {
+      description: "unescaped object looking like log template",
+      fn() {
+        log("{abc : false}")
+      },
+      args: {
+        frontend: [
+          "%c: false", //
+          "font-size:12px; color:rgba(170,187,204,1);",
+        ],
+      },
+    },
+
+    {
+      description: "escaped object looking like log template",
+      fn() {
+        log("\\{abc : false}")
+      },
+      args: {
+        frontend: [
+          "%c{abc : false}", //
+          "font-size:12px; ",
+        ],
+      },
+    },
+
+    {
+      description: "object destructuring",
+      fn() {
+        log("{ abc }")
+      },
+      args: {
+        frontend: [
+          "%c{ abc }", //
+          "font-size:12px; ",
+        ],
+      },
+    },
+
+    {
+      description: "unescaped object destructuring looking like log template",
+      fn() {
+        log("{abc }")
+      },
+      args: {
+        frontend: [""],
+      },
+    },
+
+    {
+      description:
+        "unescaped object destructuring looking like log template (2)",
+      fn() {
+        log("{abc  }")
+      },
+      args: {
+        frontend: [
+          "%c ", //
+          "font-size:12px; color:rgba(170,187,204,1);",
+        ],
+      },
+    },
+
+    {
+      description: "escaped object destructuring looking like log template",
+      fn() {
+        log("\\{abc }")
+      },
+      args: {
+        frontend: [
+          "%c{abc }", //
+          "font-size:12px; ",
         ],
       },
     },

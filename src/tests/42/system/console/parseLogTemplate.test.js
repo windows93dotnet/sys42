@@ -25,6 +25,42 @@ test.tasks(
     },
 
     {
+      input: "{a}",
+      expected: [
+        { type: "text", buffer: "{a}", nested: 0 }, //
+      ],
+    },
+
+    {
+      input: "{ a }",
+      expected: [
+        { type: "text", buffer: "{ a }", nested: 0 }, //
+      ],
+    },
+
+    {
+      input: "{abc }",
+      expected: [
+        { type: "style", buffer: "abc", nested: 1 }, //
+      ],
+    },
+
+    {
+      input: "{abc  }",
+      expected: [
+        { type: "style", buffer: "abc", nested: 1 }, //
+        { type: "text", buffer: " ", nested: 1 }, //
+      ],
+    },
+
+    {
+      input: "{ a:abc }",
+      expected: [
+        { type: "text", buffer: "{ a:abc }", nested: 0 }, //
+      ],
+    },
+
+    {
       input: "a \\{f00 c\\}",
       expected: [
         { type: "text", buffer: "a {f00 c}", nested: 0 }, //
@@ -46,7 +82,7 @@ test.tasks(
     },
   ],
 
-  ({ input, expected }) => {
+  (test, { input, expected }) => {
     test(input, (t) => {
       t.eq(parseLogTemplate(input), expected)
     })

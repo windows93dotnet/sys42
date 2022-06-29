@@ -14,7 +14,10 @@ export default function parseLogTemplate(source) {
     }
   }
 
-  const match = (reg) => source.slice(current + 1).search(reg) > -1
+  const match = (reg) => {
+    reg.lastIndex = current + 1
+    return reg.test(source)
+  }
 
   while (current < source.length) {
     const char = source[current]
@@ -41,7 +44,7 @@ export default function parseLogTemplate(source) {
       continue
     }
 
-    if (char === "{" && match(/[\d#().A-Za-z]{3,} /)) {
+    if (char === "{" && match(/[\d#().A-Za-z]{3,} /y)) {
       flush()
       type = "style"
       nested++
