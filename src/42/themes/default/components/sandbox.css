@@ -16,10 +16,9 @@ ui-sandbox > * {
 }
 
 .ui-sandbox__scene {
-  --_zoom: calc(var(--zoom));
-  width: calc(100% / var(--_zoom));
-  height: calc(100% / var(--_zoom));
-  transform: scale(var(--_zoom));
+  width: calc(100% / var(--zoom));
+  height: calc(100% / var(--zoom));
+  transform: scale(var(--zoom));
   transform-origin: top left;
 }
 

@@ -33,7 +33,7 @@ export class Sandbox extends Component {
         type: "number",
         fromView: true,
         css: true,
-        default: 100,
+        default: 1,
       },
       check: {
         type: "boolean",
