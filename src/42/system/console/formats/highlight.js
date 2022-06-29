@@ -28,7 +28,6 @@ const NUMBER_PLACEHOLDER = `#NUMBER_${42}`
 const REGEX_PLACEHOLDER = `#REGEX_${42}`
 const STRING_PLACEHOLDER = `#STRING_${42}`
 const FUNCTION_PLACEHOLDER = `#FUNCTION_${42}`
-// const BACKSLASH_PLACEHOLDER = `#BACKSLASH_${42}`
 
 const REGEX_PLACEHOLDER_REGEX = new RegExp(`${REGEX_PLACEHOLDER}(\\d+)`, "g")
 const STRING_PLACEHOLDER_REGEX = new RegExp(`${STRING_PLACEHOLDER}(\\d+)`, "g")
@@ -188,11 +187,6 @@ export default function highlight(js, options) {
         const str = _string.list[i] ?? ""
         const quote = `{${colors.string}.dim ${str[0]}}`
         const body = str.slice(1, -1)
-        // .replace(/\\\\/g, BACKSLASH_PLACEHOLDER) // TODO: fix escaped backslash in parseLogTemplate
-        // // .replace(/\\(u([a-f]|\d){4}|[^\\{}])/g, `{bright.${colors.regex} $&}`)
-        // .replace(/\\(u([A-Fa-f]|\d){4}|[^\\{}])/g, `{${colors.regex} $&}`)
-        // .replaceAll(BACKSLASH_PLACEHOLDER, `\\\\`)
-
         return `${quote}{${colors.string} ${body}}${quote}`
       }
     )

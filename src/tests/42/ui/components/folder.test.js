@@ -74,12 +74,12 @@ test("generate icon list", async (t) => {
     "false",
   ])
 
-  // el.path = "/tests/fixtures/components/folder/subfolder/"
-  // await app
+  el.path = "/tests/fixtures/components/folder/subfolder/"
+  await app
 
-  // t.eq(el.selection, [])
+  t.eq(icons.textContent, [
+    "file\u200b.txt", //
+  ])
 
-  // t.eq(icons.textContent, [
-  //   "file\u200b.txt", //
-  // ])
+  t.eq(el.selection, [])
 })

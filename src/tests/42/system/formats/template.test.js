@@ -87,14 +87,14 @@ test.tasks(
     {
       title: "ignore numeric arg when data is an array",
       source: "a {{0}}",
-      data: [],
-      expected: "a ",
-    },
-    {
-      title: "ignore numeric arg when data is an array",
-      source: "a {{0}}",
       data: ["b"],
       expected: "a b",
+    },
+    {
+      title: "ignore numeric arg when data is an empty array",
+      source: "a {{0}}",
+      data: [],
+      expected: "a ",
     },
 
     {
@@ -440,7 +440,7 @@ test.tasks(
     },
   ],
 
-  ({ title, source, data, parsed, filters, expected, async }) => {
+  (test, { title, source, data, parsed, filters, expected, async }) => {
     const format = async ? "formatAsync" : "format"
     const render = async ? "renderAsync" : "render"
     for (const str of test.utils.arrify(source)) {
