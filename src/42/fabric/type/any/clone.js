@@ -80,20 +80,17 @@ function walk(
     if (deep) new Uint8Array(target).set(new Uint8Array(source))
   } else if (globalThis.Node && source instanceof Node) {
     target =
-      typeof source.cloneNode === "function"
-        ? source.cloneNode(true)
-        : Object.create(null)
+      typeof source.cloneNode === "function" ? source.cloneNode(true) : {}
   } else {
     if (source instanceof Set) isSet = true
     if (source instanceof Map) isMap = true
-    try {
-      target = source.constructor
-        ? new source.constructor()
-        : Object.create(null)
-    } catch (err) {
-      target = Object.create(null)
-      err.message += `: "${source.constructor.name}"`
-      console.warn(err)
+    if (Object.getPrototypeOf(source) === null) target = Object.create(null)
+    else {
+      try {
+        target = source.constructor ? new source.constructor() : {}
+      } catch (error) {
+        target = { $name: source.constructor.name, $error: error.message }
+      }
     }
   }
 
@@ -112,8 +109,7 @@ function walk(
 
     if (target && typeof target === "object") {
       const descriptors = getOwnPropertyDescriptors(source)
-      for (const key in descriptors) {
-        const descriptor = descriptors[key]
+      for (const descriptor of Object.values(descriptors)) {
         if ("value" in descriptor) {
           descriptor.value = walk(descriptor.value, deep, visitedRefs, target)
         }

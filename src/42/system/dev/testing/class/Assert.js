@@ -371,6 +371,22 @@ export default class Assert {
     }
   }
 
+  instanceOf(actual, expected, message) {
+    this.#addCall()
+
+    if (!expected?.name) {
+      this.fail(`instanceOf() expected must be called with a constructor`)
+    }
+
+    if (!(actual instanceof expected)) {
+      throw new AssertionError(
+        message,
+        `Value is not an instance of ${expected.name}`,
+        { actual, expected }
+      )
+    }
+  }
+
   hasSubset(actual, expected, message, nested = "") {
     if (nested.length === 0) this.#addCall()
 

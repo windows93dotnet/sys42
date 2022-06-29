@@ -25,6 +25,7 @@ export default class UI extends DOMQuery {
     let firstUpdateDone = false
 
     asyncable(this, async () => {
+      if (!this.ctx) return
       await this.ctx.components.done()
       await this.ctx.state.ready()
       if (firstUpdateDone) return

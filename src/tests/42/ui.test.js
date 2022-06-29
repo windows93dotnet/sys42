@@ -1686,3 +1686,64 @@ test("computed", async (t) => {
 
   t.is(app.el.innerHTML, "foo: HELLO, bar: WORLD")
 })
+
+/* actions
+========== */
+
+test("on", async (t) => {
+  const app = await ui(tmp(), {
+    content: {
+      tag: "button",
+      content: "cnt: {{cnt}}",
+      on: { click: "{{cnt += 1}}" },
+    },
+
+    data: {
+      cnt: 42,
+    },
+  })
+
+  t.eq(app.data, { cnt: 42 })
+
+  const el = app.query("button")
+
+  el.click()
+  t.eq(app.data, { cnt: 42 })
+  await app
+  t.eq(app.data, { cnt: 43 })
+})
+
+test("on", "actions", async (t) => {
+  t.plan(4)
+  const app = await ui(tmp(), {
+    content: {
+      tag: "button",
+      content: "cnt: {{cnt}}",
+      on: { click: "{{incr(10, e)}}" },
+    },
+
+    data: {
+      cnt: 42,
+    },
+
+    actions: {
+      incr(n, e) {
+        t.instanceOf(e, PointerEvent)
+        this.data.cnt += n
+      },
+    },
+  })
+
+  t.eq(app.data, { cnt: 42 })
+
+  const el = app.query("button")
+
+  el.click()
+  t.eq(app.data, { cnt: 42 })
+  await app
+  t.eq(app.data, { cnt: 52 })
+
+  app.destroy()
+  el.click()
+  await app
+})

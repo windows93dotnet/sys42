@@ -141,6 +141,8 @@ test("props", 4, async (t) => {
 })
 
 test("props", 5, async (t) => {
+  t.timeout(1000)
+
   const app = await ui(tmp(), {
     content: { tag: "ui-a", bar: "{{foo |> upper}}" },
     data: { foo: "a" },
