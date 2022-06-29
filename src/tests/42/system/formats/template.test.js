@@ -1,7 +1,8 @@
 /* eslint-disable no-useless-concat */
 import test from "../../../../42/test.js"
-
 import template from "../../../../42/system/formats/template.js"
+
+test.suite.timeout(1000)
 
 const uppercase = (str) => str.toUpperCase()
 

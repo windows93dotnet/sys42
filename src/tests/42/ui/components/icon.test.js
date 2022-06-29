@@ -1,9 +1,9 @@
 import test from "../../../../42/test.js"
 import ui from "../../../../42/ui.js"
 
-const tmp = test.utils.container({ id: "ui-icon-tests", connect: true })
-
 test.suite.timeout(5000)
+
+const tmp = test.utils.container({ id: "ui-icon-tests", connect: true })
 
 test("html", async (t) => {
   const app = await ui(tmp(), {
