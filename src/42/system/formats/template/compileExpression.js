@@ -3,6 +3,7 @@ import { operators, assignments } from "./operators.js"
 import allocate from "../../../fabric/locator/allocate.js"
 
 const PIPE = Symbol("pipe")
+// const ASSIGNMENT = Symbol("assignment")
 
 function compileToken(i, list, tokens, options) {
   const { type, value, negated, loc } = tokens[i]
@@ -102,32 +103,13 @@ export default function compileExpression(tokens, options = {}) {
 
   // reduce operation tokens
   for (let i = 0, l = list.length; i < l; i++) {
-    if (typeof list[i] === "string") {
-      if (list[i] in operators) {
-        const operate = operators[list[i]]
-        const fn = options.async
-          ? async (locals) => operate(await left(locals), await right(locals))
-          : (locals) => operate(left(locals), right(locals))
-        const [left, , right] = list.splice(i - 1, 3, fn)
-        i -= l - list.length
-      } else if (list[i] in assignments) {
-        if (!options.assignment) throw new Error("Assignment not allowed")
-        const assign = assignments[list[i]]
-        const fn = options.async
-          ? async (locals) => {
-              const res = await assign(await left(locals), await right(locals))
-              allocate(locals, left.path, res, options.sep)
-              return res
-            }
-          : (locals) => {
-              const res = assign(left(locals), right(locals))
-              allocate(locals, left.path, res, options.sep)
-              return res
-            }
-
-        const [left, , right] = list.splice(i - 1, 3, fn)
-        i -= l - list.length
-      }
+    if (typeof list[i] === "string" && list[i] in operators) {
+      const operate = operators[list[i]]
+      const fn = options.async
+        ? async (locals) => operate(await left(locals), await right(locals))
+        : (locals) => operate(left(locals), right(locals))
+      const [left, , right] = list.splice(i - 1, 3, fn)
+      i -= l - list.length
     }
   }
 
@@ -139,6 +121,28 @@ export default function compileExpression(tokens, options = {}) {
             (await condition(locals)) ? ifTrue(locals) : ifFalse(locals)
         : (locals) => (condition(locals) ? ifTrue(locals) : ifFalse(locals))
       const [condition, , ifTrue, , ifFalse] = list.splice(i - 1, 5, fn)
+      i -= l - list.length
+    }
+  }
+
+  // reduce operation tokens
+  for (let i = 0, l = list.length; i < l; i++) {
+    if (typeof list[i] === "string" && list[i] in assignments) {
+      if (!options.assignment) throw new Error("Assignment not allowed")
+      const assign = assignments[list[i]]
+      const fn = options.async
+        ? async (locals) => {
+            const res = await assign(await left(locals), await right(locals))
+            allocate(locals, left.path, res, options.sep)
+            return res
+          }
+        : (locals) => {
+            const res = assign(left(locals), right(locals))
+            allocate(locals, left.path, res, options.sep)
+            return res
+          }
+
+      const [left, , right] = list.splice(i - 1, 3, fn)
       i -= l - list.length
     }
   }
