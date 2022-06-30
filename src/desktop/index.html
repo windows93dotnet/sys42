@@ -10,17 +10,46 @@
   trap(log)
 </script>
 
-<script type="_module">
+<script type="module">
   import ui from "../42/ui.js"
-  await ui({
-    tag: "ui-sandbox",
-    check: true,
-    permissions: "app",
-    content: {
-      tag: "strong",
-      content: "hello",
+
+  const app = await ui({
+    style: {
+      width: "50vw",
+      transform: "scale(2)",
+      transformOrigin: "top left",
+    },
+    content: [
+      {
+        tag: "button",
+        content: "{{foo.cnt}}",
+        on: { click: "{{foo.cnt += 1}}" },
+      },
+      {
+        scope: "foo",
+        content: {
+          tag: "ui-sandbox.bd.ma",
+          check: true,
+          permissions: "app",
+          content: {
+            tag: "button",
+            content: "sandbox: {{cnt}}",
+            on: { click: "{{cnt += 1}}" },
+          },
+        },
+      },
+    ],
+
+    data: {
+      foo: {
+        cnt: 42,
+      },
     },
   })
+
+  setTimeout(() => {
+    app.query("ui-sandbox").go("/tests/fixtures/components/sandbox/script.html")
+  }, 1000)
 </script>
 
 <script type="_module">

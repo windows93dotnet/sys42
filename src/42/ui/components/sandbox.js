@@ -55,6 +55,8 @@ export class Sandbox extends Component {
   }
 
   go(url) {
+    this.content = undefined
+    this.srcdoc = undefined
     this.src = url
   }
 
@@ -66,7 +68,6 @@ export class Sandbox extends Component {
     const { permissions } = this
     this.resource = new Resource({ permissions })
     this.querySelector(":scope > .ui-sandbox__scene").append(this.resource.el)
-    this.update()
   }
 
   async update() {
@@ -74,13 +75,18 @@ export class Sandbox extends Component {
     this.message()
 
     if (this.content) {
+      const content = {
+        content: this.content,
+        data: this.ctx.state.value,
+        scope: this.ctx.stateScope,
+      }
       return void this.resource.module(`\
 import ui from "/42/ui.js"
-ui(${JSON.stringify(this.content)})`)
+ui(${JSON.stringify(content)})`)
     }
 
     if (this.srcdoc) {
-      return void this.resource.fill(this.srcdoc)
+      return void this.resource.srcdoc(this.srcdoc)
     }
 
     if (!this.src) return

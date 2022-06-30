@@ -4,9 +4,12 @@ import resolveScope from "../resolveScope.js"
 import register from "../register.js"
 import { normalizeComputed } from "../normalize.js"
 import { toKebabCase } from "../../fabric/type/string/letters.js"
+import idleThrottle from "../../fabric/type/function/idleThrottle.js"
 
 const BOOLEAN_TRUE = new Set(["", "on", "true"])
 const BOOLEAN_FALSE = new Set(["none", "off", "false"])
+
+const FPS = 1000 / 60
 
 const CONVERTERS = {
   string: {
@@ -76,6 +79,16 @@ export default async function renderProps(el, props, def) {
     ctx.state.set(ctx.scope, {}, { silent: true })
   }
 
+  let queue
+  let updateThrottle
+  if (el.update) {
+    queue = new Set()
+    updateThrottle = idleThrottle(() => {
+      el.update(queue)
+      queue.clear()
+    }, FPS)
+  }
+
   for (let [key, item] of Object.entries(props)) {
     const type = typeof item
 
@@ -128,12 +141,14 @@ export default async function renderProps(el, props, def) {
         }
 
         if (item.update && !el.ready.isPending) {
-          if (typeof item.update === "function") {
-            item.update.call(el, ref ? ctx.state.get(ref.$ref) : val)
-          }
+          const res =
+            typeof item.update === "function"
+              ? item.update.call(el, ref ? ctx.state.get(ref.$ref) : val)
+              : undefined
 
-          if (el.update) {
-            el.update(key, ref ? ctx.state.get(ref.$ref) : val)
+          if (res !== false && queue) {
+            queue.add(key)
+            updateThrottle()
           }
         }
       })

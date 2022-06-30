@@ -100,6 +100,7 @@ export default class Component extends HTMLElement {
     if (this.#lifecycle === SETUP) return
     this.#lifecycle = SETUP
     this.setup?.(this.ctx)
+    this.update?.()
   }
 
   async #init(def, ctx) {

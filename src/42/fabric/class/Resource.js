@@ -139,21 +139,27 @@ export default class Resource {
     this.el.allow = allow.join("; ")
   }
 
-  async fill(doc) {
-    delete this.el.src
+  srcdoc(doc) {
+    this.el.removeAttribute("src")
     this.el.srcdoc = doc
   }
 
-  async module(script) {
-    delete this.el.src
+  html(html) {
+    this.el.removeAttribute("src")
     this.el.srcdoc = `\
 <!DOCTYPE html>
 <meta charset="utf-8" />
 <link rel="stylesheet" href="/style.css" id="theme" />
-<script type="module">
-  ${script}
-</script>
+${html}
 `
+  }
+
+  module(script) {
+    this.html(`\
+<script type="module">
+${script}
+</script>
+`)
   }
 
   async go(url, { signal } = this.config) {
@@ -179,7 +185,7 @@ export default class Resource {
 
       const end = (ok) => {
         ok ? resolve() : reject()
-        if (!ok) this.el.src = "about:blank"
+        if (!ok) this.el.removeAttribute("src")
         for (const forget of forgets) forget()
         forgets.length = 0
       }
@@ -188,24 +194,28 @@ export default class Resource {
         forgets.push(
           listen(signal, {
             abort: () => {
-              this.el.src = "about:blank"
+              this.el.removeAttribute("src")
               end(true)
             },
           })
         )
       }
 
-      delete this.el.srcdoc
+      this.el.removeAttribute("srcdoc")
       this.el.src = url
 
       if (this.config.checkIframable) {
         isIframable(url, signal).then((ok) => end(ok))
       } else {
         forgets.push(
-          listen(this.el, {
-            load: () => end(true),
-            error: () => end(false),
-          })
+          listen(
+            this.el,
+            { signal, once: true },
+            {
+              load: () => end(true),
+              error: () => end(false),
+            }
+          )
         )
       }
     })

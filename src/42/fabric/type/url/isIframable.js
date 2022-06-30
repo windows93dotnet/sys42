@@ -8,12 +8,12 @@ export default async function isIframable(url, signal) {
 
   return new Promise((resolve) => {
     const cleanup = (el, signal) => {
+      signal?.removeEventListener("abort", onabort)
       el.onerror = null
       el.onload = null
-      el.data = "about:blank"
+      el.removeAttribute("data")
       el.remove()
       el = null
-      signal?.removeEventListener("abort", onabort)
     }
 
     const onabort = () => {
@@ -33,7 +33,7 @@ export default async function isIframable(url, signal) {
       resolve(true)
     }
 
-    el.data = url
     document.body.append(el)
+    el.data = url
   })
 }
