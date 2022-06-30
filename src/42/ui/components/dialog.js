@@ -6,6 +6,19 @@ export class Dialog extends Component {
 
     role: "dialog",
     tabIndex: -1,
+
+    props: {
+      content: {
+        type: "any",
+        update: true,
+      },
+    },
+
+    content: [
+      { tag: "header.ui-dialog__header", content: "title" },
+      { tag: "section.ui-dialog__content", content: "{{render(content)}}" },
+      { tag: "footer.ui-dialog__footer" },
+    ],
   }
 }
 

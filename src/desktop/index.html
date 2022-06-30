@@ -13,6 +13,50 @@
 <script type="module">
   import ui from "../42/ui.js"
 
+  await ui({
+    style: {
+      width: "50vw",
+      transform: "scale(2)",
+      transformOrigin: "top left",
+    },
+    content: [
+      {
+        tag: "button",
+        content: "{{foo.cnt}}",
+        on: { click: "{{foo.cnt += 1}}" },
+      },
+      {
+        scope: "foo",
+        content: {
+          tag: "ui-sandbox.bd.ma",
+          check: true,
+          permissions: "app",
+          content: [
+            {
+              tag: "button",
+              content: "sandbox: {{cnt}}",
+              on: { click: "{{cnt += 1}}" },
+            },
+            {
+              tag: "ui-dialog",
+              content: { tag: "strong", content: "hello" },
+            },
+          ],
+        },
+      },
+    ],
+
+    data: {
+      foo: {
+        cnt: 42,
+      },
+    },
+  })
+</script>
+
+<script type="_module">
+  import ui from "../42/ui.js"
+
   const app = await ui({
     style: {
       width: "50vw",
@@ -65,14 +109,6 @@
   setTimeout(() => {
     app.query("ui-sandbox").go("/tests/fixtures/components/sandbox/script.html")
   }, 300)
-</script>
-
-<script type="_module">
-  import ui from "../42/ui.js"
-  await ui({
-    tag: "ui-dialog",
-    content: "hello",
-  })
 </script>
 
 <script type="_module">

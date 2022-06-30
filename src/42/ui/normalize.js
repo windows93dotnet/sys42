@@ -65,9 +65,10 @@ export function normalizeTokens(tokens, ctx, filters) {
       hasFilter = true
       if (ctx.actions.has(loc) === false) {
         let filter
-        filters[token.value] = async (...args) => {
+        filters[token.value] = async function (...args) {
           filter ??=
-            ctx.el[token.value]?.bind(ctx.el) ?? (await getFilter(token.value))
+            ctx.el[token.value]?.bind(ctx.el) ??
+            (await getFilter(token.value))?.bind(ctx)
 
           try {
             return await filter(...args)
