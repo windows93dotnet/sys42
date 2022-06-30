@@ -8,6 +8,7 @@ import Undones from "../fabric/class/Undones.js"
 import getFilter from "../fabric/getFilter.js"
 import dirname from "../fabric/type/path/extract/dirname.js"
 import dispatch from "../fabric/dom/dispatch.js"
+import allocate from "../fabric/locator/allocate.js"
 import isEmptyObject from "../fabric/type/any/is/isEmptyObject.js"
 import isArrayLike from "../fabric/type/any/is/isArrayLike.js"
 import noop from "../fabric/type/function/noop.js"
@@ -36,6 +37,18 @@ const DEF_KEYWORDS = new Set([
   "tag",
 ])
 
+const sep = "/"
+
+const makeFilterFn =
+  (filter, thisArg, el) =>
+  async (...args) => {
+    try {
+      return await filter.call(thisArg, ...args)
+    } catch (err) {
+      dispatch(el, err)
+    }
+  }
+
 export function normalizeTokens(tokens, ctx, filters) {
   let hasFilter = false
   const scopes = []
@@ -63,20 +76,30 @@ export function normalizeTokens(tokens, ctx, filters) {
       }
     } else if (token.type === "function") {
       hasFilter = true
-      if (ctx.actions.has(loc) === false) {
-        let filter
-        filters[token.value] = async function (...args) {
-          filter ??=
-            ctx.el[token.value]?.bind(ctx.el) ??
-            (await getFilter(token.value))?.bind(ctx)
 
-          try {
-            return await filter(...args)
-          } catch (err) {
-            dispatch(ctx.el, err)
-          }
-        }
-      } else token.value = loc
+      let filter
+      let thisArg
+
+      if (ctx.actions.has(loc)) {
+        thisArg = ctx
+        filter = ctx.actions.get(loc)
+      } else if (token.value in ctx.el) {
+        thisArg = ctx.el
+        filter = ctx.el[token.value]
+      }
+
+      if (filter) {
+        const fn = makeFilterFn(filter, thisArg, ctx.el)
+        allocate(filters, loc, fn, sep)
+      } else {
+        const thisArg = ctx
+        const fn = getFilter(token.value).then((filter) =>
+          makeFilterFn(filter, thisArg, ctx.el)
+        )
+        allocate(filters, loc, fn, sep)
+      }
+
+      token.value = loc
     }
   }
 
@@ -99,7 +122,6 @@ export function normalizeString(def, ctx) {
     def = template.compile(parsed, {
       async: true,
       sep: "/",
-      thisArg: ctx,
       filters,
     })
 

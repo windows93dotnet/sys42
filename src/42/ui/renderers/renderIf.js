@@ -22,7 +22,6 @@ export default function renderIf(def, ctx) {
     boolean: true,
     async: true,
     sep: "/",
-    thisArg: ctx,
     filters,
   })
 

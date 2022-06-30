@@ -786,6 +786,26 @@ test("filters", "thisArg", async (t) => {
   t.is(app.el.innerHTML, "<em>a B</em>")
 })
 
+test("filters", "nested action", async (t) => {
+  t.plan(3)
+  const app = await ui(tmp(), {
+    tag: "em",
+    content: "a {{foo|>foo.bar}}",
+    data: { foo: "b" },
+    actions: {
+      foo: {
+        bar(str) {
+          t.is(this.el.localName, "em")
+          t.eq(this.state.value, { foo: "b" })
+          return str.toUpperCase()
+        },
+      },
+    },
+  })
+
+  t.is(app.el.innerHTML, "<em>a B</em>")
+})
+
 test("filters", "thisArg", "nested", async (t) => {
   t.plan(8)
 

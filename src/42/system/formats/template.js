@@ -33,16 +33,16 @@ template.format = (parsed, locals, filters) =>
     { locate, jsonParse, filters, locals }
   )(locals)
 
-template.render = (source, locals, filters) =>
-  compileTemplate(
-    parseTemplate(source, jsonParse), //
-    { locate, jsonParse, filters, locals }
-  )(locals)
-
 template.formatAsync = async (parsed, locals, filters) =>
   compileTemplate(
     parsed, //
     { locate, jsonParse, filters, locals, async: true }
+  )(locals)
+
+template.render = (source, locals, filters) =>
+  compileTemplate(
+    parseTemplate(source, jsonParse), //
+    { locate, jsonParse, filters, locals }
   )(locals)
 
 template.renderAsync = async (source, locals, filters) =>

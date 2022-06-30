@@ -12,7 +12,6 @@ export default function renderListen(el, def, ctx) {
       assignment: true,
       async: true,
       sep: "/",
-      thisArg: ctx,
       filters,
     })
 

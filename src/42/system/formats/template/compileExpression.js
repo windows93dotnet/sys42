@@ -3,7 +3,6 @@ import { operators, assignments } from "./operators.js"
 import allocate from "../../../fabric/locator/allocate.js"
 
 const PIPE = Symbol("pipe")
-// const ASSIGNMENT = Symbol("assignment")
 
 function compileToken(i, list, tokens, options) {
   const { type, value, negated, loc } = tokens[i]
@@ -39,20 +38,19 @@ function compileToken(i, list, tokens, options) {
         options.async
           ? async (locals, args = []) => {
               args.unshift(fn)
-              const undones = args
-              for (const arg of argTokens) undones.push(arg(locals))
-              const [asyncFn, ...rest] = await Promise.all(undones)
+              for (const arg of argTokens) args.push(arg(locals))
+              const [asyncFn, ...rest] = await Promise.all(args)
               if (typeof asyncFn !== "function") {
                 throw new TypeError(
                   `Template filter didn't resolve as a function: "${value}"`
                 )
               }
 
-              return asyncFn.call(options.thisArg, ...rest)
+              return asyncFn(...rest)
             }
           : (locals, args = []) => {
               for (const arg of argTokens) args.push(arg(locals))
-              return fn.call(options.thisArg, ...args)
+              return fn(...args)
             }
       )
     }
@@ -125,7 +123,7 @@ export default function compileExpression(tokens, options = {}) {
     }
   }
 
-  // reduce operation tokens
+  // reduce assignment tokens
   for (let i = 0, l = list.length; i < l; i++) {
     if (typeof list[i] === "string" && list[i] in assignments) {
       if (!options.assignment) throw new Error("Assignment not allowed")
