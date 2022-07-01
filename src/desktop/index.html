@@ -22,6 +22,10 @@
     content: [
       {
         tag: "button",
+        picto: "puzzle",
+      },
+      {
+        tag: "button",
         content: "{{foo.cnt}}",
         on: { click: "{{foo.cnt += 1}}" },
       },
@@ -39,7 +43,7 @@
             },
             {
               tag: "ui-dialog",
-              content: { tag: "strong", content: "hello" },
+              content: { tag: "strong", content: "hello: {{cnt}}" },
             },
           ],
         },

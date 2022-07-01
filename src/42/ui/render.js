@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import create from "./create.js"
 import resolveScope from "./resolveScope.js"
 import register from "./register.js"
@@ -52,6 +53,11 @@ export default function render(...args) {
       register(ctx, el.name, (val) => {
         el.value = val
       })
+    }
+
+    if (def.picto) {
+      if (el.localName === "button") el.classList.add("btn-picto")
+      el.append(render({ tag: "ui-picto", value: def.picto }))
     }
 
     if (

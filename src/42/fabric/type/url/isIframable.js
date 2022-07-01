@@ -33,7 +33,7 @@ export default async function isIframable(url, signal) {
       resolve(true)
     }
 
-    document.body.append(el)
     el.data = url
+    document.body.append(el)
   })
 }

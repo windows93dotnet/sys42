@@ -10,15 +10,28 @@ export class Dialog extends Component {
     props: {
       content: {
         type: "any",
-        update: true,
       },
     },
+  }
 
-    content: [
-      { tag: "header.ui-dialog__header", content: "title" },
+  render() {
+    return [
+      {
+        tag: "header.ui-dialog__header",
+        content: [
+          {
+            tag: "h2.ui-dialog__title",
+            content: "title",
+          },
+          {
+            tag: "button",
+            picto: "close",
+          },
+        ],
+      },
       { tag: "section.ui-dialog__content", content: "{{render(content)}}" },
       { tag: "footer.ui-dialog__footer" },
-    ],
+    ]
   }
 }
 

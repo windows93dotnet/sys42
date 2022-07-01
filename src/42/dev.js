@@ -1,0 +1,112 @@
+import inTop from "./system/env/runtime/inTop.js"
+import inOpaqueOrigin from "./system/env/runtime/inOpaqueOrigin.js"
+import inAutomated from "./system/env/runtime/inAutomated.js"
+import system from "./system.js"
+import log from "./system/log.js"
+
+import testRunner from "./system/dev/testRunner.js"
+import getScriptData from "./fabric/getScriptData.js"
+const { config } = getScriptData(import.meta)
+
+// config.verbose = 0
+log.verbose = config.verbose
+
+function greet() {
+  log.if(config.verbose).cyanBright(`\
+╷ ┌───┐
+└─┤ ┌─┘  {white type} {cyanBright system42}{cyan .dev.help()}
+  └─┴─╴`)
+}
+
+if (inTop && inAutomated) {
+  if (config.testFiles) {
+    testRunner(config.testFiles, { ...config.testRunner, report: false })
+  }
+} else if (!inAutomated) {
+  if (inTop || config.verbose > 2) greet()
+
+  const liveReload = await import("./fabric/dev/liveReload.js") //
+    .then((m) => m.default)
+  const serverSentEvents = await import("./fabric/dev/serverSentEvents.js") //
+    .then((m) => m.default)
+
+  const dev = {
+    loaded: false,
+    sse: serverSentEvents("/42-dev"),
+    help() {
+      log(log.esc`\
+{cyanBright system42}{cyan .dev.test(options)} {grey ..} run tests
+{cyanBright system42}{cyan .dev.tree(element)} {grey ..} display accessibility tree
+{cyanBright system42}{cyan .dev.env(full)} {grey ......} display env
+{cyanBright system42}{cyan .dev.pause()} {grey ........} pause live-reload
+{cyanBright system42}{cyan .dev.resume()} {grey .......} resume live-reload
+{cyanBright system42}{cyan .dev.toggle()} {grey .......} toggle live-reload
+{cyanBright system42}{cyan .dev.technicolor()} {grey ..} technicolor`)
+    },
+    technicolor() {
+      log.color("#000")(
+        `\n         ▄▄████▄▄\n  █ ▄ ▄▄██{bg.c3ff00 ▀▄  ▄▀}██\n  {0ff ▄} ▀▀▀▀██{bg.c3ff00  ▀  ▀ }██\n  {0ff ▀ █▄██}██{bg.c3ff00  ▄  ▄ }██\n  {f0f █ ▄ ▄▄}██{bg.c3ff00   ▀▀  }██\n  ▄ {f0f ▀▀▀▀}██{bg.c3ff00 ▄████▄}██\n  ▀ █▄███▀▀    ▀▀█\n`
+      )
+    },
+    pause() {
+      dev.sse.enabled = false
+      log("paused")
+    },
+    resume() {
+      dev.sse.enabled = true
+      log("resumed")
+    },
+    toggle() {
+      dev.sse.enabled = !dev.sse.enabled
+      log(dev.sse.enabled ? "paused" : "resumed")
+    },
+    async test(options = config.testRunner) {
+      if (config.testFiles) return testRunner(config.testFiles, options)
+    },
+    async env(full) {
+      const env = await import("./system/env.js").then((m) => m.default)
+      if (!full) return log(env.toString())
+      const json = env.toJSON()
+      log(json)
+    },
+    // async tree(el = document.body) {
+    //   const printAccessibilityTree = await import(
+    //     "./type/aom/printAccessibilityTree.js"
+    //   ).then((m) => m.default)
+    //   printAccessibilityTree(el)
+    // },
+  }
+
+  system.dev = dev
+
+  if (inTop || inOpaqueOrigin) {
+    const sseLog = log
+      .level(2)
+      .blueBright /* .hour */
+      .prefix("┃ 📡")
+
+    dev.sse
+      .connect()
+      .on("connect", () => {
+        if (inTop && dev.sse.enabled && dev.loaded) location.reload()
+        dev.loaded = true
+        sseLog(` connected {grey /42-dev}`)
+      })
+      .on("disconnect", () => sseLog(`💥 disconnected {grey /42-dev}`))
+      .on("error", (msg) => sseLog(`💥 ${msg}`))
+      .on("change", ({ data }) => {
+        sseLog(` change ${log.format.file(data)}`)
+        liveReload(data)
+      })
+      .on("reload", () => {
+        location.reload()
+      })
+
+    window.addEventListener("pagehide", () => dev.sse.destroy())
+
+    const hasTestFlag = new URL(location.href).searchParams.has("test")
+    if (config.testRunner && hasTestFlag) await dev.test()
+  } else {
+    dev.sse.on("change", ({ data }) => liveReload(data))
+  }
+}
