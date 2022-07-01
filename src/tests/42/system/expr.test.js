@@ -100,3 +100,9 @@ test.tasks(
     })
   }
 )
+
+test("multi locals", (t) => {
+  const fn = expr.compile(expr.parse("{{a === b}}"))
+  t.eq(fn({ a: 1 }, { b: 1 }), true)
+  t.eq(fn({ a: 1 }, { b: 2 }), false)
+})

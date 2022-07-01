@@ -18,7 +18,7 @@ export default function compileTemplate(parsed, options = {}) {
   }
 
   return options.async
-    ? async (locals) => {
+    ? async (...locals) => {
         let out = strings[0] ? [strings[0]] : []
 
         for (let i = 0, l = substitutions.length; i < l; i++) {
@@ -30,7 +30,7 @@ export default function compileTemplate(parsed, options = {}) {
         out = await Promise.all(out)
         return out.length === 1 ? out[0] : out.join("")
       }
-    : (locals) => {
+    : (...locals) => {
         let out = strings[0]
 
         for (let i = 0, l = substitutions.length; i < l; i++) {

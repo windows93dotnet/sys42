@@ -7,8 +7,8 @@ import compileExpression from "./formats/template/compileExpression.js"
 
 const jsonParse = JSON5.parse
 
-export default function expr(target, str, options) {
-  return expr.compile(expr.parse(str), options)(target)
+export default function expr(locals, str, options) {
+  return expr.compile(expr.parse(str), options)(locals)
 }
 
 expr.parse = (source) => parseExpression(source, jsonParse)
@@ -23,19 +23,19 @@ expr.compile = (parsed, options) => {
   if (options?.assignment) {
     return options?.boolean
       ? options?.async
-        ? async (target) =>
-            Boolean((await Promise.all(list.map((fn) => fn(target)))).at(-1))
-        : (target) => Boolean(list.map((fn) => fn(target)).at(-1))
-      : (target) => list.map((fn) => fn(target)).at(-1)
+        ? async (...locals) =>
+            Boolean((await Promise.all(list.map((fn) => fn(locals)))).at(-1))
+        : (...locals) => Boolean(list.map((fn) => fn(locals)).at(-1))
+      : (...locals) => list.map((fn) => fn(locals)).at(-1)
   }
 
-  const compiled = list.at(-1)
+  const fn = list.at(-1)
 
   return options?.boolean
     ? options?.async
-      ? async (target) => Boolean(await compiled(target))
-      : (target) => Boolean(compiled(target))
-    : (target) => compiled(target)
+      ? async (...locals) => Boolean(await fn(locals))
+      : (...locals) => Boolean(fn(locals))
+    : (...locals) => fn(locals)
 }
 
 expr.evaluate = (str, options) => expr.compile(expr.parse(str), options)

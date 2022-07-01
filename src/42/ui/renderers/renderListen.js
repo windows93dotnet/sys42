@@ -2,12 +2,20 @@ import listen from "../../fabric/dom/listen.js"
 import { normalizeTokens } from "../normalize.js"
 import expr from "../../system/expr.js"
 
+const makeEventLocals = (e, target) =>
+  Object.defineProperties(
+    { target, e, event: e },
+    { rect: { get: () => target.getBoundingClientRect() } }
+  )
+
 export default function renderListen(el, def, ctx) {
   const events = {}
 
   for (const [key, val] of Object.entries(def)) {
     const parsed = expr.parse(val)
+
     const { filters } = normalizeTokens(parsed, ctx)
+
     const fn = expr.compile(parsed, {
       assignment: true,
       async: true,
@@ -15,35 +23,8 @@ export default function renderListen(el, def, ctx) {
       filters,
     })
 
-    events[key] = (e) => {
-      const proxy = new Proxy(ctx.state.proxy, {
-        has(target, key, receiver) {
-          const has = Reflect.has(target, key, receiver)
-          if (
-            has === false &&
-            (key === "e" ||
-              key === "event" ||
-              key === "target" ||
-              key === "rect")
-          ) {
-            return true
-          }
-
-          return has
-        },
-
-        get(target, key, receiver) {
-          const val = Reflect.get(target, key, receiver)
-          if (val === undefined) {
-            if (key === "e" || key === "event") return e
-            if (key === "target") return e.target
-            if (key === "rect") return e.target.getBoundingClientRect()
-          }
-
-          return val
-        },
-      })
-      fn(proxy)
+    events[key] = (e, target) => {
+      fn(ctx.state.proxy, makeEventLocals(e, target))
     }
   }
 

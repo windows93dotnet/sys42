@@ -65,21 +65,53 @@ function compileToken(i, list, tokens, options) {
   else if (type === "key") {
     list.push(
       negated
-        ? (locals) => !locate(locals, value, sep)
-        : (locals) => locate(locals, value, sep)
+        ? (locals) => {
+            for (const obj of locals) {
+              const res = locate(obj, value, sep)
+              if (res !== undefined) return !res
+            }
+
+            return true
+          }
+        : (locals) => {
+            for (const obj of locals) {
+              const res = locate(obj, value, sep)
+              if (res !== undefined) return res
+            }
+          }
     )
   } else if (type === "arg") {
     if (!negated && Number.isInteger(value)) {
       if (loc) {
         const baseLoc = loc.replace(new RegExp(`${sep}${value}$`), "")
         list.push((locals) => {
-          const base = locate(locals, baseLoc, sep)
-          return Array.isArray(base) ? base.at(value) : value
+          let res
+          let isArray
+          for (const obj of locals) {
+            const base = locate(obj, baseLoc, sep)
+            if (Array.isArray(base)) {
+              isArray = true
+              res ??= base.at(value)
+              if (res !== undefined) break
+            }
+          }
+
+          return isArray ? res : value
         })
       } else {
-        list.push((locals) =>
-          Array.isArray(locals) ? locate(locals, value, sep) : value
-        )
+        list.push((locals) => {
+          let res
+          let isArray
+          for (const obj of locals) {
+            if (Array.isArray(obj)) {
+              isArray = true
+              res ??= locate(obj, value, sep)
+              if (res !== undefined) break
+            }
+          }
+
+          return isArray ? res : value
+        })
       }
     } else list.push(negated ? () => !value : () => value)
   }
@@ -131,12 +163,12 @@ export default function compileExpression(tokens, options = {}) {
       const fn = options.async
         ? async (locals) => {
             const res = await assign(await left(locals), await right(locals))
-            allocate(locals, left.path, res, options.sep)
+            allocate(locals[0], left.path, res, options.sep)
             return res
           }
         : (locals) => {
             const res = assign(left(locals), right(locals))
-            allocate(locals, left.path, res, options.sep)
+            allocate(locals[0], left.path, res, options.sep)
             return res
           }
 
