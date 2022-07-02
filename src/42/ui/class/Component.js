@@ -37,21 +37,28 @@ export default class Component extends HTMLElement {
       }
     }
 
-    let tag = Class.definition?.tag
+    Class.definition ??= {}
+
+    const out = (...args) => new Class(...args)
+
+    let { tag } = Class.definition
+
     if (tag === undefined) {
       if (Class.name === "Class") throw new Error(`missing Component "tag"`)
       tag = `ui-${Class.name.toLowerCase()}`
     }
 
-    if (Class.definition?.props) {
+    if (customElements.get(tag)) return out
+
+    if (Class.definition.props) {
       Class.observedAttributes = []
       for (const [key, item] of Object.entries(Class.definition.props)) {
         Class.observedAttributes.push(item.attribute ?? toKebabCase(key))
       }
     }
 
-    if (!customElements.get(tag)) customElements.define(tag, Class)
-    return (...args) => new Class(...args)
+    customElements.define(tag, Class)
+    return out
   }
 
   #observed
@@ -113,17 +120,18 @@ export default class Component extends HTMLElement {
     tmp.el = this
     tmp.components = undefined
     tmp.cancel = ctx?.cancel?.fork()
-    delete this.cancelParent
     tmp = normalizeCtx(tmp)
     Object.defineProperty(tmp, "signal", { get: () => tmp.cancel.signal })
     this.ctx = tmp
-    this.ctx.props = definition.props
 
-    const { localName } = this
-    let i = this.ctx.componentsIndexes[localName] ?? -1
-    this.ctx.componentsIndexes[localName] = ++i
-    this.ctx.stateScope = this.ctx.scope
-    this.ctx.scope = resolveScope(this.localName, String(i))
+    if (definition.props || definition.computed) {
+      const { localName } = this
+      let i = this.ctx.componentsIndexes[localName] ?? -1
+      this.ctx.componentsIndexes[localName] = ++i
+      this.ctx.stateScope = this.ctx.scope
+      this.ctx.scope = resolveScope(this.localName, String(i))
+      this.ctx.props = definition.props
+    }
 
     let props
     if (definition.props) {
@@ -159,8 +167,6 @@ export default class Component extends HTMLElement {
     const attrs = normalizeAttrs(config, this.ctx)
     if (attrs) renderAttributes(this, this.ctx, attrs)
 
-    // await 0 // queueMicrotask
-
     this.append(render(this.def.content, this.ctx))
 
     await this.ctx.components.done()
@@ -194,10 +200,12 @@ export default class Component extends HTMLElement {
       this.ctx.cancel(`${this.localName} destroyed`)
     }
 
-    // if (this.constructor.definition?.props || this.def.computed) {
-    this.ctx.componentsIndexes[this.localName]--
-    this.ctx.state.delete(this.ctx.scope, { silent: true })
-    // }
+    const { definition } = this.constructor
+
+    if (definition.props || definition.computed) {
+      this.ctx.componentsIndexes[this.localName]--
+      this.ctx.state.delete(this.ctx.scope, { silent: true })
+    }
 
     this.ready = undefined
     this.#observed = undefined
