@@ -1,4 +1,4 @@
-const { hasOwnProperty } = Object
+/* eslint-disable guard-for-in */
 
 export default class Emitter {
   static EVENTS = Symbol.for("Emitter.EVENTS")
@@ -24,9 +24,11 @@ export default class Emitter {
     }
 
     if (options?.signal) {
-      options.signal.addEventListener("abort", () => this.off(events, fn), {
-        once: true,
-      })
+      options.signal.addEventListener(
+        "abort", //
+        () => this.off(events, fn),
+        { once: true }
+      )
     }
 
     if (options?.off) return () => this.off(events, fn)
@@ -38,9 +40,7 @@ export default class Emitter {
     for (const event of events.split(" ")) {
       if (event === "*" && !fn) {
         for (const key in this[Emitter.EVENTS]) {
-          if (hasOwnProperty.call(this[Emitter.EVENTS], key)) {
-            delete this[Emitter.EVENTS][key]
-          }
+          delete this[Emitter.EVENTS][key]
         }
       } else if (fn && this[Emitter.EVENTS][event]) {
         this[Emitter.EVENTS][event] = this[Emitter.EVENTS][event].filter(

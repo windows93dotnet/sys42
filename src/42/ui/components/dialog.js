@@ -1,4 +1,5 @@
 import Component from "../class/Component.js"
+import movable from "../traits/movable.js"
 
 export class Dialog extends Component {
   static definition = {
@@ -8,6 +9,11 @@ export class Dialog extends Component {
     tabIndex: -1,
 
     props: {
+      active: {
+        type: "boolean",
+        reflect: true,
+        default: true,
+      },
       content: {
         type: "any",
       },
@@ -32,6 +38,10 @@ export class Dialog extends Component {
       { tag: "section.ui-dialog__content", content: "{{render(content)}}" },
       { tag: "footer.ui-dialog__footer" },
     ]
+  }
+
+  setup({ signal }) {
+    movable(this, { signal })
   }
 }
 

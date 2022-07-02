@@ -20,14 +20,14 @@
 /* [hidden], */
 .hide { display: none !important; }
 
-.motionless,
+.motionless, body.motionless *,
 .animation-0, body.animation-0 * {
   animation-delay: -1ms !important;
   animation-duration: 1ms !important;
   animation-iteration-count: 1 !important;
 }
 
-.motionless,
+.motionless, body.motionless *,
 .transition-0, body.transition-0 * { transition: none !important; }
 
 .selection-0, body.selection-0 * { user-select: none !important; }

@@ -1,5 +1,3 @@
-import ensureElement from "./ensureElement.js"
-
 import cssPrefix from "./cssPrefix.js"
 import setStyles from "./setStyles.js"
 import { setClasses } from "./setAttributes.js"
@@ -60,15 +58,16 @@ const setAttributes = (el, attr) => {
 }
 
 export default function setTemp(el, ...options) {
-  el = ensureElement(el)
-
   const restores = []
-
   const attributes = []
+  const signals = []
 
   for (const item of options) {
     for (const [key, val] of Object.entries(item)) {
-      if (key === "style") {
+      if (key === "signal") {
+        val.addEventListener("abort", restore)
+        signals.push(val)
+      } else if (key === "style") {
         const isArray = Array.isArray(val)
         const saved = saveStyles(el, isArray ? val : Object.keys(val))
         if (!isArray) setStyles(el, val)
@@ -87,9 +86,15 @@ export default function setTemp(el, ...options) {
     const saved = saveAttributes(el, attributes)
     setAttributes(el, attributes)
     restores.push(() => setAttributes(el, saved))
+    attributes.length = 0
   }
 
-  return () => {
+  function restore() {
     for (const restore of restores) restore()
+    for (const signal of signals) signal.removeEventListener("abort", restore)
+    restores.length = 0
+    signals.length = 0
   }
+
+  return restore
 }
