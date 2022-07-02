@@ -97,7 +97,7 @@ export default async function renderProps(el, props, def) {
     }
 
     const scope = item.state //
-      ? resolveScope(ctx.stateScope, key, ctx)
+      ? resolveScope(ctx.globalScope, key, ctx)
       : resolveScope(ctx.scope, key, ctx)
 
     const attribute = item.attribute ?? toKebabCase(key)

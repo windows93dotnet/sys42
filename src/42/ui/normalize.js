@@ -232,8 +232,8 @@ export function normalizeDef(def = {}, ctx = normalizeCtx(), options) {
     }
 
     if (def.scope) {
-      if (ctx.stateScope) {
-        ctx.stateScope = resolveScope(ctx.stateScope, def.scope, ctx)
+      if (ctx.globalScope) {
+        ctx.globalScope = resolveScope(ctx.globalScope, def.scope, ctx)
       }
 
       ctx.scope = resolveScope(ctx.scope, def.scope, ctx)

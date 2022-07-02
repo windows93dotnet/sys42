@@ -78,7 +78,7 @@ export class Sandbox extends Component {
       const content = {
         content: this.content,
         data: this.ctx.state.value,
-        scope: this.ctx.stateScope,
+        scope: this.ctx.globalScope,
       }
       return void this.resource.module(`\
 import ui from "/42/ui.js"

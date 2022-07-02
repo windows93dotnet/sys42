@@ -10,7 +10,7 @@ class Icon extends Component {
 
     tabIndex: 0,
     aria: {
-      description: "{{infos/description}}",
+      description: "{{infos.description}}",
     },
 
     props: {

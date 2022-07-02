@@ -128,7 +128,7 @@ export default class Component extends HTMLElement {
       const { localName } = this
       let i = this.ctx.componentsIndexes[localName] ?? -1
       this.ctx.componentsIndexes[localName] = ++i
-      this.ctx.stateScope = this.ctx.scope
+      this.ctx.globalScope = this.ctx.scope
       this.ctx.scope = resolveScope(this.localName, String(i))
       this.ctx.props = definition.props
     }
