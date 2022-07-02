@@ -149,7 +149,10 @@ export default class Component extends HTMLElement {
       this.ctx.componentsIndexes[localName] = ++i
       this.ctx.stateScope = this.ctx.scope
       this.ctx.scope = resolveScope(this.localName, String(i))
+      // this.ctx.props = props
     }
+
+    // this.ctx.component = this
 
     this.#observed = props
       ? await renderProps(this, definition.props, props)
@@ -160,7 +163,7 @@ export default class Component extends HTMLElement {
     const attrs = normalizeAttrs(config, this.ctx)
     if (attrs) renderAttributes(this, this.ctx, attrs)
 
-    await 0 // queueMicrotask
+    // await 0 // queueMicrotask
 
     this.append(render(this.def.content, this.ctx))
 

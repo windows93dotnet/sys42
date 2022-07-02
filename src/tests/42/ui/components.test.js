@@ -456,6 +456,30 @@ test.tasks(
   }
 )
 
+test("component child", async (t) => {
+  const app = await ui(tmp(true), {
+    content: {
+      tag: "ui-t-props",
+      bar: 4,
+      content: {
+        tag: "em",
+        content: "derp:{{derp}}, bar:{{bar}}",
+      },
+    },
+    data: { derp: 5 },
+  })
+
+  t.eq(app.state.value, {
+    "derp": 5,
+    "ui-t-props": { 0: { bar: 4 } },
+  })
+
+  t.is(
+    app.el.innerHTML,
+    '<ui-t-props bar="4"><em>derp:5, bar:4</em></ui-t-props>'
+  )
+})
+
 /* State
 ======== */
 

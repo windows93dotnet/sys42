@@ -190,12 +190,12 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
     }
 
     for (const value of assignmentsKeys) {
-      if (source.startsWith(value, current)) {
-        if (value === "=") {
-          const next = source[current + 1]
-          if (next === "=" || next === "~") continue
-        }
+      if (value === "=") {
+        const next = source[current + 1]
+        if (next === "=" || next === "~") continue
+      }
 
+      if (source.startsWith(value, current)) {
         flush()
         tokens.push({ type: "assignment", value })
         state = "arg"
