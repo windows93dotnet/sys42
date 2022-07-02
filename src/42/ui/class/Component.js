@@ -117,10 +117,13 @@ export default class Component extends HTMLElement {
     tmp = normalizeCtx(tmp)
     Object.defineProperty(tmp, "signal", { get: () => tmp.cancel.signal })
     this.ctx = tmp
+    this.ctx.props = definition.props
 
-    const content = await this.render?.(this.ctx)
-
-    def = objectify(def)
+    const { localName } = this
+    let i = this.ctx.componentsIndexes[localName] ?? -1
+    this.ctx.componentsIndexes[localName] = ++i
+    this.ctx.stateScope = this.ctx.scope
+    this.ctx.scope = resolveScope(this.localName, String(i))
 
     let props
     if (definition.props) {
@@ -136,23 +139,16 @@ export default class Component extends HTMLElement {
       }
     }
 
+    const content = await this.render?.(this.ctx)
+
+    def = objectify(def)
+
     const config = { ...definition, ...objectify(content), ...def }
     const { computed } = config
     this.ctx.computed = computed
     delete config.computed
 
     this.def = normalizeDef(config, this.ctx, { attrs: false })
-
-    if (props || config.computed) {
-      const { localName } = this
-      let i = this.ctx.componentsIndexes[localName] ?? -1
-      this.ctx.componentsIndexes[localName] = ++i
-      this.ctx.stateScope = this.ctx.scope
-      this.ctx.scope = resolveScope(this.localName, String(i))
-      // this.ctx.props = props
-    }
-
-    // this.ctx.component = this
 
     this.#observed = props
       ? await renderProps(this, definition.props, props)
@@ -198,10 +194,10 @@ export default class Component extends HTMLElement {
       this.ctx.cancel(`${this.localName} destroyed`)
     }
 
-    if (this.constructor.definition?.props || this.def.computed) {
-      this.ctx.componentsIndexes[this.localName]--
-      this.ctx.state.delete(this.ctx.scope, { silent: true })
-    }
+    // if (this.constructor.definition?.props || this.def.computed) {
+    this.ctx.componentsIndexes[this.localName]--
+    this.ctx.state.delete(this.ctx.scope, { silent: true })
+    // }
 
     this.ready = undefined
     this.#observed = undefined

@@ -8,7 +8,7 @@ const sep = "/"
 
 function checkProps(ctx, path) {
   path = path.split("/")[0] // TODO: optimise this
-  const prop = locate(ctx.el.def.props, path, sep)
+  const prop = locate(ctx.props, path, sep)
   if (prop && prop.state !== true) return ctx.scope
   if (ctx.computed && exists(ctx.computed, path, sep)) return ctx.scope
 }
@@ -18,7 +18,7 @@ export default function resolveScope(scope, path, ctx) {
   path = String(path)
 
   if (typeof scope === "string") {
-    if (ctx?.el.def) scope = checkProps(ctx, path) ?? scope
+    if (ctx?.props) scope = checkProps(ctx, path) ?? scope
   } else {
     ctx ??= scope
     scope = ctx.scope
@@ -26,8 +26,10 @@ export default function resolveScope(scope, path, ctx) {
     if (ctx.stateScope) {
       if (path.startsWith("./") || path.startsWith("../")) {
         scope = ctx.stateScope
-      } else if (ctx.el.def) {
-        scope = checkProps(ctx, path) ?? ctx.stateScope
+      } else {
+        scope = ctx.props
+          ? checkProps(ctx, path) ?? ctx.stateScope
+          : ctx.stateScope
       }
     }
   }

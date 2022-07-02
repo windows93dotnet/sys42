@@ -644,6 +644,29 @@ test("state", "dynamic", async (t) => {
       tag: "ui-t-nested-dynamic",
       list: [
         { foo: "a" }, //
+      ],
+    },
+  })
+
+  t.eq(Object.keys(app.ctx.renderers), [
+    "/ui-t-nested-dynamic/0/list",
+    "/ui-t-nested-dynamic/0/list/0/foo",
+  ])
+
+  t.eq(app.state.value, {
+    "ui-t-nested-dynamic": { 0: { list: [{ foo: "a" }] } },
+    "ui-t-state": {
+      0: { x: { $ref: "/ui-t-nested-dynamic/0/list/0/foo" } },
+    },
+  })
+})
+
+test("state", "dynamic", 2, async (t) => {
+  const app = await ui(tmp(), {
+    content: {
+      tag: "ui-t-nested-dynamic",
+      list: [
+        { foo: "a" }, //
         { foo: "b" },
       ],
     },

@@ -23,6 +23,11 @@ test("props", 1, async (t) => {
     "ui-a": { 0: { bar: "-" } },
   })
 
+  t.eq(Object.keys(app.ctx.renderers), [
+    "/foo", //
+    "/ui-a/0/bar",
+  ])
+
   t.is(app.el.innerHTML, '<ui-a bar="-">foo: 1, bar: -</ui-a>')
 
   app.query("ui-a").bar = 0
