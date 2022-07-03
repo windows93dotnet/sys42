@@ -54,8 +54,11 @@ export function setAttribute(el, key, val) {
     if (val === undefined) el.removeAttribute(key)
     else el.setAttribute(key, val)
   } else if (key === "id") {
-    if (val) el.setAttribute(key, val === true && !el.id ? uid() : val)
-    else el.removeAttribute(key)
+    if (val) {
+      if (val === true) {
+        if (!el.id) el.setAttribute(key, uid())
+      } else el.setAttribute(key, val)
+    } else el.removeAttribute(key)
   } else if (key === "value") {
     if (el.localName === "textarea" || el.localName === "select") {
       el.value = val == null ? null : val

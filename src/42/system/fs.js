@@ -18,6 +18,7 @@ const DEFAULTS = {
 // "/www/": "cache",
 // TODO: https://web.dev/storage-foundation/
 // TODO: https://web.dev/file-system-access/
+// TODO: https://emscripten.org/docs/api_reference/Filesystem-API.html#id2
 
 let places
 

@@ -22,6 +22,8 @@ const SETUP = 3
 const RECYCLE = 4
 const DESTROY = 5
 
+const _AXIS = Symbol("AXIS")
+
 function objectify(def) {
   if (def != null) {
     if (typeof def === "object" && !Array.isArray(def)) return def
@@ -30,6 +32,12 @@ function objectify(def) {
 }
 
 export default class Component extends HTMLElement {
+  static AXIS = _AXIS;
+
+  [_AXIS]() {
+    this.style.transform = `translate(${this.x}px, ${this.y}px)`
+  }
+
   static define(Class) {
     if (typeof Class === "object") {
       Class = class extends Component {
@@ -131,6 +139,7 @@ export default class Component extends HTMLElement {
       this.ctx.globalScope = this.ctx.scope
       this.ctx.scope = resolveScope(this.localName, String(i))
       this.ctx.props = definition.props
+      if (definition.id === true) this.id = `${this.localName}-${i}`
     }
 
     let props
@@ -147,27 +156,24 @@ export default class Component extends HTMLElement {
       }
     }
 
-    const content = await this.render?.(this.ctx)
+    this.#observed = props
+      ? await renderProps(this, definition.props, props)
+      : undefined
 
-    def = objectify(def)
-
-    const config = { ...definition, ...objectify(content), ...def }
+    const config = { ...definition, ...objectify(def) }
     const { computed } = config
     this.ctx.computed = computed
     delete config.computed
 
-    this.def = normalizeDef(config, this.ctx, { attrs: false })
-
-    this.#observed = props
-      ? await renderProps(this, definition.props, props)
-      : undefined
+    def = normalizeDef(config, this.ctx, { attrs: false })
+    def = this.render ? objectify(this.render(def)) : def
 
     if (computed) normalizeComputeds(computed, this.ctx)
 
     const attrs = normalizeAttrs(config, this.ctx)
     if (attrs) renderAttributes(this, this.ctx, attrs)
 
-    this.append(render(this.def.content, this.ctx))
+    this.append(render(def.content, this.ctx))
 
     await this.ctx.components.done()
     await this.ctx.undones.done()
@@ -212,7 +218,6 @@ export default class Component extends HTMLElement {
 
     delete this.ctx.el
     delete this.ctx
-    delete this.def
 
     this.#lifecycle = CREATE
   }

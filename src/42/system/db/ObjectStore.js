@@ -1,4 +1,5 @@
 // @read https://stackoverflow.com/questions/22247614/optimized-bulk-chunk-upload-of-objects-into-indexeddb
+// @read https://rxdb.info/slow-indexeddb.html
 
 import DatabaseError from "./DatabaseError.js"
 import { merge } from "../../fabric/configure.js"
@@ -143,9 +144,7 @@ export default class ObjectStore {
   }
 
   async tx(mode, action, ...args) {
-    if (this.#signal && this.#signal.aborted) {
-      throw new DOMException("Aborted", "AbortError")
-    }
+    if (this.#signal?.aborted) throw new DOMException("Aborted", "AbortError")
 
     await this.db.init()
     const db = this.db.indexedDB
@@ -155,11 +154,7 @@ export default class ObjectStore {
         durability: this.db.durability,
       })
 
-      if (this.#signal) {
-        this.#signal.addEventListener("abort", () => {
-          tx.abort()
-        })
-      }
+      this.#signal?.addEventListener("abort", () => tx.abort())
 
       tx.onerror = (e) => {
         e.stopPropagation()

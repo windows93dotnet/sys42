@@ -5,6 +5,7 @@ export class Dialog extends Component {
   static definition = {
     tag: "ui-dialog",
 
+    id: true,
     role: "dialog",
     tabIndex: -1,
 
@@ -14,34 +15,27 @@ export class Dialog extends Component {
         reflect: true,
         default: true,
       },
-      content: {
-        type: "any",
-      },
       x: {
         type: "number",
         default: 0,
-        update: "pos",
+        update: Component.AXIS,
       },
       y: {
         type: "number",
         default: 0,
-        update: "pos",
+        update: Component.AXIS,
       },
     },
   }
 
-  pos() {
-    this.style.transform = `translate(${this.x}px, ${this.y}px)`
-  }
-
-  render() {
+  render({ content, label }) {
     return [
       {
         tag: "header.ui-dialog__header",
         content: [
           {
             tag: "h2.ui-dialog__title",
-            content: "title",
+            content: label,
           },
           {
             tag: "button",
@@ -49,7 +43,7 @@ export class Dialog extends Component {
           },
         ],
       },
-      { tag: "section.ui-dialog__content", content: "{{render(content)}}" },
+      { tag: "section.ui-dialog__content", content },
       { tag: "footer.ui-dialog__footer" },
     ]
   }

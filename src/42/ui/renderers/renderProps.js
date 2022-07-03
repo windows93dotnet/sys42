@@ -71,17 +71,21 @@ CONVERTERS.array = CONVERTERS.object
 
 export default async function renderProps(el, props, def) {
   const { ctx } = el
-  const observed = {}
 
-  if (!ctx.state.has(ctx.scope)) {
-    ctx.state.set(ctx.scope, {}, { silent: true })
+  const observed = {}
+  let data = {}
+
+  if (ctx.state.has(ctx.scope)) {
+    data = ctx.state.get(ctx.scope)
+  } else {
+    ctx.state.set(ctx.scope, data, { silent: true })
   }
 
   let queue
-  let updateThrottle
+  let componentUpdate
   if (el.update) {
     queue = new Set()
-    updateThrottle = paintThrottle(() => {
+    componentUpdate = paintThrottle(() => {
       el.update(queue)
       queue.clear()
     })
@@ -119,7 +123,9 @@ export default async function renderProps(el, props, def) {
 
     let val
 
-    if (key in el) {
+    if (key in data) {
+      val = data[key]
+    } else if (key in el) {
       val = el[key]
     } else if (fromView && el.hasAttribute(attribute)) {
       val = fromView(el.getAttribute(attribute), attribute, el, item)
@@ -135,7 +141,7 @@ export default async function renderProps(el, props, def) {
 
     if (item.update) {
       const type = typeof item.update
-      if (type === "string") {
+      if (type === "string" || type === "symbol") {
         updates[item.update] ??= paintThrottle(() => el[item.update]())
         updateFn = updates[item.update]
       } else {
@@ -156,7 +162,7 @@ export default async function renderProps(el, props, def) {
 
         if (updateFn && !el.ready.isPending && updateFn() !== false && queue) {
           queue.add(key)
-          updateThrottle()
+          componentUpdate()
         }
       })
 
@@ -231,6 +237,8 @@ export default async function renderProps(el, props, def) {
   }
 
   await ctx.undones.done()
+
+  for (const key of Reflect.ownKeys(updates)) updates[key]()
 
   return observed
 }

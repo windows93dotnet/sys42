@@ -23,12 +23,13 @@ export default function create(ctx, tag, ...args) {
 
   const parsed = parseTagSelector(tag, attrs)
   tag = parsed.tag
-  attrs = ctx === undefined ? parsed.attrs : normalizeAttrs(parsed.attrs, ctx)
 
   const el = SVG_TAGS.includes(tag)
     ? document.createElementNS("http://www.w3.org/2000/svg", tag)
     : document.createElement(tag)
 
+  attrs = ctx === undefined ? parsed.attrs : normalizeAttrs(parsed.attrs, ctx)
+  if (attrs.id === undefined) delete attrs.id
   renderAttributes(el, ctx, attrs)
 
   el.append(...content)
