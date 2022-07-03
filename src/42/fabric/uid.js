@@ -12,7 +12,7 @@ export default function uid(size = 8, radix = 36, r = random) {
 //! Copyright 2017 Andrey Sitnik <andrey@sitnik.ru>. MIT License.
 // @src https://github.com/ai/nanoid/blob/main/async/index.browser.js
 
-uid.secure = (size = 12) => {
+uid.secure = (size = 21) => {
   let id = ""
   const bytes = crypto.getRandomValues(new Uint8Array(size))
 
