@@ -61,6 +61,11 @@ export const test = chainable(
     "setup",
     "teardown",
   ],
+  {
+    taskStackframe({ data }, value) {
+      data.taskStackframe = value
+    },
+  },
   ({ data }, ...args) => {
     if (data.noop || data.todo) return
 
@@ -86,6 +91,7 @@ export const test = chainable(
       if (data.cb) fn = makeCallbackTest(fn)
 
       const test = new Test(sbs.current, title, fn)
+      if (data.taskStackframe) test.taskStackframe = data.taskStackframe
       const s = stack.find((x) => x.filename === sbs.current.filename)
       test.stackframe = s
 

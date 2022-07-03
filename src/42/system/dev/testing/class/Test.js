@@ -46,7 +46,10 @@ export default class Test {
       skip: this.suite.skip || this.skip,
     }
 
-    if (this.error) json.error = serializeError(this.error)
+    if (this.error) {
+      json.error = serializeError(this.error)
+      if (this.taskStackframe) json.error.stack.push(this.taskStackframe)
+    }
 
     if (this.logs.length > 0) {
       json.logs = this.logs.map(([err, type, args]) => [
