@@ -67,9 +67,11 @@ test("ansi and devtool have the same list of chainable getters and methods", (t)
   t.eq(ansiMethods, devtoolMethods)
 })
 
+const { task } = test
+
 test.tasks(
   [
-    {
+    task({
       description: "simple",
       fn() {
         log.yellow(`{green A {red B} C} D`)
@@ -86,9 +88,9 @@ test.tasks(
           "font-size:12px; color:yellow;",
         ],
       },
-    },
+    }),
 
-    {
+    task({
       description: "dim",
       fn() {
         log(`{dim.red A }{red B }{dim.red C }{cyan D}`)
@@ -143,9 +145,9 @@ test.tasks(
           },
         ],
       },
-    },
+    }),
 
-    {
+    task({
       description: "bright",
       fn() {
         log(`{bright.magenta A }{magenta B }{bright.magenta C }{cyan D}`)
@@ -200,9 +202,9 @@ test.tasks(
           },
         ],
       },
-    },
+    }),
 
-    {
+    task({
       description: "nested background",
       fn: () => log.dim.blue.bright.bg.magenta(" hello {bg.magenta  world } "),
       args: {
@@ -216,9 +218,9 @@ test.tasks(
           "font-size:12px; color:rgba(0,0,255,0.5);background-color:#b280f6;",
         ],
       },
-    },
+    }),
 
-    {
+    task({
       description: "user defined colors",
       fn() {
         log.color("#c3ff00").bg.color("#111")(" hello ")
@@ -244,9 +246,9 @@ test.tasks(
           },
         ],
       },
-    },
+    }),
 
-    {
+    task({
       description: "escape %c",
       fn() {
         log.red("A %c {green D C}")
@@ -258,9 +260,9 @@ test.tasks(
           "font-size:12px; color:red;color:lime;",
         ],
       },
-    },
+    }),
 
-    {
+    task({
       description: "object",
       fn() {
         log("{ a:false }")
@@ -271,9 +273,9 @@ test.tasks(
           "font-size:12px; ",
         ],
       },
-    },
+    }),
 
-    {
+    task({
       description: "object (2)",
       fn() {
         log("{a: false}")
@@ -284,9 +286,9 @@ test.tasks(
           "font-size:12px; ",
         ],
       },
-    },
+    }),
 
-    {
+    task({
       description: "object (3)",
       fn() {
         log("{abc: false}")
@@ -297,9 +299,9 @@ test.tasks(
           "font-size:12px; ",
         ],
       },
-    },
+    }),
 
-    {
+    task({
       description: "unescaped object looking like log template",
       fn() {
         log("{abc : false}")
@@ -310,9 +312,9 @@ test.tasks(
           "font-size:12px; color:rgba(170,187,204,1);",
         ],
       },
-    },
+    }),
 
-    {
+    task({
       description: "escaped object looking like log template",
       fn() {
         log("\\{abc : false}")
@@ -323,9 +325,9 @@ test.tasks(
           "font-size:12px; ",
         ],
       },
-    },
+    }),
 
-    {
+    task({
       description: "object destructuring",
       fn() {
         log("{ abc }")
@@ -336,9 +338,9 @@ test.tasks(
           "font-size:12px; ",
         ],
       },
-    },
+    }),
 
-    {
+    task({
       description: "unescaped object destructuring looking like log template",
       fn() {
         log("{abc }")
@@ -346,9 +348,9 @@ test.tasks(
       args: {
         frontend: [""],
       },
-    },
+    }),
 
-    {
+    task({
       description:
         "unescaped object destructuring looking like log template (2)",
       fn() {
@@ -360,9 +362,9 @@ test.tasks(
           "font-size:12px; color:rgba(170,187,204,1);",
         ],
       },
-    },
+    }),
 
-    {
+    task({
       description: "escaped object destructuring looking like log template",
       fn() {
         log("\\{abc }")
@@ -373,9 +375,9 @@ test.tasks(
           "font-size:12px; ",
         ],
       },
-    },
+    }),
 
-    {
+    task({
       description: "keep global style after nested",
       fn() {
         log.cyan.bg.blue(`
@@ -398,9 +400,9 @@ test.tasks(
           "font-size:12px; color:cyan;background-color:blue;",
         ],
       },
-    },
+    }),
 
-    {
+    task({
       description: "technicolor",
       fn() {
         log.bg.color("#000").color("#fff")(`
@@ -427,7 +429,7 @@ test.tasks(
 
 `)
       },
-    },
+    }),
   ],
 
   (test, { description, fn, calls, args }) => {
@@ -435,7 +437,6 @@ test.tasks(
       const spy = makeConsoleSpy(t)
 
       fn()
-      // t.pass()
 
       if (calls) {
         if (test.env.runtime.inBackend && calls.backend) {

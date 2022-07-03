@@ -267,7 +267,7 @@ test("Math", (t) => {
   t.not(a, Math)
 })
 
-if (test.env.runtime.isFrontend) {
+if (test.env.runtime.inFrontend) {
   test.serial("Blob", async (t) => {
     t.timeout(2000)
     const a = new Blob(["<h1>hello</h1>"], { type: "test/html" })

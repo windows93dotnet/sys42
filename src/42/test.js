@@ -62,8 +62,8 @@ export const test = chainable(
     "teardown",
   ],
   {
-    taskStackframe({ data }, value) {
-      data.taskStackframe = value
+    taskError({ data }, value) {
+      data.taskError = value
     },
   },
   ({ data }, ...args) => {
@@ -91,7 +91,7 @@ export const test = chainable(
       if (data.cb) fn = makeCallbackTest(fn)
 
       const test = new Test(sbs.current, title, fn)
-      if (data.taskStackframe) test.taskStackframe = data.taskStackframe
+      if (data.taskError) test.taskError = data.taskError
       const s = stack.find((x) => x.filename === sbs.current.filename)
       test.stackframe = s
 

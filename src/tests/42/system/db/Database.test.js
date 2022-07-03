@@ -185,45 +185,50 @@ test("findKey()", "object predicate", async (t) => {
   t.is(await db.users.findKey({ name: /x/ }), undefined)
 })
 
+const { task } = test
+
 test.tasks(
   [
-    {
+    task({
       fn: () => db.users.filter(({ name }) => name.endsWith("i")),
       res: [users.misato, users.rei, users.shinji],
-    },
-    { fn: () => db.users.filter(({ name }) => name.endsWith("x")), res: [] },
-    {
+    }),
+    task({
+      fn: () => db.users.filter(({ name }) => name.endsWith("x")),
+      res: [],
+    }),
+    task({
       fn: () => db.users.filter({ name: /i$/ }),
       res: [users.misato, users.rei, users.shinji],
-    },
-    { fn: () => db.users.filter({ name: /x$/ }), res: [] },
-    {
+    }),
+    task({ fn: () => db.users.filter({ name: /x$/ }), res: [] }),
+    task({
       fn: () => db.users.filter({ number: /(1|3)/ }),
       res: [users.rei, users.shinji],
-    },
-    { fn: () => db.users.filter({ number: 3 }), res: [users.shinji] },
-    { fn: () => db.users.filter({ number: 6 }), res: [] },
+    }),
+    task({ fn: () => db.users.filter({ number: 3 }), res: [users.shinji] }),
+    task({ fn: () => db.users.filter({ number: 6 }), res: [] }),
 
-    { fn: () => db.users.filterKeys({ name: /i$/ }), res: [1, 2, 4] },
-    { fn: () => db.users.filterKeys({ number: /(1|3)/ }), res: [2, 4] },
-    { fn: () => db.users.filterKeys({ number: 3 }), res: [4] },
+    task({ fn: () => db.users.filterKeys({ name: /i$/ }), res: [1, 2, 4] }),
+    task({ fn: () => db.users.filterKeys({ number: /(1|3)/ }), res: [2, 4] }),
+    task({ fn: () => db.users.filterKeys({ number: 3 }), res: [4] }),
 
-    { fn: () => db.users.filterKeys({ name: /x$/ }), res: [] },
-    { fn: () => db.users.filterKeys({ number: 6 }), res: [] },
+    task({ fn: () => db.users.filterKeys({ name: /x$/ }), res: [] }),
+    task({ fn: () => db.users.filterKeys({ number: 6 }), res: [] }),
 
-    {
+    task({
       fn: () => db.users.keys(),
       res: [1, 2, 3, 4, 5],
-    },
-    {
+    }),
+    task({
       fn: () => db.users.keys({ direction: "prev" }),
       res: [5, 4, 3, 2, 1],
-    },
-    {
+    }),
+    task({
       fn: () => db.users.keys({ query: db.range.lowerBound(3) }),
       res: [3, 4, 5],
-    },
-    {
+    }),
+    task({
       fn: () => db.users.values(),
       res: [
         { name: "Misato Katsuragi", role: "major" },
@@ -232,8 +237,8 @@ test.tasks(
         { name: "Shinji Ikari", number: 3, role: "pilot" },
         { name: "Toji Suzuhara", number: 4, role: "pilot" },
       ],
-    },
-    {
+    }),
+    task({
       fn: () => db.users.entries(),
       res: [
         [1, { name: "Misato Katsuragi", role: "major" }],
@@ -242,10 +247,10 @@ test.tasks(
         [4, { name: "Shinji Ikari", number: 3, role: "pilot" }],
         [5, { name: "Toji Suzuhara", number: 4, role: "pilot" }],
       ],
-    },
+    }),
   ],
 
-  ({ title, fn, res }) => {
+  (test, { title, fn, res }) => {
     title ??= fn.toString().replace(/^\(\) => /, "")
 
     test(title, "promise", async (t) => {

@@ -1,27 +1,29 @@
 import test from "../../../../../42/test.js"
 import rename from "../../../../../42/fabric/type/path/rename.js"
 
+const { task } = test
+
 test.tasks(
   [
-    { task: ["foo.js", "\\*_*_.js", ["*_foo_.js"]] },
-    { task: ["a/b/c/file.txt", "*/*.*", ["a/file.txt"]] },
-    { task: ["a/b/c/file.txt", "*/*/*.*", ["a/b/file.txt"]] },
-    { task: ["a/b/c/file.txt", "**/../*.*", ["a/b/file.txt"]] },
-    { task: ["a/b/c/file.txt", "**/../../*.*", ["a/file.txt"]] },
-    { task: ["a/b/c/file.txt", "*/foo/**/*.*", ["a/foo/b/c/file.txt"]] },
-    // { task: ["a/b/c/file.txt", "**/foo/*/*.*", ["a/b/foo/c/file.txt"]] },
-    { task: ["a/b/c/file.txt", "*/foo/**/../*.*", ["a/foo/b/file.txt"]] },
-    { task: ["foo.js", "*.js", ["foo.js"]] },
-    { task: ["foo.js", "bar.*", ["bar.js"]] },
-    { task: ["foo.js", "prefix_*.js", ["prefix_foo.js"]] },
-    { task: ["foo.js", "*_suffix.js", ["foo_suffix.js"]] },
-    { task: ["a/b/c.js", "*.js", ["c.js"]] },
-    { task: ["a/b/c.js", "**/*.*", ["a/b/c.js"]] },
-    { task: ["a/b/c.js", "foo/**/*.js", ["foo/a/b/c.js"]] },
-    { task: ["a/b/c.js", "foo/**/bar/*.js", ["foo/a/b/bar/c.js"]] },
+    task({ task: ["foo.js", "\\*_*_.js", ["*_foo_.js"]] }),
+    task({ task: ["a/b/c/file.txt", "*/*.*", ["a/file.txt"]] }),
+    task({ task: ["a/b/c/file.txt", "*/*/*.*", ["a/b/file.txt"]] }),
+    task({ task: ["a/b/c/file.txt", "**/../*.*", ["a/b/file.txt"]] }),
+    task({ task: ["a/b/c/file.txt", "**/../../*.*", ["a/file.txt"]] }),
+    task({ task: ["a/b/c/file.txt", "*/foo/**/*.*", ["a/foo/b/c/file.txt"]] }),
+    // task({ task: ["a/b/c/file.txt", "**/foo/*/*.*", ["a/b/foo/c/file.txt"]] }),
+    task({ task: ["a/b/c/file.txt", "*/foo/**/../*.*", ["a/foo/b/file.txt"]] }),
+    task({ task: ["foo.js", "*.js", ["foo.js"]] }),
+    task({ task: ["foo.js", "bar.*", ["bar.js"]] }),
+    task({ task: ["foo.js", "prefix_*.js", ["prefix_foo.js"]] }),
+    task({ task: ["foo.js", "*_suffix.js", ["foo_suffix.js"]] }),
+    task({ task: ["a/b/c.js", "*.js", ["c.js"]] }),
+    task({ task: ["a/b/c.js", "**/*.*", ["a/b/c.js"]] }),
+    task({ task: ["a/b/c.js", "foo/**/*.js", ["foo/a/b/c.js"]] }),
+    task({ task: ["a/b/c.js", "foo/**/bar/*.js", ["foo/a/b/bar/c.js"]] }),
   ],
 
-  ({ task: [path, pattern, expected] }) => {
+  (test, { task: [path, pattern, expected] }) => {
     test(pattern, (t) => {
       t.eq(rename(path, pattern), expected)
     })

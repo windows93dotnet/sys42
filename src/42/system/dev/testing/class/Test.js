@@ -48,7 +48,11 @@ export default class Test {
 
     if (this.error) {
       json.error = serializeError(this.error)
-      if (this.taskStackframe) json.error.stack.push(this.taskStackframe)
+      if (this.taskError) {
+        const stackframe = serializeError(this.taskError).stack.at(-1)
+        stackframe.function = "{task}"
+        json.error.stack.push(stackframe)
+      }
     }
 
     if (this.logs.length > 0) {

@@ -60,9 +60,11 @@ This syntax enables a long option to accept an argument that is itself optional.
 Eventually, GNU systems will provide completion for long option names in the shell.
 */
 
+const { task } = test
+
 test.tasks(
   [
-    {
+    task({
       input: "1 2 -a b c -def",
       expected: {
         _: [1, 2],
@@ -71,9 +73,9 @@ test.tasks(
         e: true,
         f: true,
       },
-    },
+    }),
 
-    {
+    task({
       title: "autoBoolean: false",
       input: "1 2 -a b c -def",
       options: {
@@ -86,17 +88,17 @@ test.tasks(
         e: undefined,
         f: undefined,
       },
-    },
+    }),
 
-    {
+    task({
       input: "undefined -a undefined",
       expected: {
         _: [undefined],
         a: undefined,
       },
-    },
+    }),
 
-    {
+    task({
       input: "--abc=123 --def= --no-g --no-h=789",
       expected: {
         "abc": 123,
@@ -104,9 +106,9 @@ test.tasks(
         "g": false,
         "no-h": 789,
       },
-    },
+    }),
 
-    {
+    task({
       input: `--aaa='{"a":1}' --aa={a:1} -b [2,3] -c [;] 5 -d null`,
       expected: {
         aaa: { a: 1 },
@@ -115,9 +117,9 @@ test.tasks(
         c: ["[;]", 5],
         d: null,
       },
-    },
+    }),
 
-    {
+    task({
       input: `--aaa='{"a":1}' --aa={a:1} -b [2,3] -c [;] 5 -d null`,
       options: {
         jsonParse: JSON5.parse,
@@ -129,25 +131,25 @@ test.tasks(
         c: ["[;]", 5],
         d: null,
       },
-    },
+    }),
 
-    {
+    task({
       input: "-a b -- -a 1 [2] --c=d",
       expected: {
         _: ["-a", 1, [2], "--c=d"],
         a: "b",
       },
-    },
+    }),
 
-    {
+    task({
       input: "-a.b 1 --a.c.d 2 --foo.bar 3",
       expected: {
         a: { b: 1, c: { d: 2 } },
         foo: { bar: 3 },
       },
-    },
+    }),
 
-    {
+    task({
       input: "x -b y",
       options: {
         schema: {
@@ -158,9 +160,9 @@ test.tasks(
         _: ["x", "y"],
         b: true,
       },
-    },
+    }),
 
-    {
+    task({
       input: "x -b y",
       options: {
         schema: {
@@ -174,9 +176,9 @@ test.tasks(
         _: ["x", "y"],
         bool: true,
       },
-    },
+    }),
 
-    {
+    task({
       input: "x --no-b y",
       options: {
         schema: {
@@ -187,9 +189,9 @@ test.tasks(
         _: ["x", "y"],
         b: false,
       },
-    },
+    }),
 
-    {
+    task({
       input: "-aaa --foo --foo",
       options: {
         count: ["a", "foo"],
@@ -198,9 +200,9 @@ test.tasks(
         a: 3,
         foo: 2,
       },
-    },
+    }),
 
-    {
+    task({
       input: "-v",
       options: {
         aliases: { v: "verbose" },
@@ -208,9 +210,9 @@ test.tasks(
       expected: {
         verbose: true,
       },
-    },
+    }),
 
-    {
+    task({
       input: ["-vvv", "--verbose --verbose --verbose"],
       options: {
         count: ["verbose"],
@@ -219,9 +221,9 @@ test.tasks(
       expected: {
         verbose: 3,
       },
-    },
+    }),
 
-    {
+    task({
       input: "-s",
       options: {
         aliases: { v: "verbose", s: "silent" },
@@ -230,9 +232,9 @@ test.tasks(
       expected: {
         verbose: 0,
       },
-    },
+    }),
 
-    {
+    task({
       input: "-v a",
       options: {
         schema: { verbose: { type: "number" } },
@@ -243,9 +245,9 @@ test.tasks(
         _: ["a"],
         verbose: 1,
       },
-    },
+    }),
 
-    {
+    task({
       title: "typesDefaults: true",
       input: "-a -b -i -n -o -s --null",
       options: {
@@ -268,9 +270,9 @@ test.tasks(
         s: "",
         null: null,
       },
-    },
+    }),
 
-    {
+    task({
       title: "typesDefaults: false",
       input: "-a -b -i -n -o -s --null",
       options: {
@@ -295,9 +297,9 @@ test.tasks(
         s: true,
         null: true,
       },
-    },
+    }),
 
-    {
+    task({
       title: "emptyInput:true",
       input: "-a",
       options: {
@@ -307,9 +309,9 @@ test.tasks(
         _: [],
         a: true,
       },
-    },
+    }),
 
-    {
+    task({
       title: "emptyInput:true with subcommands",
       input: "-a cmd -b",
       options: {
@@ -321,9 +323,9 @@ test.tasks(
         a: true,
         cmd: { _: [], b: true },
       },
-    },
+    }),
 
-    {
+    task({
       input: "test a --verbose watch b -s serve c --port 3000",
       options: {
         subcommands: ["test", "watch", "serve"],
@@ -333,9 +335,9 @@ test.tasks(
         watch: { _: ["b"], s: true },
         serve: { _: ["c"], port: 3000 },
       },
-    },
+    }),
 
-    {
+    task({
       input: "test --verbose watch -s serve --port 3000 watch 2",
       options: {
         subcommands: {
@@ -351,9 +353,9 @@ test.tasks(
           y: { serve: { port: 3000 } },
         },
       },
-    },
+    }),
 
-    {
+    task({
       input: "-a test **/* --verbose watch -s serve --port 3000 -vvv --dev",
       options: {
         aliases: { v: "verbose", s: "silent" },
@@ -374,9 +376,9 @@ test.tasks(
         },
         dev: true,
       },
-    },
+    }),
 
-    {
+    task({
       input: "-a test **/* --verbose watch -s serve --port 3000 -vvv --dev",
       options: configure(PRESETS.verbose, {
         globalOptions: ["dev"],
@@ -394,10 +396,10 @@ test.tasks(
         },
         dev: true,
       },
-    },
+    }),
   ],
 
-  ({ title, input, expected, options }) => {
+  (test, { title, input, expected, options }) => {
     for (const cmd of Array.isArray(input) ? input : [input]) {
       test(title ?? cmd, (t) => {
         const parsed = parseCommand(cmd)

@@ -1,6 +1,8 @@
 import test from "../../42/test.js"
 import ui from "../../42/ui.js"
 
+test.suite.timeout(1000)
+
 const tmp = test.utils.container({ id: "ui-tests" })
 
 test("tag", (t) => {
@@ -620,21 +622,21 @@ test("class", "object", async (t) => {
 
 test.tasks(
   [
-    {
+    test.task({
       def: { tag: "span#foo.bar" },
       expected: '<span id="foo" class="bar"></span>',
-    },
-    {
+    }),
+    test.task({
       def: { tag: "span#foo.bar", id: "x" },
       expected: '<span id="x" class="bar"></span>',
-    },
-    {
+    }),
+    test.task({
       def: { tag: "span#foo.bar", class: "baz" },
       expected: '<span id="foo" class="baz bar"></span>',
-    },
+    }),
   ],
-  ({ def, expected }) => {
-    test("abbr", `expand`, def, async (t) => {
+  (test, { def, expected }) => {
+    test("abbr", "expand", def, async (t) => {
       const app = await ui(tmp(), def)
       t.is(app.el.innerHTML, expected)
     })

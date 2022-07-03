@@ -6,9 +6,9 @@ import log from "../../../../../42/system/log.js"
 function trace(str, running = 1) {
   // running = 1
   if (running === 0) return
-  if (test.env.runtime.isBackend) log.hr()
+  if (test.env.runtime.inBackend) log.hr()
   log(str)
-  if (test.env.runtime.isBackend) log.hr().log()
+  if (test.env.runtime.inBackend) log.hr().log()
   else log()
   // console.log(
   //   (str.includes("\n") ? "`\\\n" : "`") + str.replace(/`|\\/g, "\\$&") + "`"

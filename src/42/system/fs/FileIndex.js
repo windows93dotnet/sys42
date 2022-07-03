@@ -55,6 +55,7 @@ export default class FileIndex extends Storable {
 
   glob(patterns, { sort } = {}) {
     const paths = glob.locate(this.root, patterns)
+    console.log(paths)
     return sort === false ? paths : sortGlobResults(paths)
   }
 }

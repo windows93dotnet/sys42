@@ -10,5 +10,16 @@ test(1, async (t) => {
     tag: "ui-sandbox",
   })
 
-  t.eq(app.satte.value)
+  t.eq(app.state.value, {
+    "ui-sandbox": {
+      0: {
+        src: undefined,
+        srcdoc: undefined,
+        permissions: undefined,
+        content: undefined,
+        zoom: 1,
+        check: false,
+      },
+    },
+  })
 })

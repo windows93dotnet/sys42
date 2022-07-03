@@ -15,7 +15,7 @@ import stringify from "../../../fabric/type/any/stringify.js"
 import system from "../../../system.js"
 import uid from "../../../fabric/uid.js"
 import prettify from "../../../fabric/type/markup/prettify.js"
-import stackTrace from "../../../fabric/type/error/stackTrace.js"
+// import stackTrace from "../../../fabric/type/error/stackTrace.js"
 
 import log, { Log, CONSOLE_KEYS } from "../../log.js"
 
@@ -26,7 +26,7 @@ const tasks = (list, cb, item) => {
   list = filterTasks(list)
   if (typeof cb === "function") {
     list.forEach((data, i) => {
-      if (data.$stackframe) item = item.taskStackframe(data.$stackframe)
+      if (data.taskError) item = item.taskError(data.taskError)
       if (cb.length > 1) cb(data.only ? item.only : item, data, i)
       else cb(data, i)
     })
@@ -57,7 +57,7 @@ export default function addUtilities(item, isExecutionContext) {
     item.env = env
     item.tasks = (list, cb) => tasks(list, cb, item)
     item.task = (obj) => {
-      obj.$stackframe = stackTrace(new Error()).at(-1)
+      obj.taskError = new Error()
       return obj
     }
   }

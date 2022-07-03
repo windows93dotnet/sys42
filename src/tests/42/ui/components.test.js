@@ -2,6 +2,8 @@ import test from "../../../42/test.js"
 import ui from "../../../42/ui.js"
 import Component from "../../../42/ui/class/Component.js"
 
+test.suite.timeout(1000)
+
 const tmp = test.utils.container({ id: "component-tests" })
 
 Component.define({
@@ -26,18 +28,20 @@ async function checkDefine(component, t, args, expected) {
   }
 }
 
+const { task } = test
+
 test.tasks(
   [
-    {
+    task({
       component: class extends Component {
         static definition = { tag: "ui-t-basic" }
       },
       html: "<ui-t-basic></ui-t-basic>",
       def: { tag: "ui-t-basic" },
       expected: "<ui-t-basic></ui-t-basic>",
-    },
+    }),
 
-    {
+    task({
       component: class extends Component {
         static definition = { tag: "ui-t-string" }
         render() {
@@ -47,9 +51,9 @@ test.tasks(
       html: "<ui-t-string></ui-t-string>",
       def: { tag: "ui-t-string" },
       expected: "<ui-t-string>hello</ui-t-string>",
-    },
+    }),
 
-    {
+    task({
       component: class extends Component {
         static definition = { tag: "ui-t-attr", class: "derp" }
         render() {
@@ -58,9 +62,9 @@ test.tasks(
       },
       def: { tag: "ui-t-attr" },
       expected: '<ui-t-attr class="derp">hello</ui-t-attr>',
-    },
+    }),
 
-    {
+    task({
       component: {
         tag: "ui-t-data",
         content: "foo: {{foo}}",
@@ -70,9 +74,9 @@ test.tasks(
         data: { foo: 1 },
       },
       expected: "<ui-t-data>foo: 1</ui-t-data>",
-    },
+    }),
 
-    {
+    task({
       component: {
         tag: "ui-t-dynamic",
         props: {
@@ -90,9 +94,9 @@ test.tasks(
         data: { foo: "bar" },
       },
       expected: "<ui-t-dynamic>x:bar</ui-t-dynamic>",
-    },
+    }),
 
-    {
+    task({
       title: "lifecycle",
       connect: true,
       component(t) {
@@ -154,17 +158,17 @@ test.tasks(
         el.click()
         t.is(stub.count, 4)
       },
-    },
+    }),
 
-    {
+    task({
       def: {
         content: { tag: "ui-t-props", bar: 0 },
         data: { foo: 1 },
       },
       expected: '<ui-t-props bar="0">foo: 1, bar: 0</ui-t-props>',
-    },
+    }),
 
-    {
+    task({
       def: {
         content: { tag: "ui-t-props" },
         data: { foo: 1 },
@@ -199,9 +203,9 @@ test.tasks(
           '<ui-t-props bar="5">foo: 1, bar: 5</ui-t-props>'
         )
       },
-    },
+    }),
 
-    {
+    task({
       component: {
         tag: "ui-t-props-state",
         props: {
@@ -252,9 +256,9 @@ test.tasks(
           '<ui-t-props-state bar="5">foo: 1, bar: 5</ui-t-props-state>'
         )
       },
-    },
+    }),
 
-    {
+    task({
       component(t) {
         t.plan(2)
         return class extends Component {
@@ -281,9 +285,9 @@ test.tasks(
         data: { foo: 1 },
       },
       expected: '<ui-t-filter bar="2">foo: 6, bar: 12</ui-t-filter>',
-    },
+    }),
 
-    {
+    task({
       component: {
         tag: "ui-t-ready",
         content: "ext: {{/foo |> extname}}",
@@ -293,9 +297,9 @@ test.tasks(
         data: { foo: "/42/index.html" },
       },
       expected: "<ui-t-ready>ext: .html</ui-t-ready>",
-    },
+    }),
 
-    {
+    task({
       component: {
         tag: "ui-t-noprops",
         content: "foo: {{foo}}",
@@ -310,9 +314,9 @@ test.tasks(
         content: { tag: "ui-t-noprops" },
       },
       expected: "<ui-t-noprops>foo: </ui-t-noprops>",
-    },
+    }),
 
-    {
+    task({
       component: {
         tag: "ui-t-css",
         props: {
@@ -348,9 +352,9 @@ test.tasks(
 
         t.is(app.el.innerHTML, '<ui-t-css style=""></ui-t-css>')
       },
-    },
+    }),
 
-    {
+    task({
       component: {
         tag: "ui-t-css-state",
         props: {
@@ -392,9 +396,9 @@ test.tasks(
 
         t.is(app.el.innerHTML, '<ui-t-css-state style=""></ui-t-css-state>')
       },
-    },
+    }),
 
-    {
+    task({
       title: "update throttle bug",
       defer: true,
       component(t) {
@@ -421,7 +425,7 @@ test.tasks(
         content: { tag: "ui-t-throttle", path: "world" },
       },
       expected: '<ui-t-throttle path="world">hello WORLD</ui-t-throttle>',
-    },
+    }),
   ],
 
   (

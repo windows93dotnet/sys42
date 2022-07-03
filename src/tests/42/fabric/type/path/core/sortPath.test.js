@@ -1,9 +1,11 @@
 import test from "../../../../../../42/test.js"
 import sortPath from "../../../../../../42/fabric/type/path/core/sortPath.js"
 
+const { task } = test
+
 test.tasks(
   [
-    {
+    task({
       unsorted: [
         "a.txt", //
         "a/b/d.txt",
@@ -18,9 +20,9 @@ test.tasks(
         "x/y.txt",
         "a.txt",
       ],
-    },
+    }),
 
-    {
+    task({
       unsorted: [
         "/hello.txt", //
         "/a/",
@@ -35,9 +37,9 @@ test.tasks(
         "/x/",
         "/hello.txt",
       ],
-    },
+    }),
 
-    {
+    task({
       // @src https://github.com/ghornich/sort-paths/blob/master/test.js
       unsorted: [
         "/home/joe/",
@@ -61,10 +63,10 @@ test.tasks(
         "/var/www/beta-site/core/pages/login.cgi",
         "/var/www/test.php",
       ],
-    },
+    }),
   ],
 
-  ({ unsorted, expected }) => {
+  (test, { unsorted, expected }) => {
     test(unsorted, (t) => {
       t.eq(sortPath(unsorted), expected)
     })
