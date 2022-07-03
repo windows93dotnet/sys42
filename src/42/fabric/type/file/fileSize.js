@@ -21,7 +21,12 @@ function toString() {
   return `${this.size} ${this.unit}`
 }
 
-export default function fileSize(bytes, options = {}) {
+export default function fileSize(bytes, options) {
+  if (!Number.isInteger(bytes)) {
+    if ("size" in bytes) bytes = bytes.size
+    else if ("byteLength" in bytes) bytes = bytes.byteLength
+  }
+
   const { SI, decimals, asString } = { ...DEFAULTS, ...options }
 
   if (bytes === 0) {
