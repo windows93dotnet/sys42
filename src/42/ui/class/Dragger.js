@@ -1,9 +1,9 @@
-import Emitter from "../../fabric/class/Emitter.js"
 import listen from "../../fabric/dom/listen.js"
 import configure from "../../fabric/configure.js"
 import setTemp from "../../fabric/dom/setTemp.js"
 import Canceller from "../../fabric/class/Canceller.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
+import noop from "../../fabric/type/function/noop.js"
 
 const DEFAULTS = {
   distance: 0,
@@ -11,15 +11,18 @@ const DEFAULTS = {
   throttle: true,
   subpixel: false,
   selector: undefined,
-  relative: false,
+  targetRelative: false,
   signal: undefined,
 }
 
-export default class Dragger extends Emitter {
+export default class Dragger {
   constructor(el, options) {
-    super()
     this.el = el
     this.config = configure(DEFAULTS, options)
+
+    this.start = this.config.start ?? noop
+    this.drag = this.config.drag ?? noop
+    this.stop = this.config.stop ?? noop
 
     let distX = 0
     let distY = 0
@@ -32,13 +35,13 @@ export default class Dragger extends Emitter {
 
     const op = this.config.subpixel ? (val) => val : Math.round
 
-    let getX = this.config.relative
+    let getX = this.config.targetRelative
       ? this.config.subpixel
         ? (x) => x - offsetX
         : (x) => op(x - offsetX)
       : op
 
-    let getY = this.config.relative
+    let getY = this.config.targetRelative
       ? this.config.subpixel
         ? (y) => y - offsetY
         : (y) => op(y - offsetY)
@@ -86,7 +89,7 @@ export default class Dragger extends Emitter {
       fromX = op(x)
       fromY = op(y)
 
-      if (this.config.relative) {
+      if (this.config.targetRelative) {
         const rect = this.el.getBoundingClientRect()
         offsetX = op(e.x - rect.left)
         offsetY = op(e.y - rect.top)
@@ -101,7 +104,7 @@ export default class Dragger extends Emitter {
           "transition-0": true,
         },
       })
-      this.emit("start", getX(x), getY(y), e, target)
+      return this.start(getX(x), getY(y), e, target)
     }
 
     const stop = (e, target) => {
@@ -117,15 +120,15 @@ export default class Dragger extends Emitter {
         window.getSelection().empty()
         requestAnimationFrame(() => {
           this.isDragging = false
-          this.emit("stop", getX(e.x), getY(e.y), e, target)
+          this.stop(getX(e.x), getY(e.y), e, target)
         })
       }
     }
 
     let drag = (e, target) => {
-      if (this.isDragging || (checkDistance(e) && start(e, target))) {
-        this.emit("drag", getX(e.x), getY(e.y), fromX, fromY, e, target)
-      }
+      if (this.isDragging) {
+        this.drag(getX(e.x), getY(e.y), fromX, fromY, e, target)
+      } else if (checkDistance(e) && start(e, target) === false) stop(e, target)
     }
 
     if (this.config.throttle) drag = paintThrottle(drag)
@@ -141,7 +144,6 @@ export default class Dragger extends Emitter {
   }
 
   destroy() {
-    this.off("*")
     this.cancel()
   }
 }

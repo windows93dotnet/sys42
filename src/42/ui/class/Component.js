@@ -116,6 +116,15 @@ export default class Component extends HTMLElement {
     this.#lifecycle = SETUP
     this.setup?.(this.ctx)
     this.update?.()
+
+    // TODO: add "setup" keyword in renderProps
+    if ("x" in this && "y" in this) {
+      const rect = this.getBoundingClientRect()
+      this.x ??= rect.x
+      this.y ??= rect.y
+      this.style.top = 0
+      this.style.left = 0
+    }
   }
 
   async #init(def, ctx) {

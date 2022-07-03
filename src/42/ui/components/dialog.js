@@ -17,12 +17,10 @@ export class Dialog extends Component {
       },
       x: {
         type: "number",
-        default: 0,
         update: Component.AXIS,
       },
       y: {
         type: "number",
-        default: 0,
         update: Component.AXIS,
       },
     },
@@ -33,14 +31,8 @@ export class Dialog extends Component {
       {
         tag: "header.ui-dialog__header",
         content: [
-          {
-            tag: "h2.ui-dialog__title",
-            content: label,
-          },
-          {
-            tag: "button",
-            picto: "close",
-          },
+          { tag: "h2.ui-dialog__title", content: label },
+          { tag: "button", picto: "close" },
         ],
       },
       { tag: "section.ui-dialog__content", content },
@@ -49,7 +41,11 @@ export class Dialog extends Component {
   }
 
   setup({ signal }) {
-    movable(this, { signal, throttle: false })
+    movable(this, {
+      signal,
+      throttle: false,
+      handler: ".ui-dialog__title",
+    })
   }
 }
 

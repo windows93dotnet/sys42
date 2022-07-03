@@ -3,7 +3,7 @@ import Trait from "../class/Trait.js"
 import Dragger from "../class/Dragger.js"
 import setup from "../../system/setup.js"
 import setTemp from "../../fabric/dom/setTemp.js"
-import maxZindex from "../../fabric/dom/maxZIndex.js"
+import maxZIndex from "../../fabric/dom/maxZIndex.js"
 
 const DEFAULTS = {
   distance: 0,
@@ -11,10 +11,9 @@ const DEFAULTS = {
   throttle: true,
   subpixel: false,
   selector: undefined,
-  zIndexSelector: undefined,
-  // TODO: // handle: undefined,
-  // TODO: // ignoreSelector: "input,textarea,[contenteditable],[contenteditable] *",
-  // TODO: // ghost: false,
+  maxZIndex: undefined,
+  handler: undefined,
+  ignore: "input,button,textarea,[contenteditable],[contenteditable] *",
   style: {
     "position": "fixed",
     "margin": 0,
@@ -36,25 +35,33 @@ class Movable extends Trait {
     let isComponent
 
     this.config = configure(options)
-    this.config.relative = true
+    this.config.targetRelative = true
     this.config.signal = this.cancel.signal
 
     this.targets = new WeakMap()
-    this.dragger = new Dragger(this.el, this.config)
 
     const tempStyle = { signal: this.cancel.signal, style: this.config.style }
 
-    this.dragger.on("start", (x, y, e, target) => {
+    this.dragger = new Dragger(this.el, this.config)
+
+    this.dragger.start = (x, y, e, target) => {
+      if (
+        (this.config.handler && !e.target.closest(this.config.handler)) ||
+        (this.config.ignore && e.target.closest(this.config.ignore))
+      ) {
+        return false
+      }
+
       isComponent =
         target.constructor.definition?.props?.x &&
         target.constructor.definition?.props?.y
 
       if (this.targets.has(target)) {
-        target.style.zIndex = maxZindex(this.config.zIndexSelector) + 1
+        target.style.zIndex = maxZIndex(this.config.maxZIndex) + 1
       } else {
         const rect = target.getBoundingClientRect()
         const style = {
-          "z-index": maxZindex(this.config.zIndexSelector) + 1,
+          "z-index": maxZIndex(this.config.maxZIndex) + 1,
           "width": rect.width + "px",
           "height": rect.height + "px",
         }
@@ -66,14 +73,14 @@ class Movable extends Trait {
 
         this.targets.set(target, setTemp(target, tempStyle, { style }))
       }
-    })
+    }
 
-    this.dragger.on("drag", (x, y, fromX, fromY, e, target) => {
+    this.dragger.drag = (x, y, fromX, fromY, e, target) => {
       if (isComponent) {
         target.x = x
         target.y = y
       } else target.style.transform = `translate(${x}px, ${y}px)`
-    })
+    }
   }
 }
 
