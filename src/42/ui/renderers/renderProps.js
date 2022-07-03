@@ -4,12 +4,10 @@ import resolveScope from "../resolveScope.js"
 import register from "../register.js"
 import { normalizeComputed } from "../normalize.js"
 import { toKebabCase } from "../../fabric/type/string/letters.js"
-import idleThrottle from "../../fabric/type/function/idleThrottle.js"
+import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 
 const BOOLEAN_TRUE = new Set(["", "on", "true"])
 const BOOLEAN_FALSE = new Set(["none", "off", "false"])
-
-const FPS = 1000 / 60
 
 const CONVERTERS = {
   string: {
@@ -83,11 +81,13 @@ export default async function renderProps(el, props, def) {
   let updateThrottle
   if (el.update) {
     queue = new Set()
-    updateThrottle = idleThrottle(() => {
+    updateThrottle = paintThrottle(() => {
       el.update(queue)
       queue.clear()
-    }, FPS)
+    })
   }
+
+  const updates = {}
 
   for (let [key, item] of Object.entries(props)) {
     const type = typeof item
@@ -131,6 +131,20 @@ export default async function renderProps(el, props, def) {
 
     let ref
     let fromRender = false
+    let updateFn
+
+    if (item.update) {
+      const type = typeof item.update
+      if (type === "string") {
+        updates[item.update] ??= paintThrottle(() => el[item.update]())
+        updateFn = updates[item.update]
+      } else {
+        updateFn =
+          type === "function"
+            ? () => item.update.call(el, ref ? ctx.state.get(ref.$ref) : val)
+            : () => {}
+      }
+    }
 
     const render = (val, update) => {
       if (ctx.cancel.signal.aborted === true) return
@@ -140,16 +154,9 @@ export default async function renderProps(el, props, def) {
           ctx.state.set(scope, ref ?? val, { silent: !update })
         }
 
-        if (item.update && !el.ready.isPending) {
-          const res =
-            typeof item.update === "function"
-              ? item.update.call(el, ref ? ctx.state.get(ref.$ref) : val)
-              : undefined
-
-          if (res !== false && queue) {
-            queue.add(key)
-            updateThrottle()
-          }
+        if (updateFn && !el.ready.isPending && updateFn() !== false && queue) {
+          queue.add(key)
+          updateThrottle()
         }
       })
 

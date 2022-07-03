@@ -17,7 +17,21 @@ export class Dialog extends Component {
       content: {
         type: "any",
       },
+      x: {
+        type: "number",
+        default: 0,
+        update: "pos",
+      },
+      y: {
+        type: "number",
+        default: 0,
+        update: "pos",
+      },
     },
+  }
+
+  pos() {
+    this.style.transform = `translate(${this.x}px, ${this.y}px)`
   }
 
   render() {
@@ -41,7 +55,7 @@ export class Dialog extends Component {
   }
 
   setup({ signal }) {
-    movable(this, { signal })
+    movable(this, { signal, throttle: false })
   }
 }
 
