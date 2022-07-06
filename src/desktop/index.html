@@ -24,7 +24,15 @@
       {
         tag: "button",
         content: "dialog",
-        on: { click: "{{dialog({ content: 'hello' })}}" },
+        on: {
+          // click: {
+          //   dialog: { content: "hello" },
+          // },
+
+          "focus click"(e, target) {
+            console.log(444, this, e, target)
+          },
+        },
       },
     ],
 

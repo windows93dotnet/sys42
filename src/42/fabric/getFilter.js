@@ -142,8 +142,7 @@ let render
 filters.ui = {
   async render(item) {
     if (typeof item === "string" && item.contains("{" + "{")) return item
-    render ??= await import("../ui/render.js") //
-      .then((m) => m.default)
+    render ??= await import("../ui/render.js").then((m) => m.default)
     queueMicrotask(() => {
       const el = this.el.nodeType === TEXT_NODE ? this.el.parentNode : this.el
       if (!el) return
