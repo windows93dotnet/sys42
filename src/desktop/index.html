@@ -18,6 +18,38 @@
     content: [
       {
         tag: "button",
+        content: "{{cnt}}",
+        on: { click: "{{cnt += 1}}" },
+      },
+      {
+        content: {
+          tag: "ui-sandbox.bd.ma",
+          check: true,
+          permissions: "app",
+          script: `console.log("hello{{cnt}}")`,
+        },
+      },
+    ],
+
+    data: {
+      cnt: 42,
+    },
+  })
+
+  window.app = app
+
+  import log from "../42/system/log.js"
+  log(app.data)
+</script>
+
+<script type="_module">
+  import ui from "../42/ui.js"
+
+  const app = await ui({
+    class: "box-fit desktop",
+    content: [
+      {
+        tag: "button",
         content: "{{foo.cnt}}",
         on: { click: "{{foo.cnt += 1}}" },
       },
@@ -55,45 +87,13 @@
   import ui from "../42/ui.js"
 
   const app = await ui({
-    // style: {
-    //   width: "50vw",
-    //   transform: "scale(2)",
-    //   transformOrigin: "top left",
-    // },
     class: "box-fit desktop",
     content: [
-      // {
-      //   tag: "button",
-      //   picto: "puzzle",
-      // },
       {
         tag: "button",
         content: "{{foo.cnt}}",
         on: { click: "{{foo.cnt += 1}}" },
       },
-      // {
-      //   scope: "foo",
-      //   content: {
-      //     tag: "ui-sandbox.bd.ma",
-      //     check: true,
-      //     permissions: "app",
-      //     content: [
-      //       {
-      //         tag: "button",
-      //         content: "sandbox: {{cnt}}",
-      //         on: { click: "{{cnt += 1}}" },
-      //       },
-      //       {
-      //         tag: "ui-dialog",
-      //         content: { tag: "strong", content: "iframe: {{cnt}}" },
-      //       },
-      //       {
-      //         tag: "ui-dialog",
-      //         content: { tag: "strong", content: "iframe: {{cnt}}" },
-      //       },
-      //     ],
-      //   },
-      // },
       {
         tag: "ui-dialog",
         label: "title: {{foo.cnt}} ({{x}}, {{y}})",
@@ -121,14 +121,75 @@
   window.app = app
 
   import log from "../42/system/log.js"
-  // log(app.query("ui-dialog").id)
   log(app.data)
+</script>
 
-  // setTimeout(() => {
-  //   const el = app.query("ui-dialog")
-  //   el.x = 50
-  //   el.y = 50
-  // }, 200)
+<script type="_module">
+  import ui from "../42/ui.js"
+
+  const app = await ui({
+    class: "box-fit desktop",
+    content: [
+      {
+        tag: "button",
+        picto: "puzzle",
+      },
+      {
+        tag: "button",
+        content: "{{foo.cnt}}",
+        on: { click: "{{foo.cnt += 1}}" },
+      },
+      {
+        scope: "foo",
+        content: {
+          tag: "ui-sandbox.bd.ma",
+          check: true,
+          permissions: "app",
+          content: [
+            {
+              tag: "button",
+              content: "sandbox: {{cnt}}",
+              on: { click: "{{cnt += 1}}" },
+            },
+            {
+              tag: "ui-dialog",
+              content: { tag: "strong", content: "iframe: {{cnt}}" },
+            },
+            {
+              tag: "ui-dialog",
+              content: { tag: "strong", content: "iframe: {{cnt}}" },
+            },
+          ],
+        },
+      },
+      {
+        tag: "ui-dialog",
+        label: "title: {{foo.cnt}} ({{x}}, {{y}})",
+        content: {
+          tag: "strong",
+          content: "top: {{foo.cnt}}\n ({{x}}, {{y}})",
+        },
+      },
+    ],
+
+    data: {
+      "foo": {
+        cnt: 42,
+      },
+      "ui-dialog": {
+        0: {
+          active: true,
+          x: 416,
+          y: 208,
+        },
+      },
+    },
+  })
+
+  window.app = app
+
+  import log from "../42/system/log.js"
+  log(app.data)
 </script>
 
 <script type="_module">

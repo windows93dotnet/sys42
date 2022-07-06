@@ -17,6 +17,7 @@ test(1, async (t) => {
         srcdoc: undefined,
         permissions: undefined,
         content: undefined,
+        script: undefined,
         zoom: 1,
         check: false,
       },

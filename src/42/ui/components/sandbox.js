@@ -29,6 +29,10 @@ export class Sandbox extends Component {
         type: "any",
         update: true,
       },
+      script: {
+        type: "string",
+        update: true,
+      },
       zoom: {
         type: "number",
         fromView: true,
@@ -83,6 +87,11 @@ export class Sandbox extends Component {
       return void this.resource.module(`\
 import ui from "/42/ui.js"
 ui(${JSON.stringify(content)})`)
+    }
+
+    if (this.script) {
+      return void this.resource.module(`\
+${this.script}`)
     }
 
     if (this.srcdoc) {
