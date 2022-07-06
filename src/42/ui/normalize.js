@@ -126,7 +126,9 @@ export function normalizeString(def, ctx) {
     })
 
     def.scopes = scopes
-    def.hasFilter = hasFilter
+
+    const isRef = !hasFilter && parsed.strings.every((x) => x === "")
+    if (isRef) def.ref = scopes[0]
     return def
   }
 

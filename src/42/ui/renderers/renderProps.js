@@ -224,10 +224,7 @@ export default async function renderProps(el, props, def) {
 
     if (typeof val === "function") {
       const fn = val
-      ref =
-        !fn.hasFilter && fn.scopes.length === 1 && fn.scopes[0] !== scope
-          ? { $ref: fn.scopes[0] }
-          : undefined
+      ref = fn.ref ? { $ref: fn.ref } : undefined
       register(ctx, fn, (val, changed) => render(val, changed !== scope))
     } else {
       render(val)

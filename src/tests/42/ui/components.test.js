@@ -559,6 +559,30 @@ test("state", "template", async (t) => {
   t.is(app.el.textContent, "x:bar-")
 })
 
+test("state", "template", "not a ref", async (t) => {
+  const app = await ui(tmp(), {
+    content: {
+      tag: "ui-t-state",
+      x: "prefix -> {{y}}",
+    },
+
+    data: {
+      y: "foo",
+    },
+  })
+
+  t.eq(app.state.value, {
+    "y": "foo",
+    "ui-t-state": { 0: { x: "prefix -> foo" } },
+  })
+  t.is(app.el.textContent, "x:prefix -> foo-")
+
+  app.data.y = "bar"
+  await app
+
+  t.is(app.el.textContent, "x:prefix -> bar-")
+})
+
 test("state", "multiple", async (t) => {
   const app = await ui(tmp(), {
     content: [
