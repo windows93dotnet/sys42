@@ -10,27 +10,33 @@ export class Sandbox extends Component {
     tabIndex: 0,
 
     props: {
-      src: {
-        type: "string",
-        fromView: true,
-        update: true,
-      },
-      srcdoc: {
-        type: "string",
-        fromView: true,
-        update: true,
-      },
       permissions: {
         type: "any",
         fromView: true,
-        // update: true, // TODO: allow permissions update
+      },
+      path: {
+        type: "string",
+        fromView: true,
+        update: true,
+      },
+      document: {
+        type: "string",
+        fromView: true,
+        update: true,
       },
       content: {
         type: "any",
+        fromView: true,
+        update: true,
+      },
+      html: {
+        type: "string",
+        fromView: true,
         update: true,
       },
       script: {
         type: "string",
+        fromView: true,
         update: true,
         toView: () => "",
       },
@@ -61,8 +67,10 @@ export class Sandbox extends Component {
 
   go(url) {
     this.content = undefined
-    this.srcdoc = undefined
-    this.src = url
+    this.script = undefined
+    this.html = undefined
+    this.document = undefined
+    this.path = url
   }
 
   message(...args) {
@@ -85,21 +93,15 @@ export class Sandbox extends Component {
         state: this.ctx.reactive.data,
         scope: this.ctx.globalScope,
       }
-      return void this.resource.module(`\
+      return void this.resource.script(`\
 import ui from "/42/ui.js"
 ui(${JSON.stringify(content)})`)
     }
 
-    if (this.script) {
-      return void this.resource.module(`\
-${this.script}`)
-    }
-
-    if (this.srcdoc) {
-      return void this.resource.srcdoc(this.srcdoc)
-    }
-
-    if (!this.src) return
+    if (this.script) return void this.resource.script(this.script)
+    if (this.html) return void this.resource.html(this.html)
+    if (this.document) return void this.resource.document(this.document)
+    if (!this.path) return
 
     this.toggleAttribute("loading", true)
     this.message("loading...")
@@ -110,13 +112,13 @@ ${this.script}`)
     this.resource.config.checkIframable = this.check
 
     try {
-      await this.resource.go(this.src, { signal })
+      await this.resource.go(this.path, { signal })
       // this.channel ??= ipc.to(this.resource.el)
       this.message()
     } catch {
       this.message(
         create("div", "Impossible to embed this URL"),
-        create("a", { href: this.src, target: "_blank" }, this.src)
+        create("a", { href: this.path, target: "_blank" }, this.path)
       )
     }
 

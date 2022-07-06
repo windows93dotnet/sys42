@@ -139,9 +139,9 @@ export default class Resource {
     this.el.allow = allow.join("; ")
   }
 
-  srcdoc(doc) {
+  document(document) {
     this.el.removeAttribute("src")
-    this.el.srcdoc = doc
+    this.el.srcdoc = document
   }
 
   html(html) {
@@ -154,9 +154,9 @@ ${html}
 `
   }
 
-  module(script) {
+  script(script, type = "module") {
     this.html(`\
-<script type="module">
+<script type="${type}">
 ${script}
 </script>
 `)
@@ -210,7 +210,7 @@ ${script}
         forgets.push(
           listen(
             this.el,
-            { signal, once: true },
+            { signal },
             {
               load: () => end(true),
               error: () => end(false),

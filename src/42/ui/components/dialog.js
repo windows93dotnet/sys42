@@ -35,7 +35,7 @@ export class Dialog extends Component {
           { tag: "button", picto: "close" },
         ],
       },
-      { tag: "section.ui-dialog__content", content },
+      { tag: "section.ui-dialog__body", content },
       { tag: "footer.ui-dialog__footer" },
     ]
   }
@@ -51,6 +51,6 @@ export class Dialog extends Component {
 
 Component.define(Dialog)
 
-export default async function dialog() {
-  console.log("dialog")
+export default async function dialog(def, ctx) {
+  document.body.append(new Dialog(def, ctx))
 }

@@ -22,6 +22,65 @@
         on: { click: "{{cnt += 1}}" },
       },
       {
+        tag: "button",
+        content: "dialog",
+        on: { click: "{{dialog({ content: 'hello' })}}" },
+      },
+    ],
+
+    state: {
+      cnt: 42,
+    },
+  })
+
+  window.app = app
+</script>
+
+<script type="_module">
+    import ui from "../42/ui.js"
+
+    const app = await ui({
+      class: "box-fit desktop",
+      content: [
+        {
+          tag: "button",
+          content: "{{cnt}}",
+          on: { click: "{{cnt += 1}}" },
+        },
+        {
+          content: {
+            tag: "ui-sandbox",
+            check: true,
+            permissions: "app",
+            html: `\
+  <script type="module">
+  import dialog from "../42/ui/components/dialog.js"
+  dialog({ content: "hello", label: "title" })
+  <\/script>`,
+          },
+        },
+      ],
+
+      state: {
+        cnt: 42,
+      },
+    })
+
+    window.app = app
+</script>
+
+<script type="_module">
+  import ui from "../42/ui.js"
+
+  const app = await ui({
+    class: "box-fit desktop",
+    content: [
+      {
+        tag: "button",
+        content: "{{cnt}}",
+        on: { click: "{{cnt += 1}}" },
+      },
+      {
         content: {
           tag: "ui-sandbox",
           check: true,

@@ -46,8 +46,6 @@ export default function formatError(error, options) {
         : "?")
     }}`
 
-    // console.log(obj.stack)
-
     const fnNames = []
 
     for (const stack of obj.stack) {
@@ -60,7 +58,6 @@ export default function formatError(error, options) {
       fnNames.push(stack.function.length)
     }
 
-    // let maxFnName = Math.max(...obj.stack.map((x) => x.function.length))
     let maxFnName = Math.max(...fnNames)
     if (maxFnName) maxFnName += 1
 

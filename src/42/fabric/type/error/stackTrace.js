@@ -44,8 +44,8 @@ const addErrorEventStackFrame = (err, stackFrames) => {
     }
   }
 
-  e.function = "errorEvent"
-  stackFrames.push(e)
+  e.function ??= "new ErrorEvent"
+  stackFrames.unshift(e)
 }
 
 export default function stackTrace(err = new Error(), options = {}) {

@@ -93,10 +93,16 @@ export function normalizeTokens(tokens, ctx, filters) {
         allocate(filters, loc, fn, sep)
       } else {
         const thisArg = ctx
-        const fn = getFilter(token.value).then((filter) =>
-          makeFilterFn(filter, thisArg, ctx.el)
+        const { value } = token
+        const err = new TypeError(
+          `Template filter is not a function: "${value}"`
         )
+        const fn = getFilter(value).then((filter) => {
+          if (typeof filter !== "function") return dispatch(ctx.el, err)
+          return makeFilterFn(filter, thisArg, ctx.el)
+        })
         allocate(filters, loc, fn, sep)
+        continue
       }
 
       token.value = loc
