@@ -1,6 +1,7 @@
 import DOMQuery from "../../fabric/class/DOMQuery.js"
 import ensureElement from "../../fabric/dom/ensureElement.js"
 import asyncable from "../../fabric/trait/asyncable.js"
+import hash from "../../fabric/type/any/hash.js"
 import render from "../render.js"
 
 export default class UI extends DOMQuery {
@@ -18,6 +19,8 @@ export default class UI extends DOMQuery {
     }
 
     this.ctx.el = this.el
+    this.ctx.id = hash(this.def)
+    this.ctx.persist ??= true
 
     this.el.append(render(this.def, this.ctx))
     this.state = this.ctx.state

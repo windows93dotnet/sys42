@@ -8,6 +8,7 @@ import defer from "../../fabric/type/promise/defer.js"
 import dispatch from "../../fabric/dom/dispatch.js"
 import equal from "../../fabric/type/any/equal.js"
 import idleThrottle from "../../fabric/type/function/idleThrottle.js"
+import persist from "../../system/persist.js"
 
 const FPS = 1000 / 60
 const sep = "/"
@@ -23,6 +24,16 @@ export default class State extends Emitter {
     this.queue = {
       paths: new Set(),
       objects: new Set(),
+    }
+
+    const persistPath = `$HOME/ui/${ctx.id}`
+
+    if (ctx.persist && persist.has(persistPath)) {
+      this.ctx.undones.push(
+        persist.load(persistPath).then((res) => {
+          Object.assign(this.proxy, res)
+        })
+      )
     }
 
     const update = () => {
@@ -57,6 +68,7 @@ export default class State extends Emitter {
 
       try {
         this.emit("update", changes)
+        if (ctx.persist) persist(persistPath, this.value)
       } catch (err) {
         dispatch(ctx.el, err)
       }

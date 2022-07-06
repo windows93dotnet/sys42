@@ -265,16 +265,24 @@ export async function fsReadText(path) {
 export async function fsWriteJSON(path, value, replacer, space = 2) {
   let previous
 
+  if (value === undefined) {
+    await fsWrite(path, "", "utf8")
+    return
+  }
+
   try {
     previous = await fsRead(path, "utf8")
   } catch {}
 
   if (previous) {
     JSON5 ??= await import("./formats/json5.js").then((m) => m.default)
-    await fsWrite(path, JSON5.format(previous, value), "utf8")
-  } else {
-    await fsWrite(path, JSON.stringify(value, replacer, space), "utf8")
+    try {
+      await fsWrite(path, JSON5.format(previous, value), "utf8")
+      return
+    } catch {}
   }
+
+  await fsWrite(path, JSON.stringify(value, replacer, space), "utf8")
 }
 
 export async function fsReadJSON(path) {
