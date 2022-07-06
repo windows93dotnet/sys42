@@ -15,6 +15,10 @@ ui-sandbox > * {
   inset: 0;
 }
 
+ui-sandbox[script] {
+  display: none;
+}
+
 .ui-sandbox__scene {
   width: calc(100% / var(--zoom));
   height: calc(100% / var(--zoom));

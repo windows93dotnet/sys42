@@ -32,6 +32,7 @@ export class Sandbox extends Component {
       script: {
         type: "string",
         update: true,
+        toView: () => "",
       },
       zoom: {
         type: "number",

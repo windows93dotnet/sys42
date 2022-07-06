@@ -42,8 +42,8 @@ const CONVERTERS = {
   },
 
   tokens: {
-    fromView: (val) => String(val).split(" "),
     toView: (val) => val.join(" "),
+    fromView: (val) => String(val).split(" "),
   },
 
   any: {
