@@ -18,6 +18,7 @@ export default class Reactive extends Emitter {
 
   constructor(ctx, data = {}) {
     super()
+
     this.ctx = ctx
     this.data = data
 
@@ -132,8 +133,8 @@ export default class Reactive extends Emitter {
   get throttle() {
     return this.#update.fn === this.#update.onrepaint
   }
-  set throttle(value) {
-    this.#update.fn = value ? this.#update.onrepaint : this.#update.now
+  set throttle(val) {
+    this.#update.fn = val ? this.#update.onrepaint : this.#update.now
   }
 
   now(cb) {
@@ -188,8 +189,8 @@ export default class Reactive extends Emitter {
     return deallocate(options?.silent ? this.data : this.state, path, sep)
   }
 
-  assign(path, value, options) {
+  assign(path, val, options) {
     const prev = locate(options?.silent ? this.data : this.state, path, sep)
-    Object.assign(prev, value)
+    Object.assign(prev, val)
   }
 }

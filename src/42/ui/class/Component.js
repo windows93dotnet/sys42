@@ -138,13 +138,15 @@ export default class Component extends HTMLElement {
     tmp.components = undefined
     tmp.cancel = ctx?.cancel?.fork()
     tmp = normalizeCtx(tmp)
-    Object.defineProperty(tmp, "signal", { get: () => tmp.cancel.signal })
     this.ctx = tmp
 
     if (definition.props || definition.computed) {
       const { localName } = this
-      let i = this.ctx.componentsIndexes[localName] ?? -1
-      this.ctx.componentsIndexes[localName] = ++i
+
+      const i = this.ctx.reactive.data[localName]
+        ? Object.keys(this.ctx.reactive.data[localName]).length
+        : 0
+
       this.ctx.globalScope = this.ctx.scope
       this.ctx.scope = resolveScope(this.localName, String(i))
       this.ctx.props = definition.props
@@ -218,7 +220,6 @@ export default class Component extends HTMLElement {
     const { definition } = this.constructor
 
     if (definition.props || definition.computed) {
-      this.ctx.componentsIndexes[this.localName]--
       this.ctx.reactive.delete(this.ctx.scope, { silent: true })
     }
 
