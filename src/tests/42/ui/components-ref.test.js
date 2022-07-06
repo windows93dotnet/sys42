@@ -15,10 +15,10 @@ Component.define({
 test("props", 1, async (t) => {
   const app = await ui(tmp(), {
     content: { tag: "ui-a" },
-    data: { foo: 1 },
+    state: { foo: 1 },
   })
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "foo": 1,
     "ui-a": { 0: { bar: "-" } },
   })
@@ -35,7 +35,7 @@ test("props", 1, async (t) => {
 
   t.is(app.el.innerHTML, '<ui-a bar="0">foo: 1, bar: 0</ui-a>')
 
-  app.data.foo = 2
+  app.state.foo = 2
   await app
 
   t.is(app.el.innerHTML, '<ui-a bar="0">foo: 2, bar: 0</ui-a>')
@@ -44,17 +44,17 @@ test("props", 1, async (t) => {
 test("props", 2, async (t) => {
   const app = await ui(tmp(), {
     content: { tag: "ui-a", bar: 0 },
-    data: { foo: 1 },
+    state: { foo: 1 },
   })
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "foo": 1,
     "ui-a": { 0: { bar: 0 } },
   })
 
   t.is(app.el.innerHTML, '<ui-a bar="0">foo: 1, bar: 0</ui-a>')
 
-  app.data.foo = 2
+  app.state.foo = 2
   await app
 
   t.is(app.el.innerHTML, '<ui-a bar="0">foo: 2, bar: 0</ui-a>')
@@ -67,10 +67,10 @@ test("props", 3, async (t) => {
       "\n",
       { tag: "ui-a#a2", bar: -2 },
     ],
-    data: { foo: 1 },
+    state: { foo: 1 },
   })
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "foo": 1,
     "ui-a": {
       0: { bar: -1 },
@@ -95,7 +95,7 @@ test("props", 3, async (t) => {
 <ui-a id="a2" bar="-2">foo: 1, bar: -2</ui-a>`
   )
 
-  app.data.foo = 2
+  app.state.foo = 2
   await app
 
   t.is(
@@ -109,17 +109,17 @@ test("props", 3, async (t) => {
 test("props", 4, async (t) => {
   const app = await ui(tmp(), {
     content: { tag: "ui-a", bar: "{{foo}}" },
-    data: { foo: "a" },
+    state: { foo: "a" },
   })
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "foo": "a",
     "ui-a": { 0: { bar: { $ref: "/foo" } } },
   })
 
   t.is(app.el.innerHTML, '<ui-a bar="a">foo: a, bar: a</ui-a>')
 
-  app.data.foo = "b"
+  app.state.foo = "b"
   await app
 
   t.is(app.el.innerHTML, '<ui-a bar="b">foo: b, bar: b</ui-a>')
@@ -127,17 +127,17 @@ test("props", 4, async (t) => {
   app.query("ui-a").bar = "c"
   await app
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "foo": "c",
     "ui-a": { 0: { bar: { $ref: "/foo" } } },
   })
 
   t.is(app.el.innerHTML, '<ui-a bar="c">foo: c, bar: c</ui-a>')
 
-  app.data.foo = "d"
+  app.state.foo = "d"
   await app
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "foo": "d",
     "ui-a": { 0: { bar: { $ref: "/foo" } } },
   })
@@ -150,17 +150,17 @@ test("props", 5, async (t) => {
 
   const app = await ui(tmp(), {
     content: { tag: "ui-a", bar: "{{foo |> upper}}" },
-    data: { foo: "a" },
+    state: { foo: "a" },
   })
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "foo": "a",
     "ui-a": { 0: { bar: "A" } },
   })
 
   t.is(app.el.innerHTML, '<ui-a bar="A">foo: a, bar: A</ui-a>')
 
-  app.data.foo = "b"
+  app.state.foo = "b"
   await app
 
   t.is(app.el.innerHTML, '<ui-a bar="B">foo: b, bar: B</ui-a>')
@@ -168,17 +168,17 @@ test("props", 5, async (t) => {
   app.query("ui-a").bar = "c"
   await app
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "foo": "b",
     "ui-a": { 0: { bar: "c" } },
   })
 
   t.is(app.el.innerHTML, '<ui-a bar="c">foo: b, bar: c</ui-a>')
 
-  app.data.foo = "d"
+  app.state.foo = "d"
   await app
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "foo": "d",
     "ui-a": { 0: { bar: "D" } },
   })
@@ -201,10 +201,10 @@ Component.define({
 test("props state", 1, async (t) => {
   const app = await ui(tmp(), {
     content: { tag: "ui-b" },
-    data: { foo: 1 },
+    state: { foo: 1 },
   })
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "foo": 1,
     "ui-b": { 0: {} },
     "bar": 2,
@@ -212,15 +212,15 @@ test("props state", 1, async (t) => {
 
   t.is(app.el.innerHTML, '<ui-b bar="2">foo: 1, bar: 2</ui-b>')
 
-  app.data.foo = 2
+  app.state.foo = 2
   await app
 
   t.is(app.el.innerHTML, '<ui-b bar="2">foo: 2, bar: 2</ui-b>')
 
-  app.data.bar = 3
+  app.state.bar = 3
   await app
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "foo": 2,
     "ui-b": { 0: {} },
     "bar": 3,
@@ -232,10 +232,10 @@ test("props state", 1, async (t) => {
 test("props state", 2, async (t) => {
   const app = await ui(tmp(), {
     content: { tag: "ui-b", bar: 0 },
-    data: { foo: 1 },
+    state: { foo: 1 },
   })
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "foo": 1,
     "ui-b": { 0: {} },
     "bar": 0,
@@ -243,15 +243,15 @@ test("props state", 2, async (t) => {
 
   t.is(app.el.innerHTML, '<ui-b bar="0">foo: 1, bar: 0</ui-b>')
 
-  app.data.foo = 2
+  app.state.foo = 2
   await app
 
   t.is(app.el.innerHTML, '<ui-b bar="0">foo: 2, bar: 0</ui-b>')
 
-  app.data.bar = 3
+  app.state.bar = 3
   await app
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "foo": 2,
     "ui-b": { 0: {} },
     "bar": 3,
@@ -267,10 +267,10 @@ test("scopped", 1, async (t) => {
       "\n",
       { scope: "two", content: { tag: "ui-a", bar: 1 } },
     ],
-    data: { foo: 1 },
+    state: { foo: 1 },
   })
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "foo": 1,
     "ui-a": {
       0: { bar: 0 },
@@ -301,10 +301,10 @@ test("scopped", 2, async (t) => {
       "\n",
       { scope: "two", content: { tag: "ui-a", bar: 3 } },
     ],
-    data: { foo: 1, one: { foo: 2 } },
+    state: { foo: 1, one: { foo: 2 } },
   })
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "foo": 1,
     "one": { foo: 2 },
     "ui-a": {
@@ -330,7 +330,7 @@ test("scopped", 2, async (t) => {
 
   app.query("ui-a:last-of-type").destroy()
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "foo": 1,
     "one": { foo: 2 },
     "ui-a": {
@@ -365,7 +365,7 @@ test("array", 1, async (t) => {
         },
       ],
     },
-    data: { arr: ["a", "b"], foo: 1 },
+    state: { arr: ["a", "b"], foo: 1 },
   })
 
   t.is(
@@ -376,7 +376,7 @@ test("array", 1, async (t) => {
 <ui-a bar="b">foo: , bar: b</ui-a><!--[#]-->`
   )
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "arr": ["a", "b"],
     "foo": 1,
     "ui-a": {
@@ -385,7 +385,7 @@ test("array", 1, async (t) => {
     },
   })
 
-  app.data.arr.push("c")
+  app.state.arr.push("c")
   await app
 
   t.is(
@@ -397,7 +397,7 @@ test("array", 1, async (t) => {
 <ui-a bar="c">foo: , bar: c</ui-a><!--[#]-->`
   )
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "arr": ["a", "b", "c"],
     "foo": 1,
     "ui-a": {
@@ -407,7 +407,7 @@ test("array", 1, async (t) => {
     },
   })
 
-  app.data.arr[0] = "A"
+  app.state.arr[0] = "A"
   await app
 
   t.is(
@@ -419,7 +419,7 @@ test("array", 1, async (t) => {
 <ui-a bar="c">foo: , bar: c</ui-a><!--[#]-->`
   )
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "arr": ["A", "b", "c"],
     "foo": 1,
     "ui-a": {
@@ -439,7 +439,7 @@ test("array", 1, async (t) => {
     "/arr/2/foo",
   ])
 
-  app.data.arr.length = 1
+  app.state.arr.length = 1
   await app
 
   t.is(
@@ -449,7 +449,7 @@ test("array", 1, async (t) => {
 <ui-a bar="A">foo: , bar: A</ui-a><!--[#]-->`
   )
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "arr": ["A"],
     "foo": 1,
     "ui-a": {
@@ -463,7 +463,7 @@ test("array", 1, async (t) => {
     "/arr/0/foo",
   ])
 
-  app.data.arr.push("B")
+  app.state.arr.push("B")
   await app
 
   t.is(
@@ -474,7 +474,7 @@ test("array", 1, async (t) => {
 <ui-a bar="B">foo: , bar: B</ui-a><!--[#]-->`
   )
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "arr": ["A", "B"],
     "foo": 1,
     "ui-a": {
@@ -496,7 +496,7 @@ test("array", 2, async (t) => {
         },
       ],
     },
-    data: { arr: ["a", "b"], foo: 1 },
+    state: { arr: ["a", "b"], foo: 1 },
   })
 
   t.is(
@@ -507,7 +507,7 @@ test("array", 2, async (t) => {
 <ui-a bar="1 - b">foo: , bar: 1 - b</ui-a><!--[#]-->`
   )
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "arr": ["a", "b"],
     "foo": 1,
     "ui-a": { 0: { bar: "0 - a" }, 1: { bar: "1 - b" } },

@@ -75,10 +75,10 @@ export default async function renderProps(el, props, def) {
   const observed = {}
   let data = {}
 
-  if (ctx.state.has(ctx.scope)) {
-    data = ctx.state.get(ctx.scope)
+  if (ctx.reactive.has(ctx.scope)) {
+    data = ctx.reactive.get(ctx.scope)
   } else {
-    ctx.state.set(ctx.scope, data, { silent: true })
+    ctx.reactive.set(ctx.scope, data, { silent: true })
   }
 
   let queue
@@ -147,7 +147,7 @@ export default async function renderProps(el, props, def) {
       } else {
         updateFn =
           type === "function"
-            ? () => item.update.call(el, ref ? ctx.state.get(ref.$ref) : val)
+            ? () => item.update.call(el, ref ? ctx.reactive.get(ref.$ref) : val)
             : () => {}
       }
     }
@@ -155,9 +155,9 @@ export default async function renderProps(el, props, def) {
     const render = (val, update) => {
       if (ctx.cancel.signal.aborted === true) return
 
-      ctx.state.now(() => {
+      ctx.reactive.now(() => {
         if (!item.computed) {
-          ctx.state.set(scope, ref ?? val, { silent: !update })
+          ctx.reactive.set(scope, ref ?? val, { silent: !update })
         }
 
         if (updateFn && !el.ready.isPending && updateFn() !== false && queue) {
@@ -214,11 +214,11 @@ export default async function renderProps(el, props, def) {
     Object.defineProperty(el, key, {
       configurable: true,
       set(val) {
-        if (ref) ctx.state.now(() => ctx.state.set(ref.$ref, val))
+        if (ref) ctx.reactive.now(() => ctx.reactive.set(ref.$ref, val))
         else render(val, true)
       },
       get() {
-        return ctx.state.get(ref ? ref.$ref : scope)
+        return ctx.reactive.get(ref ? ref.$ref : scope)
       },
     })
 

@@ -10,7 +10,7 @@ test(1, async (t) => {
     tag: "ui-sandbox",
   })
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "ui-sandbox": {
       0: {
         src: undefined,

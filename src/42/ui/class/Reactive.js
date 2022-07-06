@@ -13,25 +13,30 @@ import persist from "../../system/persist.js"
 const FPS = 1000 / 60
 const sep = "/"
 
-export default class State extends Emitter {
+export default class Reactive extends Emitter {
   #update = {}
 
-  constructor(ctx, val = {}) {
+  constructor(ctx, data = {}) {
     super()
-    this.value = val
     this.ctx = ctx
+    this.data = data
+
+    Object.defineProperty(this.ctx, "state", {
+      enumerable: true,
+      get: () => this.state,
+    })
 
     this.queue = {
       paths: new Set(),
       objects: new Set(),
     }
 
-    const persistPath = `$HOME/ui/${ctx.id}`
+    const persistPath = `$HOME/ui/${ctx.badge}`
 
     if (ctx.persist && persist.has(persistPath)) {
       this.ctx.undones.push(
         persist.load(persistPath).then((res) => {
-          Object.assign(this.proxy, res)
+          Object.assign(this.state, res)
         })
       )
     }
@@ -68,7 +73,7 @@ export default class State extends Emitter {
 
       try {
         this.emit("update", changes)
-        if (ctx.persist) persist(persistPath, this.value)
+        if (ctx.persist) persist(persistPath, this.data)
       } catch (err) {
         dispatch(ctx.el, err)
       }
@@ -79,7 +84,7 @@ export default class State extends Emitter {
     this.#update.fn = this.#update.now
     this.#update.ready = false
 
-    this.proxy = observe(this.value, {
+    this.state = observe(this.data, {
       signal: ctx.cancel.signal,
       change: (path, val, oldVal, detail) => {
         this.update(path, val, oldVal, detail)
@@ -87,7 +92,7 @@ export default class State extends Emitter {
       delete: (path, { key }) => {
         this.emit("delete", key)
       },
-      locate: (ref) => locate(this.proxy, ref, sep),
+      locate: (ref) => locate(this.state, ref, sep),
       has(path, { key }) {
         if (key.startsWith("@") || key.startsWith("#")) return true
         if (ctx.computeds.has(path)) return true
@@ -168,23 +173,23 @@ export default class State extends Emitter {
   }
 
   has(path) {
-    return exists(this.proxy, path, sep)
+    return exists(this.state, path, sep)
   }
 
   get(path, options) {
-    return locate(options?.silent ? this.value : this.proxy, path, sep)
+    return locate(options?.silent ? this.data : this.state, path, sep)
   }
 
   set(path, val, options) {
-    return allocate(options?.silent ? this.value : this.proxy, path, val, sep)
+    return allocate(options?.silent ? this.data : this.state, path, val, sep)
   }
 
   delete(path, options) {
-    return deallocate(options?.silent ? this.value : this.proxy, path, sep)
+    return deallocate(options?.silent ? this.data : this.state, path, sep)
   }
 
   assign(path, value, options) {
-    const prev = locate(options?.silent ? this.value : this.proxy, path, sep)
+    const prev = locate(options?.silent ? this.data : this.state, path, sep)
     Object.assign(prev, value)
   }
 }

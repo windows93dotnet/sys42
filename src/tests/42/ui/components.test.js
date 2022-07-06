@@ -71,7 +71,7 @@ test.tasks(
       },
       def: {
         content: { tag: "ui-t-data" },
-        data: { foo: 1 },
+        state: { foo: 1 },
       },
       expected: "<ui-t-data>foo: 1</ui-t-data>",
     }),
@@ -91,7 +91,7 @@ test.tasks(
           tag: "ui-t-dynamic",
           x: "{{foo}}",
         },
-        data: { foo: "bar" },
+        state: { foo: "bar" },
       },
       expected: "<ui-t-dynamic>x:bar</ui-t-dynamic>",
     }),
@@ -163,7 +163,7 @@ test.tasks(
     task({
       def: {
         content: { tag: "ui-t-props", bar: 0 },
-        data: { foo: 1 },
+        state: { foo: 1 },
       },
       expected: '<ui-t-props bar="0">foo: 1, bar: 0</ui-t-props>',
     }),
@@ -171,7 +171,7 @@ test.tasks(
     task({
       def: {
         content: { tag: "ui-t-props" },
-        data: { foo: 1 },
+        state: { foo: 1 },
       },
       expected: '<ui-t-props bar="2">foo: 1, bar: 2</ui-t-props>',
       async check(t, app) {
@@ -220,16 +220,16 @@ test.tasks(
       },
       def: {
         content: { tag: "ui-t-props-state" },
-        data: { foo: 1 },
+        state: { foo: 1 },
       },
       expected: '<ui-t-props-state bar="2">foo: 1, bar: 2</ui-t-props-state>',
       async check(t, app) {
         const el = app.query("ui-t-props-state")
 
-        t.is(app.state.get("bar"), 2)
+        t.is(app.reactive.get("bar"), 2)
         t.is(el.bar, 2)
 
-        app.state.set("bar", 3)
+        app.reactive.set("bar", 3)
         await app
 
         t.is(el.bar, 3)
@@ -239,7 +239,7 @@ test.tasks(
         )
 
         el.bar = 4
-        t.is(app.state.get("bar"), 4)
+        t.is(app.reactive.get("bar"), 4)
         await app
 
         t.is(
@@ -248,7 +248,7 @@ test.tasks(
         )
 
         el.setAttribute("bar", "5")
-        t.is(app.state.get("bar"), 5)
+        t.is(app.reactive.get("bar"), 5)
         await app
 
         t.is(
@@ -282,7 +282,7 @@ test.tasks(
       },
       def: {
         content: { tag: "ui-t-filter" },
-        data: { foo: 1 },
+        state: { foo: 1 },
       },
       expected: '<ui-t-filter bar="2">foo: 6, bar: 12</ui-t-filter>',
     }),
@@ -294,7 +294,7 @@ test.tasks(
       },
       def: {
         content: { tag: "ui-t-ready" },
-        data: { foo: "/42/index.html" },
+        state: { foo: "/42/index.html" },
       },
       expected: "<ui-t-ready>ext: .html</ui-t-ready>",
     }),
@@ -370,7 +370,7 @@ test.tasks(
       },
       expected: "<ui-t-css-state></ui-t-css-state>",
       async check(t, app) {
-        app.state.set("foo", "red")
+        app.reactive.set("foo", "red")
         await app
 
         t.is(
@@ -378,12 +378,12 @@ test.tasks(
           '<ui-t-css-state style="--foo:red;"></ui-t-css-state>'
         )
 
-        app.state.set("foo", undefined)
+        app.reactive.set("foo", undefined)
         await app
 
         t.is(app.el.innerHTML, '<ui-t-css-state style=""></ui-t-css-state>')
 
-        app.state.set("foo", "blue")
+        app.reactive.set("foo", "blue")
         await app
 
         t.is(
@@ -391,7 +391,7 @@ test.tasks(
           '<ui-t-css-state style="--foo:blue;"></ui-t-css-state>'
         )
 
-        app.state.delete("foo")
+        app.reactive.delete("foo")
         await app
 
         t.is(app.el.innerHTML, '<ui-t-css-state style=""></ui-t-css-state>')
@@ -470,10 +470,10 @@ test("component child", async (t) => {
         content: "derp:{{derp}}, bar:{{bar}}",
       },
     },
-    data: { derp: 5 },
+    state: { derp: 5 },
   })
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "derp": 5,
     "ui-t-props": { 0: { bar: 4 } },
   })
@@ -526,7 +526,7 @@ test("state", async (t) => {
   })
 
   t.is(app.el.textContent, "x:foo-")
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "ui-t-state": {
       0: { x: "foo" },
     },
@@ -540,12 +540,12 @@ test("state", "template", async (t) => {
       x: "{{y}}",
     },
 
-    data: {
+    state: {
       y: "foo",
     },
   })
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "y": "foo",
     "ui-t-state": {
       0: { x: { $ref: "/y" } },
@@ -553,7 +553,7 @@ test("state", "template", async (t) => {
   })
   t.is(app.el.textContent, "x:foo-")
 
-  app.data.y = "bar"
+  app.state.y = "bar"
   await app
 
   t.is(app.el.textContent, "x:bar-")
@@ -566,18 +566,18 @@ test("state", "template", "not a ref", async (t) => {
       x: "prefix -> {{y}}",
     },
 
-    data: {
+    state: {
       y: "foo",
     },
   })
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "y": "foo",
     "ui-t-state": { 0: { x: "prefix -> foo" } },
   })
   t.is(app.el.textContent, "x:prefix -> foo-")
 
-  app.data.y = "bar"
+  app.state.y = "bar"
   await app
 
   t.is(app.el.textContent, "x:prefix -> bar-")
@@ -598,7 +598,7 @@ test("state", "multiple", async (t) => {
   })
 
   t.is(app.el.textContent, "x:foo-x:bar-")
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "ui-t-state": {
       0: { x: "foo" },
       1: { x: "bar" },
@@ -622,7 +622,7 @@ test("state", "scopped", async (t) => {
   })
 
   t.is(app.el.textContent, "x:foo-x:bar-")
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "ui-t-state": {
       0: { x: "foo" },
       1: { x: "bar" },
@@ -642,7 +642,7 @@ test("state", "fixed", async (t) => {
   })
 
   t.is(app.el.textContent, "x:fixed-x:fixed-")
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "ui-t-nested-fixed": { 0: { list: [{ foo: "a" }, { foo: "b" }] } },
     "ui-t-state": { 0: { x: "fixed" }, 1: { x: "fixed" } },
   })
@@ -681,7 +681,7 @@ test("state", "dynamic", async (t) => {
     "/ui-t-nested-dynamic/0/list/0/foo",
   ])
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "ui-t-nested-dynamic": { 0: { list: [{ foo: "a" }] } },
     "ui-t-state": {
       0: { x: { $ref: "/ui-t-nested-dynamic/0/list/0/foo" } },
@@ -700,7 +700,7 @@ test("state", "dynamic", 2, async (t) => {
     },
   })
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "ui-t-nested-dynamic": { 0: { list: [{ foo: "a" }, { foo: "b" }] } },
     "ui-t-state": {
       0: { x: { $ref: "/ui-t-nested-dynamic/0/list/0/foo" } },
@@ -753,17 +753,17 @@ Component.define({
 async function testStringArray(t, app) {
   t.is(app.el.textContent, "x:a-x:b-")
 
-  app.data.arr = ["A"]
+  app.state.arr = ["A"]
   await app
 
   t.is(app.el.textContent, "x:A-")
 
-  app.data.arr.push("B")
+  app.state.arr.push("B")
   await app
 
   t.is(app.el.textContent, "x:A-x:B-")
 
-  app.data.arr[0] = "foo"
+  app.state.arr[0] = "foo"
   await app
 
   t.is(app.el.textContent, "x:foo-x:B-")
@@ -779,7 +779,7 @@ test("state", "string array", async (t) => {
       },
     },
 
-    data: {
+    state: {
       arr: ["a", "b"],
     },
   })
@@ -788,7 +788,7 @@ test("state", "string array", async (t) => {
 })
 
 async function testStringArrayWithTransfers(t, app) {
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "arr": ["a", "b"],
     "ui-t-nested-string-array": { 0: { list: { $ref: "/arr" } } },
     "ui-t-state": {
@@ -799,7 +799,7 @@ async function testStringArrayWithTransfers(t, app) {
 
   await testStringArray(t, app)
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "arr": ["foo", "B"],
     "ui-t-nested-string-array": { 0: { list: { $ref: "/arr" } } },
     "ui-t-state": {
@@ -810,7 +810,7 @@ async function testStringArrayWithTransfers(t, app) {
 
   app.query("ui-t-nested-string-array").destroy()
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "arr": ["foo", "B"],
     "ui-t-nested-string-array": {},
     "ui-t-state": {},
@@ -824,7 +824,7 @@ test("state", "string array", "using transfers", async (t) => {
       list: "{{arr}}",
     },
 
-    data: {
+    state: {
       arr: ["a", "b"],
     },
   })
@@ -832,14 +832,14 @@ test("state", "string array", "using transfers", async (t) => {
   await testStringArrayWithTransfers(t, app)
 })
 
-test("state", "string array", "using transfers and async data", async (t) => {
+test("state", "string array", "using transfers and async state", async (t) => {
   const app = await ui(tmp(true), {
     content: {
       tag: "ui-t-nested-string-array",
       list: "{{arr}}",
     },
 
-    async data() {
+    async state() {
       await t.sleep(100)
       return {
         arr: ["a", "b"],
@@ -898,13 +898,13 @@ test("computed", async (t) => {
     "/ui-t-computed/0/parsed/1",
   ])
   t.is(cnt, 1)
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "ui-t-computed": { 0: { formated: "FOO/BAR" } },
   })
   t.is(app.el.innerHTML, "<ui-t-computed>foo: FOO, bar: BAR</ui-t-computed>")
 
   const updates = ["/ui-t-computed/0/formated", "/ui-t-computed/0/parsed"]
-  app.state.on("update", (changes) => {
+  app.reactive.on("update", (changes) => {
     t.is(updates.shift(), [...changes][0])
   })
 
@@ -916,7 +916,7 @@ test("computed", async (t) => {
     "<ui-t-computed>foo: HELLO, bar: WORLD</ui-t-computed>"
   )
   t.is(cnt, 2)
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "ui-t-computed": { 0: { formated: "HELLO/WORLD" } },
   })
 })
@@ -967,21 +967,21 @@ test("computed", "from prop with state:true", async (t) => {
     "/ui-t-compu-sta/0/parsed/1",
   ])
   t.is(cnt, 1)
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "ui-t-compu-sta": { 0: {} },
     "formated": "FOO/BAR",
   })
   t.is(app.el.innerHTML, "<ui-t-compu-sta>foo: FOO, bar: BAR</ui-t-compu-sta>")
 
   const updates = ["/formated", "/ui-t-compu-sta/0/parsed"]
-  app.state.on("update", (changes) => {
+  app.reactive.on("update", (changes) => {
     t.is(updates.shift(), [...changes][0])
   })
 
-  app.data.formated = "HELLO/WORLD"
+  app.state.formated = "HELLO/WORLD"
   await app
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "ui-t-compu-sta": { 0: {} },
     "formated": "HELLO/WORLD",
   })
@@ -1039,7 +1039,7 @@ test("computed", "computed prop", async (t) => {
     "/ui-t-compu-prop/0/parsed/1",
   ])
   t.is(cnt, 1)
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "ui-t-compu-prop": { 0: { formated: "FOO/BAR" } },
   })
 
@@ -1051,7 +1051,7 @@ test("computed", "computed prop", async (t) => {
   )
 
   const updates = ["/ui-t-compu-prop/0/formated", "/ui-t-compu-prop/0/parsed"]
-  app.state.on("update", (changes) => {
+  app.reactive.on("update", (changes) => {
     t.is(updates.shift(), [...changes][0])
   })
 
@@ -1063,7 +1063,7 @@ test("computed", "computed prop", async (t) => {
     "<ui-t-compu-prop>foo: HELLO, bar: WORLD</ui-t-compu-prop>"
   )
   t.is(cnt, 2)
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "ui-t-compu-prop": { 0: { formated: "HELLO/WORLD" } },
   })
 

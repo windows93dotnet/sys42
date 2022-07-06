@@ -9,7 +9,7 @@ export default function register(ctx, loc, fn) {
   if (typeof loc === "function") {
     scopes = loc.scopes
     renderer = async (changed) => {
-      const val = loc(ctx.state.proxy)
+      const val = loc(ctx.reactive.state)
       if (val !== undefined) ctx.undones.push(val)
       const res = fn(await val, changed)
       if (res !== undefined) ctx.undones.push(res)
@@ -17,7 +17,7 @@ export default function register(ctx, loc, fn) {
   } else {
     scopes = arrify(loc)
     renderer = async (changed) => {
-      const res = fn(ctx.state.get(scopes[0]), changed)
+      const res = fn(ctx.reactive.get(scopes[0]), changed)
       if (res !== undefined) ctx.undones.push(res)
     }
   }

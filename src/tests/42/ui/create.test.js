@@ -108,7 +108,7 @@ test("classes", 2, (t) => {
 
 test("ctx", async (t) => {
   const { ctx } = normalize()
-  ctx.state.set("foo", "bar")
+  ctx.reactive.set("foo", "bar")
   const child = create(ctx, "span", { class: "{{foo}}" })
   const el = create(ctx, "div", { class: "derp" }, child)
   el.append(child)
@@ -116,7 +116,7 @@ test("ctx", async (t) => {
 
   t.is(el.outerHTML, '<div class="derp"><span class="bar"></span></div>')
 
-  ctx.state.set("foo", "baz")
+  ctx.reactive.set("foo", "baz")
   await repaint()
 
   t.is(el.outerHTML, '<div class="derp"><span class="baz"></span></div>')

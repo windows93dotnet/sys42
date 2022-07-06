@@ -24,7 +24,7 @@ export default function renderListen(el, def, ctx) {
     })
 
     events[key] = (e, target) => {
-      fn(ctx.state.proxy, makeEventLocals(e, target))
+      fn(ctx.reactive.state, makeEventLocals(e, target))
     }
   }
 

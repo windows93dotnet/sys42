@@ -19,32 +19,36 @@ export default class UI extends DOMQuery {
     }
 
     this.ctx.el = this.el
-    this.ctx.id = hash(this.def)
+    this.ctx.badge = hash(this.def)
     // this.ctx.persist ??= true
 
     this.el.append(render(this.def, this.ctx))
-    this.state = this.ctx.state
 
     let firstUpdateDone = false
 
     asyncable(this, async () => {
       if (!this.ctx) return
       await this.ctx.components.done()
-      await this.ctx.state.ready()
+      await this.ctx.reactive.ready()
       if (firstUpdateDone) return
       firstUpdateDone = true
-      this.ctx.state.throttle = true
+      this.ctx.reactive.throttle = true
       this.queryAll("[data-autofocus]").at(-1)?.focus()
     })
   }
 
+  get reactive() {
+    return this.ctx.reactive
+  }
   get data() {
-    return this.state.proxy
+    return this.ctx.reactive.data
+  }
+  get state() {
+    return this.ctx.reactive.state
   }
 
   destroy() {
     this.ctx.cancel("ui destroyed")
-    delete this.state
     delete this.ctx
     delete this.def
     delete this.el

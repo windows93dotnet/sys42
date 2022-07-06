@@ -219,7 +219,7 @@ export default class Component extends HTMLElement {
 
     if (definition.props || definition.computed) {
       this.ctx.componentsIndexes[this.localName]--
-      this.ctx.state.delete(this.ctx.scope, { silent: true })
+      this.ctx.reactive.delete(this.ctx.scope, { silent: true })
     }
 
     this.ready = undefined

@@ -28,7 +28,7 @@ export default function renderIf(def, ctx) {
   def = omit(def, ["if"])
 
   register(ctx, scopes, async () => {
-    const res = await check(ctx.state.proxy)
+    const res = await check(ctx.reactive.state)
 
     if (res === lastRes) return
     lastRes = res

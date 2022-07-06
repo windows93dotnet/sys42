@@ -82,7 +82,7 @@ export class Sandbox extends Component {
     if (this.content) {
       const content = {
         content: this.content,
-        data: this.ctx.state.value,
+        state: this.ctx.reactive.data,
         scope: this.ctx.globalScope,
       }
       return void this.resource.module(`\

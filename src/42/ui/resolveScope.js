@@ -74,5 +74,5 @@ export default function resolveScope(scope, loc, ctx) {
 
   const out = parseDotNotation(resolvePath(scope, loc)).join("/")
   if (ctx === undefined) return out
-  return locate(ctx.state.value, `${out}/$ref`, sep) ?? out
+  return locate(ctx.reactive.data, `${out}/$ref`, sep) ?? out
 }

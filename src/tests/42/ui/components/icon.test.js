@@ -11,7 +11,7 @@ test("html", async (t) => {
     path: "/script.js",
   })
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "ui-icon": { 0: { path: "/script.js", small: undefined, label: true } },
   })
 
@@ -79,7 +79,7 @@ test("infos", async (t) => {
     },
   ])
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "ui-icon": {
       0: { path: "/derp/foo.js", small: undefined, label: true },
       1: { path: "/derp/foo/", small: undefined, label: true },
@@ -174,7 +174,7 @@ test("each", async (t) => {
         path: "{{x}}",
       },
     },
-    data: {
+    state: {
       arr: [
         { x: "/derp/foo.js" }, //
         { x: "/derp/" },
@@ -182,7 +182,7 @@ test("each", async (t) => {
     },
   })
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "arr": [{ x: "/derp/foo.js" }, { x: "/derp/" }],
     "ui-icon": {
       0: { small: undefined, label: true, path: { $ref: "/arr/0/x" } },
@@ -202,7 +202,7 @@ test("each", async (t) => {
   const icons = app.each("ui-icon", { live: true })
   t.eq(icons.textContent, ["foo\u200b.js", "derp"])
 
-  app.data.arr = [{ x: "bar.txt" }]
+  app.state.arr = [{ x: "bar.txt" }]
   await app
 
   t.eq(icons.textContent, ["bar\u200b.txt"])
@@ -217,7 +217,7 @@ test("each", 2, async (t) => {
         path: "{{.}}",
       },
     },
-    data: {
+    state: {
       arr: [
         "/derp/foo.js", //
         "/derp/",
@@ -225,7 +225,7 @@ test("each", 2, async (t) => {
     },
   })
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "arr": ["/derp/foo.js", "/derp/"],
     "ui-icon": {
       0: { small: undefined, label: true, path: { $ref: "/arr/0" } },
@@ -245,7 +245,7 @@ test("each", 2, async (t) => {
   const icons = app.each("ui-icon", { live: true })
   t.eq(icons.textContent, ["foo\u200b.js", "derp"])
 
-  app.data.arr = ["bar.txt"]
+  app.state.arr = ["bar.txt"]
   await app
 
   t.eq(icons.textContent, ["bar\u200b.txt"])

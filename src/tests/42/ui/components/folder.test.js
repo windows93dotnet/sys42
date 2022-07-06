@@ -12,7 +12,7 @@ test("generate icon list", async (t) => {
     selection: ["/tests/fixtures/components/folder/script.js"],
   })
 
-  t.eq(app.state.value, {
+  t.eq(app.reactive.data, {
     "ui-folder": {
       0: {
         path: "/tests/fixtures/components/folder/",

@@ -31,7 +31,7 @@
       },
     ],
 
-    data: {
+    state: {
       cnt: 42,
     },
   })
@@ -39,7 +39,7 @@
   window.app = app
 
   import log from "../42/system/log.js"
-  log(app.data)
+  log(app.state)
 </script>
 
 <script type="_module">
@@ -63,7 +63,7 @@
       },
     ],
 
-    data: {
+    state: {
       "foo": {
         cnt: 42,
       },
@@ -80,7 +80,7 @@
   window.app = app
 
   import log from "../42/system/log.js"
-  log(app.data)
+  log(app.state)
 </script>
 
 <script type="_module">
@@ -104,7 +104,7 @@
       },
     ],
 
-    data: {
+    state: {
       "foo": {
         cnt: 42,
       },
@@ -121,7 +121,7 @@
   window.app = app
 
   import log from "../42/system/log.js"
-  log(app.data)
+  log(app.state)
 </script>
 
 <script type="_module">
@@ -172,7 +172,7 @@
       },
     ],
 
-    data: {
+    state: {
       "foo": {
         cnt: 42,
       },
@@ -189,7 +189,7 @@
   window.app = app
 
   import log from "../42/system/log.js"
-  log(app.data)
+  log(app.state)
 </script>
 
 <script type="_module">
@@ -222,7 +222,7 @@
       },
     ],
 
-    data: {
+    state: {
       foo: {
         cnt: 42,
       },
@@ -315,8 +315,8 @@
       // {
       //   type: "ui-tabs",
       //   // scope: "openedFiles",
-      //   // data: [{ path: "ok" }],
-      //   data: {
+      //   // state: [{ path: "ok" }],
+      //   state: {
       //     currentTab: 0,
       //     openedFiles: [],
       //   },

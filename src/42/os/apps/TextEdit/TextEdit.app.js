@@ -24,9 +24,9 @@ export default {
   content: [
     {
       type: "ui-tabs",
-      items: { watch: "openedFiles" },
+      items: "{{openedFiles}}",
       each: {
-        label: "{{path ?? 'Untitled'|basename}}{{dirty ? '*' : ''}}",
+        label: "{{path ?? 'Untitled' |> basename}}{{dirty ? '*' : ''}}",
         content: {
           type: "textarea.w-full",
           name: "text",
@@ -43,7 +43,7 @@ export default {
     },
   ],
 
-  data: {
+  state: {
     monospace: !false,
     spellcheck: !true,
     wrap: true,

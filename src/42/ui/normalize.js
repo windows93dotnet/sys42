@@ -1,4 +1,4 @@
-import State from "./class/State.js"
+import Reactive from "./class/Reactive.js"
 import resolveScope from "./resolveScope.js"
 import register from "./register.js"
 import Locator from "../fabric/class/Locator.js"
@@ -28,12 +28,12 @@ const DEF_KEYWORDS = new Set([
   "actions",
   "computed",
   "content",
-  "data",
   "each",
   "else",
   "if",
   "schema",
   "scope",
+  "state",
   "tag",
 ])
 
@@ -68,7 +68,7 @@ export function normalizeTokens(tokens, ctx, filters) {
       Number.isInteger(token.value)
     ) {
       scopes.push(loc)
-      if (isArrayLike(ctx.state.get(dirname(loc)))) {
+      if (isArrayLike(ctx.reactive.get(dirname(loc)))) {
         token.type = "key"
         token.value = loc
       } else {
@@ -182,7 +182,7 @@ export function normalizeComputed(scope, val, ctx, cb = noop) {
   if (fn.scopes) {
     register(ctx, fn, (val, changed) => {
       ctx.computeds.set(scope, val)
-      if (changed !== scope) ctx.state.updateNow(scope, val)
+      if (changed !== scope) ctx.reactive.updateNow(scope, val)
       cb(val)
     })
   }
@@ -197,8 +197,7 @@ export function normalizeCtx(ctx = {}) {
   ctx.actions ??= new Locator({}, { sep: "/" })
   ctx.computeds ??= new Locator({}, { sep: "/" })
   ctx.cancel ??= new Canceller()
-  ctx.state ??= new State(ctx)
-  ctx.data ??= ctx.state.proxy
+  ctx.reactive ??= new Reactive(ctx)
   return ctx
 }
 
@@ -214,16 +213,16 @@ export function normalizeDef(def = {}, ctx = normalizeCtx(), options) {
   } else {
     if (def.actions) ctx.actions.assign(ctx.scope, def.actions)
 
-    if (def.data) {
-      if (typeof def.data === "function") {
+    if (def.state) {
+      if (typeof def.state === "function") {
         const { scope } = ctx
         ctx.undones.push(
           (async () => {
-            const res = await def.data()
-            ctx.state.assign(scope, res)
+            const res = await def.state()
+            ctx.reactive.assign(scope, res)
           })()
         )
-      } else ctx.state.assign(ctx.scope, def.data)
+      } else ctx.reactive.assign(ctx.scope, def.state)
     }
 
     if (def.computed) normalizeComputeds(def.computed, ctx)
