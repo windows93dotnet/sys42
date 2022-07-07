@@ -25,7 +25,12 @@ function wrap(digest, fn) {
   return fn
 }
 
-export default function realm(fn, argsWrapper) {
+export default function realm(argsWrapper, fn) {
+  if (fn === undefined) {
+    fn = argsWrapper
+    argsWrapper = undefined
+  }
+
   const digest = hash(fn)
 
   if (!inTop) {
@@ -36,7 +41,7 @@ export default function realm(fn, argsWrapper) {
         ? async (...args) =>
             bus.send("42-realm-call", {
               digest,
-              args: await argsWrapper(args),
+              args: await argsWrapper(...args),
             })
         : async (...args) => bus.send("42-realm-call", { digest, args })
     )
@@ -47,7 +52,7 @@ export default function realm(fn, argsWrapper) {
   return wrap(
     digest,
     argsWrapper
-      ? async (...args) => fn(...(await argsWrapper(args)))
+      ? async (...args) => fn(...(await argsWrapper(...args)))
       : async (...args) => fn(...args)
   )
 }
