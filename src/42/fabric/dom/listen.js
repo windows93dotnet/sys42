@@ -1,6 +1,8 @@
 import signature from "./signature.js"
 import cancelEvent from "./cancelEvent.js"
 
+const OR_REGEX = /\s*\|\|\s*/
+
 const DEFAULTS = {
   passive: false,
   capture: false,
@@ -36,7 +38,7 @@ export const eventsMap = (el, selector, events, options) => {
   const handlers = []
 
   for (let [eventList, listener] of Object.entries(events)) {
-    for (const event of eventList.split(" ")) {
+    for (const event of eventList.split(OR_REGEX)) {
       let config
       if (typeof listener === "object") {
         if (Array.isArray(listener)) listener = arrayToListener(listener)

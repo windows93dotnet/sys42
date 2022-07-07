@@ -29,7 +29,7 @@ export default class Loop extends Player {
     })
 
     this.on(
-      "pause stop",
+      "pause || stop",
       fps ? () => clearTimeout(timerId) : () => cancelAnimationFrame(timerId)
     )
   }
