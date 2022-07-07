@@ -26,12 +26,12 @@ export class Dialog extends Component {
     },
   }
 
-  render({ content, label }) {
+  render({ content, label, title }) {
     return [
       {
         tag: "header.ui-dialog__header",
         content: [
-          { tag: "h2.ui-dialog__title", content: label },
+          { tag: "h2.ui-dialog__title", content: title ?? label },
           { tag: "button", picto: "close" },
         ],
       },

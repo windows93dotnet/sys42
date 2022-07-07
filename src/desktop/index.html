@@ -22,16 +22,26 @@
         on: { click: "{{cnt += 1}}" },
       },
       {
-        tag: "button",
+        tag: "button#dialog",
         content: "dialog",
-        on: {
-          // click: {
-          //   dialog: { content: "hello" },
-          // },
-
-          "focus || click"(e, target) {
-            console.log(444, this, e, target)
-          },
+        dialog: { title: "hello top", content: "{{cnt}}" },
+      },
+      {
+        content: {
+          tag: "ui-sandbox",
+          permissions: "app",
+          content: [
+            {
+              tag: "button",
+              content: "{{cnt}}",
+              on: { click: "{{cnt += 1}}" },
+            },
+            {
+              tag: "button",
+              content: "dialog",
+              dialog: { title: "hello iframe", content: "{{cnt}}" },
+            },
+          ],
         },
       },
     ],
@@ -42,6 +52,10 @@
   })
 
   window.app = app
+
+  setTimeout(() => {
+    app.query("#dialog").click()
+  }, 100)
 </script>
 
 <script type="_module">

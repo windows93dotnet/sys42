@@ -12,6 +12,7 @@ import allocate from "../fabric/locator/allocate.js"
 import isEmptyObject from "../fabric/type/any/is/isEmptyObject.js"
 import isArrayLike from "../fabric/type/any/is/isArrayLike.js"
 import noop from "../fabric/type/function/noop.js"
+import arrify from "../fabric/type/any/arrify.js"
 import ATTRIBUTES_ALLOW_LIST from "../fabric/constants/ATTRIBUTES_ALLOW_LIST.js"
 
 const ATTRIBUTES = new Set(
@@ -232,6 +233,12 @@ export function normalizeDef(def = {}, ctx = normalizeCtx(), options) {
     }
 
     if (def.computed) normalizeComputeds(def.computed, ctx)
+
+    if (def.on) def.on = arrify(def.on)
+    if (def.dialog) {
+      def.on ??= []
+      def.on.push({ click: { dialog: def.dialog } })
+    }
 
     if (options?.attrs !== false) {
       const attrs = normalizeAttrs(def, ctx)

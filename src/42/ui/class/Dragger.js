@@ -137,7 +137,7 @@ export default class Dragger {
       pointerdown(e, target) {
         forget = listen(listenOptions, {
           "pointermove": (e) => drag(e, target),
-          "pointerup pointercancel": (e) => stop(e, target),
+          "pointerup || pointercancel": (e) => stop(e, target),
         })
       },
     })
