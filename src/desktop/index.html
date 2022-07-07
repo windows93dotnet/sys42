@@ -10,34 +10,33 @@
   trap(log)
 </script>
 
-<script type="module">
+<script type="_module">
   import exec from "../42/os/exec.js"
   console.log(1, await exec("glob **/*.css"))
 </script>
 
-<script type="module">
-  import "../42/os/exec.js"
-  import ui from "../42/ui.js"
+<script type="_module">
+    import "../42/os/exec.js"
+    import ui from "../42/ui.js"
 
-  await ui({
-    class: "box-fit desktop",
-    content: [
-      {
-        content: {
-          tag: "ui-sandbox",
-          permissions: "app",
-          // permissions: "trusted",
-          script: `
-import exec from "../42/os/exec.js"
-console.log(2, await exec("glob **/*.html"))
-                `,
+    await ui({
+      class: "box-fit desktop",
+      content: [
+        {
+          content: {
+            tag: "ui-sandbox",
+            permissions: "app",
+            script: `
+  import exec from "../42/os/exec.js"
+  console.log(2, await exec("glob **/*.html"))
+                  `,
+          },
         },
-      },
-    ],
-  })
+      ],
+    })
 </script>
 
-<script type="_module">
+<script type="module">
   import ui from "../42/ui.js"
 
   const app = await ui({
@@ -64,11 +63,15 @@ console.log(2, await exec("glob **/*.html"))
               on: { click: "{{cnt += 1}}" },
             },
             {
-              tag: "button",
+              tag: "button#dialog",
               content: "dialog",
               dialog: { title: "hello iframe", content: "{{cnt}}" },
             },
           ],
+          script: `
+console.log(888)
+app.query("#dialog").click()
+`,
         },
       },
     ],

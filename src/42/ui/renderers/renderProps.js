@@ -183,7 +183,12 @@ export default async function renderProps(el, props, def) {
           if (item.default === true && val === false) {
             el.setAttribute(attribute, "false")
           } else el.toggleAttribute(attribute, val)
-        } else el.setAttribute(attribute, toView(val, key, el, item))
+        } else {
+          const res = toView(val, key, el, item)
+          if (typeof res === "boolean") el.toggleAttribute(attribute, res)
+          else el.setAttribute(attribute, res)
+        }
+
         fromRender = false
       }
     }

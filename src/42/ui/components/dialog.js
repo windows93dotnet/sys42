@@ -1,5 +1,6 @@
 import Component from "../class/Component.js"
 import movable from "../traits/movable.js"
+import realm from "../../system/realm.js"
 
 export class Dialog extends Component {
   static definition = {
@@ -51,6 +52,9 @@ export class Dialog extends Component {
 
 Component.define(Dialog)
 
-export default async function dialog(def, ctx) {
-  document.body.append(new Dialog(def, ctx))
-}
+export default realm(
+  async (def, ctx) => (realm.inTop ? [def, ctx] : [def]),
+  async (def, ctx) => {
+    document.body.append(new Dialog(def, ctx))
+  }
+)

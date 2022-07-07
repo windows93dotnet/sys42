@@ -1,7 +1,7 @@
 import Component from "../class/Component.js"
 import Resource from "../../fabric/class/Resource.js"
 import create from "../create.js"
-// import ipc from "../../system/ipc.js"
+import traverse from "../../fabric/type/object/traverse.js"
 
 export class Sandbox extends Component {
   static definition = {
@@ -38,7 +38,9 @@ export class Sandbox extends Component {
         type: "string",
         fromView: true,
         update: true,
-        toView: () => "",
+        toView(key, val, el) {
+          return !el.content
+        },
       },
       zoom: {
         type: "number",
@@ -93,9 +95,17 @@ export class Sandbox extends Component {
         state: this.ctx.reactive.data,
         scope: this.ctx.globalScope,
       }
+      const undones = []
+      traverse(this.content, (key) => {
+        // Ensure realmed components can exectute function in top
+        if (key === "dialog") undones.push(import("./dialog.js"))
+      })
+      await Promise.all(undones)
       return void this.resource.script(`\
 import ui from "/42/ui.js"
-ui(${JSON.stringify(content)})`)
+const app = await ui(${JSON.stringify(content)})
+${this.script ?? ""}
+`)
     }
 
     if (this.script) return void this.resource.script(this.script)
@@ -113,7 +123,6 @@ ui(${JSON.stringify(content)})`)
 
     try {
       await this.resource.go(this.path, { signal })
-      // this.channel ??= ipc.to(this.resource.el)
       this.message()
     } catch {
       this.message(
