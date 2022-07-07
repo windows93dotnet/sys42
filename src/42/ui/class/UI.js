@@ -19,7 +19,7 @@ export default class UI extends DOMQuery {
     }
 
     this.ctx.el = this.el
-    this.ctx.badge = hash(this.def)
+    this.ctx.digest = hash(this.def)
     // this.ctx.persist ??= true
 
     this.el.append(render(this.def, this.ctx))

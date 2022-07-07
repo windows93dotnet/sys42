@@ -1,59 +1,70 @@
-import inTop from "../system/env/runtime/inTop.js"
-import inIframe from "../system/env/runtime/inIframe.js"
-import ipc from "../system/ipc.js"
-import disk from "../system/fs/disk.js"
-import traverse from "../fabric/type/object/traverse.js"
-import dirname from "../fabric/type/path/extract/dirname.js"
-import resolvePath from "../fabric/type/path/core/resolvePath.js"
+import realm from "../system/realm.js"
+import getCWD from "../fabric/getCWD.js"
 import getParentModule from "../fabric/getParentModule.js"
-import JSON5 from "../system/formats/json5.js"
 
-import parseCommand from "./cli/parseCommand.js"
-import argv from "./cli/argv.js"
+export default realm((cmd, locals = {}) => {
+  console.log(888, cmd, getCWD(), getParentModule())
+  // console.log(getParentModule())
+  // locals.cwd ??= dirname(new URL(getParentModule().url).pathname)
+  // console.log(cmd, locals)
+})
 
-let bus
-const { HOME } = disk
+// import inTop from "../system/env/runtime/inTop.js"
+// import inIframe from "../system/env/runtime/inIframe.js"
+// import ipc from "../system/ipc.js"
+// import disk from "../system/fs/disk.js"
+// import traverse from "../fabric/type/object/traverse.js"
+// import dirname from "../fabric/type/path/extract/dirname.js"
+// import resolvePath from "../fabric/type/path/core/resolvePath.js"
+// import getParentModule from "../fabric/getParentModule.js"
+// import JSON5 from "../system/formats/json5.js"
 
-if (inTop) ipc.on("main<-exec", ({ cmd, locals }) => exec(cmd, locals))
+// import parseCommand from "./cli/parseCommand.js"
+// import argv from "./cli/argv.js"
 
-export default async function exec(cmd, locals = {}) {
-  locals.cwd ??= dirname(new URL(getParentModule().url).pathname)
+// let bus
+// const { HOME } = disk
 
-  if (inIframe) {
-    bus ??= ipc.to(globalThis.top)
-    return bus.send("main<-exec", { cmd, locals })
-  }
+// if (inTop) ipc.on("main<-exec", ({ cmd, locals }) => exec(cmd, locals))
 
-  const [name, ...rest] = parseCommand(cmd)
+// export default async function exec(cmd, locals = {}) {
+//   locals.cwd ??= dirname(new URL(getParentModule().url).pathname)
 
-  let program
+//   if (inIframe) {
+//     bus ??= ipc.to(globalThis.top)
+//     return bus.send("main<-exec", { cmd, locals })
+//   }
 
-  const programs = disk.glob(
-    [`${HOME}/**/${name}{.cmd,.app}.js`, `**/${name}{.cmd,.app}.js`],
-    { sort: false }
-  )
+//   const [name, ...rest] = parseCommand(cmd)
 
-  if (programs.length === 0) throw new Error(`"${name}" command not found`)
+//   let program
 
-  let cliOptions = { argsKey: "glob" }
+//   const programs = disk.glob(
+//     [`${HOME}/**/${name}{.cmd,.app}.js`, `**/${name}{.cmd,.app}.js`],
+//     { sort: false }
+//   )
 
-  await import(/* @vite-ignore */ programs[0]).then((m) => {
-    program = m.default
-    if (m.cli) cliOptions = m.cli
-  })
+//   if (programs.length === 0) throw new Error(`"${name}" command not found`)
 
-  cliOptions.jsonParse ??= JSON5.parse
+//   let cliOptions = { argsKey: "glob" }
 
-  if (!program) return
+//   await import(programs[0]).then((m) => {
+//     program = m.default
+//     if (m.cli) cliOptions = m.cli
+//   })
 
-  const args = argv(rest, cliOptions)
+//   cliOptions.jsonParse ??= JSON5.parse
 
-  traverse(args, (key, val, obj) => {
-    if (key === cliOptions.argsKey && val.length === 1) {
-      const filename = resolvePath(locals.cwd, val[0])
-      if (disk.has(filename)) obj.filename = filename
-    }
-  })
+//   if (!program) return
 
-  return program(args, locals)
-}
+//   const args = argv(rest, cliOptions)
+
+//   traverse(args, (key, val, obj) => {
+//     if (key === cliOptions.argsKey && val.length === 1) {
+//       const filename = resolvePath(locals.cwd, val[0])
+//       if (disk.has(filename)) obj.filename = filename
+//     }
+//   })
+
+//   return program(args, locals)
+// }

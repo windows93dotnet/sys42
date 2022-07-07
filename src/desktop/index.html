@@ -4,13 +4,40 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" href="/style.css" id="theme" />
 
-<script type="module">
+<script type="_module">
   import trap from "../42/fabric/type/error/trap.js"
   import log from "../42/system/log.js"
   trap(log)
 </script>
 
 <script type="module">
+  import exec from "../42/os/exec.js"
+  console.log(1, await exec("glob **/*.css"))
+</script>
+
+<script type="module">
+  import "../42/os/exec.js"
+  import ui from "../42/ui.js"
+
+  await ui({
+    class: "box-fit desktop",
+    content: [
+      {
+        content: {
+          tag: "ui-sandbox",
+          permissions: "app",
+          // permissions: "trusted",
+          script: `
+import exec from "../42/os/exec.js"
+console.log(2, await exec("glob **/*.html"))
+                `,
+        },
+      },
+    ],
+  })
+</script>
+
+<script type="_module">
   import ui from "../42/ui.js"
 
   const app = await ui({

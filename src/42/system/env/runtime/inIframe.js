@@ -1,1 +1,1 @@
-export default globalThis.top !== globalThis
+export default globalThis !== globalThis.top

@@ -5,7 +5,7 @@ import exec from "./os/exec.js"
 import ui from "./ui.js"
 import theme from "./os/theme.js"
 import devices from "./system/devices.js"
-import apps from "./os/apps.js"
+// import apps from "./os/apps.js"
 
 system.fs = fs
 system.disk = disk
@@ -13,7 +13,7 @@ system.exec = exec
 system.ui = ui
 system.theme = theme
 system.devices = devices
-system.apps = apps
+// system.apps = apps
 
 globalThis.$ ??= system
 

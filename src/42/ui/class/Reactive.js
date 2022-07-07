@@ -32,7 +32,7 @@ export default class Reactive extends Emitter {
       objects: new Set(),
     }
 
-    const persistPath = `$HOME/ui/${ctx.badge}`
+    const persistPath = `$HOME/ui/${ctx.digest}`
 
     if (ctx.persist && persist.has(persistPath)) {
       this.ctx.undones.push(
