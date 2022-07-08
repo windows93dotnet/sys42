@@ -10,7 +10,6 @@ export function stackframe(obj) {
   out.line = Number(obj.line)
   out.column = Number(obj.column)
   out.function = obj.function
-  Object.defineProperty(out, "source", { value: obj.source })
   return out
 }
 
@@ -61,7 +60,6 @@ function parseV8OrIE(error) {
       filename,
       line: locationParts[1],
       column: locationParts[2],
-      source: line,
     })
   })
 }
@@ -97,7 +95,6 @@ function parseFFOrSafari(error) {
       filename: locationParts[0],
       line: locationParts[1],
       column: locationParts[2],
-      source: line,
     })
   })
 }
@@ -130,7 +127,6 @@ function parseOpera9(e) {
         stackframe({
           filename: match[2],
           line: match[1],
-          source: lines[i],
         })
       )
     }
@@ -152,7 +148,6 @@ function parseOpera10(err) {
           function: match[3] || undefined,
           filename: match[2],
           line: match[1],
-          source: lines[i],
         })
       )
     }
@@ -195,7 +190,6 @@ function parseOpera11(error) {
       filename: locationParts[0],
       line: locationParts[1],
       column: locationParts[2],
-      source: line,
     })
   })
 }

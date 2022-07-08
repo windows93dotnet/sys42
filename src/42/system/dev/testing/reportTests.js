@@ -1,5 +1,6 @@
+/* eslint-disable complexity */
 import configure from "../../../fabric/configure.js"
-import isBackend from "../../env/runtime/inBackend.js"
+import inBackend from "../../env/runtime/inBackend.js"
 import log from "../../log.js"
 import highlight from "../../console/formats/highlight.js"
 import formatFilename from "../../console/formats/formatFilename.js"
@@ -122,21 +123,21 @@ const displayTest = (test, config, showError) => {
 
   let err = ""
   if (test.error) {
-    if (showError) {
-      err += "\n\n"
-      err += formatError(test.error, {
-        entries: {
-          newline: "\n\n",
-          valueFormater: (x) =>
-            typeof x === "string"
-              ? highlight(x)
-              : "\n{dim.grey ┌╴}\n{dim.grey │} " +
-                formatError(x, { compact: true })
-                  .replaceAll("\n", "\n{dim.grey │} ")
-                  .replace(/│} $/, "└╴} "),
-        },
-      })
-    } else {
+    err += "\n\n"
+    err += formatError(test.error, {
+      entries: {
+        newline: "\n\n",
+        valueFormater: (x) =>
+          typeof x === "string"
+            ? highlight(x)
+            : "\n{dim.grey ┌╴}\n{dim.grey │} " +
+              formatError(x, { compact: true })
+                .replaceAll("\n", "\n{dim.grey │} ")
+                .replace(/│} $/, "└╴} "),
+      },
+    })
+
+    if (!showError) {
       failed.push(test)
     }
   }
@@ -148,7 +149,21 @@ const displayTest = (test, config, showError) => {
       test.icon +
       (test.skip ? "{magenta.dim ~} " : test.ok ? "{green ✔} " : "{red ✖} ")
     if (showError) prefix = `\n${prefix}`
-    log(prefix + title + err)
+
+    if (test.error && !inBackend) {
+      if (showError) {
+        log.br()
+        log.groupCollapsed((prefix + title + err).trimStart())
+        console.log(test.error.original)
+        log.groupEnd()
+      } else {
+        log.groupCollapsed(prefix + title)
+        log(err.slice(1))
+        log.groupEnd()
+      }
+    } else {
+      log(prefix + title + err)
+    }
   }
 }
 
@@ -199,7 +214,7 @@ function displaySuite(current, config) {
 }
 
 function displayFailedTests(failed, config) {
-  if (isBackend) log.hr()
+  if (inBackend) log.hr()
   let sample
   let unshown
   if (config.verbose > 3) {
@@ -212,7 +227,7 @@ function displayFailedTests(failed, config) {
 
   for (const fail of sample) {
     displayTest(fail, config, true)
-    if (isBackend) log.hr()
+    if (inBackend) log.hr()
   }
 
   if (unshown) {
@@ -221,16 +236,16 @@ function displayFailedTests(failed, config) {
       unshown
     )}\n{reset.grey increase verbose level to show more errors}`
     log.red.dim(notice)
-    if (isBackend) log.hr()
+    if (inBackend) log.hr()
   }
 }
 
 function displayLogs(logs) {
   for (const [icon, stackframe, type, args] of logs) {
     log(`${icon}{blue •} ${log.format.file(stackframe)}`)
-    if (isBackend) log.hr()
+    if (inBackend) log.hr()
     console[type](...args)
-    if (isBackend) log.hr().br()
+    if (inBackend) log.hr().br()
     else log.br()
   }
 }
@@ -240,9 +255,16 @@ function displayWarnings(warnings) {
     const file = stackframe ? ` ${log.format.file(stackframe)}` : ""
     log(`\n${icon}{yellow ⚠ ${context}}${file}`)
     if (err) {
-      if (isBackend) log.hr()
-      log(formatError(err))
-      if (isBackend) log.hr().br()
+      if (inBackend) log.hr()
+      if (inBackend) {
+        log(formatError(err))
+      } else {
+        log.groupCollapsed(formatError(err))
+        console.log(err.original)
+        log.groupEnd()
+      }
+
+      if (inBackend) log.hr().br()
     } else log.br()
   }
 }

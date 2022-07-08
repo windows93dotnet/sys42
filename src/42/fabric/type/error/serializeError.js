@@ -25,5 +25,6 @@ export default function serializeError(error) {
     message: error.message,
     details,
     stack: stackTrace(error),
+    original: error.stack,
   }
 }

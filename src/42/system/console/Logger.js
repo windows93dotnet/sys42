@@ -114,7 +114,7 @@ export default class Logger extends Callable {
         }
 
         if (logError) {
-          this.console.log(logError)
+          this.console.log(logError.stack)
           this.console.groupEnd()
         }
 
