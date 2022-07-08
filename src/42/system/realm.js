@@ -19,10 +19,11 @@ if (inTop) {
 
 let bus
 
-function wrap(digest, fn) {
+function wrap(name, digest, fn) {
   fn.destroy = inTop
     ? async () => functions.delete(digest)
     : async () => bus.send("42-realm-destroy", digest)
+  Object.defineProperty(fn, "name", { value: name })
   return fn
 }
 
@@ -37,6 +38,7 @@ export default function realm(argsWrapper, fn) {
   if (!inTop) {
     bus ??= ipc.to(globalThis.top)
     return wrap(
+      fn.name,
       digest,
       argsWrapper
         ? async (...args) =>
@@ -51,10 +53,11 @@ export default function realm(argsWrapper, fn) {
   functions.set(digest, fn)
 
   return wrap(
+    fn.name,
     digest,
-    argsWrapper
+    argsWrapper //
       ? async (...args) => fn(...(await argsWrapper(...args)))
-      : async (...args) => fn(...args)
+      : fn
   )
 }
 

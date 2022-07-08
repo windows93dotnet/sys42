@@ -1,7 +1,7 @@
 import Component from "../class/Component.js"
 import movable from "../traits/movable.js"
 import realm from "../../system/realm.js"
-import normalize, { forkDef } from "../normalize.js"
+import normalize, { objectifyDef, forkDef } from "../normalize.js"
 
 export class Dialog extends Component {
   static definition = {
@@ -55,7 +55,7 @@ Component.define(Dialog)
 
 export default realm(
   async (def, ctx) => {
-    if (realm.inTop) return [def, ctx]
+    if (realm.inTop) return [objectifyDef(def), ctx]
     return [forkDef(def, ctx)]
   },
   async function dialog(...args) {
