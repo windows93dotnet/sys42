@@ -96,7 +96,8 @@ const getFooter = (results, config) => {
   return footer
 }
 
-const displayTest = (test, config, showError) => {
+const displayTest = (test, config, options) => {
+  const showError = options?.showError
   test.icon ??= config.icon ?? ""
 
   let title = `${getSuiteTitle({
@@ -144,10 +145,11 @@ const displayTest = (test, config, showError) => {
 
   if (test.logs) logs.push(...test.logs.map((arr) => [test.icon, ...arr]))
 
+  let prefix =
+    test.icon +
+    (test.skip ? "{magenta.dim ~} " : test.ok ? "{green ✔} " : "{red ✖} ")
+
   if (showError || config.verbose > 2) {
-    let prefix =
-      test.icon +
-      (test.skip ? "{magenta.dim ~} " : test.ok ? "{green ✔} " : "{red ✖} ")
     if (showError) prefix = `\n${prefix}`
 
     if (test.error && !inBackend) {
@@ -166,6 +168,16 @@ const displayTest = (test, config, showError) => {
     } else {
       log(prefix + title + err)
     }
+  } else if (!test.suiteOk && !inBackend) {
+    if (test.error) {
+      log.groupCollapsed(prefix + getTestTitle(test))
+      log.groupCollapsed(err.slice(1))
+      console.log(test.error.original)
+      log.groupEnd()
+      log.groupEnd()
+    } else {
+      log(prefix + getTestTitle(test))
+    }
   }
 }
 
@@ -177,7 +189,7 @@ const displaySuiteHeader = (suite, config) => {
       config.icon +
         (suite.skip ? "{magenta.dim ~} " : suite.ok ? "{green ✔} " : "{red ✖} ")
     )
-    .log(title + stats)
+    [suite.ok ? "log" : "groupCollapsed"](title + stats)
 }
 
 function displaySuite(current, config) {
@@ -187,6 +199,10 @@ function displaySuite(current, config) {
 
   for (const test of current.tests) displayTest(test, config)
   for (const suite of current.suites) displaySuite(suite, config)
+
+  if (current.title !== "#root" && config.verbose === 2 && !current.ok) {
+    log.groupEnd()
+  }
 
   if (current.warnings) {
     warnings.push(...current.warnings.map((arr) => [config.icon, ...arr]))
@@ -228,7 +244,7 @@ function displayFailedTests(failed, config) {
   }
 
   for (const fail of sample) {
-    displayTest(fail, config, true)
+    displayTest(fail, config, { showError: true })
     if (inBackend) log.hr()
   }
 

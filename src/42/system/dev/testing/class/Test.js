@@ -40,6 +40,7 @@ export default class Test {
     const json = {
       title: this.title,
       suiteTitle: this.suite.title,
+      suiteOk: this.suite.ok,
       stackframe: this.stackframe,
       ok: this.ok,
       ms: this.ms,
