@@ -66,6 +66,7 @@ export default class Component extends HTMLElement {
   #observed
   #destroyCallback
   #lifecycle = CREATE
+  #hasProps
 
   constructor(...args) {
     super()
@@ -134,12 +135,12 @@ export default class Component extends HTMLElement {
     tmp = normalizeCtx(tmp)
     this.ctx = tmp
 
-    if (definition.props || definition.computed) {
+    if (definition.props || def?.props || definition.computed) {
+      this.#hasProps = true
       const { localName } = this
 
-      const i = this.ctx.reactive.data[localName]
-        ? Object.keys(this.ctx.reactive.data[localName]).length
-        : 0
+      let i = this.ctx.componentsIndexes[localName] ?? -1
+      this.ctx.componentsIndexes[localName] = ++i
 
       this.ctx.globalScope = this.ctx.scope
       this.ctx.scope = resolveScope(this.localName, String(i))
@@ -211,14 +212,14 @@ export default class Component extends HTMLElement {
       this.ctx.cancel(`${this.localName} destroyed`)
     }
 
-    const { definition } = this.constructor
-
-    if (definition.props || definition.computed) {
+    if (this.#hasProps) {
+      this.ctx.componentsIndexes[this.localName]--
       this.ctx.reactive.delete(this.ctx.scope, { silent: true })
     }
 
     this.ready = undefined
     this.#observed = undefined
+    this.#hasProps = undefined
 
     delete this.ctx.el
     delete this.ctx

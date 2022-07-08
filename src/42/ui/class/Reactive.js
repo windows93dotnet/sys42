@@ -8,7 +8,6 @@ import defer from "../../fabric/type/promise/defer.js"
 import dispatch from "../../fabric/dom/dispatch.js"
 import equal from "../../fabric/type/any/equal.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
-import persist from "../../system/persist.js"
 
 const sep = "/"
 
@@ -129,20 +128,12 @@ export default class Reactive extends Emitter {
     //   })
     // })
 
-    if (this.ctx.persist) {
-      const persistPath = `$HOME/ui/${this.ctx.digest}`
+    if (this.ctx.parentDigest) {
+      console.log(this.ctx.parentDigest)
+    }
 
-      if (persist.has(persistPath)) {
-        this.ctx.undones.push(
-          persist.load(persistPath).then((res) => {
-            Object.assign(this.state, res)
-          })
-        )
-      }
-
-      this.on("update", () => {
-        persist(persistPath, this.data)
-      })
+    for (const plugin of this.ctx.plugins) {
+      this.ctx.undones.push(plugin(this.ctx))
     }
   }
 

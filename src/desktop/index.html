@@ -52,33 +52,33 @@
         content: "dialog",
         dialog: {
           x: 100,
-          title: "hello top",
+          title: "hello top ({{x}},{{y}})",
           content: "{{cnt}}",
         },
       },
-      {
-        content: {
-          tag: "ui-sandbox",
-          permissions: "app",
-          content: [
-            {
-              tag: "button#incr",
-              content: "{{cnt}}",
-              on: { click: "{{cnt += 1}}" },
-            },
-            {
-              tag: "button#dialog",
-              content: "dialog",
-              dialog: { title: "hello iframe", content: "{{cnt}}" },
-            },
-          ],
-          script: `
-  app.query("#dialog")?.click()
-  await app
-  setTimeout(() => app.query("#incr")?.click(), 500)
-  `,
-        },
-      },
+      //       {
+      //         content: {
+      //           tag: "ui-sandbox",
+      //           permissions: "app",
+      //           content: [
+      //             {
+      //               tag: "button#incr",
+      //               content: "{{cnt}}",
+      //               on: { click: "{{cnt += 1}}" },
+      //             },
+      //             {
+      //               tag: "button#dialog",
+      //               content: "dialog",
+      //               dialog: { title: "hello iframe", content: "{{cnt}}" },
+      //             },
+      //           ],
+      //           script: `
+      // app.query("#dialog")?.click()
+      // await app
+      // setTimeout(() => app.query("#incr")?.click(), 500)
+      // `,
+      //         },
+      //       },
     ],
 
     state: {
