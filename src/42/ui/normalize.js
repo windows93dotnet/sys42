@@ -13,6 +13,7 @@ import isEmptyObject from "../fabric/type/any/is/isEmptyObject.js"
 import isArrayLike from "../fabric/type/any/is/isArrayLike.js"
 import noop from "../fabric/type/function/noop.js"
 import arrify from "../fabric/type/any/arrify.js"
+import hash from "../fabric/type/any/hash.js"
 import ATTRIBUTES_ALLOW_LIST from "../fabric/constants/ATTRIBUTES_ALLOW_LIST.js"
 
 const ATTRIBUTES = new Set(
@@ -204,10 +205,12 @@ export function normalizeCtx(ctx = {}) {
   ctx.cancel ??= new Canceller()
   ctx.signal = ctx.cancel.signal
   ctx.reactive ??= new Reactive(ctx)
-  return ctx
+  return { ...ctx }
 }
 
-export function normalizeDef(def = {}, ctx = normalizeCtx(), options) {
+export function normalizeDef(def = {}, ctx, options) {
+  ctx.digest ??= hash(def)
+  ctx.reactive.ctx.digest ??= ctx.digest
   ctx.type = typeof def
 
   if (ctx.type === "string") {
@@ -251,6 +254,8 @@ export function normalizeDef(def = {}, ctx = normalizeCtx(), options) {
 
       ctx.scope = resolveScope(ctx.scope, def.scope, ctx)
     }
+
+    if (def.parentDigest) ctx.reactive.realm(def.parentDigest)
   }
 
   return def
@@ -270,12 +275,12 @@ export function forkDef(def, ctx) {
   def = objectifyDef(def)
   def.scope = ctx.globalScope ?? ctx.scope
   def.state = ctx.reactive.data
-  def.digest = ctx.digest
+  def.parentDigest = ctx.digest
   return def
 }
 
-export default function normalize(def, ctx) {
-  ctx = { ...normalizeCtx(ctx) }
+export default function normalize(def, ctx = {}) {
+  ctx = normalizeCtx(ctx)
   def = normalizeDef(def, ctx)
   return [def, ctx]
 }

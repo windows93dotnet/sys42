@@ -3,7 +3,12 @@
 // @thanks https://www.30secondsofcode.org/js/s/sdbm
 // @related https://gist.github.com/WebReflection/14d135b9a2b988ea8073d1098b0abd0f
 
-// @desc Hashes the input string into a whole number
+/**
+ * Non-cryptographic hash function.
+ * Hashes the input string into an unsigned 32-bit integer.
+ * @param {string} str
+ * @returns {number}
+ */
 
 export default function sdbm(str = "") {
   let hash = 0

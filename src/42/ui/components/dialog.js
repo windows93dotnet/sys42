@@ -58,7 +58,7 @@ export default realm(
     if (realm.inTop) return [def, ctx]
     return [forkDef(def, ctx)]
   },
-  async (...args) => {
+  async function dialog(...args) {
     const [def, ctx] = normalize(...args)
     document.body.append(new Dialog(def, ctx))
   }

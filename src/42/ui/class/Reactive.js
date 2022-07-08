@@ -9,6 +9,8 @@ import dispatch from "../../fabric/dom/dispatch.js"
 import equal from "../../fabric/type/any/equal.js"
 import idleThrottle from "../../fabric/type/function/idleThrottle.js"
 import persist from "../../system/persist.js"
+import inTop from "../../system/env/runtime/inTop.js"
+import inIframe from "../../system/env/runtime/inIframe.js"
 
 const FPS = 1000 / 60
 const sep = "/"
@@ -192,5 +194,12 @@ export default class Reactive extends Emitter {
   assign(path, val, options) {
     const prev = locate(options?.silent ? this.data : this.state, path, sep)
     Object.assign(prev, val)
+  }
+
+  async realm(parentDigest) {
+    console.log({ inTop, inIframe, parentDigest, digest: this.ctx.digest })
+    // const ipc = await import("../../system/ipc.js").then((m) => m.default)
+    // console.log(parentDigest, ipc)
+    // this.bus = ipc.
   }
 }

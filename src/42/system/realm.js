@@ -1,4 +1,5 @@
 import inTop from "./env/runtime/inTop.js"
+import inIframe from "./env/runtime/inIframe.js"
 import hash from "../fabric/type/any/hash.js"
 import ipc from "./ipc.js"
 
@@ -58,4 +59,4 @@ export default function realm(argsWrapper, fn) {
 }
 
 realm.inTop = inTop
-realm.inFrame = !inTop
+realm.inIframe = inIframe

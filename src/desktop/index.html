@@ -43,7 +43,7 @@
     class: "box-fit desktop",
     content: [
       {
-        tag: "button",
+        tag: "button#incr",
         content: "{{cnt}}",
         on: { click: "{{cnt += 1}}" },
       },
@@ -62,7 +62,7 @@
           permissions: "app",
           content: [
             {
-              tag: "button",
+              tag: "button#incr",
               content: "{{cnt}}",
               on: { click: "{{cnt += 1}}" },
             },
@@ -73,8 +73,9 @@
             },
           ],
           script: `
-console.log(888)
-app.query("#dialog").click()
+app.query("#dialog")?.click()
+await app
+setTimeout(() => app.query("#incr")?.click(), 500)
 `,
         },
       },
@@ -87,9 +88,9 @@ app.query("#dialog").click()
 
   window.app = app
 
-  setTimeout(() => {
-    app.query("#dialog")?.click()
-  }, 100)
+  app.query("#dialog")?.click()
+  await app
+  setTimeout(() => app.query("#incr")?.click(), 500)
 </script>
 
 <script type="_module">

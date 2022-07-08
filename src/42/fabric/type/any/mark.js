@@ -4,63 +4,67 @@
 import { isIterable, isArray, isPlainObjectOrHashmap } from "./is.js"
 import allKeys from "../object/allKeys.js"
 
-export default function mark(value) {
-  if (value == undefined) return String(value)
-  const type = typeof value
-  if (type === "string") return `"${value}"`
-  if (type === "number" || type === "boolean") return String(value)
-  if (type === "bigint") return `${value}n`
+/**
+ * Converts any value into a readable, most unique possible string.
+ * @param {*} val
+ * @returns {string}
+ */
 
-  if (isArray(value)) {
-    return value.length > 0
-      ? `[${value.map(mark).join()}]`
-      : `[${mark(value[0])}]`
+export default function mark(val) {
+  if (val == undefined) return String(val)
+  const type = typeof val
+  if (type === "string") return `"${val}"`
+  if (type === "number" || type === "boolean") return String(val)
+  if (type === "bigint") return `${val}n`
+
+  if (isArray(val)) {
+    return val.length > 0 ? `[${val.map(mark).join()}]` : `[${mark(val[0])}]`
   }
 
-  if (isPlainObjectOrHashmap(value)) {
-    const keys = allKeys(value)
+  if (isPlainObjectOrHashmap(val)) {
+    const keys = allKeys(val)
     return `{${keys
-      .map((key) => `${key.toString()}:${mark(value[key])}`)
+      .map((key) => `${key.toString()}:${mark(val[key])}`)
       .join()}}`
   }
 
-  if ("Blob" in globalThis && value instanceof Blob) {
-    return "File" in globalThis && value.constructor === File
-      ? `new File([],"${value.name}",{size:${value.size},type:"${
-          value.type
-        }",lastModified:${value.lastModified},webkitRelativePath:"${
-          value.webkitRelativePath || ""
+  if ("Blob" in globalThis && val instanceof Blob) {
+    return "File" in globalThis && val.constructor === File
+      ? `new File([],"${val.name}",{size:${val.size},type:"${
+          val.type
+        }",lastModified:${val.lastModified},webkitRelativePath:"${
+          val.webkitRelativePath || ""
         }"})`
-      : `new Blob([],{size:${value.size},type:"${value.type}"})`
+      : `new Blob([],{size:${val.size},type:"${val.type}"})`
   }
 
-  if ("Node" in globalThis && value instanceof Node) {
-    return value.outerHTML
+  if ("Node" in globalThis && val instanceof Node) {
+    return val.outerHTML
   }
 
   let closeTag = ""
-  if (value instanceof ArrayBuffer) {
-    value = new Uint8Array(value)
+  if (val instanceof ArrayBuffer) {
+    val = new Uint8Array(val)
     closeTag = ".buffer"
   }
 
-  if (isIterable(value)) {
-    return `new ${value.constructor.name}([${[...value]
+  if (isIterable(val)) {
+    return `new ${val.constructor.name}([${[...val]
       .map(mark)
       .join()}])${closeTag}`
   }
 
   if (type === "symbol") {
-    const key = Symbol.keyFor(value)
-    return key ? `Symbol.for(${key})` : value.toString()
+    const key = Symbol.keyFor(val)
+    return key ? `Symbol.for(${key})` : val.toString()
   }
 
-  if (typeof value.toString === "function") {
-    return `${value.constructor?.name}#${value.toString()}`
+  if (typeof val.toString === "function") {
+    return `${val.constructor?.name}#${val.toString()}`
   }
 
-  if (typeof value.toJSON === "function") {
-    return `${value.constructor?.name}#${value.toJSON()}`
+  if (typeof val.toJSON === "function") {
+    return `${val.constructor?.name}#${val.toJSON()}`
   }
 
   return "<unknown>"

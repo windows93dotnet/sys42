@@ -42,6 +42,7 @@ module.exports = {
   },
   rules: {
     "curly": [2, "multi-line"],
+    "func-names": [2, "as-needed"],
 
     "no-warning-comments": 0,
     "capitalized-comments": 0,
