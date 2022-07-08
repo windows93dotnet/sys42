@@ -103,7 +103,6 @@ export function normalizeTokens(tokens, ctx, filters) {
           return makeFilterFn(filter, thisArg, ctx.el)
         })
         allocate(filters, loc, fn, sep)
-        continue
       }
 
       token.value = loc
