@@ -1,8 +1,8 @@
 import DOMQuery from "../../fabric/class/DOMQuery.js"
 import ensureElement from "../../fabric/dom/ensureElement.js"
 import asyncable from "../../fabric/trait/asyncable.js"
-import hash from "../../fabric/type/any/hash.js"
 import render from "../render.js"
+import normalize from "../normalize.js"
 
 export default class UI extends DOMQuery {
   constructor(...args) {
@@ -19,10 +19,14 @@ export default class UI extends DOMQuery {
     }
 
     this.ctx.el = this.el
-    this.ctx.digest = hash(this.def)
+
     // this.ctx.persist ??= true
 
-    this.el.append(render(this.def, this.ctx))
+    const [def, ctx] = normalize(this.def, this.ctx)
+    this.def = def
+    this.ctx = ctx
+
+    this.el.append(render(this.def, this.ctx, { skipNormalize: true }))
 
     let firstUpdateDone = false
 

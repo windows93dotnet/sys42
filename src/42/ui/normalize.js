@@ -196,6 +196,7 @@ export function normalizeComputed(scope, val, ctx, cb = noop) {
 }
 
 export function normalizeCtx(ctx = {}) {
+  ctx = { ...ctx }
   ctx.scope ??= "/"
   ctx.renderers ??= {}
   ctx.components ??= new Undones()
@@ -205,12 +206,11 @@ export function normalizeCtx(ctx = {}) {
   ctx.cancel ??= new Canceller()
   ctx.signal = ctx.cancel.signal
   ctx.reactive ??= new Reactive(ctx)
-  return { ...ctx }
+  return ctx
 }
 
 export function normalizeDef(def = {}, ctx, options) {
   ctx.digest ??= hash(def)
-  ctx.reactive.ctx.digest ??= ctx.digest
   ctx.type = typeof def
 
   if (ctx.type === "string") {
@@ -220,6 +220,8 @@ export function normalizeDef(def = {}, ctx, options) {
   } else if (Array.isArray(def)) {
     ctx.type = "array"
   } else {
+    if (def.parentDigest) ctx.parentDigest = def.parentDigest
+
     if (def.actions) ctx.actions.assign(ctx.scope, def.actions)
 
     if (def.state) {
@@ -254,16 +256,15 @@ export function normalizeDef(def = {}, ctx, options) {
 
       ctx.scope = resolveScope(ctx.scope, def.scope, ctx)
     }
-
-    if (def.parentDigest) ctx.reactive.realm(def.parentDigest)
   }
+
+  ctx.reactive.setup()
 
   return def
 }
 
 export function objectifyDef(def) {
   if (def != null) {
-    // def = structuredClone(def)
     if (typeof def === "object" && !Array.isArray(def)) return def
     return { content: def }
   }
@@ -279,7 +280,8 @@ export function forkDef(def, ctx) {
   return def
 }
 
-export default function normalize(def, ctx = {}) {
+export default function normalize(def, ctx = {}, options) {
+  if (options?.skipNormalize) return [def, ctx]
   ctx = normalizeCtx(ctx)
   def = normalizeDef(def, ctx)
   return [def, ctx]

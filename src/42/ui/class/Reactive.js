@@ -9,12 +9,11 @@ import dispatch from "../../fabric/dom/dispatch.js"
 import equal from "../../fabric/type/any/equal.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 import persist from "../../system/persist.js"
-import inTop from "../../system/env/runtime/inTop.js"
-import inIframe from "../../system/env/runtime/inIframe.js"
 
 const sep = "/"
 
 export default class Reactive extends Emitter {
+  #init = false
   #update = {}
 
   constructor(ctx, data = {}) {
@@ -33,32 +32,22 @@ export default class Reactive extends Emitter {
       objects: new Set(),
     }
 
-    const persistPath = `$HOME/ui/${ctx.digest}`
-
-    if (ctx.persist && persist.has(persistPath)) {
-      this.ctx.undones.push(
-        persist.load(persistPath).then((res) => {
-          Object.assign(this.state, res)
-        })
-      )
-    }
-
     const update = () => {
       const changes = new Set()
 
       for (const path of this.queue.objects) {
         changes.add(path)
-        for (const key of Object.keys(ctx.renderers)) {
-          if (key.startsWith(path) && key in ctx.renderers) {
-            for (const render of ctx.renderers[key]) render(key)
+        for (const key of Object.keys(this.ctx.renderers)) {
+          if (key.startsWith(path) && key in this.ctx.renderers) {
+            for (const render of this.ctx.renderers[key]) render(key)
           }
         }
       }
 
       for (const path of this.queue.paths) {
         changes.add(path)
-        if (path in ctx.renderers) {
-          for (const render of ctx.renderers[path]) render(path)
+        if (path in this.ctx.renderers) {
+          for (const render of this.ctx.renderers[path]) render(path)
         }
       }
 
@@ -75,7 +64,6 @@ export default class Reactive extends Emitter {
 
       try {
         this.emit("update", changes)
-        if (ctx.persist) persist(persistPath, this.data)
       } catch (err) {
         dispatch(ctx.el, err)
       }
@@ -87,20 +75,25 @@ export default class Reactive extends Emitter {
     this.#update.ready = false
 
     this.state = observe(this.data, {
-      signal: ctx.cancel.signal,
+      signal: this.ctx.cancel.signal,
+
+      locate: (ref) => locate(this.state, ref, sep),
+
       change: (path, val, oldVal, detail) => {
         this.update(path, val, oldVal, detail)
       },
+
       delete: (path, { key }) => {
         this.emit("delete", key)
       },
-      locate: (ref) => locate(this.state, ref, sep),
-      has(path, { key }) {
+
+      has: (path, { key }) => {
         if (key.startsWith("@") || key.startsWith("#")) return true
-        if (ctx.computeds.has(path)) return true
+        if (this.ctx.computeds.has(path)) return true
         return false
       },
-      get(path, { key, chain, parent }) {
+
+      get: (path, { key, chain, parent }) => {
         if (key.startsWith("@") || key.startsWith("#")) {
           const parts = key.split(":")
           if (key.startsWith("#")) {
@@ -115,9 +108,42 @@ export default class Reactive extends Emitter {
           }
         }
 
-        if (ctx.computeds.has(path)) return ctx.computeds.get(path)
+        if (this.ctx.computeds.has(path)) return this.ctx.computeds.get(path)
       },
     })
+  }
+
+  setup() {
+    if (this.#init) return
+    this.#init = true
+
+    // queueMicrotask(async () => {
+    //   console.log({
+    //     inTop: await import("../../system/env/runtime/inTop.js") //
+    //       .then((m) => m.default),
+    //     inIframe: await import("../../system/env/runtime/inIframe.js") //
+    //       .then((m) => m.default),
+    //     parentDigest: this.ctx.parentDigest,
+    //     digest: this.ctx.digest,
+    //     el: this.ctx.el,
+    //   })
+    // })
+
+    if (this.ctx.persist) {
+      const persistPath = `$HOME/ui/${this.ctx.digest}`
+
+      if (persist.has(persistPath)) {
+        this.ctx.undones.push(
+          persist.load(persistPath).then((res) => {
+            Object.assign(this.state, res)
+          })
+        )
+      }
+
+      this.on("update", () => {
+        persist(persistPath, this.data)
+      })
+    }
   }
 
   async ready(n = 10) {
@@ -193,12 +219,5 @@ export default class Reactive extends Emitter {
   assign(path, val, options) {
     const prev = locate(options?.silent ? this.data : this.state, path, sep)
     Object.assign(prev, val)
-  }
-
-  async realm(parentDigest) {
-    console.log({ inTop, inIframe, parentDigest, digest: this.ctx.digest })
-    // const ipc = await import("../../system/ipc.js").then((m) => m.default)
-    // console.log(parentDigest, ipc)
-    // this.bus = ipc.
   }
 }

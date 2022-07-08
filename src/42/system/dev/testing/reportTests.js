@@ -158,7 +158,9 @@ const displayTest = (test, config, showError) => {
         log.groupEnd()
       } else {
         log.groupCollapsed(prefix + title)
-        log(err.slice(1))
+        log.groupCollapsed(err.slice(1))
+        console.log(test.error.original)
+        log.groupEnd()
         log.groupEnd()
       }
     } else {
