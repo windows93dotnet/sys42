@@ -16,7 +16,7 @@ const SPECIAL_STRINGS = {
 }
 
 export default function render(...args) {
-  const { def, ctx } = normalize(...args)
+  const [def, ctx] = normalize(...args)
 
   if (ctx.type === "string") {
     return SPECIAL_STRINGS[def]?.() ?? document.createTextNode(def)

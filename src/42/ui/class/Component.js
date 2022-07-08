@@ -8,6 +8,7 @@ import renderProps from "../renderers/renderProps.js"
 import resolveScope from "../resolveScope.js"
 import render from "../render.js"
 import {
+  objectifyDef,
   normalizeCtx,
   normalizeDef,
   normalizeString,
@@ -23,13 +24,6 @@ const RECYCLE = 4
 const DESTROY = 5
 
 const _AXIS = Symbol("AXIS")
-
-function objectify(def) {
-  if (def != null) {
-    if (typeof def === "object" && !Array.isArray(def)) return def
-    return { content: def }
-  }
-}
 
 export default class Component extends HTMLElement {
   static AXIS = _AXIS;
@@ -171,13 +165,13 @@ export default class Component extends HTMLElement {
       ? await renderProps(this, definition.props, props)
       : undefined
 
-    const config = { ...definition, ...objectify(def) }
+    const config = { ...definition, ...objectifyDef(def) }
     const { computed } = config
     this.ctx.computed = computed
     delete config.computed
 
     def = normalizeDef(config, this.ctx, { attrs: false })
-    def = this.render ? objectify(this.render(def)) : def
+    def = this.render ? objectifyDef(this.render(def)) : def
 
     if (computed) normalizeComputeds(computed, this.ctx)
 

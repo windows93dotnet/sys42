@@ -178,7 +178,7 @@ function displaySuite(current, config) {
   if (current.stats.ran === 0 && !current.skip) {
     warnings.push([
       config.icon,
-      `no test ran in ${current.title} suite`,
+      `No test ran in ${current.title} suite`,
       current.filename,
     ])
   }
@@ -192,7 +192,7 @@ function displaySuite(current, config) {
     }
 
     for (const { err, cnt } of uncaughts) {
-      const title = "Uncaught error" + (cnt > 0 ? ` {dim x${cnt}}` : "")
+      const title = "Uncaught error" + (cnt > 0 ? `s {dim x${cnt}}` : "")
       warnings.push([config.icon, title, "", err])
     }
   }

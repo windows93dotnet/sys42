@@ -1,6 +1,6 @@
 import test from "../../../42/test.js"
 import create from "../../../42/ui/create.js"
-import normalize from "../../../42/ui/normalize.js"
+import { normalizeCtx } from "../../../42/ui/normalize.js"
 import repaint from "../../../42/fabric/type/promise/repaint.js"
 import setAttributes from "../../../42/fabric/dom/setAttributes.js"
 
@@ -107,7 +107,7 @@ test("classes", 2, (t) => {
 })
 
 test("ctx", async (t) => {
-  const { ctx } = normalize()
+  const ctx = normalizeCtx()
   ctx.reactive.set("foo", "bar")
   const child = create(ctx, "span", { class: "{{foo}}" })
   const el = create(ctx, "div", { class: "derp" }, child)
@@ -123,7 +123,7 @@ test("ctx", async (t) => {
 })
 
 test("ctx", "renderKeyVal 'dynamic' bug", async (t) => {
-  const { ctx } = normalize()
+  const ctx = normalizeCtx()
   const child = create(ctx, "span", { class: "bar" })
   const el = create(ctx, "div", { class: "derp" }, child)
 

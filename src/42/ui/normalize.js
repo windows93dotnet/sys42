@@ -257,8 +257,26 @@ export function normalizeDef(def = {}, ctx = normalizeCtx(), options) {
   return def
 }
 
+export function objectifyDef(def) {
+  if (def != null) {
+    // def = structuredClone(def)
+    if (typeof def === "object" && !Array.isArray(def)) return def
+    return { content: def }
+  }
+
+  return {}
+}
+
+export function forkDef(def, ctx) {
+  def = objectifyDef(def)
+  def.scope = ctx.globalScope ?? ctx.scope
+  def.state = ctx.reactive.data
+  def.digest = ctx.digest
+  return def
+}
+
 export default function normalize(def, ctx) {
   ctx = { ...normalizeCtx(ctx) }
   def = normalizeDef(def, ctx)
-  return { def, ctx }
+  return [def, ctx]
 }

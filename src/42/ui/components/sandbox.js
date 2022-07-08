@@ -2,6 +2,7 @@ import Component from "../class/Component.js"
 import Resource from "../../fabric/class/Resource.js"
 import create from "../create.js"
 import traverse from "../../fabric/type/object/traverse.js"
+import { forkDef } from "../normalize.js"
 
 export class Sandbox extends Component {
   static definition = {
@@ -90,11 +91,7 @@ export class Sandbox extends Component {
     this.message()
 
     if (this.content) {
-      const content = {
-        content: this.content,
-        state: this.ctx.reactive.data,
-        scope: this.ctx.globalScope,
-      }
+      const content = forkDef(this.content, this.ctx)
       const undones = []
       traverse(this.content, (key) => {
         // Ensure realmed components can exectute function in top

@@ -50,7 +50,11 @@
       {
         tag: "button#dialog",
         content: "dialog",
-        dialog: { title: "hello top", content: "{{cnt}}" },
+        dialog: {
+          x: 100,
+          title: "hello top",
+          content: "{{cnt}}",
+        },
       },
       {
         content: {
@@ -84,7 +88,7 @@ app.query("#dialog").click()
   window.app = app
 
   setTimeout(() => {
-    app.query("#dialog").click()
+    app.query("#dialog")?.click()
   }, 100)
 </script>
 
