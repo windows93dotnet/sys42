@@ -7,12 +7,11 @@ import deallocate from "../../fabric/locator/deallocate.js"
 import defer from "../../fabric/type/promise/defer.js"
 import dispatch from "../../fabric/dom/dispatch.js"
 import equal from "../../fabric/type/any/equal.js"
-import idleThrottle from "../../fabric/type/function/idleThrottle.js"
+import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 import persist from "../../system/persist.js"
 import inTop from "../../system/env/runtime/inTop.js"
 import inIframe from "../../system/env/runtime/inIframe.js"
 
-const FPS = 1000 / 60
 const sep = "/"
 
 export default class Reactive extends Emitter {
@@ -82,7 +81,7 @@ export default class Reactive extends Emitter {
       }
     }
 
-    this.#update.onrepaint = idleThrottle(update, FPS)
+    this.#update.onrepaint = paintThrottle(update)
     this.#update.now = update
     this.#update.fn = this.#update.now
     this.#update.ready = false

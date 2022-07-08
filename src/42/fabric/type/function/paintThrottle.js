@@ -1,4 +1,5 @@
 // @src https://developer.mozilla.org/en-US/docs/Web/API/Visual_Viewport_API#example
+// @read https://stackoverflow.com/a/44700302
 
 export default function paintThrottle(fn) {
   let pending = false
@@ -6,8 +7,10 @@ export default function paintThrottle(fn) {
     if (pending) return
     pending = true
     requestAnimationFrame(() => {
-      fn(...args)
-      pending = false
+      requestAnimationFrame(() => {
+        fn(...args)
+        pending = false
+      })
     })
   }
 }
