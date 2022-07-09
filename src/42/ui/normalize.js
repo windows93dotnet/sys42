@@ -110,6 +110,8 @@ export function normalizeTokens(tokens, ctx, filters) {
     }
   }
 
+  console.log(scopes)
+
   return { hasFilter, scopes, filters }
 }
 

@@ -39,7 +39,7 @@ export default class UI extends DOMQuery {
     asyncable(this, async () => {
       if (!this.ctx) return
       await this.ctx.components.done()
-      await this.ctx.reactive.ready()
+      await this.ctx.reactive.done()
       if (firstUpdateDone) return
       firstUpdateDone = true
       this.ctx.reactive.throttle = true

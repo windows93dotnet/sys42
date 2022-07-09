@@ -34,7 +34,7 @@ export class Dialog extends Component {
         tag: "header.ui-dialog__header",
         content: [
           { tag: "h2.ui-dialog__title", content: title ?? label },
-          { tag: "button", picto: "close" },
+          // { tag: "button", picto: "close" },
         ],
       },
       { tag: "section.ui-dialog__body", content },
@@ -60,6 +60,9 @@ export default realm(
   },
   async function dialog(...args) {
     const [def, ctx] = normalize(...args)
-    document.body.append(new Dialog(def, ctx))
+    const el = new Dialog(def, ctx)
+    document.body.append(el)
+    await el.ready
+    console.log(444, ctx.reactive.data["ui-dialog"][0])
   }
 )

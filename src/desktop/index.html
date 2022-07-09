@@ -6,29 +6,57 @@
 
 <script type="module">
   import trap from "../42/fabric/type/error/trap.js"
-  import log from "../42/system/log.js"
-  trap(log)
+  trap((err) => {
+    import("../42/system/log.js").then((m) => m.default(err))
+    return false
+  })
 </script>
 
 <script type="module">
-  import animate from "../42/fabric/dom/animate.js"
-  import render from "../42/ui/render.js"
-  import sleep from "../42/fabric/type/promise/sleep.js"
+  import ui from "../42/ui.js"
 
-  const el = render({ tag: "div.bd.box-ratio.pa-xl", content: "hello" })
+  const app = await ui({
+    class: "box-fit desktop",
+    content: [
+      {
+        tag: "button#dialog",
+        content: "dialog",
+        dialog: {
+          title: "iframe ({{x}},{{y}})",
+          content: "hello",
+        },
+      },
+    ],
+  })
 
-  document.body.className = "pa-xxl"
+  app.query("#dialog")?.click()
+</script>
 
-  await sleep(100)
-  document.body.append(el)
-  await animate.from(el, { rotate: "360deg", scale: "0" })
-  await sleep(1000)
-  await animate.to(
-    el,
-    { transform: "rotate(360deg) scale(0)" },
-    { easing: "ease-in" }
-  )
-  el.remove()
+<script type="_module">
+  import ui from "../42/ui.js"
+
+  await ui({
+    class: "box-fit desktop",
+    content: [
+      {
+        content: {
+          tag: "ui-sandbox",
+          permissions: "app",
+          content: [
+            {
+              tag: "button#dialog",
+              content: "dialog",
+              dialog: {
+                title: "iframe ({{x}},{{y}})",
+                content: "hello",
+              },
+            },
+          ],
+          script: `app.query("#dialog")?.click()`,
+        },
+      },
+    ],
+  })
 </script>
 
 <script type="_module">
@@ -37,24 +65,24 @@
     const app = await ui({
       class: "box-fit desktop",
       content: [
-        {
-          tag: "button#incr",
-          content: "{{cnt}}",
-          on: { click: "{{cnt += 1}}" },
-        },
-        {
-          tag: "button#dialog",
-          content: "dialog",
-          dialog: {
-            x: 100,
-            title: "top ({{x}},{{y}})",
-            content: {
-              tag: "button",
-              content: "{{cnt}}",
-              on: { click: "{{cnt += 1}}" },
-            },
-          },
-        },
+        // {
+        //   tag: "button#incr",
+        //   content: "{{cnt}}",
+        //   on: { click: "{{cnt += 1}}" },
+        // },
+        // {
+        //   tag: "button#dialog",
+        //   content: "dialog",
+        //   dialog: {
+        //     x: 100,
+        //     title: "top ({{x}},{{y}})",
+        //     content: {
+        //       tag: "button",
+        //       content: "{{cnt}}",
+        //       on: { click: "{{cnt += 1}}" },
+        //     },
+        //   },
+        // },
         {
           content: {
             tag: "ui-sandbox",
@@ -78,7 +106,7 @@
   app.query("#dialog")?.click()
   await app
   setTimeout(() => app.query("#incr")?.click(), 500)
-          `,
+            `,
           },
         },
       ],
@@ -119,6 +147,27 @@
         },
       ],
     })
+</script>
+
+<script type="_module">
+  import animate from "../42/fabric/dom/animate.js"
+  import render from "../42/ui/render.js"
+  import sleep from "../42/fabric/type/promise/sleep.js"
+
+  const el = render({ tag: "div.bd.box-ratio.pa-xl", content: "hello" })
+
+  document.body.className = "pa-xxl"
+
+  await sleep(100)
+  document.body.append(el)
+  await animate.from(el, { rotate: "360deg", scale: "0" })
+  await sleep(1000)
+  await animate.to(
+    el,
+    { transform: "rotate(360deg) scale(0)" },
+    { easing: "ease-in" }
+  )
+  el.remove()
 </script>
 
 <script type="_module">

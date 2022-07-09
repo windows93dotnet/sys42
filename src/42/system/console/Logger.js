@@ -164,7 +164,8 @@ export default class Logger extends Callable {
         // The trick is that the "make" function is an arrow function
         // that can access "this"
         make("log")
-      )
+      ),
+      "log"
     )
 
     this.stylizer = stylizer

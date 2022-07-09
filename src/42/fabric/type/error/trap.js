@@ -26,12 +26,14 @@ const handleError = (type, e, cb, originStack) => {
     const title =
       type === "rejection" ? "Unhandled Rejection" : "Uncaught Error"
 
-    const res = // allow to write `trap(log)`
+    let res = // allow to write `trap(log)`
       cb.length <= 1
         ? cb(error)
         : cb.length < 3
         ? cb(error, title)
         : cb(error, title, e)
+
+    if (cb.name === "log") res = false
 
     if (res === false) {
       if (!e.filename?.startsWith("blob:")) e.preventDefault?.()
