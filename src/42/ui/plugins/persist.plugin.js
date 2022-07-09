@@ -1,7 +1,7 @@
 import persist from "../../system/persist.js"
 
 export default async (ctx) => {
-  const persistPath = `$HOME/ui/${ctx.digest}`
+  const persistPath = `$HOME/.ui/${ctx.id}`
 
   if (persist.has(persistPath)) {
     const res = await persist.load(persistPath)

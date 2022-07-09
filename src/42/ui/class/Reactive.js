@@ -12,7 +12,7 @@ import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 const sep = "/"
 
 export default class Reactive extends Emitter {
-  #init = false
+  #setuped = false
   #update = {}
 
   constructor(ctx, data = {}) {
@@ -113,24 +113,8 @@ export default class Reactive extends Emitter {
   }
 
   setup() {
-    if (this.#init) return
-    this.#init = true
-
-    // queueMicrotask(async () => {
-    //   console.log({
-    //     inTop: await import("../../system/env/runtime/inTop.js") //
-    //       .then((m) => m.default),
-    //     inIframe: await import("../../system/env/runtime/inIframe.js") //
-    //       .then((m) => m.default),
-    //     parentDigest: this.ctx.parentDigest,
-    //     digest: this.ctx.digest,
-    //     el: this.ctx.el,
-    //   })
-    // })
-
-    if (this.ctx.parentDigest) {
-      console.log(this.ctx.parentDigest)
-    }
+    if (this.#setuped) return
+    this.#setuped = true
 
     for (const plugin of this.ctx.plugins) {
       this.ctx.undones.push(plugin(this.ctx))

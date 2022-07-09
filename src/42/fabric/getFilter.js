@@ -5,7 +5,7 @@
 
 import locate from "./locator/locate.js"
 // import locate from "./locator/allocate.js"
-import fileSize from "./type/file/fileSize.js"
+import bytesize from "./type/file/bytesize.js"
 import dispatch from "./dom/dispatch.js"
 import { round, floor, ceil } from "./type/number/precision.js"
 
@@ -133,7 +133,7 @@ filters.file = {
   },
   text: async (file) => file?.text?.(),
   arrayBuffer: async (file) => file?.arrayBuffer?.(),
-  size: (file, option) => fileSize(file?.size ?? 0, option),
+  size: (file, options) => bytesize(file?.size ?? 0, options),
 }
 
 const { TEXT_NODE } = Node

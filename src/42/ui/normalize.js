@@ -212,7 +212,7 @@ export function normalizeCtx(ctx = {}) {
 }
 
 export function normalizeDef(def = {}, ctx, options) {
-  ctx.digest ??= hash(def)
+  ctx.id ??= hash(def)
   ctx.type = typeof def
 
   if (ctx.type === "string") {
@@ -222,7 +222,7 @@ export function normalizeDef(def = {}, ctx, options) {
   } else if (Array.isArray(def)) {
     ctx.type = "array"
   } else {
-    if (def.parentDigest) ctx.parentDigest = def.parentDigest
+    if (def.parentId) ctx.parentId = def.parentId
 
     if (def.actions) ctx.actions.assign(ctx.scope, def.actions)
 
@@ -277,8 +277,13 @@ export function objectifyDef(def) {
 export function forkDef(def, ctx) {
   def = objectifyDef(def)
   def.scope = ctx.globalScope ?? ctx.scope
-  def.state = ctx.reactive.data
-  def.parentDigest = ctx.digest
+  def.state = {}
+
+  for (const [key, val] of Object.entries(ctx.reactive.data)) {
+    if (!key.startsWith("ui-")) def.state[key] = val
+  }
+
+  def.parentId = ctx.id
   return def
 }
 

@@ -4,7 +4,8 @@ import asyncable from "../../fabric/trait/asyncable.js"
 import render from "../render.js"
 import normalize from "../normalize.js"
 
-import persist from "../plugins/persist.plugin.js"
+// import persist from "../plugins/persist.plugin.js"
+// import ipc from "../plugins/ipc.plugin.js"
 
 export default class UI extends DOMQuery {
   constructor(...args) {
@@ -22,7 +23,10 @@ export default class UI extends DOMQuery {
 
     this.ctx.el = this.el
 
-    this.ctx.plugins ??= [persist]
+    this.ctx.plugins ??= [
+      // persist, //
+      // ipc,
+    ]
 
     const [def, ctx] = normalize(this.def, this.ctx)
     this.def = def

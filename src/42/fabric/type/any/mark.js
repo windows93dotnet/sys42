@@ -9,7 +9,6 @@ import allKeys from "../object/allKeys.js"
  * @param {*} val
  * @returns {string}
  */
-
 export default function mark(val) {
   if (val == undefined) return String(val)
   const type = typeof val

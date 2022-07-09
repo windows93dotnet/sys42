@@ -4,10 +4,10 @@ import sdbm from "../string/sdbm.js"
 /**
  * Non-cryptographic hash function.
  * Hashes any value into the most unique possible short string.
+ * The first char is always alphabetical allowing its use as an element id attribute.
  * @param {*} val
  * @returns {string}
  */
-
 export default function hash(val) {
   const h = sdbm(mark(val))
   return (

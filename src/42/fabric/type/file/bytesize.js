@@ -14,23 +14,23 @@ const UNITS = {
 const DEFAULTS = {
   SI: false,
   decimals: 2,
-  asString: true,
+  string: true,
 }
 
 function toString() {
   return `${this.size} ${this.unit}`
 }
 
-export default function fileSize(bytes, options) {
+export default function bytesize(bytes, options) {
   if (!Number.isInteger(bytes)) {
     if ("size" in bytes) bytes = bytes.size
     else if ("byteLength" in bytes) bytes = bytes.byteLength
   }
 
-  const { SI, decimals, asString } = { ...DEFAULTS, ...options }
+  const { SI, decimals, string } = { ...DEFAULTS, ...options }
 
   if (bytes === 0) {
-    return asString ? "0 B" : { size: 0, unit: "B", toString }
+    return string ? "0 B" : { size: 0, unit: "B", toString }
   }
 
   const k = SI ? K_SI : K_IEC
@@ -39,5 +39,5 @@ export default function fileSize(bytes, options) {
   const size = round(bytes / k ** i, decimals)
   const unit = units[i]
 
-  return asString ? `${size} ${unit}` : { size, unit, toString }
+  return string ? `${size} ${unit}` : { size, unit, toString }
 }

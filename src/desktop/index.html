@@ -52,33 +52,40 @@
         content: "dialog",
         dialog: {
           x: 100,
-          title: "hello top ({{x}},{{y}})",
-          content: "{{cnt}}",
+          title: "top ({{x}},{{y}})",
+          content: {
+            tag: "button",
+            content: "{{cnt}}",
+            on: { click: "{{cnt += 1}}" },
+          },
         },
       },
-      //       {
-      //         content: {
-      //           tag: "ui-sandbox",
-      //           permissions: "app",
-      //           content: [
-      //             {
-      //               tag: "button#incr",
-      //               content: "{{cnt}}",
-      //               on: { click: "{{cnt += 1}}" },
-      //             },
-      //             {
-      //               tag: "button#dialog",
-      //               content: "dialog",
-      //               dialog: { title: "hello iframe", content: "{{cnt}}" },
-      //             },
-      //           ],
-      //           script: `
-      // app.query("#dialog")?.click()
-      // await app
-      // setTimeout(() => app.query("#incr")?.click(), 500)
-      // `,
-      //         },
-      //       },
+      {
+        content: {
+          tag: "ui-sandbox",
+          permissions: "app",
+          content: [
+            {
+              tag: "button#incr",
+              content: "{{cnt}}",
+              on: { click: "{{cnt += 1}}" },
+            },
+            {
+              tag: "button#dialog",
+              content: "dialog",
+              dialog: {
+                title: "iframe ({{x}},{{y}})",
+                content: "{{cnt}}",
+              },
+            },
+          ],
+          script: `
+app.query("#dialog")?.click()
+await app
+setTimeout(() => app.query("#incr")?.click(), 500)
+        `,
+        },
+      },
     ],
 
     state: {

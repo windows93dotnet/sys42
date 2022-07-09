@@ -9,7 +9,6 @@
  * @param {string} str
  * @returns {number}
  */
-
 export default function sdbm(str = "") {
   let hash = 0
   for (let i = 0, l = str.length; i < l; i++) {

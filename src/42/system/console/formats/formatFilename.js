@@ -6,7 +6,7 @@ import { isObject } from "../../../fabric/type/any/is.js"
 import configure from "../../../fabric/configure.js"
 import { esc } from "../logUtils.js"
 import shortenFilename from "../../../fabric/type/path/shortenFilename.js"
-import fileSize from "../../../fabric/type/file/fileSize.js"
+import bytesize from "../../../fabric/type/file/bytesize.js"
 
 const DEFAULTS = {
   appendFullPath: !true,
@@ -64,26 +64,8 @@ export default function formatFilename(stackframe, options) {
     }
   }
 
-  // let out = esc`{${colors.dir} ${dir}}{${colors.name} ${name}}{${colors.ext} ${ext}}`
-
-  // if (hasPosition) {
-  //   out += `{${colors.dir}.dim :}{${colors.line} ${stackframe.line}}{${colors.column}.dim :${stackframe.column}}`
-  // }
-
-  // // devtools doesn't autolink when using color
-  // if (!isBackend && appendFullPath) {
-  //   if (!protocol.startsWith("http") || filename.startsWith("http")) {
-  //     return hasPosition
-  //       ? `${filename}:${stackframe.line}:${stackframe.column}`
-  //       : filename
-  //   }
-
-  //   out += esc` {${colors.punctuation}.dim │} {reset ${href}`
-  //   out += hasPosition ? `:${stackframe.line}:${stackframe.column}}` : `}`
-  // }
-
   if (config.bytes) {
-    const { size, unit } = fileSize(config.bytes, { asString: false })
+    const { size, unit } = bytesize(config.bytes, { string: false })
     out += `  {${colors.bytes} ${size}} {${colors.bytes}.dim ${unit}}`
   }
 

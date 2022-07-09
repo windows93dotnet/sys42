@@ -55,27 +55,18 @@ ui-dialog:focus {
 }
 
 .ui-dialog__footer {
-  /* padding: var(--unit-md); */
-  /* padding: 0; */
   justify-content: end;
   display: flex;
   gap: var(--unit-sm);
-  /* flex-direction: column; */
-
-  /* margin: 0;
-  display: flex;
-  flex-direction: column;
-  */
 }
 
-/* .ui-dialog__footer button:not(:first-of-type) {
-  margin-left: var(--unit-md);
-} */
+.ui-dialog__footer:empty {
+  display: none;
+}
 
 .ui-dialog__title {
   flex: 1;
   padding: 0 var(--unit-md);
-  /* align-self: center; */
   display: inline-block;
   margin: 0;
   font-size: inherit;
