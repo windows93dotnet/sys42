@@ -30,12 +30,17 @@
   })
 </script>
 
-<script type="_module">
+<script type="module">
   import ui from "../42/ui.js"
 
   const app = await ui({
     class: "box-fit desktop",
     content: [
+      {
+        tag: "button#incr",
+        content: "{{cnt}}",
+        on: { click: "{{cnt += 1}}" },
+      },
       {
         tag: "button#dialog",
         content: "dialog",
@@ -45,6 +50,8 @@
         },
       },
     ],
+
+    plugins: ["persist"],
 
     state: {
       cnt: 42,
@@ -85,7 +92,7 @@
   })
 </script>
 
-<script type="module">
+<script type="_module">
   import ui from "../42/ui.js"
 
   const app = await ui({

@@ -206,69 +206,37 @@ export function normalizeScope(def, ctx) {
   }
 }
 
-export function normalizeCtx(ctx = {}) {
-  ctx = { ...ctx }
-  ctx.scope ??= "/"
-  ctx.renderers ??= {}
-  ctx.componentsIndexes ??= {}
-  ctx.plugins ??= []
-  ctx.components ??= new Undones()
-  ctx.undones ??= new Undones()
-  ctx.actions ??= new Locator({}, { sep: "/" })
-  ctx.computeds ??= new Locator({}, { sep: "/" })
-  ctx.cancel ??= new Canceller()
-  ctx.signal = ctx.cancel.signal
-  ctx.reactive ??= new Reactive(ctx)
-  return ctx
-}
-
-export function normalizeDef(def = {}, ctx, options) {
-  ctx.id ??= hash(def)
-  ctx.type = typeof def
-
-  if (ctx.type === "string") {
-    const fn = normalizeString(def, ctx)
-    ctx.type = typeof fn
-    if (ctx.type === "function") def = fn
-  } else if (Array.isArray(def)) {
-    ctx.type = "array"
+export function normalizeData(def, ctx, cb) {
+  if (typeof def === "function") {
+    const { scope } = ctx
+    ctx.undones.push(
+      (async () => {
+        const res = await def()
+        cb(res, scope)
+      })()
+    )
   } else {
-    if (def.parentId) ctx.parentId = def.parentId
-
-    if (def.actions) ctx.actions.assign(ctx.scope, def.actions)
-
-    if (def.state) {
-      if (typeof def.state === "function") {
-        const { scope } = ctx
-        ctx.undones.push(
-          (async () => {
-            const res = await def.state()
-            ctx.reactive.assign(scope, res)
-          })()
-        )
-      } else ctx.reactive.assign(ctx.scope, def.state)
-    }
-
-    if (def.computed) normalizeComputeds(def.computed, ctx)
-
-    if (def.on) def.on = arrify(def.on)
-    if (def.dialog) {
-      def.on ??= []
-      def.on.push({ click: { dialog: def.dialog } })
-    }
-
-    if (options?.skipAttrs !== true) {
-      const attrs = normalizeAttrs(def, ctx)
-      if (!isEmptyObject(attrs)) def.attrs = attrs
-    }
-
-    normalizeScope(def, ctx)
+    cb(def, ctx.scope)
   }
-
-  ctx.reactive.setup()
-
-  return def
 }
+
+export function normalizePlugins(ctx, plugins) {
+  for (const plugin of plugins) {
+    if (typeof plugin === "string") {
+      ctx.undones.push(
+        import(`./plugins/${plugin}.plugin.js`) //
+          .then((m) => m.default(ctx))
+      )
+    } else if (Array.isArray(plugin)) {
+      ctx.undones.push(plugin[0](ctx, plugin[1]))
+    } else {
+      ctx.undones.push(plugin(ctx))
+    }
+  }
+}
+
+/* def
+====== */
 
 export function objectifyDef(def) {
   if (def != null) {
@@ -290,6 +258,74 @@ export function forkDef(def, ctx) {
 
   def.parentId = ctx.id
   return def
+}
+
+export function normalizeDef(def = {}, ctx, options) {
+  ctx.id ??= hash(def)
+  ctx.type = typeof def
+
+  if (ctx.type === "string") {
+    const fn = normalizeString(def, ctx)
+    ctx.type = typeof fn
+    if (ctx.type === "function") def = fn
+  } else if (Array.isArray(def)) {
+    ctx.type = "array"
+  } else if (def && ctx.type === "object") {
+    if (def.parentId) ctx.parentId = def.parentId
+
+    if (def.state) {
+      normalizeData(def.state, ctx, (res, scope) => {
+        ctx.reactive.assign(scope, res)
+      })
+    }
+
+    if (def.actions) {
+      normalizeData(def.actions, ctx, (res, scope) => {
+        ctx.actions.assign(scope, res)
+      })
+    }
+
+    if (def.computed) normalizeComputeds(def.computed, ctx)
+
+    if (def.on) def.on = arrify(def.on)
+    if (def.dialog) {
+      def.on ??= []
+      def.on.push({ click: { dialog: def.dialog } })
+    }
+
+    if (options?.skipAttrs !== true) {
+      const attrs = normalizeAttrs(def, ctx)
+      if (!isEmptyObject(attrs)) def.attrs = attrs
+    }
+
+    normalizeScope(def, ctx)
+
+    if (def.plugins) {
+      normalizeData(def.plugins, ctx, (res) => {
+        normalizePlugins(ctx, res)
+      })
+    }
+  }
+
+  return def
+}
+
+/* ctx
+====== */
+
+export function normalizeCtx(ctx = {}) {
+  ctx = { ...ctx }
+  ctx.scope ??= "/"
+  ctx.renderers ??= {}
+  ctx.componentsIndexes ??= {}
+  ctx.components ??= new Undones()
+  ctx.undones ??= new Undones()
+  ctx.actions ??= new Locator({}, { sep: "/" })
+  ctx.computeds ??= new Locator({}, { sep: "/" })
+  ctx.cancel ??= new Canceller()
+  ctx.signal = ctx.cancel.signal
+  ctx.reactive ??= new Reactive(ctx)
+  return ctx
 }
 
 export default function normalize(def, ctx = {}) {

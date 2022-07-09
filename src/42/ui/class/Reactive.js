@@ -12,7 +12,6 @@ import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 const sep = "/"
 
 export default class Reactive extends Emitter {
-  #setuped = false
   #update = {}
 
   constructor(ctx, data = {}) {
@@ -110,15 +109,6 @@ export default class Reactive extends Emitter {
         if (this.ctx.computeds.has(path)) return this.ctx.computeds.get(path)
       },
     })
-  }
-
-  setup() {
-    if (this.#setuped) return
-    this.#setuped = true
-
-    for (const plugin of this.ctx.plugins) {
-      this.ctx.undones.push(plugin(this.ctx))
-    }
   }
 
   async done(n = 10) {
