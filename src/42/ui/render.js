@@ -54,8 +54,9 @@ export default function render(def, ctx, options) {
 
   if (def.tag || def.attrs) {
     el = create(ctx, def.tag, def.attrs)
-    ctx.el = el
+
     const { localName } = el
+    if (localName) ctx.el = el
 
     if (el.form !== undefined && el.name) {
       el.name = resolveScope(ctx, el.name)
@@ -70,6 +71,7 @@ export default function render(def, ctx, options) {
     }
 
     if (
+      localName &&
       ctx.trusted !== true &&
       !ELEMENTS_ALLOW_LIST.includes(localName) &&
       !SVG_TAGS.includes(localName)
@@ -77,7 +79,7 @@ export default function render(def, ctx, options) {
       return document.createComment(`[disallowed tag: ${localName}]`)
     }
 
-    if (def.on) renderListen(el, def.on, ctx)
+    if (def.on) renderListen(ctx.el, def.on, ctx)
   } else {
     el = document.createDocumentFragment()
   }

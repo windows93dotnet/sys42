@@ -1,8 +1,5 @@
-export default function parseTagSelector(source, attrs = {}) {
-  const out = {
-    tag: "div",
-    attrs,
-  }
+export default function parseTagSelector(source, attrs = {}, tag = "div") {
+  const out = { tag, attrs }
 
   if (!source) return out
 

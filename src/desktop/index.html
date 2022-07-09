@@ -12,6 +12,31 @@
   })
 </script>
 
+<script type="module">
+  import ui from "../42/ui.js"
+
+  await ui({
+    tag: ".box-fit.desktop",
+
+    content: [
+      {
+        tag: "ui-picto",
+        value: "{{foo}}",
+      },
+    ],
+
+    on: {
+      click() {
+        this.state.foo = "folder"
+      },
+    },
+
+    state: {
+      foo: "puzzle",
+    },
+  })
+</script>
+
 <script type="_module">
   import ui from "../42/ui.js"
 
@@ -61,12 +86,17 @@
   app.query("#dialog")?.click()
 </script>
 
-<script type="module">
+<script type="_module">
   import ui from "../42/ui.js"
 
   await ui({
     class: "box-fit desktop",
     content: [
+      {
+        tag: "button#incr",
+        content: "{{cnt}}",
+        on: { click: "{{cnt += 1}}" },
+      },
       {
         content: {
           tag: "ui-sandbox",
