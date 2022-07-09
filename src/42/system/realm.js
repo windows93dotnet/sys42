@@ -27,38 +27,30 @@ function wrap(name, digest, fn) {
   return fn
 }
 
-export default function realm(argsWrapper, fn) {
-  if (fn === undefined) {
-    fn = argsWrapper
-    argsWrapper = undefined
-  }
-
-  const digest = hash(fn)
+export default function realm({ name, args, top }) {
+  const digest = hash(top)
 
   if (!inTop) {
     bus ??= ipc.to(globalThis.top)
-    return wrap(
-      fn.name,
-      digest,
-      argsWrapper
-        ? async (...args) =>
-            bus.send("42-realm-call", {
-              digest,
-              args: await argsWrapper(...args),
-            })
-        : async (...args) => bus.send("42-realm-call", { digest, args })
-    )
+
+    const fn = args
+      ? async (...rest) =>
+          bus.send("42-realm-call", {
+            digest,
+            args: await args(...rest),
+          })
+      : async (...args) => bus.send("42-realm-call", { digest, args })
+
+    return wrap(name, digest, fn)
   }
 
-  functions.set(digest, fn)
+  functions.set(digest, top)
 
-  return wrap(
-    fn.name,
-    digest,
-    argsWrapper //
-      ? async (...args) => fn(...(await argsWrapper(...args)))
-      : fn
-  )
+  const fn = args //
+    ? async (...rest) => top(...(await args(...rest)))
+    : top
+
+  return wrap(name, digest, fn)
 }
 
 realm.inTop = inTop

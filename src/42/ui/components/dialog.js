@@ -31,6 +31,8 @@ export class Dialog extends Component {
       label: undefined,
       footer: undefined,
     },
+
+    plugins: ["ipc"],
   }
 
   render({ content, label, footer }) {
@@ -58,14 +60,17 @@ export class Dialog extends Component {
 
 Component.define(Dialog)
 
-export default realm(
-  async (def, ctx) => {
+export default realm({
+  name: "dialog",
+
+  args(def, ctx) {
     if (realm.inTop) return [objectifyDef(def), ctx]
     return [forkDef(def, ctx)]
   },
-  async function dialog(def, ctx) {
+
+  async top(def, ctx) {
     const el = new Dialog(def, ctx)
     await el.ready
     document.body.append(el)
-  }
-)
+  },
+})

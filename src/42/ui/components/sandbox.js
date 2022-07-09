@@ -56,6 +56,8 @@ export class Sandbox extends Component {
       },
     },
 
+    plugins: ["ipc"],
+
     content: [
       { tag: ".ui-sandbox__scene" }, //
       { tag: ".ui-sandbox__message" },

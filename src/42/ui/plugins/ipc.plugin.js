@@ -3,6 +3,7 @@
 // import ipc from "../../system/ipc.js"
 
 export default async (/* ctx */) => {
+  console.log("ipc.plugin")
   // console.log({
   //   inTop,
   //   inIframe,

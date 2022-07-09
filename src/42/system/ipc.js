@@ -42,7 +42,7 @@ globalThis.addEventListener(
         iframe,
         port,
         get send() {
-          return function (events, ...args) {
+          return (events, ...args) => {
             port.postMessage({ type: "IPC_SEND", events, args })
           }
         },
