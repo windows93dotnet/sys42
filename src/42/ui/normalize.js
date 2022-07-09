@@ -223,14 +223,14 @@ export function normalizeData(def, ctx, cb) {
 export function normalizePlugins(ctx, plugins) {
   for (const plugin of plugins) {
     if (typeof plugin === "string") {
-      ctx.undones.push(
+      ctx.preload.push(
         import(`./plugins/${plugin}.plugin.js`) //
           .then((m) => m.default(ctx))
       )
     } else if (Array.isArray(plugin)) {
-      ctx.undones.push(plugin[0](ctx, plugin[1]))
+      ctx.preload.push(plugin[0](ctx, plugin[1]))
     } else {
-      ctx.undones.push(plugin(ctx))
+      ctx.preload.push(plugin(ctx))
     }
   }
 }
@@ -317,11 +317,14 @@ export function normalizeCtx(ctx = {}) {
   ctx = { ...ctx }
   ctx.scope ??= "/"
   ctx.renderers ??= {}
+
   ctx.componentsIndexes ??= {}
   ctx.components ??= new Undones()
+  ctx.preload ??= new Undones()
   ctx.undones ??= new Undones()
   ctx.actions ??= new Locator({}, { sep: "/" })
   ctx.computeds ??= new Locator({}, { sep: "/" })
+
   ctx.cancel ??= new Canceller()
   ctx.signal = ctx.cancel.signal
   ctx.reactive ??= new Reactive(ctx)

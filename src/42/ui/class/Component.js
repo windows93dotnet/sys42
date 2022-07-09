@@ -133,6 +133,7 @@ export default class Component extends HTMLElement {
     ------------- */
     let tmp = { ...ctx }
     tmp.el = this
+    tmp.preload = undefined
     tmp.components = undefined
     tmp.cancel = ctx?.cancel?.fork()
     tmp = normalizeCtx(tmp)
@@ -196,6 +197,8 @@ export default class Component extends HTMLElement {
 
     const attrs = normalizeAttrs(config, this.ctx, definition.defaults)
     if (attrs) renderAttributes(this, this.ctx, attrs)
+
+    await this.ctx.preload.done()
 
     this.append(render(def, this.ctx, { skipNormalize: true }))
 

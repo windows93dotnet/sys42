@@ -24,14 +24,18 @@ export default class UI extends DOMQuery {
     this.def = def
     this.ctx = ctx
 
-    this.el.append(render(this.def, this.ctx, { skipNormalize: true }))
-
     let firstUpdateDone = false
 
     asyncable(this, async () => {
+      if (!firstUpdateDone) {
+        if (this.ctx?.preload.length > 0) await this.ctx.preload.done()
+        this.el.append(render(this.def, this.ctx, { skipNormalize: true }))
+      }
+
       if (!this.ctx) return
       await this.ctx.components.done()
       await this.ctx.reactive.done()
+
       if (firstUpdateDone) return
       firstUpdateDone = true
       this.ctx.reactive.throttle = true
