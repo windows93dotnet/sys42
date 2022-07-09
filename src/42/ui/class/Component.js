@@ -13,6 +13,7 @@ import {
   normalizeDef,
   normalizeString,
   normalizeComputeds,
+  normalizeScope,
   normalizeAttrs,
 } from "../normalize.js"
 
@@ -115,8 +116,8 @@ export default class Component extends HTMLElement {
     // TODO: add "setup" keyword in renderProps
     if ("x" in this && "y" in this) {
       const rect = this.getBoundingClientRect()
-      this.x ??= Math.round(rect.x)
-      this.y ??= Math.round(rect.y)
+      this.x ??= Math.round(rect.left)
+      this.y ??= Math.round(rect.top)
       this.style.top = 0
       this.style.left = 0
     }
@@ -128,13 +129,18 @@ export default class Component extends HTMLElement {
 
     const { definition } = this.constructor
 
+    /* handle ctx
+    ------------- */
     let tmp = { ...ctx }
     tmp.el = this
     tmp.components = undefined
     tmp.cancel = ctx?.cancel?.fork()
     tmp = normalizeCtx(tmp)
     this.ctx = tmp
+    normalizeScope(def, this.ctx)
 
+    /* handle props
+    --------------- */
     if (definition.props || def?.props || definition.computed) {
       this.#hasProps = true
       const { localName } = this
@@ -144,6 +150,7 @@ export default class Component extends HTMLElement {
 
       this.ctx.globalScope = this.ctx.scope
       this.ctx.scope = resolveScope(this.localName, String(i))
+
       this.ctx.props = definition.props
       if (definition.id === true) this.id = `${this.localName}-${i}`
     }
@@ -166,20 +173,31 @@ export default class Component extends HTMLElement {
       ? await renderProps(this, definition.props, props)
       : undefined
 
+    /* handle def
+    ------------- */
     const config = { ...definition, ...objectifyDef(def) }
-    const { computed } = config
+    const { computed, state } = config
     this.ctx.computed = computed
     delete config.computed
+    delete config.state
+    delete config.scope
+    delete config.tag
 
-    def = normalizeDef(config, this.ctx, { attrs: false })
-    def = this.render ? objectifyDef(this.render(def)) : def
+    if (this.render) {
+      Object.assign(config, objectifyDef(await this.render(config)))
+    }
 
+    def = normalizeDef(config, this.ctx, { skipAttrs: true })
+
+    /* apply
+    -------- */
+    if (state) this.ctx.reactive.assign(this.ctx.globalScope, state)
     if (computed) normalizeComputeds(computed, this.ctx)
 
-    const attrs = normalizeAttrs(config, this.ctx)
+    const attrs = normalizeAttrs(config, this.ctx, definition.defaults)
     if (attrs) renderAttributes(this, this.ctx, attrs)
 
-    this.append(render(def.content, this.ctx))
+    this.append(render(def, this.ctx, { skipNormalize: true }))
 
     await this.ctx.components.done()
     await this.ctx.undones.done()

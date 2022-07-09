@@ -110,8 +110,6 @@ export function normalizeTokens(tokens, ctx, filters) {
     }
   }
 
-  // console.warn(scopes)
-
   return { hasFilter, scopes, filters }
 }
 
@@ -154,7 +152,7 @@ function normalizeObject(def, ctx) {
   return out
 }
 
-export function normalizeAttrs(def, ctx) {
+export function normalizeAttrs(def, ctx, ignore) {
   const attrs = {}
 
   for (const [key, val] of Object.entries(def)) {
@@ -162,7 +160,8 @@ export function normalizeAttrs(def, ctx) {
       !DEF_KEYWORDS.has(key) &&
       (ctx?.trusted ||
         ATTRIBUTES.has(key.toLowerCase()) ||
-        ATTRIBUTES_WITHDASH.has(key))
+        ATTRIBUTES_WITHDASH.has(key)) &&
+      !(ignore && key in ignore)
     ) {
       const type = typeof val
       if (val && type === "object") {
@@ -194,6 +193,16 @@ export function normalizeComputed(scope, val, ctx, cb = noop) {
       if (changed !== scope) ctx.reactive.updateNow(scope, val)
       cb(val)
     })
+  }
+}
+
+export function normalizeScope(def, ctx) {
+  if (def?.scope) {
+    if (ctx.globalScope) {
+      ctx.globalScope = resolveScope(ctx.globalScope, def.scope, ctx)
+    }
+
+    ctx.scope = resolveScope(ctx.scope, def.scope, ctx)
   }
 }
 
@@ -248,18 +257,12 @@ export function normalizeDef(def = {}, ctx, options) {
       def.on.push({ click: { dialog: def.dialog } })
     }
 
-    if (options?.attrs !== false) {
+    if (options?.skipAttrs !== true) {
       const attrs = normalizeAttrs(def, ctx)
       if (!isEmptyObject(attrs)) def.attrs = attrs
     }
 
-    if (def.scope) {
-      if (ctx.globalScope) {
-        ctx.globalScope = resolveScope(ctx.globalScope, def.scope, ctx)
-      }
-
-      ctx.scope = resolveScope(ctx.scope, def.scope, ctx)
-    }
+    normalizeScope(def, ctx)
   }
 
   ctx.reactive.setup()

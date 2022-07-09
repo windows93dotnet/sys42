@@ -123,7 +123,7 @@ export default class Resource {
         if (this.el.sandbox.supports(token)) this.el.sandbox.add(token)
         else {
           throw new DOMException(
-            `usupported sandox token: ${token}`,
+            `usupported sandbox token: ${token}`,
             "SecurityError"
           )
         }

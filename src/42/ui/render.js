@@ -66,7 +66,7 @@ export default function render(def, ctx, options) {
 
     if (def.picto) {
       if (el.localName === "button") el.classList.add("btn-picto")
-      el.append(render({ tag: "ui-picto", value: def.picto }))
+      el.append(renderComponent(create("ui-picto"), { value: def.picto }, ctx))
     }
 
     if (

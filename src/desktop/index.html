@@ -12,7 +12,7 @@
   })
 </script>
 
-<script type="module">
+<script type="_module">
   import ui from "../42/ui.js"
 
   await ui({
@@ -40,11 +40,15 @@
         tag: "button#dialog",
         content: "dialog",
         dialog: {
-          title: "iframe ({{x}},{{y}})",
-          content: "hello",
+          label: "iframe ({{x}},{{y}})",
+          content: "hello {{cnt}}",
         },
       },
     ],
+
+    state: {
+      cnt: 42,
+    },
   })
 
   app.query("#dialog")?.click()
@@ -65,8 +69,8 @@
               tag: "button#dialog",
               content: "dialog",
               dialog: {
-                title: "iframe ({{x}},{{y}})",
-                content: "hello",
+                label: "iframe ({{x}},{{y}})",
+                content: "hello {{cnt}}",
               },
             },
           ],
@@ -74,71 +78,79 @@
         },
       },
     ],
+
+    state: {
+      cnt: 42,
+    },
   })
 </script>
 
-<script type="_module">
-    import ui from "../42/ui.js"
+<script type="module">
+  import ui from "../42/ui.js"
 
-    const app = await ui({
-      class: "box-fit desktop",
-      content: [
-        // {
-        //   tag: "button#incr",
-        //   content: "{{cnt}}",
-        //   on: { click: "{{cnt += 1}}" },
-        // },
-        // {
-        //   tag: "button#dialog",
-        //   content: "dialog",
-        //   dialog: {
-        //     x: 100,
-        //     title: "top ({{x}},{{y}})",
-        //     content: {
-        //       tag: "button",
-        //       content: "{{cnt}}",
-        //       on: { click: "{{cnt += 1}}" },
-        //     },
-        //   },
-        // },
-        {
+  const app = await ui({
+    class: "box-fit desktop",
+    content: [
+      {
+        tag: "button#incr",
+        content: "{{cnt}}",
+        on: { click: "{{cnt += 1}}" },
+      },
+      {
+        tag: "button#dialog",
+        content: "dialog",
+        dialog: {
+          x: 100,
+          label: "top ({{x}},{{y}})",
           content: {
-            tag: "ui-sandbox",
-            permissions: "app",
-            content: [
-              {
-                tag: "button#incr",
-                content: "{{cnt}}",
-                on: { click: "{{cnt += 1}}" },
-              },
-              {
-                tag: "button#dialog",
-                content: "dialog",
-                dialog: {
-                  title: "iframe ({{x}},{{y}})",
+            tag: "button",
+            content: "{{cnt}}",
+            on: { click: "{{cnt += 1}}" },
+          },
+        },
+      },
+      {
+        content: {
+          tag: "ui-sandbox",
+          permissions: "app",
+          content: [
+            {
+              tag: "button#incr",
+              content: "{{cnt}}",
+              on: { click: "{{cnt += 1}}" },
+            },
+            {
+              tag: "button#dialog",
+              content: "dialog",
+              dialog: {
+                label: "iframe ({{x}},{{y}})",
+                content: {
+                  tag: "button",
                   content: "{{cnt}}",
+                  on: { click: "{{cnt += 1}}" },
                 },
               },
-            ],
-            script: `
+            },
+          ],
+          script: `
   app.query("#dialog")?.click()
   await app
   setTimeout(() => app.query("#incr")?.click(), 500)
-            `,
-          },
+              `,
         },
-      ],
-
-      state: {
-        cnt: 42,
       },
-    })
+    ],
 
-    window.app = app
+    state: {
+      cnt: 42,
+    },
+  })
 
-    app.query("#dialog")?.click()
-    await app
-    setTimeout(() => app.query("#incr")?.click(), 500)
+  window.app = app
+
+  app.query("#dialog")?.click()
+  await app
+  setTimeout(() => app.query("#incr")?.click(), 500)
 </script>
 
 <script type="_module">
