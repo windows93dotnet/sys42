@@ -15,25 +15,36 @@ const SPECIAL_STRINGS = {
   "---": () => document.createElement("hr"),
 }
 
-export default function render(...args) {
-  const [def, ctx] = normalize(...args)
-
-  if (ctx.type === "string") {
-    return SPECIAL_STRINGS[def]?.() ?? document.createTextNode(def)
+export default function render(def, ctx, options) {
+  if (def?.tag?.startsWith("ui-")) {
+    return renderComponent(create(def.tag), def, ctx)
   }
 
-  if (ctx.type === "function") {
-    const el = document.createTextNode("")
-    register(ctx, def, (val) => {
-      el.textContent = val
-    })
-    return el
+  if (!options?.skipNormalize) {
+    const normalized = normalize(def, ctx)
+    def = normalized[0]
+    ctx = normalized[1]
   }
 
-  if (ctx.type === "array") {
-    const fragment = document.createDocumentFragment()
-    for (const content of def) fragment.append(render(content, ctx))
-    return fragment
+  switch (ctx.type) {
+    case "string":
+      return SPECIAL_STRINGS[def]?.() ?? document.createTextNode(def)
+
+    case "array": {
+      const fragment = document.createDocumentFragment()
+      for (const content of def) fragment.append(render(content, ctx))
+      return fragment
+    }
+
+    case "function": {
+      const el = document.createTextNode("")
+      register(ctx, def, (val) => {
+        el.textContent = val
+      })
+      return el
+    }
+
+    default:
   }
 
   if (def.if) return renderIf(def, ctx)
@@ -42,9 +53,7 @@ export default function render(...args) {
   let el
 
   if (def.tag || def.attrs) {
-    const isComponent = def.tag?.startsWith("ui-")
-
-    el = create(ctx, def.tag, isComponent ? undefined : def.attrs)
+    el = create(ctx, def.tag, def.attrs)
     ctx.el = el
     const { localName } = el
 
@@ -61,15 +70,12 @@ export default function render(...args) {
     }
 
     if (
-      !isComponent &&
       ctx.trusted !== true &&
       !ELEMENTS_ALLOW_LIST.includes(localName) &&
       !SVG_TAGS.includes(localName)
     ) {
       return document.createComment(`[disallowed tag: ${localName}]`)
     }
-
-    if (isComponent) return renderComponent(el, def, ctx)
 
     if (def.on) renderListen(el, def.on, ctx)
   } else {

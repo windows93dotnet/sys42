@@ -15,6 +15,24 @@
 <script type="module">
   import ui from "../42/ui.js"
 
+  await ui({
+    class: "box-fit desktop",
+    content: [
+      {
+        tag: "ui-picto",
+        value: "{{foo}}",
+      },
+    ],
+
+    state: {
+      foo: "puzzle",
+    },
+  })
+</script>
+
+<script type="_module">
+  import ui from "../42/ui.js"
+
   const app = await ui({
     class: "box-fit desktop",
     content: [

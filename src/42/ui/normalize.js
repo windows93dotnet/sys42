@@ -110,7 +110,7 @@ export function normalizeTokens(tokens, ctx, filters) {
     }
   }
 
-  console.log(scopes)
+  // console.warn(scopes)
 
   return { hasFilter, scopes, filters }
 }
@@ -289,8 +289,7 @@ export function forkDef(def, ctx) {
   return def
 }
 
-export default function normalize(def, ctx = {}, options) {
-  if (options?.skipNormalize) return [def, ctx]
+export default function normalize(def, ctx = {}) {
   ctx = normalizeCtx(ctx)
   def = normalizeDef(def, ctx)
   return [def, ctx]
