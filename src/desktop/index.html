@@ -82,7 +82,11 @@
               content: "dialog",
               dialog: {
                 label: "iframe ({{x}},{{y}})",
-                content: "hello {{cnt}}",
+                content: {
+                  tag: "button#incr",
+                  content: "{{cnt}}",
+                  on: { click: "{{cnt += 1}}" },
+                },
               },
             },
           ],

@@ -94,6 +94,7 @@ export class Sandbox extends Component {
 
     if (this.content) {
       const content = forkDef(this.content, this.ctx)
+      content.plugins = ["ipc"]
       const undones = []
       traverse(this.content, (key) => {
         // Ensure realmed components can exectute function in top
