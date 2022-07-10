@@ -1,7 +1,7 @@
 // @src https://youtu.be/9-6CKCz58A8
 
 function configure(options) {
-  if (typeof options === "number") options = { duration: options }
+  if (typeof options === "number") return { duration: options }
   if ("ms" in options) options.duration = options.ms
   return options
 }
@@ -10,6 +10,7 @@ function configure(options) {
  * @param {HTMLElement} el
  * @param {PropertyIndexedKeyframes} from
  * @param {KeyframeAnimationOptions} options
+ * @returns {Promise<Animation>}
  */
 export async function animateFrom(el, from, options) {
   const anim = el.animate(
@@ -29,6 +30,7 @@ export async function animateFrom(el, from, options) {
  * @param {HTMLElement} el
  * @param {Keyframe[] | PropertyIndexedKeyframes} to
  * @param {KeyframeAnimationOptions} options
+ * @returns {Promise<Animation>}
  */
 export async function animateTo(el, to, options) {
   const anim = el.animate(

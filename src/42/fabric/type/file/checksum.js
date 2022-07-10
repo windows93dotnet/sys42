@@ -3,6 +3,7 @@
 /**
  * Cryptographic hash function.
  * Hashes input value and returns the digest as an hex string.
+ *
  * @param {string | File | Blob | ArrayBuffer | TypedArray} val
  * @param {string} algorithm
  * @returns {string}

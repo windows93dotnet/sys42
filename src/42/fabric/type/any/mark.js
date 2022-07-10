@@ -6,6 +6,7 @@ import allKeys from "../object/allKeys.js"
 
 /**
  * Converts any value into a readable, most unique possible string.
+ *
  * @param {*} val
  * @returns {string}
  */
