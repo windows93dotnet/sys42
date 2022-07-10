@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>anim</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/style.css" id="theme" />
+
+<script type="module">
+  import trap from "../42/fabric/type/error/trap.js"
+  trap((err) => {
+    import("../42/system/log.js").then((m) => m.default(err))
+    return false
+  })
+</script>
+
+<script type="module">
+  import ui from "../42/ui.js"
+
+  const app = await ui({
+    tag: "body.desktop.box-fit.box-h.txt-center.pa-xxl",
+
+    content: [
+      {
+        tag: ".item-shrink.box-v",
+        content: {
+          tag: "button#toggle.item-spread",
+          content: "toggle",
+          on: { click: "{{show = !show}}" },
+        },
+      },
+      {
+        tag: ".box-center",
+        content: [
+          {
+            if: "{{show}}",
+            tag: "div.bd.box-ratio.pa-xxl",
+            content: "a",
+            from: { rotate: "360deg", scale: 0, ms: 1000 },
+            to: { rotate: "-360deg", scale: 0, ms: 1000 },
+          },
+          {
+            if: "{{show}}",
+            tag: "div.bd.box-ratio.pa-xxl",
+            content: "b",
+            animate: { rotate: "360deg", scale: 0, ms: 1000 },
+          },
+        ],
+      },
+      {
+        tag: ".item-shrink.box-v",
+        content: [
+          {
+            tag: "button.item-spread",
+            content: "add",
+            on: {
+              click() {
+                this.state.arr.push(this.state.arr.length + 1)
+              },
+            },
+          },
+          {
+            tag: "button.item-spread",
+            content: "remove",
+            on: {
+              click() {
+                this.state.arr.pop()
+              },
+            },
+          },
+          {
+            tag: "button.item-spread",
+            content: "fill",
+            on: {
+              click() {
+                this.state.arr = new Array(60).fill().map((_, i) => i + 1)
+              },
+            },
+          },
+          {
+            tag: "button.item-spread",
+            content: "half",
+            on: {
+              click() {
+                this.state.arr.length = Math.floor(this.state.arr.length / 2)
+              },
+            },
+          },
+        ],
+      },
+      {
+        tag: "._box-center.txt-left",
+        scope: "arr",
+        each: {
+          tag: "div.bd.box-ratio.pa-xxl",
+          content: "{{.}}",
+          animate: { rotate: "360deg", scale: 0, ms: 1000 },
+        },
+      },
+    ],
+
+    state: {
+      show: true,
+      arr: ["1"],
+    },
+  })
+
+  setTimeout(() => {
+    app.query("#toggle")?.click()
+  }, 1500)
+</script>
