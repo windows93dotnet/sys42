@@ -9,6 +9,7 @@ import renderComponent from "./renderers/renderComponent.js"
 import renderIf from "./renderers/renderIf.js"
 import renderEach from "./renderers/renderEach.js"
 import renderListen from "./renderers/renderListen.js"
+import renderAnimation from "./renderers/renderAnimation.js"
 
 const SPECIAL_STRINGS = {
   "\n\n": () => document.createElement("br"),
@@ -85,6 +86,9 @@ export default function render(def, ctx, options) {
   }
 
   if (def.content) el.append(render(def.content, ctx))
+
+  if (def.from) renderAnimation(el, "from", def.from)
+  else if (def.animate) renderAnimation(el, "from", def.animate)
 
   return el
 }

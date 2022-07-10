@@ -1,6 +1,7 @@
 import render from "../render.js"
 import omit from "../../fabric/type/object/omit.js"
-import createRange from "../../fabric/dom/createRange.js"
+import createRange from "../../fabric/range/createRange.js"
+import removeRange from "./removeRange.js"
 import register from "../register.js"
 import { normalizeTokens } from "../normalize.js"
 import expr from "../../system/expr.js"
@@ -37,7 +38,7 @@ export default function renderIf(def, ctx) {
       const range = createRange()
       range.setStartAfter(placeholder)
       range.setEndAfter(lastChild)
-      range.deleteContents()
+      removeRange(range, def)
       lastChild = undefined
     }
 

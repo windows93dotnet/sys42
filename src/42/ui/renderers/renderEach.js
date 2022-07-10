@@ -1,6 +1,7 @@
 import render from "../render.js"
 import omit from "../../fabric/type/object/omit.js"
-import createRange from "../../fabric/dom/createRange.js"
+import createRange from "../../fabric/range/createRange.js"
+import removeRange from "./removeRange.js"
 import register from "../register.js"
 
 const PLACEHOLDER = "[each]"
@@ -23,7 +24,7 @@ export default function renderEach(def, ctx) {
         const range = createRange()
         range.setStartAfter(placeholder)
         range.setEndAfter(lastChild)
-        range.deleteContents()
+        removeRange(range, each)
         lastChild = undefined
       }
 
@@ -66,7 +67,7 @@ export default function renderEach(def, ctx) {
             const range = createRange()
             range.setStartAfter(lastPrevious)
             range.setEndAfter(lastChild)
-            range.deleteContents()
+            removeRange(range, each)
             lastChild = lastPrevious
             break
           }

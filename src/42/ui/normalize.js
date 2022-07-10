@@ -28,15 +28,18 @@ const ATTRIBUTES_WITHDASH = new Set(["acceptCharset", "httpEquiv"])
 
 const DEF_KEYWORDS = new Set([
   "actions",
+  "animate",
   "computed",
   "content",
   "each",
   "else",
+  "from",
   "if",
   "schema",
   "scope",
   "state",
   "tag",
+  "to",
 ])
 
 const sep = "/"

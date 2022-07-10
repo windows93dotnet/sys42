@@ -21,22 +21,20 @@ export default function create(ctx, tag, ...args) {
     }
   }
 
-  const inBody = ctx?.el?.localName === "body"
+  // const inBody = ctx?.el?.localName === "body"
 
-  const parsed = parseTagSelector(tag, attrs, inBody ? "" : "div")
+  const parsed = parseTagSelector(tag, attrs)
   tag = parsed.tag
 
   const el = SVG_TAGS.includes(tag)
     ? document.createElementNS("http://www.w3.org/2000/svg", tag)
-    : tag
-    ? document.createElement(tag)
-    : document.createDocumentFragment()
+    : tag === "body"
+    ? document.createDocumentFragment()
+    : document.createElement(tag)
 
-  if (tag || inBody) {
-    attrs = ctx === undefined ? parsed.attrs : normalizeAttrs(parsed.attrs, ctx)
-    if (attrs.id === undefined) delete attrs.id
-    renderAttributes(inBody ? ctx.el : el, ctx, attrs)
-  }
+  attrs = ctx === undefined ? parsed.attrs : normalizeAttrs(parsed.attrs, ctx)
+  if (attrs.id === undefined) delete attrs.id
+  renderAttributes(tag === "body" ? ctx.el : el, ctx, attrs)
 
   el.append(...content)
 

@@ -159,7 +159,7 @@ textarea.box-fit {
 )) {
   flex: 0 0 auto;
   max-width: 50%;
-  overflow-y: auto;
+  /* overflow-y: auto; */
 }
 
 :where(
