@@ -13,6 +13,20 @@
 </script>
 
 <script type="_module">
+  import log from "../42/system/log.js"
+
+  import http from "../42/fabric/http.js"
+  http("https://google.com").catch(log)
+
+  // Promise.any([
+  //   Promise.reject(new Error("some error")),
+  //   Promise.reject(new Error("BOOM")),
+  // ]).catch((err) => {
+  //   log(err)
+  // })
+</script>
+
+<script type="_module">
   import ui from "../42/ui.js"
 
   await ui({

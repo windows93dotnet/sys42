@@ -201,6 +201,8 @@ function parseOpera11(error) {
 }
 
 export default function parseErrorStack(err) {
+  if (err.stack === `${err.name}: ${err.message}`) return []
+
   if (
     typeof err.stacktrace !== "undefined" ||
     typeof err["opera#sourceloc"] !== "undefined"

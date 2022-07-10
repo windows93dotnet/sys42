@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import { esc, escapeLog } from "../logUtils.js"
 import normalizeError from "../../../fabric/type/error/normalizeError.js"
 import serializeError from "../../../fabric/type/error/serializeError.js"
@@ -36,16 +37,24 @@ export default function formatError(error, options) {
 
   let out = `{${colors.message} ${escapeLog(obj.message)}}\n`
 
-  if (error.stack !== `${error.name}: ${error.message}`) {
-    out += esc`\
-{${colors.punctuation} ${obj.stack.length > 0 ? "┌╴" : "╶╴"}}\
-{${colors.errorName} ${
-      error.name ||
-      ("ErrorEvent" in globalThis && error instanceof ErrorEvent
-        ? "ErrorEvent"
-        : "?")
-    }}`
+  const isAggregateError =
+    error instanceof AggregateError ||
+    ("errors" in error &&
+      Array.isArray(error.errors) &&
+      error.errors.every((x) => x instanceof Error))
 
+  out += esc`\
+{${colors.punctuation} ${
+    obj.stack.length > 0 || isAggregateError ? "┌╴" : "╶╴"
+  }}\
+{${colors.errorName} ${
+    error.name ||
+    ("ErrorEvent" in globalThis && error instanceof ErrorEvent
+      ? "ErrorEvent"
+      : "?")
+  }}`
+
+  if (obj.stack.length > 0) {
     const fnNames = []
 
     for (const stack of obj.stack) {
@@ -81,6 +90,15 @@ export default function formatError(error, options) {
 
   if (d.errorEvent?.message === obj.message) {
     d.errorEvent = { type: d.errorEvent.type }
+  }
+
+  if (isAggregateError) {
+    out += `\n`
+    for (const err of d.errors) {
+      out += `{${colors.punctuation} ┆\n┆ }` + formatError(err, options)
+    }
+
+    delete d.errors
   }
 
   const details = formatEntries(d, config.entries)

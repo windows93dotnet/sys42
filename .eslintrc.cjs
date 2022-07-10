@@ -42,7 +42,7 @@ module.exports = {
   },
   rules: {
     "curly": [2, "multi-line"],
-    "func-names": [2, "as-needed"],
+    "func-names": 0,
 
     "no-warning-comments": 0,
     "capitalized-comments": 0,
@@ -106,7 +106,10 @@ module.exports = {
     "unicorn/no-empty-file": 0,
     "unicorn/prevent-abbreviations": 0,
     "unicorn/prefer-add-event-listener": 0,
-    "unicorn/catch-error-name": [2, { name: "err", ignore: ["^error$"] }],
+    "unicorn/catch-error-name": [
+      2,
+      { name: "err", ignore: ["^(error|cause)$"] },
+    ],
     "unicorn/no-fn-reference-in-iterator": 0,
     "unicorn/no-await-expression-member": 0,
     "unicorn/prefer-regexp-test": 0,

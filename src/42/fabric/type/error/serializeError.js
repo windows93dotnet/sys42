@@ -1,13 +1,19 @@
 import stackTrace from "./stackTrace.js"
+import allKeys from "../object/allKeys.js"
+import addStack from "./addStack.js"
 import omit from "../object/omit.js"
 
 const ERROR_EVENT_INFOS = ["lineno", "colno", "filename"]
 
 export default function serializeError(error) {
-  const details = { ...error }
+  const details = {}
+
+  for (const key of allKeys(error)) details[key] = error[key]
+
+  const original = error.stack
+  let { name, message } = error
 
   delete details.message
-
   if (details.name === (error.name ?? error.constructor.name)) {
     delete details.name
   }
@@ -16,15 +22,20 @@ export default function serializeError(error) {
   if (details.codeFrame) delete details.codeFrame
 
   if ("errorEvent" in details) {
-    if (!error.message) error.message = details.errorEvent.message
+    if (!message) message = details.errorEvent.message
     details.errorEvent = omit(details.errorEvent, ERROR_EVENT_INFOS)
   }
 
+  if (error.cause) {
+    details.cause = `${error.cause.name}: ${error.cause.message}`
+    addStack(error, error.cause)
+  }
+
   return {
-    name: error.name,
-    message: error.message,
+    name,
+    message,
     details,
     stack: stackTrace(error),
-    original: error.stack,
+    original,
   }
 }

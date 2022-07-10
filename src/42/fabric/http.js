@@ -47,10 +47,8 @@ export async function handleStatus(res, url) {
   if (res.ok || res.status === 304 /* 1 */) return res
 
   // Lazy load status codes list
-  if (HTTP_STATUS_CODES === undefined) {
-    HTTP_STATUS_CODES = (await import("./constants/HTTP_STATUS_CODES.js"))
-      .default
-  }
+  HTTP_STATUS_CODES ??= await import("./constants/HTTP_STATUS_CODES.js") //
+    .then((m) => m.default)
 
   throw new HTTPError(res, url)
 }
@@ -89,21 +87,23 @@ export async function normalizeBody(body, out, parent) {
 async function request(url, options) {
   try {
     return await fetch(url, options)
-  } catch (err) {
-    const infos = { url, fetchError: err.message }
+  } catch (cause) {
+    const infos = { url, reached: false }
     let message = "This url can't be reached"
     try {
       const res = await fetch(url, { ...options, mode: "no-cors" })
+      infos.reached = true
       if (res.status !== 0) {
         infos.status = res.status
         infos.statusText = res.statusText
         infos.headers = Object.fromEntries(res.headers)
       }
 
-      message = "This url can be reached but the response is empty"
+      message =
+        'This url can be reached using "no-cors" but the response is empty'
     } catch {}
 
-    throw Object.assign(new Error(`${message} : ${url}`), infos)
+    throw Object.assign(new Error(`${message} : ${url}`, { cause }), infos)
   }
 }
 

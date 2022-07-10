@@ -85,6 +85,7 @@ export default class Logger extends Callable {
         ) {
           logError = args[0]
           key = "groupCollapsed"
+          this.console.log(" ")
         }
 
         contextHandler(data, this)
