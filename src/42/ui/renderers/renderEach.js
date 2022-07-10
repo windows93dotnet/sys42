@@ -1,8 +1,10 @@
+/* eslint-disable max-depth */
 import render from "../render.js"
 import omit from "../../fabric/type/object/omit.js"
 import createRange from "../../fabric/range/createRange.js"
 import removeRange from "./removeRange.js"
 import register from "../register.js"
+import Canceller from "../../fabric/class/Canceller.js"
 
 const PLACEHOLDER = "[each]"
 const ITEM = "[#]"
@@ -14,18 +16,23 @@ export default function renderEach(def, ctx) {
 
   const el = render(def, ctx)
 
-  let lastChild
+  let lastItem
+  const cancels = []
+
   const placeholder = document.createComment(PLACEHOLDER)
   el.append(placeholder)
 
   register(ctx, ctx.scope, (array) => {
     if (!array || !Array.isArray(array) || array.length === 0) {
-      if (lastChild) {
+      if (lastItem) {
+        for (const cancel of cancels) cancel()
+        cancels.length = 0
+
         const range = createRange()
         range.setStartAfter(placeholder)
-        range.setEndAfter(lastChild)
+        range.setEndAfter(lastItem)
         removeRange(range, each)
-        lastChild = undefined
+        lastItem = undefined
       }
 
       return
@@ -34,41 +41,36 @@ export default function renderEach(def, ctx) {
     let i = 0
     const { length } = array
 
-    let lastPrevious
+    let endItem
 
-    if (lastChild) {
+    if (lastItem) {
+      const l = length - 1
+      let node
+
       const walker = document.createTreeWalker(
-        lastChild.parentElement,
+        lastItem.parentElement,
         NodeFilter.SHOW_COMMENT
       )
 
-      const l = length - 1
-      i = 0
-
-      let inRange = false
-      let node
+      walker.currentNode = placeholder
 
       while ((node = walker.nextNode())) {
-        if (node === placeholder) {
-          inRange = true
-          continue
-        }
+        if (node.textContent === ITEM) {
+          i++
 
-        if (inRange && node.textContent === ITEM) {
-          lastPrevious = node
-
-          if (lastPrevious === lastChild) {
-            ++i
-            break
-          }
+          endItem = node
+          if (endItem === lastItem) break
 
           // remove extra items only
-          if (++i > l) {
+          if (i > l) {
+            for (let j = i; j < cancels.length; j++) cancels[j]()
+            cancels.length = i
+
             const range = createRange()
-            range.setStartAfter(lastPrevious)
-            range.setEndAfter(lastChild)
+            range.setStartAfter(endItem)
+            range.setEndAfter(lastItem)
             removeRange(range, each)
-            lastChild = lastPrevious
+            lastItem = endItem
             break
           }
         }
@@ -79,14 +81,17 @@ export default function renderEach(def, ctx) {
 
     for (; i < length; i++) {
       const newCtx = { ...ctx }
-      newCtx.scope += `/${i}`
+      newCtx.scope = `${ctx.scope}/${i}`
+      newCtx.cancel = new Canceller()
+      newCtx.signal = newCtx.cancel.signal
+      cancels.push(newCtx.cancel)
+
       fragment.append(render(each, newCtx))
-      lastChild = document.createComment(ITEM)
-      fragment.append(lastChild)
+      lastItem = document.createComment(ITEM)
+      fragment.append(lastItem)
     }
 
-    if (lastPrevious) lastPrevious.after(fragment)
-    else placeholder.after(fragment)
+    ;(endItem ?? placeholder).after(fragment)
   })
 
   return el

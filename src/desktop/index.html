@@ -33,12 +33,14 @@
           {
             if: "{{show}}",
             tag: "div.bd.box-ratio.pa-xxl",
+            content: "a",
             from: { rotate: "360deg", scale: 0, ms: 1000 },
             to: { rotate: "-360deg", scale: 0, ms: 1000 },
           },
           {
             if: "{{show}}",
             tag: "div.bd.box-ratio.pa-xxl",
+            content: "b",
             animate: { rotate: "360deg", scale: 0, ms: 1000 },
           },
         ],
@@ -69,7 +71,7 @@
             content: "fill",
             on: {
               click() {
-                this.state.arr = new Array(60).fill().map((_, i) => i)
+                this.state.arr = new Array(60).fill().map((_, i) => i + 1)
               },
             },
           },

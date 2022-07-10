@@ -1107,7 +1107,7 @@ test("array", async (t) => {
 /* each
 ========= */
 
-test("each", async (t) => {
+test("each", "manage childNodes", async (t) => {
   const app = await ui(tmp(), {
     content: { scope: "arr", each: "{{.}}" },
   })
@@ -1154,6 +1154,65 @@ test("each", async (t) => {
   app.state.arr.length = 0
   await app
   t.is(app.el.textContent, "")
+})
+
+test("each", "manage renderers", async (t) => {
+  const app = await ui(tmp(), {
+    content: {
+      scope: "arr",
+      each: { tag: "em", content: "{{.}}" },
+    },
+    state: {
+      arr: ["a", "b", "c", "d"],
+    },
+  })
+
+  t.is(app.el.textContent, "abcd")
+  t.eq(Object.keys(app.ctx.renderers), [
+    "/arr", //
+    "/arr/0",
+    "/arr/1",
+    "/arr/2",
+    "/arr/3",
+  ])
+
+  app.state.arr.splice(2, 1)
+  await app
+
+  t.is(app.el.textContent, "abd")
+  t.eq(Object.keys(app.ctx.renderers), [
+    "/arr", //
+    "/arr/0",
+    "/arr/1",
+    "/arr/2",
+  ])
+
+  app.state.arr.length = 1
+  await app
+
+  t.is(app.el.textContent, "a")
+  t.eq(Object.keys(app.ctx.renderers), [
+    "/arr", //
+    "/arr/0",
+  ])
+
+  app.state.arr.push("x")
+  await app
+
+  t.is(app.el.textContent, "ax")
+  t.eq(Object.keys(app.ctx.renderers), [
+    "/arr", //
+    "/arr/0",
+    "/arr/1",
+  ])
+
+  app.state.arr.length = 0
+  await app
+
+  t.is(app.el.textContent, "")
+  t.eq(Object.keys(app.ctx.renderers), [
+    "/arr", //
+  ])
 })
 
 test("each", "def", async (t) => {
