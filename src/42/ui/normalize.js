@@ -14,6 +14,7 @@ import isArrayLike from "../fabric/type/any/is/isArrayLike.js"
 import noop from "../fabric/type/function/noop.js"
 import arrify from "../fabric/type/any/arrify.js"
 import hash from "../fabric/type/any/hash.js"
+import getType from "../fabric/getType.js"
 import ATTRIBUTES_ALLOW_LIST from "../fabric/constants/ATTRIBUTES_ALLOW_LIST.js"
 
 const ATTRIBUTES = new Set(
@@ -265,15 +266,13 @@ export function forkDef(def, ctx) {
 
 export function normalizeDef(def = {}, ctx, options) {
   ctx.id ??= hash(def)
-  ctx.type = typeof def
+  ctx.type = getType(def)
 
   if (ctx.type === "string") {
     const fn = normalizeString(def, ctx)
     ctx.type = typeof fn
     if (ctx.type === "function") def = fn
-  } else if (Array.isArray(def)) {
-    ctx.type = "array"
-  } else if (def && ctx.type === "object") {
+  } else if (ctx.type === "object") {
     if (def.parentId) ctx.parentId = def.parentId
 
     if (def.state) {

@@ -10,8 +10,7 @@ const PLACEHOLDER = "[each]"
 const ITEM = "[#]"
 
 export default function renderEach(def, ctx) {
-  const { each } = def
-
+  const eachDef = def.each
   def = omit(def, ["each"])
 
   const el = render(def, ctx)
@@ -31,7 +30,7 @@ export default function renderEach(def, ctx) {
         const range = createRange()
         range.setStartAfter(placeholder)
         range.setEndAfter(lastItem)
-        removeRange(range, each)
+        removeRange(range, eachDef)
         lastItem = undefined
       }
 
@@ -69,7 +68,7 @@ export default function renderEach(def, ctx) {
             const range = createRange()
             range.setStartAfter(endItem)
             range.setEndAfter(lastItem)
-            removeRange(range, each)
+            removeRange(range, eachDef)
             lastItem = endItem
             break
           }
@@ -80,18 +79,23 @@ export default function renderEach(def, ctx) {
     const fragment = document.createDocumentFragment()
 
     for (; i < length; i++) {
-      const newCtx = { ...ctx }
-      newCtx.scope = `${ctx.scope}/${i}`
-      newCtx.cancel = new Canceller()
-      newCtx.signal = newCtx.cancel.signal
-      cancels.push(newCtx.cancel)
+      const cancel = new Canceller()
+      cancels.push(cancel)
 
-      fragment.append(render(each, newCtx))
-      lastItem = document.createComment(ITEM)
-      fragment.append(lastItem)
+      fragment.append(
+        render(eachDef, {
+          ...ctx,
+
+          cancel,
+          signal: cancel.signal,
+          scope: `${ctx.scope}/${i}`,
+        }),
+        (lastItem = document.createComment(ITEM))
+      )
     }
 
-    ;(endItem ?? placeholder).after(fragment)
+    if (endItem) endItem.after(fragment)
+    else placeholder.after(fragment)
   })
 
   return el

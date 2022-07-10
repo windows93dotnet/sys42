@@ -901,6 +901,38 @@ test("if", async (t) => {
   t.is(app.el.textContent, "")
 })
 
+test("if", "manage renderers", async (t) => {
+  const app = await ui(tmp(), {
+    content: { if: "{{a.b}}", content: "{{x}}" },
+    state: {
+      a: { b: false },
+      x: "y",
+    },
+  })
+
+  t.is(app.el.textContent, "")
+  t.eq(Object.keys(app.ctx.renderers), [
+    "/a/b", //
+  ])
+
+  app.state.a.b = true
+  await app
+
+  t.is(app.el.textContent, "y")
+  t.eq(Object.keys(app.ctx.renderers), [
+    "/a/b", //
+    "/x", //
+  ])
+
+  app.state.a.b = false
+  await app
+
+  t.is(app.el.textContent, "")
+  t.eq(Object.keys(app.ctx.renderers), [
+    "/a/b", //
+  ])
+})
+
 test("if", "array", async (t) => {
   const app = await ui(tmp(), {
     content: {

@@ -3,7 +3,9 @@ import omit from "../../fabric/type/object/omit.js"
 import createRange from "../../fabric/range/createRange.js"
 import removeRange from "./removeRange.js"
 import register from "../register.js"
-import { normalizeTokens } from "../normalize.js"
+import Canceller from "../../fabric/class/Canceller.js"
+import getType from "../../fabric/getType.js"
+import { normalizeDef, normalizeTokens } from "../normalize.js"
 import expr from "../../system/expr.js"
 
 const PLACEHOLDER = "[if]"
@@ -14,6 +16,8 @@ export default function renderIf(def, ctx) {
 
   let lastChild
   let lastRes
+  let cancel
+
   const placeholder = document.createComment(PLACEHOLDER)
   el.append(placeholder)
 
@@ -26,15 +30,20 @@ export default function renderIf(def, ctx) {
     filters,
   })
 
-  def = omit(def, ["if"])
+  const defIf = normalizeDef(omit(def, ["if"]), ctx)
+  const defElse = def.else ? normalizeDef(def.else, ctx) : undefined
+  const typeIf = getType(defIf)
+  const typeElse = getType(defElse)
 
   register(ctx, scopes, async () => {
     const res = await check(ctx.reactive.state)
-
     if (res === lastRes) return
     lastRes = res
 
+    const [def, type] = res ? [defIf, typeIf] : [defElse, typeElse]
+
     if (lastChild) {
+      cancel?.()
       const range = createRange()
       range.setStartAfter(placeholder)
       range.setEndAfter(lastChild)
@@ -42,12 +51,19 @@ export default function renderIf(def, ctx) {
       lastChild = undefined
     }
 
-    let el
-    if (res) {
-      el = render(def, ctx)
-    } else if (def.else) {
-      el = render(def.else, ctx)
-    } else return
+    if (!def) return
+
+    cancel = new Canceller()
+    const el = render(
+      def,
+      {
+        ...ctx,
+        type,
+        cancel,
+        signal: cancel.signal,
+      },
+      { skipNormalize: true }
+    )
 
     lastChild = el.nodeType === DOCUMENT_FRAGMENT_NODE ? el.lastChild : el
     placeholder.after(el)
