@@ -145,7 +145,7 @@
             },
           ],
           script: `
-          app.query("#dialog")?.click()
+          // app.query("#dialog")?.click()
           // setTimeout(() => app.query("#incr")?.click(), 800)
           `,
         },
@@ -161,9 +161,12 @@
 
   // app.query("#incr").click()
   // setTimeout(() => app.query("#incr")?.click(), 500)
-  setTimeout(() => {
-    document.querySelector("#dialog-incr")?.click()
-  }, 500)
+
+  /*  */
+
+  // setTimeout(() => {
+  //   document.querySelector("#dialog-incr")?.click()
+  // }, 500)
 </script>
 
 <script type="_module">

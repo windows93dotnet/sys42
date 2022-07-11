@@ -1,13 +1,17 @@
+/* eslint-disable camelcase */
 import inIframe from "../../system/env/runtime/inIframe.js"
 import inTop from "../../system/env/runtime/inTop.js"
 import ipc from "../../system/ipc.js"
 import allocate from "../../fabric/locator/allocate.js"
 import configure from "../../fabric/configure.js"
 
+const debug = false
+
 const DEFAULTS = {
-  parentIframeToTop: true,
-  topToParentIframe: true,
-  parentTopToIframe: !true,
+  parent_iframe_to_top: true,
+  top_to_parent_iframe: true,
+  parent_top_to_iframe: true,
+  iframe_to_parent_top: true,
 }
 
 function getData(queue, ctx) {
@@ -35,14 +39,15 @@ if (inIframe) {
 
 export default async (ctx, options) => {
   const {
-    parentIframeToTop, //
-    topToParentIframe,
-    parentTopToIframe,
+    parent_iframe_to_top, //
+    top_to_parent_iframe,
+    parent_top_to_iframe,
+    iframe_to_parent_top,
   } = configure(DEFAULTS, options)
 
   // Parent Iframe --> Top
 
-  if (parentIframeToTop) {
+  if (parent_iframe_to_top) {
     if (inTop && ctx.parentId) {
       ipc.on(`42-ui-ipc-${ctx.parentId}`, (data) => {
         ctx.reactive.assign("/", data)
@@ -51,7 +56,7 @@ export default async (ctx, options) => {
 
     if (inIframe) {
       ctx.reactive.on("update", (queue) => {
-        console.log("Parent Iframe --> Top", queue)
+        if (debug) console.log("Parent Iframe --> Top", queue)
         topBus.send(`42-ui-ipc-${ctx.id}`, getData(queue, ctx))
       })
     }
@@ -59,10 +64,10 @@ export default async (ctx, options) => {
 
   // Top --> Parent Iframe
 
-  if (topToParentIframe) {
+  if (top_to_parent_iframe) {
     if (inTop && ctx.parentId) {
       ctx.reactive.on("update", (queue) => {
-        console.log("Top --> Parent Iframe", queue)
+        if (debug) console.log("Top --> Parent Iframe", queue)
         const data = getData(queue, ctx)
         for (const send of iframes) send(`42-ui-ipc-${ctx.parentId}`, data)
       })
@@ -77,9 +82,10 @@ export default async (ctx, options) => {
 
   // Parent Top --> Iframe
 
-  if (parentTopToIframe) {
+  if (parent_top_to_iframe) {
     if (inTop) {
       ctx.reactive.on("update", (queue) => {
+        if (debug) console.log("Parent Top --> Iframe", queue)
         const data = getData(queue, ctx)
         for (const send of iframes) send(`42-ui-ipc-${ctx.id}`, data)
       })
@@ -88,6 +94,23 @@ export default async (ctx, options) => {
     if (inIframe) {
       topBus.on(`42-ui-ipc-${ctx.parentId}`, (data) => {
         ctx.reactive.assign("/", data)
+      })
+    }
+  }
+
+  // Iframe --> Parent Top
+
+  if (iframe_to_parent_top) {
+    if (inTop) {
+      ipc.on(`42-ui-ipc-${ctx.id}`, (data) => {
+        ctx.reactive.assign("/", data)
+      })
+    }
+
+    if (inIframe) {
+      ctx.reactive.on("update", (queue) => {
+        if (debug) console.log("Iframe --> Parent Top", queue)
+        topBus.send(`42-ui-ipc-${ctx.parentId}`, getData(queue, ctx))
       })
     }
   }
