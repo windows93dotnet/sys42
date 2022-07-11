@@ -5,20 +5,43 @@ import allocate from "../../fabric/locator/allocate.js"
 import configure from "../../fabric/configure.js"
 
 const DEFAULTS = {
-  upstream: true,
-  downstream: true,
+  parentIframeToTop: true,
+  topToParentIframe: true,
+  parentTopToIframe: !true,
 }
 
 function getData(queue, ctx) {
   const data = {}
-  for (const key of queue) allocate(data, key, ctx.reactive.get(key), "/")
+  for (const key of queue) {
+    allocate(data, key, ctx.reactive.get(key, { silent: true }), "/")
+  }
+
   return data
 }
 
-export default async (ctx, options) => {
-  const { upstream, downstream } = configure(DEFAULTS, options)
+const iframes = []
 
-  if (upstream) {
+let topBus
+
+if (inTop) {
+  ipc.on("42-ui-ipc-handshake", (data, meta) => iframes.push(meta.send))
+}
+
+if (inIframe) {
+  topBus ??= ipc.to(globalThis.top)
+  topBus.send("42-ui-ipc-handshake")
+}
+
+export default async (ctx, options) => {
+  const {
+    parentIframeToTop, //
+    topToParentIframe,
+    parentTopToIframe,
+  } = configure(DEFAULTS, options)
+
+  // Parent Iframe --> Top
+
+  if (parentIframeToTop) {
     if (inTop && ctx.parentId) {
       ipc.on(`42-ui-ipc-${ctx.parentId}`, (data) => {
         ctx.reactive.assign("/", data)
@@ -26,35 +49,45 @@ export default async (ctx, options) => {
     }
 
     if (inIframe) {
-      const bus = ipc.to(globalThis.top)
-
       ctx.reactive.on("update", (queue) => {
-        bus.send(`42-ui-ipc-${ctx.id}`, getData(queue, ctx))
+        console.log("Parent Iframe --> Top", queue)
+        topBus.send(`42-ui-ipc-${ctx.id}`, getData(queue, ctx))
       })
     }
   }
 
-  if (downstream) {
-    if (inTop) {
-      const senders = []
+  // Top --> Parent Iframe
 
-      ipc.on("42-ui-ipc-handshake", (data, meta) => {
-        senders.push(meta.send)
-      })
-
+  if (topToParentIframe) {
+    if (inTop && ctx.parentId) {
       ctx.reactive.on("update", (queue) => {
+        console.log("Top --> Parent Iframe", queue)
         const data = getData(queue, ctx)
-        for (const send of senders) send(`42-ui-ipc-${ctx.id}`, data)
+        for (const send of iframes) send(`42-ui-ipc-${ctx.parentId}`, data)
       })
     }
 
     if (inIframe) {
-      ipc
-        .to(globalThis.top)
-        .on(`42-ui-ipc-${ctx.parentId}`, (data) => {
-          ctx.reactive.assign("/", data)
-        })
-        .send("42-ui-ipc-handshake")
+      topBus.on(`42-ui-ipc-${ctx.id}`, (data) => {
+        ctx.reactive.assign("/", data)
+      })
+    }
+  }
+
+  // Parent Top --> Iframe
+
+  if (parentTopToIframe) {
+    if (inTop) {
+      ctx.reactive.on("update", (queue) => {
+        const data = getData(queue, ctx)
+        for (const send of iframes) send(`42-ui-ipc-${ctx.id}`, data)
+      })
+    }
+
+    if (inIframe) {
+      topBus.on(`42-ui-ipc-${ctx.parentId}`, (data) => {
+        ctx.reactive.assign("/", data)
+      })
     }
   }
 }

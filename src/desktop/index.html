@@ -101,6 +101,7 @@
 </script>
 
 <script type="module">
+  /* eslint-disable no-unused-vars */
   import ui from "../42/ui.js"
 
   const app = await ui({
@@ -127,7 +128,7 @@
               dialog: {
                 label: "iframe ({{x}},{{y}})",
                 content: {
-                  tag: "button#incr",
+                  tag: "button#dialog-incr",
                   content: "{{cnt}}",
                   on: { click: "{{cnt += 1}}" },
                 },
@@ -136,7 +137,7 @@
           ],
           script: `
           app.query("#dialog")?.click()
-          setTimeout(() => app.query("#incr")?.click(), 800)
+          // setTimeout(() => app.query("#incr")?.click(), 800)
           `,
         },
       },
@@ -148,7 +149,10 @@
   })
 
   // app.query("#incr").click()
-  setTimeout(() => app.query("#incr")?.click(), 500)
+  // setTimeout(() => app.query("#incr")?.click(), 500)
+  setTimeout(() => {
+    document.querySelector("#dialog-incr")?.click()
+  }, 500)
 </script>
 
 <script type="_module">
