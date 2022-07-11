@@ -85,7 +85,11 @@
         content: "dialog",
         dialog: {
           label: "iframe ({{x}},{{y}})",
-          content: "hello {{cnt}}",
+          content: {
+            tag: "button#incr",
+            content: "{{cnt}}",
+            on: { click: "{{cnt += 1}}" },
+          },
         },
       },
     ],
@@ -95,6 +99,10 @@
     state: {
       cnt: 42,
     },
+  })
+
+  app.reactive.on("update", (queue) => {
+    console.log(11, queue)
   })
 
   app.query("#dialog")?.click()
@@ -112,6 +120,7 @@
         content: "{{cnt}}",
         on: { click: "{{cnt += 1}}" },
       },
+
       {
         content: {
           tag: "ui-sandbox",
@@ -147,6 +156,8 @@
       cnt: 42,
     },
   })
+
+  // console.log(app.ctx.renderers)
 
   // app.query("#incr").click()
   // setTimeout(() => app.query("#incr")?.click(), 500)

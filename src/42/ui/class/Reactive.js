@@ -19,6 +19,7 @@ export default class Reactive extends Emitter {
 
     this.ctx = ctx
     this.data = data
+    this.firstUpdateDone = false
 
     Object.defineProperty(this.ctx, "state", {
       enumerable: true,
@@ -120,6 +121,16 @@ export default class Reactive extends Emitter {
       if (n < 0) throw new Error("Too much recursion")
       await this.done(n--)
     }
+
+    if (this.firstUpdateDone === false) this.setup()
+  }
+
+  setup() {
+    this.throttle = true
+    this.firstUpdateDone = true
+    Array.from(this.ctx.el.querySelectorAll(":scope [data-autofocus]"))
+      .at(-1)
+      ?.focus()
   }
 
   get throttle() {

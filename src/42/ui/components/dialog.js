@@ -70,7 +70,7 @@ export default realm({
 
   async top(def, ctx) {
     const el = new Dialog(def, ctx)
-    await el.ready
+    // await el.ready
     document.body.append(el)
   },
 })

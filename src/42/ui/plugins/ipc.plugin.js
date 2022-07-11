@@ -13,6 +13,7 @@ const DEFAULTS = {
 function getData(queue, ctx) {
   const data = {}
   for (const key of queue) {
+    if (key.startsWith("/ui-")) continue
     allocate(data, key, ctx.reactive.get(key, { silent: true }), "/")
   }
 
