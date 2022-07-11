@@ -1,6 +1,7 @@
 // jQuery inspired class
 
 import ensureElement from "../dom/ensureElement.js"
+import waitFor from "../dom/waitFor.js"
 
 export default class DOMQuery {
   constructor(el = document.body) {
@@ -35,6 +36,11 @@ export default class DOMQuery {
         return target.map((item) => item[prop])
       },
     })
+  }
+
+  async waitFor(selector, options = {}) {
+    options.parent = this.el
+    return waitFor(selector, options)
   }
 }
 

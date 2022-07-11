@@ -118,6 +118,7 @@ export default class Component extends HTMLElement {
       const rect = this.getBoundingClientRect()
       this.x ??= Math.round(rect.left)
       this.y ??= Math.round(rect.top)
+      this[_AXIS]() // TODO: don't force AXIS rendering
       this.style.top = 0
       this.style.left = 0
     }

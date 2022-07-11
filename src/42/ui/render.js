@@ -5,6 +5,7 @@ import register from "./register.js"
 import normalize from "./normalize.js"
 import ELEMENTS_ALLOW_LIST from "../fabric/constants/ELEMENTS_ALLOW_LIST.js"
 import SVG_TAGS from "../fabric/constants/SVG_TAGS.js"
+import preload from "../system/load/preload.js"
 import renderComponent from "./renderers/renderComponent.js"
 import renderIf from "./renderers/renderIf.js"
 import renderEach from "./renderers/renderEach.js"
@@ -15,6 +16,8 @@ const SPECIAL_STRINGS = {
   "\n\n": () => document.createElement("br"),
   "---": () => document.createElement("hr"),
 }
+
+const PRELOAD = new Set(["link", "script"])
 
 export default function render(def, ctx, options) {
   if (def?.tag?.startsWith("ui-")) {
@@ -78,6 +81,10 @@ export default function render(def, ctx, options) {
       !SVG_TAGS.includes(localName)
     ) {
       return document.createComment(`[disallowed tag: ${localName}]`)
+    }
+
+    if (PRELOAD.has(localName)) {
+      ctx.preload.push(preload(el.src ?? el.href))
     }
 
     if (def.on) renderListen(ctx.el, def.on, ctx)

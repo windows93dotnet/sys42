@@ -1,5 +1,7 @@
 import normalizeError from "../error/normalizeError.js"
 
+const OR_REGEX = /\s*(\|\||&&|\+)\s*/
+
 export default async function when(
   target,
   events,
@@ -7,9 +9,14 @@ export default async function when(
 ) {
   const controller = new AbortController()
   const options = { signal: controller.signal, once: true }
+  let originStack
+
+  race ??= events.includes("||")
+  if (error === true) error = "error"
+  if (error) originStack = new Error().stack
 
   return Promise[race ? "race" : "all"](
-    events.split(" ").map(
+    events.split(OR_REGEX).map(
       (event) =>
         new Promise((resolve, reject) => {
           function onevent(e) {
@@ -18,7 +25,7 @@ export default async function when(
           }
 
           function onerror(e) {
-            reject(normalizeError(e))
+            reject(normalizeError(e, originStack))
             controller.abort()
           }
 

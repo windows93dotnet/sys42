@@ -41,7 +41,7 @@ const parseFilename = memoize((filename, options) => {
   out.ext = out.isDir ? "" : parsed.ext
   out.name = out.isDir ? parsed.base : parsed.name
 
-  if (out.isFile) {
+  if (options?.getURIMimetype === false ? out.isFile : out.ext) {
     out.charset = EXTENSIONS.charset[out.ext] ?? NAMES.charset[out.name]
     out.mimetype =
       EXTENSIONS.mimetype[out.ext] ||

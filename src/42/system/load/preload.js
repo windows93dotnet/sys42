@@ -1,3 +1,5 @@
+import normalizeError from "../../fabric/type/error/normalizeError.js"
+
 const SELECTORS = {
   "audio": "audio",
   "iframe": "document",
@@ -40,7 +42,7 @@ export default async function preload(
   url,
   { as, crossorigin, media, type, signal } = {}
 ) {
-  const el = document.createElement("link")
+  let el = document.createElement("link")
   el.rel = "preload"
 
   if (crossorigin) el.crossorigin = crossorigin
@@ -60,12 +62,12 @@ export default async function preload(
   if (as === "fetch" || as === "font") el.crossorigin = true
 
   return new Promise((resolve, reject) => {
-    const cleanup = (el, signal) => {
+    const cleanup = () => {
       signal?.removeEventListener("abort", onabort)
       el.onerror = null
       el.onload = null
-      el.removeAttribute("href")
       el.remove()
+      el.removeAttribute("href")
       el = null
     }
 
@@ -76,13 +78,13 @@ export default async function preload(
 
     signal?.addEventListener("abort", onabort)
 
-    el.onerror = (err) => {
-      cleanup(el)
-      reject(err)
+    el.onerror = (e) => {
+      cleanup()
+      reject(normalizeError(e))
     }
 
     el.onload = () => {
-      cleanup(el)
+      cleanup()
       resolve()
     }
 

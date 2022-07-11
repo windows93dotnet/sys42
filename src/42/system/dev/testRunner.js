@@ -32,11 +32,12 @@ export default async function testRunner(testFiles, options) {
   system.testing.ran = false
 
   await Promise.all(
-    testFiles.map((x) =>
-      x.endsWith(".html")
-        ? isFrontend && htmlTest(x)
-        : import(/* @vite-ignore */ x)
-    )
+    testFiles.map((url) => {
+      url = new URL(url, location.href)
+      return url.href.endsWith(".html")
+        ? isFrontend && htmlTest(url)
+        : import(/* @vite-ignore */ url)
+    })
   )
 
   await system.testing.run()

@@ -15,6 +15,7 @@ import stringify from "../../../fabric/type/any/stringify.js"
 import system from "../../../system.js"
 import uid from "../../../fabric/uid.js"
 import prettify from "../../../fabric/type/markup/prettify.js"
+import DOMQuery from "../../../fabric/class/DOMQuery.js"
 // import stackTrace from "../../../fabric/type/error/stackTrace.js"
 
 import log, { Log, CONSOLE_KEYS } from "../../log.js"
@@ -73,7 +74,7 @@ export default function addUtilities(item, isExecutionContext) {
     return function (connect = options.connect) {
       const el = document.createElement(options.tag ?? "section")
       if (options.id) el.id = options.id
-      elements.push(el)
+      if (options.keep !== true) elements.push(el)
       if (connect) document.body.append(el)
       return el
     }
@@ -99,5 +100,6 @@ export default function addUtilities(item, isExecutionContext) {
     uid,
     prettify,
     container,
+    $: new DOMQuery(),
   }
 }
