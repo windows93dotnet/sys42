@@ -80,7 +80,7 @@ export default function render(def, ctx, options) {
       !ELEMENTS_ALLOW_LIST.includes(localName) &&
       !SVG_TAGS.includes(localName)
     ) {
-      return document.createComment(`[disallowed tag: ${localName}]`)
+      throw new DOMException(`Disallowed tag: ${localName}`, "SecurityError")
     }
 
     if (PRELOAD.has(localName)) {
@@ -94,8 +94,8 @@ export default function render(def, ctx, options) {
 
   if (def.content) el.append(render(def.content, ctx))
 
-  if (def.from) renderAnimation(el, "from", def.from)
-  else if (def.animate) renderAnimation(el, "from", def.animate)
+  if (def.from) renderAnimation(ctx.el, "from", def.from)
+  else if (def.animate) renderAnimation(ctx.el, "from", def.animate)
 
   return el
 }

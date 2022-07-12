@@ -35,13 +35,19 @@ export class Dialog extends Component {
     plugins: ["ipc"],
   }
 
+  close() {
+    this.ctx.cancel("dialog close")
+    this.remove()
+  }
+
   render({ content, label, footer }) {
     return [
       {
         tag: "header.ui-dialog__header",
         content: [
           { tag: "h2.ui-dialog__title", content: label },
-          { tag: "button", picto: "close" },
+          // { tag: "button", picto: "close", on: { click: "{{close()}}" } },
+          { tag: "button", picto: "close", on: { click: () => this.close() } },
         ],
       },
       { tag: "section.ui-dialog__body", content },
@@ -70,7 +76,6 @@ export default realm({
 
   async top(def, ctx) {
     const el = new Dialog(def, ctx)
-    // await el.ready
     document.body.append(el)
   },
 })

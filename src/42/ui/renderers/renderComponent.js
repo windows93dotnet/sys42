@@ -2,7 +2,7 @@ import defer from "../../fabric/type/promise/defer.js"
 
 export default function renderComponent(el, def, ctx) {
   const deferred = defer()
-  ctx.components.push(deferred)
+  ctx?.components.push(deferred)
   const tag = el.localName
 
   if (customElements.get(tag) === undefined) {
@@ -16,18 +16,12 @@ export default function renderComponent(el, def, ctx) {
       })
     }
 
-    customElements
-      .whenDefined(tag)
-      .then(() => {
-        customElements.upgrade(el)
-        return el.init(def, ctx)
-      })
-      .then(deferred.resolve)
-      .catch(deferred.reject)
+    customElements.whenDefined(tag).then(() => {
+      customElements.upgrade(el)
+      el.init(def, ctx).then(deferred.resolve, deferred.reject)
+    })
   } else {
-    el.init(def, ctx) //
-      .then(deferred.resolve)
-      .catch(deferred.reject)
+    el.init(def, ctx).then(deferred.resolve, deferred.reject)
   }
 
   return el
