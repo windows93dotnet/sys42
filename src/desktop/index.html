@@ -26,11 +26,11 @@
   // })
 </script>
 
-<script type="_module">
+<script type="module">
   import ui from "../42/ui.js"
 
   await ui({
-    tag: ".box-fit.desktop",
+    tag: "body.box-fit.box-center.desktop",
 
     content: [
       {
@@ -108,7 +108,7 @@
   app.query("#dialog")?.click()
 </script>
 
-<script type="module">
+<script type="_module">
   /* eslint-disable no-unused-vars */
   import ui from "../42/ui.js"
 
@@ -268,7 +268,7 @@
   import render from "../42/ui/render.js"
   import sleep from "../42/fabric/type/promise/sleep.js"
 
-  const el = render({ tag: "div.bd.box-ratio.pa-xl", content: "hello" })
+  const el = render({ tag: "div.bd.ratio.pa-xl", content: "hello" })
 
   document.body.className = "pa-xxl"
 

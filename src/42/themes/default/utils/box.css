@@ -58,35 +58,6 @@ textarea.box-fit {
   grid-column: span var(--span);
 }
 
-/* ratio
-======== */
-
-:root {
-  /* @thanks https://open-props.style/#aspect-ratio */
-  --ratio-square: 1;
-  --ratio-landscape: 4/3;
-  --ratio-portrait: 3/4;
-  --ratio-widescreen: 16/9;
-  --ratio-ultrawide: 18/5;
-  --ratio-golden: 1.618;
-}
-
-.box-ratio {
-  --ratio: 1;
-  aspect-ratio: var(--ratio);
-}
-
-:where(.box-ratio) {
-  display: inline-block;
-}
-
-.ratio-square { --ratio: var(--ratio-square); }
-.ratio-landscape { --ratio: var(--ratio-landscape); }
-.ratio-portrait { --ratio: var(--ratio-portrait); }
-.ratio-widescreen { --ratio: var(--ratio-widescreen); }
-.ratio-ultrawide { --ratio: var(--ratio-ultrawide); }
-.ratio-golden { --ratio: var(--ratio-golden); }
-
 /* center
 ========= */
 
@@ -98,8 +69,9 @@ textarea.box-fit {
 }
 
 :where(:is(.box-main, .box-center) > *) {
-  margin-top: auto;
-  margin-bottom: auto;
+  /* margin-top: auto;
+  margin-bottom: auto; */
+  margin: auto;
 }
 
 /* stack
@@ -109,7 +81,7 @@ textarea.box-fit {
   display: grid;
 }
 
-.box-stack > * {
+:where(.box-stack > *) {
   grid-area: 1 / 1;
   /* position: relative; */
 }
@@ -124,6 +96,11 @@ textarea.box-fit {
   max-width: 100%;
 }
 :where(.box-v) { flex-wrap: wrap; min-width: 0; } /* [1] */
+:where(.box-v > *) {
+  flex: 1 1 0%;
+  min-width: 0; /* [1] */
+  position: relative;
+}
 
 .box-h {
   display: flex;
@@ -131,13 +108,6 @@ textarea.box-fit {
   max-height: 100%;
 }
 :where(.box-h) { flex-wrap: wrap; min-height: 0; } /* [1] */
-
-:where(.box-v > *) {
-  flex: 1 1 0%;
-  min-width: 0; /* [1] */
-  position: relative;
-}
-
 :where(.box-h > *) {
   flex: 1 1 0%;
   min-height: 0; /* [1] */
@@ -219,9 +189,6 @@ textarea.box-fit {
   border-bottom-left-radius: 0;
 }
 
-.box-whitespace { gap: 1ch; }
-
-:where(.box-whitespace > *),
 :where(.box-liquid > *) { flex: 0 0 auto; }
 :where(.box-solid > *) { flex: 1 1 0%; }
 
@@ -252,12 +219,12 @@ textarea.box-fit {
 ========= */
 
 .box-main,
-.scroll-y-auto,.scroll-auto { overflow-x: hidden; overflow-y: auto; }
+.scroll-y-auto, .scroll-auto { overflow-x: hidden; overflow-y: auto; }
 .scroll-y,.scroll { overflow-x: hidden; overflow-y: scroll; }
 .scroll-x { overflow-x: scroll; overflow-y: hidden; }
 .scroll-x-auto { overflow-x: scroll; overflow-y: auto; }
 .scroll-xy { overflow: scroll; }
-.scroll-xy-auto { overflow: auto; }
+.scroll-xy-auto, .scroll-1 { overflow: auto; }
 .scroll-0 { overflow: hidden; }
 
 /* align
@@ -282,6 +249,9 @@ textarea.box-fit {
 
 .items-wrap { flex-wrap: wrap; }
 .items-wrap-0 { flex-wrap: nowrap; }
+
+/* item
+======= */
 
 .item-shrink {
   justify-self: start;

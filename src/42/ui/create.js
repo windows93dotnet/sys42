@@ -21,7 +21,7 @@ export default function create(ctx, tag, ...args) {
     }
   }
 
-  // const inBody = ctx?.el?.localName === "body"
+  const inBody = ctx?.el?.localName === "body"
 
   const parsed = parseTagSelector(tag, attrs)
   tag = parsed.tag
@@ -34,7 +34,11 @@ export default function create(ctx, tag, ...args) {
 
   attrs = ctx === undefined ? parsed.attrs : normalizeAttrs(parsed.attrs, ctx)
   if (attrs.id === undefined) delete attrs.id
-  renderAttributes(tag === "body" ? ctx.el : el, ctx, attrs)
+  renderAttributes(
+    tag === "body" ? (inBody ? ctx.el : document.body) : el,
+    ctx,
+    attrs
+  )
 
   el.append(...content)
 

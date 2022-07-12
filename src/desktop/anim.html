@@ -16,7 +16,7 @@
   import ui from "../42/ui.js"
 
   const app = await ui({
-    tag: "body.desktop.box-fit.box-h.txt-center.pa-xxl",
+    tag: "body.box-fit.box-h.txt-center.pa-xxl.desktop",
 
     content: [
       {
@@ -32,14 +32,14 @@
         content: [
           {
             if: "{{show}}",
-            tag: "div.bd.box-ratio.pa-xxl",
+            tag: ".ratio.bd.pa-xxl",
             content: "a",
             from: { rotate: "360deg", scale: 0, ms: 1000 },
             to: { rotate: "-360deg", scale: 0, ms: 1000 },
           },
           {
             if: "{{show}}",
-            tag: "div.bd.box-ratio.pa-xxl",
+            tag: ".ratio.bd.pa-xxl",
             content: "b",
             animate: { rotate: "360deg", scale: 0, ms: 1000 },
           },
@@ -87,10 +87,10 @@
         ],
       },
       {
-        tag: "._box-center.txt-left",
+        tag: ".txt-left",
         scope: "arr",
         each: {
-          tag: "div.bd.box-ratio.pa-xxl",
+          tag: ".ratio.bd.pa-xxl",
           content: "{{.}}",
           animate: { rotate: "360deg", scale: 0, ms: 1000 },
         },
