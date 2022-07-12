@@ -324,6 +324,7 @@ export function normalizeCtx(ctx = {}) {
   ctx.components ??= new Undones()
   ctx.preload ??= new Undones()
   ctx.undones ??= new Undones()
+  ctx.postrender ??= new Undones()
   ctx.actions ??= new Locator({}, { sep: "/" })
   ctx.computeds ??= new Locator({}, { sep: "/" })
 

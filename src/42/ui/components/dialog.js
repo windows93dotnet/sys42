@@ -1,6 +1,7 @@
 import Component from "../class/Component.js"
 import movable from "../traits/movable.js"
 import realm from "../../system/realm.js"
+import renderAnimation from "../renderers/renderAnimation.js"
 import { objectifyDef, forkDef } from "../normalize.js"
 
 export class Dialog extends Component {
@@ -35,19 +36,27 @@ export class Dialog extends Component {
     plugins: ["ipc"],
   }
 
-  close() {
+  #anim
+
+  async close() {
     this.ctx.cancel("dialog close")
+    if (this.#anim) await renderAnimation(this.ctx, this, "to", this.#anim)
     this.remove()
   }
 
-  render({ content, label, footer }) {
+  render({ content, label, footer, animate, to }) {
+    this.#anim = to ?? animate
     return [
       {
         tag: "header.ui-dialog__header",
         content: [
           { tag: "h2.ui-dialog__title", content: label },
           // { tag: "button", picto: "close", on: { click: "{{close()}}" } },
-          { tag: "button", picto: "close", on: { click: () => this.close() } },
+          {
+            tag: "button.ui-dialog__close",
+            picto: "close",
+            on: { click: () => this.close() },
+          },
         ],
       },
       { tag: "section.ui-dialog__body", content },

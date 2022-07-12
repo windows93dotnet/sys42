@@ -28,7 +28,8 @@
         content: "dialog",
         dialog: {
           // from: { scale: 0 },
-          from: { opacity: 0, ms: 1000 },
+          // animate: { opacity: 0, ms: 1000 },
+          animate: { scale: 0, rotate: "360deg", _ms: 1000 },
           label: "iframe ({{x}},{{y}})",
           content: {
             tag: "button#incr",
@@ -51,6 +52,9 @@
   // })
 
   app.query("#dialog")?.click()
+  setTimeout(() => {
+    document.querySelector("ui-dialog .ui-dialog__close")?.click()
+  }, 1000)
 </script>
 
 <script type="_module">

@@ -125,12 +125,16 @@ export default class Reactive extends Emitter {
     if (this.firstUpdateDone === false) this.setup()
   }
 
-  setup() {
-    this.throttle = true
+  async setup() {
     this.firstUpdateDone = true
+
+    this.throttle = true
+
     Array.from(this.ctx.el.querySelectorAll(":scope [data-autofocus]"))
       .at(-1)
       ?.focus()
+
+    await this.ctx.postrender.call()
   }
 
   get throttle() {

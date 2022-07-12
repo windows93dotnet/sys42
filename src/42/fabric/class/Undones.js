@@ -9,4 +9,11 @@ export default class Undones extends Array {
       return res
     })
   }
+
+  async call() {
+    return Promise.all(this.map((task) => task())).then((res) => {
+      this.length = 0
+      return res
+    })
+  }
 }
