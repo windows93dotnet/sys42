@@ -31,14 +31,20 @@ export default function renderIf(def, ctx) {
   })
 
   const defIf = normalizeDef(omit(def, ["if"]), ctx)
-  const defElse = def.else ? normalizeDef(def.else, ctx) : undefined
   const typeIf = getType(defIf)
-  const typeElse = getType(defElse)
+  let defElse
+  let typeElse
+  if (def.else) {
+    if ("to" in defIf) def.else.to ??= defIf.to
+    if ("from" in defIf) def.else.from ??= defIf.from
+    if ("animate" in defIf) def.else.animate ??= defIf.animate
+    defElse = def.else ? normalizeDef(def.else, ctx) : undefined
+    typeElse = getType(defElse)
+  }
 
   register(ctx, scopes, async () => {
     const res = await check(ctx.reactive.state)
     if (res === lastRes) return
-    lastRes = res
 
     const [def, type] = res ? [defIf, typeIf] : [defElse, typeElse]
 
@@ -47,10 +53,16 @@ export default function renderIf(def, ctx) {
       const range = createRange()
       range.setStartAfter(placeholder)
       range.setEndAfter(lastChild)
-      removeRange(range, def)
+      removeRange(
+        range,
+        lastRes === false && ("to" in defElse || "animate" in defElse)
+          ? defElse
+          : defIf
+      )
       lastChild = undefined
     }
 
+    lastRes = res
     if (!def) return
 
     cancel = new Canceller()

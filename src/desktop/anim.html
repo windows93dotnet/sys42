@@ -5,14 +5,6 @@
 <link rel="stylesheet" href="/style.css" id="theme" />
 
 <script type="module">
-  import trap from "../42/fabric/type/error/trap.js"
-  trap((err) => {
-    import("../42/system/log.js").then((m) => m.default(err))
-    return false
-  })
-</script>
-
-<script type="module">
   import ui from "../42/ui.js"
 
   const app = await ui({
@@ -28,20 +20,58 @@
         },
       },
       {
-        tag: ".box-center",
+        tag: ".box-v",
         content: [
           {
-            if: "{{show}}",
-            tag: ".ratio.bd.pa-xxl",
-            content: "a",
-            from: { rotate: "360deg", scale: 0, ms: 1000 },
-            to: { rotate: "-360deg", scale: 0, ms: 1000 },
+            tag: ".box-center.box-stack",
+            content: {
+              if: "{{show}}",
+              tag: ".ratio.bd.pa-xxl",
+              from: { rotate: "360deg", scale: 0, ms: 1000 },
+              to: { rotate: "-360deg", scale: 0, ms: 1000 },
+              content: "a",
+            },
           },
           {
-            if: "{{show}}",
-            tag: ".ratio.bd.pa-xxl",
-            content: "b",
-            animate: { rotate: "360deg", scale: 0, ms: 1000 },
+            tag: ".box-center.box-stack",
+            content: {
+              if: "{{show}}",
+              tag: ".ratio.bd.pa-xxl",
+              animate: { translate: "-150px", scale: 0 },
+              content: "a",
+              else: {
+                tag: ".ratio.bd.pa-xxl",
+                content: "b",
+                animate: { translate: "150px", scale: 0 },
+              },
+            },
+          },
+          {
+            tag: ".box-center.box-stack",
+            content: {
+              if: "{{show}}",
+              tag: ".ratio.bd.pa-xxl",
+              animate: { translate: "0 -150px", scale: 0 },
+              content: "a",
+              else: {
+                tag: ".ratio.bd.pa-xxl",
+                content: "b",
+              },
+            },
+          },
+          {
+            tag: ".box-center.box-stack",
+            content: {
+              if: "{{show}}",
+              tag: ".ratio.bd.pa-xxl",
+              animate: { translate: "0 -150px", scale: 0 },
+              content: "a",
+              else: {
+                tag: ".ratio.bd.pa-xxl",
+                content: "b",
+                animate: false,
+              },
+            },
           },
         ],
       },
@@ -92,7 +122,7 @@
         each: {
           tag: ".ratio.bd.pa-xxl",
           content: "{{.}}",
-          animate: { rotate: "360deg", scale: 0, ms: 1000 },
+          animate: { rotate: "360deg", scale: 0, ms: 400 },
         },
       },
     ],
