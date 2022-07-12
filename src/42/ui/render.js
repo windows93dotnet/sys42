@@ -94,8 +94,8 @@ export default function render(def, ctx, options) {
 
   if (def.content) el.append(render(def.content, ctx))
 
-  if (def.from) renderAnimation(ctx.el, "from", def.from)
-  else if (def.animate) renderAnimation(ctx.el, "from", def.animate)
+  if (def.from) renderAnimation(ctx, ctx.el, "from", def.from)
+  else if (def.animate) renderAnimation(ctx, ctx.el, "from", def.animate)
 
   return el
 }

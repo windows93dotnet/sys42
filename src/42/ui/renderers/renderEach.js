@@ -30,7 +30,7 @@ export default function renderEach(def, ctx) {
         const range = createRange()
         range.setStartAfter(placeholder)
         range.setEndAfter(lastItem)
-        removeRange(range, eachDef)
+        removeRange(ctx, range, eachDef)
         lastItem = undefined
       }
 
@@ -68,7 +68,7 @@ export default function renderEach(def, ctx) {
             const range = createRange()
             range.setStartAfter(endItem)
             range.setEndAfter(lastItem)
-            removeRange(range, eachDef)
+            removeRange(ctx, range, eachDef)
             lastItem = endItem
             break
           }

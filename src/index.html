@@ -36,6 +36,7 @@
   }
   main a {
     pointer-events: auto;
+    margin-bottom: 0.8rem;
   }
 </style>
 
@@ -54,6 +55,13 @@
   import system from "./42/system.js"
   import fs from "./42/system/fs.js"
   import disk from "./42/system/fs/disk.js"
+  import create from "./42/ui/create.js"
+  import stemname from "./42/fabric/type/path/extract/stemname.js"
+
+  const main = document.querySelector("main")
+  disk.glob("**/*.demo.html").forEach((href) => {
+    main.append(create("a", stemname(href).replace(".demo", ""), { href }))
+  })
 
   // await disk.reinstall()
   try {

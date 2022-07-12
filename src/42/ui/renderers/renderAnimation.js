@@ -11,6 +11,6 @@ const keyframeEffectKeys = [
   "ms",
 ]
 
-export default function renderAnimation(el, how, def) {
+export default function renderAnimation(ctx, el, how, def) {
   return animate[how](el, ...bisect(def, keyframeEffectKeys))
 }

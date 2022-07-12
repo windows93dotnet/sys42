@@ -35,9 +35,12 @@ export default function renderIf(def, ctx) {
   let defElse
   let typeElse
   if (def.else) {
-    if ("to" in defIf) def.else.to ??= defIf.to
-    if ("from" in defIf) def.else.from ??= defIf.from
-    if ("animate" in defIf) def.else.animate ??= defIf.animate
+    if (typeIf === "object") {
+      if ("to" in defIf) def.else.to ??= defIf.to
+      if ("from" in defIf) def.else.from ??= defIf.from
+      if ("animate" in defIf) def.else.animate ??= defIf.animate
+    }
+
     defElse = def.else ? normalizeDef(def.else, ctx) : undefined
     typeElse = getType(defElse)
   }
@@ -54,8 +57,11 @@ export default function renderIf(def, ctx) {
       range.setStartAfter(placeholder)
       range.setEndAfter(lastChild)
       removeRange(
+        ctx,
         range,
-        lastRes === false && ("to" in defElse || "animate" in defElse)
+        lastRes === false &&
+          typeElse === "object" &&
+          ("to" in defElse || "animate" in defElse)
           ? defElse
           : defIf
       )

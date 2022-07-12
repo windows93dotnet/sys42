@@ -17,6 +17,10 @@ function getVal(btn) {
   return out
 }
 
+test.teardown(() => {
+  document.querySelector("ui-dialog")?.close()
+})
+
 test.serial.flaky("transfer state data cross-realms", async (t) => {
   const app = await ui(tmp(true), {
     class: "box-fit desktop",
