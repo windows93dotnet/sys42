@@ -1,7 +1,6 @@
-export default function timeout(delay = 10_000) {
-  return new Promise((resolve, reject) =>
-    setTimeout(() => {
-      reject(new Error(`Timeout error: ${delay}`))
-    }, delay)
-  )
+export default function timeout(
+  delay = 5000,
+  err = new Error(`Timed out: ${delay}ms`)
+) {
+  return new Promise((_, reject) => setTimeout(() => reject(err), delay))
 }
