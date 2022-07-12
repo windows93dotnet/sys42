@@ -24,15 +24,7 @@ const SETUP = 3
 const RECYCLE = 4
 const DESTROY = 5
 
-const _AXIS = Symbol("AXIS")
-
 export default class Component extends HTMLElement {
-  static AXIS = _AXIS;
-
-  [_AXIS]() {
-    this.style.transform = `translate(${this.x}px, ${this.y}px)`
-  }
-
   static define(Class) {
     if (typeof Class === "object") {
       Class = class extends Component {
@@ -110,18 +102,9 @@ export default class Component extends HTMLElement {
   #setup() {
     if (this.#lifecycle === SETUP) return
     this.#lifecycle = SETUP
-    this.setup?.(this.ctx)
     this.update?.()
-
-    // TODO: add "setup" keyword in renderProps
-    if ("x" in this && "y" in this) {
-      const rect = this.getBoundingClientRect()
-      this.x ??= Math.round(rect.left)
-      this.y ??= Math.round(rect.top)
-      this[_AXIS]() // TODO: don't force AXIS rendering
-      this.style.top = 0
-      this.style.left = 0
-    }
+    this.setup?.(this.ctx)
+    this.ctx.postrender.call()
   }
 
   async #init(def, ctx) {
@@ -136,6 +119,7 @@ export default class Component extends HTMLElement {
     tmp.el = this
     tmp.preload = undefined
     tmp.components = undefined
+    tmp.postrender = undefined
     tmp.cancel = ctx?.cancel?.fork()
     tmp = normalizeCtx(tmp)
     this.ctx = tmp

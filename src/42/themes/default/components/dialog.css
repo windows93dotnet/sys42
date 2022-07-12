@@ -72,6 +72,7 @@ ui-dialog:focus {
   font-size: inherit;
   font-weight: inherit;
   position: relative;
+  user-select: none;
 }
 
 .ui-dialog__title::before {

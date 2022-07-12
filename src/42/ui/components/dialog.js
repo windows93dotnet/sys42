@@ -20,11 +20,11 @@ export class Dialog extends Component {
       },
       x: {
         type: "number",
-        update: Component.AXIS,
+        update: "axis",
       },
       y: {
         type: "number",
-        update: Component.AXIS,
+        update: "axis",
       },
     },
 
@@ -37,6 +37,10 @@ export class Dialog extends Component {
   }
 
   #anim
+
+  axis() {
+    this.style.transform = `translate(${this.x}px, ${this.y}px)`
+  }
 
   async close() {
     this.ctx.cancel("dialog close")
@@ -65,6 +69,13 @@ export class Dialog extends Component {
   }
 
   setup({ signal }) {
+    const rect = this.getBoundingClientRect()
+    this.x ??= Math.round(rect.left)
+    this.y ??= Math.round(rect.top)
+    this.axis()
+    this.style.top = 0
+    this.style.left = 0
+
     movable(this, {
       signal,
       throttle: false,
@@ -85,6 +96,7 @@ export default realm({
 
   async top(def, ctx) {
     const el = new Dialog(def, ctx)
+    await el.ready
     document.body.append(el)
   },
 })

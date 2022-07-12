@@ -36,10 +36,22 @@
 .touch-0, body.touch-0 * { touch-action: none !important; }
 .touch-1, body.touch-0 .touch-1 { touch-action: auto !important; }
 
-.events-0, body.events-0 * { pointer-events: none !important; }
-.events-1, body.events-0 .events-1 { pointer-events: auto !important; }
+.pointer-0, body.pointer-0 * { pointer-events: none !important; }
+.pointer-1, body.pointer-0 .pointer-1 { pointer-events: auto !important; }
 
-body.events-iframes-0 iframe { pointer-events: none !important; }
+.action-0, body.action-0 * {
+  user-select: none !important;
+  touch-action: none !important;
+  pointer-events: none !important;
+}
+
+.action-1, body.action-0 .action-1 {
+  user-select: auto !important;
+  touch-action: auto !important;
+  pointer-events: auto !important;
+}
+
+body.pointer-iframes-0 iframe { pointer-events: none !important; }
 
 .scrollbar-0 { scrollbar-width: none; }
 .scrollbar-0::-webkit-scrollbar { display: none; }

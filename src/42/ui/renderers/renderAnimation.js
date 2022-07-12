@@ -1,5 +1,6 @@
 import animate from "../../fabric/dom/animate.js"
 import bisect from "../../fabric/type/object/bisect.js"
+import setTemp from "../../fabric/dom/setTemp.js"
 
 const keyframeEffectKeys = [
   "composite",
@@ -12,14 +13,18 @@ const keyframeEffectKeys = [
 ]
 
 function start(el, how, keyframe, options) {
+  const cL = document.body.classList
+  if (cL.contains("motionless") || cL.contains("animation-0")) return
+
+  const temp = { class: "action-0" }
   if ("x" in el && "y" in el) {
-    console.log(how, el.x, el.y)
-    el.style.left = el.x + "px"
-    el.style.top = el.y + "px"
-    el.style.transform = `translate(0px, 0px)`
+    temp.style = {
+      transformOrigin: `calc(${el.x}px + 50%) calc(${el.y}px + 50%)`,
+    }
   }
 
-  return animate[how](el, keyframe, options)
+  const restore = setTemp(el, temp)
+  return animate[how](el, keyframe, options).then(restore)
 }
 
 export default async function renderAnimation(ctx, el, how, def) {
