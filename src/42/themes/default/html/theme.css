@@ -303,9 +303,6 @@ ui-swatch,
 hr {
   /* height: 0; */
   width: 100%;
-}
-
-hr {
   margin-block: var(--unit);
   margin-inline: 0;
   border-width: var(--separator-bdw);

@@ -15,16 +15,15 @@ import noop from "../fabric/type/function/noop.js"
 import arrify from "../fabric/type/any/arrify.js"
 import hash from "../fabric/type/any/hash.js"
 import getType from "../fabric/getType.js"
-import ATTRIBUTES_ALLOW_LIST from "../fabric/constants/ATTRIBUTES_ALLOW_LIST.js"
+import ALLOWED_HTML_ATTRIBUTES from "../fabric/constants/ALLOWED_HTML_ATTRIBUTES.js"
+import ALLOWED_SVG_ATTRIBUTES from "../fabric/constants/ALLOWED_SVG_ATTRIBUTES.js"
 
-const ATTRIBUTES = new Set(
-  ATTRIBUTES_ALLOW_LIST.concat([
-    "dataset",
-    "aria",
-    // TODO: add SVG_ATTRIBUTES_ALLOW_LIST
-    "viewbox",
-  ])
-)
+const ATTRIBUTES = new Set([
+  ...ALLOWED_HTML_ATTRIBUTES,
+  ...ALLOWED_SVG_ATTRIBUTES,
+  "dataset",
+  "aria",
+])
 const ATTRIBUTES_WITHDASH = new Set(["acceptCharset", "httpEquiv"])
 
 const DEF_KEYWORDS = new Set([

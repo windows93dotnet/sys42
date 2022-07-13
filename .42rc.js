@@ -101,19 +101,82 @@ export default {
 
   annexes: [
     {
-      // only: true,
+      only: true,
       metaHeaders: false,
       src: "WICG/sanitizer-api",
-      head: "export default Object.freeze(",
-      foot: ")",
       map: [
         [
           "resources/baseline-attribute-allow-list.json",
-          "src/42/data/ATTRIBUTES_ALLOW_LIST.js",
+          "src/42/fabric/constants/ALLOWED_HTML_ATTRIBUTES.js",
+          {
+            head:
+              "// @src https://github.com/WICG/sanitizer-api/blob/main/resources/baseline-attribute-allow-list.json" +
+              "\n\nexport default Object.freeze(",
+            foot: ")",
+            replace: [
+              "align",
+              "alink",
+              "background",
+              "bgcolor",
+              "border",
+              "clear",
+              "hspace",
+              "language",
+              "link",
+              "nowrap",
+              "start",
+              "text",
+              "type",
+              "vlink",
+              "vspace",
+            ].map((deprecated) => [`"${deprecated}",\n`, ""]),
+          },
         ],
         [
           "resources/baseline-element-allow-list.json",
-          "src/42/data/ELEMENTS_ALLOW_LIST.js",
+          "src/42/fabric/constants/ALLOWED_HTML_TAGS.js",
+          {
+            head:
+              "// @src https://github.com/WICG/sanitizer-api/blob/main/resources/baseline-element-allow-list.json" +
+              "\n\nexport default Object.freeze(",
+            foot: ")",
+            replace: [
+              "acronym",
+              "applet",
+              "basefont",
+              "bgsound",
+              "big",
+              "blink",
+              "center",
+              "content",
+              "dir",
+              "embed",
+              "font",
+              "frame",
+              "frameset",
+              "hgroup",
+              "image",
+              "isindex",
+              "keygen",
+              "marquee",
+              "menu",
+              "menuitem",
+              "nobr",
+              "noembed",
+              "noframes",
+              "param",
+              "plaintext",
+              "rb",
+              "rtc",
+              "s",
+              "shadow",
+              "spacer",
+              "strike",
+              "tt",
+              "u",
+              "xmp",
+            ].map((deprecated) => [`"${deprecated}",\n`, ""]),
+          },
           // TODO: remove deprecated html elements (b basefont bgsound command font i keygen plaintext portal ...)
         ],
       ],
@@ -123,7 +186,6 @@ export default {
     ========= */
 
     {
-      only: true,
       src: "golden-fleece",
       dest: "src/42/system/formats/json5.js",
       foot: "export default { ast: parse, parse: evaluate, format: patch, stringify }",
@@ -140,8 +202,6 @@ export default {
     },
 
     {
-      // src: "ua-parser-js",
-      // dest: "42/system/env/parseUserAgent.js",
       src: "faisalman/ua-parser-js@develop",
       map: [["src/ua-parser.js", "src/42/system/env/parseUserAgent.js"]],
       metaHeaders: false,

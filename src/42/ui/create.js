@@ -1,7 +1,7 @@
 import renderAttributes from "./renderers/renderAttributes.js"
 import parseTagSelector from "../system/formats/emmet/parseTagSelector.js"
 import { normalizeAttrs } from "./normalize.js"
-import SVG_TAGS from "../fabric/constants/SVG_TAGS.js"
+import ALLOWED_SVG_ATTRIBUTES from "../fabric/constants/ALLOWED_SVG_ATTRIBUTES.js"
 
 export default function create(ctx, tag, ...args) {
   if (typeof ctx === "string") {
@@ -26,7 +26,7 @@ export default function create(ctx, tag, ...args) {
   const parsed = parseTagSelector(tag, attrs)
   tag = parsed.tag
 
-  const el = SVG_TAGS.includes(tag)
+  const el = ALLOWED_SVG_ATTRIBUTES.includes(tag)
     ? document.createElementNS("http://www.w3.org/2000/svg", tag)
     : tag === "body"
     ? document.createDocumentFragment()

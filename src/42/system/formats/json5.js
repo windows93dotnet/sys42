@@ -1,4 +1,4 @@
-// {src:"golden-fleece",dest:"src/42/system/formats/json5.js",foot:"export default { ast: parse, parse: evaluate, format: patch, stringify }",replace:[[/spaces(options.spaces)/g,"spaces(options.spaces) /* ok */"]],eslint:{disable:true}}
+// {src:"golden-fleece",dest:"src/42/system/formats/json5.js",foot:"export default { ast: parse, parse: evaluate, format: patch, stringify }",eslint:{disable:true}}
 /* eslint-disable unicorn/no-abusive-eslint-disable */
 /* eslint-disable */
 

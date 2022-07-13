@@ -3,8 +3,8 @@ import create from "./create.js"
 import resolveScope from "./resolveScope.js"
 import register from "./register.js"
 import normalize from "./normalize.js"
-import ELEMENTS_ALLOW_LIST from "../fabric/constants/ELEMENTS_ALLOW_LIST.js"
-import SVG_TAGS from "../fabric/constants/SVG_TAGS.js"
+import ALLOWED_HTML_TAGS from "../fabric/constants/ALLOWED_HTML_TAGS.js"
+import ALLOWED_SVG_TAGS from "../fabric/constants/ALLOWED_SVG_TAGS.js"
 import preload from "../system/load/preload.js"
 import renderComponent from "./renderers/renderComponent.js"
 import renderIf from "./renderers/renderIf.js"
@@ -77,8 +77,8 @@ export default function render(def, ctx, options) {
     if (
       localName &&
       ctx.trusted !== true &&
-      !ELEMENTS_ALLOW_LIST.includes(localName) &&
-      !SVG_TAGS.includes(localName)
+      !ALLOWED_HTML_TAGS.includes(localName) &&
+      !ALLOWED_SVG_TAGS.includes(localName)
     ) {
       throw new DOMException(`Disallowed tag: ${localName}`, "SecurityError")
     }
