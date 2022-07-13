@@ -37,7 +37,7 @@ function mountPlace(place, driverName, options = {}) {
   }
 }
 
-export async function fsMount(place, driverName, options) {
+export function fsMount(place, driverName, options) {
   const type = typeof place
   if (type === "object") {
     options = driverName

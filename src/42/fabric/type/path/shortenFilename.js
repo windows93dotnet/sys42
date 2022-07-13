@@ -6,7 +6,7 @@ import getCWD from "./cwd.js"
 const origin = globalThis?.location?.origin
 const host = origin ?? "https?://localhost:(\\d{2,4})"
 const cwd = getCWD()
-const base = origin ? origin : `file://${cwd}/`
+const base = origin ?? `file://${cwd}/`
 
 const DEFAULTS = {
   ignoreParams: ["t"],

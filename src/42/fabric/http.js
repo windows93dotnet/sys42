@@ -111,7 +111,7 @@ const makeMethod = (method, withBody = true) =>
   withBody
     ? async (url, body, ...rest) => {
         const config = configure(...rest, { method })
-        body = config.body ? config.body : body
+        body = config.body ?? body
         if (body) {
           config.body = config.headers["Content-Type"].startsWith(
             "application/json"
@@ -131,7 +131,7 @@ const makeMethod = (method, withBody = true) =>
 
 export const postJSON = async (url, body, ...rest) => {
   const config = configure(...rest, POST_JSON_CONFIG)
-  body = config.body ? config.body : body
+  body = config.body ?? body
   config.body = JSON.stringify(body)
   const res = await request(url, config)
   return handleStatus(res, url)

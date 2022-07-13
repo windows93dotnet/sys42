@@ -11,12 +11,12 @@ const BOOLEAN_FALSE = new Set(["none", "off", "false"])
 
 const CONVERTERS = {
   string: {
-    toView: (val) => String(val),
-    fromView: (val) => String(val),
+    toView: String,
+    fromView: String,
   },
 
   number: {
-    toView: (val) => String(val),
+    toView: String,
     fromView(val, key) {
       const out = Number(val)
       if (Number.isNaN(out)) {
