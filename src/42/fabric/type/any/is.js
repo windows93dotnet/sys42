@@ -9,14 +9,13 @@ import isEmptyObject from "./is/isEmptyObject.js"
 import isLength from "./is/isLength.js"
 
 // TODO: move more usefull is* functions in 'any' folder
+export { default as isObject } from "./is/isObject.js"
 export { default as isEmptyObject } from "./is/isEmptyObject.js"
 export { default as isLength } from "./is/isLength.js"
 export { default as isProxy } from "./is/isProxy.js"
 export { default as isArrayLike } from "./is/isArrayLike.js"
 export { default as isPromiseLike } from "./is/isPromiseLike.js"
 export { default as isTemplateObject } from "./is/isTemplateObject.js"
-
-const { toString } = Object.prototype
 
 export const isPositiveInteger = (x) => x >>> 0 === x
 export const { isSafeInteger } = Number
@@ -68,9 +67,6 @@ export const isIterator = (x) =>
   x[Symbol.iterator]() === x
 
 export const isObjectLike = (x) => x !== null && typeof x === "object"
-
-export const isObject = (x) =>
-  x !== null && typeof x === "object" && toString.call(x) === "[object Object]"
 
 export const isPlainObject = (x) =>
   x !== null && typeof x === "object" && x.constructor === Object
