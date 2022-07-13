@@ -101,7 +101,6 @@ export default {
 
   annexes: [
     {
-      only: true,
       metaHeaders: false,
       src: "WICG/sanitizer-api",
       map: [
@@ -202,6 +201,7 @@ export default {
     },
 
     {
+      only: true,
       src: "faisalman/ua-parser-js@develop",
       map: [["src/ua-parser.js", "src/42/system/env/parseUserAgent.js"]],
       metaHeaders: false,

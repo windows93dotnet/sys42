@@ -10,7 +10,7 @@ deallocate.evaluate = (obj, tokens) => {
   let current = obj
 
   if (tokens.length === 0) {
-    for (const key in obj) delete obj[key]
+    for (const key in obj) if (Object.ownKeys(obj, key)) delete obj[key]
     return obj
   }
 

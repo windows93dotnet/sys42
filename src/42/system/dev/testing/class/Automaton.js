@@ -2,7 +2,7 @@
 // @related https://devexpress.github.io/testcafe/documentation/test-api/actions/action-options.html#click-action-options
 
 // import configure from "../../configure.js"
-import gamepad, { GamepadEvent } from "../../../system/devices/gamepad.js"
+import gamepad, { GamepadEvent } from "../../../devices/gamepad.js"
 
 const DEFAULT_EVENT = {
   bubbles: true,

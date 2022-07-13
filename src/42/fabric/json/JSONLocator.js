@@ -120,9 +120,7 @@ export default class JSONLocator {
 
   clear() {
     for (const key in this.value) {
-      if (Object.hasOwnProperty.call(this.value, key)) {
-        delete this.value[key]
-      }
+      if (Object.hasOwn(this.value, key)) delete this.value[key]
     }
 
     return this

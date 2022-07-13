@@ -10,8 +10,6 @@ import { isPlainObjectOrHashmap /* , isIterable */ } from "../type/any/is.js"
 
 import LinkedListNode from "../structure/LinkedListNode.js"
 
-const { hasOwnProperty } = Object.prototype
-
 const checkIsJsonValue = function (value) {
   switch (typeof value) {
     case "string":
@@ -142,16 +140,18 @@ const arrayDiff = function (a, b, path, options, parents) {
     let patchIdx
 
     for (idx in patches) {
-      patch = patches[idx]
-      if (patch.op === "replace") {
-        patchIdx = patch.path[patch.path.length - 1]
-        patches[idx] = valueDiff(
-          a[patchIdx],
-          patch.value,
-          patch.path,
-          options,
-          parents
-        )
+      if (Object.hasOwn(patches, idx)) {
+        patch = patches[idx]
+        if (patch.op === "replace") {
+          patchIdx = patch.path[patch.path.length - 1]
+          patches[idx] = valueDiff(
+            a[patchIdx],
+            patch.value,
+            patch.path,
+            options,
+            parents
+          )
+        }
       }
     }
 
@@ -226,7 +226,7 @@ function valueDiff(a, b, path, options, parents = {}) {
 
   let acc = []
   for (const key in b) {
-    if (hasOwnProperty.call(b, key)) {
+    if (Object.hasOwn(b, key)) {
       if (key in a) {
         acc = acc.concat(
           valueDiff(a[key], b[key], path.concat(key), options, parents)
@@ -244,7 +244,7 @@ function valueDiff(a, b, path, options, parents = {}) {
   }
 
   for (const key in a) {
-    if (hasOwnProperty.call(a, key)) {
+    if (Object.hasOwn(a, key)) {
       if (!(key in b)) {
         acc.push({ op: "remove", path: joinJSONPointer(path.concat(key)) })
       }

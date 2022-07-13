@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "pretest": "eslint '{src,bin}/**/*.{js,html}'",
+    "fmt": "prettier --loglevel silent '{src,cli}/**/*.{js,md,html}' --write",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

@@ -37,7 +37,7 @@ export default class FileIndex extends Storable {
     const names = []
 
     for (const key in dir) {
-      if (Object.hasOwnProperty.call(dir, key)) {
+      if (Object.hasOwn(dir, key)) {
         const entry = dir[key]
         const res = absolute ? joinPath(path, key) : joinPath(parent, key)
         if (typeof entry === "object") {

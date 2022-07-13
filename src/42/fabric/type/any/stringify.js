@@ -652,8 +652,7 @@ ${indentSpace.repeat(depth - 1)})`
     tag = tag === "Array" ? "" : `/* ${tag} */ `
     if (len > 0) {
       let { sp, nl, lc } = this._
-      // eslint-disable-next-line no-prototype-builtins
-      if (val.every((item, i) => !val.hasOwnProperty(i))) {
+      if (val.every((item, i) => !Object.hasOwn(val, i))) {
         return `new ${cName}(${len})`
       }
 

@@ -7,7 +7,7 @@
 import setup from "./setup.js"
 import listen from "../fabric/dom/listen.js"
 import signature from "../fabric/dom/signature.js"
-import serializeArgs from "../ui/utils/serializeArgs.js"
+// import serializeArgs from "../ui/utils/serializeArgs.js"
 import getInheritedMethod from "../fabric/dom/getInheritedMethod.js"
 import expr from "./expr.js"
 import locate from "../fabric/locator/locate.js"
@@ -195,16 +195,17 @@ export class Shortcuts {
       })
 
       if (pass) {
-        rule.result = rule.options.serializeArgs
-          ? rule.run(
-              ...serializeArgs(
-                e,
-                target,
-                rule.options.args,
-                rule.options.thisArg
-              )
-            )
-          : rule.run(e, target)
+        // rule.result = rule.options.serializeArgs
+        //   ? rule.run(
+        //       ...serializeArgs(
+        //         e,
+        //         target,
+        //         rule.options.args,
+        //         rule.options.thisArg
+        //       )
+        //     )
+        //   : rule.run(e, target)
+        rule.result = rule.run(e, target)
 
         if (rule.result === false || rule.options.preventDefault) {
           e.preventDefault()

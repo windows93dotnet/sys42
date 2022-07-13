@@ -4,7 +4,6 @@
 // @thanks https://github.com/epoberezkin/fast-deep-equal
 // @related https://github.com/substack/node-deep-equal
 
-const { hasOwnProperty } = Object.prototype
 const PRIMITIVES = new Set(["boolean", "number", "string"])
 
 const checkNode = "Node" in globalThis
@@ -16,7 +15,7 @@ const compareObjects = (a, b, config) => {
   if (l !== Reflect.ownKeys(b).length) return false
 
   for (let i = 0; i < l; i++) {
-    if (hasOwnProperty.call(b, keysA[i]) === false) return false
+    if (Object.hasOwn(b, keysA[i]) === false) return false
   }
 
   if (config.visited.has(a) && config.visited.has(b)) return true

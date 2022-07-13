@@ -2,7 +2,7 @@ module.exports = {
   parser: "@babel/eslint-parser",
   parserOptions: {
     requireConfigFile: false,
-    ecmaVersion: 2021,
+    ecmaVersion: 2022,
     sourceType: "module",
   },
   extends: [
@@ -31,7 +31,7 @@ module.exports = {
     worker: true,
     serviceworker: true,
     browser: true,
-    es2021: true,
+    es2022: true,
   },
   settings: {
     "import/resolver": {
