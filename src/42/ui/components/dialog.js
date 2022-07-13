@@ -50,21 +50,34 @@ export class Dialog extends Component {
 
   render({ content, label, footer, animate, to }) {
     this.#anim = to ?? animate
-    return [
+
+    const buttons = [
+      {
+        tag: "button.ui-dialog__close",
+        picto: "close",
+        on: { click: "{{close()}}" },
+      },
+    ]
+
+    const def = [
       {
         tag: "header.ui-dialog__header",
-        content: [
-          { tag: "h2.ui-dialog__title", content: label },
-          {
-            tag: "button.ui-dialog__close",
-            picto: "close",
-            on: { click: "{{close()}}" },
-          },
-        ],
+        content: [{ tag: "h2.ui-dialog__title", content: label }, ...buttons],
       },
-      { tag: "section.ui-dialog__body", content },
-      { tag: "footer.ui-dialog__footer", content: footer },
+      {
+        tag: "section.ui-dialog__body",
+        content,
+      },
     ]
+
+    if (footer) {
+      def.push({
+        tag: "footer.ui-dialog__footer",
+        content: footer,
+      })
+    }
+
+    return def
   }
 
   setup({ signal }) {

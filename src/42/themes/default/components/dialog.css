@@ -60,10 +60,6 @@ ui-dialog:focus {
   gap: var(--unit-sm);
 }
 
-.ui-dialog__footer:empty {
-  display: none;
-}
-
 .ui-dialog__title {
   flex: 1;
   padding: 0 var(--unit-md);

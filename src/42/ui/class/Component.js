@@ -6,6 +6,7 @@ import defer from "../../fabric/type/promise/defer.js"
 import renderAttributes from "../renderers/renderAttributes.js"
 import renderProps from "../renderers/renderProps.js"
 import resolveScope from "../resolveScope.js"
+import configure from "../../fabric/configure.js"
 import render from "../render.js"
 import {
   objectifyDef,
@@ -142,19 +143,24 @@ export default class Component extends HTMLElement {
       if (definition.id === true) this.id = `${this.localName}-${i}`
     }
 
+    def = objectifyDef(def)
+
+    const options = {}
     let props
     if (definition.props) {
-      const keys = Object.keys(definition.props)
-      if (definition.defaults) keys.push(...Object.keys(definition.defaults))
+      const propsKeys = Object.keys(definition.props)
+      const configKeys = Object.keys(definition.defaults ?? {})
       const entries = Object.entries(def)
       props = {}
       def = {}
       for (const [key, val] of entries) {
-        if (keys.includes(key)) {
+        if (propsKeys.includes(key)) {
           props[key] =
             typeof val === "string" //
               ? normalizeString(val, this.ctx)
               : val
+        } else if (configKeys.includes(key)) {
+          options[key] = val
         } else def[key] = val
       }
     }
@@ -165,26 +171,28 @@ export default class Component extends HTMLElement {
 
     /* handle def
     ------------- */
-    const config = { ...definition, ...objectifyDef(def) }
-    const { computed, state } = config
+    def = { ...definition, ...def }
+    const { computed, state } = def
     this.ctx.computed = computed
-    delete config.computed
-    delete config.state
-    delete config.scope
-    delete config.tag
+    delete def.computed
+    delete def.state
+    delete def.scope
+    delete def.tag
+
+    const config = configure(definition.defaults, options)
 
     if (this.render) {
-      Object.assign(config, objectifyDef(await this.render(config)))
+      Object.assign(def, objectifyDef(await this.render({ ...config, ...def })))
     }
 
-    def = normalizeDef(config, this.ctx, { skipAttrs: true })
+    def = normalizeDef(def, this.ctx, { skipAttrs: true })
 
     /* apply
     -------- */
     if (state) this.ctx.reactive.assign(this.ctx.globalScope, state)
     if (computed) normalizeComputeds(computed, this.ctx)
 
-    const attrs = normalizeAttrs(config, this.ctx, definition.defaults)
+    const attrs = normalizeAttrs(def, this.ctx, definition.defaults)
     if (attrs) renderAttributes(this, this.ctx, attrs)
 
     await this.ctx.preload.done()

@@ -13,52 +13,64 @@
 </script>
 
 <script type="module">
-  /* eslint-disable no-unused-vars */
   import ui from "../42/ui.js"
+  import fs from "../42/system/fs.js"
+  import disk from "../42/system/fs/disk.js"
 
-  const app = await ui({
-    tag: "body.box-fit.desktop._motionless",
-    content: [
-      {
-        tag: "button#incr",
-        content: "{{cnt}}",
-        on: { click: "{{cnt += 1}}" },
-      },
-      {
-        tag: "button#dialog",
-        content: "dialog",
-        dialog: {
-          // animate: { scale: 0, translate: "-50% -50%" },
-          // animate: { scale: 0, ms: 1000 },
-          // animate: { opacity: 0, ms: 1000 },
-          // animate: { scale: 0.5, _rotate: "360deg", ms: 5000 },
-          // animate: { scale: 0, rotate: "-360deg", ms: 1000 },
-          animate: { translate: "0 -100%", opacity: 0, ms: 300 },
-          label: "iframe ({{x}},{{y}})",
-          content: {
-            tag: "button#incr",
-            content: "{{cnt}}",
-            on: { click: "{{cnt += 1}}" },
+  await fs.deleteDir(disk.HOME + "/.ui").catch(() => {})
+
+  const app = await ui(
+    {
+      tag: "body.box-fit.desktop._motionless",
+      content: [
+        {
+          tag: "button#incr",
+          content: "{{cnt}}",
+          on: { click: "{{cnt += 1}}" },
+        },
+        {
+          tag: "button#dialog-left",
+          content: "dialog <--",
+          dialog: {
+            x: 100,
+            animate: { translate: "0 -100%", opacity: 0, ms: 300 },
+            label: "<-- ({{x}},{{y}})",
+            content: {
+              tag: "button#incr",
+              content: "{{cnt}}",
+              on: { click: "{{cnt += 1}}" },
+            },
           },
         },
+        {
+          tag: "button#dialog-right",
+          content: "dialog -->",
+          dialog: {
+            animate: { translate: "0 -100%", opacity: 0, ms: 300 },
+            label: "--> ({{x}},{{y}})",
+            content: {
+              tag: "button#incr",
+              content: "{{cnt}}",
+              on: { click: "{{cnt += 1}}" },
+            },
+          },
+        },
+      ],
+
+      plugins: ["persist"],
+
+      state: {
+        cnt: 42,
       },
-    ],
-
-    plugins: ["persist"],
-
-    state: {
-      cnt: 42,
     },
-  })
+    { id: "persist-test" }
+  )
 
-  // app.reactive.on("update", (queue) => {
-  //   console.log(11, queue)
-  // })
-
-  // app.query("#dialog")?.click()
-  // setTimeout(() => {
-  //   document.querySelector("ui-dialog .ui-dialog__close")?.click()
-  // }, 2000)
+  if (app.ctx.plugins.persist.initial) {
+    app.query("#dialog-left")?.click()
+    app.query("#dialog-right")?.click()
+    app.query("#incr")?.click()
+  }
 </script>
 
 <script type="_module">

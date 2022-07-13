@@ -7,10 +7,8 @@ export default function paintThrottle(fn) {
     if (pending) return
     pending = true
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        fn(...args)
-        pending = false
-      })
+      fn(...args)
+      pending = false
     })
   }
 }

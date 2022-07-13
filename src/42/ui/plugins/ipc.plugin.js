@@ -38,6 +38,9 @@ if (inIframe) {
 }
 
 export default async (ctx, options) => {
+  if (ctx.plugins.ipc) return
+  ctx.plugins.ipc = true
+
   const {
     parent_iframe_to_top, //
     top_to_parent_iframe,
