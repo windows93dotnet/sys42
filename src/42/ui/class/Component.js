@@ -117,6 +117,7 @@ export default class Component extends HTMLElement {
     ------------- */
     let tmp = { ...ctx }
     tmp.el = this
+    tmp.component = this
     tmp.preload = undefined
     tmp.components = undefined
     tmp.postrender = undefined

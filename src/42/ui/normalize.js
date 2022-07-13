@@ -88,9 +88,9 @@ export function normalizeTokens(tokens, ctx, filters) {
       if (ctx.actions.has(loc)) {
         thisArg = ctx
         filter = ctx.actions.get(loc)
-      } else if (token.value in ctx.el) {
-        thisArg = ctx.el
-        filter = ctx.el[token.value]
+      } else if (token.value in ctx.component) {
+        thisArg = ctx.component
+        filter = ctx.component[token.value]
       }
 
       if (filter) {

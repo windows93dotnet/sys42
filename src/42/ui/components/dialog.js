@@ -55,11 +55,10 @@ export class Dialog extends Component {
         tag: "header.ui-dialog__header",
         content: [
           { tag: "h2.ui-dialog__title", content: label },
-          // { tag: "button", picto: "close", on: { click: "{{close()}}" } },
           {
             tag: "button.ui-dialog__close",
             picto: "close",
-            on: { click: () => this.close() },
+            on: { click: "{{close()}}" },
           },
         ],
       },
@@ -72,7 +71,6 @@ export class Dialog extends Component {
     const rect = this.getBoundingClientRect()
     this.x ??= Math.round(rect.left)
     this.y ??= Math.round(rect.top)
-    this.axis()
     this.style.top = 0
     this.style.left = 0
 

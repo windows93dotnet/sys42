@@ -13,6 +13,7 @@
 </script>
 
 <script type="module">
+  /* eslint-disable no-unused-vars */
   import ui from "../42/ui.js"
 
   const app = await ui({
@@ -43,7 +44,7 @@
       },
     ],
 
-    // plugins: ["persist"],
+    plugins: ["persist"],
 
     state: {
       cnt: 42,
@@ -54,10 +55,10 @@
   //   console.log(11, queue)
   // })
 
-  app.query("#dialog")?.click()
-  setTimeout(() => {
-    document.querySelector("ui-dialog .ui-dialog__close")?.click()
-  }, 2000)
+  // app.query("#dialog")?.click()
+  // setTimeout(() => {
+  //   document.querySelector("ui-dialog .ui-dialog__close")?.click()
+  // }, 2000)
 </script>
 
 <script type="_module">
