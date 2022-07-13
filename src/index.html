@@ -64,15 +64,12 @@
   })
 
   // await disk.reinstall()
-  try {
-    await fs.deleteDir(disk.HOME + "/.ui")
-  } catch {}
+  await fs.deleteDir(disk.HOME + "/.ui").catch(() => {})
 
   system.DEV = true
 
   testRunner(
-    // prettier-ignore
-    // await import("./42/system/fs/disk.js").then((m) => m.default.glob("**/*.test.js")),
+    // disk.glob("**/*.test.js"),
     [
       // "/tests/42/fabric/configure.test.js",
       // // // "/tests/42/fabric/type/any/clone.test.js",
@@ -101,7 +98,6 @@
       // "/tests/42/system/i18n.test.js",
       // "/tests/42/system/log.test.js",
 
-      "/tests/42/ui/components-ref.test.js",
       "/tests/42/ui/components.test.js",
       "/tests/42/ui/components/folder.test.js",
       "/tests/42/ui/components/icon.test.js",

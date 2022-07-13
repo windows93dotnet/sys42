@@ -144,14 +144,17 @@ export default class Component extends HTMLElement {
 
     let props
     if (definition.props) {
-      const propsKeys = Object.keys(definition.props)
+      const keys = Object.keys(definition.props)
+      if (definition.defaults) keys.push(...Object.keys(definition.defaults))
       const entries = Object.entries(def)
       props = {}
       def = {}
       for (const [key, val] of entries) {
-        if (propsKeys.includes(key)) {
+        if (keys.includes(key)) {
           props[key] =
-            typeof val === "string" ? normalizeString(val, this.ctx) : val
+            typeof val === "string" //
+              ? normalizeString(val, this.ctx)
+              : val
         } else def[key] = val
       }
     }
@@ -228,6 +231,7 @@ export default class Component extends HTMLElement {
     this.#observed = undefined
     this.#hasProps = undefined
 
+    delete this.ctx.component
     delete this.ctx.el
     delete this.ctx
 

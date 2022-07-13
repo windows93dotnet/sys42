@@ -21,6 +21,7 @@ const PRELOAD = new Set(["link", "script"])
 
 export default function render(def, ctx, options) {
   if (def?.tag?.startsWith("ui-")) {
+    delete def?.attrs
     return renderComponent(create(def.tag), def, ctx)
   }
 

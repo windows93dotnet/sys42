@@ -23,18 +23,12 @@ export function setAriaAttributes(el, obj) {
   return el
 }
 
-// Must use classList to prevent a browser bug
-// `el.setAttribute("class", val)` and `el.className = val`
-// is messing with styles for some reasons
-function setArrayClasses(el, val) {
-  for (const className of val) el.classList.add(className)
-}
-
+// [1] SVG doesn't support `className` // TODO: check browser compatibility
 export function setClasses(el, val) {
-  if (Array.isArray(val)) setArrayClasses(el, val)
+  if (Array.isArray(val)) el.setAttribute("class", val.join(" ") /* [1] */)
   else {
     const type = typeof val
-    if (type === "string") setArrayClasses(el, val.split(" "))
+    if (type === "string") el.setAttribute("class", val /* [1] */)
     else if (val && type === "object") {
       for (const [keys, value] of Object.entries(val)) {
         const op = value ? "add" : "remove"
