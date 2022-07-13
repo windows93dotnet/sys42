@@ -2,6 +2,8 @@
 // @src https://github.com/zloirock/core-js/blob/master/packages/core-js/modules/esnext.array.is-template-object.js
 // https://github.com/tc39/proposal-array-is-template-object
 
+globalThis.system42?.polyfills.push("Array.isTemplateObject")
+
 const { isFrozen } = Object
 const { isArray } = Array
 

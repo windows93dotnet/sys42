@@ -1,5 +1,5 @@
 /* eslint-disable no-throw-literal */
-import "../env/polyfills/readable-stream-async-iterator.js"
+import "../env/polyfills/ReadableStream.prototype.values.js"
 import Disk, { RESERVED_BYTES } from "./Disk.js"
 import Driver from "./Driver.js"
 

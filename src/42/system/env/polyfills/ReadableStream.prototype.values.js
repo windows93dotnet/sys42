@@ -3,6 +3,8 @@
 // @related https://gist.github.com/dy/8ca154c96e2b2a823c6501d29972b8a8
 
 if (Symbol.asyncIterator in ReadableStream.prototype === false) {
+  globalThis.system42?.polyfills.push("ReadableStream.prototype.values")
+
   ReadableStream.prototype.values = function ({ preventCancel } = {}) {
     const reader = this.getReader()
     return {

@@ -1,10 +1,7 @@
 import Loop from "./class/Loop.js"
 
 if ("requestIdleCallback" in globalThis === false) {
-  await import("../system/env/polyfills/window.requestIdleCallback.js")
-  import("../system.js").then((m) =>
-    m.default.polyfills.push("window.requestIdleCallback")
-  )
+  await import("../system/env/polyfills/globalThis.requestIdleCallback.js")
 }
 
 export class Mainloop extends Loop {

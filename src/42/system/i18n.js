@@ -8,11 +8,7 @@ import languages from "./i18n/languages.js"
 import pluralize from "../fabric/type/string/pluralize.js"
 import makeTemplate from "./formats/template/makeTemplate.js"
 import parseTemplate from "./formats/template/parseTemplate.js"
-
-if ("isTemplateObject" in globalThis.Array === false) {
-  await import("./env/polyfills/Array.isTemplateObject.js")
-  system.polyfills.push("Array.isTemplateObject")
-}
+import isTemplateObject from "../fabric/type/any/is/isTemplateObject.js"
 
 system.i18n ??= {
   languages,
@@ -53,7 +49,7 @@ function findContext(locale, context, callback, i = 0) {
 function plural({ data }, ...args) {
   const { locale, config } = normalizeConfig(data)
 
-  if (Array.isTemplateObject(args[0])) {
+  if (isTemplateObject(args[0])) {
     const [strings, ...substitutions] = args
     let out = strings[0]
 

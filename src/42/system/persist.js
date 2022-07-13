@@ -3,6 +3,10 @@ import systemPath from "./fs/systemPath.js"
 import dispatch from "../fabric/dom/dispatch.js"
 import disk from "./fs/disk.js"
 
+if ("requestIdleCallback" in globalThis === false) {
+  await import("./env/polyfills/globalThis.requestIdleCallback.js")
+}
+
 const pending = new Map()
 
 export default function persist(path, data) {

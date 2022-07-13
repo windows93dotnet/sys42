@@ -14,6 +14,7 @@ export { default as isLength } from "./is/isLength.js"
 export { default as isProxy } from "./is/isProxy.js"
 export { default as isArrayLike } from "./is/isArrayLike.js"
 export { default as isPromiseLike } from "./is/isPromiseLike.js"
+export { default as isTemplateObject } from "./is/isTemplateObject.js"
 
 const { toString } = Object.prototype
 
@@ -33,7 +34,6 @@ export const isTruthy = (x) => Boolean(x) === true
 
 export const { isFrozen } = Object
 export const { isArray } = Array
-export const isTemplateObject = (x) => Array.isTemplateObject(x)
 export const isBoolean = (x) => typeof x === "boolean"
 export const isString = (x) => typeof x === "string"
 export const isSymbol = (x) => typeof x === "symbol"
