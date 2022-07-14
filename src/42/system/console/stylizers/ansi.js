@@ -36,7 +36,7 @@ const color = ({ entries }, color) => {
 }
 
 const ansi = chainable(GETTERS, color, ({ entries }, str) => {
-  if (ansi.enabled !== true || !str) return str
+  if (ansi.enabled === false || !str) return str
 
   let modified
 

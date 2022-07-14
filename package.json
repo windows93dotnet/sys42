@@ -3,10 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "bin": {
+    "42": "bin/42.js"
+  },
   "scripts": {
     "pretest": "eslint '{src,bin}/**/*.{js,html}'",
     "fmt": "prettier --loglevel silent '{src,cli}/**/*.{js,md,html}' --write",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./bin/42.js test",
+    "dev": "./bin/42.js"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.18.2",
@@ -21,5 +25,11 @@
     "stylelint": "^14.9.1",
     "stylelint-config-standard": "^26.0.0",
     "stylelint-import": "^1.0.0"
+  },
+  "dependencies": {
+    "cosmiconfig": "^7.0.1",
+    "fastify": "^4.2.1",
+    "fastify-disablecache": "^3.0.0",
+    "pino-pretty": "^8.1.0"
   }
 }

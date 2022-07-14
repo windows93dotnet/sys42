@@ -21,7 +21,7 @@ const urlKeys = [
 
 const parseFilename = memoize((filename, options) => {
   assertPath(filename)
-  const index = options?.index // ?? "index.html"
+  const index = options?.index
 
   const url = new URL(filename, "file:")
   const out = pick(url, urlKeys)
@@ -34,6 +34,14 @@ const parseFilename = memoize((filename, options) => {
   out.filename = decodeURI(
     index && out.isDir ? `${out.pathname}${index}` : out.pathname
   )
+
+  if (index && out.isDir) {
+    out.filename = decodeURI(`${out.pathname}${index}`)
+    out.isDir = false
+    out.isFile = true
+  } else {
+    out.filename = decodeURI(out.pathname)
+  }
 
   const parsed = parsePath(out.filename)
   out.dir = parsed.dir
