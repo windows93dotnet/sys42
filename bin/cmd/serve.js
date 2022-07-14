@@ -83,7 +83,7 @@ export default async function serve() {
         asset.headers["access-control-allow-origin"] = "null"
       }
 
-      if (asset.ext === "html") {
+      if (asset.ext === ".html") {
         const devStream = makeDevScript(asset, reply.getHeader("user-agent"))
         asset.headers["content-length"] += Buffer.byteLength(devStream, "utf8")
         reply.headers(asset.headers)

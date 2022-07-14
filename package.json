@@ -10,7 +10,7 @@
     "pretest": "eslint '{src,bin}/**/*.{js,html}'",
     "fmt": "prettier --loglevel silent '{src,cli}/**/*.{js,md,html}' --write",
     "test": "./bin/42.js test",
-    "dev": "./bin/42.js"
+    "dev": "./bin/42.js serve watch"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.18.2",
@@ -27,9 +27,11 @@
     "stylelint-import": "^1.0.0"
   },
   "dependencies": {
+    "chokidar": "^3.5.3",
     "cosmiconfig": "^7.0.1",
     "fastify": "^4.2.1",
     "fastify-disablecache": "^3.0.0",
+    "node-source-walk": "^5.0.0",
     "pino-pretty": "^8.1.0"
   }
 }

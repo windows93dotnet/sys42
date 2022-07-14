@@ -4,7 +4,8 @@ import inNode from "../src/42/system/env/runtime/inNode.js"
 import trap from "../src/42/fabric/type/error/trap.js"
 import log from "../src/42/system/log.js"
 import emittable from "../src/42/fabric/trait/emittable.js"
-// import propagateConfig from "./utils/propagateConfig.js"
+import propagateConfig from "./utils/propagateConfig.js"
+import fs from "node:fs/promises"
 
 trap((err, title) => {
   log(`\n💥 ${title}:`, err)
@@ -13,15 +14,11 @@ trap((err, title) => {
 const args = inNode ? process.argv.slice(2) : Deno.args.slice(1)
 const config = await userConfig(args)
 
-emittable(system)
-
 system.config = config
-
-// propagateConfig(config)
-// polyfillConfig(config)
-
 system.tasks = {}
 system.unclosed = new Set()
+emittable(system)
+propagateConfig(config)
 
 system.on("backend:restart", async () => {
   log.yellow(`\n⚡ restart\n`)
@@ -29,7 +26,7 @@ system.on("backend:restart", async () => {
   process.send("restart")
 })
 
-function greet() {
+async function greet() {
   if (!config.greet || config.verbose < 1) return
   const line1 = []
   const line2 = []
@@ -44,10 +41,16 @@ function greet() {
   const verbose =
     config.verbose > 1 ? ` verbose {magenta ${config.verbose}}` : ""
 
+  const { version } = JSON.parse(
+    await fs.readFile(new URL("../package.json", import.meta.url), "utf8")
+  )
+
   log[config.dev ? "yellow" : "cyanBright"](`
   ╷ ┌───┐   ${line1.join("")}
   └─┤ ┌─┘   ${line2.join("")}
-    └─┴─╴   {grey v0.0.1}${verbose}${config.dev ? " {yellow 🛠️ dev} " : ""}\n`)
+    └─┴─╴   {grey v${version}}${verbose}${
+    config.dev ? " {yellow 🛠️ dev} " : ""
+  }\n`)
 }
 
 function exit(res) {
@@ -61,7 +64,7 @@ function exit(res) {
   process.exit(exit)
 }
 
-greet()
+await greet()
 
 const res = await Promise.all(
   config.run.map((task) =>

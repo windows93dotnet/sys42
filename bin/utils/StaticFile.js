@@ -1,5 +1,5 @@
 import fs from "node:fs/promises"
-import { createReadStream } from "node:fs"
+// import { createReadStream } from "node:fs"
 import parseFilename from "../../src/42/fabric/type/path/parseFilename.js"
 
 class StaticFile {
@@ -17,8 +17,8 @@ class StaticFile {
   }
 
   stream(encoding = this.charset) {
-    // return this.handle.createReadStream({ encoding })
-    return createReadStream(this.filename, { encoding })
+    return this.handle.createReadStream({ encoding })
+    // return createReadStream(this.filename, { encoding })
   }
 
   async read(encoding = this.charset) {
