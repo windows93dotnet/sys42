@@ -1,5 +1,5 @@
 import listen from "../../fabric/dom/listen.js"
-// import arrify from "../../fabric/type/any/arrify.js"
+import hash from "../../fabric/type/any/hash.js"
 import { normalizeTokens } from "../normalize.js"
 import expr from "../../system/expr.js"
 
@@ -30,6 +30,8 @@ export default function renderListen(el, defs, ctx) {
           fn(ctx.reactive.state, makeEventLocals(e, target))
       } else if (type === "object") {
         if ("dialog" in val) {
+          el.id ||= hash(defs)
+          val.dialog.opener = `#${el.id}`
           event[key] = async () => {
             const dialog = await import("../components/dialog.js") //
               .then((m) => m.default)

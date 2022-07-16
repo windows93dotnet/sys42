@@ -13,6 +13,7 @@
 </script>
 
 <script type="module">
+  /* eslint-disable no-unused-vars */
   import ui from "../42/ui.js"
   import log from "../42/system/log.js"
 
@@ -51,6 +52,7 @@
             label: "--> ({{x}},{{y}})",
             content: {
               tag: "button#incr",
+              autofocus: true,
               content: "{{cnt}}",
               on: { click: "{{cnt += 1}}" },
             },
@@ -67,15 +69,15 @@
     { id: "persist-test" }
   )
 
-  // if (app.ctx.plugins.persist.initial) {
-  //   app.query("#dialog-left")?.click()
-  //   app.query("#dialog-right")?.click()
-  //   app.query("#incr")?.click()
-  // }
+  if (app.ctx.plugins.persist.initial) {
+    app.query("#dialog-left")?.click()
+    app.query("#dialog-right")?.click()
+    app.query("#incr")?.click()
+  }
 
-  app.on("click", () => {
-    log(app.data)
-  })
+  // app.on("click", () => {
+  //   log(app.data)
+  // })
 </script>
 
 <script type="_module">

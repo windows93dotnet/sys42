@@ -3,6 +3,9 @@ import movable from "../traits/movable.js"
 import realm from "../../system/realm.js"
 import renderAnimation from "../renderers/renderAnimation.js"
 import { objectifyDef, forkDef } from "../normalize.js"
+import { autofocus } from "../../fabric/dom/focus.js"
+
+const _axis = Symbol("axis")
 
 export class Dialog extends Component {
   static definition = {
@@ -13,6 +16,9 @@ export class Dialog extends Component {
     tabIndex: -1,
 
     props: {
+      opener: {
+        type: "string",
+      },
       active: {
         type: "boolean",
         reflect: true,
@@ -20,11 +26,11 @@ export class Dialog extends Component {
       },
       x: {
         type: "number",
-        update: "axis",
+        update: _axis,
       },
       y: {
         type: "number",
-        update: "axis",
+        update: _axis,
       },
     },
 
@@ -36,14 +42,15 @@ export class Dialog extends Component {
     plugins: ["ipc"],
   }
 
-  #anim
+  #anim;
 
-  axis() {
+  [_axis]() {
     this.style.transform = `translate(${this.x}px, ${this.y}px)`
   }
 
   async close() {
-    this.ctx.cancel("dialog close")
+    document.querySelector(this.opener)?.focus()
+    this.destroy({ remove: false })
     if (this.#anim) await renderAnimation(this.ctx, this, "to", this.#anim)
     this.remove()
   }
@@ -109,5 +116,6 @@ export default realm({
     const el = new Dialog(def, ctx)
     await el.ready
     document.body.append(el)
+    autofocus(el.querySelector(":scope > .ui-dialog__body"))
   },
 })

@@ -218,13 +218,16 @@ export default class Component extends HTMLElement {
     }
   }
 
-  #destroy() {
+  #destroy(options) {
     if (this.#lifecycle === DESTROY || this.#lifecycle === CREATE) return
     this.#lifecycle = DESTROY
 
     this.#destroyCallback?.()
-    this.replaceChildren()
-    this.remove()
+
+    if (options?.remove !== false) {
+      this.replaceChildren()
+      this.remove()
+    }
 
     if (this.ctx.cancel.signal.aborted === false) {
       this.ctx.cancel(`${this.localName} destroyed`)
