@@ -6,8 +6,6 @@ export default function asyncable(obj, options, fn) {
     options = undefined
   }
 
-  obj[_RESOLVED] = false
-
   let init = fn()
 
   const then = (resolve, reject) => {
@@ -26,7 +24,15 @@ export default function asyncable(obj, options, fn) {
       })
   }
 
-  Object.defineProperty(obj, "then", {
-    get: () => (obj[_RESOLVED] ? undefined : then),
+  Object.defineProperties(obj, {
+    [_RESOLVED]: {
+      value: false,
+      enumerable: false,
+      writable: true,
+    },
+    then: {
+      // prevent recursive `then` call
+      get: () => (obj[_RESOLVED] ? undefined : then),
+    },
   })
 }
