@@ -60,7 +60,6 @@ export default class Component extends HTMLElement {
   #observed
   #destroyCallback
   #lifecycle = CREATE
-  #hasProps
 
   constructor(...args) {
     super()
@@ -130,7 +129,6 @@ export default class Component extends HTMLElement {
     /* handle props
     --------------- */
     if (definition.props || def?.props || definition.computed) {
-      this.#hasProps = true
       const { localName } = this
 
       let i = this.ctx.componentsIndexes[localName] ?? -1
@@ -233,14 +231,13 @@ export default class Component extends HTMLElement {
       this.ctx.cancel(`${this.localName} destroyed`)
     }
 
-    if (this.#hasProps) {
+    if (this.ctx.globalScope) {
       this.ctx.componentsIndexes[this.localName]--
-      this.ctx.reactive.delete(this.ctx.scope, { silent: true })
+      this.ctx.reactive.delete(this.ctx.scope)
     }
 
     this.ready = undefined
     this.#observed = undefined
-    this.#hasProps = undefined
 
     delete this.ctx.component
     delete this.ctx.el
