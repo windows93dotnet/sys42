@@ -1,7 +1,7 @@
 import parsePath from "../../../fabric/type/path/core/parsePath.js"
 
 import inBackend from "../../env/runtime/inBackend.js"
-import { isObject } from "../../../fabric/type/any/is.js"
+import isObject from "../../../fabric/type/any/is/isObject.js"
 
 import configure from "../../../fabric/configure.js"
 import { esc } from "../logUtils.js"

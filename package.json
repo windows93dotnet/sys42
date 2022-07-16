@@ -6,6 +6,9 @@
   "bin": {
     "42": "bin/42.js"
   },
+  "engines": {
+    "node": "^18.0.0"
+  },
   "scripts": {
     "pretest": "eslint '{src,bin}/**/*.{js,html}'",
     "fmt": "prettier --loglevel silent '{src,cli}/**/*.{js,md,html}' --write",
@@ -27,6 +30,7 @@
     "stylelint-import": "^1.0.0"
   },
   "dependencies": {
+    "cbor": "^8.1.0",
     "chokidar": "^3.5.3",
     "cosmiconfig": "^7.0.1",
     "fastify": "^4.2.1",

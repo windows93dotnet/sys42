@@ -169,7 +169,7 @@ export default async function userConfig(args) {
   const ignore = []
 
   if (args.filter((x) => SUBCOMMANDS.includes(x)).length === 0) {
-    args.push("watch", "scan", "test", "coverage", "serve")
+    args.push("watch", "scan", /* "test", "coverage", */ "serve")
   } else if (args.includes("--dev") && !args.includes("watch")) {
     args.push("watch")
   }

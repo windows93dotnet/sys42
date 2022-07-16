@@ -1,15 +1,15 @@
-import globbyModule from "globby"
-const { globby } = globbyModule
+import globby from "globby"
 
 import js from "./graph/js.js"
 import extname from "../../src/42/fabric/type/path/extract/extname.js"
 
+const GLOBBY_DEFAULTS = {
+  gitignore: true,
+  onlyFiles: true,
+}
+
 export default async function graph(glob, { cwd, host }) {
-  const scanned = await globby(glob, {
-    cwd,
-    gitignore: true,
-    onlyFiles: true,
-  })
+  const scanned = await globby(glob, { ...GLOBBY_DEFAULTS, cwd })
 
   const files = {}
   const globs = {}

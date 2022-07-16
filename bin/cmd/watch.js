@@ -52,8 +52,6 @@ async function refresh(event, filename) {
 
   task.log(` ${event.padEnd(7)} ${format.file(filename)}`)
 
-  console.log(665, task.graph)
-
   if (event !== "change") {
     const undones = []
     if (task.graph) undones.push(makeGraphResult())
