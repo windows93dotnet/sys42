@@ -2,6 +2,7 @@
 
 import ensureElement from "../dom/ensureElement.js"
 import waitFor from "../dom/waitFor.js"
+import listen from "../dom/listen.js"
 
 export default class DOMQuery {
   constructor(el = document.body) {
@@ -41,6 +42,12 @@ export default class DOMQuery {
   async waitFor(selector, options = {}) {
     options.parent = this.el
     return waitFor(selector, options)
+  }
+
+  on(event, selector, fn) {
+    return typeof selector === "function"
+      ? listen(this.el, { [event]: selector })
+      : listen(this.el, selector, { [event]: fn })
   }
 }
 

@@ -14,9 +14,10 @@
 
 <script type="module">
   import ui from "../42/ui.js"
+  import log from "../42/system/log.js"
+
   import fs from "../42/system/fs.js"
   import disk from "../42/system/fs/disk.js"
-
   await fs.deleteDir(disk.HOME + "/.ui").catch(() => {})
 
   const app = await ui(
@@ -66,11 +67,15 @@
     { id: "persist-test" }
   )
 
-  if (app.ctx.plugins.persist.initial) {
-    app.query("#dialog-left")?.click()
-    app.query("#dialog-right")?.click()
-    app.query("#incr")?.click()
-  }
+  // if (app.ctx.plugins.persist.initial) {
+  //   app.query("#dialog-left")?.click()
+  //   app.query("#dialog-right")?.click()
+  //   app.query("#incr")?.click()
+  // }
+
+  app.on("click", () => {
+    log(app.data)
+  })
 </script>
 
 <script type="_module">
