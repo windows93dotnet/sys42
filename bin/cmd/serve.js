@@ -101,7 +101,8 @@ export default async function serve() {
     }
   })
 
-  server.listen({ port: task.port /* , host: "0.0.0.0" */ }, () => {
+  server.listen({ port: task.port /* , host: "0.0.0.0" */ }, async () => {
     task.log(` serve {white ${task.host}}`)
+    // console.log(await (await fetch("/index.html")).text())
   })
 }
