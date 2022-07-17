@@ -48,7 +48,7 @@ export default class UI extends DOMQuery {
   }
 
   destroy() {
-    this.ctx.cancel("ui destroyed")
+    this.ctx?.cancel("ui destroyed")
     delete this.ctx
     delete this.def
     delete this.el

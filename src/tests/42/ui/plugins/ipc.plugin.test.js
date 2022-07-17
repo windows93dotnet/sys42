@@ -4,7 +4,11 @@ import ui from "../../../../42/ui.js"
 test.suite.timeout(2000)
 test.suite.serial()
 
-const tmp = test.utils.container({ id: "component-tests", keep: !true })
+const apps = []
+const cleanup = (app) => apps.push(app)
+const tmp = test.utils.container({ id: "component-tests", keep: !true }, () =>
+  apps.forEach((app) => app?.destroy())
+)
 
 const { $ } = test.utils
 
@@ -72,6 +76,8 @@ test.serial.flaky("transfer state data cross-realms", async (t) => {
       cnt: 42,
     },
   })
+
+  cleanup(app)
 
   const el = await $.waitFor("ui-dialog", { timeout: 1000 })
   t.eq(el.localName, "ui-dialog")

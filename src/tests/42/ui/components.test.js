@@ -4,7 +4,11 @@ import Component from "../../../42/ui/class/Component.js"
 
 test.suite.timeout(1000)
 
-const tmp = test.utils.container({ id: "component-tests" })
+const apps = []
+const cleanup = (app) => apps.push(app)
+const tmp = test.utils.container({ id: "component-tests" }, () =>
+  apps.forEach((app) => app?.destroy())
+)
 
 Component.define({
   tag: "ui-t-props",
@@ -100,7 +104,7 @@ test.tasks(
       title: "lifecycle",
       connect: true,
       component(t) {
-        t.plan(9)
+        t.plan(17)
         const stub = t.stub()
         const reasons = [
           "ui-t-signal destroyed", //
@@ -118,7 +122,11 @@ test.tasks(
           setup({ signal }) {
             signal.addEventListener("abort", () => {
               const expected = reasons.shift()
-              t.is(signal.reason, expected)
+              t.true(signal.reason instanceof DOMException)
+              t.is(signal.reason.name, "AbortError")
+              t.is(signal.reason.message, expected)
+              t.isString(signal.reason.stack)
+              t.true(signal.reason.stack.length > "Error".length)
             })
             this.addEventListener("click", stub, { signal })
           }
@@ -1417,6 +1425,8 @@ test("computed", async (t) => {
     },
   })
 
+  cleanup(app)
+
   t.eq(Object.keys(app.ctx.renderers), [
     "/ui-t-computed/0/formated",
     "/ui-t-computed/0/parsed/0",
@@ -1555,6 +1565,8 @@ test("computed", "computed prop", async (t) => {
       formated: "FOO/BAR",
     },
   })
+
+  cleanup(app)
 
   const el = app.query("ui-t-compu-prop")
 

@@ -3,7 +3,11 @@ import ui from "../../../../42/ui.js"
 
 test.suite.timeout(5000)
 
-const tmp = test.utils.container({ id: "ui-folder-tests", connect: true })
+const apps = []
+const cleanup = (app) => apps.push(app)
+const tmp = test.utils.container({ id: "ui-folder-tests", connect: true }, () =>
+  apps.forEach((app) => app?.destroy())
+)
 
 test("generate icon list", async (t) => {
   const app = await ui(tmp(), {
@@ -11,6 +15,8 @@ test("generate icon list", async (t) => {
     path: "/tests/fixtures/components/folder/",
     selection: ["/tests/fixtures/components/folder/script.js"],
   })
+
+  cleanup(app)
 
   t.eq(app.reactive.data, {
     "ui-folder": {

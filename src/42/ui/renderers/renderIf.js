@@ -52,7 +52,8 @@ export default function renderIf(def, ctx) {
     const [def, type] = res ? [defIf, typeIf] : [defElse, typeElse]
 
     if (lastChild) {
-      cancel?.()
+      cancel?.("renderIf removed")
+      cancel = undefined
       const range = createRange()
       range.setStartAfter(placeholder)
       range.setEndAfter(lastChild)
@@ -71,7 +72,7 @@ export default function renderIf(def, ctx) {
     lastRes = res
     if (!def) return
 
-    cancel = new Canceller()
+    cancel = new Canceller(ctx.signal)
     const el = render(
       def,
       {

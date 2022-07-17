@@ -16,12 +16,14 @@ export default async (ctx) => {
   if (persist.has(persistPath)) {
     config.initial = false
     const res = await persist.load(persistPath)
-    Object.assign(ctx.reactive.state, res)
 
     const openers = []
     for (const { opener } of Object.values(res["ui-dialog"])) {
       openers.push(opener)
     }
+
+    // delete res["ui-dialog"]
+    Object.assign(ctx.reactive.state, res)
 
     ctx.postrender.push(() => {
       for (const opener of openers) {

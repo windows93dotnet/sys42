@@ -63,10 +63,11 @@ export default function addUtilities(item, isExecutionContext) {
     }
   }
 
-  function container(options = {}) {
+  function container(options = {}, cb) {
     const elements = []
 
     item.teardown(() => {
+      cb?.(elements)
       for (const el of elements) el.remove()
       elements.length = 0
     })

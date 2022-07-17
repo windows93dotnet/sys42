@@ -43,6 +43,7 @@ export default function renderEach(def, ctx) {
     let endItem
 
     if (lastItem) {
+      // if (!lastItem.parentElement) return
       const l = length - 1
       let node
 
@@ -62,7 +63,10 @@ export default function renderEach(def, ctx) {
 
           // remove extra items only
           if (i > l) {
-            for (let j = i; j < cancels.length; j++) cancels[j]()
+            for (let j = i; j < cancels.length; j++) {
+              cancels[j]("renderEach removed")
+            }
+
             cancels.length = i
 
             const range = createRange()
@@ -79,13 +83,12 @@ export default function renderEach(def, ctx) {
     const fragment = document.createDocumentFragment()
 
     for (; i < length; i++) {
-      const cancel = new Canceller()
+      const cancel = new Canceller(ctx.signal)
       cancels.push(cancel)
 
       fragment.append(
         render(eachDef, {
           ...ctx,
-
           cancel,
           signal: cancel.signal,
           scope: `${ctx.scope}/${i}`,

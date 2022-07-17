@@ -227,15 +227,16 @@ export default class Component extends HTMLElement {
       this.remove()
     }
 
-    if (this.ctx.cancel.signal.aborted === false) {
-      this.ctx.cancel(`${this.localName} destroyed`)
-    }
+    const reason = `${this.localName} destroyed`
+    this.ctx.cancel(reason)
 
     if (this.ctx.globalScope) {
       this.ctx.componentsIndexes[this.localName]--
       this.ctx.reactive.delete(this.ctx.scope)
+      // this.ctx.reactive.emit("update", new Set())
     }
 
+    this.ready?.reject?.(new Error(reason))
     this.ready = undefined
     this.#observed = undefined
 

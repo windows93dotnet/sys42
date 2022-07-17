@@ -8,7 +8,12 @@ const ERROR_EVENT_INFOS = ["lineno", "colno", "filename"]
 export default function serializeError(error) {
   const details = {}
 
-  for (const key of allKeys(error)) details[key] = error[key]
+  const keys =
+    error instanceof DOMException
+      ? Object.keys(error) // prevent legacy constant codes
+      : allKeys(error)
+
+  for (const key of keys) details[key] = error[key]
 
   const original = error.stack
   let { name, message } = error

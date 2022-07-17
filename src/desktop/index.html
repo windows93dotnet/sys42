@@ -210,6 +210,32 @@
 </script>
 
 <script type="_module">
+  import Canceller from "../42/fabric/class/Canceller.js"
+  import log from "../42/system/log.js"
+
+  const { cancel, signal } = new Canceller()
+
+  signal.addEventListener("abort", () => {
+    log(signal.reason)
+  })
+
+  // console.log(signal)
+
+  cancel("BOOM")
+  // cancel()
+
+  // cancel("never seen")
+
+  // try {
+  //   signal.throwIfAborted()
+  // } catch (err) {
+  //   console.log(777, err)
+  // }
+
+  // signal.timeout(1000)
+</script>
+
+<script type="_module">
   import exec from "../42/os/exec.js"
   console.log(1, await exec("glob **/*.css"))
 </script>

@@ -26,6 +26,8 @@ export default class Reactive extends Emitter {
       get: () => this.state,
     })
 
+    this.ctx.cancel.signal.addEventListener("abort", () => this.destroy())
+
     this.queue = {
       paths: new Set(),
       objects: new Set(),
@@ -199,5 +201,15 @@ export default class Reactive extends Emitter {
   assign(path, val, options) {
     const prev = locate(options?.silent ? this.data : this.state, path, sep)
     Object.assign(prev, val)
+  }
+
+  destroy() {
+    this.off("*")
+    this.queue.paths.clear()
+    this.queue.objects.clear()
+    this.#update.ready = false
+    delete this.data
+    delete this.state
+    this.ctx.cancel("Reactive instance destroyed")
   }
 }
