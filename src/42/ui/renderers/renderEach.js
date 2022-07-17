@@ -43,7 +43,6 @@ export default function renderEach(def, ctx) {
     let endItem
 
     if (lastItem) {
-      // if (!lastItem.parentElement) return
       const l = length - 1
       let node
 

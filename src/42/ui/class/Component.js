@@ -232,8 +232,8 @@ export default class Component extends HTMLElement {
 
     if (this.ctx.globalScope) {
       this.ctx.componentsIndexes[this.localName]--
-      this.ctx.reactive.delete(this.ctx.scope)
-      // this.ctx.reactive.emit("update", new Set())
+      this.ctx.reactive.delete(this.ctx.scope, { silent: true })
+      this.ctx.reactive.emit("update", new Set()) // prevent calling $ref renderers
     }
 
     this.ready?.reject?.(new Error(reason))

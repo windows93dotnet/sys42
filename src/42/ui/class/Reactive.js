@@ -84,10 +84,6 @@ export default class Reactive extends Emitter {
         this.update(path, val, oldVal, detail)
       },
 
-      delete: (path, { key }) => {
-        this.emit("delete", key)
-      },
-
       has: (path, { key }) => {
         if (key.startsWith("@") || key.startsWith("#")) return true
         if (this.ctx.computeds.has(path)) return true
