@@ -31,13 +31,19 @@ export default function render(def, ctx, options) {
     ctx = normalized[1]
   }
 
+  if (options?.track !== undefined) ctx.tracks.push(options.track)
+  // console.log(ctx.tracks)
+
   switch (ctx.type) {
     case "string":
       return SPECIAL_STRINGS[def]?.() ?? document.createTextNode(def)
 
     case "array": {
       const fragment = document.createDocumentFragment()
-      for (const content of def) fragment.append(render(content, ctx))
+      for (let track = 0, l = def.length; track < l; track++) {
+        fragment.append(render(def[track], ctx, { track }))
+      }
+
       return fragment
     }
 
@@ -93,7 +99,13 @@ export default function render(def, ctx, options) {
     el = document.createDocumentFragment()
   }
 
-  if (def.content) el.append(render(def.content, ctx))
+  if (def.content) {
+    el.append(
+      render(def.content, ctx, {
+        track: ctx.el.localName + (ctx.el.id ? `#${ctx.el.id}` : ""),
+      })
+    )
+  }
 
   if (def.from) renderAnimation(ctx, ctx.el, "from", def.from)
   else if (def.animate) renderAnimation(ctx, ctx.el, "from", def.animate)

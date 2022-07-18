@@ -104,7 +104,7 @@ export class Dialog extends Component {
 
 Component.define(Dialog)
 
-export default realm({
+const dialog = realm({
   name: "dialog",
 
   args(def, ctx) {
@@ -113,9 +113,16 @@ export default realm({
   },
 
   async top(def, ctx) {
+    ctx.tracks.push("dialog°" + dialog.list.length)
+    // console.log(ctx.tracks)
     const el = new Dialog(def, ctx)
+    dialog.list.push(el)
     await el.ready
     document.body.append(el)
     autofocus(el.querySelector(":scope > .ui-dialog__body"))
   },
 })
+
+dialog.list = []
+
+export default dialog

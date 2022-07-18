@@ -320,6 +320,9 @@ export function normalizeCtx(ctx = {}) {
   ctx.renderers ??= {}
   ctx.plugins ??= {}
 
+  ctx.tracks ??= []
+  ctx.tracks = [...ctx.tracks]
+
   ctx.componentsIndexes ??= {}
   ctx.components ??= new Undones()
   ctx.preload ??= new Undones()

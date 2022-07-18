@@ -19,6 +19,7 @@ export default class UI extends DOMQuery {
     }
 
     this.ctx.el = this.el
+    this.ctx.tracks = []
 
     const [def, ctx] = normalize(this.def, this.ctx)
     this.def = def
