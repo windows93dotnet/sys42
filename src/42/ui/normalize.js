@@ -319,9 +319,7 @@ export function normalizeCtx(ctx = {}) {
   ctx.scope ??= "/"
   ctx.renderers ??= {}
   ctx.plugins ??= {}
-
-  ctx.tracks ??= []
-  ctx.tracks = [...ctx.tracks]
+  ctx.steps ??= "?"
 
   ctx.componentsIndexes ??= {}
   ctx.components ??= new Undones()

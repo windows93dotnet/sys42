@@ -31,8 +31,7 @@ export default function render(def, ctx, options) {
     ctx = normalized[1]
   }
 
-  if (options?.track !== undefined) ctx.tracks.push(options.track)
-  // console.log(ctx.tracks)
+  if (options?.step !== undefined) ctx.steps += "," + options.step
 
   switch (ctx.type) {
     case "string":
@@ -40,8 +39,8 @@ export default function render(def, ctx, options) {
 
     case "array": {
       const fragment = document.createDocumentFragment()
-      for (let track = 0, l = def.length; track < l; track++) {
-        fragment.append(render(def[track], ctx, { track }))
+      for (let step = 0, l = def.length; step < l; step++) {
+        fragment.append(render(def[step], ctx, { step }))
       }
 
       return fragment
@@ -102,7 +101,7 @@ export default function render(def, ctx, options) {
   if (def.content) {
     el.append(
       render(def.content, ctx, {
-        track: ctx.el.localName + (ctx.el.id ? `#${ctx.el.id}` : ""),
+        step: ctx.el.localName + (ctx.el.id ? `#${ctx.el.id}` : ""),
       })
     )
   }

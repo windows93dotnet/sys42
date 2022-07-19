@@ -12,7 +12,10 @@ const makeEventLocals = (e, target) =>
 export default function renderListen(el, defs, ctx) {
   for (const def of defs) {
     for (const [key, val] of Object.entries(def)) {
-      const newCtx = { ...ctx, tracks: [...ctx.tracks, ctx.el.localName, key] }
+      const newCtx = {
+        ...ctx,
+        steps: `${ctx.steps},${ctx.el.localName}^${key}`,
+      }
       const event = {}
       const type = typeof val
       if (type === "string") {

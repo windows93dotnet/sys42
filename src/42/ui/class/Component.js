@@ -1,6 +1,8 @@
+/* eslint-disable complexity */
 // @read https://developer.salesforce.com/blogs/2020/01/accessibility-for-web-components
 // @read https://github.com/webcomponents/gold-standard/wiki
 
+import system from "../../system.js"
 import { toKebabCase } from "../../fabric/type/string/letters.js"
 import defer from "../../fabric/type/promise/defer.js"
 import renderAttributes from "../renderers/renderAttributes.js"
@@ -8,6 +10,7 @@ import renderProps from "../renderers/renderProps.js"
 import resolveScope from "../resolveScope.js"
 import configure from "../../fabric/configure.js"
 import render from "../render.js"
+import hash from "../../fabric/type/any/hash.js"
 import {
   objectifyDef,
   normalizeCtx,
@@ -122,6 +125,7 @@ export default class Component extends HTMLElement {
     tmp.components = undefined
     tmp.postrender = undefined
     tmp.cancel = ctx?.cancel?.fork()
+    tmp.steps ??= this.localName
     tmp = normalizeCtx(tmp)
     this.ctx = tmp
     normalizeScope(def, this.ctx)
@@ -135,7 +139,10 @@ export default class Component extends HTMLElement {
       this.ctx.componentsIndexes[localName] = ++i
 
       this.ctx.globalScope = this.ctx.scope
-      this.ctx.scope = resolveScope(this.localName, String(i))
+      this.ctx.scope = resolveScope(
+        this.localName,
+        system.DEV ? this.ctx.steps : hash(this.ctx.steps)
+      )
 
       this.ctx.props = definition.props
       if (definition.id === true) this.id = `${this.localName}-${i}`

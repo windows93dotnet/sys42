@@ -14,7 +14,11 @@ export default function mark(val) {
   if (val == undefined) return String(val)
   const type = typeof val
   if (type === "string") return `"${val}"`
-  if (type === "number" || type === "boolean") return String(val)
+  if (type === "boolean") return String(val)
+  if (type === "number") {
+    return Object.is(val, -0) ? "-0" : val ? String(val) : "+0"
+  }
+
   if (type === "bigint") return `${val}n`
 
   if (isArray(val)) {
@@ -38,8 +42,12 @@ export default function mark(val) {
       : `new Blob([],{size:${val.size},type:"${val.type}"})`
   }
 
-  if ("Node" in globalThis && val instanceof Node) {
+  if ("Element" in globalThis && val instanceof Element) {
     return val.outerHTML
+  }
+
+  if ("Node" in globalThis && val instanceof Node) {
+    return `${val.constructor?.name}#${val.textContent || val.nodeName}`
   }
 
   let closeTag = ""
@@ -49,9 +57,10 @@ export default function mark(val) {
   }
 
   if (isIterable(val)) {
-    return `new ${val.constructor.name}([${[...val]
-      .map(mark)
-      .join()}])${closeTag}`
+    return `new ${val.constructor.name}([${("byteLength" in val
+      ? [...val]
+      : [...val].map(mark)
+    ).join()}])${closeTag}`
   }
 
   if (type === "symbol") {

@@ -349,13 +349,14 @@ export default class Assert {
     }
   }
 
-  match(string, regex, message) {
+  match(string, regex, message, details) {
     this.#addCall()
     string = String(string)
     if (!string.match(regex)) {
       throw new AssertionError(message, "Value must match regex", {
         string,
         regex,
+        ...details,
       })
     }
   }

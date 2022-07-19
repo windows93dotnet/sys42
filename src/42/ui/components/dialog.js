@@ -108,13 +108,12 @@ const dialog = realm({
   name: "dialog",
 
   args(def, ctx) {
-    if (realm.inTop) return [objectifyDef(def), ctx]
-    return [forkDef(def, ctx)]
+    if (realm.inTop) return [objectifyDef(def), { ...ctx }]
+    return [forkDef(def, { ...ctx })]
   },
 
   async top(def, ctx) {
-    ctx.tracks.push("dialog°" + dialog.list.length)
-    // console.log(ctx.tracks)
+    ctx.steps += ",dialog°" + dialog.list.length
     const el = new Dialog(def, ctx)
     dialog.list.push(el)
     await el.ready

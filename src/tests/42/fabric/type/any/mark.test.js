@@ -15,6 +15,8 @@ const list = [
   task({ actual: null, expected: "null" }),
   task({ actual: false, expected: "false" }),
   task({ actual: true, expected: "true" }),
+  task({ actual: 0, expected: "+0" }),
+  task({ actual: -0, expected: "-0" }),
   task({ actual: 1, expected: "1" }),
   task({ actual: 2, expected: "2" }),
   task({ actual: "a", expected: '"a"' }),
@@ -24,10 +26,12 @@ const list = [
   task({ actual: BigInt("0x1fffffffffffff"), expected: "9007199254740991n" }),
   task({ actual: (a) => a + 1, expected: "Function#(a) => a + 1" }),
   task({ actual: [], expected: "[undefined]" }),
+  task({ actual: [0, -0], expected: "[+0,-0]" }),
   task({ actual: [1, 2], expected: "[1,2]" }),
   task({ actual: [1, { a: 1 }], expected: "[1,{a:1}]" }),
   task({ actual: {}, expected: "{}" }),
   task({ actual: { a: 1 }, expected: "{a:1}" }),
+  task({ actual: { a: 0, b: -0 }, expected: "{a:+0,b:-0}" }),
   task({
     actual: { a: 1, b: { c: /a/i } },
     expected: "{a:1,b:{c:RegExp#/a/i}}",
@@ -102,6 +106,25 @@ if (globalThis.Blob) {
 }
 
 if (globalThis.document) {
+  list.push(
+    task({
+      actual: document.createTextNode("hello"),
+      expected: "Text#hello",
+    }),
+    task({
+      actual: document.createComment("hello"),
+      expected: "Comment#hello",
+    }),
+    task({
+      actual: document.createAttribute("hello"),
+      expected: "Attr#hello",
+    }),
+    task({
+      actual: document.createDocumentFragment(),
+      expected: "DocumentFragment##document-fragment",
+    })
+  )
+
   let el = document.createElement("div")
   el.style = "color:tan"
   list.push(
