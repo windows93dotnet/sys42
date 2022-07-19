@@ -9,7 +9,7 @@ export default class Trait {
   static INSTANCES = _INSTANCES
 
   constructor(el, options) {
-    el = ensureElement(el, { fragment: true })
+    el = ensureElement(el)
 
     const { name } = this.constructor
 

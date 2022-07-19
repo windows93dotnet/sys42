@@ -1,7 +1,5 @@
 import arrify from "../fabric/type/any/arrify.js"
 
-const options = { once: true }
-
 export default function register(ctx, loc, fn) {
   let scopes
   let renderer
@@ -25,12 +23,10 @@ export default function register(ctx, loc, fn) {
   for (const scope of scopes) {
     ctx.renderers[scope] ??= new Set()
     ctx.renderers[scope].add(renderer)
-    const onabort = () => {
+    ctx.cancel.signal.addEventListener("abort", () => {
       ctx.renderers[scope].delete(renderer)
       if (ctx.renderers[scope].size === 0) delete ctx.renderers[scope]
-    }
-
-    ctx.cancel.signal.addEventListener("abort", onabort, options)
+    })
   }
 
   renderer()

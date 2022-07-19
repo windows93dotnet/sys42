@@ -8,8 +8,8 @@ export default class UI extends DOMQuery {
   constructor(...args) {
     super()
 
-    if (args[0] instanceof Node || typeof args[0] === "string") {
-      this.el = ensureElement(args[0], { fragment: true })
+    if (args[0] instanceof Element || typeof args[0] === "string") {
+      this.el = ensureElement(args[0])
       this.def = args[1]
       this.ctx = args[2] ?? {}
     } else {
@@ -25,6 +25,10 @@ export default class UI extends DOMQuery {
     this.def = def
     this.ctx = ctx
 
+    this.ctx.postrender.push(() => {
+      this.queryAll(":scope [data-autofocus]").at(-1)?.focus()
+    })
+
     asyncable(this, async () => {
       if (!this.ctx) return
 
@@ -33,7 +37,6 @@ export default class UI extends DOMQuery {
         this.el.append(render(this.def, this.ctx, { skipNormalize: true }))
       }
 
-      await this.ctx.components.done()
       await this.ctx.reactive.done()
     })
   }

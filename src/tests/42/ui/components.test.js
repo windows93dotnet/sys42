@@ -680,7 +680,7 @@ Component.define({
   },
 })
 
-test("state", "dynamic", async (t) => {
+test("state", "dynamic", "push", async (t) => {
   const app = await ui(tmp(), {
     content: {
       tag: "ui-t-nested-dynamic",
@@ -703,18 +703,17 @@ test("state", "dynamic", async (t) => {
       },
     },
   })
-})
 
-test("state", "dynamic", 2, async (t) => {
-  const app = await ui(tmp(), {
-    content: {
-      tag: "ui-t-nested-dynamic",
-      list: [
-        { foo: "a" }, //
-        { foo: "b" },
-      ],
-    },
-  })
+  const el = app.query("ui-t-nested-dynamic")
+
+  el.list.push({ foo: "b" })
+  await app
+
+  t.eq(Object.keys(app.ctx.renderers), [
+    "/ui-t-nested-dynamic/root/list",
+    "/ui-t-nested-dynamic/root/list/0/foo",
+    "/ui-t-nested-dynamic/root/list/1/foo",
+  ])
 
   t.eq(app.reactive.data, {
     "ui-t-nested-dynamic": { root: { list: [{ foo: "a" }, { foo: "b" }] } },
@@ -727,6 +726,68 @@ test("state", "dynamic", 2, async (t) => {
       },
     },
   })
+})
+
+test("state", "dynamic", "pop", async (t) => {
+  const app = await ui(tmp(true), {
+    content: {
+      tag: "ui-t-nested-dynamic",
+      list: [
+        { foo: "a" }, //
+        { foo: "b" }, //
+      ],
+    },
+  })
+
+  t.eq(Object.keys(app.ctx.renderers), [
+    "/ui-t-nested-dynamic/root/list",
+    "/ui-t-nested-dynamic/root/list/0/foo",
+    "/ui-t-nested-dynamic/root/list/1/foo",
+  ])
+
+  t.eq(app.reactive.data, {
+    "ui-t-nested-dynamic": { root: { list: [{ foo: "a" }, { foo: "b" }] } },
+    "ui-t-state": {
+      "root,ui-t-nested-dynamic,[0]": {
+        x: { $ref: "/ui-t-nested-dynamic/root/list/0/foo" },
+      },
+      "root,ui-t-nested-dynamic,[1]": {
+        x: { $ref: "/ui-t-nested-dynamic/root/list/1/foo" },
+      },
+    },
+  })
+
+  const el = app.query("ui-t-nested-dynamic")
+
+  el.list.pop()
+  await app
+
+  t.eq(Object.keys(app.ctx.renderers), [
+    "/ui-t-nested-dynamic/root/list",
+    "/ui-t-nested-dynamic/root/list/0/foo",
+  ])
+
+  t.eq(app.reactive.data, {
+    "ui-t-nested-dynamic": { root: { list: [{ foo: "a" }] } },
+    "ui-t-state": {
+      "root,ui-t-nested-dynamic,[0]": {
+        x: { $ref: "/ui-t-nested-dynamic/root/list/0/foo" },
+      },
+    },
+  })
+})
+
+test("state", "dynamic", "textContent", async (t) => {
+  const app = await ui(tmp(true), {
+    content: {
+      tag: "ui-t-nested-dynamic",
+      list: [
+        { foo: "a" }, //
+        { foo: "b" },
+      ],
+    },
+  })
+
   t.is(app.el.textContent, "x:a-x:b-")
 
   const el = app.query("ui-t-nested-dynamic")
@@ -735,6 +796,11 @@ test("state", "dynamic", 2, async (t) => {
   await app
 
   t.is(app.el.textContent, "x:a-x:b-x:c-")
+
+  el.list.pop()
+  await app
+
+  t.is(app.el.textContent, "x:a-x:b-")
 
   el.list = [{ foo: "A" }]
   await app

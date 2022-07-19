@@ -93,7 +93,7 @@ export default function observe(root, options = {}) {
     revokes.clear()
   }
 
-  options.signal?.addEventListener("abort", destroy, { once: true })
+  options.signal?.addEventListener("abort", destroy)
 
   return proxy
 }

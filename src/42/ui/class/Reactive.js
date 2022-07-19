@@ -57,8 +57,8 @@ export default class Reactive extends Emitter {
       // console.log("%c" + Object.keys(ctx.renderers).join("\n"), "color:#999")
       // console.groupEnd()
 
-      this.queue.paths.clear()
       this.queue.objects.clear()
+      this.queue.paths.clear()
 
       this.#update.ready?.resolve?.()
       this.#update.ready = 0
@@ -111,11 +111,11 @@ export default class Reactive extends Emitter {
   }
 
   async done(n = 10) {
+    await this.ctx.components.done()
     await this.ctx.undones.done()
     await this.#update.ready
-    await 0 // queueMicrotask
 
-    if (this.ctx.undones.length > 0) {
+    if (this.ctx.undones.length > 0 || this.ctx.components.length > 0) {
       if (n < 0) throw new Error("Too much recursion")
       await this.done(n--)
     }
@@ -125,13 +125,7 @@ export default class Reactive extends Emitter {
 
   async setup() {
     this.firstUpdateDone = true
-
     this.throttle = true
-
-    Array.from(this.ctx.el.querySelectorAll(":scope [data-autofocus]"))
-      .at(-1)
-      ?.focus()
-
     await this.ctx.postrender.call()
   }
 

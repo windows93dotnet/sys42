@@ -31,7 +31,7 @@ export default async function when(
 
           target.addEventListener(event, onevent, options)
           if (error) target.addEventListener(error, onerror, options)
-          signal?.addEventListener("abort", onerror, options)
+          signal?.addEventListener("abort", onerror)
         })
     )
   )
