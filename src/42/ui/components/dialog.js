@@ -109,7 +109,7 @@ const dialog = realm({
 
   args(def, ctx) {
     if (realm.inTop) return [objectifyDef(def), { ...ctx }]
-    return [forkDef(def, { ...ctx })]
+    return [forkDef(def, ctx), {}]
   },
 
   async top(def, ctx) {

@@ -12,6 +12,8 @@ import renderEach from "./renderers/renderEach.js"
 import renderListen from "./renderers/renderListen.js"
 import renderAnimation from "./renderers/renderAnimation.js"
 
+const { ELEMENT_NODE } = Node
+
 const SPECIAL_STRINGS = {
   "\n\n": () => document.createElement("br"),
   "---": () => document.createElement("hr"),
@@ -22,6 +24,11 @@ const PRELOAD = new Set(["link", "script"])
 export default function render(def, ctx, options) {
   if (def?.tag?.startsWith("ui-")) {
     delete def?.attrs
+    if (options?.step !== undefined) {
+      ctx = { ...ctx }
+      ctx.steps += "," + options.step
+    }
+
     return renderComponent(create(def.tag), def, ctx)
   }
 
@@ -101,7 +108,10 @@ export default function render(def, ctx, options) {
   if (def.content) {
     el.append(
       render(def.content, ctx, {
-        step: ctx.el.localName + (ctx.el.id ? `#${ctx.el.id}` : ""),
+        step:
+          el.nodeType === ELEMENT_NODE
+            ? el.localName + (el.id ? `#${el.id}` : "")
+            : undefined,
       })
     )
   }

@@ -12,17 +12,17 @@ test("html", async (t) => {
   })
 
   t.eq(app.reactive.data, {
-    "ui-icon": { 0: { path: "/script.js", small: undefined, label: true } },
+    "ui-icon": { root: { path: "/script.js", small: undefined, label: true } },
   })
 
   t.eq(Object.keys(app.ctx.renderers), [
-    "/ui-icon/0/path",
-    "/ui-icon/0/infos/description",
-    "/ui-icon/0/infos/image",
-    "/ui-icon/0/label",
-    "/ui-icon/0/infos/stem",
-    "/ui-icon/0/infos/isFile",
-    "/ui-icon/0/infos/ext",
+    "/ui-icon/root/path",
+    "/ui-icon/root/infos/description",
+    "/ui-icon/root/infos/image",
+    "/ui-icon/root/label",
+    "/ui-icon/root/infos/stem",
+    "/ui-icon/root/infos/isFile",
+    "/ui-icon/root/infos/ext",
   ])
 
   t.is(
@@ -81,11 +81,15 @@ test("infos", async (t) => {
 
   t.eq(app.reactive.data, {
     "ui-icon": {
-      0: { path: "/derp/foo.js", small: undefined, label: true },
-      1: { path: "/derp/foo/", small: undefined, label: true },
-      2: { path: "/derp/foo.bar/", small: undefined, label: true },
-      3: { path: "https://www.windows93.net/", small: undefined, label: true },
-      4: {
+      "root,0": { path: "/derp/foo.js", small: undefined, label: true },
+      "root,1": { path: "/derp/foo/", small: undefined, label: true },
+      "root,2": { path: "/derp/foo.bar/", small: undefined, label: true },
+      "root,3": {
+        path: "https://www.windows93.net/",
+        small: undefined,
+        label: true,
+      },
+      "root,4": {
         path: "https://www.windows93.net/script.js",
         small: undefined,
         label: true,
@@ -185,18 +189,27 @@ test("each", async (t) => {
   t.eq(app.reactive.data, {
     "arr": [{ x: "/derp/foo.js" }, { x: "/derp/" }],
     "ui-icon": {
-      0: { small: undefined, label: true, path: { $ref: "/arr/0/x" } },
-      1: { small: undefined, label: true, path: { $ref: "/arr/1/x" } },
+      "root,[0]": {
+        small: undefined,
+        label: true,
+        path: { $ref: "/arr/0/x" },
+      },
+      "root,[1]": {
+        small: undefined,
+        label: true,
+        path: { $ref: "/arr/1/x" },
+      },
     },
   })
 
-  t.eq(Object.keys(app.ctx.renderers).slice(0, 6), [
+  t.eq(Object.keys(app.ctx.renderers).slice(0, 7), [
     "/arr",
     "/arr/0/x",
-    "/ui-icon/0/path",
+    "/ui-icon/root,[0]/path",
     "/arr/1/x",
-    "/ui-icon/1/path",
-    "/ui-icon/0/infos/description",
+    "/ui-icon/root,[1]/path",
+    "/ui-icon/root,[0]/infos/description",
+    "/ui-icon/root,[1]/infos/description",
   ])
 
   const icons = app.each("ui-icon", { live: true })
@@ -228,18 +241,18 @@ test("each", 2, async (t) => {
   t.eq(app.reactive.data, {
     "arr": ["/derp/foo.js", "/derp/"],
     "ui-icon": {
-      0: { small: undefined, label: true, path: { $ref: "/arr/0" } },
-      1: { small: undefined, label: true, path: { $ref: "/arr/1" } },
+      "root,[0]": { small: undefined, label: true, path: { $ref: "/arr/0" } },
+      "root,[1]": { small: undefined, label: true, path: { $ref: "/arr/1" } },
     },
   })
 
   t.eq(Object.keys(app.ctx.renderers).slice(0, 6), [
     "/arr",
     "/arr/0",
-    "/ui-icon/0/path",
+    "/ui-icon/root,[0]/path",
     "/arr/1",
-    "/ui-icon/1/path",
-    "/ui-icon/0/infos/description",
+    "/ui-icon/root,[1]/path",
+    "/ui-icon/root,[0]/infos/description",
   ])
 
   const icons = app.each("ui-icon", { live: true })

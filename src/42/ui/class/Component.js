@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 // @read https://developer.salesforce.com/blogs/2020/01/accessibility-for-web-components
 // @read https://github.com/webcomponents/gold-standard/wiki
 
@@ -27,6 +26,8 @@ const RENDER = 2
 const SETUP = 3
 const RECYCLE = 4
 const DESTROY = 5
+
+const getStep = (steps) => (system.DEV ? steps : hash(steps))
 
 export default class Component extends HTMLElement {
   static define(Class) {
@@ -141,7 +142,8 @@ export default class Component extends HTMLElement {
       this.ctx.globalScope = this.ctx.scope
       this.ctx.scope = resolveScope(
         this.localName,
-        system.DEV ? this.ctx.steps : hash(this.ctx.steps)
+        // String(i)
+        getStep(this.ctx.steps)
       )
 
       this.ctx.props = definition.props
@@ -202,7 +204,9 @@ export default class Component extends HTMLElement {
 
     await this.ctx.preload.done()
 
-    this.append(render(def, this.ctx, { skipNormalize: true }))
+    this.append(
+      render(def, this.ctx, { skipNormalize: true, step: this.localName })
+    )
 
     await this.ctx.components.done()
     await this.ctx.undones.done()

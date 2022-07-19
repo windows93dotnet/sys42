@@ -12,7 +12,7 @@ test(1, async (t) => {
 
   t.eq(app.reactive.data, {
     "ui-sandbox": {
-      0: {
+      root: {
         permissions: undefined,
         path: undefined,
         document: undefined,
