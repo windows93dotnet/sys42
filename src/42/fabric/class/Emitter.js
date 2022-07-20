@@ -31,9 +31,7 @@ export default class Emitter {
       }
     }
 
-    if (options?.signal) {
-      options.signal.addEventListener("abort", () => this.off(events, fn))
-    }
+    options?.signal?.addEventListener("abort", () => this.off(events, fn))
 
     if (options?.off) return () => this.off(events, fn)
 

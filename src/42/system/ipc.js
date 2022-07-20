@@ -49,7 +49,7 @@ globalThis.addEventListener(
       }
 
       port.postMessage({ type: "IPC_PONG" })
-      port.onmessage = async ({ data: { id, type, event, data } }) => {
+      port.onmessage = ({ data: { id, type, event, data } }) => {
         if (type === "emit") {
           if (sources.has(source)) sources.get(source).emit(event, data, meta)
           ipc.emit(event, data, meta)
@@ -78,6 +78,14 @@ globalThis.addEventListener(
 )
 
 export class Receiver extends Emitter {
+  constructor(source, options) {
+    super({ signal: options?.signal })
+    options?.signal?.addEventListener("abort", () => this.destroy())
+
+    if (source instanceof HTMLIFrameElement) source = source.contentWindow
+    sources.set(source, this)
+  }
+
   destroy() {
     this.off("*")
   }
@@ -86,13 +94,36 @@ export class Receiver extends Emitter {
 export class Sender extends Emitter {
   #queue
 
-  constructor(target, targetOrigin) {
-    super()
+  constructor(target, options = {}) {
+    super({ signal: options?.signal })
+    options?.signal?.addEventListener("abort", () => this.destroy())
+
     const { port1, port2 } = new MessageChannel()
     this.port1 = port1
     this.port2 = port2
     const message = { type: "IPC_PING" }
-    target.postMessage(message, targetOrigin, [port2])
+
+    if (target instanceof HTMLIFrameElement) {
+      // default "targetOrigin" use wildcard only if iframe is sandboxed
+      // with "allow-same-origin" and is from same origin.
+      const iframeOrigin = target.src
+        ? new URL(target.src).origin
+        : target.srcdoc
+        ? location.origin
+        : undefined
+
+      options.origin ??= target.sandbox.contains("allow-same-origin")
+        ? iframeOrigin
+        : iframeOrigin === location.origin
+        ? "*"
+        : iframeOrigin
+
+      target = target.contentWindow
+    } else {
+      options.origin ??= location.origin === "null" ? "*" : location.origin
+    }
+
+    target.postMessage(message, options.origin, [port2])
 
     this.#queue = new Map()
 
@@ -109,11 +140,11 @@ export class Sender extends Emitter {
           return
         }
 
-        if (data.type === "IPC_PONG") return resolve()
-
         if (data.type === "IPC_SEND") {
           return super.emit(data.events, ...data.args)
         }
+
+        if (data.type === "IPC_PONG") return resolve()
       }
     })
   }
@@ -140,37 +171,32 @@ export class Sender extends Emitter {
 }
 
 export class IPC extends Emitter {
-  from(source) {
-    if (source instanceof HTMLIFrameElement) source = source.contentWindow
-    const receiver = new Receiver()
-    sources.set(source, receiver)
-    return receiver
+  from(source, options) {
+    return new Receiver(source, options)
   }
 
-  to(target, targetOrigin) {
-    if (target instanceof HTMLIFrameElement) {
-      // default "targetOrigin" use wildcard only if iframe is sandboxed
-      // with "allow-same-origin" and is from same origin.
-      const iframeOrigin = target.src
-        ? new URL(target.src).origin
-        : target.srcdoc
-        ? location.origin
-        : undefined
-
-      targetOrigin ??= target.sandbox.contains("allow-same-origin")
-        ? iframeOrigin
-        : iframeOrigin === location.origin
-        ? "*"
-        : iframeOrigin
-
-      target = target.contentWindow
-    } else {
-      targetOrigin ??= location.origin === "null" ? "*" : location.origin
-    }
-
-    return new Sender(target, targetOrigin)
+  to(target, options) {
+    return new Sender(target, options)
   }
 }
 
 const ipc = new IPC()
+
+let top
+let parent
+Object.defineProperties(ipc.to, {
+  top: {
+    get() {
+      top ??= ipc.to(globalThis.top)
+      return top
+    },
+  },
+  parent: {
+    get() {
+      parent ??= ipc.to(globalThis.parent)
+      return parent
+    },
+  },
+})
+
 export default ipc

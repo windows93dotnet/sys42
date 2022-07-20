@@ -26,15 +26,12 @@ function getData(queue, ctx) {
 
 const iframes = []
 
-let topBus
-
 if (inTop) {
   ipc.on("42-ui-ipc-handshake", (data, meta) => iframes.push(meta.send))
 }
 
 if (inIframe) {
-  topBus ??= ipc.to(globalThis.top)
-  topBus.send("42-ui-ipc-handshake")
+  ipc.to.top.send("42-ui-ipc-handshake")
 }
 
 export default async (ctx, options) => {
@@ -60,7 +57,7 @@ export default async (ctx, options) => {
     if (inIframe) {
       ctx.reactive.on("update", (queue) => {
         if (debug) console.log("Parent Iframe --> Top", queue)
-        topBus.send(`42-ui-ipc-${ctx.id}`, getData(queue, ctx))
+        ipc.to.top.send(`42-ui-ipc-${ctx.id}`, getData(queue, ctx))
       })
     }
   }
@@ -77,7 +74,7 @@ export default async (ctx, options) => {
     }
 
     if (inIframe) {
-      topBus.on(`42-ui-ipc-${ctx.id}`, (data) => {
+      ipc.to.top.on(`42-ui-ipc-${ctx.id}`, (data) => {
         ctx.reactive.assign("/", data)
       })
     }
@@ -95,7 +92,7 @@ export default async (ctx, options) => {
     }
 
     if (inIframe) {
-      topBus.on(`42-ui-ipc-${ctx.parentId}`, (data) => {
+      ipc.to.top.on(`42-ui-ipc-${ctx.parentId}`, (data) => {
         ctx.reactive.assign("/", data)
       })
     }
@@ -113,7 +110,7 @@ export default async (ctx, options) => {
     if (inIframe) {
       ctx.reactive.on("update", (queue) => {
         if (debug) console.log("Iframe --> Parent Top", queue)
-        topBus.send(`42-ui-ipc-${ctx.parentId}`, getData(queue, ctx))
+        ipc.to.top.send(`42-ui-ipc-${ctx.parentId}`, getData(queue, ctx))
       })
     }
   }

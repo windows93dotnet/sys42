@@ -17,12 +17,10 @@ if (inTop) {
     })
 }
 
-let bus
-
 function wrap(name, digest, fn) {
   fn.destroy = inTop
     ? async () => functions.delete(digest)
-    : async () => bus.send("42-realm-destroy", digest)
+    : async () => ipc.to.top.send("42-realm-destroy", digest)
   Object.defineProperty(fn, "name", { value: name })
   return fn
 }
@@ -31,15 +29,13 @@ export default function realm({ name, args, top }) {
   const digest = hash(top)
 
   if (!inTop) {
-    bus ??= ipc.to(globalThis.top)
-
     const fn = args
       ? async (...rest) =>
-          bus.send("42-realm-call", {
+          ipc.to.top.send("42-realm-call", {
             digest,
             args: await args(...rest),
           })
-      : async (...args) => bus.send("42-realm-call", { digest, args })
+      : async (...args) => ipc.to.top.send("42-realm-call", { digest, args })
 
     return wrap(name, digest, fn)
   }

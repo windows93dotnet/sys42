@@ -15,7 +15,8 @@ export default class Reactive extends Emitter {
   #update = {}
 
   constructor(ctx, data = {}) {
-    super()
+    super({ signal: ctx.cancel.signal })
+    ctx.cancel.signal.addEventListener("abort", () => this.destroy())
 
     this.ctx = ctx
     this.data = data
@@ -25,8 +26,6 @@ export default class Reactive extends Emitter {
       enumerable: true,
       get: () => this.state,
     })
-
-    this.ctx.cancel.signal.addEventListener("abort", () => this.destroy())
 
     this.queue = {
       paths: new Set(),
