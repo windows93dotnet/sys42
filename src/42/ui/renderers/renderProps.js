@@ -100,9 +100,10 @@ export default async function renderProps(el, props, def) {
       item = { type, default: item, reflect: true }
     }
 
-    const scope = item.state //
-      ? resolveScope(ctx.globalScope, key, ctx)
-      : resolveScope(ctx.scope, key, ctx)
+    const scope =
+      item.state === undefined //
+        ? resolveScope(ctx.scope, key, ctx)
+        : resolveScope(ctx.globalScope, key, ctx)
 
     const attribute = item.attribute ?? toKebabCase(key)
     const converter = item.converter ?? CONVERTERS[item.type ?? "string"]
@@ -137,30 +138,28 @@ export default async function renderProps(el, props, def) {
 
     let ref
     let fromRender = false
-    let updateFn
+    let update
 
     if (item.update) {
       const type = typeof item.update
       if (type === "string" || type === "symbol") {
-        updates[item.update] ??= paintThrottle(() => el[item.update]())
-        updateFn = updates[item.update]
-      } else {
-        updateFn =
-          type === "function"
-            ? () => item.update.call(el, ref ? ctx.reactive.get(ref.$ref) : val)
-            : () => {}
+        updates[item.update] ??= paintThrottle((init) => el[item.update](init))
+        update = updates[item.update]
+      } else if (type === "function") {
+        updates[key] = (init) => item.update.call(el, init)
+        update = updates[key]
       }
     }
 
-    const render = (val, update) => {
+    const render = (val, silent = true) => {
       if (ctx.cancel.signal.aborted === true) return
 
       ctx.reactive.now(() => {
-        if (!item.computed) {
-          ctx.reactive.set(scope, ref ?? val, { silent: !update })
+        if (!item.computed && item.state !== false) {
+          ctx.reactive.set(scope, ref ?? val, { silent })
         }
 
-        if (updateFn && !el.ready.isPending && updateFn() !== false && queue) {
+        if (!el.ready.isPending && update?.(false) !== false && queue) {
           queue.add(key)
           componentUpdate()
         }
@@ -196,7 +195,7 @@ export default async function renderProps(el, props, def) {
     if (fromView) {
       observed[attribute] = (val) => {
         if (fromRender) return
-        render(fromView(val, attribute, el, item), true)
+        render(fromView(val, attribute, el, item), false)
       }
     }
 
@@ -218,29 +217,36 @@ export default async function renderProps(el, props, def) {
 
     Object.defineProperty(el, key, {
       configurable: true,
-      set(val) {
-        if (ref) ctx.reactive.now(() => ctx.reactive.set(ref.$ref, val))
-        else render(val, true)
-      },
-      get() {
-        return ctx.reactive.get(ref ? ref.$ref : scope)
-      },
+      set:
+        item.state === false
+          ? (value) => {
+              val = value
+              render(value, false)
+            }
+          : (val) => {
+              if (ref) ctx.reactive.now(() => ctx.reactive.set(ref.$ref, val))
+              else render(val, false)
+            },
+      get:
+        item.state === false
+          ? () => val
+          : () => ctx.reactive.get(ref ? ref.$ref : scope),
     })
 
     if (typeof val === "function") {
       const fn = val
       ref = fn.ref ? { $ref: fn.ref } : undefined
-      register(ctx, fn, (val, changed) => render(val, changed !== scope))
+      register(ctx, fn, (val, changed) => render(val, changed === scope))
     } else {
       render(val)
       if (!item.state) continue
-      register(ctx, scope, (val, changed) => render(val, changed !== scope))
+      register(ctx, scope, (val, changed) => render(val, changed === scope))
     }
   }
 
   await ctx.undones.done()
 
-  for (const key of Reflect.ownKeys(updates)) updates[key]()
+  for (const key of Reflect.ownKeys(updates)) updates[key](true)
 
   return observed
 }

@@ -14,8 +14,8 @@ export class Folder extends Component {
         type: "string",
         reflect: true,
         default: "/",
-        update() {
-          this.selection.length = 0
+        update(init) {
+          if (!init) this.selection.length = 0
         },
       },
       glob: {

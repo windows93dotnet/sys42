@@ -321,7 +321,6 @@ export function normalizeCtx(ctx = {}) {
   ctx.plugins ??= {}
   ctx.steps ??= "?"
 
-  ctx.componentsIndexes ??= {}
   ctx.components ??= new Undones()
   ctx.preload ??= new Undones()
   ctx.undones ??= new Undones()

@@ -4,12 +4,14 @@ export class Picto extends Component {
   static definition = {
     tag: "ui-picto",
 
-    class: "picto--{{value}}",
-
     props: {
       value: {
         type: "string",
         reflect: true,
+        state: false,
+        update() {
+          this.className = `picto--${this.value}`
+        },
       },
     },
   }

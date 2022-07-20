@@ -114,6 +114,7 @@ export default class Reactive extends Emitter {
     await this.ctx.components.done()
     await this.ctx.undones.done()
     await this.#update.ready
+    await 0 // queueMicrotask
 
     if (this.ctx.undones.length > 0 || this.ctx.components.length > 0) {
       if (n < 0) throw new Error("Too much recursion")

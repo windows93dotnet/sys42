@@ -88,9 +88,9 @@
   )
 
   if (app.ctx.plugins.persist.initial) {
-    // app.query("#dialog-left")?.click()
+    app.query("#dialog-left")?.click()
     app.query("#dialog-right")?.click()
-    // app.query("#incr")?.click()
+    app.query("#incr")?.click()
     await app
     log(app.data)
   }

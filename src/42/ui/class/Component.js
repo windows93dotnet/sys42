@@ -111,6 +111,12 @@ export default class Component extends HTMLElement {
     this.ctx.postrender.call()
   }
 
+  #setCustomScope(props) {
+    this.ctx.globalScope = this.ctx.scope
+    this.ctx.scope = resolveScope(this.localName, getStep(this.ctx.steps))
+    this.ctx.props = props
+  }
+
   async #init(def, ctx) {
     this.removeAttribute("data-no-init")
     this.#lifecycle = INIT
@@ -130,35 +136,24 @@ export default class Component extends HTMLElement {
     tmp = normalizeCtx(tmp)
     this.ctx = tmp
     normalizeScope(def, this.ctx)
-
-    /* handle props
-    --------------- */
-    if (definition.props || def?.props || definition.computed) {
-      const { localName } = this
-
-      let i = this.ctx.componentsIndexes[localName] ?? -1
-      this.ctx.componentsIndexes[localName] = ++i
-
-      this.ctx.globalScope = this.ctx.scope
-      this.ctx.scope = resolveScope(
-        this.localName,
-        // String(i)
-        getStep(this.ctx.steps)
-      )
-
-      this.ctx.props = definition.props
-      if (definition.id === true) this.id = `${this.localName}-${i}`
-    }
-
     def = objectifyDef(def)
 
     const options = {}
-    let props
-    if (definition.props) {
-      const propsKeys = Object.keys(definition.props)
+
+    /* handle props
+    --------------- */
+    const configProps = configure(definition.props, def?.props)
+    const propsValues = Object.values(configProps)
+
+    if (propsValues.length > 0) {
+      if (!propsValues.every((val) => val.state !== undefined)) {
+        this.#setCustomScope(configProps)
+      }
+
+      const propsKeys = Object.keys(configProps)
       const configKeys = Object.keys(definition.defaults ?? {})
       const entries = Object.entries(def)
-      props = {}
+      const props = {}
       def = {}
       for (const [key, val] of entries) {
         if (propsKeys.includes(key)) {
@@ -170,11 +165,13 @@ export default class Component extends HTMLElement {
           options[key] = val
         } else def[key] = val
       }
+
+      this.#observed = await renderProps(this, configProps, props)
     }
 
-    this.#observed = props
-      ? await renderProps(this, definition.props, props)
-      : undefined
+    if (definition.computed && !this.ctx.globalScope) {
+      this.#setCustomScope(configProps)
+    }
 
     /* handle def
     ------------- */
@@ -204,7 +201,7 @@ export default class Component extends HTMLElement {
 
     await this.ctx.preload.done()
 
-    this.append(
+    this.replaceChildren(
       render(def, this.ctx, { skipNormalize: true, step: this.localName })
     )
 
@@ -242,9 +239,8 @@ export default class Component extends HTMLElement {
     this.ctx.cancel(reason)
 
     if (this.ctx.globalScope) {
-      this.ctx.componentsIndexes[this.localName]--
       this.ctx.reactive.delete(this.ctx.scope, { silent: true })
-      this.ctx.reactive.emit("update", new Set()) // prevent calling $ref renderers
+      this.ctx.reactive.emit("update", new Set([this.ctx.scope])) // prevent calling $ref renderers
     }
 
     this.ready?.reject?.(new Error(reason))

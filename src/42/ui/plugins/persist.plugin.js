@@ -22,7 +22,6 @@ export default async (ctx) => {
       openers.push(opener)
     }
 
-    // delete res["ui-dialog"]
     Object.assign(ctx.reactive.state, res)
 
     ctx.postrender.push(() => {

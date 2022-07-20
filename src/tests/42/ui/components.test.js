@@ -1025,9 +1025,8 @@ test("props state", 1, async (t) => {
   })
 
   t.eq(app.reactive.data, {
-    "foo": 1,
-    "ui-b": { root: {} },
-    "bar": 2,
+    foo: 1,
+    bar: 2,
   })
 
   t.is(app.el.innerHTML, '<ui-b bar="2">foo: 1, bar: 2</ui-b>')
@@ -1041,9 +1040,8 @@ test("props state", 1, async (t) => {
   await app
 
   t.eq(app.reactive.data, {
-    "foo": 2,
-    "ui-b": { root: {} },
-    "bar": 3,
+    foo: 2,
+    bar: 3,
   })
 
   t.is(app.el.innerHTML, '<ui-b bar="3">foo: 2, bar: 3</ui-b>')
@@ -1056,9 +1054,8 @@ test("props state", 2, async (t) => {
   })
 
   t.eq(app.reactive.data, {
-    "foo": 1,
-    "ui-b": { root: {} },
-    "bar": 0,
+    foo: 1,
+    bar: 0,
   })
 
   t.is(app.el.innerHTML, '<ui-b bar="0">foo: 1, bar: 0</ui-b>')
@@ -1072,9 +1069,8 @@ test("props state", 2, async (t) => {
   await app
 
   t.eq(app.reactive.data, {
-    "foo": 2,
-    "ui-b": { root: {} },
-    "bar": 3,
+    foo: 2,
+    bar: 3,
   })
 
   t.is(app.el.innerHTML, '<ui-b bar="3">foo: 2, bar: 3</ui-b>')
@@ -1530,7 +1526,7 @@ test("computed", async (t) => {
 })
 
 test("computed", "from prop with state:true", async (t) => {
-  t.plan(9)
+  t.plan(11)
   let cnt = 0
 
   await Component.define(
@@ -1576,8 +1572,10 @@ test("computed", "from prop with state:true", async (t) => {
   ])
   t.is(cnt, 1)
   t.eq(app.reactive.data, {
-    "ui-t-compu-sta": { root: {} },
-    "formated": "FOO/BAR",
+    formated: "FOO/BAR",
+  })
+  t.eq(app.ctx.computeds.value, {
+    "ui-t-compu-sta": { root: { parsed: ["FOO", "BAR"] } },
   })
   t.is(app.el.innerHTML, "<ui-t-compu-sta>foo: FOO, bar: BAR</ui-t-compu-sta>")
 
@@ -1590,8 +1588,10 @@ test("computed", "from prop with state:true", async (t) => {
   await app
 
   t.eq(app.reactive.data, {
-    "ui-t-compu-sta": { root: {} },
-    "formated": "HELLO/WORLD",
+    formated: "HELLO/WORLD",
+  })
+  t.eq(app.ctx.computeds.value, {
+    "ui-t-compu-sta": { root: { parsed: ["HELLO", "WORLD"] } },
   })
   t.is(cnt, 2)
   t.is(
