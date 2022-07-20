@@ -1,6 +1,5 @@
 .trash
 node_modules/*
-src/42/vendor/*
 src/tests/annexes/*
-src/42/system/polyfills/*
+src/42/core/env/polyfills/*
 **/*.min.js

@@ -1,5 +1,5 @@
 import listen from "../../fabric/dom/listen.js"
-import configure from "../../fabric/configure.js"
+import configure from "../../core/configure.js"
 import setTemp from "../../fabric/dom/setTemp.js"
 import Canceller from "../../fabric/class/Canceller.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"

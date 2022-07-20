@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 
-import setup from "../../../system/setup.js"
-import uid from "../../uid.js"
+import setup from "../../../core/setup.js"
+import uid from "../../../core/uid.js"
 import allKeys from "../object/allKeys.js"
 import omit from "../object/omit.js"
 import pick from "../object/pick.js"

@@ -1,9 +1,9 @@
 /* eslint-disable camelcase */
-import inIframe from "../../system/env/runtime/inIframe.js"
-import inTop from "../../system/env/runtime/inTop.js"
-import ipc from "../../system/ipc.js"
+import inIframe from "../../core/env/runtime/inIframe.js"
+import inTop from "../../core/env/runtime/inTop.js"
+import ipc from "../../core/ipc.js"
 import allocate from "../../fabric/locator/allocate.js"
-import configure from "../../fabric/configure.js"
+import configure from "../../core/configure.js"
 
 const debug = false
 

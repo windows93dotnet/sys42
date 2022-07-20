@@ -6,7 +6,7 @@ import register from "../register.js"
 import Canceller from "../../fabric/class/Canceller.js"
 import getType from "../../fabric/getType.js"
 import { normalizeDef, normalizeTokens } from "../normalize.js"
-import expr from "../../system/expr.js"
+import expr from "../../core/expr.js"
 
 const PLACEHOLDER = "[if]"
 const { DOCUMENT_FRAGMENT_NODE } = Node

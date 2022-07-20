@@ -1,7 +1,7 @@
 import listen from "../../fabric/dom/listen.js"
 import hash from "../../fabric/type/any/hash.js"
 import { normalizeTokens } from "../normalize.js"
-import expr from "../../system/expr.js"
+import expr from "../../core/expr.js"
 
 const makeEventLocals = (e, target) =>
   Object.defineProperties(

@@ -1,7 +1,7 @@
 // @related https://www.npmjs.com/package/clean-stack
 // @read https://github.com/tlrobinson/long-stack-traces
 
-import isNode from "../../../system/env/runtime/inNode.js"
+import isNode from "../../../core/env/runtime/inNode.js"
 import parseErrorStack, { stackframe } from "./parseErrorStack.js"
 
 // @src https://github.com/tapjs/stack-utils/blob/82097544610b7360e14c496b3eb23aedda53d3d0/index.js#L5

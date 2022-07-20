@@ -1,7 +1,7 @@
 import { ConfigFile } from "./class/ConfigFile.js"
 import findIconPath from "./theme/findIconPath.js"
 
-import loadCSS from "../system/load/loadCSS.js"
+import loadCSS from "../core/load/loadCSS.js"
 
 const DEFAULTS = {
   // style: "/42/themes/default/index.css",

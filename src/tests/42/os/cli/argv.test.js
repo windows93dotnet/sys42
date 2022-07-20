@@ -1,9 +1,9 @@
 import test from "../../../../42/test.js"
 import argv from "../../../../42/os/cli/argv.js"
 import parseCommand from "../../../../42/os/cli/parseCommand.js"
-import JSON5 from "../../../../42/system/formats/json5.js"
+import JSON5 from "../../../../42/core/formats/json5.js"
 
-import configure from "../../../../42/fabric/configure.js"
+import configure from "../../../../42/core/configure.js"
 export const PRESETS = {
   verbose: {
     schema: { verbose: { type: "number" } },

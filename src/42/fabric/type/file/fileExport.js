@@ -1,6 +1,6 @@
 // @read https://github.com/jimmywarting/native-file-system-adapter/blob/master/src/adapters/downloader.js
 
-import inOpaqueOrigin from "../../../system/env/runtime/inOpaqueOrigin.js"
+import inOpaqueOrigin from "../../../core/env/runtime/inOpaqueOrigin.js"
 const supportShowSaveFilePicker = "showSaveFilePicker" in globalThis
 
 function legacySaveFile(file, options) {

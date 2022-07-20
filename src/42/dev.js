@@ -1,10 +1,10 @@
-import inTop from "./system/env/runtime/inTop.js"
-import inOpaqueOrigin from "./system/env/runtime/inOpaqueOrigin.js"
-import inAutomated from "./system/env/runtime/inAutomated.js"
+import inTop from "./core/env/runtime/inTop.js"
+import inOpaqueOrigin from "./core/env/runtime/inOpaqueOrigin.js"
+import inAutomated from "./core/env/runtime/inAutomated.js"
 import system from "./system.js"
-import log from "./system/log.js"
+import log from "./core/log.js"
 
-import testRunner from "./system/dev/testRunner.js"
+import testRunner from "./core/dev/testRunner.js"
 import getScriptData from "./fabric/getScriptData.js"
 const { config } = getScriptData(import.meta)
 
@@ -64,7 +64,7 @@ if (inTop && inAutomated) {
       if (config.testFiles) return testRunner(config.testFiles, options)
     },
     async env(full) {
-      const env = await import("./system/env.js").then((m) => m.default)
+      const env = await import("./core/env.js").then((m) => m.default)
       if (!full) return log(env.toString())
       const json = env.toJSON()
       log(json)

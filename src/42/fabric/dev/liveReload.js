@@ -1,11 +1,11 @@
 /* eslint-disable max-params */
 
-import env from "../../system/env.js"
+import env from "../../core/env.js"
 import parseCSSUrl from "../cssom/parseCSSUrl.js"
 import walkCSSRules from "../cssom/walkCSSRules.js"
-import log from "../../system/log.js"
-import preload from "../../system/load/preload.js"
-import inOpaqueOrigin from "../../system/env/runtime/inOpaqueOrigin.js"
+import log from "../../core/log.js"
+import preload from "../../core/load/preload.js"
+import inOpaqueOrigin from "../../core/env/runtime/inOpaqueOrigin.js"
 
 import when from "../type/promise/when.js"
 import sleep from "../type/promise/sleep.js"

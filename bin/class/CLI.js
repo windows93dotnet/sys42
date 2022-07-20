@@ -1,4 +1,4 @@
-import setup from "../../src/42/system/setup.js"
+import setup from "../../src/42/core/setup.js"
 import argv from "../../src/42/os/cli/argv.js"
 import parseCommand from "../../src/42/os/cli/parseCommand.js"
 // import validator from "../type/json/validator.js"

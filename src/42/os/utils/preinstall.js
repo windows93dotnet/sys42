@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 
 import defer from "../../fabric/type/promise/defer.js"
-// import inOpaqueOrigin from "../../system/env/runtime/inOpaqueOrigin.js"
+// import inOpaqueOrigin from "../../core/env/runtime/inOpaqueOrigin.js"
 
 export default function preinstall(app) {
   function resolve(url) {

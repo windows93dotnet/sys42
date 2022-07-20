@@ -1,5 +1,5 @@
 import renderAttributes from "./renderers/renderAttributes.js"
-import parseTagSelector from "../system/formats/emmet/parseTagSelector.js"
+import parseTagSelector from "../core/formats/emmet/parseTagSelector.js"
 import { normalizeAttrs } from "./normalize.js"
 import ALLOWED_SVG_ATTRIBUTES from "../fabric/constants/ALLOWED_SVG_ATTRIBUTES.js"
 

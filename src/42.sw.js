@@ -1,5 +1,5 @@
-import getDriver from "./42/system/fs/getDriver.js"
-import Disk from "./42/system/fs/Disk.js"
+import getDriver from "./42/core/fs/getDriver.js"
+import Disk from "./42/core/fs/Disk.js"
 
 const disk = new Disk()
 

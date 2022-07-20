@@ -1,9 +1,9 @@
-import Database from "../../system/db/Database.js"
-import configure from "../configure.js"
+import Database from "../../core/db/Database.js"
+import configure from "../../core/configure.js"
 import flatten from "../type/object/flatten.js"
 import trim from "../type/string/trim.js"
 import defer from "../type/promise/defer.js"
-import inOpaqueOrigin from "../../system/env/runtime/inOpaqueOrigin.js"
+import inOpaqueOrigin from "../../core/env/runtime/inOpaqueOrigin.js"
 
 import exists from "../locator/exists.js"
 import locate from "../locator/locate.js"

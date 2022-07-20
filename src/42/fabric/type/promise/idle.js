@@ -1,7 +1,5 @@
 if ("requestIdleCallback" in globalThis === false) {
-  await import(
-    "../../../system/env/polyfills/globalThis.requestIdleCallback.js"
-  )
+  await import("../../../core/env/polyfills/globalThis.requestIdleCallback.js")
 }
 
 export default function idle() {

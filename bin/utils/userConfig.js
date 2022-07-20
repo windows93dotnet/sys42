@@ -1,12 +1,11 @@
 import { cosmiconfig } from "cosmiconfig"
 
-// import fs from "../../src/42/system/fs.js"
 import fs from "node:fs/promises"
 import CLI from "../class/CLI.js"
-import log, { Log } from "../../src/42/system/log.js"
+import log, { Log } from "../../src/42/core/log.js"
 import normalizeConfig from "./userConfig/normalizeConfig.js"
 import normalizePaths from "./userConfig/normalizePaths.js"
-import configure from "../../src/42/fabric/configure.js"
+import configure from "../../src/42/core/configure.js"
 import cwd from "../../src/42/fabric/type/path/cwd.js"
 
 import normalizeTestContexts, {

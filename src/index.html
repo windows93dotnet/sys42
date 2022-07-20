@@ -51,10 +51,10 @@
 </main>
 
 <script type="module">
-  import testRunner from "./42/system/dev/testRunner.js"
+  import testRunner from "./42/core/dev/testRunner.js"
   import system from "./42/system.js"
-  import fs from "./42/system/fs.js"
-  import disk from "./42/system/fs/disk.js"
+  import fs from "./42/core/fs.js"
+  import disk from "./42/core/fs/disk.js"
   import create from "./42/ui/create.js"
   import stemname from "./42/fabric/type/path/extract/stemname.js"
 
@@ -70,43 +70,46 @@
 
   testRunner(
     // disk.glob("**/*.test.js"),
-    [
-      // "/tests/42/fabric/configure.test.js",
-      // // // "/tests/42/fabric/type/any/clone.test.js",
-      // "/tests/42/fabric/type/any/hash.test.js",
-      // "/tests/42/fabric/type/any/mark.test.js",
-      // "/tests/42/fabric/type/any/stringify.test.js",
-      // "/tests/42/fabric/type/file/bytesize.test.js",
-      // "/tests/42/fabric/type/file/checksum.test.js",
-      // "/tests/42/fabric/type/path/core/sortPath.test.js",
-      // "/tests/42/fabric/type/path/glob.test.js",
-      // "/tests/42/fabric/type/path/rename.test.js",
-      // "/tests/42/fabric/type/path/shortenFilename.test.js",
-      // "/tests/42/fabric/type/string/count.test.js",
-      // "/tests/42/fabric/type/string/sdbm.test.js",
+    disk
+      .glob("**/*.test.js")
+      .filter((x) => x !== "/tests/42/ui/plugins/ipc.plugin.test.js"),
+    // [
+    //   // "/tests/42/fabric/configure.test.js",
+    //   // // // "/tests/42/fabric/type/any/clone.test.js",
+    //   // "/tests/42/fabric/type/any/hash.test.js",
+    //   // "/tests/42/fabric/type/any/mark.test.js",
+    //   // "/tests/42/fabric/type/any/stringify.test.js",
+    //   // "/tests/42/fabric/type/file/bytesize.test.js",
+    //   // "/tests/42/fabric/type/file/checksum.test.js",
+    //   // "/tests/42/fabric/type/path/core/sortPath.test.js",
+    //   // "/tests/42/fabric/type/path/glob.test.js",
+    //   // "/tests/42/fabric/type/path/rename.test.js",
+    //   // "/tests/42/fabric/type/path/shortenFilename.test.js",
+    //   // "/tests/42/fabric/type/string/count.test.js",
+    //   // "/tests/42/fabric/type/string/sdbm.test.js",
 
-      // "/tests/42/os/cli/argv.test.js",
+    //   // "/tests/42/os/cli/argv.test.js",
 
-      // "/tests/42/system/console/formats/highlight.test.js",
-      // "/tests/42/system/console/parseLogTemplate.test.js",
-      // // // "/tests/42/system/db/Database.test.js",
-      // "/tests/42/system/expr.test.js",
-      // // // "/tests/42/system/formats/cbor.test.js",
-      // "/tests/42/system/formats/template.test.js",
-      // "/tests/42/system/formats/template/parseExpression.test.js",
-      // // // "/tests/42/system/fs.test.js",
-      // "/tests/42/system/i18n.test.js",
-      // "/tests/42/system/log.test.js",
+    //   // "/tests/42/core/console/formats/highlight.test.js",
+    //   // "/tests/42/core/console/parseLogTemplate.test.js",
+    //   // // // "/tests/42/core/db/Database.test.js",
+    //   // "/tests/42/core/expr.test.js",
+    //   // // // "/tests/42/core/formats/cbor.test.js",
+    //   // "/tests/42/core/formats/template.test.js",
+    //   // "/tests/42/core/formats/template/parseExpression.test.js",
+    //   // // // "/tests/42/core/fs.test.js",
+    //   // "/tests/42/core/i18n.test.js",
+    //   // "/tests/42/core/log.test.js",
 
-      "/tests/42/ui/components.test.js",
-      "/tests/42/ui/components/folder.test.js",
-      "/tests/42/ui/components/icon.test.js",
-      "/tests/42/ui/components/picto.test.js",
-      "/tests/42/ui/components/sandbox.test.js",
-      "/tests/42/ui/create.test.js",
-      "/tests/42/ui.test.js",
-      // "/tests/42/ui/plugins/ipc.plugin.test.js",
-    ],
+    //   "/tests/42/ui/components.test.js",
+    //   "/tests/42/ui/components/folder.test.js",
+    //   "/tests/42/ui/components/icon.test.js",
+    //   "/tests/42/ui/components/picto.test.js",
+    //   "/tests/42/ui/components/sandbox.test.js",
+    //   "/tests/42/ui/create.test.js",
+    //   "/tests/42/ui.test.js",
+    //   // "/tests/42/ui/plugins/ipc.plugin.test.js",
+    // ],
     { verbose: 2 }
   )
 </script>

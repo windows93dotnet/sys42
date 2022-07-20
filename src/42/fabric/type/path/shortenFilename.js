@@ -1,5 +1,5 @@
-import inBackend from "../../../system/env/runtime/inBackend.js"
-import setup from "../../../system/setup.js"
+import inBackend from "../../../core/env/runtime/inBackend.js"
+import setup from "../../../core/setup.js"
 import arrify from "../any/arrify.js"
 import getCWD from "./cwd.js"
 

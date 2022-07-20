@@ -1,5 +1,5 @@
-import uid from "../uid.js"
-import configure from "../configure.js"
+import uid from "../../core/uid.js"
+import configure from "../../core/configure.js"
 import arrify from "../type/any/arrify.js"
 import listen from "../dom/listen.js"
 import isIframable from "../type/url/isIframable.js"

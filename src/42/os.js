@@ -1,10 +1,10 @@
 import system from "./system.js"
-import fs from "./system/fs.js"
-import disk from "./system/fs/disk.js"
+import fs from "./core/fs.js"
+import disk from "./core/fs/disk.js"
 import exec from "./os/exec.js"
 import ui from "./ui.js"
 import theme from "./os/theme.js"
-import devices from "./system/devices.js"
+import devices from "./core/devices.js"
 // import apps from "./os/apps.js"
 
 system.fs = fs
@@ -14,7 +14,5 @@ system.ui = ui
 system.theme = theme
 system.devices = devices
 // system.apps = apps
-
-globalThis.$ ??= system
 
 export { default } from "./system.js"

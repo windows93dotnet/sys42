@@ -1,4 +1,4 @@
-import configure from "../configure.js"
+import configure from "../../core/configure.js"
 // import toggleable from "../../fabric/trait/toggleable.js"
 import Emitter from "../../fabric/class/Emitter.js"
 

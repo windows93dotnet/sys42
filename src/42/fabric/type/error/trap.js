@@ -1,6 +1,6 @@
 import normalizeError from "./normalizeError.js"
 import removeItem from "../array/removeItem.js"
-import inNode from "../../../system/env/runtime/inNode.js"
+import inNode from "../../../core/env/runtime/inNode.js"
 
 export const queue = []
 

@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-import uid from "../../fabric/uid.js"
+import uid from "../../core/uid.js"
 import setStyles from "./setStyles.js"
 
 export function setDataset(el, obj) {

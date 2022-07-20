@@ -2,12 +2,12 @@
 
 import system from "./system.js"
 import chainable from "./fabric/trait/chainable.js"
-import Suite from "./system/dev/testing/class/Suite.js"
-import Test from "./system/dev/testing/class/Test.js"
-import ensureCurrentSuite from "./system/dev/testing/ensureCurrentSuite.js"
-import addUtilities from "./system/dev/testing/addUtilities.js"
+import Suite from "./core/dev/testing/class/Suite.js"
+import Test from "./core/dev/testing/class/Test.js"
+import ensureCurrentSuite from "./core/dev/testing/ensureCurrentSuite.js"
+import addUtilities from "./core/dev/testing/addUtilities.js"
 
-export { default as mock } from "./system/dev/testing/mock.js"
+export { default as mock } from "./core/dev/testing/mock.js"
 
 system.testing ??= {
   root: new Suite("#root"),
@@ -16,13 +16,13 @@ system.testing ??= {
   iframes: [],
   ran: false,
   run: (...args) =>
-    import("./system/dev/testing/runTests.js") //
+    import("./core/dev/testing/runTests.js") //
       .then((m) => m.default(...args)),
   report: (...args) =>
-    import("./system/dev/testing/reportTests.js") //
+    import("./core/dev/testing/reportTests.js") //
       .then((m) => m.default(...args)),
   serialize: (...args) =>
-    import("./system/dev/testing/serializeTests.js") //
+    import("./core/dev/testing/serializeTests.js") //
       .then((m) => m.default(...args)),
 }
 

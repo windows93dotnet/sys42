@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 import allocate from "../../fabric/locator/allocate.js"
-import setup from "../../system/setup.js"
+import setup from "../../core/setup.js"
 import locate from "../../fabric/locator/locate.js"
 import { isObject, isArray } from "../../fabric/type/any/is.js"
 

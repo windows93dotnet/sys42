@@ -1,4 +1,4 @@
-import configure from "../configure.js"
+import configure from "../../core/configure.js"
 
 export default function signature(target, args, DEFAULTS, normalize) {
   const definitions = []

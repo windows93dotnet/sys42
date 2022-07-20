@@ -1,6 +1,6 @@
 import Component from "../class/Component.js"
 import movable from "../traits/movable.js"
-import realm from "../../system/realm.js"
+import realm from "../../core/realm.js"
 import renderAnimation from "../renderers/renderAnimation.js"
 import { objectifyDef, forkDef } from "../normalize.js"
 import { autofocus } from "../../fabric/dom/focus.js"

@@ -1,7 +1,7 @@
 import system from "../../../src/42/system.js"
 import escapeHTML from "../../../src/42/fabric/type/string/escapeHTML.js"
 
-import parseUserAgent from "../../../src/42/system/env/parseUserAgent.js"
+import parseUserAgent from "../../../src/42/core/env/parseUserAgent.js"
 import memoize from "../../../src/42/fabric/type/function/memoize.js"
 
 const getUserAgent = memoize(parseUserAgent)

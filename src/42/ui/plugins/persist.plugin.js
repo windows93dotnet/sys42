@@ -1,4 +1,4 @@
-import persist from "../../system/persist.js"
+import persist from "../../core/persist.js"
 
 export default async (ctx) => {
   if (ctx.plugins.persist) return

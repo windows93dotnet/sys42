@@ -1,9 +1,9 @@
-import fs from "../../system/fs.js"
+import fs from "../../core/fs.js"
 import system from "../../system.js"
 import defer from "../../fabric/type/promise/defer.js"
 import extname from "../../fabric/type/path/extract/extname.js"
 import basename from "../../fabric/type/path/extract/basename.js"
-import configure from "../../fabric/configure.js"
+import configure from "../../core/configure.js"
 
 const VALID_TYPES = new Set([".json", ".json5", ".cbor"])
 

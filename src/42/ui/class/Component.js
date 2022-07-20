@@ -7,7 +7,7 @@ import defer from "../../fabric/type/promise/defer.js"
 import renderAttributes from "../renderers/renderAttributes.js"
 import renderProps from "../renderers/renderProps.js"
 import resolveScope from "../resolveScope.js"
-import configure from "../../fabric/configure.js"
+import configure from "../../core/configure.js"
 import render from "../render.js"
 import hash from "../../fabric/type/any/hash.js"
 import {

@@ -7,7 +7,7 @@
 <script type="module">
   import trap from "../42/fabric/type/error/trap.js"
   trap((err) => {
-    import("../42/system/log.js").then((m) => m.default(err))
+    import("../42/core/log.js").then((m) => m.default(err))
     return false
   })
 </script>
@@ -143,7 +143,7 @@
 
 <script type="_module">
   import Canceller from "../42/fabric/class/Canceller.js"
-  import log from "../42/system/log.js"
+  import log from "../42/core/log.js"
 
   const { cancel, signal } = new Canceller()
 
@@ -275,7 +275,7 @@
 
   window.app = app
 
-  import log from "../42/system/log.js"
+  import log from "../42/core/log.js"
   log(app.state)
 </script>
 
@@ -316,7 +316,7 @@
 
   window.app = app
 
-  import log from "../42/system/log.js"
+  import log from "../42/core/log.js"
   log(app.state)
 </script>
 
@@ -357,7 +357,7 @@
 
   window.app = app
 
-  import log from "../42/system/log.js"
+  import log from "../42/core/log.js"
   log(app.state)
 </script>
 
@@ -425,7 +425,7 @@
 
   window.app = app
 
-  import log from "../42/system/log.js"
+  import log from "../42/core/log.js"
   log(app.state)
 </script>
 
@@ -514,9 +514,9 @@
 </script>
 
 <script type="_module">
-  import log from "../42/system/log.js"
+  import log from "../42/core/log.js"
 
-  import http from "../42/fabric/http.js"
+  import http from "../42/core/http.js"
   http("https://google.com").catch(log)
 
   // Promise.any([

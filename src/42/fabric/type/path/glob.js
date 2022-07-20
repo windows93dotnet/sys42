@@ -130,7 +130,7 @@ export class Glob extends RegExp {
   }
 }
 
-import configure from "../../configure.js"
+import configure from "../../../core/configure.js"
 
 const DEFAULTS = {
   onlyFiles: false,

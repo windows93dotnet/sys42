@@ -113,7 +113,7 @@ let fs
 filters.file = {
   async open(path, fallback = "") {
     if (path === undefined) return fallback
-    fs ??= await import("../system/fs.js").then((m) => m.default)
+    fs ??= await import("../core/fs.js").then((m) => m.default)
     try {
       return await fs.open(path)
     } catch (err) {
@@ -123,7 +123,7 @@ filters.file = {
   },
   async read(path, fallback = "") {
     if (path === undefined) return fallback
-    fs ??= await import("../system/fs.js").then((m) => m.default)
+    fs ??= await import("../core/fs.js").then((m) => m.default)
     try {
       return await fs.readText(path)
     } catch (err) {

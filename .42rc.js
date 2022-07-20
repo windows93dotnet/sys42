@@ -186,7 +186,7 @@ export default {
 
     {
       src: "golden-fleece",
-      dest: "src/42/system/formats/json5.js",
+      dest: "src/42/core/formats/json5.js",
       foot: "export default { ast: parse, parse: evaluate, format: patch, stringify }",
       eslint: { disable: true },
     },
@@ -203,7 +203,7 @@ export default {
     {
       only: true,
       src: "faisalman/ua-parser-js@develop",
-      map: [["src/ua-parser.js", "src/42/system/env/parseUserAgent.js"]],
+      map: [["src/ua-parser.js", "src/42/core/env/parseUserAgent.js"]],
       metaHeaders: false,
       eslint: {
         fix: true,

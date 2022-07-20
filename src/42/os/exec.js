@@ -1,12 +1,12 @@
-import realm from "../system/realm.js"
+import realm from "../core/realm.js"
 import getCWD from "../fabric/getCWD.js"
 
-import JSON5 from "../system/formats/json5.js"
+import JSON5 from "../core/formats/json5.js"
 import parseCommand from "./cli/parseCommand.js"
 import argv from "./cli/argv.js"
 import traverse from "../fabric/type/object/traverse.js"
 import resolvePath from "../fabric/type/path/core/resolvePath.js"
-import disk from "../system/fs/disk.js"
+import disk from "../core/fs/disk.js"
 
 const { HOME } = disk
 

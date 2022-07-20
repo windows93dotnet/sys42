@@ -1,4 +1,4 @@
-import configure from "../../../src/42/fabric/configure.js"
+import configure from "../../../src/42/core/configure.js"
 import normalizeConfig from "./normalizeConfig.js"
 
 export const TEST_CTX_ALIASES = {

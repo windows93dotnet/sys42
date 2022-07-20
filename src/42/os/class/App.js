@@ -1,5 +1,5 @@
 /* eslint-disable unicorn/no-this-assignment */
-import inIframe from "../../system/env/runtime/inIframe.js"
+import inIframe from "../../core/env/runtime/inIframe.js"
 import preinstall from "../utils/preinstall.js"
 import UI from "../../ui/class/UI.js"
 import basename from "../../fabric/type/path/extract/basename.js"
@@ -130,7 +130,7 @@ export default class App extends UI {
 
         async save() {
           if (this.path) {
-            fs ??= await import("../../system/fs.js").then((m) => m.default)
+            fs ??= await import("../../core/fs.js").then((m) => m.default)
             fs.write(this.path, new Blob([this.text]))
             this.dirty = false
           } else {
@@ -144,7 +144,7 @@ export default class App extends UI {
             .then((m) => m.default)
           const res = await explorer.save(this.path ?? "untitled.txt")
           if (res) {
-            fs ??= await import("../../system/fs.js").then((m) => m.default)
+            fs ??= await import("../../core/fs.js").then((m) => m.default)
             await fs.write(res, new Blob([this.text]))
             this.path = res
             this.dirty = false
