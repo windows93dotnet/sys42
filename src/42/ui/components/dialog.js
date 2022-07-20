@@ -104,6 +104,8 @@ export class Dialog extends Component {
 
 Component.define(Dialog)
 
+const tracker = new Map()
+
 const dialog = realm({
   name: "dialog",
 
@@ -113,15 +115,18 @@ const dialog = realm({
   },
 
   async top(def, ctx) {
-    ctx.steps += ",dialog°" + dialog.list.length
+    const { steps } = ctx
+    let n = tracker.has(steps) ? tracker.get(steps) : 0
+    ctx = { ...ctx }
+    ctx.steps += ",dialog°" + n++
+    tracker.set(steps, n)
+
     const el = new Dialog(def, ctx)
-    dialog.list.push(el)
+
     await el.ready
     document.body.append(el)
     autofocus(el.querySelector(":scope > .ui-dialog__body"))
   },
 })
-
-dialog.list = []
 
 export default dialog
