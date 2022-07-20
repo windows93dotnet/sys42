@@ -5,10 +5,16 @@ const OR_REGEX = /\s*\|\|\s*/
 export default class Emitter {
   static EVENTS = Symbol.for("Emitter.EVENTS")
 
-  constructor(events = Object.create(null)) {
+  constructor(options) {
     Object.defineProperty(this, Emitter.EVENTS, {
-      value: events,
+      value: options?.events
+        ? Object.assign(Object.create(null), options.events)
+        : Object.create(null),
       writable: true,
+    })
+
+    options?.signal?.addEventListener("abort", () => {
+      this.off("*")
     })
   }
 
