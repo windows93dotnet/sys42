@@ -1,4 +1,4 @@
-import { cosmiconfig } from "cosmiconfig"
+import { lilconfig } from "lilconfig"
 
 import fs from "node:fs/promises"
 import CLI from "../class/CLI.js"
@@ -151,15 +151,16 @@ const cli = new CLI("verbose", {
   argsKey: "glob",
 })
 
-const cosmiconfigOptions = {
+const lilconfigOptions = {
   cache: false,
   loaders: {
-    ".js": async (filepath) =>
-      (await import(/* graph-ignore */ filepath)).default,
+    async ".js"(filepath) {
+      return (await import(/* graph-ignore */ filepath)).default
+    },
   },
 }
-const configExplorerPrettier = cosmiconfig("prettier", cosmiconfigOptions)
-const configExplorer42 = cosmiconfig("42", cosmiconfigOptions)
+const configExplorerPrettier = lilconfig("prettier", lilconfigOptions)
+const configExplorer42 = lilconfig("42", lilconfigOptions)
 
 export default async function userConfig(args) {
   const prettierConfig = await configExplorerPrettier.search()
