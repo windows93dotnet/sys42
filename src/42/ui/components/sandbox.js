@@ -4,6 +4,8 @@ import create from "../create.js"
 import traverse from "../../fabric/type/object/traverse.js"
 import { forkDef } from "../normalize.js"
 
+const _setResource = Symbol("setResource")
+
 export class Sandbox extends Component {
   static definition = {
     tag: "ui-sandbox",
@@ -14,6 +16,7 @@ export class Sandbox extends Component {
       permissions: {
         type: "any",
         fromView: true,
+        update: _setResource,
       },
       path: {
         type: "string",
@@ -82,13 +85,29 @@ export class Sandbox extends Component {
     this.querySelector(":scope > .ui-sandbox__message").replaceChildren(...args)
   }
 
-  setup() {
+  [_setResource](init) {
+    if (init) return
     const { permissions } = this
     this.resource = new Resource({ permissions })
-    this.querySelector(":scope > .ui-sandbox__scene").append(this.resource.el)
+
+    const { sandbox } = this.resource.el
+    if (
+      this.ctx.trusted !== true &&
+      sandbox.contains("allow-scripts") &&
+      sandbox.contains("allow-same-origin")
+    ) {
+      throw new DOMException(
+        '"scripts" and "same-origin" permissions are forbiden in untrusted context',
+        "SecurityError"
+      )
+    }
+
+    this.querySelector(":scope > .ui-sandbox__scene") //
+      .replaceChildren(this.resource.el)
   }
 
   async update() {
+    if (!this.resource) this[_setResource]()
     this.cancel()
     this.message()
 

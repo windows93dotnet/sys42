@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>ui-dialog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/style.css" id="theme" />
+
+<script type="module">
+  import ui from "../../../42/ui.js"
+  import dialog from "../../../42/ui/components/dialog.js"
+  // import listen from "../../../42/fabric/dom/listen.js"
+
+  const app = await ui({
+    tag: "body.desktop",
+    content: [
+      { tag: "button", content: "{{cnt}}", click: "{{cnt += 1}}" },
+      {
+        tag: "button#dialog",
+        content: "dialog",
+        dialog: {
+          live: false,
+          label: "live dialog",
+          content: [
+            { tag: "button", content: "{{cnt}}", click: "{{cnt += 1}}" },
+          ],
+        },
+      },
+    ],
+    state: {
+      cnt: 42,
+    },
+  })
+
+  app.query("#dialog")?.click()
+
+  // listen({
+  //   dialogopen(e) {
+  //     console.log("dialogopen", e)
+  //     setTimeout(() => {
+  //       document.querySelector(".ui-dialog__close")?.click()
+  //     }, 1000)
+  //   },
+  //   dialogclose(e) {
+  //     // e.preventDefault()
+  //     console.log("dialogclose", e)
+  //   },
+  // })
+
+  const res = await dialog({
+    x: 100,
+    label: "standalone",
+    content: "hello {{cnt}}",
+    state: { cnt: 42 },
+  })
+  console.log("res", res)
+</script>

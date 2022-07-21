@@ -1,4 +1,5 @@
-// thanks: https://github.com/sethvincent/gameloop/blob/master/index.js
+// @thanks https://github.com/sethvincent/gameloop/blob/master/index.js
+// @read https://dev.to/lukeshiru/comment/1e884
 
 import Player from "./Player.js"
 import noop from "../type/function/noop.js"

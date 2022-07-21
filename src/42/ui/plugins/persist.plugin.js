@@ -17,18 +17,20 @@ export default async (ctx) => {
     config.initial = false
     const res = await persist.load(persistPath)
 
-    const openers = []
-    for (const { opener } of Object.values(res["ui-dialog"])) {
-      openers.push(opener)
+    if (res?.ui?.dialog) {
+      const openers = []
+      for (const { opener } of Object.values(res.ui.dialog)) {
+        openers.push(opener)
+      }
+
+      ctx.postrender.push(() => {
+        for (const opener of openers) {
+          document.querySelector(opener)?.click()
+        }
+      })
     }
 
     Object.assign(ctx.reactive.state, res)
-
-    ctx.postrender.push(() => {
-      for (const opener of openers) {
-        document.querySelector(opener)?.click()
-      }
-    })
 
     config.loaded = true
   }

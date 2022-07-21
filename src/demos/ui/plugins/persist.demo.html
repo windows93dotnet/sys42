@@ -8,9 +8,9 @@
   import ui from "../../../42/ui.js"
   import log from "../../../42/core/log.js"
 
-  import fs from "../../../42/core/fs.js"
-  import disk from "../../../42/core/fs/disk.js"
-  await fs.deleteDir(disk.HOME + "/.ui").catch(() => {})
+  // import fs from "../../../42/core/fs.js"
+  // import disk from "../../../42/core/fs/disk.js"
+  // await fs.deleteDir(disk.HOME + "/.ui").catch(() => {})
 
   const app = await ui(
     {
@@ -21,60 +21,60 @@
           content: "{{cnt}}",
           on: { click: "{{cnt += 1}}" },
         },
-        // {
-        //   tag: "button#dialog-left",
-        //   content: "dialog <--",
-        //   dialog: {
-        //     x: 100,
-        //     animate: { translate: "0 -100%", opacity: 0 },
-        //     label: "<-- ({{x}},{{y}})",
-        //     content: {
-        //       tag: "button#incr",
-        //       content: "{{cnt}}",
-        //       on: { click: "{{cnt += 1}}" },
-        //     },
-        //   },
-        // },
-        // {
-        //   tag: "button#dialog-right",
-        //   content: "dialog -->",
-        //   dialog: {
-        //     animate: { translate: "0 -100%", opacity: 0 },
-        //     label: "--> ({{x}},{{y}})",
-        //     content: {
-        //       tag: "button#incr",
-        //       autofocus: true,
-        //       content: "{{cnt}}",
-        //       on: { click: "{{cnt += 1}}" },
-        //     },
-        //   },
-        // },
         {
-          tag: "button#nested",
-          content: "nested",
+          tag: "button#dialog-left",
+          content: "dialog <--",
           dialog: {
-            y: 100,
-            animate: { translate: "0 100%", opacity: 0 },
-            label: "nested ({{x}},{{y}})",
+            x: 100,
+            animate: { translate: "0 -100%", opacity: 0 },
+            label: "<-- ({{x}},{{y}})",
             content: {
-              tag: "button#nested2",
-              autofocus: true,
+              tag: "button#incr",
               content: "{{cnt}}",
-              dialog: {
-                x: 100,
-                y: 100,
-                animate: { translate: "0 100%", opacity: 0 },
-                label: "nested 2 ({{x}},{{y}})",
-                content: {
-                  tag: "button#incr",
-                  autofocus: true,
-                  content: "{{cnt}}",
-                  on: { click: "{{cnt += 1}}" },
-                },
-              },
+              on: { click: "{{cnt += 1}}" },
             },
           },
         },
+        {
+          tag: "button#dialog-right",
+          content: "dialog -->",
+          dialog: {
+            animate: { translate: "0 -100%", opacity: 0 },
+            label: "--> ({{x}},{{y}})",
+            content: {
+              tag: "button#incr",
+              autofocus: true,
+              content: "{{cnt}}",
+              on: { click: "{{cnt += 1}}" },
+            },
+          },
+        },
+        // {
+        //   tag: "button#nested",
+        //   content: "nested",
+        //   dialog: {
+        //     y: 100,
+        //     animate: { translate: "0 100%", opacity: 0 },
+        //     label: "nested ({{x}},{{y}})",
+        //     content: {
+        //       tag: "button#nested2",
+        //       autofocus: true,
+        //       content: "{{cnt}}",
+        //       dialog: {
+        //         x: 100,
+        //         y: 100,
+        //         animate: { translate: "0 100%", opacity: 0 },
+        //         label: "nested 2 ({{x}},{{y}})",
+        //         content: {
+        //           tag: "button#incr",
+        //           autofocus: true,
+        //           content: "{{cnt}}",
+        //           on: { click: "{{cnt += 1}}" },
+        //         },
+        //       },
+        //     },
+        //   },
+        // },
       ],
 
       plugins: ["persist"],
@@ -88,11 +88,11 @@
 
   if (app.ctx.plugins.persist.initial) {
     app.query("#incr")?.click()
-    // app.query("#dialog-left")?.click()
-    // app.query("#dialog-right")?.click()
-    app.query("#nested")?.click()
-    await app
-    app.query("#nested2")?.click()
+    app.query("#dialog-left")?.click()
+    app.query("#dialog-right")?.click()
+    // app.query("#nested")?.click()
+    // await app
+    // app.query("#nested2")?.click()
     log(app.data)
   }
 

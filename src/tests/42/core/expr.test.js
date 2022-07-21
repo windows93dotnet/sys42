@@ -78,6 +78,8 @@ test.tasks(
     task({ str: "{{a -= b}}", res: -1, expec: { a: -1, b: 3 } }),
     task({ str: "{{b /= a}}", res: 1.5, expec: { a: 2, b: 1.5 } }),
     task({ str: "{{a *= b}}", res: 6, expec: { a: 6, b: 3 } }),
+    task({ str: "{{a += 1}}", res: 3, expec: { a: 3, b: 3 } }),
+    task({ skip: true, str: "{{a++}}", res: 3, expec: { a: 3, b: 3 } }),
     task({ str: "{{a += b; b = 10}}", res: 10, expec: { a: 5, b: 10 } }),
     task({ str: "{{b = 5; a += b}}", res: 7, expec: { a: 7, b: 5 } }),
     task({ str: "{{x = 5; a += x; b += x}}", res: 8, expec: { a: 7, b: 8, x: 5 } }),
