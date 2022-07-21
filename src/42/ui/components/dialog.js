@@ -1,5 +1,6 @@
 import Component from "../class/Component.js"
 import realm from "../../core/realm.js"
+import dispatch from "../../fabric/dom/dispatch.js"
 import renderAnimation from "../renderers/renderAnimation.js"
 import { objectifyDef, forkDef } from "../normalize.js"
 import { autofocus } from "../../fabric/dom/focus.js"
@@ -15,6 +16,7 @@ export class Dialog extends Component {
     tabIndex: -1,
 
     traits: {
+      emittable: true,
       movable: {
         throttle: false,
         handler: ".ui-dialog__title",
@@ -55,6 +57,9 @@ export class Dialog extends Component {
   }
 
   async close() {
+    const event = dispatch(this, "dialogclose", { cancelable: true })
+    if (event.defaultPrevented) return
+    this.emit("close", this.ctx.reactive.data)
     document.querySelector(this.opener)?.focus()
     this.destroy({ remove: false })
     if (this.#anim) await renderAnimation(this.ctx, this, "to", this.#anim)
@@ -99,6 +104,7 @@ export class Dialog extends Component {
     this.y ??= Math.round(rect.top)
     this.style.top = 0
     this.style.left = 0
+    dispatch(this, "dialogopen")
   }
 }
 
@@ -126,6 +132,8 @@ const dialog = realm({
     await el.ready
     document.body.append(el)
     autofocus(el.querySelector(":scope > .ui-dialog__body"))
+
+    return el.once("close")
   },
 })
 

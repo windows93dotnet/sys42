@@ -13,12 +13,45 @@
 </script>
 
 <script type="module">
+  // dialog
+  import dialog from "../42/ui/components/dialog.js"
+  import listen from "../42/fabric/dom/listen.js"
+
+  import ui from "../42/ui.js"
+
+  await ui({
+    tag: "body.box-fit.box-center.desktop",
+    content: {
+      tag: "div.box-h",
+      content: [],
+    },
+  })
+
+  listen({
+    dialogopen(e) {
+      console.log("dialogopen", e)
+      document.querySelector(".ui-dialog__close")?.click()
+    },
+    dialogclose(e) {
+      // e.preventDefault()
+      console.log("dialogclose", e)
+    },
+  })
+
+  const res = await dialog({
+    x: 100,
+    content: "hello {{cnt}}",
+    state: { cnt: 42 },
+  })
+  console.log("res", res)
+</script>
+
+<script type="_module">
+  // movable
   import dialog from "../42/ui/components/dialog.js"
 
   import ui from "../42/ui.js"
   import log from "../42/core/log.js"
-
-  dialog({ x: 100, content: "hello" })
 
   const app = await ui({
     tag: "body.box-fit.box-center.desktop",
@@ -44,6 +77,11 @@
 
   app.on("click", () => {
     log(app.data)
+  })
+
+  dialog({
+    x: 100,
+    content: "hello",
   })
 </script>
 

@@ -7,18 +7,21 @@ export default function emittable(item, options) {
     ? Object.assign(Object.create(null), options.events)
     : Object.create(null)
 
-  Object.defineProperty(item, Emitter.EVENTS, { value: events, writable: true })
+  Object.defineProperty(item, Emitter.EVENTS, {
+    value: events,
+    configurable: true,
+  })
   for (const key of Object.getOwnPropertyNames(Emitter.prototype)) {
     if (key !== "constructor" && key in item === false) {
       Object.defineProperty(item, key, {
         value: Emitter.prototype[key],
-        writable: true,
+        configurable: true,
       })
     }
   }
 
   options?.signal?.addEventListener("abort", () => {
-    this.off("*")
+    item.off("*")
     delete item[Emitter.EVENTS]
     for (const key of Object.getOwnPropertyNames(Emitter.prototype)) {
       if (key !== "constructor" && item[key] === Emitter.prototype[key]) {
