@@ -1,5 +1,6 @@
 import Component from "../class/Component.js"
 import realm from "../../core/realm.js"
+import omit from "../../fabric/type/object/omit.js"
 import dispatch from "../../fabric/dom/dispatch.js"
 import renderAnimation from "../renderers/renderAnimation.js"
 import { objectifyDef, forkDef } from "../normalize.js"
@@ -59,7 +60,7 @@ export class Dialog extends Component {
   async close() {
     const event = dispatch(this, "dialogclose", { cancelable: true })
     if (event.defaultPrevented) return
-    this.emit("close", this.ctx.reactive.data)
+    this.emit("close", omit(this.ctx.reactive.data, ["ui"]))
     document.querySelector(this.opener)?.focus()
     this.destroy({ remove: false })
     if (this.#anim) await renderAnimation(this.ctx, this, "to", this.#anim)

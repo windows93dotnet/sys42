@@ -113,7 +113,11 @@ export default class Component extends HTMLElement {
 
   #setCustomScope(props) {
     this.ctx.globalScope = this.ctx.scope
-    this.ctx.scope = resolveScope(this.localName, getStep(this.ctx.steps))
+    const i = this.localName.indexOf("-")
+    this.ctx.scope = resolveScope(
+      this.localName.slice(0, i) + "/" + this.localName.slice(i + 1),
+      getStep(this.ctx.steps)
+    )
     this.ctx.props = props
   }
 

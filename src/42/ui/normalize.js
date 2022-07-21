@@ -12,6 +12,7 @@ import allocate from "../fabric/locator/allocate.js"
 import isEmptyObject from "../fabric/type/any/is/isEmptyObject.js"
 import isArrayLike from "../fabric/type/any/is/isArrayLike.js"
 import noop from "../fabric/type/function/noop.js"
+import omit from "../fabric/type/object/omit.js"
 import arrify from "../fabric/type/any/arrify.js"
 import hash from "../fabric/type/any/hash.js"
 import getType from "../fabric/getType.js"
@@ -298,12 +299,7 @@ export function objectifyDef(def) {
 export function forkDef(def, ctx) {
   def = objectifyDef(def)
   def.scope = ctx.globalScope ?? ctx.scope
-  def.state = {}
-
-  for (const [key, val] of Object.entries(ctx.reactive.data)) {
-    if (!key.startsWith("ui-")) def.state[key] = val
-  }
-
+  def.state = omit(ctx.reactive.data, ["ui"])
   def.parentId = ctx.id
   return def
 }

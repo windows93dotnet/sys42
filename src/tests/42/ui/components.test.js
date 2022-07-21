@@ -482,8 +482,8 @@ test("component child", async (t) => {
   })
 
   t.eq(app.reactive.data, {
-    "derp": 5,
-    "ui-t-props": { root: { bar: 4 } },
+    derp: 5,
+    ui: { "t-props": { root: { bar: 4 } } },
   })
 
   t.is(
@@ -535,8 +535,10 @@ test("state", async (t) => {
 
   t.is(app.el.textContent, "x:foo-")
   t.eq(app.reactive.data, {
-    "ui-t-state": {
-      root: { x: "foo" },
+    ui: {
+      "t-state": {
+        root: { x: "foo" },
+      },
     },
   })
 })
@@ -554,9 +556,11 @@ test("state", "template", async (t) => {
   })
 
   t.eq(app.reactive.data, {
-    "y": "foo",
-    "ui-t-state": {
-      root: { x: { $ref: "/y" } },
+    y: "foo",
+    ui: {
+      "t-state": {
+        root: { x: { $ref: "/y" } },
+      },
     },
   })
   t.is(app.el.textContent, "x:foo-")
@@ -580,8 +584,10 @@ test("state", "template", "not a ref", async (t) => {
   })
 
   t.eq(app.reactive.data, {
-    "y": "foo",
-    "ui-t-state": { root: { x: "prefix -> foo" } },
+    y: "foo",
+    ui: {
+      "t-state": { root: { x: "prefix -> foo" } },
+    },
   })
   t.is(app.el.textContent, "x:prefix -> foo-")
 
@@ -607,9 +613,11 @@ test("state", "multiple", async (t) => {
 
   t.is(app.el.textContent, "x:foo-x:bar-")
   t.eq(app.reactive.data, {
-    "ui-t-state": {
-      "root,0": { x: "foo" },
-      "root,1": { x: "bar" },
+    ui: {
+      "t-state": {
+        "root,0": { x: "foo" },
+        "root,1": { x: "bar" },
+      },
     },
   })
 })
@@ -631,9 +639,11 @@ test("state", "scopped", async (t) => {
 
   t.is(app.el.textContent, "x:foo-x:bar-")
   t.eq(app.reactive.data, {
-    "ui-t-state": {
-      "root,0": { x: "foo" },
-      "root,1": { x: "bar" },
+    ui: {
+      "t-state": {
+        "root,0": { x: "foo" },
+        "root,1": { x: "bar" },
+      },
     },
   })
 })
@@ -651,10 +661,12 @@ test("state", "fixed", async (t) => {
 
   t.is(app.el.textContent, "x:fixed-x:fixed-")
   t.eq(app.reactive.data, {
-    "ui-t-nested-fixed": { root: { list: [{ foo: "a" }, { foo: "b" }] } },
-    "ui-t-state": {
-      "root,ui-t-nested-fixed,[0]": { x: "fixed" },
-      "root,ui-t-nested-fixed,[1]": { x: "fixed" },
+    ui: {
+      "t-nested-fixed": { root: { list: [{ foo: "a" }, { foo: "b" }] } },
+      "t-state": {
+        "root,ui-t-nested-fixed,[0]": { x: "fixed" },
+        "root,ui-t-nested-fixed,[1]": { x: "fixed" },
+      },
     },
   })
 })
@@ -691,15 +703,17 @@ test("state", "dynamic", "push", async (t) => {
   })
 
   t.eq(Object.keys(app.ctx.renderers), [
-    "/ui-t-nested-dynamic/root/list",
-    "/ui-t-nested-dynamic/root/list/0/foo",
+    "/ui/t-nested-dynamic/root/list",
+    "/ui/t-nested-dynamic/root/list/0/foo",
   ])
 
   t.eq(app.reactive.data, {
-    "ui-t-nested-dynamic": { root: { list: [{ foo: "a" }] } },
-    "ui-t-state": {
-      "root,ui-t-nested-dynamic,[0]": {
-        x: { $ref: "/ui-t-nested-dynamic/root/list/0/foo" },
+    ui: {
+      "t-nested-dynamic": { root: { list: [{ foo: "a" }] } },
+      "t-state": {
+        "root,ui-t-nested-dynamic,[0]": {
+          x: { $ref: "/ui/t-nested-dynamic/root/list/0/foo" },
+        },
       },
     },
   })
@@ -710,19 +724,21 @@ test("state", "dynamic", "push", async (t) => {
   await app
 
   t.eq(Object.keys(app.ctx.renderers), [
-    "/ui-t-nested-dynamic/root/list",
-    "/ui-t-nested-dynamic/root/list/0/foo",
-    "/ui-t-nested-dynamic/root/list/1/foo",
+    "/ui/t-nested-dynamic/root/list",
+    "/ui/t-nested-dynamic/root/list/0/foo",
+    "/ui/t-nested-dynamic/root/list/1/foo",
   ])
 
   t.eq(app.reactive.data, {
-    "ui-t-nested-dynamic": { root: { list: [{ foo: "a" }, { foo: "b" }] } },
-    "ui-t-state": {
-      "root,ui-t-nested-dynamic,[0]": {
-        x: { $ref: "/ui-t-nested-dynamic/root/list/0/foo" },
-      },
-      "root,ui-t-nested-dynamic,[1]": {
-        x: { $ref: "/ui-t-nested-dynamic/root/list/1/foo" },
+    ui: {
+      "t-nested-dynamic": { root: { list: [{ foo: "a" }, { foo: "b" }] } },
+      "t-state": {
+        "root,ui-t-nested-dynamic,[0]": {
+          x: { $ref: "/ui/t-nested-dynamic/root/list/0/foo" },
+        },
+        "root,ui-t-nested-dynamic,[1]": {
+          x: { $ref: "/ui/t-nested-dynamic/root/list/1/foo" },
+        },
       },
     },
   })
@@ -740,19 +756,21 @@ test("state", "dynamic", "pop", async (t) => {
   })
 
   t.eq(Object.keys(app.ctx.renderers), [
-    "/ui-t-nested-dynamic/root/list",
-    "/ui-t-nested-dynamic/root/list/0/foo",
-    "/ui-t-nested-dynamic/root/list/1/foo",
+    "/ui/t-nested-dynamic/root/list",
+    "/ui/t-nested-dynamic/root/list/0/foo",
+    "/ui/t-nested-dynamic/root/list/1/foo",
   ])
 
   t.eq(app.reactive.data, {
-    "ui-t-nested-dynamic": { root: { list: [{ foo: "a" }, { foo: "b" }] } },
-    "ui-t-state": {
-      "root,ui-t-nested-dynamic,[0]": {
-        x: { $ref: "/ui-t-nested-dynamic/root/list/0/foo" },
-      },
-      "root,ui-t-nested-dynamic,[1]": {
-        x: { $ref: "/ui-t-nested-dynamic/root/list/1/foo" },
+    ui: {
+      "t-nested-dynamic": { root: { list: [{ foo: "a" }, { foo: "b" }] } },
+      "t-state": {
+        "root,ui-t-nested-dynamic,[0]": {
+          x: { $ref: "/ui/t-nested-dynamic/root/list/0/foo" },
+        },
+        "root,ui-t-nested-dynamic,[1]": {
+          x: { $ref: "/ui/t-nested-dynamic/root/list/1/foo" },
+        },
       },
     },
   })
@@ -763,15 +781,17 @@ test("state", "dynamic", "pop", async (t) => {
   await app
 
   t.eq(Object.keys(app.ctx.renderers), [
-    "/ui-t-nested-dynamic/root/list",
-    "/ui-t-nested-dynamic/root/list/0/foo",
+    "/ui/t-nested-dynamic/root/list",
+    "/ui/t-nested-dynamic/root/list/0/foo",
   ])
 
   t.eq(app.reactive.data, {
-    "ui-t-nested-dynamic": { root: { list: [{ foo: "a" }] } },
-    "ui-t-state": {
-      "root,ui-t-nested-dynamic,[0]": {
-        x: { $ref: "/ui-t-nested-dynamic/root/list/0/foo" },
+    ui: {
+      "t-nested-dynamic": { root: { list: [{ foo: "a" }] } },
+      "t-state": {
+        "root,ui-t-nested-dynamic,[0]": {
+          x: { $ref: "/ui/t-nested-dynamic/root/list/0/foo" },
+        },
       },
     },
   })
@@ -836,13 +856,13 @@ test("props", 1, async (t) => {
   })
 
   t.eq(app.reactive.data, {
-    "foo": 1,
-    "ui-a": { root: { bar: "-" } },
+    foo: 1,
+    ui: { a: { root: { bar: "-" } } },
   })
 
   t.eq(Object.keys(app.ctx.renderers), [
     "/foo", //
-    "/ui-a/root/bar",
+    "/ui/a/root/bar",
   ])
 
   t.is(app.el.innerHTML, '<ui-a bar="-">foo: 1, bar: -</ui-a>')
@@ -865,8 +885,8 @@ test("props", 2, async (t) => {
   })
 
   t.eq(app.reactive.data, {
-    "foo": 1,
-    "ui-a": { root: { bar: 0 } },
+    foo: 1,
+    ui: { a: { root: { bar: 0 } } },
   })
 
   t.is(app.el.innerHTML, '<ui-a bar="0">foo: 1, bar: 0</ui-a>')
@@ -888,10 +908,12 @@ test("props", 3, async (t) => {
   })
 
   t.eq(app.reactive.data, {
-    "foo": 1,
-    "ui-a": {
-      "root,0": { bar: -1 },
-      "root,2": { bar: -2 },
+    foo: 1,
+    ui: {
+      a: {
+        "root,0": { bar: -1 },
+        "root,2": { bar: -2 },
+      },
     },
   })
 
@@ -930,8 +952,8 @@ test("props", 4, async (t) => {
   })
 
   t.eq(app.reactive.data, {
-    "foo": "a",
-    "ui-a": { root: { bar: { $ref: "/foo" } } },
+    foo: "a",
+    ui: { a: { root: { bar: { $ref: "/foo" } } } },
   })
 
   t.is(app.el.innerHTML, '<ui-a bar="a">foo: a, bar: a</ui-a>')
@@ -945,8 +967,8 @@ test("props", 4, async (t) => {
   await app
 
   t.eq(app.reactive.data, {
-    "foo": "c",
-    "ui-a": { root: { bar: { $ref: "/foo" } } },
+    foo: "c",
+    ui: { a: { root: { bar: { $ref: "/foo" } } } },
   })
 
   t.is(app.el.innerHTML, '<ui-a bar="c">foo: c, bar: c</ui-a>')
@@ -955,8 +977,8 @@ test("props", 4, async (t) => {
   await app
 
   t.eq(app.reactive.data, {
-    "foo": "d",
-    "ui-a": { root: { bar: { $ref: "/foo" } } },
+    foo: "d",
+    ui: { a: { root: { bar: { $ref: "/foo" } } } },
   })
 
   t.is(app.el.innerHTML, '<ui-a bar="d">foo: d, bar: d</ui-a>')
@@ -971,8 +993,8 @@ test("props", 5, async (t) => {
   })
 
   t.eq(app.reactive.data, {
-    "foo": "a",
-    "ui-a": { root: { bar: "A" } },
+    foo: "a",
+    ui: { a: { root: { bar: "A" } } },
   })
 
   t.is(app.el.innerHTML, '<ui-a bar="A">foo: a, bar: A</ui-a>')
@@ -986,8 +1008,8 @@ test("props", 5, async (t) => {
   await app
 
   t.eq(app.reactive.data, {
-    "foo": "b",
-    "ui-a": { root: { bar: "c" } },
+    foo: "b",
+    ui: { a: { root: { bar: "c" } } },
   })
 
   t.is(app.el.innerHTML, '<ui-a bar="c">foo: b, bar: c</ui-a>')
@@ -996,8 +1018,8 @@ test("props", 5, async (t) => {
   await app
 
   t.eq(app.reactive.data, {
-    "foo": "d",
-    "ui-a": { root: { bar: "D" } },
+    foo: "d",
+    ui: { a: { root: { bar: "D" } } },
   })
 
   t.is(app.el.innerHTML, '<ui-a bar="D">foo: d, bar: D</ui-a>')
@@ -1087,10 +1109,12 @@ test("scopped", 1, async (t) => {
   })
 
   t.eq(app.reactive.data, {
-    "foo": 1,
-    "ui-a": {
-      "root,0": { bar: 0 },
-      "root,2": { bar: 1 },
+    foo: 1,
+    ui: {
+      a: {
+        "root,0": { bar: 0 },
+        "root,2": { bar: 1 },
+      },
     },
   })
 
@@ -1121,15 +1145,17 @@ test("scopped", 2, async (t) => {
   })
 
   t.eq(app.reactive.data, {
-    "foo": 1,
-    "one": { foo: 2 },
-    "ui-a": {
-      "root,0": { bar: -1 },
-      "root,2": { bar: 0 },
-      "root,4": { bar: { $ref: "/one/foo" } },
-      "root,6": { bar: { $ref: "/foo" } },
-      "root,8": { bar: { $ref: "/foo" } },
-      "root,10": { bar: 3 },
+    foo: 1,
+    one: { foo: 2 },
+    ui: {
+      a: {
+        "root,0": { bar: -1 },
+        "root,2": { bar: 0 },
+        "root,4": { bar: { $ref: "/one/foo" } },
+        "root,6": { bar: { $ref: "/foo" } },
+        "root,8": { bar: { $ref: "/foo" } },
+        "root,10": { bar: 3 },
+      },
     },
   })
 
@@ -1147,14 +1173,16 @@ test("scopped", 2, async (t) => {
   app.query("ui-a:last-of-type").destroy()
 
   t.eq(app.reactive.data, {
-    "foo": 1,
-    "one": { foo: 2 },
-    "ui-a": {
-      "root,0": { bar: -1 },
-      "root,2": { bar: 0 },
-      "root,4": { bar: { $ref: "/one/foo" } },
-      "root,6": { bar: { $ref: "/foo" } },
-      "root,8": { bar: { $ref: "/foo" } },
+    foo: 1,
+    one: { foo: 2 },
+    ui: {
+      a: {
+        "root,0": { bar: -1 },
+        "root,2": { bar: 0 },
+        "root,4": { bar: { $ref: "/one/foo" } },
+        "root,6": { bar: { $ref: "/foo" } },
+        "root,8": { bar: { $ref: "/foo" } },
+      },
     },
   })
 
@@ -1196,11 +1224,13 @@ test("array", 1, async (t) => {
   )
 
   t.eq(app.reactive.data, {
-    "arr": ["a", "b"],
-    "foo": 1,
-    "ui-a": {
-      "root,[0],1": { bar: { $ref: "/arr/0" } },
-      "root,[1],1": { bar: { $ref: "/arr/1" } },
+    arr: ["a", "b"],
+    foo: 1,
+    ui: {
+      a: {
+        "root,[0],1": { bar: { $ref: "/arr/0" } },
+        "root,[1],1": { bar: { $ref: "/arr/1" } },
+      },
     },
   })
 
@@ -1217,12 +1247,14 @@ test("array", 1, async (t) => {
   )
 
   t.eq(app.reactive.data, {
-    "arr": ["a", "b", "c"],
-    "foo": 1,
-    "ui-a": {
-      "root,[0],1": { bar: { $ref: "/arr/0" } },
-      "root,[1],1": { bar: { $ref: "/arr/1" } },
-      "root,[2],1": { bar: { $ref: "/arr/2" } },
+    arr: ["a", "b", "c"],
+    foo: 1,
+    ui: {
+      a: {
+        "root,[0],1": { bar: { $ref: "/arr/0" } },
+        "root,[1],1": { bar: { $ref: "/arr/1" } },
+        "root,[2],1": { bar: { $ref: "/arr/2" } },
+      },
     },
   })
 
@@ -1239,12 +1271,14 @@ test("array", 1, async (t) => {
   )
 
   t.eq(app.reactive.data, {
-    "arr": ["A", "b", "c"],
-    "foo": 1,
-    "ui-a": {
-      "root,[0],1": { bar: { $ref: "/arr/0" } },
-      "root,[1],1": { bar: { $ref: "/arr/1" } },
-      "root,[2],1": { bar: { $ref: "/arr/2" } },
+    arr: ["A", "b", "c"],
+    foo: 1,
+    ui: {
+      a: {
+        "root,[0],1": { bar: { $ref: "/arr/0" } },
+        "root,[1],1": { bar: { $ref: "/arr/1" } },
+        "root,[2],1": { bar: { $ref: "/arr/2" } },
+      },
     },
   })
 
@@ -1269,9 +1303,9 @@ test("array", 1, async (t) => {
   )
 
   t.eq(app.reactive.data, {
-    "arr": ["A"],
-    "foo": 1,
-    "ui-a": { "root,[0],1": { bar: { $ref: "/arr/0" } } },
+    arr: ["A"],
+    foo: 1,
+    ui: { a: { "root,[0],1": { bar: { $ref: "/arr/0" } } } },
   })
 
   t.eq(Object.keys(app.ctx.renderers), [
@@ -1292,11 +1326,13 @@ test("array", 1, async (t) => {
   )
 
   t.eq(app.reactive.data, {
-    "arr": ["A", "B"],
-    "foo": 1,
-    "ui-a": {
-      "root,[0],1": { bar: { $ref: "/arr/0" } },
-      "root,[1],1": { bar: { $ref: "/arr/1" } },
+    arr: ["A", "B"],
+    foo: 1,
+    ui: {
+      a: {
+        "root,[0],1": { bar: { $ref: "/arr/0" } },
+        "root,[1],1": { bar: { $ref: "/arr/1" } },
+      },
     },
   })
 })
@@ -1325,9 +1361,11 @@ test("array", 2, async (t) => {
   )
 
   t.eq(app.reactive.data, {
-    "arr": ["a", "b"],
-    "foo": 1,
-    "ui-a": { "root,[0],1": { bar: "0 - a" }, "root,[1],1": { bar: "1 - b" } },
+    arr: ["a", "b"],
+    foo: 1,
+    ui: {
+      a: { "root,[0],1": { bar: "0 - a" }, "root,[1],1": { bar: "1 - b" } },
+    },
   })
 })
 
@@ -1391,31 +1429,37 @@ test("string array", async (t) => {
 
 async function testStringArrayWithTransfers(t, app) {
   t.eq(app.reactive.data, {
-    "arr": ["a", "b"],
-    "ui-t-nested-string-array": { root: { list: { $ref: "/arr" } } },
-    "ui-t-state": {
-      "root,ui-t-nested-string-array,[0]": { x: { $ref: "/arr/0" } },
-      "root,ui-t-nested-string-array,[1]": { x: { $ref: "/arr/1" } },
+    arr: ["a", "b"],
+    ui: {
+      "t-nested-string-array": { root: { list: { $ref: "/arr" } } },
+      "t-state": {
+        "root,ui-t-nested-string-array,[0]": { x: { $ref: "/arr/0" } },
+        "root,ui-t-nested-string-array,[1]": { x: { $ref: "/arr/1" } },
+      },
     },
   })
 
   await testStringArray(t, app)
 
   t.eq(app.reactive.data, {
-    "arr": ["foo", "B"],
-    "ui-t-nested-string-array": { root: { list: { $ref: "/arr" } } },
-    "ui-t-state": {
-      "root,ui-t-nested-string-array,[0]": { x: { $ref: "/arr/0" } },
-      "root,ui-t-nested-string-array,[1]": { x: { $ref: "/arr/1" } },
+    arr: ["foo", "B"],
+    ui: {
+      "t-nested-string-array": { root: { list: { $ref: "/arr" } } },
+      "t-state": {
+        "root,ui-t-nested-string-array,[0]": { x: { $ref: "/arr/0" } },
+        "root,ui-t-nested-string-array,[1]": { x: { $ref: "/arr/1" } },
+      },
     },
   })
 
   app.query("ui-t-nested-string-array").destroy()
 
   t.eq(app.reactive.data, {
-    "arr": ["foo", "B"],
-    "ui-t-nested-string-array": {},
-    "ui-t-state": {},
+    arr: ["foo", "B"],
+    ui: {
+      "t-nested-string-array": {},
+      "t-state": {},
+    },
   })
 }
 
@@ -1497,17 +1541,19 @@ test("computed", async (t) => {
   cleanup(app)
 
   t.eq(Object.keys(app.ctx.renderers), [
-    "/ui-t-computed/root/formated",
-    "/ui-t-computed/root/parsed/0",
-    "/ui-t-computed/root/parsed/1",
+    "/ui/t-computed/root/formated",
+    "/ui/t-computed/root/parsed/0",
+    "/ui/t-computed/root/parsed/1",
   ])
   t.is(cnt, 1)
   t.eq(app.reactive.data, {
-    "ui-t-computed": { root: { formated: "FOO/BAR" } },
+    ui: {
+      "t-computed": { root: { formated: "FOO/BAR" } },
+    },
   })
   t.is(app.el.innerHTML, "<ui-t-computed>foo: FOO, bar: BAR</ui-t-computed>")
 
-  const updates = ["/ui-t-computed/root/formated", "/ui-t-computed/root/parsed"]
+  const updates = ["/ui/t-computed/root/formated", "/ui/t-computed/root/parsed"]
   app.reactive.on("update", (changes) => {
     t.is(updates.shift(), [...changes][0])
   })
@@ -1521,7 +1567,9 @@ test("computed", async (t) => {
   )
   t.is(cnt, 2)
   t.eq(app.reactive.data, {
-    "ui-t-computed": { root: { formated: "HELLO/WORLD" } },
+    ui: {
+      "t-computed": { root: { formated: "HELLO/WORLD" } },
+    },
   })
 })
 
@@ -1567,19 +1615,21 @@ test("computed", "from prop with state:true", async (t) => {
 
   t.eq(Object.keys(app.ctx.renderers), [
     "/formated",
-    "/ui-t-compu-sta/root/parsed/0",
-    "/ui-t-compu-sta/root/parsed/1",
+    "/ui/t-compu-sta/root/parsed/0",
+    "/ui/t-compu-sta/root/parsed/1",
   ])
   t.is(cnt, 1)
   t.eq(app.reactive.data, {
     formated: "FOO/BAR",
   })
   t.eq(app.ctx.computeds.value, {
-    "ui-t-compu-sta": { root: { parsed: ["FOO", "BAR"] } },
+    ui: {
+      "t-compu-sta": { root: { parsed: ["FOO", "BAR"] } },
+    },
   })
   t.is(app.el.innerHTML, "<ui-t-compu-sta>foo: FOO, bar: BAR</ui-t-compu-sta>")
 
-  const updates = ["/formated", "/ui-t-compu-sta/root/parsed"]
+  const updates = ["/formated", "/ui/t-compu-sta/root/parsed"]
   app.reactive.on("update", (changes) => {
     t.is(updates.shift(), [...changes][0])
   })
@@ -1591,7 +1641,9 @@ test("computed", "from prop with state:true", async (t) => {
     formated: "HELLO/WORLD",
   })
   t.eq(app.ctx.computeds.value, {
-    "ui-t-compu-sta": { root: { parsed: ["HELLO", "WORLD"] } },
+    ui: {
+      "t-compu-sta": { root: { parsed: ["HELLO", "WORLD"] } },
+    },
   })
   t.is(cnt, 2)
   t.is(
@@ -1644,13 +1696,15 @@ test("computed", "computed prop", async (t) => {
   const el = app.query("ui-t-compu-prop")
 
   t.eq(Object.keys(app.ctx.renderers), [
-    "/ui-t-compu-prop/root/formated",
-    "/ui-t-compu-prop/root/parsed/0",
-    "/ui-t-compu-prop/root/parsed/1",
+    "/ui/t-compu-prop/root/formated",
+    "/ui/t-compu-prop/root/parsed/0",
+    "/ui/t-compu-prop/root/parsed/1",
   ])
   t.is(cnt, 1)
   t.eq(app.reactive.data, {
-    "ui-t-compu-prop": { root: { formated: "FOO/BAR" } },
+    ui: {
+      "t-compu-prop": { root: { formated: "FOO/BAR" } },
+    },
   })
 
   t.eq(el.parsed, ["FOO", "BAR"])
@@ -1661,8 +1715,8 @@ test("computed", "computed prop", async (t) => {
   )
 
   const updates = [
-    "/ui-t-compu-prop/root/formated",
-    "/ui-t-compu-prop/root/parsed",
+    "/ui/t-compu-prop/root/formated",
+    "/ui/t-compu-prop/root/parsed",
   ]
   app.reactive.on("update", (changes) => {
     t.is(updates.shift(), [...changes][0])
@@ -1677,7 +1731,9 @@ test("computed", "computed prop", async (t) => {
   )
   t.is(cnt, 2)
   t.eq(app.reactive.data, {
-    "ui-t-compu-prop": { root: { formated: "HELLO/WORLD" } },
+    ui: {
+      "t-compu-prop": { root: { formated: "HELLO/WORLD" } },
+    },
   })
 
   t.eq(el.parsed, ["HELLO", "WORLD"])

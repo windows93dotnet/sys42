@@ -19,28 +19,30 @@ test("generate icon list", async (t) => {
   cleanup(app)
 
   t.eq(app.reactive.data, {
-    "ui-folder": {
-      root: {
-        path: "/tests/fixtures/components/folder/",
-        glob: undefined,
-        selection: ["/tests/fixtures/components/folder/script.js"],
+    ui: {
+      folder: {
+        root: {
+          path: "/tests/fixtures/components/folder/",
+          glob: undefined,
+          selection: ["/tests/fixtures/components/folder/script.js"],
+        },
       },
-    },
-    "ui-icon": {
-      "root,ui-folder,[0]": {
-        small: undefined,
-        label: true,
-        path: { $ref: "/ui-folder/root/items/0" },
-      },
-      "root,ui-folder,[1]": {
-        small: undefined,
-        label: true,
-        path: { $ref: "/ui-folder/root/items/1" },
-      },
-      "root,ui-folder,[2]": {
-        small: undefined,
-        label: true,
-        path: { $ref: "/ui-folder/root/items/2" },
+      icon: {
+        "root,ui-folder,[0]": {
+          small: undefined,
+          label: true,
+          path: { $ref: "/ui/folder/root/items/0" },
+        },
+        "root,ui-folder,[1]": {
+          small: undefined,
+          label: true,
+          path: { $ref: "/ui/folder/root/items/1" },
+        },
+        "root,ui-folder,[2]": {
+          small: undefined,
+          label: true,
+          path: { $ref: "/ui/folder/root/items/2" },
+        },
       },
     },
   })

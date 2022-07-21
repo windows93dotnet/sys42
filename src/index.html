@@ -69,10 +69,10 @@
   system.DEV = true
 
   testRunner(
-    // disk.glob("**/*.test.js"),
-    disk
-      .glob("**/*.test.js")
-      .filter((x) => x !== "/tests/42/ui/plugins/ipc.plugin.test.js"),
+    disk.glob("**/*.test.js"),
+    // disk
+    //   .glob("**/*.test.js")
+    //   .filter((x) => x !== "/tests/42/ui/plugins/ipc.plugin.test.js"),
     // [
     //   // "/tests/42/fabric/configure.test.js",
     //   // // // "/tests/42/fabric/type/any/clone.test.js",
@@ -108,7 +108,7 @@
     //   "/tests/42/ui/components/sandbox.test.js",
     //   "/tests/42/ui/create.test.js",
     //   "/tests/42/ui.test.js",
-    //   // "/tests/42/ui/plugins/ipc.plugin.test.js",
+    //   "/tests/42/ui/plugins/ipc.plugin.test.js",
     // ],
     { verbose: 2 }
   )
