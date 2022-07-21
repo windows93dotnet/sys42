@@ -11,7 +11,7 @@ export default class Trait {
   constructor(el, options) {
     el = ensureElement(el)
 
-    const { name } = this.constructor
+    const name = options?.name ?? this.constructor.name.toLowerCase()
 
     el[_INSTANCES] ??= Object.create(null)
     const previous = el[_INSTANCES][name]
@@ -19,20 +19,23 @@ export default class Trait {
     el[_INSTANCES][name] = this
 
     this.el = el
+    this.name = name
     this.cancel = new Canceller(options?.signal)
+
+    options?.signal.addEventListener("abort", () => this.destroy())
   }
 
   destroy() {
-    this.cancel()
+    this.cancel(`${this.constructor.name} destroyed`)
 
     if (_EVENTS in this) {
       this.emit("destroy")
       this.off("*")
-      delete this._EVENTS
+      delete this[_EVENTS]
     }
 
     if (this.el && this.el.nodeType === ELEMENT_NODE) {
-      delete this.el[_INSTANCES][this.constructor.name]
+      delete this.el[_INSTANCES][this.name]
     }
   }
 }

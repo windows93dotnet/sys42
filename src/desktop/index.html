@@ -13,6 +13,41 @@
 </script>
 
 <script type="module">
+  import dialog from "../42/ui/components/dialog.js"
+
+  import ui from "../42/ui.js"
+  import log from "../42/core/log.js"
+
+  dialog({ x: 100, content: "hello" })
+
+  const app = await ui({
+    tag: "body.box-fit.box-center.desktop",
+    content: {
+      tag: "div.box-h",
+      content: [
+        {
+          tag: "button",
+          content: "toggle movable",
+          click: "{{bool = !bool}}",
+        },
+        {
+          tag: ".bd.pa.txt-center.cursor-{{bool ? 'grab' : 'not-allowed'}}",
+          content: "drag me",
+          movable: "{{bool ? { grid: 20 } : false}}",
+        },
+      ],
+    },
+    state: {
+      bool: true,
+    },
+  })
+
+  app.on("click", () => {
+    log(app.data)
+  })
+</script>
+
+<script type="_module">
   /* eslint-disable no-unused-vars */
   import ui from "../42/ui.js"
 

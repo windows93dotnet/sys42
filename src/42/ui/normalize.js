@@ -42,6 +42,14 @@ const DEF_KEYWORDS = new Set([
   "to",
 ])
 
+const TRAIT_KEYWORDS = new Set([
+  "movable", //
+  "emittable",
+  "selectable",
+])
+
+const _INSTANCES = Symbol.for("Trait.INSTANCES")
+
 const sep = "/"
 
 const makeFilterFn =
@@ -238,6 +246,39 @@ export function normalizePlugins(ctx, plugins) {
   }
 }
 
+export function normalizeTraits(def, ctx) {
+  const list = []
+  const traits = def.traits ?? {}
+
+  for (const key of TRAIT_KEYWORDS) if (key in def) traits[key] = def[key]
+
+  for (const [name, raw] of Object.entries(traits)) {
+    const val = typeof raw === "string" ? normalizeString(raw, ctx) : raw
+    const trait = { name, val }
+    list.push(trait)
+    ctx.preload.push(
+      import(`./traits/${name}.js`).then((m) => {
+        trait.module = m.default
+      })
+    )
+  }
+
+  if (list.length === 0) return
+
+  return async (el) => {
+    await ctx.preload
+    for (const { module, name, val } of list) {
+      const fn = (val) => {
+        if (val === false) el[_INSTANCES]?.[name]?.destroy()
+        else module(el, { signal: ctx.signal, ...val })
+      }
+
+      if (val.scopes) register(ctx, val, fn)
+      else fn(val)
+    }
+  }
+}
+
 /* def
 ====== */
 
@@ -288,10 +329,18 @@ export function normalizeDef(def = {}, ctx, options) {
 
     if (def.computed) normalizeComputeds(def.computed, ctx)
 
+    const traits = normalizeTraits(def, ctx)
+    if (traits) def.traits = traits
+
     if (def.on) def.on = arrify(def.on)
     if (def.dialog) {
       def.on ??= []
       def.on.push({ click: { dialog: def.dialog } })
+    }
+
+    if (def.click) {
+      def.on ??= []
+      def.on.push({ click: def.click })
     }
 
     if (options?.skipAttrs !== true) {

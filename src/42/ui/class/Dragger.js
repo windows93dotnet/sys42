@@ -33,34 +33,35 @@ export default class Dragger {
     let offsetX = 0
     let offsetY = 0
 
-    const op = this.config.subpixel ? (val) => val : Math.round
+    const adapt = this.config.subpixel ? (val) => val : Math.round
 
     let getX = this.config.targetRelative
       ? this.config.subpixel
         ? (x) => x - offsetX
-        : (x) => op(x - offsetX)
-      : op
+        : (x) => adapt(x - offsetX)
+      : adapt
 
     let getY = this.config.targetRelative
       ? this.config.subpixel
         ? (y) => y - offsetY
-        : (y) => op(y - offsetY)
-      : op
+        : (y) => adapt(y - offsetY)
+      : adapt
 
     const { grid } = this.config
 
     if (grid) {
-      const opX = getX
-      const opY = getY
+      const [gridX, gridY] = Array.isArray(grid) ? grid : [grid, grid]
+      const adaptX = getX
+      const adaptY = getY
 
       getX = (x) => {
-        x = opX(x)
-        return x - (x % grid[0])
+        x = adaptX(x)
+        return x - (x % gridX)
       }
 
       getY = (y) => {
-        y = opY(y)
-        return y - (y % grid[1])
+        y = adaptY(y)
+        return y - (y % gridY)
       }
     }
 
@@ -86,13 +87,13 @@ export default class Dragger {
     const start = (e, target) => {
       const { x, y } = e
 
-      fromX = op(x)
-      fromY = op(y)
+      fromX = adapt(x)
+      fromY = adapt(y)
 
       if (this.config.targetRelative) {
         const rect = this.el.getBoundingClientRect()
-        offsetX = op(e.x - rect.left)
-        offsetY = op(e.y - rect.top)
+        offsetX = adapt(e.x - rect.left)
+        offsetY = adapt(e.y - rect.top)
       }
 
       this.isDragging = true

@@ -116,6 +116,8 @@ export default function render(def, ctx, options) {
     )
   }
 
+  def.traits?.(ctx.el)
+
   if (def.from) renderAnimation(ctx, ctx.el, "from", def.from)
   else if (def.animate) renderAnimation(ctx, ctx.el, "from", def.animate)
 

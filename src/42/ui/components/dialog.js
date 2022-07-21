@@ -1,5 +1,4 @@
 import Component from "../class/Component.js"
-import movable from "../traits/movable.js"
 import realm from "../../core/realm.js"
 import renderAnimation from "../renderers/renderAnimation.js"
 import { objectifyDef, forkDef } from "../normalize.js"
@@ -14,6 +13,13 @@ export class Dialog extends Component {
     id: true,
     role: "dialog",
     tabIndex: -1,
+
+    traits: {
+      movable: {
+        throttle: false,
+        handler: ".ui-dialog__title",
+      },
+    },
 
     props: {
       opener: {
@@ -87,18 +93,12 @@ export class Dialog extends Component {
     return def
   }
 
-  setup({ signal }) {
+  setup() {
     const rect = this.getBoundingClientRect()
     this.x ??= Math.round(rect.left)
     this.y ??= Math.round(rect.top)
     this.style.top = 0
     this.style.left = 0
-
-    movable(this, {
-      signal,
-      throttle: false,
-      handler: ".ui-dialog__title",
-    })
   }
 }
 
