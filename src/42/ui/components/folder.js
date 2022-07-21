@@ -48,9 +48,9 @@ export class Folder extends Component {
       dir = this.glob
         ? disk.glob(path.endsWith("*") ? path : path + "*")
         : disk.readDir(path, { absolute: true })
-    } catch (error) {
+    } catch (err) {
       dir = []
-      dispatch(this, error)
+      dispatch(this, err)
     }
 
     return dir

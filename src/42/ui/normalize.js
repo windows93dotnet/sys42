@@ -111,7 +111,7 @@ export function normalizeTokens(tokens, ctx, filters) {
           `Template filter is not a function: "${value}"`
         )
         const fn = getFilter(value).then((filter) => {
-          if (typeof filter !== "function") return dispatch(ctx.el, err)
+          if (typeof filter !== "function") return void dispatch(ctx.el, err)
           return makeFilterFn(filter, thisArg, ctx.el)
         })
         allocate(filters, loc, fn, sep)

@@ -1,8 +1,6 @@
 export default function dispatch(el, name, detail) {
   el = el.isConnected ? el : globalThis
 
-  let event
-
   if (name instanceof Error) {
     const error = name
     const dispatchErr = new Error()
@@ -20,9 +18,8 @@ export default function dispatch(el, name, detail) {
       el.dispatchEvent(new ErrorEvent("error", eventInit))
     })
   } else {
-    event = new CustomEvent(name, { bubbles: true, ...detail })
+    const event = new CustomEvent(name, { bubbles: true, ...detail })
     el.dispatchEvent(event)
+    return event
   }
-
-  return event
 }

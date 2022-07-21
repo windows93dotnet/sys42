@@ -109,11 +109,10 @@ filters.path = {
   stemname: "path/extract/stemname",
 }
 
-let fs
 filters.file = {
   async open(path, fallback = "") {
     if (path === undefined) return fallback
-    fs ??= await import("../core/fs.js").then((m) => m.default)
+    const fs = await import("../core/fs.js").then((m) => m.default)
     try {
       return await fs.open(path)
     } catch (err) {
@@ -123,7 +122,7 @@ filters.file = {
   },
   async read(path, fallback = "") {
     if (path === undefined) return fallback
-    fs ??= await import("../core/fs.js").then((m) => m.default)
+    const fs = await import("../core/fs.js").then((m) => m.default)
     try {
       return await fs.readText(path)
     } catch (err) {
@@ -136,17 +135,13 @@ filters.file = {
   size: (file, options) => bytesize(file?.size ?? 0, options),
 }
 
-const { TEXT_NODE } = Node
-let render
-
 filters.ui = {
   async render(item) {
     if (typeof item === "string" && item.contains("{" + "{")) return item
-    render ??= await import("../ui/render.js").then((m) => m.default)
+    const render = await import("../ui/render.js").then((m) => m.default)
     queueMicrotask(() => {
-      const el = this.el.nodeType === TEXT_NODE ? this.el.parentNode : this.el
-      if (!el) return
-      el.replaceChildren(render(item, this))
+      if (!this.el) return
+      this.el.replaceChildren(render(item, this))
     })
   },
 }
