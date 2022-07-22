@@ -22,10 +22,9 @@ const handleError = (type, e, cb, originStack) => {
   // close most opened console group
   for (let i = 100; i; i--) console.groupEnd()
 
-  try {
-    const title =
-      type === "rejection" ? "Unhandled Rejection" : "Uncaught Error"
+  const title = type === "rejection" ? "Unhandled Rejection" : "Uncaught Error"
 
+  try {
     let res = // allow to write `trap(log)`
       cb.length <= 1
         ? cb(error)
@@ -48,7 +47,7 @@ const handleError = (type, e, cb, originStack) => {
 }
 
 const handler = (type, e, handlerStack) => {
-  trap.hasCrashed = true
+  trap.caught++
   for (let i = queue.length - 1; i >= 0; i--) {
     const [cb, originStack] = handlerStack
       ? [queue[i][0], handlerStack]
@@ -104,4 +103,4 @@ trap.handle =
     handler("error", e, stack)
 
 trap.queue = queue
-trap.hasCrashed = false
+trap.caught = 0

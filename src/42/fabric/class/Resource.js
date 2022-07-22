@@ -208,14 +208,11 @@ ${script}
         isIframable(url, signal).then((ok) => end(ok))
       } else {
         forgets.push(
-          listen(
-            this.el,
-            { signal },
-            {
-              load: () => end(true),
-              error: () => end(false),
-            }
-          )
+          listen(this.el, {
+            signal,
+            load: () => end(true),
+            error: () => end(false),
+          })
         )
       }
     })

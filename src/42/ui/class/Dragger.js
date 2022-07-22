@@ -79,7 +79,6 @@ export default class Dragger {
 
     this.cancel = new Canceller(options?.signal)
     const { signal } = this.cancel
-    const listenOptions = { signal }
 
     let forget
     let restore
@@ -134,9 +133,12 @@ export default class Dragger {
 
     if (this.config.throttle) drag = paintThrottle(drag)
 
-    listen(this.el, this.selector, listenOptions, {
+    listen(this.el, {
+      signal,
+      selector: this.selector,
       pointerdown(e, target) {
-        forget = listen(listenOptions, {
+        forget = listen({
+          signal,
           "pointermove": (e) => drag(e, target),
           "pointerup || pointercancel": (e) => stop(e, target),
         })

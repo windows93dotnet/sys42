@@ -1,28 +1,29 @@
+function cleanup(intervalID, timeoutID) {
+  clearInterval(intervalID)
+  clearTimeout(timeoutID)
+}
+
 export default async function waitFor(selector, options) {
-  const timeout = options?.timeout ?? 1000 * 5
+  const timeout = options?.timeout ?? 5000
+  const polling = options?.polling ?? 100
   const parent = options?.parent ?? document.body
 
   return new Promise((resolve, reject) => {
-    function cleanup() {
-      clearInterval(intervalID)
-      clearTimeout(timeoutID)
-    }
-
     const intervalID = setInterval(() => {
       if (options?.signal?.aborted) {
-        cleanup()
+        cleanup(intervalID, timeoutID)
         reject(options.signal.reason)
       }
 
       const el = parent.querySelector(`:scope ${selector}`)
       if (el) {
-        cleanup()
+        cleanup(intervalID, timeoutID)
         resolve(el)
       }
-    }, 100)
+    }, polling)
 
     const timeoutID = setTimeout(() => {
-      cleanup()
+      cleanup(intervalID, timeoutID)
       reject(new Error(`wait for "${selector}" timed out`))
     }, timeout)
   })

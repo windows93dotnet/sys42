@@ -7,3 +7,7 @@ export class Explorer extends Component {
 }
 
 Component.define(Explorer)
+
+export default () => {
+  console.log("explorer")
+}

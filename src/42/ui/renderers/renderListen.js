@@ -1,6 +1,6 @@
-import listen from "../../fabric/dom/listen.js"
-import hash from "../../fabric/type/any/hash.js"
+import { normalizeListen, eventsMap } from "../../fabric/dom/listen.js"
 import { normalizeTokens } from "../normalize.js"
+import hash from "../../fabric/type/any/hash.js"
 import expr from "../../core/expr.js"
 
 const makeEventLocals = (e, target) =>
@@ -9,46 +9,49 @@ const makeEventLocals = (e, target) =>
     { rect: { get: () => target.getBoundingClientRect() } }
   )
 
+function compileRun(val, newCtx) {
+  const parsed = expr.parse(val)
+
+  const { filters } = normalizeTokens(parsed, newCtx)
+
+  const fn = expr.compile(parsed, {
+    assignment: true,
+    async: true,
+    sep: "/",
+    filters,
+  })
+
+  return (e, target) => fn(newCtx.reactive.state, makeEventLocals(e, target))
+}
+
+function forkCtx(ctx, key) {
+  return { ...ctx, steps: `${ctx.steps},${ctx.el.localName}^${key}` }
+}
+
 export default function renderListen(el, defs, ctx) {
-  for (const def of defs) {
-    for (const [key, val] of Object.entries(def)) {
-      const newCtx = {
-        ...ctx,
-        steps: `${ctx.steps},${ctx.el.localName}^${key}`,
-      }
-      const event = {}
-      const type = typeof val
-      if (type === "string") {
-        const parsed = expr.parse(val)
-
-        const { filters } = normalizeTokens(parsed, newCtx)
-
-        const fn = expr.compile(parsed, {
-          assignment: true,
-          async: true,
-          sep: "/",
-          filters,
-        })
-
-        event[key] = (e, target) =>
-          fn(newCtx.reactive.state, makeEventLocals(e, target))
-      } else if (type === "object") {
-        if ("dialog" in val) {
+  const { list } = normalizeListen([{ signal: ctx.signal }, el, ...defs], {
+    returnForget: false,
+    getEvents(events) {
+      for (const [key, val] of Object.entries(events)) {
+        if (typeof val === "string") {
+          events[key] = compileRun(val, forkCtx(ctx, key))
+        } else if ("dialog" in val) {
+          const newCtx = forkCtx(ctx, key)
           el.id ||= hash(String(newCtx.tracks))
           val.dialog.opener = `#${el.id}`
-          event[key] = async () => {
+          events[key] = async () => {
             const dialog = await import("../components/dialog.js") //
               .then((m) => m.default)
             await dialog(val.dialog, newCtx)
           }
-        } else if ("menu" in val) {
-          console.log("menu")
+        } else if ("popup" in val) {
+          console.log("popup")
         }
-      } else if (type === "function") {
-        event[key] = val.bind(newCtx)
       }
 
-      listen(el, event, { signal: newCtx.cancel.signal })
-    }
-  }
+      return events
+    },
+  })
+
+  for (const item of list) eventsMap(item)
 }

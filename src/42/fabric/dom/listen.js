@@ -1,5 +1,7 @@
-import signature from "./signature.js"
-import cancelEvent from "./cancelEvent.js"
+import stopEvent from "./stopEvent.js"
+import bisect from "../type/object/bisect.js"
+import ensureElement from "./ensureElement.js"
+import Canceller from "../class/Canceller.js"
 
 const OR_REGEX = /\s*\|\|\s*/
 
@@ -10,67 +12,93 @@ const DEFAULTS = {
   signal: undefined,
 }
 
+const DEFAULTS_KEYS = Object.keys(DEFAULTS)
+const ITEM_KEYS = ["selector", "returnForget"]
+
 export const delegate = (selector, fn) => (e) => {
   const target = e.target.closest(selector)
-  if (target && fn(e, target) === false) cancelEvent(e)
+  if (target && fn(e, target) === false) stopEvent(e)
 }
 
-const handle = (fn, el) => (e) => {
-  if (fn(e, el) === false) cancelEvent(e)
+const handler = (fn, el) => (e) => {
+  if (fn(e, el) === false) stopEvent(e)
 }
 
-const getOptions = (options1, options2) => {
-  if (typeof options1 === "boolean") options1 = { capture: options1 }
-  if (typeof options2 === "boolean") options2 = { capture: options2 }
-  return { ...DEFAULTS, ...options1, ...options2 }
-}
-
-function arrayToListener(listener) {
-  const out = { options: undefined, listener: undefined }
-  for (const item of listener) {
-    out[typeof item === "function" ? "listener" : "options"] = item
+export const eventsMap = ({ el, listeners }) => {
+  for (const { selector, events, options } of listeners) {
+    for (const [key, fn] of Object.entries(events)) {
+      for (const event of key.split(OR_REGEX)) {
+        el.addEventListener(
+          event,
+          selector ? delegate(selector, fn) : handler(fn, el),
+          { ...DEFAULTS, ...options }
+        )
+      }
+    }
   }
-
-  return out
 }
 
-export const eventsMap = (el, selector, events, options) => {
-  const handlers = []
+export function normalizeListen(args, config) {
+  const optionsKeys = config?.optionsKeys ?? DEFAULTS_KEYS
+  const itemKeys = config?.itemKeys ?? ITEM_KEYS
+  const getEvents = config?.getEvents ?? ((x) => x)
+  let returnForget = config?.returnForget ?? true
 
-  for (let [eventList, listener] of Object.entries(events)) {
-    for (const event of eventList.split(OR_REGEX)) {
-      let config
-      if (typeof listener === "object") {
-        if (Array.isArray(listener)) listener = arrayToListener(listener)
-        config = listener.options
-        listener = listener.listener
+  const list = []
+  let globalOptions
+
+  let current = { el: undefined, listeners: [] }
+
+  for (let arg of args.flat()) {
+    if (typeof arg === "string") arg = ensureElement(arg)
+    if ("addEventListener" in arg) {
+      if (list.length > 0) {
+        current.el ??= globalThis
+        list.push(current)
       }
 
-      const handler = selector
-        ? delegate(selector, listener)
-        : handle(listener, el)
-      options = getOptions(options, config)
+      current = { el: arg, listeners: [] }
+    } else {
+      const [events, item, options] = bisect(arg, itemKeys, optionsKeys)
 
-      el.addEventListener(event, handler, options)
-      handlers.push([event, handler, options])
+      if (Object.keys(events).length === 0 && Object.keys(options).length > 0) {
+        if ("returnForget" in item) returnForget = item.returnForget
+        globalOptions = options
+        continue
+      }
+
+      item.events = getEvents(events)
+      item.options = options
+      current.listeners.push(item)
     }
   }
 
-  // TODO: test abort signal
-  return () => {
-    for (const [event, handler, options] of handlers) {
-      el.removeEventListener(event, handler, options)
-    }
+  current.el ??= globalThis
+  list.push(current)
 
-    handlers.length = 0
+  const cancels = returnForget ? [] : undefined
+
+  for (const { listeners: map } of list) {
+    for (const item of map) {
+      item.options = { ...globalOptions, ...item.options }
+
+      if (returnForget) {
+        const { cancel, signal } = new Canceller(item.options.signal)
+        item.options.signal = signal
+        cancels.push(cancel)
+      }
+    }
   }
+
+  return { list, cancels }
 }
 
-// TODO: rewrite signature to allow options scope
-// e.g. listen({ once: true, load }, { resize })
 export default function listen(...args) {
-  const config = signature(Object.create(null), args, DEFAULTS)
-  const { el, options, listener, selector, definitions } = config
-  const map = definitions ?? { [selector]: listener }
-  return eventsMap(el, selector, map, options)
+  const { list, cancels } = normalizeListen(args)
+  for (const item of list) eventsMap(item)
+  if (cancels) {
+    return () => {
+      for (const cancel of cancels) cancel()
+    }
+  }
 }

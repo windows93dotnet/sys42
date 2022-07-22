@@ -47,7 +47,7 @@ export default class DOMQuery {
   on(event, selector, fn) {
     return typeof selector === "function"
       ? listen(this.el, { [event]: selector })
-      : listen(this.el, selector, { [event]: fn })
+      : listen(this.el, { selector, [event]: fn })
   }
 }
 

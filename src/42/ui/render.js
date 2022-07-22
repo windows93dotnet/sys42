@@ -75,9 +75,7 @@ export default function render(def, ctx, options) {
     const { localName } = el
     if (localName) ctx.el = el
 
-    if (el.form !== undefined && def.scope) {
-      el = renderField(el, ctx, def)
-    }
+    if (el.form !== undefined && def.scope) el = renderField(el, ctx, def)
 
     if (def.picto) {
       if (el.localName === "button") el.classList.add("btn-picto")
@@ -93,11 +91,7 @@ export default function render(def, ctx, options) {
       throw new DOMException(`Disallowed tag: ${localName}`, "SecurityError")
     }
 
-    if (PRELOAD.has(localName)) {
-      ctx.preload.push(preload(el.src ?? el.href))
-    }
-
-    if (def.on) renderListen(ctx.el, def.on, ctx)
+    if (PRELOAD.has(localName)) ctx.preload.push(preload(el.src ?? el.href))
   } else {
     el = document.createDocumentFragment()
   }
@@ -114,6 +108,8 @@ export default function render(def, ctx, options) {
   }
 
   def.traits?.(ctx.el)
+
+  if (def.on) renderListen(ctx.el, def.on, ctx)
 
   if (def.animate?.from) renderAnimation(ctx, ctx.el, "from", def.animate.from)
 
