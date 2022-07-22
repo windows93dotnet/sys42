@@ -89,6 +89,16 @@ test("support null as target, undefined as source", (t) => {
   t.is(result.foo, undefined)
 })
 
+test("support object as target, non-object as source", (t) => {
+  const result = configure({ foo: "string" }, { foo: { a: 1 } })
+  t.eq(result.foo, { a: 1 })
+})
+
+test("support object as target, null as source", (t) => {
+  const result = configure({ foo: null }, { foo: { a: 1 } })
+  t.eq(result.foo, { a: 1 })
+})
+
 test("throw TypeError on non-option-objects", async (t) => {
   for (const value of [
     42,

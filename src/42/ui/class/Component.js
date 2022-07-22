@@ -180,7 +180,7 @@ export default class Component extends HTMLElement {
 
     /* handle def
     ------------- */
-    def = { ...definition, ...def }
+    def = configure(definition, def)
     const { computed, state } = def
     this.ctx.computed = computed
     delete def.computed

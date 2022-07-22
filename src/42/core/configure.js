@@ -6,7 +6,10 @@ export function merge(target, source) {
       target[key] = []
       merge(target[key], val)
     } else if (toString.call(val) === OBJECT && val.constructor === Object) {
-      target[key] ??= {}
+      if (target[key] === null || typeof target[key] !== "object") {
+        target[key] = {}
+      }
+
       merge(target[key], val)
     } else {
       target[key] = val
@@ -21,9 +24,8 @@ export default function configure(...options) {
   if (options.length === 0) return config
 
   for (const opt of options) {
-    if (toString.call(opt) === OBJECT) {
-      if (opt) merge(config, opt)
-    } else if (opt != null) {
+    if (toString.call(opt) === OBJECT) merge(config, opt)
+    else if (opt != null) {
       throw new TypeError(`Arguments must be objects or nullish: ${typeof opt}`)
     }
   }
