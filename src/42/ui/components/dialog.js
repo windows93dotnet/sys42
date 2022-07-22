@@ -2,7 +2,6 @@ import Component from "../class/Component.js"
 import realm from "../../core/realm.js"
 import omit from "../../fabric/type/object/omit.js"
 import dispatch from "../../fabric/dom/dispatch.js"
-import renderAnimation from "../renderers/renderAnimation.js"
 import { objectifyDef, forkDef } from "../normalize.js"
 import { autofocus } from "../../fabric/dom/focus.js"
 
@@ -49,9 +48,7 @@ export class Dialog extends Component {
     },
 
     plugins: ["ipc"],
-  }
-
-  #anim;
+  };
 
   [_axis]() {
     this.style.transform = `translate(${this.x}px, ${this.y}px)`
@@ -62,14 +59,10 @@ export class Dialog extends Component {
     if (event.defaultPrevented) return
     this.emit("close", omit(this.ctx.reactive.data, ["ui"]))
     document.querySelector(this.opener)?.focus()
-    this.destroy({ remove: false })
-    if (this.#anim) await renderAnimation(this.ctx, this, "to", this.#anim)
-    this.remove()
+    await this.destroy()
   }
 
-  render({ content, label, footer, animate, to }) {
-    this.#anim = to ?? animate
-
+  render({ content, label, footer }) {
     const buttons = [
       {
         tag: "button.ui-dialog__close",

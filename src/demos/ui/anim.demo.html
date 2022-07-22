@@ -27,8 +27,10 @@
             content: {
               if: "{{show}}",
               tag: ".ratio.bd.pa-xxl",
-              from: { rotate: "360deg", scale: 0, ms: 1000 },
-              to: { rotate: "-360deg", scale: 0, ms: 1000 },
+              animate: {
+                from: { rotate: "360deg", scale: 0, ms: 1000 },
+                to: { rotate: "-360deg", scale: 0, ms: 1000 },
+              },
               content: "a",
             },
           },

@@ -62,6 +62,7 @@ export default class Component extends HTMLElement {
   }
 
   #observed
+  #animateTo
   #destroyCallback
   #lifecycle = CREATE
 
@@ -195,6 +196,8 @@ export default class Component extends HTMLElement {
 
     def = normalizeDef(def, this.ctx, { skipAttrs: true })
 
+    this.#animateTo = def.animate?.to
+
     /* apply
     -------- */
     if (state) this.ctx.reactive.assign(this.ctx.globalScope, state)
@@ -228,13 +231,20 @@ export default class Component extends HTMLElement {
     }
   }
 
-  #destroy(options) {
+  async #destroy(options) {
     if (this.#lifecycle === DESTROY || this.#lifecycle === CREATE) return
     this.#lifecycle = DESTROY
 
     this.#destroyCallback?.()
 
     if (options?.remove !== false) {
+      if (this.isConnected && this.#animateTo) {
+        // TODO: use Promise.race here
+        await import("../renderers/renderAnimation.js").then((m) =>
+          m.default(this.ctx, this, "to", this.#animateTo)
+        )
+      }
+
       this.replaceChildren()
       this.remove()
     }

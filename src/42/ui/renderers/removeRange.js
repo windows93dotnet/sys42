@@ -2,7 +2,7 @@ import getElementsInRange from "../../fabric/range/getElementsInRange.js"
 import renderAnimation from "./renderAnimation.js"
 
 export default function removeRange(ctx, range, def) {
-  const anim = def?.to ?? def?.animate
+  const anim = def?.animate?.to
   if (anim) {
     Promise.all(
       getElementsInRange(range).map((el) =>

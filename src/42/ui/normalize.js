@@ -30,17 +30,20 @@ const ATTRIBUTES_WITHDASH = new Set(["acceptCharset", "httpEquiv"])
 const DEF_KEYWORDS = new Set([
   "actions",
   "animate",
+  "click",
   "computed",
   "content",
+  "dialog",
   "each",
   "else",
-  "from",
   "if",
+  "on",
+  "parentId",
+  "plugins",
   "schema",
   "scope",
   "state",
   "tag",
-  "to",
 ])
 
 const TRAIT_KEYWORDS = new Set([
@@ -191,6 +194,17 @@ export function normalizeAttrs(def, ctx, ignore) {
   return attrs
 }
 
+export function normalizeAnimate(animate) {
+  if (!("from" in animate || "to" in animate)) {
+    return {
+      from: animate,
+      to: animate,
+    }
+  }
+
+  return animate
+}
+
 export function normalizeComputeds(computeds, ctx) {
   for (const [key, val] of Object.entries(computeds)) {
     normalizeComputed(resolveScope(ctx.scope, key, ctx), val, ctx)
@@ -326,6 +340,8 @@ export function normalizeDef(def = {}, ctx, options) {
         ctx.actions.assign(scope, res)
       })
     }
+
+    if (def.animate) def.animate = normalizeAnimate(def.animate)
 
     if (def.computed) normalizeComputeds(def.computed, ctx)
 
