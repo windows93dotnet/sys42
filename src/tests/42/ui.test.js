@@ -1757,7 +1757,7 @@ test("each", "input element", async (t) => {
   const app = await ui(tmp(), {
     content: {
       scope: "arr",
-      each: [{ tag: "textarea", name: "./a" }],
+      each: [{ tag: "textarea", scope: "a" }],
     },
     state: {
       arr: [{ a: "x" }, { a: "y" }],
@@ -1879,4 +1879,47 @@ test("on", "actions", async (t) => {
   app.destroy()
   el.click()
   await app
+})
+
+/* fields
+========= */
+
+function change(input, value) {
+  input.value = value
+  input.dispatchEvent(new Event("input", { bubbles: true }))
+}
+
+test("input", async (t) => {
+  const app = await ui(tmp(), {
+    content: {
+      tag: "input",
+      scope: "str",
+    },
+
+    state: {
+      str: "foo",
+    },
+  })
+
+  t.eq(
+    test.utils.prettify(app.el.innerHTML),
+    `\
+<fieldset role="none">
+  <label for="a59j5pfmedwe">Str</label>
+  <input name="/str" id="a59j5pfmedwe">
+</fieldset>`
+  )
+
+  const input = app.query("input")
+  t.eq(input.value, "foo")
+
+  change(input, "bar")
+  await app
+
+  t.eq(app.data.str, "bar")
+
+  app.state.str = "baz"
+  await app
+
+  t.eq(input.value, "baz")
 })

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>fields</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/style.css" id="theme" />
+
+<script type="module">
+  import ui from "../../42/ui.js"
+
+  const app = await ui({
+    tag: ".ma-auto.mt-xxl",
+    style: { "max-width": 400 },
+    content: [
+      {
+        tag: "fieldset.form-aligned",
+        content: [
+          {
+            tag: "legend",
+            content: "Legend",
+          },
+          {
+            tag: "checkbox",
+            scope: "checkboxBool",
+          },
+          {
+            tag: "radio",
+            scope: "radioChoice",
+            value: "foo",
+          },
+          {
+            tag: "radio",
+            scope: "radioChoice",
+            value: "bar",
+          },
+          {
+            tag: "text",
+            scope: "freeText",
+            // compact: true,
+          },
+          // {
+          //   tag: ".box-h",
+          //   content: [
+          //     { tag: "h2", content: "Manual" },
+          //     {
+          //       tag: "input",
+          //       value: "{{foo}}",
+          //       on: { input: "{{foo = target.value}}" },
+          //     },
+          //     {
+          //       tag: "output",
+          //       content: "{{foo}}",
+          //     },
+          //   ],
+          // },
+          // {
+          //   tag: ".box-h",
+          //   content: [
+          //     { tag: "h2", content: "Auto" },
+          //     {
+          //       tag: "input",
+          //       scope: "foo",
+          //       // on: { input: "{{/foo = target.value}}" },
+          //     },
+          //     {
+          //       tag: "output",
+          //       content: "{{foo}}",
+          //     },
+          //   ],
+          // },
+        ],
+      },
+      { tag: "pre.code", content: "{{stringify(/)}}" },
+    ],
+
+    state: {
+      // checkboxBool: undefined,
+      // radioChoice: "foo",
+    },
+  })
+
+  setTimeout(() => {
+    app.state.radioChoice = "bar"
+    app.state.checkboxBool = true
+    app.state.freeText = "hello"
+  }, 1000)
+</script>

@@ -1,12 +1,12 @@
 /* eslint-disable complexity */
 import create from "./create.js"
-import resolveScope from "./resolveScope.js"
 import register from "./register.js"
 import normalize from "./normalize.js"
 import ALLOWED_HTML_TAGS from "../fabric/constants/ALLOWED_HTML_TAGS.js"
 import ALLOWED_SVG_TAGS from "../fabric/constants/ALLOWED_SVG_TAGS.js"
 import preload from "../core/load/preload.js"
 import renderComponent from "./renderers/renderComponent.js"
+import renderField from "./renderers/renderField.js"
 import renderIf from "./renderers/renderIf.js"
 import renderEach from "./renderers/renderEach.js"
 import renderListen from "./renderers/renderListen.js"
@@ -75,11 +75,8 @@ export default function render(def, ctx, options) {
     const { localName } = el
     if (localName) ctx.el = el
 
-    if (el.form !== undefined && el.name) {
-      el.name = resolveScope(ctx, el.name)
-      register(ctx, el.name, (val) => {
-        el.value = val
-      })
+    if (el.form !== undefined && def.scope) {
+      el = renderField(el, ctx, def)
     }
 
     if (def.picto) {

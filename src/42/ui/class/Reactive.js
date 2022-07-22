@@ -51,6 +51,10 @@ export default class Reactive extends Emitter {
         }
       }
 
+      if (sep in this.ctx.renderers) {
+        for (const render of this.ctx.renderers[sep]) render(sep)
+      }
+
       // console.group("State Update")
       // console.log([...changes].join("\n"))
       // console.log("%c" + Object.keys(ctx.renderers).join("\n"), "color:#999")

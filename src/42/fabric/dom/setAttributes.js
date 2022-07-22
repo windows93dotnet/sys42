@@ -59,10 +59,8 @@ export function setAttribute(el, key, val) {
       } else el.setAttribute(key, val)
     } else el.removeAttribute(key)
   } else if (key === "value") {
-    if (el.localName === "textarea" || el.localName === "select") {
-      el.value = val == null ? null : val
-    } else if (val == null) el.toggleAttribute(key, false)
-    else el.setAttribute("value", val)
+    if (val == null) el.toggleAttribute(key, false)
+    el.value = val == null ? null : val
   } else if (key === "aria") {
     setAriaAttributes(el, val)
   } else if (key.startsWith("aria-")) {
