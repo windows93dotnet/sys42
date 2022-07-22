@@ -2,7 +2,7 @@ import arrify from "../fabric/type/any/arrify.js"
 
 export default function register(ctx, loc, fn) {
   let scopes
-  let renderer
+  let renderer // TODO: check renderer garbage collection
 
   if (typeof loc === "function") {
     scopes = loc.scopes
@@ -24,8 +24,10 @@ export default function register(ctx, loc, fn) {
     ctx.renderers[scope] ??= new Set()
     ctx.renderers[scope].add(renderer)
     ctx.cancel.signal.addEventListener("abort", () => {
-      ctx.renderers[scope].delete(renderer)
-      if (ctx.renderers[scope].size === 0) delete ctx.renderers[scope]
+      if (ctx.renderers[scope]) {
+        ctx.renderers[scope].delete(renderer)
+        if (ctx.renderers[scope].size === 0) delete ctx.renderers[scope]
+      }
     })
   }
 

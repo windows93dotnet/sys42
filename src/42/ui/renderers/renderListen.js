@@ -2,17 +2,20 @@ import { normalizeListen, eventsMap } from "../../fabric/dom/listen.js"
 import { normalizeTokens } from "../normalize.js"
 import hash from "../../fabric/type/any/hash.js"
 import expr from "../../core/expr.js"
+import allocate from "../../fabric/locator/allocate.js"
 
-const makeEventLocals = (e, target) =>
-  Object.defineProperties(
+const makeEventLocals = (loc, e, target) => {
+  const eventLocals = Object.defineProperties(
     { target, e, event: e },
     { rect: { get: () => target.getBoundingClientRect() } }
   )
+  return allocate({}, loc, eventLocals, "/")
+}
 
-function compileRun(val, newCtx) {
+function compileRun(val, ctx) {
   const parsed = expr.parse(val)
 
-  const { filters } = normalizeTokens(parsed, newCtx)
+  const { filters } = normalizeTokens(parsed, ctx)
 
   const fn = expr.compile(parsed, {
     assignment: true,
@@ -21,7 +24,10 @@ function compileRun(val, newCtx) {
     filters,
   })
 
-  return (e, target) => fn(newCtx.reactive.state, makeEventLocals(e, target))
+  const scope = ctx.globalScope ?? ctx.scope
+
+  return (e, target) =>
+    fn(ctx.reactive.state, makeEventLocals(scope, e, target))
 }
 
 function forkCtx(ctx, key) {

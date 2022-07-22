@@ -1096,7 +1096,8 @@ input[type="color" i]::-webkit-color-swatch { border: none; }
   margin-top: var(--ctrl-group-gap);
 }
 
-.ctrl-group > fieldset[role="none"] > :is(button,.button) {
+/* .ctrl-group > fieldset[role="none"] > :is(button,.button) { */
+.ctrl-group > fieldset[role="none"] > :not(label, .label) {
   width: 100%;
 }
 

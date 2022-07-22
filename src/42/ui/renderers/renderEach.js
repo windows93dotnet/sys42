@@ -91,6 +91,7 @@ export default function renderEach(def, ctx) {
           cancel,
           signal: cancel.signal,
           scope: `${ctx.scope}/${i}`,
+          globalScope: ctx.globalScope ? `${ctx.globalScope}/${i}` : undefined,
           steps: `${ctx.steps},[${i}]`,
         }),
         (lastItem = document.createComment(ITEM))

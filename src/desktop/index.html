@@ -14,6 +14,7 @@
 
 <script type="module">
   import ui from "../42/ui.js"
+  import explorer from "../42/ui/components/explorer.js"
 
   window.app = await ui({
     tag: "body.box-fit.box-h._debug",
@@ -26,19 +27,19 @@
             on: [
               {
                 selector: 'ui-icon[aria-description="folder"]',
-                click: "{{openFolder(target.path)}}",
+                dblclick: "{{openFolder(target.path)}}",
               },
               {
                 selector: 'ui-icon[aria-description="file"]',
-                click: "{{openFile(target.path)}}",
+                dblclick: "{{openFile(target.path)}}",
               },
             ],
           },
         ],
       },
       {
-        tag: "footer#taskbar.outset.pa-xs",
         scope: "taskbar",
+        tag: "footer#taskbar.outset.pa-xs",
         content: {
           tag: "button",
           label: "Start",
@@ -50,12 +51,10 @@
 
     actions: {
       openFolder(path) {
-        console.log("openFolder", path)
-        // explorer(path)
+        explorer(path)
       },
       openFile(path) {
         console.log("openFile", path)
-        // open(path)
       },
       taskbar: {
         start() {

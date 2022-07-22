@@ -150,11 +150,9 @@ export default class Component extends HTMLElement {
     const configProps = configure(definition.props, def?.props)
     const propsValues = Object.values(configProps)
 
-    if (propsValues.length > 0) {
-      if (!propsValues.every((val) => val.state !== undefined)) {
-        this.#setCustomScope(configProps)
-      }
+    let hasCustomScope = false
 
+    if (propsValues.length > 0) {
       const propsKeys = Object.keys(configProps)
       const configKeys = Object.keys(definition.defaults ?? {})
       const entries = Object.entries(def)
@@ -171,10 +169,15 @@ export default class Component extends HTMLElement {
         } else def[key] = val
       }
 
+      if (!propsValues.every((val) => val.state !== undefined)) {
+        hasCustomScope = true
+        this.#setCustomScope(configProps)
+      }
+
       this.#observed = await renderProps(this, configProps, props)
     }
 
-    if (definition.computed && !this.ctx.globalScope) {
+    if (definition.computed && !hasCustomScope) {
       this.#setCustomScope(configProps)
     }
 
