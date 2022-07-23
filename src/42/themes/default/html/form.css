@@ -370,6 +370,23 @@ legend.label {
   speak: none;
 }
 
+/* cursors
+========== */
+
+body {
+  cursor: var(--cursor-default);
+}
+
+*::-webkit-scrollbar {
+  cursor: var(--cursor-default);
+}
+
+body,
+body * {
+  /* TODO: debug this */
+  cursor: url("../../../themes/windows-9x/cursors/default.cur"), default;
+}
+
 /* field
 ======== */
 
@@ -647,7 +664,7 @@ a.button {
 
   text-align: center;
   user-select: none;
-  cursor: var(--cursor-default, default);
+  /* cursor: var(--cursor-default); */
 }
 
 :where(button,.button):empty::before,

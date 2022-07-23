@@ -21,44 +21,40 @@
 @import "../default/themes/inc/pixel-font.css";
 
 :root {
-  --cursor-default: url("/42/themes/windows-9x/cursors/default.cur"), default;
-  /* --cursor-context-menu: url("/42/themes/windows-9x/cursors/context-menu.cur"), context-menu; */
-  --cursor-help: url("/42/themes/windows-9x/cursors/help.cur"), help;
-  --cursor-pointer: url("/42/themes/windows-9x/cursors/pointer.cur"), pointer;
-  --cursor-progress: url("/42/themes/windows-9x/cursors/progress.cur"), progress;
-  --cursor-wait: url("/42/themes/windows-9x/cursors/wait.cur"), wait;
-  --cursor-cell: url("/42/themes/windows-9x/cursors/cell.cur"), cell;
-  /* --cursor-crosshair: url("/42/themes/windows-9x/cursors/crosshair.cur"), crosshair; */
-  --cursor-text: url("/42/themes/windows-9x/cursors/text.cur"), text;
-  /* --cursor-vertical-text: url("/42/themes/windows-9x/cursors/vertical-text.cur"), vertical-text; */
-  --cursor-alias: url("/42/themes/windows-9x/cursors/alias.cur"), alias;
-  --cursor-copy: url("/42/themes/windows-9x/cursors/copy.cur"), copy;
-  --cursor-move: url("/42/themes/windows-9x/cursors/move.cur"), move;
-  --cursor-no-drop: url("/42/themes/windows-9x/cursors/no-drop.cur"), no-drop;
-  --cursor-not-allowed: url("/42/themes/windows-9x/cursors/not-allowed.cur"), not-allowed;
-  --cursor-grab: url("/42/themes/windows-9x/cursors/grab.cur"), grab;
-  --cursor-grabbing: url("/42/themes/windows-9x/cursors/grabbing.cur"), grabbing;
-  /* --cursor-all-scroll: url("/42/themes/windows-9x/cursors/all-scroll.cur"), all-scroll; */
-  /* --cursor-col-resize: url("/42/themes/windows-9x/cursors/col-resize.cur"), col-resize; */
-  /* --cursor-row-resize: url("/42/themes/windows-9x/cursors/row-resize.cur"), row-resize; */
-  /* --cursor-n-resize: url("/42/themes/windows-9x/cursors/n-resize.cur"), n-resize; */
-  /* --cursor-e-resize: url("/42/themes/windows-9x/cursors/e-resize.cur"), e-resize; */
-  /* --cursor-s-resize: url("/42/themes/windows-9x/cursors/s-resize.cur"), s-resize; */
-  /* --cursor-w-resize: url("/42/themes/windows-9x/cursors/w-resize.cur"), w-resize;  */
-  /* --cursor-ne-resize: url("/42/themes/windows-9x/cursors/ne-resize.cur"), ne-resize; */
-  /* --cursor-nw-resize: url("/42/themes/windows-9x/cursors/nw-resize.cur"), nw-resize; */
-  /* --cursor-se-resize: url("/42/themes/windows-9x/cursors/se-resize.cur"), se-resize; */
-  /* --cursor-sw-resize: url("/42/themes/windows-9x/cursors/sw-resize.cur"), sw-resize; */
-  --cursor-ew-resize: url("/42/themes/windows-9x/cursors/ew-resize.cur"), ew-resize;
-  --cursor-ns-resize: url("/42/themes/windows-9x/cursors/ns-resize.cur"), ns-resize;
-  --cursor-nesw-resize: url("/42/themes/windows-9x/cursors/nesw-resize.cur"), nesw-resize;
-  --cursor-nwse-resize: url("/42/themes/windows-9x/cursors/nwse-resize.cur"), nwse-resize;
-  /* --cursor-zoom-in: url("/42/themes/windows-9x/cursors/zoom-in.cur"), zoom-in; */
-  /* --cursor-zoom-out: url("/42/themes/windows-9x/cursors/zoom-out.cur"), zoom-out; */
-}
-
-body {
-  cursor: var(--cursor-default);
+  --cursor-default: url("../../../themes/windows-9x/cursors/default.cur"), default;
+  /* --cursor-context-menu: url("../../../themes/windows-9x/cursors/context-menu.cur"), context-menu; */
+  --cursor-help: url("../../../themes/windows-9x/cursors/help.cur"), help;
+  --cursor-pointer: url("../../../themes/windows-9x/cursors/pointer.cur"), pointer;
+  --cursor-progress: url("../../../themes/windows-9x/cursors/progress.cur"), progress;
+  --cursor-wait: url("../../../themes/windows-9x/cursors/wait.cur"), wait;
+  --cursor-cell: url("../../../themes/windows-9x/cursors/cell.cur"), cell;
+  /* --cursor-crosshair: url("../../../themes/windows-9x/cursors/crosshair.cur"), crosshair; */
+  --cursor-text: url("../../../themes/windows-9x/cursors/text.cur"), text;
+  /* --cursor-vertical-text: url("../../../themes/windows-9x/cursors/vertical-text.cur"), vertical-text; */
+  --cursor-alias: url("../../../themes/windows-9x/cursors/alias.cur"), alias;
+  --cursor-copy: url("../../../themes/windows-9x/cursors/copy.cur"), copy;
+  --cursor-move: url("../../../themes/windows-9x/cursors/move.cur"), move;
+  --cursor-no-drop: url("../../../themes/windows-9x/cursors/no-drop.cur"), no-drop;
+  --cursor-not-allowed: url("../../../themes/windows-9x/cursors/not-allowed.cur"), not-allowed;
+  --cursor-grab: url("../../../themes/windows-9x/cursors/grab.cur"), grab;
+  --cursor-grabbing: url("../../../themes/windows-9x/cursors/grabbing.cur"), grabbing;
+  /* --cursor-all-scroll: url("../../../themes/windows-9x/cursors/all-scroll.cur"), all-scroll; */
+  /* --cursor-col-resize: url("../../../themes/windows-9x/cursors/col-resize.cur"), col-resize; */
+  /* --cursor-row-resize: url("../../../themes/windows-9x/cursors/row-resize.cur"), row-resize; */
+  /* --cursor-n-resize: url("../../../themes/windows-9x/cursors/n-resize.cur"), n-resize; */
+  /* --cursor-e-resize: url("../../../themes/windows-9x/cursors/e-resize.cur"), e-resize; */
+  /* --cursor-s-resize: url("../../../themes/windows-9x/cursors/s-resize.cur"), s-resize; */
+  /* --cursor-w-resize: url("../../../themes/windows-9x/cursors/w-resize.cur"), w-resize;  */
+  /* --cursor-ne-resize: url("../../../themes/windows-9x/cursors/ne-resize.cur"), ne-resize; */
+  /* --cursor-nw-resize: url("../../../themes/windows-9x/cursors/nw-resize.cur"), nw-resize; */
+  /* --cursor-se-resize: url("../../../themes/windows-9x/cursors/se-resize.cur"), se-resize; */
+  /* --cursor-sw-resize: url("../../../themes/windows-9x/cursors/sw-resize.cur"), sw-resize; */
+  --cursor-ew-resize: url("../../../themes/windows-9x/cursors/ew-resize.cur"), ew-resize;
+  --cursor-ns-resize: url("../../../themes/windows-9x/cursors/ns-resize.cur"), ns-resize;
+  --cursor-nesw-resize: url("../../../themes/windows-9x/cursors/nesw-resize.cur"), nesw-resize;
+  --cursor-nwse-resize: url("../../../themes/windows-9x/cursors/nwse-resize.cur"), nwse-resize;
+  /* --cursor-zoom-in: url("../../../themes/windows-9x/cursors/zoom-in.cur"), zoom-in; */
+  /* --cursor-zoom-out: url("../../../themes/windows-9x/cursors/zoom-out.cur"), zoom-out; */
 }
 
 :root {
@@ -453,7 +449,7 @@ ui-dialog[active] .ui-dialog__title {
 
 *::-webkit-scrollbar {
   background: var(--Scrollbar) var(--screentone-url) repeat;
-  cursor: var(--cursor-default, default);
+  /* cursor: var(--cursor-default, default); */
 }
 
 *::-webkit-scrollbar,
