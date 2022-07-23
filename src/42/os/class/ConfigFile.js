@@ -1,4 +1,5 @@
 import fs from "../../core/fs.js"
+import disk from "../../core/fs/disk.js"
 import system from "../../system.js"
 import defer from "../../fabric/type/promise/defer.js"
 import extname from "../../fabric/type/path/extract/extname.js"
@@ -22,9 +23,9 @@ export class ConfigFile {
   }
 
   async #init() {
-    await (system.DEV || (await fs.access(this.filename)) === false //
-      ? this.reset()
-      : this.open())
+    await (system.DEV !== true && disk.has(this.filename)
+      ? this.load()
+      : this.reset())
 
     // fs.on(this.name, async () => {
     //   this.ready = defer()
@@ -44,7 +45,7 @@ export class ConfigFile {
     }
   }
 
-  async open() {
+  async load() {
     this.value = await fs.read[this.type](this.filename)
     if (this.defaults.version > this.value.version) await this.reset()
   }

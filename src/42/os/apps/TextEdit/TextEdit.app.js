@@ -21,31 +21,47 @@ export default {
 
   // menubar,
 
-  content: [
-    {
-      type: "ui-tabs",
-      items: "{{openedFiles}}",
-      each: {
-        label: "{{path ?? 'Untitled' |> basename}}{{dirty ? '*' : ''}}",
-        content: {
-          type: "textarea.w-full",
-          name: "text",
-          label: "{{path}}",
-          value: "{{text ? text : read(path)}}",
-          class: "{{monospace ? 'font-mono' : ''}}",
-          spellcheck: "{{spellcheck}}",
-          wrap: "{{wrap ? 'soft' : 'off'}}",
-          prose: false,
-          compact: true,
-          autofocus: true,
-        },
-      },
+  content: {
+    scope: "openedFiles/0",
+    content: {
+      scope: "/text",
+      tag: "textarea",
+      label: "{{path}}",
+      value: "{{/text ? /text : read(path)}}",
+      class: "w-full {{/monospace ? 'font-mono' : ''}}",
+      spellcheck: "{{/spellcheck}}",
+      wrap: "{{/wrap ? 'soft' : 'off'}}",
+      prose: false,
+      compact: true,
+      autofocus: true,
     },
-  ],
+  },
+
+  // content: [
+  //   {
+  //     tag: "ui-tabs",
+  //     items: "{{openedFiles}}",
+  //     each: {
+  //       label: "{{path ?? 'Untitled' |> basename}}{{dirty ? '*' : ''}}",
+  //       content: {
+  //         tag: "textarea.w-full",
+  //         name: "text",
+  //         label: "{{path}}",
+  //         value: "{{text ? text : read(path)}}",
+  //         class: "{{monospace ? 'font-mono' : ''}}",
+  //         spellcheck: "{{spellcheck}}",
+  //         wrap: "{{wrap ? 'soft' : 'off'}}",
+  //         prose: false,
+  //         compact: true,
+  //         autofocus: true,
+  //       },
+  //     },
+  //   },
+  // ],
 
   state: {
-    monospace: !false,
-    spellcheck: !true,
+    monospace: true,
+    spellcheck: false,
     wrap: true,
   },
 }

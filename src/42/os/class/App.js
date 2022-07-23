@@ -94,23 +94,24 @@ const menubar = [
 ]
 
 export default class App extends UI {
-  constructor({ name, categories, data, content, encode, decode, dir }) {
+  constructor({ name, categories, state, content, encode, decode, dir }) {
     dir ??= dirname(document.URL) + "/"
 
     const install = preinstall({ name, categories, dir })
 
-    data.openedFiles ??= [{ dirty: false, path: undefined }]
+    state.openedFiles ??= [{ dirty: false, path: undefined }]
 
     // TODO: test openedFile
-    Object.defineProperty(data, "openedFile", {
-      get: () => this.data.openedFiles[0],
+    Object.defineProperty(state, "openedFile", {
+      // get: () => this.state.openedFiles[0],
+      get: () => state.openedFiles[0],
     })
 
     super({
-      type: ".box-fit.box-h",
-      content: [{ type: "ui-menubar", content: menubar }, content],
+      tag: ".box-fit.box-h",
+      content: [/* { tag: "ui-menubar", content: menubar }, */ content],
 
-      data,
+      state,
 
       actions: {
         new() {
@@ -187,26 +188,5 @@ export default class App extends UI {
     })
 
     const app = this
-  }
-
-  async mount(...args) {
-    await super.mount(...args)
-
-    // const data = {
-    //   // currentTab: 0,
-    //   monospace: false,
-    //   spellcheck: false,
-    //   wrap: true,
-    //   openedFiles: [
-    //     { path: "/desktop/index.html" }, //
-    //     { path: "/42.sw.js" },
-    //     // { path: "/42/os.js" },
-    //   ],
-    // }
-
-    // setTimeout(() => {
-    //   this.ctx.global.state.assign(this.ctx.scope, data)
-    //   // this.ctx.global.state.set(this.ctx.scope, data)
-    // }, 500)
   }
 }

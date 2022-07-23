@@ -15,8 +15,9 @@
 <script type="module">
   import ui from "../42/ui.js"
   import explorer from "../42/ui/components/explorer.js"
+  import open from "../42/os/cmd/open.cmd.js"
 
-  window.app = await ui({
+  const app = await ui({
     tag: "body.box-fit.box-h._debug",
     content: [
       {
@@ -27,11 +28,11 @@
             on: [
               {
                 selector: 'ui-icon[aria-description="folder"]',
-                dblclick: "{{openFolder(target.path)}}",
+                click: "{{openFolder(target.path)}}",
               },
               {
                 selector: 'ui-icon[aria-description="file"]',
-                dblclick: "{{openFile(target.path)}}",
+                click: "{{openFile(target.path)}}",
               },
             ],
           },
@@ -54,7 +55,7 @@
         explorer(path)
       },
       openFile(path) {
-        console.log("openFile", path)
+        open(path)
       },
       taskbar: {
         start() {
@@ -63,4 +64,8 @@
       },
     },
   })
+
+  globalThis.app = app
+
+  app.query('ui-icon[path="/index.html"]')?.click()
 </script>

@@ -11,6 +11,8 @@ const DEFAULTS = {
   },
 }
 
+const APP_CLASS_URL = new URL("./class/App.js", import.meta.url).pathname
+
 let dialog
 
 function addMIMETypes({ defaultApps }, name, types) {
@@ -102,19 +104,15 @@ class AppManager extends ConfigFile {
       label: appName,
       content: {
         style: { width: "400px", height: "350px" },
-        type: "ui-sandbox",
+        tag: "ui-sandbox",
         permissions: "app",
-        // src: "/42/os/apps/TextEdit/index.html",
-        srcdoc: `\
-<!DOCTYPE html>
-<meta charset="utf-8" />
-<link rel="stylesheet" href="/style.css" id="theme" />
+        html: `\
 <script type="module">
-  import App from "/42/os/class/App.js"
+  import App from "${APP_CLASS_URL}"
   import definition from "${app.path}"
   definition.dir = "${dir}"
-  definition.data.openedFiles = ${JSON.stringify(filenames)}
-  const app = await new App(definition).mount()
+  definition.state.openedFiles = ${JSON.stringify(filenames)}
+  globalThis.app = await new App(definition)
 </script>
 `,
       },

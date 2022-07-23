@@ -1904,10 +1904,13 @@ test("input", async (t) => {
   t.eq(
     test.utils.prettify(app.el.innerHTML),
     `\
-<fieldset role="none">
-  <label for="a59j5pfmedwe">Str</label>
-  <input name="/str" id="a59j5pfmedwe">
-</fieldset>`
+<label for="a59j5pfmedwe">Str</label>
+<input name="/str" id="a59j5pfmedwe" autocomplete="off">`
+    //     `\
+    // <fieldset role="none">
+    //   <label for="a59j5pfmedwe">Str</label>
+    //   <input name="/str" id="a59j5pfmedwe">
+    // </fieldset>`
   )
 
   const input = app.query("input")
