@@ -106,7 +106,5 @@ if (inTop && inAutomated) {
 
     const hasTestFlag = new URL(location.href).searchParams.has("test")
     if (config.testRunner && hasTestFlag) await dev.test()
-  } else {
-    dev.sse.on("change", ({ data }) => liveReload(data))
   }
 }

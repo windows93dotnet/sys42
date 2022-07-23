@@ -119,6 +119,7 @@ const DEFAULTS = {
     files: {
       config: "",
       scan: "",
+      devScript: "/42/dev.js",
     },
     dirs: {
       src: ".",

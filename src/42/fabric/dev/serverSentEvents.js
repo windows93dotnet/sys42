@@ -77,8 +77,6 @@ export class ServerSentEvents extends Emitter {
     return super.once(event, fn)
   }
 
-  // TODO: add .source() method to make a stream
-
   destroy() {
     Object.entries(this.#events).forEach(([event, fn]) =>
       this.#sse.removeEventListener(event, fn)

@@ -80,10 +80,11 @@ export default async function serve() {
       await asset.open()
 
       if (req.headers.host === host) {
+        // TODO: check this
         asset.headers["access-control-allow-origin"] = "null"
       }
 
-      if (asset.ext === ".html" || asset.ext === ".svg") {
+      if (asset.ext === ".html" /*  || asset.ext === ".svg" */) {
         const devStream = makeDevScript(asset, reply.getHeader("user-agent"))
         asset.headers["content-length"] += Buffer.byteLength(devStream, "utf8")
         reply.headers(asset.headers)

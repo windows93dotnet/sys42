@@ -38,5 +38,8 @@ export default function makeDevScript(asset, ua) {
 
   const dataConfig = escapeHTML(JSON.stringify(config))
 
-  return `<!-- [42] --><script async type="module" data-config="${dataConfig}" src="/42/dev.js"></script>`
+  let { devScript } = system.config.paths.files
+  devScript = devScript.replace(system.config.paths.dirs.src, "")
+
+  return `<!-- [42] --><script async type="module" data-config="${dataConfig}" src="${devScript}"></script>`
 }

@@ -2,6 +2,7 @@ import globby from "globby"
 import cbor from "cbor"
 import fs from "node:fs/promises"
 
+import extname from "../../src/42/fabric/type/path/extract/extname.js"
 import system from "../../src/42/system.js"
 import allocate from "../../src/42/fabric/locator/allocate.js"
 import sortPath from "../../src/42/fabric/type/path/core/sortPath.js"
@@ -32,8 +33,22 @@ export default async function scan() {
   scannedFiles.forEach((file) => allocate(files, file, 0, "/"))
 
   if (system.config.paths.files.scan) {
-    const buffer = cbor.encode(files)
+    const ext = extname(system.config.paths.files.scan)
+
+    let buffer
+    if (ext === ".json") {
+      const str = JSON.stringify(files)
+      buffer = new TextEncoder().encode(str)
+    } else if (ext === ".cbor") {
+      buffer = cbor.encode(files)
+    } else {
+      throw new Error(
+        `Scan file must be .json or .cbor : ${system.config.paths.files.scan}`
+      )
+    }
+
     await fs.writeFile(system.config.paths.files.scan, buffer)
+
     task.log(
       ` scan {white.dim →} ${task.log.format.file(
         system.config.paths.files.scan,

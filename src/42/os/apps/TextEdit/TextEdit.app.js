@@ -1,5 +1,6 @@
 export default {
   name: "TextEdit",
+  command: "textedit",
 
   categories: ["utilities", "productivity", "development"],
 

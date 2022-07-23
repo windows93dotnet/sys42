@@ -2,13 +2,17 @@ import normalizeError from "../error/normalizeError.js"
 
 const OR_REGEX = /\s*(\|\||&&|\+)\s*/
 
-export default async function when(
-  target,
-  events,
-  { race, error, signal } = {}
-) {
+export default async function when(target, events, options) {
+  if (typeof target === "string") {
+    options = events
+    events = target
+    target = globalThis
+  }
+
+  let { race, error, signal } = options ?? {}
+
   const controller = new AbortController()
-  const options = { signal: controller.signal, once: true }
+  const listenerOptions = { signal: controller.signal, once: true }
   let originStack
 
   race ??= events.includes("||")
@@ -29,8 +33,8 @@ export default async function when(
             controller.abort()
           }
 
-          target.addEventListener(event, onevent, options)
-          if (error) target.addEventListener(error, onerror, options)
+          target.addEventListener(event, onevent, listenerOptions)
+          if (error) target.addEventListener(error, onerror, listenerOptions)
           signal?.addEventListener("abort", onerror)
         })
     )

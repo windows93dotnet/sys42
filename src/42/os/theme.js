@@ -1,20 +1,19 @@
 import { ConfigFile } from "./class/ConfigFile.js"
 import findIconPath from "./theme/findIconPath.js"
 
-import loadCSS from "../core/load/loadCSS.js"
+// import loadCSS from "../core/load/loadCSS.js"
 
 const DEFAULTS = {
-  // style: "/42/themes/default/index.css",
-  style: "/42/themes/windows-9x/index.css",
-  icons: ["/42/themes/default/icons"],
+  style: new URL("../themes/windows-9x/index.css", import.meta.url).pathname,
+  icons: [new URL("../themes/default/icons", import.meta.url).pathname],
 }
 
 class Theme extends ConfigFile {
   async init() {
     await super.init()
-    const el = await loadCSS(this.value.style)
-    document.querySelector("link#theme")?.remove()
-    el.id = "theme"
+    // const el = await loadCSS(this.value.style)
+    // document.querySelector("link#theme")?.remove()
+    // el.id = "theme"
   }
 
   getIconImage(desc) {

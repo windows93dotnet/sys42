@@ -45,12 +45,10 @@ export default function renderField(el, ctx, def) {
   register(ctx, ctx.scope, (val) => setFieldData(el, val))
   def.on ??= [{ input: () => ctx.reactive.set(el.name, getFieldData(el)) }]
 
-  // const field = create("fieldset", {
-  //   role: "none",
-  //   ...def.fieldset,
-  // })
-
-  const field = document.createDocumentFragment()
+  const field = create("fieldset", {
+    role: "none",
+    ...def.fieldset,
+  })
 
   if (el.type === "radio" || el.type === "checkbox") {
     field.classList.add("check-cont")
