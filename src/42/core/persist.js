@@ -12,9 +12,9 @@ const persist = {}
 
 persist.has = (path) => disk.has(systemPath(path))
 
-persist.load = async (path) => fs.readJSON(systemPath(path))
+persist.get = async (path) => fs.readJSON(systemPath(path))
 
-persist.save = (path, data) =>
+persist.set = (path, data) =>
   new Promise((resolve, reject) => {
     if (pending.has(path)) {
       const fn = pending.get(path)
@@ -24,22 +24,25 @@ persist.save = (path, data) =>
 
     const fn = async () => {
       try {
+        console.log(path, "writeJSON")
         await fs.writeJSON(systemPath(path), data)
       } catch (err) {
         reject(err)
       }
 
       pending.delete(path)
+      if (isListening && pending.size === 0) forget()
       resolve()
     }
 
+    if (!isListening) listen()
     fn.id = requestIdleCallback(fn)
     pending.set(path, fn)
   })
 
 export default persist
 
-const beforeUnload = (e) => {
+const handler = (e) => {
   if (pending.size > 0) {
     queueMicrotask(() => {
       // force blocking ui saving
@@ -49,6 +52,7 @@ const beforeUnload = (e) => {
       }
 
       pending.clear()
+      if (isListening) forget()
     })
     e.preventDefault()
     e.returnValue = "Changes you made may not be saved."
@@ -56,4 +60,15 @@ const beforeUnload = (e) => {
   }
 }
 
-globalThis.addEventListener("beforeunload", beforeUnload, { capture: true })
+const options = { capture: true }
+let isListening = false
+
+const listen = () => {
+  isListening = true
+  globalThis.addEventListener("beforeunload", handler, options)
+}
+
+const forget = () => {
+  isListening = false
+  globalThis.removeEventListener("beforeunload", handler, options)
+}

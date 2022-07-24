@@ -1,4 +1,5 @@
 import persist from "../../core/persist.js"
+import debounce from "../../fabric/type/function/debounce.js"
 
 export default async (ctx) => {
   if (ctx.plugins.persist) return
@@ -15,7 +16,7 @@ export default async (ctx) => {
 
   if (persist.has(persistPath)) {
     config.initial = false
-    const res = await persist.load(persistPath)
+    const res = await persist.get(persistPath)
 
     if (res?.ui?.dialog) {
       const openers = []
@@ -35,9 +36,12 @@ export default async (ctx) => {
     config.loaded = true
   }
 
-  ctx.reactive.on("update", async () => {
-    config.saved = false
-    await persist.save(persistPath, ctx.reactive.data)
-    config.saved = true
-  })
+  ctx.reactive.on(
+    "update",
+    debounce(async () => {
+      config.saved = false
+      await persist.set(persistPath, ctx.reactive.data)
+      config.saved = true
+    })
+  )
 }
