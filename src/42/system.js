@@ -4,7 +4,7 @@ globalThis.system42 ??= new System()
 const system = globalThis.system42
 
 system.polyfills = []
-system.HOME ??= "/home/anonymous"
+system.HOME ??= "/users/anonymous"
 system.DEV = false
 
 export default system

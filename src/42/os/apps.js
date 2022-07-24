@@ -1,6 +1,7 @@
 import { ConfigFile } from "./class/ConfigFile.js"
 import parseFilename from "../fabric/type/path/parseFilename.js"
 import arrify from "../fabric/type/any/arrify.js"
+import pick from "../fabric/type/object/pick.js"
 import disk from "../core/fs/disk.js"
 import dirname from "../fabric/type/path/extract/dirname.js"
 
@@ -11,9 +12,16 @@ const DEFAULTS = {
   },
 }
 
-const APP_CLASS_URL = new URL("./class/App.js", import.meta.url).pathname
+const REGISTRY_KEYS = [
+  "name",
+  "path",
+  "manifest",
+  "categories",
+  "inset",
+  "geometry",
+]
 
-let dialog
+const APP_CLASS_URL = new URL("./class/App.js", import.meta.url).pathname
 
 function addMIMETypes({ defaultApps }, name, types) {
   for (const { accept } of types) {
@@ -35,16 +43,15 @@ class AppManager extends ConfigFile {
     this.value.windows ??= {}
 
     await Promise.all(
-      disk.glob("**/*.app.js").map((path) =>
-        import(/* @vite-ignore */ path).then((m) => {
+      disk.glob("**/*.app.js").map((manifest) =>
+        import(/* @vite-ignore */ manifest).then((m) => {
           const def = m.default
           if (def?.decode?.types) {
             addMIMETypes(this.value, def.name, def.decode.types)
           }
 
-          const { name, categories, geometry } = def
-          if (def.path) path = def.path
-          this.value.windows[def.name] = { name, path, categories, geometry }
+          this.value.windows[def.name] = pick(def, REGISTRY_KEYS)
+          this.value.windows[def.name].manifest = manifest
         })
       )
     )
@@ -69,17 +76,17 @@ class AppManager extends ConfigFile {
   async open(filenames) {
     await this.ready
 
-    const openers = new Map()
-
-    dialog ??= await import("../ui/components/dialog.js").then((m) => m.default)
+    const openers = {}
 
     for (const filename of arrify(filenames)) {
-      let [appName] = await this.lookup(filename)
+      const [appName] = await this.lookup(filename)
 
       if (appName === undefined) {
-        appName = "TextEdit"
+        // appName = "TextEdit"
+        console.log("No app available to open this type of file")
         // dialog.alert("No app available to open this type of file")
         // return
+        continue
       }
 
       openers[appName] ??= []
@@ -91,36 +98,52 @@ class AppManager extends ConfigFile {
     }
   }
 
-  async exec(appName, filenames) {
+  async exec(appName, files) {
     await this.ready
 
     const app = this.value.windows[appName]
 
-    const dir = new URL(dirname(app.path + "/"), location).href
+    const dir = new URL(dirname(app.manifest + "/"), location).href
 
-    filenames = filenames.map((path) => ({ path }))
+    files = files.map((path) => ({ path }))
+
+    const dialog = await import("../ui/components/dialog.js") //
+      .then((m) => m.default)
+
+    let sandboxConfig
+    let dialogConfig
+
+    if (app.path) {
+      sandboxConfig = { path: app.path }
+      dialogConfig = { state: { files } }
+    } else {
+      sandboxConfig = {
+        html: `\
+<script type="module">
+  import App from "${APP_CLASS_URL}"
+  import manifest from "${app.manifest}"
+  manifest.dir = "${dir}"
+  manifest.state ??= {}
+  manifest.state.files = ${JSON.stringify(files)}
+  globalThis.app = await new App(manifest)
+</script>`,
+      }
+    }
 
     return dialog({
       label: appName,
       content: {
         style: { width: "400px", height: "350px" },
-        tag: "ui-sandbox",
+        tag: "ui-sandbox" + (app.inset ? ".inset" : ""),
         permissions: "app",
-        html: `\
-<script type="module">
-  import App from "${APP_CLASS_URL}"
-  import definition from "${app.path}"
-  definition.dir = "${dir}"
-  definition.state.openedFiles = ${JSON.stringify(filenames)}
-  globalThis.app = await new App(definition)
-</script>
-`,
+        ...sandboxConfig,
       },
+      ...dialogConfig,
     })
   }
 }
 
 const apps = new AppManager("apps.cbor", DEFAULTS)
-await apps.init()
+apps.init()
 
 export default apps

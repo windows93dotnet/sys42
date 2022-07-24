@@ -5,8 +5,6 @@ import UI from "../../ui/class/UI.js"
 import basename from "../../fabric/type/path/extract/basename.js"
 import dirname from "../../fabric/type/path/extract/dirname.js"
 
-let fs
-let explorer
 let toggleFullscreen
 let fileImport
 let fileExport
@@ -94,18 +92,13 @@ const menubar = [
 ]
 
 export default class App extends UI {
-  constructor({ name, categories, state, content, encode, decode, dir }) {
+  constructor(manifest) {
+    let { name, categories, state, content, encode, decode, dir } = manifest
     dir ??= dirname(document.URL) + "/"
 
     const install = preinstall({ name, categories, dir })
 
-    state.openedFiles ??= [{ dirty: false, path: undefined }]
-
-    // TODO: test openedFile
-    Object.defineProperty(state, "openedFile", {
-      // get: () => this.state.openedFiles[0],
-      get: () => state.openedFiles[0],
-    })
+    state.files ??= [{ dirty: false, path: undefined }]
 
     super({
       tag: ".box-fit.box-h",
@@ -115,23 +108,23 @@ export default class App extends UI {
 
       actions: {
         new() {
-          this.currentTab = this.openedFiles.length
-          this.openedFiles.push({ dirty: false, path: undefined })
+          this.currentTab = this.files.length
+          this.files.push({ dirty: false, path: undefined })
         },
 
         async open() {
-          explorer ??= await import("../../ui/components/explorer.js") //
+          const explorer = await import("../../ui/components/explorer.js") //
             .then((m) => m.default)
           const res = await explorer.pick(this.path)
           if (res) {
-            this.currentTab = this.openedFiles.length
-            this.openedFiles.push({ dirty: false, path: res.selection[0] })
+            this.currentTab = this.files.length
+            this.files.push({ dirty: false, path: res.selection[0] })
           }
         },
 
         async save() {
           if (this.path) {
-            fs ??= await import("../../core/fs.js").then((m) => m.default)
+            const fs = await import("../../core/fs.js").then((m) => m.default)
             fs.write(this.path, new Blob([this.text]))
             this.dirty = false
           } else {
@@ -141,11 +134,11 @@ export default class App extends UI {
         },
 
         async saveAs() {
-          explorer ??= await import("../../ui/components/explorer.js") //
+          const explorer = await import("../../ui/components/explorer.js") //
             .then((m) => m.default)
           const res = await explorer.save(this.path ?? "untitled.txt")
           if (res) {
-            fs ??= await import("../../core/fs.js").then((m) => m.default)
+            const fs = await import("../../core/fs.js").then((m) => m.default)
             await fs.write(res, new Blob([this.text]))
             this.path = res
             this.dirty = false
@@ -187,6 +180,7 @@ export default class App extends UI {
       },
     })
 
+    this.manifest = manifest
     const app = this
   }
 }

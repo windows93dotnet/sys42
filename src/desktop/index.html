@@ -28,11 +28,11 @@
             on: [
               {
                 selector: 'ui-icon[aria-description="folder"]',
-                click: "{{openFolder(target.path)}}",
+                dblclick: "{{openFolder(e, target.path)}}",
               },
               {
                 selector: 'ui-icon[aria-description="file"]',
-                click: "{{openFile(target.path)}}",
+                dblclick: "{{openFile(target.path)}}",
               },
             ],
           },
@@ -51,7 +51,7 @@
     ],
 
     actions: {
-      openFolder(path) {
+      openFolder(e, path) {
         explorer(path)
       },
       openFile(path) {
@@ -68,4 +68,8 @@
   globalThis.app = app
 
   // app.query('ui-icon[path="/index.html"]')?.click()
+
+  if (globalThis.top === globalThis) {
+    open("/desktop/index.html")
+  }
 </script>

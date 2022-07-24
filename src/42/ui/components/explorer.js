@@ -1,6 +1,7 @@
 import Component from "../class/Component.js"
 import dirname from "../../fabric/type/path/extract/dirname.js"
 import dialog from "./dialog.js"
+import open from "../../os/cmd/open.cmd.js"
 
 import parsePath from "../../fabric/type/path/core/parsePath.js"
 import joinPath from "../../fabric/type/path/core/joinPath.js"
@@ -74,12 +75,15 @@ export class Explorer extends Component {
     on: [
       {
         selector: 'ui-icon[aria-description="folder"]',
-        dblclick: "{{go(target.path, glob)}}",
+        dblclick: "{{go(target.path)}}",
       },
       {
         selector: 'ui-icon[aria-description="file"]',
         dblclick: "{{open(target.path)}}",
       },
+      // {
+      //   "alt+up": "{{folderUp()}}",
+      // },
     ],
   }
 
@@ -94,7 +98,7 @@ export class Explorer extends Component {
   }
 
   open(path) {
-    console.log("open", path)
+    open(path)
   }
 
   displaySelection(selection) {
