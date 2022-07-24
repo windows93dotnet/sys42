@@ -83,20 +83,12 @@
           {
             tag: "button.item-spread",
             content: "add",
-            on: {
-              click() {
-                this.state.arr.push(this.state.arr.length + 1)
-              },
-            },
+            on: { click: "{{push(arr, arr.length + 1)}}" },
           },
           {
             tag: "button.item-spread",
             content: "remove",
-            on: {
-              click() {
-                this.state.arr.pop()
-              },
-            },
+            on: { click: "{{pop(arr)}}" },
           },
           {
             tag: "button.item-spread",

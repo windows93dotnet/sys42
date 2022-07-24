@@ -1,6 +1,7 @@
 // @src https://github.com/behnammodi/polyfill/blob/master/window.polyfill.js
 
-globalThis.system42?.polyfills.push("globalThis.requestIdleCallback")
+globalThis.sys42 ??= { polyfills: [] }
+globalThis.sys42.polyfills.push("globalThis.requestIdleCallback")
 
 globalThis.requestIdleCallback = function (callback, options = {}) {
   const relaxation = 1

@@ -24,7 +24,7 @@ module.exports = {
     DecompressionStream: true,
     DedicatedWorkerGlobalScope: true,
     SharedWorkerGlobalScope: true,
-    system42: true,
+    sys42: true,
   },
   env: {
     node: true,

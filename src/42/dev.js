@@ -14,7 +14,7 @@ log.verbose = config.verbose
 function greet() {
   log.if(config.verbose).cyanBright(`\
 ╷ ┌───┐
-└─┤ ┌─┘  {white type} {cyanBright system42}{cyan .dev.help()}
+└─┤ ┌─┘  {white type} {cyanBright sys42}{cyan .dev.help()}
   └─┴─╴`)
 }
 
@@ -35,13 +35,13 @@ if (inTop && inAutomated) {
     sse: serverSentEvents("/42-dev"),
     help() {
       log(log.esc`\
-{cyanBright system42}{cyan .dev.test(options)} {grey ..} run tests
-{cyanBright system42}{cyan .dev.tree(element)} {grey ..} display accessibility tree
-{cyanBright system42}{cyan .dev.env(full)} {grey ......} display env
-{cyanBright system42}{cyan .dev.pause()} {grey ........} pause live-reload
-{cyanBright system42}{cyan .dev.resume()} {grey .......} resume live-reload
-{cyanBright system42}{cyan .dev.toggle()} {grey .......} toggle live-reload
-{cyanBright system42}{cyan .dev.technicolor()} {grey ..} technicolor`)
+{cyanBright sys42}{cyan .dev.test(options)} {grey ..} run tests
+{cyanBright sys42}{cyan .dev.tree(element)} {grey ..} display accessibility tree
+{cyanBright sys42}{cyan .dev.env(full)} {grey ......} display env
+{cyanBright sys42}{cyan .dev.pause()} {grey ........} pause live-reload
+{cyanBright sys42}{cyan .dev.resume()} {grey .......} resume live-reload
+{cyanBright sys42}{cyan .dev.toggle()} {grey .......} toggle live-reload
+{cyanBright sys42}{cyan .dev.technicolor()} {grey ..} technicolor`)
     },
     technicolor() {
       log.color("#000")(

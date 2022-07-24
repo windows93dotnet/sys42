@@ -312,9 +312,12 @@ export function objectifyDef(def) {
 
 export function forkDef(def, ctx) {
   def = objectifyDef(def)
-  def.scope = ctx.globalScope ?? ctx.scope
-  def.state = omit(ctx.reactive.data, ["ui"])
-  def.parentId = ctx.id
+  if (ctx) {
+    def.scope = ctx.globalScope ?? ctx.scope
+    def.state = omit(ctx.reactive.data, ["ui"])
+    def.parentId = ctx.id
+  }
+
   return def
 }
 

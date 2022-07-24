@@ -43,7 +43,7 @@ export default function renderListen(el, defs, ctx) {
           events[key] = compileRun(val, forkCtx(ctx, key))
         } else if ("dialog" in val) {
           const newCtx = forkCtx(ctx, key)
-          el.id ||= hash(String(newCtx.tracks))
+          el.id ||= hash(String(newCtx.steps))
           val.dialog.opener = `#${el.id}`
           events[key] = async () => {
             const dialog = await import("../components/dialog.js") //
@@ -52,6 +52,8 @@ export default function renderListen(el, defs, ctx) {
           }
         } else if ("popup" in val) {
           console.log("popup")
+        } else {
+          events[key] = val.bind(ctx)
         }
       }
 

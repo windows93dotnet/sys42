@@ -67,9 +67,15 @@
 
   globalThis.app = app
 
-  // app.query('ui-icon[path="/index.html"]')?.click()
+  // app
+  //   .query('ui-icon[path="/index.html"]')
+  //   ?.dispatchEvent(new CustomEvent("dblclick", { bubbles: true }))
 
-  if (globalThis.top === globalThis) {
-    open("/desktop/index.html")
-  }
+  // if (globalThis.top === globalThis) {
+  //   open("/desktop/index.html")
+  // } else {
+  //   app
+  //     .query('ui-icon[path="/style.css"]')
+  //     ?.dispatchEvent(new CustomEvent("dblclick", { bubbles: true }))
+  // }
 </script>
