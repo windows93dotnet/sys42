@@ -1,19 +1,16 @@
 <pre style="text-align: center; line-height: 1; background: transparent">
 
-
-system
 ╷ ┌───┐
 └─┤ ┌─┘
   └─┴─╴
+sys42
 
 <!-- It's like `system32.dll` but for making desktop GUI, for the web, and it's not a DLL at all. -->
 </pre>
 
 ## Does this answer the Ultimate Question\* ?
 
-> \*Life (Inclusive Design), Teh Universe (UI Toolkit & Components), And Everything (JavaScript/CSS utility library)
-
-_tl;dr: Nope, but it can help you build desktop interfaces using web technologies._
+tl;dr: Nope, but it can help you build desktop interfaces using web technologies.
 
 ### Fine, but why making desktop-like GUI on the web ?
 
@@ -68,16 +65,16 @@ ui({ tag: "ui-picto", value: "puzzle", tooltip: "Modules" })
 
 ### Desktop First
 
-_Desktop First_ means it's not designed as the usuals UI components for making websites and mobile apps.
+_Desktop First_ means it's not designed as many UI components made for websites and mobile apps.
 The main goal here is to make something close to GTK/Qt for HTML.
-But, in the same way the term _Mobile First_ also implies that you can also make desktop apps with it, we're trying to make all our components inclusives for any users and devices.
+In the same way the term _Mobile First_ also implies that you can make desktop apps with it, we're trying to make all our components inclusives for any users and devices.
 
 ### Inclusive Design
 
 To make it short _[Inclusive Design](https://24ways.org/2016/what-the-heck-is-inclusive-design/)_ is a term combining web accessibility and responsive design.
 We tried to follow good practices and semantic markup to help every users.
 Users who use small screens, touch devices, screen readers, stylus, gamepads, MIDI controllers...
-(The only ones we don't think about are Safari users, and we are [not even sorry](https://issafarithenewie.com/)).
+(The only ones we don't think about are Safari users, [sorry not sorry](https://issafarithenewie.com/)).
 
 ## Tomorow is teh future
 
