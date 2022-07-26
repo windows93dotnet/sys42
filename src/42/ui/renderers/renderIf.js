@@ -22,12 +22,12 @@ export default function renderIf(def, ctx) {
   el.append(placeholder)
 
   const parsed = expr.parse(def.if)
-  const { scopes, filters } = normalizeTokens(parsed, ctx)
+  const { scopes, actions } = normalizeTokens(parsed, ctx)
   const check = expr.compile(parsed, {
     boolean: true,
     async: true,
     sep: "/",
-    filters,
+    actions,
   })
 
   const defIf = normalizeDef(omit(def, ["if"]), ctx)

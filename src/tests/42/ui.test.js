@@ -701,12 +701,12 @@ test("abbr", "reactive", 2, async (t) => {
   t.is(app.el.innerHTML, '<em class=" "></em>')
 })
 
-/* filters
+/* actions
 ========== */
 
 const uppercase = (str) => str.toUpperCase()
 
-test("filters", async (t) => {
+test("actions", async (t) => {
   const app = await ui(tmp(), {
     content: "a {{foo|>uppercase}}",
     state: { foo: "b" },
@@ -721,7 +721,7 @@ test("filters", async (t) => {
   t.is(app.el.innerHTML, "a X")
 })
 
-test("filters", "as function", async (t) => {
+test("actions", "as function", async (t) => {
   const app = await ui(tmp(), {
     content: "a {{uppercase(foo)}}",
     state: { foo: "b" },
@@ -736,7 +736,7 @@ test("filters", "as function", async (t) => {
   t.is(app.el.innerHTML, "a X")
 })
 
-test("filters", "inline variable", async (t) => {
+test("actions", "inline variable", async (t) => {
   const app = await ui(tmp(), {
     content: "a {{'b'|>uppercase}}",
     actions: { uppercase },
@@ -745,7 +745,7 @@ test("filters", "inline variable", async (t) => {
   t.is(app.el.innerHTML, "a B")
 })
 
-test("filters", "inline variable", "as function", async (t) => {
+test("actions", "inline variable", "as function", async (t) => {
   const app = await ui(tmp(), {
     content: "a {{uppercase('b')}}",
     actions: { uppercase },
@@ -754,7 +754,7 @@ test("filters", "inline variable", "as function", async (t) => {
   t.is(app.el.innerHTML, "a B")
 })
 
-test("filters", "buildin filters", async (t) => {
+test("actions", "buildin actions", async (t) => {
   const app = await ui(tmp(), {
     tag: "pre",
     content: "{{foo|>stringify}}",
@@ -770,7 +770,7 @@ test("filters", "buildin filters", async (t) => {
   )
 })
 
-test("filters", "thisArg", async (t) => {
+test("actions", "thisArg", async (t) => {
   t.plan(3)
   const app = await ui(tmp(), {
     tag: "em",
@@ -788,7 +788,7 @@ test("filters", "thisArg", async (t) => {
   t.is(app.el.innerHTML, "<em>a B</em>")
 })
 
-test("filters", "nested action", async (t) => {
+test("actions", "nested action", async (t) => {
   t.plan(3)
   const app = await ui(tmp(), {
     tag: "em",
@@ -808,7 +808,7 @@ test("filters", "nested action", async (t) => {
   t.is(app.el.innerHTML, "<em>a B</em>")
 })
 
-test("filters", "nested action", 2, async (t) => {
+test("actions", "nested action", 2, async (t) => {
   t.plan(3)
   const app = await ui(tmp(), {
     tag: "em",
@@ -828,7 +828,7 @@ test("filters", "nested action", 2, async (t) => {
   t.is(app.el.innerHTML, "<em>a B</em>")
 })
 
-test("filters", "thisArg", "nested", async (t) => {
+test("actions", "thisArg", "nested", async (t) => {
   t.plan(8)
 
   const tags = ["section", "em", "strong"]
@@ -858,7 +858,7 @@ test("filters", "thisArg", "nested", async (t) => {
   t.is(app.el.innerHTML, "X<em>X</em><strong>X</strong>")
 })
 
-test("filters", "buildin filters locate", async (t) => {
+test("actions", "buildin actions locate", async (t) => {
   const app = await ui(tmp(), {
     tag: "pre",
     content: "{{foo |> stringify('min')}}",
@@ -869,7 +869,7 @@ test("filters", "buildin filters locate", async (t) => {
   t.is(app.el.innerHTML, "<pre>{a:1}</pre>")
 })
 
-test("filters", "pluralize", async (t) => {
+test("actions", "pluralize", async (t) => {
   const app = await ui(tmp(), {
     content: "{{'apple'|>pluralize}}, {{'orange'|>pluralize(5)}}",
   })

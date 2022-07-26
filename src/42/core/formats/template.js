@@ -10,10 +10,10 @@ import JSON5 from "./json5.js"
 
 const jsonParse = JSON5.parse
 
-export default function template(source, { filters, locals } = {}) {
+export default function template(source, { actions, locals } = {}) {
   return compileTemplate(
     parseTemplate(source, jsonParse), //
-    { locate, filters, jsonParse, locals }
+    { locate, actions, jsonParse, locals }
   )
 }
 
@@ -27,26 +27,26 @@ template.compile = (parsed, options = {}) =>
     { locate, jsonParse, ...options }
   )
 
-template.format = (parsed, locals, filters) =>
+template.format = (parsed, locals, actions) =>
   compileTemplate(
     parsed, //
-    { locate, jsonParse, filters, locals }
+    { locate, jsonParse, actions, locals }
   )(locals)
 
-template.formatAsync = async (parsed, locals, filters) =>
+template.formatAsync = async (parsed, locals, actions) =>
   compileTemplate(
     parsed, //
-    { locate, jsonParse, filters, locals, async: true }
+    { locate, jsonParse, actions, locals, async: true }
   )(locals)
 
-template.render = (source, locals, filters) =>
+template.render = (source, locals, actions) =>
   compileTemplate(
     parseTemplate(source, jsonParse), //
-    { locate, jsonParse, filters, locals }
+    { locate, jsonParse, actions, locals }
   )(locals)
 
-template.renderAsync = async (source, locals, filters) =>
+template.renderAsync = async (source, locals, actions) =>
   compileTemplate(
     parseTemplate(source, jsonParse), //
-    { locate, jsonParse, filters, locals, async: true }
+    { locate, jsonParse, actions, locals, async: true }
   )(locals)

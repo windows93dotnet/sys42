@@ -133,12 +133,12 @@ test.tasks(
       expected: "a {cyan b}",
     }),
 
-    /* filters
+    /* actions
     ========== */
 
     task({
       source: "a {{x()}}",
-      filters: {
+      actions: {
         x: () => "b",
       },
       parsed: {
@@ -153,14 +153,14 @@ test.tasks(
     task({
       source: ["a {{uppercase('x\\'x')}}"],
       data: { x: "b" },
-      filters: { uppercase },
+      actions: { uppercase },
       expected: "a X'X",
     }),
 
     task({
       source: ["a {{x|>uppercase}}", "a {{ x |> uppercase }}"],
       data: { x: "b" },
-      filters: {
+      actions: {
         uppercase,
       },
       parsed: {
@@ -180,21 +180,21 @@ test.tasks(
     task({
       source: 'a {{ "b" |> uppercase }}',
       data: { x: "b" },
-      filters: { uppercase },
+      actions: { uppercase },
       expected: "a B",
     }),
 
     task({
       source: ["a {{uppercase(x)}}", "a {{uppercase('b')}}"],
       data: { x: "b" },
-      filters: { uppercase },
+      actions: { uppercase },
       expected: "a B",
     }),
 
     task({
       source: ["a {{uppercase(x)|>double}}"],
       data: { x: "b" },
-      filters: {
+      actions: {
         uppercase,
         double: (str) => str + str,
       },
@@ -210,14 +210,14 @@ test.tasks(
     task({
       source: ["a {{foo(a > 1, a, 1)}}"],
       data: { a: 2 },
-      filters: { foo: (...args) => args.join(" - ") },
+      actions: { foo: (...args) => args.join(" - ") },
       expected: "a true - 2 - 1",
     }),
 
     task({
       source: ["a {{x|>add(y)}}", "a {{x|>add(2)}}", "a {{1|>add(2)}}"],
       data: { x: 1, y: 2 },
-      filters: {
+      actions: {
         add: (a, b) => a + b,
       },
       expected: "a 3",
@@ -231,7 +231,7 @@ test.tasks(
         "a {{ binary(3) }}",
       ],
       data: { x: 1, y: 2 },
-      filters: {
+      actions: {
         add: (a, b) => a + b,
         binary: (a) => `0b${a.toString(2).padStart(4, "0")}`,
       },
@@ -277,7 +277,7 @@ test.tasks(
         'a {{[] ? "b" : y}}',
       ],
       data: { x: "b", y: "c", foo: true },
-      filters: { x: () => "b", y: () => "c", foo: () => true },
+      actions: { x: () => "b", y: () => "c", foo: () => true },
       expected: "a b",
     }),
 
@@ -292,7 +292,7 @@ test.tasks(
         'a {{[] ? "b" : y |> uppercase}}',
       ],
       data: { x: "b", y: "c", foo: true },
-      filters: { x: () => "b", y: () => "c", foo: () => true, uppercase },
+      actions: { x: () => "b", y: () => "c", foo: () => true, uppercase },
       expected: "a B",
     }),
 
@@ -308,7 +308,7 @@ test.tasks(
         'a {{NaN ? x : "c"}}',
       ],
       data: { x: "b", y: "c", foo: false },
-      filters: { x: () => "b", y: () => "c", foo: () => false },
+      actions: { x: () => "b", y: () => "c", foo: () => false },
       expected: "a c",
     }),
 
@@ -332,7 +332,7 @@ test.tasks(
     task({
       source: "{{a > 1|>foo}}",
       data: { a: 2 },
-      filters: { foo: (arg) => (arg ? "more" : "less") },
+      actions: { foo: (arg) => (arg ? "more" : "less") },
       title: "more",
       expected: "more",
     }),
@@ -340,7 +340,7 @@ test.tasks(
     task({
       source: "{{a > 1|>foo}}",
       data: { a: 0 },
-      filters: { foo: (arg) => (arg ? "more" : "less") },
+      actions: { foo: (arg) => (arg ? "more" : "less") },
       title: "less",
       expected: "less",
     }),
@@ -361,7 +361,7 @@ test.tasks(
         "{{a() > one() ? b : c}}",
       ],
       data: { a: 0, b: "b", c: "c" },
-      filters: { a: () => 0, one: () => 1, b: () => "b", c: () => "c" },
+      actions: { a: () => 0, one: () => 1, b: () => "b", c: () => "c" },
       expected: "c",
     }),
 
@@ -394,20 +394,20 @@ test.tasks(
     task({
       title: "failing async filter",
       source: ["{{foo()}}"],
-      filters: { foo: async () => "foo" },
+      actions: { foo: async () => "foo" },
       expected: "[object Promise]",
     }),
 
     task({
       source: ["{{foo()}}"],
-      filters: { foo: async () => "foo" },
+      actions: { foo: async () => "foo" },
       async: true,
       expected: "foo",
     }),
 
     task({
       source: ["{{foo()|>uppercaseAsync}}"],
-      filters: {
+      actions: {
         foo: async () => "foo",
         uppercaseAsync,
       },
@@ -417,7 +417,7 @@ test.tasks(
 
     task({
       source: ["{{zero() > one() ? a() : b()|>uppercaseAsync}}"],
-      filters: {
+      actions: {
         zero: async () => 0,
         one: async () => 1,
         a: async () => "a",
@@ -430,7 +430,7 @@ test.tasks(
 
     task({
       source: ["{{zero() < one() ? a() : b()|>uppercaseAsync}}"],
-      filters: {
+      actions: {
         zero: async () => 0,
         one: async () => 1,
         a: async () => "a",
@@ -442,7 +442,7 @@ test.tasks(
     }),
   ],
 
-  (test, { title, source, data, parsed, filters, expected, async }) => {
+  (test, { title, source, data, parsed, actions, expected, async }) => {
     const format = async ? "formatAsync" : "format"
     const render = async ? "renderAsync" : "render"
     for (const str of test.utils.arrify(source)) {
@@ -451,14 +451,14 @@ test.tasks(
           const p = template.parse(str)
 
           if (expected) {
-            t.is(await template[format](p, data, filters), expected)
+            t.is(await template[format](p, data, actions), expected)
           }
 
           t.eq(p, parsed)
         }
 
         if (expected) {
-          t.is(await template[render](str, data, filters), expected)
+          t.is(await template[render](str, data, actions), expected)
         }
       })
     }

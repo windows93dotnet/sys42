@@ -3,7 +3,7 @@ import parsePath from "./core/parsePath.js"
 import formatPath from "./core/formatPath.js"
 import parseRegexLiteral from "../regex/parseRegexLiteral.js"
 import arrify from "../any/arrify.js"
-import stringFilters from "../string/stringFilters.js"
+import manipulation from "../string/manipulation.js"
 
 const makePlaceholder = (i) => `#PLACEHOLDER_${42}_${i}`
 
@@ -28,7 +28,7 @@ const makeFilter = (filter, replacer) => {
         args = [replacer, newSubstr]
       } else args = args.split(",")
     } else name = name.trim()
-    if (name in stringFilters) list.push([stringFilters[name], args ?? []])
+    if (name in manipulation) list.push([manipulation[name], args ?? []])
   })
 
   if (list.length > 0) {

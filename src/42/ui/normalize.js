@@ -5,7 +5,7 @@ import Locator from "../fabric/class/Locator.js"
 import template from "../core/formats/template.js"
 import Canceller from "../fabric/class/Canceller.js"
 import Undones from "../fabric/class/Undones.js"
-import getFilter from "../fabric/getFilter.js"
+import filters from "../core/filters.js"
 import dirname from "../fabric/type/path/extract/dirname.js"
 import dispatch from "../fabric/dom/dispatch.js"
 import allocate from "../fabric/locator/allocate.js"
@@ -56,7 +56,7 @@ const _INSTANCES = Symbol.for("Trait.INSTANCES")
 
 const sep = "/"
 
-const makeFilterFn =
+const makeActionFn =
   (filter, thisArg, el) =>
   async (...args) => {
     try {
@@ -66,10 +66,10 @@ const makeFilterFn =
     }
   }
 
-export function normalizeTokens(tokens, ctx, filters) {
+export function normalizeTokens(tokens, ctx, actions) {
   let hasFilter = false
   const scopes = []
-  filters ??= { ...ctx.actions.value }
+  actions ??= { ...ctx.actions.value }
 
   for (const token of tokens) {
     if (token.value === undefined) continue
@@ -94,49 +94,49 @@ export function normalizeTokens(tokens, ctx, filters) {
     } else if (token.type === "function") {
       hasFilter = true
 
-      let filter
+      let action
       let thisArg
 
       if (ctx.actions.has(loc)) {
         thisArg = ctx
-        filter = ctx.actions.get(loc)
+        action = ctx.actions.get(loc)
       } else if (ctx.component && token.value in ctx.component) {
         thisArg = ctx.component
-        filter = ctx.component[token.value]
+        action = ctx.component[token.value]
       }
 
-      if (filter) {
-        const fn = makeFilterFn(filter, thisArg, ctx.el)
-        allocate(filters, loc, fn, sep)
+      if (action) {
+        const fn = makeActionFn(action, thisArg, ctx.el)
+        allocate(actions, loc, fn, sep)
       } else {
         const thisArg = ctx
         const { value } = token
         const err = new TypeError(
           `Template filter is not a function: "${value}"`
         )
-        const fn = getFilter(value).then((filter) => {
+        const fn = filters(value).then((filter) => {
           if (typeof filter !== "function") return void dispatch(ctx.el, err)
-          return makeFilterFn(filter, thisArg, ctx.el)
+          return makeActionFn(filter, thisArg, ctx.el)
         })
-        allocate(filters, loc, fn, sep)
+        allocate(actions, loc, fn, sep)
       }
 
       token.value = loc
     }
   }
 
-  return { hasFilter, scopes, filters }
+  return { hasFilter, scopes, actions }
 }
 
 export function normalizeString(def, ctx) {
   const parsed = template.parse(def)
 
   if (parsed.substitutions.length > 0) {
-    const filters = { ...ctx.actions.value }
+    const actions = { ...ctx.actions.value }
     const scopes = []
     let hasFilter = false
     for (const tokens of parsed.substitutions) {
-      const res = normalizeTokens(tokens, ctx, filters)
+      const res = normalizeTokens(tokens, ctx, actions)
       hasFilter ||= res.hasFilter
       scopes.push(...res.scopes)
     }
@@ -144,7 +144,7 @@ export function normalizeString(def, ctx) {
     def = template.compile(parsed, {
       async: true,
       sep: "/",
-      filters,
+      actions,
     })
 
     def.scopes = scopes

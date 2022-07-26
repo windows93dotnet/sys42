@@ -3,49 +3,64 @@
 // @read https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters
 // @read https://ansible-docs.readthedocs.io/zh/stable-2.0/rst/playbooks_filters.html
 
-import locate from "./locator/locate.js"
-// import locate from "./locator/allocate.js"
-import bytesize from "./type/file/bytesize.js"
-import dispatch from "./dom/dispatch.js"
-import { round, floor, ceil } from "./type/number/precision.js"
+import locate from "../fabric/locator/locate.js"
+import bytesize from "../fabric/type/file/bytesize.js"
+import dispatch from "../fabric/dom/dispatch.js"
+import { round, floor, ceil } from "../fabric/type/number/precision.js"
 
-const filters = {}
+const types = {}
 
-const STRING_FILTER = { url: "string/stringFilters", key: true }
+const MANIPULATION = { url: "string/manipulation", key: true }
+const COUNT = { url: "string/count", key: true }
+const TRIM = { url: "string/trim", key: true }
 
-filters.string = {
-  slice: STRING_FILTER,
-  replace: STRING_FILTER,
-  nospace: STRING_FILTER,
+types.string = {
+  camelCase: MANIPULATION,
+  capitalCase: MANIPULATION,
+  constantCase: MANIPULATION,
+  headerCase: MANIPULATION,
+  kebabCase: MANIPULATION,
+  lowerCase: MANIPULATION,
+  nocaseCase: MANIPULATION,
+  pascalCase: MANIPULATION,
+  sentenceCase: MANIPULATION,
+  snakeCase: MANIPULATION,
+  titleCase: MANIPULATION,
+  upperCase: MANIPULATION,
+
+  nospace: MANIPULATION,
+  slice: MANIPULATION,
+  split: MANIPULATION,
+  repeat: MANIPULATION,
+  replace: MANIPULATION,
+  padEnd: MANIPULATION,
+  padStart: MANIPULATION,
+  endsWith: MANIPULATION,
+  startsWith: MANIPULATION,
+
   deburr: "string/deburr",
   pluralize: "string/pluralize",
-  camel: STRING_FILTER,
-  capital: STRING_FILTER,
-  constant: STRING_FILTER,
-  header: STRING_FILTER,
-  kebab: STRING_FILTER,
-  lower: STRING_FILTER,
-  nocase: STRING_FILTER,
-  pascal: STRING_FILTER,
-  sentence: STRING_FILTER,
-  snake: STRING_FILTER,
-  title: STRING_FILTER,
-  upper: STRING_FILTER,
-  split: (str, sep) => str.split(sep),
-  endsWith: (str, search) => str.endsWith(search),
-  startsWith: (str, search) => str.startsWith(search),
-  padStart: (str, length, padString) => str.padStart(length, padString),
-  padEnd: (str, length, padString) => str.padEnd(length, padString),
+
+  countLetters: COUNT,
+  countWords: COUNT,
+  countBytes: COUNT,
+
+  trim: TRIM,
+  trimStart: TRIM,
+  trimEnd: TRIM,
 }
 
-function padding(num, precision, pad) {
-  if (!pad || precision === 0) return num
-  const [a, b] = String(num).split(".")
-  return a + "." + (b ?? "0").padEnd(precision, "0")
+export function padding(num, decimals, pad) {
+  if (!pad || decimals === 0) return num
+  const n = String(num)
+  const index = n.indexOf(".")
+  return `${n.slice(0, index) || "0"}.${n
+    .slice(index + 1)
+    .padEnd(decimals, "0")}`
 }
 
 // prettier-ignore
-filters.number = {
+types.number = {
   ceil: (num, decimals = 0, pad = true) => padding(ceil(num, decimals), decimals, pad),
   floor: (num, decimals = 0, pad = true) => padding(floor(num, decimals), decimals, pad),
   round: (num, decimals = 0, pad = true) => padding(round(num, decimals), decimals, pad),
@@ -57,14 +72,14 @@ filters.number = {
 }
 
 // TODO: find a way to register globstar renderer when using filters.array or filters.object
-filters.array = {
+types.array = {
   join: (arr, sep) => arr.join(sep),
   at: (arr, index) => arr.at(index),
   includes: (arr, search) => arr.includes(search),
   pop: (arr) => arr.pop(),
   shift: (arr) => arr.shift(),
   push: (arr, ...item) => arr.push(...item),
-  slice: STRING_FILTER,
+  slice: MANIPULATION,
   difference: "array/difference",
   groupBy: "array/groupBy",
   removeItem: "array/removeItem",
@@ -73,7 +88,7 @@ filters.array = {
   uniq: "array/uniq",
 }
 
-filters.object = {
+types.object = {
   fromEntries: (obj) => Object.fromEntries(obj),
   entries: (obj) => Object.entries(obj),
   keys: (obj) => Object.keys(obj),
@@ -84,7 +99,7 @@ filters.object = {
   pick: "object/pick",
 }
 
-filters.any = {
+types.any = {
   arrify: "any/arrify",
   cast: "any/cast",
   clone: "any/clone",
@@ -92,7 +107,7 @@ filters.any = {
   stringify: "any/stringify",
 }
 
-filters.path = {
+types.path = {
   // formatPath: "path/core/formatPath",
   // joinPath: "path/core/joinPath",
   // normalizePath: "path/core/normalizePath",
@@ -112,10 +127,10 @@ filters.path = {
   stemname: "path/extract/stemname",
 }
 
-filters.file = {
+types.file = {
   async open(path, fallback = "") {
     if (path === undefined) return fallback
-    const fs = await import("../core/fs.js").then((m) => m.default)
+    const fs = await import("./fs.js").then((m) => m.default)
     try {
       return await fs.open(path)
     } catch (err) {
@@ -125,7 +140,7 @@ filters.file = {
   },
   async read(path, fallback = "") {
     if (path === undefined) return fallback
-    const fs = await import("../core/fs.js").then((m) => m.default)
+    const fs = await import("./fs.js").then((m) => m.default)
     try {
       return await fs.readText(path)
     } catch (err) {
@@ -138,7 +153,7 @@ filters.file = {
   size: (file, options) => bytesize(file?.size ?? 0, options),
 }
 
-filters.ui = {
+types.ui = {
   async render(item) {
     if (typeof item === "string" && item.contains("{" + "{")) return item
     const render = await import("../ui/render.js").then((m) => m.default)
@@ -149,15 +164,15 @@ filters.ui = {
   },
 }
 
-const entries = Object.entries(filters)
+const entries = Object.entries(types)
 
-export default async function getFilter(name) {
+export default async function filters(name) {
   for (const [, val] of entries) {
     if (name in val) {
       const item = val[name]
       let fn = item.url ?? item
       if (typeof fn === "string") {
-        fn = await import(`./type/${fn}.js`).then((m) =>
+        fn = await import(`../fabric/type/${fn}.js`).then((m) =>
           item.key
             ? locate(m.default, name)
             : item.import
@@ -170,3 +185,5 @@ export default async function getFilter(name) {
     }
   }
 }
+
+Object.assign(filters, types)

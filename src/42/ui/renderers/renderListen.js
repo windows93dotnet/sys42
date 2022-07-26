@@ -15,13 +15,13 @@ const makeEventLocals = (loc, e, target) => {
 function compileRun(val, ctx) {
   const parsed = expr.parse(val)
 
-  const { filters } = normalizeTokens(parsed, ctx)
+  const { actions } = normalizeTokens(parsed, ctx)
 
   const fn = expr.compile(parsed, {
     assignment: true,
     async: true,
     sep: "/",
-    filters,
+    actions,
   })
 
   const scope = ctx.globalScope ?? ctx.scope

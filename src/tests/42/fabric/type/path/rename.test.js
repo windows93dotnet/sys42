@@ -104,7 +104,7 @@ test("escaped hash", (t) => {
 })
 
 test("filter", (t) => {
-  t.eq(rename(files, "**/_*{upper}_.js"), [
+  t.eq(rename(files, "**/_*{upperCase}_.js"), [
     "a/b/_ONE_.js",
     "a/b/_TWO_.js",
     "a/b/_THREE_.js",
@@ -116,27 +116,27 @@ test("filter", (t) => {
     "A/B/THREE.JS",
   ]
 
-  t.eq(rename(files, "**{upper}/*{upper}.*{upper}"), allCaps)
-  t.eq(rename(files, "{upper}"), allCaps)
+  t.eq(rename(files, "**{upperCase}/*{upperCase}.*{upperCase}"), allCaps)
+  t.eq(rename(files, "{upperCase}"), allCaps)
 })
 
 test("filter change case", (t) => {
-  t.eq(rename("foo-bar/a-file.js", "**{camel}/_*{camel}_.js"), [
+  t.eq(rename("foo-bar/a-file.js", "**{camelCase}/_*{camelCase}_.js"), [
     "fooBar/_aFile_.js",
   ])
-  t.eq(rename("foo bar/a file.js", "**{camel}/_*{camel}_.js"), [
+  t.eq(rename("foo bar/a file.js", "**{camelCase}/_*{camelCase}_.js"), [
     "fooBar/_aFile_.js",
   ])
-  t.eq(rename("foo bar/a file.js", "**{snake}/_*{snake}_.js"), [
+  t.eq(rename("foo bar/a file.js", "**{snakeCase}/_*{snakeCase}_.js"), [
     "foo_bar/_a_file_.js",
   ])
 })
 
 test("filter change case from camel", (t) => {
-  t.eq(rename("fooBar/aFile.js", "**{upper}/_*{upper}_.js"), [
+  t.eq(rename("fooBar/aFile.js", "**{upperCase}/_*{upperCase}_.js"), [
     "FOO BAR/_A FILE_.js",
   ])
-  t.eq(rename("fooBar/aFile.js", "**{kebab}/_*{kebab}_.js"), [
+  t.eq(rename("fooBar/aFile.js", "**{kebabCase}/_*{kebabCase}_.js"), [
     "foo-bar/_a-file_.js",
   ])
 })
@@ -144,8 +144,8 @@ test("filter change case from camel", (t) => {
 test("deburr", (t) => {
   const expected = ["el nino/oscilacion.txt"]
   t.eq(rename("el niño/oscilación.txt", "**{deburr}/*{deburr}.*"), expected)
-  t.eq(rename("EL NIÑO/OSCILACIÓN.TXT", "{deburr|lower}"), expected)
-  t.eq(rename("EL NIÑO/OSCILACIÓN.TXT", "{lower|deburr}"), expected)
+  t.eq(rename("EL NIÑO/OSCILACIÓN.TXT", "{deburr|lowerCase}"), expected)
+  t.eq(rename("EL NIÑO/OSCILACIÓN.TXT", "{lowerCase|deburr}"), expected)
 })
 
 test("unknown filter", (t) => {
@@ -169,7 +169,7 @@ test("filter slice", (t) => {
     "a/b/_ee_.js",
   ])
 
-  t.eq(rename(files, "**/_*{slice:0,2|upper}_.js"), [
+  t.eq(rename(files, "**/_*{slice:0,2|upperCase}_.js"), [
     "a/b/_ON_.js",
     "a/b/_TW_.js",
     "a/b/_TH_.js",

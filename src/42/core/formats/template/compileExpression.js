@@ -6,7 +6,7 @@ const PIPE = Symbol("pipe")
 
 function compileToken(i, list, tokens, options) {
   const { type, value, negated, loc } = tokens[i]
-  const { locate, filters, sep } = options
+  const { locate, actions, sep } = options
 
   if (type === "function") {
     let argTokens = []
@@ -27,22 +27,22 @@ function compileToken(i, list, tokens, options) {
       i = end
     }
 
-    const fn = locate(filters, value, sep)
+    const action = locate(actions, value, sep)
 
-    if (fn) {
-      if (!options.async && typeof fn !== "function") {
-        throw new TypeError(`Template filter is not a function: "${value}"`)
+    if (action) {
+      if (!options.async && typeof action !== "function") {
+        throw new TypeError(`Template action is not a function: "${value}"`)
       }
 
       list.push(
         options.async
           ? async (locals, args = []) => {
-              args.unshift(fn)
+              args.unshift(action)
               for (const arg of argTokens) args.push(arg(locals))
               const [asyncFn, ...rest] = await Promise.all(args)
               if (typeof asyncFn !== "function") {
                 throw new TypeError(
-                  `Template filter didn't resolve as a function: "${value}"`
+                  `Template action didn't resolve as a function: "${value}"`
                 )
               }
 
@@ -50,7 +50,7 @@ function compileToken(i, list, tokens, options) {
             }
           : (locals, args = []) => {
               for (const arg of argTokens) args.push(arg(locals))
-              return fn(...args)
+              return action(...args)
             }
       )
     }
@@ -180,8 +180,8 @@ export default function compileExpression(tokens, options = {}) {
   // reduce pipe tokens
   for (let i = 0, l = list.length; i < l; i++) {
     if (list[i] === PIPE) {
-      const fn = (locals) => filter(locals, [res(locals)])
-      const [res, , filter] = list.splice(i - 1, 3, fn)
+      const fn = (locals) => action(locals, [res(locals)])
+      const [res, , action] = list.splice(i - 1, 3, fn)
       i -= l - list.length
     }
   }
