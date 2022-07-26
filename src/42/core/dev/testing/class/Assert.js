@@ -112,7 +112,8 @@ export default class Assert {
 
     Object.entries(is).forEach(([key, check]) => {
       const not = `isNot${key.slice(2)}`
-      const type = key.charAt(2).toLowerCase() + key.slice(3)
+      const type =
+        key === "isNaN" ? "NaN" : key.charAt(2).toLowerCase() + key.slice(3)
       this[key] = (actual, message, details = { actual }) => {
         this.#addCall()
         if (check(actual) === false) {
