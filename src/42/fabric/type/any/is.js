@@ -16,6 +16,7 @@ export { default as isProxy } from "./is/isProxy.js"
 export { default as isArrayLike } from "./is/isArrayLike.js"
 export { default as isPromiseLike } from "./is/isPromiseLike.js"
 export { default as isTemplateObject } from "./is/isTemplateObject.js"
+export { default as isMultipleOf } from "../number/isMultipleOf.js"
 
 export const isPositiveInteger = (x) => x >>> 0 === x
 export const { isSafeInteger } = Number
