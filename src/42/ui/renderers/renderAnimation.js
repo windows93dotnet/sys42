@@ -1,5 +1,5 @@
 import animate from "../../fabric/dom/animate.js"
-import bisect from "../../fabric/type/object/bisect.js"
+import distribute from "../../fabric/type/object/distribute.js"
 import setTemp from "../../fabric/dom/setTemp.js"
 
 const keyframeEffectKeys = [
@@ -30,7 +30,7 @@ function start(el, how, keyframe, options) {
 export default async function renderAnimation(ctx, el, how, def) {
   await 0 // queueMicrotask
 
-  const [keyframe, options] = bisect(def, keyframeEffectKeys)
+  const [keyframe, options] = distribute(def, keyframeEffectKeys)
 
   if (how === "from" && !el.isConnected) {
     ctx.postrender.push(() => start(el, how, keyframe, options))

@@ -1,5 +1,5 @@
 import stopEvent from "./stopEvent.js"
-import bisect from "../type/object/bisect.js"
+import distribute from "../type/object/distribute.js"
 import ensureElement from "./ensureElement.js"
 import Canceller from "../class/Canceller.js"
 
@@ -59,7 +59,7 @@ export function normalizeListen(args, config) {
 
       current = { el: arg, listeners: [] }
     } else {
-      const [events, item, options] = bisect(arg, itemKeys, optionsKeys)
+      const [events, item, options] = distribute(arg, itemKeys, optionsKeys)
 
       if (Object.keys(events).length === 0 && Object.keys(options).length > 0) {
         if ("returnForget" in item) returnForget = item.returnForget

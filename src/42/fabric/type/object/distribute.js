@@ -1,4 +1,4 @@
-export default function bisect(obj, ...keyLists) {
+export default function distribute(obj, ...keyLists) {
   const out = Array.from({ length: keyLists.length + 1 }, () => ({}))
 
   main: for (const [key, val] of Object.entries(obj)) {

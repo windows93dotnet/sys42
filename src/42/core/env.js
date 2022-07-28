@@ -1,7 +1,6 @@
 import * as runtime from "./env/runtime.js"
 import { UAParser } from "./env/parseUserAgent.js"
 import getGPU from "./env/getGPU.js"
-import hashmap from "../fabric/type/object/hashmap.js"
 import languages from "./i18n/languages.js"
 import disposable from "../fabric/trait/disposable.js"
 
@@ -19,7 +18,7 @@ export class ENV {
     const { major } = browser
     browser.major = Number.parseInt(major, 10)
     if (Number.isNaN(browser.major)) browser.major = major
-    return hashmap({
+    return {
       isChrome: name.startsWith("chrom"),
       isEdge: name.startsWith("edge"),
       isFirefox: name.startsWith("firefox"),
@@ -27,19 +26,19 @@ export class ENV {
       isOpera: name.startsWith("opera"),
       isSafari: name.startsWith("safari"),
       ...browser,
-    })
+    }
   }
 
   get engine() {
-    return hashmap(getUAParse().getEngine())
+    return getUAParse().getEngine()
   }
 
   get os() {
-    return hashmap(getUAParse().getOS())
+    return getUAParse().getOS()
   }
 
   get device() {
-    const device = hashmap(getUAParse().getDevice())
+    const device = getUAParse().getDevice()
     device.type =
       device.type ||
       (globalThis.navigator?.userAgentData
@@ -53,18 +52,18 @@ export class ENV {
   }
 
   get cpu() {
-    return hashmap({
+    return {
       ...getUAParse().getCPU(),
       cores: globalThis.navigator?.hardwareConcurrency,
-    })
+    }
   }
 
   get memory() {
-    return hashmap({ gigabytes: globalThis.navigator?.deviceMemory })
+    return { gigabytes: globalThis.navigator?.deviceMemory }
   }
 
   get gpu() {
-    return hashmap(getGPU())
+    return getGPU()
   }
 
   get network() {
