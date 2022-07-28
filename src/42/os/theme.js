@@ -4,7 +4,7 @@ import findIconPath from "./theme/findIconPath.js"
 // import loadCSS from "../core/load/loadCSS.js"
 
 const DEFAULTS = {
-  style: new URL("../themes/windows-9x/index.css", import.meta.url).pathname,
+  style: new URL("../themes/windows9x/index.css", import.meta.url).pathname,
   icons: [new URL("../themes/default/icons", import.meta.url).pathname],
 }
 

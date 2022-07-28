@@ -384,7 +384,7 @@ body {
 body,
 body * {
   /* TODO: debug this */
-  cursor: url("../../../themes/windows-9x/cursors/default.cur"), default;
+  cursor: url("../../../themes/windows9x/cursors/default.cur"), default;
 }
 
 /* field
