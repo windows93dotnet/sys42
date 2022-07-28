@@ -1,3 +1,4 @@
+/* eslint-disable max-params */
 import { normalizeListen, eventsMap } from "../../fabric/dom/listen.js"
 import { normalizeTokens } from "../normalize.js"
 import hash from "../../fabric/type/any/hash.js"
@@ -42,8 +43,7 @@ function setOpener(el, ctx, key, def, type) {
   el.id ||= hash(String(ctx.steps))
   def.opener = `#${el.id}`
   type ??= def.tag?.startsWith("ui-") ? def.tag.slice(3) : def.role ?? def.tag
-  const haspopup = POPUP_TYPES.has(type) ? type : "true"
-  el.setAttribute("aria-haspopup", haspopup)
+  el.setAttribute("aria-haspopup", POPUP_TYPES.has(type) ? type : "true")
   return ctx
 }
 

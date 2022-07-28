@@ -2,6 +2,7 @@ import Component from "../class/Component.js"
 import realm from "../../core/realm.js"
 import omit from "../../fabric/type/object/omit.js"
 import dispatch from "../../fabric/dom/dispatch.js"
+import maxZIndex from "../../fabric/dom/maxZIndex.js"
 import { objectifyDef, forkDef } from "../normalize.js"
 import { autofocus } from "../../fabric/dom/focus.js"
 
@@ -98,6 +99,7 @@ export class Dialog extends Component {
     this.y ??= Math.round(rect.top)
     this.style.top = 0
     this.style.left = 0
+    this.style.zIndex = maxZIndex("ui-dialog") + 1
     dispatch(this, "dialogopen")
   }
 }

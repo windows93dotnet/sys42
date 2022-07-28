@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>popup</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/style.css" id="theme" />
+
+<script type="module">
+  import ui from "../../42/ui.js"
+
+  const button = { tag: "button", content: "{{cnt}}", click: "{{cnt += 1}}" }
+
+  const toolbar = {
+    tag: ".box-h",
+    content: [
+      button,
+      {
+        tag: "button",
+        content: "dialog",
+        dialog: { content: button },
+      },
+      {
+        tag: "button",
+        content: "popup",
+        popup: { content: "hello" },
+      },
+    ],
+  }
+
+  ui({
+    tag: ".box-fit.box-center",
+    content: {
+      tag: ".box-v.w-full",
+      content: [
+        {
+          tag: ".box-center.ground",
+          content: toolbar,
+        },
+        {
+          tag: "ui-sandbox",
+          permissions: "app",
+          content: {
+            tag: ".box-fit.box-center.desktop",
+            content: toolbar,
+          },
+        },
+      ],
+    },
+    state: {
+      cnt: 42,
+    },
+  })
+</script>
