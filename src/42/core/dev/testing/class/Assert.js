@@ -6,7 +6,7 @@
 
 import equal from "../../../../fabric/type/any/equal.js"
 import clone from "../../../../fabric/type/any/clone.js"
-import __p from "../../../../fabric/type/string/pluralize.js"
+import pluralize from "../../../../fabric/type/string/pluralize.js"
 import * as is from "../../../../fabric/type/any/is.js"
 import Stub from "./Stub.js"
 import Spy from "./Spy.js"
@@ -181,7 +181,7 @@ export default class Assert {
       }
     } else if (this.#planned !== this.#count) {
       throw new VerifyError(
-        `Planned for ${this.#planned} ${__p(
+        `Planned for ${this.#planned} ${pluralize(
           "assertion",
           this.#planned
         )}, but got ${this.#count}`,

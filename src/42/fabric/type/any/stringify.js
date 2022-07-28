@@ -7,7 +7,7 @@ import omit from "../object/omit.js"
 import pick from "../object/pick.js"
 import chainable from "../../traits/chainable.js"
 import replaceIndentation from "../string/replaceIndentation.js"
-import __p from "../string/pluralize.js"
+import pluralize from "../string/pluralize.js"
 import { escapeUnicode, unescapeUnicode } from "../string/escapeUnicode.js"
 import { joinJSONPointer, joinJSONPointerURI } from "../../json/pointer.js"
 
@@ -161,7 +161,7 @@ const escapeString = (val, config, q = '"') => {
     : val
 }
 
-const limitMessage = (n, word) => `${n} unshown ${__p(word, n)}`
+const limitMessage = (n, word) => `${n} unshown ${pluralize(word, n)}`
 
 const applyLimit = (items, limit, word = "item") =>
   items.length > limit
@@ -459,7 +459,7 @@ ${indentSpace.repeat(depth - 1)})`
     let out = ""
     if (this.config.addComments) {
       const childNodesLen = val.childNodes.length
-      out += `/* ${tag} > ${childNodesLen} ${__p(
+      out += `/* ${tag} > ${childNodesLen} ${pluralize(
         "childNode",
         childNodesLen
       )} | ${notDisplayed} */ `

@@ -7,7 +7,7 @@ import formatFilename from "../../console/formats/formatFilename.js"
 import formatError from "../../console/formats/formatError.js"
 import truncate from "../../../fabric/type/string/truncate.js"
 import equal from "../../../fabric/type/any/equal.js"
-import __p from "../../../fabric/type/string/pluralize.js"
+import pluralize from "../../../fabric/type/string/pluralize.js"
 import { escapeLog } from "../../console/logUtils.js"
 
 const DEFAULTS = {
@@ -91,7 +91,9 @@ const getFooter = (results, config) => {
   const { onlies } = results.stats
 
   footer +=
-    onlies > 0 ? ` {red ┈ ${onlies} ${__p("only suite", onlies)} ┈}\n` : "\n"
+    onlies > 0
+      ? ` {red ┈ ${onlies} ${pluralize("only suite", onlies)} ┈}\n`
+      : "\n"
 
   return footer
 }
@@ -249,7 +251,7 @@ function displayFailedTests(failed, config) {
   }
 
   if (unshown) {
-    const notice = `[…] {reset.red ${unshown}} unshown failed ${__p(
+    const notice = `[…] {reset.red ${unshown}} unshown failed ${pluralize(
       "test",
       unshown
     )}\n{reset.grey increase verbose level to show more errors}`
