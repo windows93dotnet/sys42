@@ -65,8 +65,8 @@ export default function chainable(...args) {
 
   const entries = []
 
-  const defaults = hashmap()
-  const methods = hashmap()
+  const defaults = Object.create(null)
+  const methods = Object.create(null)
   const getters = []
 
   const methodsEntries = []
