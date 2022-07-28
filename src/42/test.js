@@ -1,7 +1,7 @@
 // @thanks https://github.com/avajs/ava
 
 import system from "./system.js"
-import chainable from "./fabric/trait/chainable.js"
+import chainable from "./fabric/traits/chainable.js"
 import Suite from "./core/dev/testing/class/Suite.js"
 import Test from "./core/dev/testing/class/Test.js"
 import ensureCurrentSuite from "./core/dev/testing/ensureCurrentSuite.js"

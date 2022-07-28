@@ -274,7 +274,7 @@ export function normalizeTraits(def, ctx) {
     ctx.preload.push(
       import(
         name === "emittable"
-          ? "../fabric/trait/emittable.js"
+          ? "../fabric/traits/emittable.js"
           : `./traits/${name}.js`
       ).then((m) => {
         trait.module = m.default

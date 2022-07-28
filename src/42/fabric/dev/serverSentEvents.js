@@ -1,5 +1,5 @@
 import configure from "../../core/configure.js"
-// import toggleable from "../../fabric/trait/toggleable.js"
+// import toggleable from "../../fabric/traits/toggleable.js"
 import Emitter from "../../fabric/class/Emitter.js"
 
 const DEFAULTS = {

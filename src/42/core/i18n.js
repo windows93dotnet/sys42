@@ -3,7 +3,7 @@
 // @related https://github.com/WebReflection/i18n-utils
 
 import system from "../system.js"
-import chainable from "../fabric/trait/chainable.js"
+import chainable from "../fabric/traits/chainable.js"
 import languages from "./i18n/languages.js"
 import pluralize from "../fabric/type/string/pluralize.js"
 import makeTemplate from "./formats/template/makeTemplate.js"

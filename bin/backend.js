@@ -3,7 +3,7 @@ import userConfig, { CLI_TASKS } from "./utils/userConfig.js"
 import inNode from "../src/42/core/env/runtime/inNode.js"
 import trap from "../src/42/fabric/type/error/trap.js"
 import log from "../src/42/core/log.js"
-import emittable from "../src/42/fabric/trait/emittable.js"
+import emittable from "../src/42/fabric/traits/emittable.js"
 import propagateConfig from "./utils/propagateConfig.js"
 import fs from "node:fs/promises"
 

@@ -1,7 +1,7 @@
 // @thanks https://github.com/chalk/chalk
 
-import chainable from "../../../fabric/trait/chainable.js"
-// import toggleable from "../../../fabric/trait/toggleable.js"
+import chainable from "../../../fabric/traits/chainable.js"
+// import toggleable from "../../../fabric/traits/toggleable.js"
 import SGR from "../../../fabric/constants/SGR.js"
 import Color from "../../../fabric/class/Color.js"
 

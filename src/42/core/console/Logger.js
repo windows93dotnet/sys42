@@ -1,6 +1,6 @@
 import Callable from "../../fabric/class/Callable.js"
-import chainable from "../../fabric/trait/chainable.js"
-// import toggleable from "../../fabric/trait/toggleable.js"
+import chainable from "../../fabric/traits/chainable.js"
+// import toggleable from "../../fabric/traits/toggleable.js"
 import configure from "../configure.js"
 import noop from "../../fabric/type/function/noop.js"
 import parseLogTemplate from "./parseLogTemplate.js"

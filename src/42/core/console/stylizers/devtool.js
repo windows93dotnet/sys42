@@ -2,8 +2,8 @@ import inWorker from "../../env/runtime/inWorker.js"
 import inView from "../../env/runtime/inView.js"
 import inOpaqueOrigin from "../../env/runtime/inOpaqueOrigin.js"
 import setup from "../../../core/setup.js"
-// import toggleable from "../../../fabric/trait/toggleable.js"
-import chainable from "../../../fabric/trait/chainable.js"
+// import toggleable from "../../../fabric/traits/toggleable.js"
+import chainable from "../../../fabric/traits/chainable.js"
 import Color from "../../../fabric/class/Color.js"
 
 const capitalize = (word) => word[0].toUpperCase() + word.slice(1)
