@@ -14,6 +14,26 @@
 
 <script type="module">
   import ui from "../42/ui.js"
+
+  ui({
+    tag: "body.box-fit.box-center",
+    content: [
+      {
+        tag: "button",
+        content: "dialog",
+        dialog: { content: "hello" },
+      },
+      {
+        tag: "button",
+        content: "popup",
+        popup: { content: "hello" },
+      },
+    ],
+  })
+</script>
+
+<script type="_module">
+  import ui from "../42/ui.js"
   import explorer from "../42/ui/components/explorer.js"
   import open from "../42/os/cmd/open.cmd.js"
 

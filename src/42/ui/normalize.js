@@ -298,6 +298,25 @@ export function normalizeTraits(def, ctx) {
   }
 }
 
+function normalizeListen(def) {
+  if (def.on) def.on = arrify(def.on)
+
+  if (def.click) {
+    def.on ??= []
+    def.on.push({ click: def.click })
+  }
+
+  if (def.dialog) {
+    def.on ??= []
+    def.on.push({ click: { dialog: def.dialog } })
+  }
+
+  if (def.popup) {
+    def.on ??= []
+    def.on.push({ click: { popup: def.popup } })
+  }
+}
+
 /* def
 ====== */
 
@@ -351,16 +370,7 @@ export function normalizeDef(def = {}, ctx, options) {
     const traits = normalizeTraits(def, ctx)
     if (traits) def.traits = traits
 
-    if (def.on) def.on = arrify(def.on)
-    if (def.dialog) {
-      def.on ??= []
-      def.on.push({ click: { dialog: def.dialog } })
-    }
-
-    if (def.click) {
-      def.on ??= []
-      def.on.push({ click: def.click })
-    }
+    normalizeListen(def)
 
     if (options?.skipAttrs !== true) {
       const attrs = normalizeAttrs(def, ctx)
