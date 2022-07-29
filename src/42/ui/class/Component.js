@@ -203,7 +203,7 @@ export default class Component extends HTMLElement {
 
     /* apply
     -------- */
-    if (state) this.ctx.reactive.assign(this.ctx.globalScope, state)
+    if (state) this.ctx.reactive.merge(this.ctx.globalScope, state)
     if (computed) normalizeComputeds(computed, this.ctx)
 
     const attrs = normalizeAttrs(def, this.ctx, definition.defaults)

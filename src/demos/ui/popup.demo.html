@@ -6,41 +6,47 @@
 
 <script type="module">
   import ui from "../../42/ui.js"
+  // import listen from "../../42/fabric/dom/listen.js"
+  // import log from "../../42/core/log.js"
 
-  const button = { tag: "button", content: "{{cnt}}", click: "{{cnt += 1}}" }
+  const button = {
+    tag: "button#incr",
+    content: "{{cnt}}",
+    click: "{{cnt += 1}}",
+  }
 
-  const toolbar = {
+  const toolbar = (label) => ({
     tag: ".box-h",
     content: [
       button,
       {
-        tag: "button",
+        tag: `button#dialog-${label}`,
         content: "dialog",
-        dialog: { content: button },
+        dialog: { label, content: button },
       },
       {
-        tag: "button",
+        tag: "button#popup",
         content: "popup",
         popup: { content: "hello" },
       },
     ],
-  }
+  })
 
-  ui({
+  const app = await ui({
     tag: ".box-fit.box-center",
     content: {
       tag: ".box-v.w-full",
       content: [
         {
           tag: ".box-center.ground",
-          content: toolbar,
+          content: toolbar("top"),
         },
         {
           tag: "ui-sandbox",
           permissions: "app",
           content: {
             tag: ".box-fit.box-center.desktop",
-            content: toolbar,
+            content: toolbar("iframe"),
           },
         },
       ],
@@ -49,4 +55,25 @@
       cnt: 42,
     },
   })
+
+  // listen({
+  //   dialogopen(e) {
+  //     console.log("dialogopen", e)
+  //     // setTimeout(() => {
+  //     //   document.querySelector(".ui-dialog__close")?.click()
+  //     // }, 1000)
+  //     // log(app.reactive.data)
+  //     setTimeout(() => {
+  //       log(app.reactive.data)
+  //     }, 100)
+  //   },
+  //   dialogclose(e) {
+  //     // e.preventDefault()
+  //     console.log("dialogclose", e)
+  //   },
+  // })
+
+  setTimeout(() => {
+    app.query("#dialog-top")?.click()
+  }, 100)
 </script>

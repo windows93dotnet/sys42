@@ -7,6 +7,7 @@ import deallocate from "../../fabric/locator/deallocate.js"
 import defer from "../../fabric/type/promise/defer.js"
 import dispatch from "../../fabric/dom/dispatch.js"
 import equal from "../../fabric/type/any/equal.js"
+import { merge } from "../../core/configure.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 
 const sep = "/"
@@ -185,16 +186,23 @@ export default class Reactive extends Emitter {
   }
 
   set(path, val, options) {
-    return allocate(options?.silent ? this.data : this.state, path, val, sep)
+    allocate(options?.silent ? this.data : this.state, path, val, sep)
   }
 
   delete(path, options) {
-    return deallocate(options?.silent ? this.data : this.state, path, sep)
+    deallocate(options?.silent ? this.data : this.state, path, sep)
   }
 
   assign(path, val, options) {
-    const prev = locate(options?.silent ? this.data : this.state, path, sep)
-    Object.assign(prev, val)
+    const prev = this.get(path, options)
+    if (prev && typeof prev === "object") Object.assign(prev, val)
+    else this.set(path, val, options)
+  }
+
+  merge(path, val, options) {
+    const prev = this.get(path, options)
+    if (prev && typeof prev === "object") merge(prev, val)
+    else this.set(path, val, options)
   }
 
   destroy() {

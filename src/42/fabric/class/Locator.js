@@ -2,6 +2,7 @@ import exists from "../locator/exists.js"
 import locate from "../locator/locate.js"
 import allocate from "../locator/allocate.js"
 import deallocate from "../locator/deallocate.js"
+import { merge } from "../../core/configure.js"
 
 export default class Locator {
   constructor(value = {}, options) {
@@ -13,23 +14,28 @@ export default class Locator {
     return exists(this.value, path, this.sep)
   }
 
-  set(path, value) {
-    allocate(this.value, path, value, this.sep)
-  }
-
   get(path) {
     return locate(this.value, path, this.sep)
+  }
+
+  set(path, val) {
+    allocate(this.value, path, val, this.sep)
   }
 
   delete(path) {
     deallocate(this.value, path, this.sep)
   }
 
-  assign(path, newValue) {
-    const oldValue = this.get(path)
-    if (oldValue && typeof oldValue === "object") {
-      Object.assign(oldValue, newValue)
-    } else this.set(path, newValue)
+  assign(path, val) {
+    const prev = this.get(path)
+    if (prev && typeof prev === "object") Object.assign(prev, val)
+    else this.set(path, val)
+  }
+
+  merge(path, val) {
+    const prev = this.get(path)
+    if (prev && typeof prev === "object") merge(prev, val)
+    else this.set(path, val)
   }
 
   clear() {

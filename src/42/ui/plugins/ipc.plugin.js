@@ -5,7 +5,13 @@ import ipc from "../../core/ipc.js"
 import allocate from "../../fabric/locator/allocate.js"
 import configure from "../../core/configure.js"
 
-const debug = false
+const debug = 0
+
+if (debug) {
+  document.addEventListener("click", () => {
+    console.log("////////////////////////////")
+  })
+}
 
 const DEFAULTS = {
   parent_iframe_to_top: true,
@@ -50,13 +56,13 @@ export default async (ctx, options) => {
   if (parent_iframe_to_top) {
     if (inTop && ctx.parentId) {
       ipc.on(`42-ui-ipc-${ctx.parentId}`, (data) => {
-        ctx.reactive.assign("/", data)
+        if (debug) console.log("Parent Iframe --> Top")
+        ctx.reactive.merge("/", data)
       })
     }
 
     if (inIframe) {
       ctx.reactive.on("update", (queue) => {
-        if (debug) console.log("Parent Iframe --> Top", queue)
         ipc.to.top.send(`42-ui-ipc-${ctx.id}`, getData(queue, ctx))
       })
     }
@@ -67,7 +73,6 @@ export default async (ctx, options) => {
   if (top_to_parent_iframe) {
     if (inTop && ctx.parentId) {
       ctx.reactive.on("update", (queue) => {
-        if (debug) console.log("Top --> Parent Iframe", queue)
         const data = getData(queue, ctx)
         for (const send of iframes) send(`42-ui-ipc-${ctx.parentId}`, data)
       })
@@ -75,7 +80,8 @@ export default async (ctx, options) => {
 
     if (inIframe) {
       ipc.to.top.on(`42-ui-ipc-${ctx.id}`, (data) => {
-        ctx.reactive.assign("/", data)
+        if (debug) console.log("Top --> Parent Iframe")
+        ctx.reactive.merge("/", data)
       })
     }
   }
@@ -85,7 +91,6 @@ export default async (ctx, options) => {
   if (parent_top_to_iframe) {
     if (inTop) {
       ctx.reactive.on("update", (queue) => {
-        if (debug) console.log("Parent Top --> Iframe", queue)
         const data = getData(queue, ctx)
         for (const send of iframes) send(`42-ui-ipc-${ctx.id}`, data)
       })
@@ -93,7 +98,8 @@ export default async (ctx, options) => {
 
     if (inIframe) {
       ipc.to.top.on(`42-ui-ipc-${ctx.parentId}`, (data) => {
-        ctx.reactive.assign("/", data)
+        if (debug) console.log("Parent Top --> Iframe")
+        ctx.reactive.merge("/", data)
       })
     }
   }
@@ -103,13 +109,13 @@ export default async (ctx, options) => {
   if (iframe_to_parent_top) {
     if (inTop) {
       ipc.on(`42-ui-ipc-${ctx.id}`, (data) => {
-        ctx.reactive.assign("/", data)
+        if (debug) console.log("Iframe --> Parent Top")
+        ctx.reactive.merge("/", data)
       })
     }
 
     if (inIframe) {
       ctx.reactive.on("update", (queue) => {
-        if (debug) console.log("Iframe --> Parent Top", queue)
         ipc.to.top.send(`42-ui-ipc-${ctx.parentId}`, getData(queue, ctx))
       })
     }

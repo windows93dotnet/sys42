@@ -353,13 +353,13 @@ export function normalizeDef(def = {}, ctx, options) {
 
     if (def.state) {
       normalizeData(def.state, ctx, (res, scope) => {
-        ctx.reactive.assign(scope, res)
+        ctx.reactive.merge(scope, res)
       })
     }
 
     if (def.actions) {
       normalizeData(def.actions, ctx, (res, scope) => {
-        ctx.actions.assign(scope, res)
+        ctx.actions.merge(scope, res)
       })
     }
 
