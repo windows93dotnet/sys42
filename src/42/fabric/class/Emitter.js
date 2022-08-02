@@ -2,11 +2,13 @@
 
 const OR_REGEX = /\s*\|\|\s*/
 
+const _EVENTS = Symbol.for("_EVENTS")
+
 export default class Emitter {
-  static EVENTS = Symbol.for("Emitter.EVENTS")
+  static EVENTS = _EVENTS
 
   constructor(options) {
-    Object.defineProperty(this, Emitter.EVENTS, {
+    Object.defineProperty(this, _EVENTS, {
       value: options?.events
         ? Object.assign(Object.create(null), options.events)
         : Object.create(null),
@@ -26,8 +28,8 @@ export default class Emitter {
 
     for (const event of events.split(OR_REGEX)) {
       if (typeof fn === "function") {
-        this[Emitter.EVENTS][event] ??= []
-        this[Emitter.EVENTS][event].push(fn)
+        this[_EVENTS][event] ??= []
+        this[_EVENTS][event].push(fn)
       }
     }
 
@@ -41,14 +43,14 @@ export default class Emitter {
   off(events, fn) {
     for (const event of events.split(OR_REGEX)) {
       if (event === "*" && !fn) {
-        for (const key in this[Emitter.EVENTS]) {
-          delete this[Emitter.EVENTS][key]
+        for (const key in this[_EVENTS]) {
+          delete this[_EVENTS][key]
         }
-      } else if (fn && this[Emitter.EVENTS][event]) {
-        this[Emitter.EVENTS][event] = this[Emitter.EVENTS][event].filter(
+      } else if (fn && this[_EVENTS][event]) {
+        this[_EVENTS][event] = this[_EVENTS][event].filter(
           (cb) => cb !== fn && cb.fn !== fn
         )
-      } else delete this[Emitter.EVENTS][event]
+      } else delete this[_EVENTS][event]
     }
 
     return this
@@ -78,12 +80,12 @@ export default class Emitter {
 
   emit(events, ...args) {
     for (const event of events.split(OR_REGEX)) {
-      if (event in this[Emitter.EVENTS]) {
-        this[Emitter.EVENTS][event].forEach((fn) => fn(...args))
+      if (event in this[_EVENTS]) {
+        this[_EVENTS][event].forEach((fn) => fn(...args))
       }
 
-      if ("*" in this[Emitter.EVENTS]) {
-        this[Emitter.EVENTS]["*"].forEach((fn) => fn(event, ...args))
+      if ("*" in this[_EVENTS]) {
+        this[_EVENTS]["*"].forEach((fn) => fn(event, ...args))
       }
     }
 
@@ -94,14 +96,12 @@ export default class Emitter {
   send(events, ...args) {
     const undones = []
     for (const event of events.split(OR_REGEX)) {
-      if (event in this[Emitter.EVENTS]) {
-        this[Emitter.EVENTS][event].forEach((fn) => undones.push(fn(...args)))
+      if (event in this[_EVENTS]) {
+        this[_EVENTS][event].forEach((fn) => undones.push(fn(...args)))
       }
 
-      if ("*" in this[Emitter.EVENTS]) {
-        this[Emitter.EVENTS]["*"].forEach((fn) =>
-          undones.push(fn(event, ...args))
-        )
+      if ("*" in this[_EVENTS]) {
+        this[_EVENTS]["*"].forEach((fn) => undones.push(fn(event, ...args)))
       }
     }
 

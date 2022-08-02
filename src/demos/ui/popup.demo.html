@@ -6,8 +6,6 @@
 
 <script type="module">
   import ui from "../../42/ui.js"
-  // import listen from "../../42/fabric/dom/listen.js"
-  // import log from "../../42/core/log.js"
 
   const button = {
     tag: "button#incr",
@@ -15,14 +13,21 @@
     click: "{{cnt += 1}}",
   }
 
-  const toolbar = (label) => ({
+  const buttons = (label) => ({
     tag: ".box-h",
     content: [
       button,
       {
         tag: `button#dialog-${label}`,
         content: "dialog",
-        dialog: { label, content: button },
+        dialog: {
+          x:
+            label === "top"
+              ? window.innerWidth / 2 - 200
+              : window.innerWidth / 2 + 50,
+          label,
+          content: button,
+        },
       },
       {
         tag: "button#popup",
@@ -32,48 +37,48 @@
     ],
   })
 
-  const app = await ui({
-    tag: ".box-fit.box-center",
-    content: {
-      tag: ".box-v.w-full",
-      content: [
-        {
-          tag: ".box-center.ground",
-          content: toolbar("top"),
-        },
-        {
-          tag: "ui-sandbox",
-          permissions: "app",
-          content: {
-            tag: ".box-fit.box-center.desktop",
-            content: toolbar("iframe"),
+  // eslint-disable-next-line no-unused-vars
+  const app = await ui(
+    {
+      tag: ".box-fit.box-center",
+      content: {
+        tag: ".box-v.w-full",
+        content: [
+          {
+            tag: ".box-center.ground",
+            content: buttons("top"),
           },
-        },
-      ],
+          {
+            tag: "ui-dialog",
+            x: 10,
+            y: 10,
+            content: {
+              tag: "ui-sandbox",
+              permissions: "app",
+              content: {
+                tag: ".box-fit.box-center.desktop",
+                content: buttons("dialog"),
+              },
+              // script: `setTimeout(() => app.query("#dialog-iframe")?.click(), 500)`,
+            },
+          },
+          {
+            tag: "ui-sandbox",
+            permissions: "app",
+            content: {
+              tag: ".box-fit.box-center.desktop",
+              content: buttons("iframe"),
+            },
+            // script: `setTimeout(() => app.query("#dialog-iframe")?.click(), 500)`,
+          },
+        ],
+      },
+      state: {
+        cnt: 42,
+      },
     },
-    state: {
-      cnt: 42,
-    },
-  })
+    { id: "popup-demo" }
+  )
 
-  // listen({
-  //   dialogopen(e) {
-  //     console.log("dialogopen", e)
-  //     // setTimeout(() => {
-  //     //   document.querySelector(".ui-dialog__close")?.click()
-  //     // }, 1000)
-  //     // log(app.reactive.data)
-  //     setTimeout(() => {
-  //       log(app.reactive.data)
-  //     }, 100)
-  //   },
-  //   dialogclose(e) {
-  //     // e.preventDefault()
-  //     console.log("dialogclose", e)
-  //   },
-  // })
-
-  setTimeout(() => {
-    app.query("#dialog-top")?.click()
-  }, 100)
+  // setTimeout(() => app.query("#dialog-top")?.click(), 500)
 </script>

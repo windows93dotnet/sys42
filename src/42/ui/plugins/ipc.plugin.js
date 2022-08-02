@@ -5,13 +5,21 @@ import ipc from "../../core/ipc.js"
 import allocate from "../../fabric/locator/allocate.js"
 import configure from "../../core/configure.js"
 
-const debug = 0
+let debug = 0
+
+let cnt = 0
+const max = 30
 
 if (debug) {
   document.addEventListener("click", () => {
     console.log("////////////////////////////")
   })
-}
+
+  debug = (message) => {
+    console.log(message)
+    if (cnt++ > max) throw new Error("maximum ipc debug call")
+  }
+} else debug = undefined
 
 const DEFAULTS = {
   parent_iframe_to_top: true,
@@ -24,23 +32,33 @@ function getData(queue, ctx) {
   const data = {}
   for (const key of queue) {
     if (key.startsWith("/ui-")) continue
-    allocate(data, key, ctx.reactive.get(key, { silent: true }), "/")
+    const val = ctx.reactive.get(key, { silent: true })
+    if (val !== undefined) allocate(data, key, val, "/")
   }
 
   return data
 }
 
-const iframes = []
+const iframes = new Map()
 
 if (inTop) {
-  ipc.on("42-ui-ipc-handshake", (data, meta) => iframes.push(meta.send))
+  ipc
+    .on("42-ui-ipc-handshake", (data, { iframe, emit }) =>
+      iframes.set(iframe, emit)
+    )
+    .on("42-ui-ipc-close", (data, { iframe }) => {
+      iframes.delete(iframe)
+    })
 }
 
 if (inIframe) {
-  ipc.to.top.send("42-ui-ipc-handshake")
+  ipc.to.top.emit("42-ui-ipc-handshake")
+  globalThis.addEventListener("pagehide", () =>
+    ipc.to.top.emit("42-ui-ipc-close")
+  )
 }
 
-export default async (ctx, options) => {
+export default async function ipcPlugin(ctx, options) {
   if (ctx.plugins.ipc) return
   ctx.plugins.ipc = true
 
@@ -55,15 +73,15 @@ export default async (ctx, options) => {
 
   if (parent_iframe_to_top) {
     if (inTop && ctx.parentId) {
-      ipc.on(`42-ui-ipc-${ctx.parentId}`, (data) => {
-        if (debug) console.log("Parent Iframe --> Top")
+      ipc.on(`42-ui-ipc-${ctx.parentId}`, ctx, (data) => {
+        debug?.("Parent Iframe --> Top")
         ctx.reactive.merge("/", data)
       })
     }
 
     if (inIframe) {
-      ctx.reactive.on("update", (queue) => {
-        ipc.to.top.send(`42-ui-ipc-${ctx.id}`, getData(queue, ctx))
+      ctx.reactive.on("update", ctx, (queue) => {
+        ipc.to.top.emit(`42-ui-ipc-${ctx.id}`, getData(queue, ctx))
       })
     }
   }
@@ -72,15 +90,17 @@ export default async (ctx, options) => {
 
   if (top_to_parent_iframe) {
     if (inTop && ctx.parentId) {
-      ctx.reactive.on("update", (queue) => {
+      ctx.reactive.on("update", ctx, (queue) => {
         const data = getData(queue, ctx)
-        for (const send of iframes) send(`42-ui-ipc-${ctx.parentId}`, data)
+        for (const emit of iframes.values()) {
+          emit(`42-ui-ipc-${ctx.parentId}`, data)
+        }
       })
     }
 
     if (inIframe) {
-      ipc.to.top.on(`42-ui-ipc-${ctx.id}`, (data) => {
-        if (debug) console.log("Top --> Parent Iframe")
+      ipc.to.top.on(`42-ui-ipc-${ctx.id}`, ctx, (data) => {
+        debug?.("Top --> Parent Iframe")
         ctx.reactive.merge("/", data)
       })
     }
@@ -90,15 +110,17 @@ export default async (ctx, options) => {
 
   if (parent_top_to_iframe) {
     if (inTop) {
-      ctx.reactive.on("update", (queue) => {
+      ctx.reactive.on("update", ctx, (queue) => {
         const data = getData(queue, ctx)
-        for (const send of iframes) send(`42-ui-ipc-${ctx.id}`, data)
+        for (const emit of iframes.values()) {
+          emit(`42-ui-ipc-${ctx.id}`, data)
+        }
       })
     }
 
     if (inIframe) {
-      ipc.to.top.on(`42-ui-ipc-${ctx.parentId}`, (data) => {
-        if (debug) console.log("Parent Top --> Iframe")
+      ipc.to.top.on(`42-ui-ipc-${ctx.parentId}`, ctx, (data) => {
+        debug?.("Parent Top --> Iframe")
         ctx.reactive.merge("/", data)
       })
     }
@@ -108,15 +130,15 @@ export default async (ctx, options) => {
 
   if (iframe_to_parent_top) {
     if (inTop) {
-      ipc.on(`42-ui-ipc-${ctx.id}`, (data) => {
-        if (debug) console.log("Iframe --> Parent Top")
+      ipc.on(`42-ui-ipc-${ctx.id}`, ctx, (data) => {
+        debug?.("Iframe --> Parent Top")
         ctx.reactive.merge("/", data)
       })
     }
 
     if (inIframe) {
-      ctx.reactive.on("update", (queue) => {
-        ipc.to.top.send(`42-ui-ipc-${ctx.parentId}`, getData(queue, ctx))
+      ctx.reactive.on("update", ctx, (queue) => {
+        ipc.to.top.emit(`42-ui-ipc-${ctx.parentId}`, getData(queue, ctx))
       })
     }
   }

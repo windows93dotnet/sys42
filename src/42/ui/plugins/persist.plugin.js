@@ -1,7 +1,7 @@
 import persist from "../../core/persist.js"
 import debounce from "../../fabric/type/function/debounce.js"
 
-export default async (ctx) => {
+export default async function persistPlugin(ctx) {
   if (ctx.plugins.persist) return
 
   const config = {

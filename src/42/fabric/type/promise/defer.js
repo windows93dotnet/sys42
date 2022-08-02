@@ -5,7 +5,7 @@ export default function defer() {
   deferred.isRejected = false
   deferred.isResolved = false
 
-  const promise = new Promise((resolve, reject) => {
+  deferred.promise = new Promise((resolve, reject) => {
     deferred.resolve = (arg) => {
       deferred.isPending = false
       deferred.isResolved = true
@@ -19,9 +19,7 @@ export default function defer() {
     }
   })
 
-  deferred.promise = promise
-
-  deferred.then = (resolve, reject) => promise.then(resolve, reject)
+  deferred.then = (resolve, reject) => deferred.promise.then(resolve, reject)
 
   return deferred
 }

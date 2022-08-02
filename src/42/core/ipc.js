@@ -11,10 +11,7 @@ globalThis.addEventListener(
 
     if (data?.type === "IPC_PING") {
       const port = ports[0]
-      if (!port) {
-        console.warn("IPC_PING: missing port")
-        return
-      }
+      if (!port) throw new Error("IPC_PING: missing port")
 
       let iframe
       for (const el of document.querySelectorAll("iframe")) {
@@ -32,8 +29,10 @@ globalThis.addEventListener(
             : Boolean(iframe.srcdoc)))
 
       if (!trusted) {
-        console.warn("IPC_PING: untrusted")
-        return
+        throw new DOMException(
+          `IPC_PING: untrusted origin: ${origin}`,
+          "SecurityError"
+        )
       }
 
       const meta = {
@@ -41,14 +40,15 @@ globalThis.addEventListener(
         source,
         iframe,
         port,
-        get send() {
+        get emit() {
           return (events, ...args) => {
-            port.postMessage({ type: "IPC_SEND", events, args })
+            port.postMessage({ type: "IPC_EMIT", events, args })
           }
         },
       }
 
       port.postMessage({ type: "IPC_PONG" })
+
       port.onmessage = ({ data: { id, type, event, data } }) => {
         if (type === "emit") {
           if (sources.has(source)) sources.get(source).emit(event, data, meta)
@@ -101,7 +101,9 @@ export class Sender extends Emitter {
     const { port1, port2 } = new MessageChannel()
     this.port1 = port1
     this.port2 = port2
-    const message = { type: "IPC_PING" }
+
+    this.#queue = new Map()
+    this.ready = defer()
 
     if (target instanceof HTMLIFrameElement) {
       // default "targetOrigin" use wildcard only if iframe is sandboxed
@@ -123,34 +125,34 @@ export class Sender extends Emitter {
       options.origin ??= location.origin === "null" ? "*" : location.origin
     }
 
-    target.postMessage(message, options.origin, [port2])
+    target.postMessage({ type: "IPC_PING" }, options.origin, [port2])
 
-    this.#queue = new Map()
-
-    this.ready = new Promise((resolve) => {
-      port1.onmessage = ({ data }) => {
-        if (data.id && this.#queue.has(data.id)) {
-          if (data.err) {
-            this.#queue.get(data.id).reject(data.err)
-          } else {
-            this.#queue.get(data.id).resolve(data.res)
-          }
-
-          this.#queue.delete(data.id)
-          return
+    this.port1.onmessage = ({ data }) => {
+      if (data.id && this.#queue.has(data.id)) {
+        if (data.err) {
+          this.#queue.get(data.id).reject(data.err)
+        } else {
+          this.#queue.get(data.id).resolve(data.res)
         }
 
-        if (data.type === "IPC_SEND") {
-          return super.emit(data.events, ...data.args)
-        }
-
-        if (data.type === "IPC_PONG") return resolve()
+        this.#queue.delete(data.id)
+        return
       }
-    })
+
+      if (data.type === "IPC_EMIT") {
+        return super.emit(data.events, ...data.args)
+      }
+
+      if (data.type === "IPC_PONG") return this.ready.resolve()
+    }
   }
 
   emit(event, data) {
-    this.port1.postMessage({ type: "emit", event, data })
+    if (this.ready.isPending) {
+      this.ready.then(() => {
+        this.port1.postMessage({ type: "emit", event, data })
+      })
+    } else this.port1.postMessage({ type: "emit", event, data })
     return this
   }
 

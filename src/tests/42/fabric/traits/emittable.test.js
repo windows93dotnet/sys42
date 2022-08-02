@@ -11,12 +11,19 @@ test("emittable() return instance of Emitter", (t) => {
 })
 
 test("public methods should not be enumerable", (t) => {
-  const el = emittable()
-  t.is(Object.propertyIsEnumerable.call(el, "on"), false)
-  t.is(Object.propertyIsEnumerable.call(el, "once"), false)
-  t.is(Object.propertyIsEnumerable.call(el, "emit"), false)
-  t.is(Object.propertyIsEnumerable.call(el, "send"), false)
-  t.is(Object.propertyIsEnumerable.call(el, "off"), false)
+  let el = emittable()
+  t.false(Object.propertyIsEnumerable.call(el, "on"))
+  t.false(Object.propertyIsEnumerable.call(el, "off"))
+  t.false(Object.propertyIsEnumerable.call(el, "once"))
+  t.false(Object.propertyIsEnumerable.call(el, "emit"))
+  t.false(Object.propertyIsEnumerable.call(el, "send"))
+
+  el = emittable({})
+  t.false(Object.propertyIsEnumerable.call(el, "on"))
+  t.false(Object.propertyIsEnumerable.call(el, "off"))
+  t.false(Object.propertyIsEnumerable.call(el, "once"))
+  t.false(Object.propertyIsEnumerable.call(el, "emit"))
+  t.false(Object.propertyIsEnumerable.call(el, "send"))
 })
 
 test("single listener", (t) => {
