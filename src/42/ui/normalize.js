@@ -349,6 +349,7 @@ export function normalizeDef(def = {}, ctx, options) {
     ctx.type = typeof fn
     if (ctx.type === "function") def = fn
   } else if (ctx.type === "object") {
+    def = { ...def }
     if (def.parentId) ctx.parentId = def.parentId
 
     if (def.state) {
