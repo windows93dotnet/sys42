@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 // @read https://developer.salesforce.com/blogs/2020/01/accessibility-for-web-components
 // @read https://github.com/webcomponents/gold-standard/wiki
 
@@ -28,6 +29,20 @@ const RECYCLE = 4
 const DESTROY = 5
 
 const getStep = (steps) => (system.DEV ? steps : hash(steps))
+
+function filterPropsKeys(configProps) {
+  const out = []
+  for (const key in configProps) {
+    if (
+      Object.hasOwn(configProps, key) &&
+      configProps[key].state === undefined
+    ) {
+      out.push(key)
+    }
+  }
+
+  return out
+}
 
 export default class Component extends HTMLElement {
   static define(Class) {
@@ -113,13 +128,13 @@ export default class Component extends HTMLElement {
   }
 
   #setCustomScope(props) {
-    this.ctx.globalScope = this.ctx.scope
+    this.ctx.scopeChain = structuredClone(this.ctx.scopeChain)
+    this.ctx.scopeChain.push({ scope: this.ctx.scope, props })
     const i = this.localName.indexOf("-")
     this.ctx.scope = resolveScope(
       this.localName.slice(0, i) + "/" + this.localName.slice(i + 1),
       getStep(this.ctx.steps)
     )
-    this.ctx.props = props
   }
 
   async #init(def, ctx) {
@@ -148,15 +163,15 @@ export default class Component extends HTMLElement {
     /* handle props
     --------------- */
     const configProps = configure(definition.props, def?.props)
-    const propsValues = Object.values(configProps)
+    const filteredPropsKeys = filterPropsKeys(configProps)
 
     let hasCustomScope = false
 
-    if (propsValues.length > 0) {
-      const propsKeys = Object.keys(configProps)
+    const props = {}
+    const propsKeys = Object.keys(configProps)
+    if (propsKeys.length > 0) {
       const configKeys = Object.keys(definition.defaults ?? {})
       const entries = Object.entries(def)
-      const props = {}
       def = {}
       for (const [key, val] of entries) {
         if (propsKeys.includes(key)) {
@@ -168,33 +183,66 @@ export default class Component extends HTMLElement {
           options[key] = val
         } else def[key] = val
       }
-
-      if (!propsValues.every((val) => val.state !== undefined)) {
-        hasCustomScope = true
-        this.#setCustomScope(configProps)
-      }
-
-      this.#observed = await renderProps(this, configProps, props)
     }
 
-    if (definition.computed && !hasCustomScope) {
-      this.#setCustomScope(configProps)
-    }
+    /* handle attrs
+    --------------- */
+
+    let attrs = normalizeAttrs(def, this.ctx, definition.defaults)
+    for (const attr of Object.keys(attrs)) delete def[attr]
+    if (attrs) renderAttributes(this, this.ctx, attrs)
 
     /* handle def
     ------------- */
     def = configure(definition, def)
     const { computed, state } = def
-    this.ctx.computed = computed
+
     delete def.computed
     delete def.state
     delete def.scope
+    delete def.props
     delete def.tag
+
+    /* apply props
+    -------------- */
+
+    if (propsKeys.length > 0) {
+      if (filteredPropsKeys.length > 0) {
+        hasCustomScope = true
+        this.#setCustomScope(filteredPropsKeys)
+      }
+
+      this.#observed = await renderProps(this, configProps, props)
+    }
+
+    if (computed) {
+      const computedKeys = Object.keys(computed)
+      if (hasCustomScope) {
+        this.ctx.scopeChain.at(-1).props.push(...computedKeys)
+      } else {
+        hasCustomScope = true
+        this.#setCustomScope([...filteredPropsKeys, ...computedKeys])
+      }
+    }
 
     const config = configure(definition.defaults, options)
 
     if (this.render) {
-      Object.assign(def, objectifyDef(await this.render({ ...config, ...def })))
+      const renderConfig = { ...config }
+      for (const key of propsKeys) {
+        Object.defineProperty(renderConfig, key, { get: () => this[key] })
+      }
+
+      for (const [key, val] of Object.entries(def)) {
+        Object.defineProperty(renderConfig, key, {
+          get() {
+            delete def[key] // not needed anymore if used in render
+            return val
+          },
+        })
+      }
+
+      Object.assign(def, objectifyDef(await this.render(renderConfig)))
     }
 
     def = normalizeDef(def, this.ctx, { skipAttrs: true })
@@ -203,10 +251,17 @@ export default class Component extends HTMLElement {
 
     /* apply
     -------- */
-    if (state) this.ctx.reactive.merge(this.ctx.globalScope, state)
+    if (state) {
+      this.ctx.reactive.merge(
+        hasCustomScope ? this.ctx.scopeChain.at(0).scope : this.ctx.scope,
+        state
+      )
+    }
+
     if (computed) normalizeComputeds(computed, this.ctx)
 
-    const attrs = normalizeAttrs(def, this.ctx, definition.defaults)
+    attrs = normalizeAttrs(def, this.ctx, definition.defaults)
+    for (const attr of Object.keys(attrs)) delete def[attr]
     if (attrs) renderAttributes(this, this.ctx, attrs)
 
     await this.ctx.preload.done()
@@ -217,7 +272,6 @@ export default class Component extends HTMLElement {
 
     await this.ctx.components.done()
     await this.ctx.undones.done()
-    delete this.ctx.computed
 
     if (this.#lifecycle === INIT) this.#lifecycle = RENDER
     if (this.isConnected) this.#setup()
@@ -255,7 +309,7 @@ export default class Component extends HTMLElement {
     const reason = `${this.localName} destroyed`
     this.ctx.cancel(reason)
 
-    if (this.ctx.globalScope) {
+    if (this.ctx.scope.startsWith("/ui/")) {
       this.ctx.reactive.delete(this.ctx.scope, { silent: true })
       this.ctx.reactive.emit("update", new Set([this.ctx.scope])) // prevent calling $ref renderers
     }

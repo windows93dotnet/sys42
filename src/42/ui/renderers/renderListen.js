@@ -25,7 +25,7 @@ function compileRun(val, ctx) {
     actions,
   })
 
-  const scope = ctx.globalScope ?? ctx.scope
+  const scope = ctx.scopeChain.at(0)?.scope ?? ctx.scope
 
   return (e, target) =>
     fn(ctx.reactive.state, makeEventLocals(scope, e, target))

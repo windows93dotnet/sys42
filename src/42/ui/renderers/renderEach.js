@@ -85,13 +85,18 @@ export default function renderEach(def, ctx) {
       const cancel = new Canceller(ctx.signal)
       cancels.push(cancel)
 
+      // const scopeChain = []
+      // for (const { scope, props } of ctx.scopeChain) {
+      //   scopeChain.push({ scope: `${scope}/${i}`, props })
+      // }
+
       fragment.append(
         render(eachDef, {
           ...ctx,
           cancel,
           signal: cancel.signal,
+          scopeChain: [],
           scope: `${ctx.scope}/${i}`,
-          globalScope: ctx.globalScope ? `${ctx.globalScope}/${i}` : undefined,
           steps: `${ctx.steps},[${i}]`,
         }),
         (lastItem = document.createComment(ITEM))

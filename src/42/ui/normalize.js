@@ -1,5 +1,6 @@
 import Reactive from "./class/Reactive.js"
 import resolveScope from "./resolveScope.js"
+import findScope from "./findScope.js"
 import register from "./register.js"
 import Locator from "../fabric/class/Locator.js"
 import template from "../core/formats/template.js"
@@ -12,7 +13,6 @@ import allocate from "../fabric/locator/allocate.js"
 import isEmptyObject from "../fabric/type/any/is/isEmptyObject.js"
 import isArrayLike from "../fabric/type/any/is/isArrayLike.js"
 import noop from "../fabric/type/function/noop.js"
-import omit from "../fabric/type/object/omit.js"
 import arrify from "../fabric/type/any/arrify.js"
 import hash from "../fabric/type/any/hash.js"
 import getType from "../fabric/getType.js"
@@ -74,7 +74,7 @@ export function normalizeTokens(tokens, ctx, actions) {
   for (const token of tokens) {
     if (token.value === undefined) continue
 
-    const loc = resolveScope(ctx, token.value)
+    const loc = resolveScope(...findScope(ctx, token.value), ctx)
 
     if (token.type === "key") {
       token.value = loc
@@ -128,8 +128,8 @@ export function normalizeTokens(tokens, ctx, actions) {
   return { hasFilter, scopes, actions }
 }
 
-export function normalizeString(def, ctx) {
-  const parsed = template.parse(def)
+export function normalizeString(item, ctx) {
+  const parsed = template.parse(item)
 
   if (parsed.substitutions.length > 0) {
     const actions = { ...ctx.actions.value }
@@ -141,36 +141,36 @@ export function normalizeString(def, ctx) {
       scopes.push(...res.scopes)
     }
 
-    def = template.compile(parsed, {
+    item = template.compile(parsed, {
       async: true,
       sep: "/",
       actions,
     })
 
-    def.scopes = scopes
+    item.scopes = scopes
 
     const isRef = !hasFilter && parsed.strings.every((x) => x === "")
-    if (isRef) def.ref = scopes[0]
-    return def
+    if (isRef) item.ref = scopes[0]
+    return item
   }
 
-  return def
+  return item
 }
 
-function normalizeObject(def, ctx) {
+function normalizeObject(item, ctx) {
   const out = {}
 
-  for (const [key, val] of Object.entries(def)) {
+  for (const [key, val] of Object.entries(item)) {
     out[key] = typeof val === "string" ? normalizeString(val, ctx) : val
   }
 
   return out
 }
 
-export function normalizeAttrs(def, ctx, ignore) {
+export function normalizeAttrs(item, ctx, ignore) {
   const attrs = {}
 
-  for (const [key, val] of Object.entries(def)) {
+  for (const [key, val] of Object.entries(item)) {
     if (
       !DEF_KEYWORDS.has(key) &&
       (ctx?.trusted ||
@@ -207,12 +207,13 @@ export function normalizeAnimate(animate) {
 
 export function normalizeComputeds(computeds, ctx) {
   for (const [key, val] of Object.entries(computeds)) {
-    normalizeComputed(resolveScope(ctx.scope, key, ctx), val, ctx)
+    normalizeComputed(resolveScope(...findScope(ctx, key), ctx), val, ctx)
   }
 }
 
 export function normalizeComputed(scope, val, ctx, cb = noop) {
   const fn = typeof val === "string" ? normalizeString(val, ctx) : val
+  ctx.computeds.set(scope, undefined)
   if (fn.scopes) {
     register(ctx, fn, (val, changed) => {
       ctx.computeds.set(scope, val)
@@ -223,13 +224,7 @@ export function normalizeComputed(scope, val, ctx, cb = noop) {
 }
 
 export function normalizeScope(def, ctx) {
-  if (def?.scope) {
-    if (ctx.globalScope) {
-      ctx.globalScope = resolveScope(ctx.globalScope, def.scope, ctx)
-    }
-
-    ctx.scope = resolveScope(ctx.scope, def.scope, ctx)
-  }
+  if (def?.scope) ctx.scope = resolveScope(ctx.scope, def.scope, ctx)
 }
 
 export function normalizeData(def, ctx, cb) {
@@ -332,8 +327,9 @@ export function objectifyDef(def) {
 export function forkDef(def, ctx) {
   def = objectifyDef(def)
   if (ctx) {
-    def.scope = ctx.globalScope ?? ctx.scope
-    def.state = omit(ctx.reactive.data, ["ui"])
+    def.scope = ctx.scope
+    def.scopeChain = structuredClone(ctx.scopeChain)
+    def.state = structuredClone(ctx.reactive.data)
     def.parentId = ctx.id
   }
 
@@ -351,6 +347,7 @@ export function normalizeDef(def = {}, ctx, options) {
   } else if (ctx.type === "object") {
     def = { ...def }
     if (def.parentId) ctx.parentId = def.parentId
+    if (def.scopeChain) ctx.scopeChain = def.scopeChain
 
     if (def.state) {
       normalizeData(def.state, ctx, (res, scope) => {
@@ -396,9 +393,10 @@ export function normalizeDef(def = {}, ctx, options) {
 export function normalizeCtx(ctx = {}) {
   ctx = { ...ctx }
   ctx.scope ??= "/"
+  ctx.steps ??= "?"
   ctx.renderers ??= {}
   ctx.plugins ??= {}
-  ctx.steps ??= "?"
+  ctx.scopeChain ??= []
 
   ctx.components ??= new Undones()
   ctx.preload ??= new Undones()

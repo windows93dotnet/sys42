@@ -103,7 +103,7 @@ export default async function renderProps(el, props, def) {
     const scope =
       item.state === undefined //
         ? resolveScope(ctx.scope, key, ctx)
-        : resolveScope(ctx.globalScope, key, ctx)
+        : resolveScope(ctx.scopeChain.at(0)?.scope ?? ctx.scope, key, ctx)
 
     const attribute = item.attribute ?? toKebabCase(key)
     const converter = item.converter ?? CONVERTERS[item.type ?? "string"]

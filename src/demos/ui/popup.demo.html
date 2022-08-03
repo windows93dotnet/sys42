@@ -57,20 +57,25 @@
               permissions: "app",
               content: {
                 tag: ".box-fit.box-center.desktop",
-                content: buttons("dialog"),
+                // content: buttons("dialog"),
+                content: [
+                  { tag: "div", content: "x: {{x}}" }, //
+                  { tag: "div", content: "cnt: {{cnt}}" }, //
+                  button,
+                ],
               },
               // script: `setTimeout(() => app.query("#dialog-iframe")?.click(), 500)`,
             },
           },
-          {
-            tag: "ui-sandbox",
-            permissions: "app",
-            content: {
-              tag: ".box-fit.box-center.desktop",
-              content: buttons("iframe"),
-            },
-            // script: `setTimeout(() => app.query("#dialog-iframe")?.click(), 500)`,
-          },
+          // {
+          //   tag: "ui-sandbox",
+          //   permissions: "app",
+          //   content: {
+          //     tag: ".box-fit.box-center.desktop",
+          //     content: buttons("iframe"),
+          //   },
+          //   // script: `setTimeout(() => app.query("#dialog-iframe")?.click(), 500)`,
+          // },
         ],
       },
       state: {

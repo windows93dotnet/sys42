@@ -671,6 +671,129 @@ test("state", "fixed", async (t) => {
   })
 })
 
+/* custom content
+================= */
+
+Component.define(
+  class extends Component {
+    static definition = {
+      tag: "ui-one",
+      props: {
+        bar: 1,
+        one: 1,
+      },
+    }
+
+    render({ content }) {
+      return content
+    }
+  }
+)
+
+Component.define(
+  class extends Component {
+    static definition = {
+      tag: "ui-two",
+      props: {
+        bar: 2,
+        two: 2,
+      },
+    }
+  }
+)
+
+test("custom content", async (t) => {
+  const app = await ui(tmp(true), {
+    content: {
+      tag: "ui-one",
+      content: "hi {{bar}}",
+    },
+  })
+
+  cleanup(app)
+
+  t.is(app.el.innerHTML, '<ui-one bar="1" one="1">hi 1</ui-one>')
+})
+
+test("custom content", 2, async (t) => {
+  const app = await ui(tmp(true), {
+    content: {
+      tag: "ui-one",
+      bar: "{{bar}}",
+      content: "hi {{bar}}, root: {{root}}",
+    },
+
+    state: {
+      bar: 5,
+      root: 0,
+    },
+  })
+
+  cleanup(app)
+
+  t.is(app.el.innerHTML, '<ui-one one="1" bar="5">hi 5, root: 0</ui-one>')
+})
+
+test("custom content", "nested components", 2, async (t) => {
+  const app = await ui(tmp(true), {
+    content: {
+      tag: "ui-one",
+      content: {
+        tag: "ui-two",
+        content: `
+root: {{root}}
+one: {{one}}
+two: {{two}}
+bar: {{bar}}
+../bar: {{../bar}}
+../../bar: {{../../bar}}
+/bar: {{/bar}}
+`,
+      },
+    },
+
+    state: {
+      root: 0,
+      bar: -1,
+    },
+  })
+
+  cleanup(app)
+
+  t.eq(app.reactive.data, {
+    root: 0,
+    bar: -1,
+    ui: {
+      one: {
+        root: {
+          bar: 1,
+          one: 1,
+        },
+      },
+      two: {
+        "root,ui-one": {
+          bar: 2,
+          two: 2,
+        },
+      },
+    },
+  })
+
+  t.is(
+    app.el.innerHTML,
+    `\
+<ui-one bar="1" one="1"><ui-two bar="2" two="2">
+root: 0
+one: 1
+two: 2
+bar: 2
+../bar: 1
+../../bar: -1
+/bar: -1
+</ui-two></ui-one>`
+  )
+})
+
 /* nested
 ========= */
 
@@ -702,10 +825,10 @@ test("state", "dynamic", "push", async (t) => {
     },
   })
 
-  t.eq(Object.keys(app.ctx.renderers), [
-    "/ui/t-nested-dynamic/root/list",
-    "/ui/t-nested-dynamic/root/list/0/foo",
-  ])
+  // t.eq(Object.keys(app.ctx.renderers), [
+  //   "/ui/t-nested-dynamic/root/list",
+  //   "/ui/t-nested-dynamic/root/list/0/foo",
+  // ])
 
   t.eq(app.reactive.data, {
     ui: {
