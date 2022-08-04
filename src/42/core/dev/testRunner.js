@@ -7,13 +7,13 @@ const DEFAULTS = {
   verbose: 1,
   runner: {
     serial: false,
-    keepIframes: false,
   },
   serializer: {
     title: "line",
     details: "inspect",
     diff: "inspect",
     truncateTitleParts: 80,
+    keepIframes: false,
   },
   reporter: {
     verbose: undefined,
@@ -31,17 +31,20 @@ export default async function testRunner(testFiles, options) {
 
   system.testing.ran = false
 
+  const time = performance.now()
+
   await Promise.all(
     testFiles.map((url) => {
       url = new URL(url, location.href)
       return url.href.endsWith(".html")
-        ? isFrontend && htmlTest(url)
+        ? isFrontend && htmlTest(url, options)
         : import(/* @vite-ignore */ url)
     })
   )
 
   await system.testing.run()
 
+  system.testing.root.ms = performance.now() - time
   system.testing.ran = true
 
   if (config.serialize) return system.testing.serialize(config.serializer)

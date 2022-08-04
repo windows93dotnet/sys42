@@ -3,9 +3,11 @@
 import ensureElement from "../dom/ensureElement.js"
 import waitFor from "../dom/waitFor.js"
 import listen from "../dom/listen.js"
+import Callabale from "./Callable.js"
 
-export default class DOMQuery {
+export default class DOMQuery extends Callabale {
   constructor(el = document.body) {
+    super((...args) => this.each(...args))
     this.el = ensureElement(el)
   }
 
@@ -20,21 +22,44 @@ export default class DOMQuery {
   each(selector, options) {
     const init = options?.live ? [] : this.queryAll(selector)
     return new Proxy(init, {
-      get: (target, prop) => {
+      get: (target, key, receiver) => {
         if (options?.live) {
           target.length = 0
           target.push(...this.el.querySelectorAll(`:scope ${selector}`))
         }
 
-        if (Reflect.has(target, prop)) return Reflect.get(target, prop)
+        if (Reflect.has(target, key)) return Reflect.get(target, key)
 
         if (target.length === 0) return target
 
-        if (target.some((item) => typeof item[prop] === "function")) {
-          return (...args) => target.map((item) => item[prop]?.(...args))
+        if (key === "on") {
+          return (event, selector, fn) => {
+            for (const item of target) {
+              typeof selector === "function"
+                ? listen(item, { [event]: selector })
+                : listen(item, { selector, [event]: fn })
+            }
+
+            return receiver
+          }
         }
 
-        return target.map((item) => item[prop])
+        if (target.some((item) => typeof item[key] === "function")) {
+          return (...args) => target.map((item) => item[key]?.(...args))
+        }
+
+        return target.map((item) => item[key])
+      },
+
+      set: (target, key, val) => {
+        if (options?.live) {
+          target.length = 0
+          target.push(...this.el.querySelectorAll(`:scope ${selector}`))
+        }
+
+        let out = false
+        for (const item of target) out ||= Reflect.set(item, key, val)
+        return out
       },
     })
   }
@@ -50,5 +75,3 @@ export default class DOMQuery {
       : listen(this.el, { selector, [event]: fn })
   }
 }
-
-DOMQuery.prototype.$ = DOMQuery.prototype.each

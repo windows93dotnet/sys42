@@ -13,6 +13,7 @@ const DEFAULTS = {
   alike: { preset: "inspect", traceNullProto: false },
   diff: "sample",
   truncateTitleParts: 80,
+  keepIframes: false,
 }
 
 const castTestTitleParts = async (arg, config) =>
@@ -91,5 +92,8 @@ export default async function serializeTests(options) {
   const { root } = system.testing
   const results = await serializeSuite(root.toJSON(), config)
   results.suites = sortPath(results.suites, "filename")
+  if (config.keepIframes) {
+    for (const el of system.testing.iframes) el.style.opacity = 1
+  } else for (const el of system.testing.iframes) el.remove()
   return results
 }

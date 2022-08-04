@@ -15,6 +15,8 @@ import stringify from "../../../fabric/type/any/stringify.js"
 import system from "../../../system.js"
 import uid from "../../uid.js"
 import prettify from "../../../fabric/type/markup/prettify.js"
+import when from "../../../fabric/type/promise/when.js"
+import documentReady from "../../../fabric/dom/documentReady.js"
 import DOMQuery from "../../../fabric/class/DOMQuery.js"
 import env from "../../env.js"
 import log, { Log, CONSOLE_KEYS } from "../../log.js"
@@ -97,6 +99,8 @@ export default function addUtilities(item, isExecutionContext) {
     uid,
     prettify,
     container,
+    when,
+    documentReady,
     $: new DOMQuery(),
   }
 }

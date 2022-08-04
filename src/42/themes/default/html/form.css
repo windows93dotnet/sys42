@@ -373,19 +373,15 @@ legend.label {
 /* cursors
 ========== */
 
-body {
-  cursor: var(--cursor-default);
-}
+body { cursor: var(--cursor-default); }
+*::-webkit-scrollbar { cursor: var(--cursor-default); }
+a { cursor: var(--cursor-pointer); }
 
-*::-webkit-scrollbar {
-  cursor: var(--cursor-default);
-}
-
-body,
+/* TODO: debug this */
+/* body,
 body * {
-  /* TODO: debug this */
   cursor: url("../../../themes/windows9x/cursors/default.cur"), default;
-}
+} */
 
 /* field
 ======== */

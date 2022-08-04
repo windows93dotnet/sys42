@@ -5,8 +5,7 @@ import stackTrace from "../../../fabric/type/error/stackTrace.js"
 import configure from "../../configure.js"
 
 const DEFAULTS = {
-  serial: 0,
-  keepIframes: false,
+  serial: false,
 }
 
 const uncaughts = []
@@ -62,6 +61,4 @@ export default async function runTests(options = {}) {
     system.testing.root.ok = false
     system.testing.root.uncaughts.push(...uncaughts)
   }
-
-  if (!config.keepIframes) system.testing.iframes.forEach((el) => el.remove())
 }

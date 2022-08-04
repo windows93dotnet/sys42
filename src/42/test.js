@@ -1,6 +1,6 @@
 // @thanks https://github.com/avajs/ava
 
-import system from "./system.js"
+import system from "./core/dev/testing/mainSystem.js"
 import chainable from "./fabric/traits/chainable.js"
 import Suite from "./core/dev/testing/class/Suite.js"
 import Test from "./core/dev/testing/class/Test.js"
@@ -183,11 +183,27 @@ export function awaitTestFileReady(url, retry = 100) {
   })
 }
 
-export async function htmlTest(url, retry) {
+export async function htmlTest(url, options) {
   const el = document.createElement("iframe")
   el.src = url
-  await awaitTestFileReady(el.src, retry)
-  sbs.iframes.push(el)
+  el.style.cssText = `
+position: absolute;
+inset: 0;
+width: 800px;
+height: 600px;
+opacity: 0.01;`
+
+  if (options?.serializer?.keepIframes) el.style.opacity = 1
+
+  document.body.append(el)
+
+  try {
+    await awaitTestFileReady(el.src, options?.retry)
+    sbs.iframes.push(el)
+  } catch {
+    el.remove()
+  }
+
   return el
 }
 

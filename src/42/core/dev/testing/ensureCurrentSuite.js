@@ -1,4 +1,4 @@
-import system from "../../../system.js"
+import system from "./mainSystem.js"
 import getParentModule from "../../../fabric/getParentModule.js"
 import shortenFilename from "../../../fabric/type/path/shortenFilename.js"
 import Suite from "./class/Suite.js"
