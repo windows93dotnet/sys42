@@ -41,6 +41,7 @@ const CONVERTERS = {
     fromView: (val) => JSON.parse(val),
   },
 
+  // TODO: implement TokenList ? https://stackoverflow.com/a/29656169
   tokens: {
     toView: (val) => val.join(" "),
     fromView: (val) => String(val).split(" "),

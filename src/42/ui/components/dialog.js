@@ -51,8 +51,7 @@ export class Dialog extends Component {
     plugins: ["ipc"],
   };
 
-  [_axis](init) {
-    if (init) return
+  [_axis]() {
     this.style.transform = `translate(${this.x}px, ${this.y}px)`
   }
 

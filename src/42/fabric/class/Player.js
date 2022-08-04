@@ -43,7 +43,7 @@ export default class Player extends Emitter {
 
   destroy(...args) {
     this.stop(...args)
-    this.emit("destroy")
+    this.emit("destroy", this)
     this.off("*")
   }
 }

@@ -2,6 +2,8 @@
 /* eslint-disable complexity */
 
 // @read https://github.com/kriszyp/cbor-x
+// @read https://github.com/rvagg/cborg
+// TODO: add commits from https://github.com/rinq/cbor-js/commits/master
 
 // @src https://github.com/paroga/cbor-js/blob/master/cbor.js
 //! Copyright (c) 2014-2016 Patrick Gansterer <paroga@paroga.com>. MIT License.

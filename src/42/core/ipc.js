@@ -87,6 +87,7 @@ export class Receiver extends Emitter {
   }
 
   destroy() {
+    this.emit("destroy", this)
     this.off("*")
   }
 }
@@ -166,6 +167,7 @@ export class Sender extends Emitter {
   }
 
   destroy() {
+    this.emit("destroy", this)
     this.off("*")
     this.port1.close()
     this.port2.close()

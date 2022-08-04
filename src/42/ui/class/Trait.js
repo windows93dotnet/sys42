@@ -29,7 +29,7 @@ export default class Trait {
     this.cancel(`${this.constructor.name} destroyed`)
 
     if (_EVENTS in this) {
-      this.emit("destroy")
+      this.emit("destroy", this)
       this.off("*")
       delete this[_EVENTS]
     }

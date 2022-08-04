@@ -136,7 +136,8 @@ export default class Dragger {
     listen(this.el, {
       signal,
       selector: this.selector,
-      pointerdown(e, target) {
+      pointerdown: (e, target) => {
+        target = this.selector ? target : this.el
         forget = listen({
           signal,
           "pointermove": (e) => drag(e, target),

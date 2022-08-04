@@ -207,6 +207,7 @@ export default class Reactive extends Emitter {
   }
 
   destroy() {
+    this.emit("destroy", this)
     this.off("*")
     this.queue.paths.clear()
     this.queue.objects.clear()

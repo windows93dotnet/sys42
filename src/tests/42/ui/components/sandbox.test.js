@@ -8,13 +8,14 @@ const tmp = test.utils.container({ id: "ui-sandbox-tests", connect: true })
 test(1, async (t) => {
   const app = await ui(tmp(), {
     tag: "ui-sandbox",
+    permissions: "app",
   })
 
   t.eq(app.reactive.data, {
     ui: {
       sandbox: {
         root: {
-          permissions: undefined,
+          permissions: "app",
           path: undefined,
           document: undefined,
           content: undefined,

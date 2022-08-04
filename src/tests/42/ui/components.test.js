@@ -1579,10 +1579,10 @@ async function testStringArrayWithTransfers(t, app) {
 
   t.eq(app.reactive.data, {
     arr: ["foo", "B"],
-    ui: {
-      "t-nested-string-array": {},
-      "t-state": {},
-    },
+    // ui: {
+    //   "t-nested-string-array": {},
+    //   "t-state": {},
+    // },
   })
 }
 

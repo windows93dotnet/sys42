@@ -297,16 +297,18 @@ export default class Component extends HTMLElement {
     this.ctx.cancel(reason)
 
     if (this.#hasNewScope) {
-      this.ctx.reactive.delete(this.ctx.scope, { silent: true })
-      const i = this.localName.indexOf("-")
-      const prefix = this.localName.slice(0, i)
-      const suffix = this.localName.slice(i + 1)
-      if (isEmptyObject(this.ctx.reactive.data[prefix][suffix])) {
-        delete this.ctx.reactive.data[prefix][suffix]
-      }
+      if (this.ctx.reactive.data) {
+        this.ctx.reactive.delete(this.ctx.scope, { silent: true })
+        const i = this.localName.indexOf("-")
+        const prefix = this.localName.slice(0, i)
+        const suffix = this.localName.slice(i + 1)
+        if (isEmptyObject(this.ctx.reactive.data[prefix]?.[suffix])) {
+          delete this.ctx.reactive.data[prefix][suffix]
+        }
 
-      if (isEmptyObject(this.ctx.reactive.data[prefix])) {
-        delete this.ctx.reactive.data[prefix]
+        if (isEmptyObject(this.ctx.reactive.data[prefix])) {
+          delete this.ctx.reactive.data[prefix]
+        }
       }
 
       this.ctx.reactive.emit("update", new Set([this.ctx.scope])) // prevent calling $ref renderers
