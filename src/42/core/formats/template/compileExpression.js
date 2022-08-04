@@ -1,6 +1,7 @@
 /* eslint-disable complexity */
 import { operators, assignments } from "./operators.js"
 import allocate from "../../../fabric/locator/allocate.js"
+import synchronize from "../../../fabric/type/function/synchronize.js"
 
 const PIPE = Symbol("pipe")
 
@@ -160,12 +161,13 @@ export default function compileExpression(tokens, options = {}) {
     if (typeof list[i] === "string" && list[i] in assignments) {
       if (!options.assignment) throw new Error("Assignment not allowed")
       const assign = assignments[list[i]]
+
       const fn = options.async
-        ? async (locals) => {
+        ? synchronize(async (locals) => {
             const res = await assign(await left(locals), await right(locals))
             allocate(locals[0], left.path, res, options.sep)
             return res
-          }
+          })
         : (locals) => {
             const res = assign(left(locals), right(locals))
             allocate(locals[0], left.path, res, options.sep)

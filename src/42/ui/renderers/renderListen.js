@@ -28,7 +28,7 @@ function compileRun(val, ctx) {
   const scope = ctx.scopeChain.at(0)?.scope ?? ctx.scope
 
   return (e, target) =>
-    fn(ctx.reactive.state, makeEventLocals(scope, e, target))
+    ctx.undones.push(fn(ctx.reactive.state, makeEventLocals(scope, e, target)))
 }
 
 function forkCtx(ctx, key) {

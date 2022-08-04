@@ -1846,6 +1846,32 @@ test("on", async (t) => {
   t.eq(app.state, { cnt: 43 })
 })
 
+test("on", "queued fast calls", async (t) => {
+  const app = await ui(tmp(), {
+    content: {
+      tag: "button",
+      content: "cnt: {{cnt}}",
+      on: { click: "{{cnt += 1}}" },
+    },
+
+    state: {
+      cnt: 42,
+    },
+  })
+
+  t.eq(app.state, { cnt: 42 })
+
+  const el = app.query("button")
+
+  el.click()
+  el.click()
+  el.click()
+  el.click()
+  t.eq(app.state, { cnt: 42 })
+  await app
+  t.eq(app.state, { cnt: 46 })
+})
+
 test("on", "actions", async (t) => {
   t.plan(4)
   const app = await ui(tmp(), {
