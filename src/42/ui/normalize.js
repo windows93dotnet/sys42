@@ -336,6 +336,12 @@ export function forkDef(def, ctx) {
   return def
 }
 
+export function normalizeDefNoCtx(def = {}) {
+  if (def.animate) def.animate = normalizeAnimate(def.animate)
+  normalizeListen(def)
+  return def
+}
+
 export function normalizeDef(def = {}, ctx, options) {
   ctx.id ??= hash(def)
   ctx.type = getType(def)
@@ -361,14 +367,12 @@ export function normalizeDef(def = {}, ctx, options) {
       })
     }
 
-    if (def.animate) def.animate = normalizeAnimate(def.animate)
-
     if (def.computed) normalizeComputeds(def.computed, ctx)
 
     const traits = normalizeTraits(def, ctx)
     if (traits) def.traits = traits
 
-    normalizeListen(def)
+    if (options?.skipNoCtx !== true) normalizeDefNoCtx(def)
 
     if (options?.skipAttrs !== true) {
       const attrs = normalizeAttrs(def, ctx)

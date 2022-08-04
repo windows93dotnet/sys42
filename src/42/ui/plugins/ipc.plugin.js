@@ -5,7 +5,7 @@ import ipc from "../../core/ipc.js"
 import allocate from "../../fabric/locator/allocate.js"
 import configure from "../../core/configure.js"
 
-let debug = 1
+let debug = 0
 
 let cnt = 0
 const max = 30

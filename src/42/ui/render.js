@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import create from "./create.js"
 import register from "./register.js"
 import normalize from "./normalize.js"
@@ -21,9 +20,45 @@ const SPECIAL_STRINGS = {
 
 const PRELOAD = new Set(["link", "script"])
 
+function renderTag(ctx, def) {
+  let el = create(ctx, def.tag, def.attrs)
+
+  const { localName } = el
+  if (localName) {
+    ctx.el = el
+  }
+
+  if (el.form !== undefined && def.scope) {
+    el = renderField(el, ctx, def)
+  }
+
+  if (def.picto) {
+    if (el.localName === "button") {
+      el.classList.add("btn-picto")
+    }
+
+    el.append(renderComponent(create("ui-picto"), { value: def.picto }, ctx))
+  }
+
+  if (
+    localName &&
+    ctx.trusted !== true &&
+    !ALLOWED_HTML_TAGS.includes(localName) &&
+    !ALLOWED_SVG_TAGS.includes(localName)
+  ) {
+    throw new DOMException(`Disallowed tag: ${localName}`, "SecurityError")
+  }
+
+  if (PRELOAD.has(localName)) {
+    ctx.preload.push(preload(el.src ?? el.href))
+  }
+
+  return el
+}
+
 export default function render(def, ctx, options) {
   if (def?.tag?.startsWith("ui-")) {
-    delete def?.attrs
+    delete def.attrs
     if (options?.step !== undefined) {
       ctx = { ...ctx }
       ctx.steps += "," + options.step
@@ -33,7 +68,7 @@ export default function render(def, ctx, options) {
   }
 
   if (!options?.skipNormalize) {
-    const normalized = normalize(def, ctx)
+    const normalized = normalize(def, ctx, options)
     def = normalized[0]
     ctx = normalized[1]
   }
@@ -67,34 +102,10 @@ export default function render(def, ctx, options) {
   if (def.if) return renderIf(def, ctx)
   if (def.each) return renderEach(def, ctx)
 
-  let el
-
-  if (def.tag || def.attrs) {
-    el = create(ctx, def.tag, def.attrs)
-
-    const { localName } = el
-    if (localName) ctx.el = el
-
-    if (el.form !== undefined && def.scope) el = renderField(el, ctx, def)
-
-    if (def.picto) {
-      if (el.localName === "button") el.classList.add("btn-picto")
-      el.append(renderComponent(create("ui-picto"), { value: def.picto }, ctx))
-    }
-
-    if (
-      localName &&
-      ctx.trusted !== true &&
-      !ALLOWED_HTML_TAGS.includes(localName) &&
-      !ALLOWED_SVG_TAGS.includes(localName)
-    ) {
-      throw new DOMException(`Disallowed tag: ${localName}`, "SecurityError")
-    }
-
-    if (PRELOAD.has(localName)) ctx.preload.push(preload(el.src ?? el.href))
-  } else {
-    el = document.createDocumentFragment()
-  }
+  const el =
+    def.tag || def.attrs
+      ? renderTag(ctx, def)
+      : document.createDocumentFragment()
 
   if (def.content) {
     el.append(

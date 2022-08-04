@@ -1,16 +1,22 @@
-/* eslint-disable max-depth */
 import render from "../render.js"
 import omit from "../../fabric/type/object/omit.js"
 import createRange from "../../fabric/range/createRange.js"
 import removeRange from "./removeRange.js"
 import register from "../register.js"
 import Canceller from "../../fabric/class/Canceller.js"
+import { normalizeDefNoCtx } from "../normalize.js"
 
 const PLACEHOLDER = "[each]"
 const ITEM = "[#]"
 
+function cancelExtraItems(i, cancels) {
+  const x = i
+  for (let l = cancels.length; i < l; i++) cancels[i]("renderEach removed")
+  cancels.length = x
+}
+
 export default function renderEach(def, ctx) {
-  const eachDef = def.each
+  const eachDef = normalizeDefNoCtx(def.each)
   def = omit(def, ["each"])
 
   const el = render(def, ctx)
@@ -68,12 +74,7 @@ export default function renderEach(def, ctx) {
 
           // remove extra items only
           if (i > l) {
-            for (let j = i; j < cancels.length; j++) {
-              cancels[j]("renderEach removed")
-            }
-
-            cancels.length = i
-
+            cancelExtraItems(i, cancels)
             const range = createRange()
             range.setStartAfter(endItem)
             range.setEndAfter(lastItem)
@@ -92,14 +93,18 @@ export default function renderEach(def, ctx) {
       cancels.push(cancel)
 
       fragment.append(
-        render(eachDef, {
-          ...ctx,
-          cancel,
-          signal: cancel.signal,
-          scope: `${ctx.scope}/${i}`,
-          steps: `${ctx.steps},[${i}]`,
-          scopeChain,
-        }),
+        render(
+          eachDef,
+          {
+            ...ctx,
+            cancel,
+            signal: cancel.signal,
+            scope: `${ctx.scope}/${i}`,
+            steps: `${ctx.steps},[${i}]`,
+            scopeChain,
+          },
+          { skipNoCtx: true }
+        ),
         (lastItem = document.createComment(ITEM))
       )
     }
