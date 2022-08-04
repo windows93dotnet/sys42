@@ -274,7 +274,6 @@ export default class Component extends HTMLElement {
     await this.ctx.undones.done()
 
     if (this.#lifecycle === INIT) this.#lifecycle = RENDER
-    if (this.isConnected) this.#setup()
   }
 
   async init(...args) {
@@ -282,6 +281,7 @@ export default class Component extends HTMLElement {
     try {
       await this.#init(...args)
       this.ready.resolve()
+      if (this.isConnected) this.#setup()
     } catch (err) {
       this.ready.reject(err)
       throw err
@@ -296,7 +296,6 @@ export default class Component extends HTMLElement {
 
     if (options?.remove !== false) {
       if (this.isConnected && this.#animateTo) {
-        // TODO: use Promise.race here
         await import("../renderers/renderAnimation.js").then((m) =>
           m.default(this.ctx, this, "to", this.#animateTo)
         )

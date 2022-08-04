@@ -38,8 +38,10 @@
   --highlight-fg: var(--bg);
   --highlight-tsh: none;
 
-  --inset-bg: var(--fld-bg, var(--bg));
-  --inset-fg: var(--fld-fg, var(--fg));
+  /* --inset-bg: var(--fld-bg, var(--bg));
+  --inset-fg: var(--fld-fg, var(--fg)); */
+  --inset-bg: var(--panel-bg);
+  --inset-fg: var(--panel-fg);
   --inset-bdw: var(--fld-bdw);
   --inset-bds: var(--fld-bds);
   --inset-bdc: var(--fld-bdc);
@@ -58,8 +60,10 @@
   --inset-shallow-tsh: var(--inset-tsh);
   --inset-shallow-bsh: var(--inset-bsh);
 
-  --outset-bg: var(--btn-bg, var(--bg));
-  --outset-fg: var(--btn-fg, var(--fg));
+  /* --outset-bg: var(--btn-bg, var(--bg));
+  --outset-fg: var(--btn-fg, var(--fg)); */
+  --outset-bg: var(--panel-bg);
+  --outset-fg: var(--panel-fg);
   --outset-bdw: var(--btn-bdw);
   --outset-bds: var(--btn-bds);
   --outset-bdc: var(--btn-bdc);
@@ -130,7 +134,7 @@ body {
   text-shadow: var(--inset-tsh, none);
   box-shadow: var(--inset-bsh);
 
-  height: 300;
+  /* height: 300; */
 }
 
 .inset-shallow {

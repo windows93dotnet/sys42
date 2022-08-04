@@ -1,5 +1,4 @@
 import inTop from "./core/env/runtime/inTop.js"
-import inOpaqueOrigin from "./core/env/runtime/inOpaqueOrigin.js"
 import inAutomated from "./core/env/runtime/inAutomated.js"
 import system from "./system.js"
 import log from "./core/log.js"
@@ -79,7 +78,7 @@ if (inTop && inAutomated) {
 
   system.dev = dev
 
-  if (inTop || inOpaqueOrigin) {
+  if (inTop) {
     const sseLog = log
       .level(2)
       .blueBright /* .hour */

@@ -5,7 +5,7 @@ import ipc from "../../core/ipc.js"
 import allocate from "../../fabric/locator/allocate.js"
 import configure from "../../core/configure.js"
 
-let debug = 0
+let debug = 1
 
 let cnt = 0
 const max = 30
@@ -31,9 +31,8 @@ const DEFAULTS = {
 function getData(queue, ctx) {
   const data = {}
   for (const key of queue) {
-    if (key.startsWith("/ui-")) continue
     const val = ctx.reactive.get(key, { silent: true })
-    if (val !== undefined) allocate(data, key, val, "/")
+    allocate(data, key, val, "/")
   }
 
   return data

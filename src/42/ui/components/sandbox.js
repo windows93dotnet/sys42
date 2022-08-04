@@ -112,14 +112,14 @@ export class Sandbox extends Component {
     this.message()
 
     if (this.content) {
-      const content = forkDef(this.content, this.ctx)
-      content.plugins = ["ipc"]
       const undones = []
       traverse(this.content, (key) => {
         // Ensure realmed components can exectute function in top
         if (key === "dialog") undones.push(import("./dialog.js"))
       })
       await Promise.all(undones)
+      const content = forkDef(this.content, this.ctx)
+      content.plugins = ["ipc"]
       return void this.resource.script(`\
 import ui from "/42/ui.js"
 const app = await ui(${JSON.stringify(content)})
