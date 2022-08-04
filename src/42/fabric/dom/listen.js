@@ -20,8 +20,8 @@ export const delegate = (selector, fn) => (e) => {
   if (target && fn(e, target) === false) stopEvent(e)
 }
 
-const handler = (fn, el) => (e) => {
-  if (fn(e, el) === false) stopEvent(e)
+const handler = (fn) => (e) => {
+  if (fn(e, e.target) === false) stopEvent(e)
 }
 
 export const eventsMap = ({ el, listeners }) => {
@@ -30,7 +30,7 @@ export const eventsMap = ({ el, listeners }) => {
       for (const event of key.split(OR_REGEX)) {
         el.addEventListener(
           event,
-          selector ? delegate(selector, fn) : handler(fn, el),
+          selector ? delegate(selector, fn) : handler(fn),
           { ...DEFAULTS, ...options }
         )
       }

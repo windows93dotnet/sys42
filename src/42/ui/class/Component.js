@@ -10,6 +10,7 @@ import renderProps from "../renderers/renderProps.js"
 import resolveScope from "../resolveScope.js"
 import configure from "../../core/configure.js"
 import render from "../render.js"
+import isEmptyObject from "../../fabric/type/any/is/isEmptyObject.js"
 import hash from "../../fabric/type/any/hash.js"
 import {
   objectifyDef,
@@ -79,6 +80,7 @@ export default class Component extends HTMLElement {
   #observed
   #animateTo
   #destroyCallback
+  #hasNewScope
   #lifecycle = CREATE
 
   constructor(...args) {
@@ -127,7 +129,8 @@ export default class Component extends HTMLElement {
     this.ctx.postrender.call()
   }
 
-  #setCustomScope(props) {
+  #setNewScope(props) {
+    this.#hasNewScope = true
     this.ctx.scopeChain = structuredClone(this.ctx.scopeChain)
     this.ctx.scopeChain.push({ scope: this.ctx.scope, props })
     const i = this.localName.indexOf("-")
@@ -164,8 +167,6 @@ export default class Component extends HTMLElement {
     --------------- */
     const configProps = configure(definition.props, def?.props)
     const filteredPropsKeys = filterPropsKeys(configProps)
-
-    let hasCustomScope = false
 
     const props = {}
     const propsKeys = Object.keys(configProps)
@@ -208,8 +209,7 @@ export default class Component extends HTMLElement {
 
     if (propsKeys.length > 0) {
       if (filteredPropsKeys.length > 0) {
-        hasCustomScope = true
-        this.#setCustomScope(filteredPropsKeys)
+        this.#setNewScope(filteredPropsKeys)
       }
 
       this.#observed = await renderProps(this, configProps, props)
@@ -217,11 +217,10 @@ export default class Component extends HTMLElement {
 
     if (computed) {
       const computedKeys = Object.keys(computed)
-      if (hasCustomScope) {
+      if (this.#hasNewScope) {
         this.ctx.scopeChain.at(-1).props.push(...computedKeys)
       } else {
-        hasCustomScope = true
-        this.#setCustomScope([...filteredPropsKeys, ...computedKeys])
+        this.#setNewScope([...filteredPropsKeys, ...computedKeys])
       }
     }
 
@@ -253,7 +252,7 @@ export default class Component extends HTMLElement {
     -------- */
     if (state) {
       this.ctx.reactive.merge(
-        hasCustomScope ? this.ctx.scopeChain.at(0).scope : this.ctx.scope,
+        this.#hasNewScope ? this.ctx.scopeChain.at(0).scope : this.ctx.scope,
         state
       )
     }
@@ -294,6 +293,29 @@ export default class Component extends HTMLElement {
 
     this.#destroyCallback?.()
 
+    const reason = `${this.localName} destroyed`
+    this.ctx.cancel(reason)
+
+    if (this.#hasNewScope) {
+      this.ctx.reactive.delete(this.ctx.scope, { silent: true })
+      const i = this.localName.indexOf("-")
+      const prefix = this.localName.slice(0, i)
+      const suffix = this.localName.slice(i + 1)
+      if (isEmptyObject(this.ctx.reactive.data[prefix][suffix])) {
+        delete this.ctx.reactive.data[prefix][suffix]
+      }
+
+      if (isEmptyObject(this.ctx.reactive.data[prefix])) {
+        delete this.ctx.reactive.data[prefix]
+      }
+
+      this.ctx.reactive.emit("update", new Set([this.ctx.scope])) // prevent calling $ref renderers
+    }
+
+    this.ready?.reject?.(new Error(reason))
+    this.ready = undefined
+    this.#observed = undefined
+
     if (options?.remove !== false) {
       if (this.isConnected && this.#animateTo) {
         await import("../renderers/renderAnimation.js").then((m) =>
@@ -304,18 +326,6 @@ export default class Component extends HTMLElement {
       this.replaceChildren()
       this.remove()
     }
-
-    const reason = `${this.localName} destroyed`
-    this.ctx.cancel(reason)
-
-    if (this.ctx.scope.startsWith("/ui/")) {
-      this.ctx.reactive.delete(this.ctx.scope, { silent: true })
-      this.ctx.reactive.emit("update", new Set([this.ctx.scope])) // prevent calling $ref renderers
-    }
-
-    this.ready?.reject?.(new Error(reason))
-    this.ready = undefined
-    this.#observed = undefined
 
     delete this.ctx.component
     delete this.ctx.el

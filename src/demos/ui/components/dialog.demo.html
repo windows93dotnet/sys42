@@ -6,8 +6,8 @@
 
 <script type="module">
   import ui from "../../../42/ui.js"
-  import dialog from "../../../42/ui/components/dialog.js"
-  // import listen from "../../../42/fabric/dom/listen.js"
+  import listen from "../../../42/fabric/dom/listen.js"
+  import sleep from "../../../42/fabric/type/promise/sleep.js"
 
   const app = await ui({
     tag: "body.desktop",
@@ -19,6 +19,7 @@
         dialog: {
           live: false,
           label: "live dialog",
+          // animate: { translate: "0 -100%", opacity: 0 },
           content: [
             { tag: "button", content: "{{cnt}}", click: "{{cnt += 1}}" },
           ],
@@ -30,26 +31,44 @@
     },
   })
 
-  app.query("#dialog")?.click()
-
+  // import log from "../../../42/core/log.js"
   // listen({
-  //   dialogopen(e) {
-  //     console.log("dialogopen", e)
+  //   click() {
   //     setTimeout(() => {
-  //       document.querySelector(".ui-dialog__close")?.click()
-  //     }, 1000)
-  //   },
-  //   dialogclose(e) {
-  //     // e.preventDefault()
-  //     console.log("dialogclose", e)
+  //       log(app.data)
+  //     }, 0)
   //   },
   // })
 
-  const res = await dialog({
-    x: 100,
-    label: "standalone",
-    content: "hello {{cnt}}",
-    state: { cnt: 42 },
+  setTimeout(() => {
+    app.query("button#dialog")?.click()
+    // app.query("button#dialog")?.click()
+  }, 100)
+
+  let closed
+
+  listen({
+    async dialogopen(e) {
+      // console.log("dialogopen", e)
+      if (closed) return
+      closed = true
+      await sleep(500)
+      // document.querySelector(".ui-dialog__close")?.click()
+      e.target.close()
+      app.query("button#dialog")?.click()
+    },
+    // dialogclose(e) {
+    //   // e.preventDefault()
+    //   console.log("dialogclose", e)
+    // },
   })
-  console.log("res", res)
+
+  // import dialog from "../../../42/ui/components/dialog.js"
+  // const res = await dialog({
+  //   x: 100,
+  //   label: "standalone",
+  //   content: "hello {{cnt}}",
+  //   state: { cnt: 42 },
+  // })
+  // console.log("res", res)
 </script>

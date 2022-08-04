@@ -59,9 +59,11 @@ export class Dialog extends Component {
   async close() {
     const event = dispatch(this, "dialogclose", { cancelable: true })
     if (event.defaultPrevented) return
-    this.emit("close", omit(this.ctx.reactive.data, ["ui"]))
+    const data = omit(this.ctx.reactive.data, ["ui"])
+    this.emit("close", data)
     document.querySelector(this.opener)?.focus()
     await this.destroy()
+    return data
   }
 
   render({ content, label, footer }) {
