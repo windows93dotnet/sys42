@@ -21,6 +21,12 @@ export default function renderEach(def, ctx) {
   const placeholder = document.createComment(PLACEHOLDER)
   el.append(placeholder)
 
+  let scopeChain
+  if (ctx.scopeChain.length > 0) {
+    scopeChain = structuredClone(ctx.scopeChain)
+    scopeChain.push({ scope: ctx.scope })
+  }
+
   register(ctx, ctx.scope, (array) => {
     if (!array || !Array.isArray(array) || array.length === 0) {
       if (lastItem) {
@@ -85,19 +91,14 @@ export default function renderEach(def, ctx) {
       const cancel = new Canceller(ctx.signal)
       cancels.push(cancel)
 
-      // const scopeChain = []
-      // for (const { scope, props } of ctx.scopeChain) {
-      //   scopeChain.push({ scope: `${scope}/${i}`, props })
-      // }
-
       fragment.append(
         render(eachDef, {
           ...ctx,
           cancel,
           signal: cancel.signal,
-          scopeChain: [],
           scope: `${ctx.scope}/${i}`,
           steps: `${ctx.steps},[${i}]`,
+          scopeChain,
         }),
         (lastItem = document.createComment(ITEM))
       )

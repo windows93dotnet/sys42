@@ -17,7 +17,10 @@ export default function findScope(ctx, loc) {
       const n = occurences(loc, "../")
       const previous = ctx.scopeChain.at(-n)
       const newLoc = loc.slice(n * 3)
-      if (previous && previous.props.includes(newLoc)) {
+      if (
+        previous &&
+        (previous.props === undefined || previous.props.includes(newLoc))
+      ) {
         return [previous.scope, newLoc]
       }
 
@@ -25,10 +28,12 @@ export default function findScope(ctx, loc) {
     }
 
     let i = ctx.scopeChain.length
-    while (i--) {
-      const item = ctx.scopeChain[i]
-      if (item.props.includes(loc)) break
-      scope = item.scope
+    if (ctx.scopeChain.at(-1).props !== undefined) {
+      while (i--) {
+        const item = ctx.scopeChain[i]
+        if (item.props?.includes(loc)) break
+        scope = item.scope
+      }
     }
   }
 

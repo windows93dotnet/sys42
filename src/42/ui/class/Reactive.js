@@ -52,6 +52,7 @@ export default class Reactive extends Emitter {
         }
       }
 
+      // root renderers
       if (sep in this.ctx.renderers) {
         for (const render of this.ctx.renderers[sep]) render(sep)
       }

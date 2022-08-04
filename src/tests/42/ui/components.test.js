@@ -825,10 +825,10 @@ test("state", "dynamic", "push", async (t) => {
     },
   })
 
-  // t.eq(Object.keys(app.ctx.renderers), [
-  //   "/ui/t-nested-dynamic/root/list",
-  //   "/ui/t-nested-dynamic/root/list/0/foo",
-  // ])
+  t.eq(Object.keys(app.ctx.renderers), [
+    "/ui/t-nested-dynamic/root/list",
+    "/ui/t-nested-dynamic/root/list/0/foo",
+  ])
 
   t.eq(app.reactive.data, {
     ui: {
