@@ -4,19 +4,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" href="/style.css" id="theme" />
 
-<div id="toto" style="width: 300px">hello</div>
-
 <script type="module">
   import ui from "../../../../42/ui.js"
 
   const app = await ui(
     {
-      class: "box-fit desktop",
+      tag: "body.box-fit.desktop",
       content: [
         {
           tag: "button#incr",
           content: "{{cnt}}",
-          on: { click: "{{cnt += 1}}" },
+          click: "{{cnt += 1}}",
+        },
+
+        {
+          tag: "button#dialog",
+          content: "dialog",
+          dialog: {
+            y: 200,
+            label: "top ({{x}},{{y}})",
+            content: {
+              tag: "button#dialog-incr",
+              content: "{{cnt}}",
+              click: "{{cnt += 1}}",
+            },
+          },
         },
 
         {
@@ -27,22 +39,27 @@
               {
                 tag: "button#iframe-incr",
                 content: "{{cnt}}",
-                on: { click: "{{cnt += 1}}" },
+                click: "{{cnt += 1}}",
               },
               {
-                tag: "button#dialog",
+                tag: "button#iframe-dialog",
                 content: "dialog",
                 dialog: {
+                  y: 300,
                   label: "iframe ({{x}},{{y}})",
                   content: {
-                    tag: "button#dialog-incr",
-                    content: "{{cnt}} ({{x}},{{y}})",
-                    on: { click: "{{cnt += 1}}" },
+                    tag: "button#iframe-dialog-incr",
+                    content: "{{cnt}}",
+                    click: "{{cnt += 1}}",
                   },
                 },
               },
             ],
-            script: `app.query("#dialog")?.click()`,
+            // script: `app.query("button#iframe-dialog")?.click()`,
+            script: `
+            app.query("button#iframe-incr")?.click()
+            // app.query("button#iframe-incr")?.click()
+          `,
           },
         },
       ],
@@ -56,10 +73,6 @@
 
   globalThis.app = app
 
-  const $incr = app("button#incr")
-
-  $incr.click()
-  $incr.click()
-  $incr.click()
-  $incr.click()
+  // app.query("button#dialog")?.click()
+  // app.query("button#incr")?.click()
 </script>

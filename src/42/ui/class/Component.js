@@ -186,9 +186,8 @@ export default class Component extends HTMLElement {
       }
     }
 
-    /* handle attrs
-    --------------- */
-
+    /* handle def attrs
+    ------------------- */
     let attrs = normalizeAttrs(def, this.ctx, definition.defaults)
     for (const attr of Object.keys(attrs)) delete def[attr]
     if (attrs) renderAttributes(this, this.ctx, attrs)
@@ -206,7 +205,6 @@ export default class Component extends HTMLElement {
 
     /* apply props
     -------------- */
-
     if (propsKeys.length > 0) {
       if (filteredPropsKeys.length > 0) {
         this.#setNewScope(filteredPropsKeys)
@@ -259,6 +257,8 @@ export default class Component extends HTMLElement {
 
     if (computed) normalizeComputeds(computed, this.ctx)
 
+    /* handle all attrs
+    ------------------- */
     attrs = normalizeAttrs(def, this.ctx, definition.defaults)
     for (const attr of Object.keys(attrs)) delete def[attr]
     if (attrs) renderAttributes(this, this.ctx, attrs)

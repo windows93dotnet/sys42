@@ -33,6 +33,7 @@ const DEF_KEYWORDS = new Set([
   "click",
   "computed",
   "content",
+  "defaults",
   "dialog",
   "each",
   "else",
@@ -40,10 +41,13 @@ const DEF_KEYWORDS = new Set([
   "on",
   "parentId",
   "plugins",
+  "popup",
   "schema",
   "scope",
+  "scopeChain",
   "state",
   "tag",
+  "traits",
 ])
 
 const TRAIT_KEYWORDS = new Set([
