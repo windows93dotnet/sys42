@@ -1,12 +1,12 @@
 import sleep from "../promise/sleep.js"
 
 export default function synchronize(fn) {
-  const queue = []
+  const stack = []
   return async (...args) => {
     await sleep(0)
-    await queue.pop()
+    await stack.pop()
     const res = fn(...args)
-    queue.push(res)
+    stack.push(res)
     return res
   }
 }

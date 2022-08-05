@@ -236,9 +236,44 @@ test("reactive data", "styles", async (t) => {
   )
 })
 
+/* update event
+=============== */
+
+test("update", async (t) => {
+  const app = await ui(tmp(), {
+    content: "{{a}}{{b}}{{c}}",
+    state: { a: "a", b: "b", c: "c" },
+  })
+
+  const stub = t.stub()
+
+  app.reactive.on("update", stub)
+
+  t.is(app.el.innerHTML, "abc")
+  t.is(stub.count, 0)
+
+  app.state.a = "A"
+  app.state.b = "B"
+  delete app.state.c
+
+  t.is(stub.count, 0)
+
+  await app
+
+  t.is(app.el.innerHTML, "AB")
+  t.is(stub.count, 1)
+  t.eq(stub.calls, [
+    {
+      args: [new Set(["/a", "/b", "/c"]), new Set(["/c"])],
+    },
+  ])
+
+  t.is(app.reactive.throttle, true)
+})
+
 /* update throttle
 ==================
-One update on idle or every animation frame */
+One update every animation frame */
 
 test("update throttle", async (t) => {
   const app = await ui(tmp(), {
@@ -267,7 +302,7 @@ test("update throttle", async (t) => {
   t.is(stub.count, 1)
   t.eq(stub.calls, [
     {
-      args: [new Set(["/a", "/b", "/c"])],
+      args: [new Set(["/a", "/b", "/c"]), new Set()],
     },
   ])
 
@@ -300,9 +335,9 @@ test("update throttle", "using throttle:false", async (t) => {
   t.is(app.el.innerHTML, "ABC")
   t.is(stub.count, 3)
   t.eq(stub.calls, [
-    { args: [new Set(["/a"])] },
-    { args: [new Set(["/b"])] },
-    { args: [new Set(["/c"])] },
+    { args: [new Set(["/a"]), new Set()] },
+    { args: [new Set(["/b"]), new Set()] },
+    { args: [new Set(["/c"]), new Set()] },
   ])
 
   t.is(app.reactive.throttle, false)
@@ -335,9 +370,9 @@ test("update throttle", "using updateNow", async (t) => {
   t.is(app.el.innerHTML, "ABC")
   t.is(stub.count, 3)
   t.eq(stub.calls, [
-    { args: [new Set(["/a"])] },
-    { args: [new Set(["/b"])] },
-    { args: [new Set(["/c"])] },
+    { args: [new Set(["/a"]), new Set()] },
+    { args: [new Set(["/b"]), new Set()] },
+    { args: [new Set(["/c"]), new Set()] },
   ])
 
   t.is(app.reactive.throttle, true)
@@ -370,9 +405,9 @@ test("update throttle", "using silent:true", async (t) => {
   t.is(app.el.innerHTML, "ABC")
   t.is(stub.count, 3)
   t.eq(stub.calls, [
-    { args: [new Set(["/a"])] },
-    { args: [new Set(["/b"])] },
-    { args: [new Set(["/c"])] },
+    { args: [new Set(["/a"]), new Set()] },
+    { args: [new Set(["/b"]), new Set()] },
+    { args: [new Set(["/c"]), new Set()] },
   ])
 
   t.is(app.reactive.throttle, true)

@@ -34,42 +34,11 @@ export default class Reactive extends Emitter {
     }
 
     const update = () => {
-      const changes = new Set()
-
-      for (const path of this.queue.objects) {
-        changes.add(path)
-        for (const key of Object.keys(this.ctx.renderers)) {
-          if (key.startsWith(path) && key in this.ctx.renderers) {
-            for (const render of this.ctx.renderers[key]) render(key)
-          }
-        }
-      }
-
-      for (const path of this.queue.paths) {
-        changes.add(path)
-        if (path in this.ctx.renderers) {
-          for (const render of this.ctx.renderers[path]) render(path)
-        }
-      }
-
-      // root renderers
-      if (sep in this.ctx.renderers) {
-        for (const render of this.ctx.renderers[sep]) render(sep)
-      }
-
-      // console.group("State Update")
-      // console.log([...changes].join("\n"))
-      // console.log("%c" + Object.keys(ctx.renderers).join("\n"), "color:#999")
-      // console.groupEnd()
-
-      this.queue.objects.clear()
-      this.queue.paths.clear()
-
+      const res = this.render(this.queue)
       this.#update.ready?.resolve?.()
       this.#update.ready = 0
-
       try {
-        this.emit("update", changes)
+        this.emit("update", ...res)
       } catch (err) {
         dispatch(ctx.el, err)
       }
@@ -85,8 +54,8 @@ export default class Reactive extends Emitter {
 
       locate: (ref) => locate(this.state, ref, sep),
 
-      change: (path, val, oldVal, detail) => {
-        this.update(path, val, oldVal, detail)
+      change: (path, val, oldVal, deleted) => {
+        this.update(path, val, oldVal, deleted)
       },
 
       has: (path, { key }) => {
@@ -156,9 +125,13 @@ export default class Reactive extends Emitter {
     this.throttle = throttle
   }
 
-  update(path, val, oldVal) {
-    if (path.endsWith("/length")) {
-      this.queue.objects.add(path.slice(0, -7))
+  // eslint-disable-next-line max-params
+  enqueue(queue, path, val, oldVal, deleted) {
+    if (deleted) {
+      const type = oldVal && typeof oldVal === "object" ? "objects" : "paths"
+      queue[type].add([path, true])
+    } else if (path.endsWith("/length")) {
+      queue.objects.add(path.slice(0, -7))
     } else if (val && typeof val === "object") {
       if (
         oldVal !== undefined &&
@@ -168,14 +141,90 @@ export default class Reactive extends Emitter {
         return
       }
 
-      this.queue.objects.add(path)
+      queue.objects.add([path])
     } else {
       if (oldVal !== undefined && equal(val, oldVal)) return
-      this.queue.paths.add(path)
+      queue.paths.add([path])
     }
+  }
 
+  update(path, val, oldVal, deleted) {
+    this.enqueue(this.queue, path, val, oldVal, deleted)
     this.#update.ready ||= defer()
     this.#update.fn()
+  }
+
+  render(queue) {
+    const changes = new Set()
+    const deleteds = new Set()
+
+    for (const [path, deleted] of queue.objects) {
+      changes.add(path)
+      if (deleted) deleteds.add(path)
+      for (const key of Object.keys(this.ctx.renderers)) {
+        if (key.startsWith(path) && key in this.ctx.renderers) {
+          for (const render of this.ctx.renderers[key]) render(key)
+        }
+      }
+    }
+
+    for (const [path, deleted] of queue.paths) {
+      changes.add(path)
+      if (deleted) deleteds.add(path)
+      if (path in this.ctx.renderers) {
+        for (const render of this.ctx.renderers[path]) render(path)
+      }
+    }
+
+    // root renderers
+    if (sep in this.ctx.renderers) {
+      for (const render of this.ctx.renderers[sep]) render(sep)
+    }
+
+    // console.group("State Update")
+    // console.log([...changes].join("\n"))
+    // console.log("%c" + Object.keys(ctx.renderers).join("\n"), "color:#999")
+    // console.groupEnd()
+
+    queue.objects.clear()
+    queue.paths.clear()
+
+    return [changes, deleteds]
+  }
+
+  export(changes, deleteds) {
+    const data = { add: [], remove: [] }
+    for (const loc of changes) {
+      if (deleteds.has(loc)) data.delete.push(loc)
+      else data.add.push([loc, locate(this.data, loc, sep)])
+    }
+
+    return data
+  }
+
+  import({ add, remove }, ...rest) {
+    const queue = {
+      paths: new Set(),
+      objects: new Set(),
+    }
+
+    for (const [loc, val] of add) {
+      allocate(this.data, loc, val, sep)
+      this.enqueue(queue, loc, val)
+    }
+
+    for (const loc of remove) {
+      deallocate(this.data, loc, sep)
+      this.enqueue(queue, loc, undefined, undefined, true)
+    }
+
+    const res = this.render(queue)
+
+    try {
+      this.emit("update", ...res, ...rest)
+    } catch (err) {
+      dispatch(this.ctx.el, err)
+    }
   }
 
   has(path) {

@@ -48,38 +48,45 @@ export default function observe(root, options = {}) {
       },
 
       set(target, key, val, receiver) {
-        const oldVal = Reflect.get(target, key, receiver)
-
-        let out
+        let res
 
         if (typeof key === "string") {
+          const oldVal = Reflect.get(target, key, receiver)
           const path = scope + key
-          const allow =
-            options.set?.(path, val, oldVal, { key, chain, parent, root }) ??
-            true
-          out = allow && Reflect.set(target, key, val, receiver)
+          const allow = options.set?.(path, val, oldVal, {
+            key,
+            chain,
+            parent,
+            root,
+          })
+          res = (allow ?? true) && Reflect.set(target, key, val, receiver)
           options.change?.(path, val, oldVal)
         } else {
-          out = Reflect.set(target, key, val, receiver)
+          res = Reflect.set(target, key, val, receiver)
         }
 
-        return out
+        return res
       },
 
-      deleteProperty(target, key) {
-        let out
+      deleteProperty(target, key, receiver) {
+        let res
 
         if (typeof key === "string") {
+          const oldVal = Reflect.get(target, key, receiver)
           const path = scope + key
-          const allow =
-            options.delete?.(path, { key, chain, parent, root }) ?? true
-          out = allow && Reflect.deleteProperty(target, key)
-          options.change?.(path)
+          const allow = options.delete?.(path, oldVal, {
+            key,
+            chain,
+            parent,
+            root,
+          })
+          res = (allow ?? true) && Reflect.deleteProperty(target, key)
+          options.change?.(path, undefined, oldVal, true)
         } else {
-          out = Reflect.deleteProperty(target, key)
+          res = Reflect.deleteProperty(target, key)
         }
 
-        return out
+        return res
       },
     }
   }

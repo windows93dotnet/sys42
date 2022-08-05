@@ -2,13 +2,12 @@
 import inIframe from "../../core/env/runtime/inIframe.js"
 import inTop from "../../core/env/runtime/inTop.js"
 import ipc from "../../core/ipc.js"
-import allocate from "../../fabric/locator/allocate.js"
 import configure from "../../core/configure.js"
 
 let debug = 1
 
 let cnt = 0
-const max = 30
+const max = 300
 
 if (debug) {
   document.addEventListener("click", () => {
@@ -26,16 +25,6 @@ const DEFAULTS = {
   top_to_parent_iframe: true,
   parent_top_to_iframe: true,
   iframe_to_parent_top: true,
-}
-
-function getData(queue, ctx) {
-  const data = {}
-  for (const key of queue) {
-    const val = ctx.reactive.get(key, { silent: true })
-    allocate(data, key, val, "/")
-  }
-
-  return data
 }
 
 const iframes = new Map()
@@ -72,15 +61,19 @@ export default async function ipcPlugin(ctx, options) {
 
   if (parent_iframe_to_top) {
     if (inTop && ctx.parentId) {
-      ipc.on(`42-ui-ipc-${ctx.parentId}`, ctx, (data) => {
+      ipc.on(`42-ui-ipc-${ctx.parentId}`, ctx, (data, { iframe }) => {
         debug?.("Parent Iframe --> Top")
-        ctx.reactive.merge("/", data)
+        ctx.reactive.import(data, iframe)
       })
     }
 
     if (inIframe) {
-      ctx.reactive.on("update", ctx, (queue) => {
-        ipc.to.top.emit(`42-ui-ipc-${ctx.id}`, getData(queue, ctx))
+      ctx.reactive.on("update", ctx, (changes, deleteds, source) => {
+        console.log(source)
+        ipc.to.top.emit(
+          `42-ui-ipc-${ctx.id}`,
+          ctx.reactive.export(changes, deleteds)
+        )
       })
     }
   }
@@ -89,10 +82,10 @@ export default async function ipcPlugin(ctx, options) {
 
   if (top_to_parent_iframe) {
     if (inTop && ctx.parentId) {
-      ctx.reactive.on("update", ctx, (queue) => {
-        const data = getData(queue, ctx)
-        for (const emit of iframes.values()) {
-          emit(`42-ui-ipc-${ctx.parentId}`, data)
+      ctx.reactive.on("update", ctx, (changes, deleteds, source) => {
+        const data = ctx.reactive.export(changes, deleteds)
+        for (const [iframe, emit] of iframes.entries()) {
+          if (iframe !== source) emit(`42-ui-ipc-${ctx.parentId}`, data)
         }
       })
     }
@@ -100,7 +93,7 @@ export default async function ipcPlugin(ctx, options) {
     if (inIframe) {
       ipc.to.top.on(`42-ui-ipc-${ctx.id}`, ctx, (data) => {
         debug?.("Top --> Parent Iframe")
-        ctx.reactive.merge("/", data)
+        ctx.reactive.import(data)
       })
     }
   }
@@ -109,10 +102,10 @@ export default async function ipcPlugin(ctx, options) {
 
   if (parent_top_to_iframe) {
     if (inTop) {
-      ctx.reactive.on("update", ctx, (queue) => {
-        const data = getData(queue, ctx)
-        for (const emit of iframes.values()) {
-          emit(`42-ui-ipc-${ctx.id}`, data)
+      ctx.reactive.on("update", ctx, (changes, deleteds, source) => {
+        const data = ctx.reactive.export(changes, deleteds)
+        for (const [iframe, emit] of iframes.entries()) {
+          if (iframe !== source) emit(`42-ui-ipc-${ctx.id}`, data)
         }
       })
     }
@@ -120,7 +113,7 @@ export default async function ipcPlugin(ctx, options) {
     if (inIframe) {
       ipc.to.top.on(`42-ui-ipc-${ctx.parentId}`, ctx, (data) => {
         debug?.("Parent Top --> Iframe")
-        ctx.reactive.merge("/", data)
+        ctx.reactive.import(data)
       })
     }
   }
@@ -129,15 +122,19 @@ export default async function ipcPlugin(ctx, options) {
 
   if (iframe_to_parent_top) {
     if (inTop) {
-      ipc.on(`42-ui-ipc-${ctx.id}`, ctx, (data) => {
+      ipc.on(`42-ui-ipc-${ctx.id}`, ctx, (data, { iframe }) => {
         debug?.("Iframe --> Parent Top")
-        ctx.reactive.merge("/", data)
+        ctx.reactive.import(data, iframe)
       })
     }
 
     if (inIframe) {
-      ctx.reactive.on("update", ctx, (queue) => {
-        ipc.to.top.emit(`42-ui-ipc-${ctx.parentId}`, getData(queue, ctx))
+      ctx.reactive.on("update", ctx, (changes, deleteds, source) => {
+        console.log(source)
+        ipc.to.top.emit(
+          `42-ui-ipc-${ctx.parentId}`,
+          ctx.reactive.export(changes, deleteds)
+        )
       })
     }
   }
