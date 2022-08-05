@@ -37,5 +37,10 @@ export default function findScope(ctx, loc) {
     }
   }
 
+  // console.group("findScope", ctx.scope)
+  // console.log({ scope, loc })
+  // console.log(ctx.scopeChain)
+  // console.groupEnd()
+
   return [scope, loc]
 }

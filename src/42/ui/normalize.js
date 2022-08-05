@@ -340,6 +340,22 @@ export function forkDef(def, ctx) {
   return def
 }
 
+export function ensureDef(def = {}, ctx) {
+  def = { ...def }
+
+  if (def.parentId) {
+    ctx.parentId = def.parentId
+    delete def.parentId
+  }
+
+  if (def.scopeChain) {
+    ctx.scopeChain = def.scopeChain
+    delete def.scopeChain
+  }
+
+  return def
+}
+
 export function normalizeDefNoCtx(def = {}) {
   if (def.animate) def.animate = normalizeAnimate(def.animate)
   normalizeListen(def)
@@ -355,9 +371,7 @@ export function normalizeDef(def = {}, ctx, options) {
     ctx.type = typeof fn
     if (ctx.type === "function") def = fn
   } else if (ctx.type === "object") {
-    def = { ...def }
-    if (def.parentId) ctx.parentId = def.parentId
-    if (def.scopeChain) ctx.scopeChain = def.scopeChain
+    def = ensureDef(def, ctx)
 
     if (def.state) {
       normalizeData(def.state, ctx, (res, scope) => {

@@ -50,9 +50,8 @@ function setOpener(el, ctx, key, def, type) {
 function setDialogTrigger(el, ctx, key, def) {
   ctx = setOpener(el, ctx, key, def, "dialog")
   return async () => {
-    const dialog = await import("../components/dialog.js") //
-      .then((m) => m.default)
-    await dialog(def, ctx)
+    await import("../components/dialog.js") //
+      .then((m) => m.default(def, ctx))
   }
 }
 

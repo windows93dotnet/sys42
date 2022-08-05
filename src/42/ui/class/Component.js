@@ -13,6 +13,7 @@ import render from "../render.js"
 import isEmptyObject from "../../fabric/type/any/is/isEmptyObject.js"
 import hash from "../../fabric/type/any/hash.js"
 import {
+  ensureDef,
   objectifyDef,
   normalizeCtx,
   normalizeDef,
@@ -148,16 +149,18 @@ export default class Component extends HTMLElement {
 
     /* handle ctx
     ------------- */
-    let tmp = { ...ctx }
-    tmp.el = this
-    tmp.component = this
-    tmp.preload = undefined
-    tmp.components = undefined
-    tmp.postrender = undefined
-    tmp.cancel = ctx?.cancel?.fork()
-    tmp.steps ??= this.localName
-    tmp = normalizeCtx(tmp)
-    this.ctx = tmp
+    this.ctx = normalizeCtx({
+      ...ctx,
+      el: this,
+      component: this,
+      preload: undefined,
+      components: undefined,
+      postrender: undefined,
+      cancel: ctx?.cancel?.fork(),
+      steps: ctx?.steps ?? this.localName,
+    })
+
+    def = ensureDef(def, this.ctx)
     normalizeScope(def, this.ctx)
     def = objectifyDef(def)
 
