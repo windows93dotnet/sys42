@@ -21,7 +21,7 @@
           tag: "button#dialog",
           content: "dialog",
           dialog: {
-            y: 200,
+            y: 100,
             label: "top ({{x}},{{y}})",
             content: {
               tag: "button#dialog-incr",
@@ -33,33 +33,57 @@
 
         {
           content: {
-            tag: "ui-sandbox",
+            tag: "ui-sandbox#sandbox1",
             permissions: "trusted",
             content: [
               {
-                tag: "button#iframe-incr",
+                tag: "button#iframe1-incr",
                 content: "{{cnt}}",
                 click: "{{cnt += 1}}",
               },
               {
-                tag: "button#iframe-dialog",
+                tag: "button#iframe1-dialog",
                 content: "dialog",
                 dialog: {
-                  y: 300,
+                  y: 200,
                   label: "iframe ({{x}},{{y}})",
                   content: {
-                    tag: "button#iframe-dialog-incr",
+                    tag: "button#iframe1-dialog-incr",
                     content: "{{cnt}}",
                     click: "{{cnt += 1}}",
                   },
                 },
               },
             ],
-            // script: `app.query("button#iframe-dialog")?.click()`,
-            script: `
-            app.query("button#iframe-incr")?.click()
-            // app.query("button#iframe-incr")?.click()
-          `,
+            script: `app.query("button#iframe1-dialog")?.click()`,
+          },
+        },
+
+        {
+          content: {
+            tag: "ui-sandbox#sandbox2.ground",
+            permissions: "trusted",
+            content: [
+              {
+                tag: "button#iframe2-incr",
+                content: "{{cnt}}",
+                click: "{{cnt += 1}}",
+              },
+              {
+                tag: "button#iframe2-dialog",
+                content: "dialog",
+                dialog: {
+                  y: 300,
+                  label: "iframe ({{x}},{{y}})",
+                  content: {
+                    tag: "button#iframe2-dialog-incr",
+                    content: "{{cnt}}",
+                    click: "{{cnt += 1}}",
+                  },
+                },
+              },
+            ],
+            script: `app.query("button#iframe2-dialog")?.click()`,
           },
         },
       ],
@@ -73,6 +97,9 @@
 
   globalThis.app = app
 
-  // app.query("button#dialog")?.click()
-  // app.query("button#incr")?.click()
+  app.query("button#dialog")?.click()
+
+  setTimeout(() => {
+    app.query("button#incr")?.click()
+  }, 1000)
 </script>

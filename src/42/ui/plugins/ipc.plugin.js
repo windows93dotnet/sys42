@@ -4,10 +4,10 @@ import inTop from "../../core/env/runtime/inTop.js"
 import ipc from "../../core/ipc.js"
 import configure from "../../core/configure.js"
 
-let debug = 1
+let debug = 0
 
 let cnt = 0
-const max = 300
+const max = 100
 
 if (debug) {
   document.addEventListener("click", () => {
@@ -69,7 +69,7 @@ export default async function ipcPlugin(ctx, options) {
 
     if (inIframe) {
       ctx.reactive.on("update", ctx, (changes, deleteds, source) => {
-        console.log(source)
+        if (source === "top") return
         ipc.to.top.emit(
           `42-ui-ipc-${ctx.id}`,
           ctx.reactive.export(changes, deleteds)
@@ -93,7 +93,7 @@ export default async function ipcPlugin(ctx, options) {
     if (inIframe) {
       ipc.to.top.on(`42-ui-ipc-${ctx.id}`, ctx, (data) => {
         debug?.("Top --> Parent Iframe")
-        ctx.reactive.import(data)
+        ctx.reactive.import(data, "top")
       })
     }
   }
@@ -113,7 +113,7 @@ export default async function ipcPlugin(ctx, options) {
     if (inIframe) {
       ipc.to.top.on(`42-ui-ipc-${ctx.parentId}`, ctx, (data) => {
         debug?.("Parent Top --> Iframe")
-        ctx.reactive.import(data)
+        ctx.reactive.import(data, "parent")
       })
     }
   }
@@ -130,7 +130,7 @@ export default async function ipcPlugin(ctx, options) {
 
     if (inIframe) {
       ctx.reactive.on("update", ctx, (changes, deleteds, source) => {
-        console.log(source)
+        if (source === "parent") return
         ipc.to.top.emit(
           `42-ui-ipc-${ctx.parentId}`,
           ctx.reactive.export(changes, deleteds)
