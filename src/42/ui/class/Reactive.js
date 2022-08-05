@@ -195,7 +195,7 @@ export default class Reactive extends Emitter {
   export(changes, deleteds) {
     const data = { add: [], remove: [] }
     for (const loc of changes) {
-      if (deleteds.has(loc)) data.delete.push(loc)
+      if (deleteds.has(loc)) data.remove.push(loc)
       else data.add.push([loc, locate(this.data, loc, sep)])
     }
 

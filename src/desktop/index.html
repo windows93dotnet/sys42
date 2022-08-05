@@ -6,10 +6,7 @@
 
 <script type="module">
   import trap from "../42/fabric/type/error/trap.js"
-  trap((err) => {
-    import("../42/core/log.js").then((m) => m.default(err))
-    return false
-  })
+  trap()
 </script>
 
 <script type="module">

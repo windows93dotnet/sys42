@@ -19,8 +19,9 @@ export default async function when(target, events, options) {
   if (error === true) error = "error"
   if (error) originStack = new Error().stack
 
-  return Promise[race ? "race" : "all"](
-    events.split(OR_REGEX).map(
+  const list = events.split(OR_REGEX)
+  const res = await Promise[race ? "race" : "all"](
+    list.map(
       (event) =>
         new Promise((resolve, reject) => {
           function onevent(e) {
@@ -39,4 +40,8 @@ export default async function when(target, events, options) {
         })
     )
   )
+
+  if (race || list.length === 1) return res[0]
+
+  return res
 }

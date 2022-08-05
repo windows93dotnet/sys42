@@ -40,14 +40,6 @@
     pointer-events: auto;
     margin-bottom: 0.8rem;
   }
-  main strong {
-    pointer-events: auto;
-    margin-top: 0.8rem;
-    margin-bottom: 0.8rem;
-    text-transform: uppercase;
-    font-weight: 100;
-    opacity: 0.5;
-  }
 </style>
 
 <main>
@@ -69,13 +61,8 @@
   import stemname from "./42/fabric/type/path/extract/stemname.js"
 
   const main = document.querySelector("main")
-  main.append(create("strong", "demos"))
   disk.glob("**/*.demo.html").forEach((href) => {
     main.append(create("a", stemname(href).replace(".demo", ""), { href }))
-  })
-  main.append(create("strong", "tests"))
-  disk.glob("**/*.test.html").forEach((href) => {
-    main.append(create("a", stemname(href).replace(".test", ""), { href }))
   })
 
   // await disk.reinstall()

@@ -756,6 +756,33 @@ test("actions", async (t) => {
   t.is(app.el.innerHTML, "a X")
 })
 
+test("actions", "error", async (t) => {
+  const app = await ui(tmp(true), {
+    content: "a {{foo|>uppercase}}",
+    state: { foo: "b" },
+    actions: {
+      uppercase() {
+        throw new Error("boom")
+      },
+    },
+  })
+
+  let e = await t.utils.when(document.body, "error")
+  e.preventDefault()
+  t.is(e.message, "boom")
+
+  t.is(app.el.innerHTML, "a ")
+
+  app.state.foo = "x"
+
+  e = await t.utils.when(document.body, "error")
+  e.preventDefault()
+  t.is(e.message, "boom")
+
+  await app
+  t.is(app.el.innerHTML, "a ")
+})
+
 test("actions", "as function", async (t) => {
   const app = await ui(tmp(), {
     content: "a {{uppercase(foo)}}",

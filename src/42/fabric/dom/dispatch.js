@@ -7,19 +7,21 @@ export default function dispatch(el, name, detail) {
     import("../type/error/stackTrace.js").then((module) => {
       const stack = module.default(dispatchErr).at(-1)
       const eventInit = {
+        bubbles: true,
+        cancelable: true,
         error,
         message: error.message,
-        bubbles: true,
         lineno: stack.line,
         colno: stack.column,
         filename: stack.filename,
         ...detail,
       }
+
       el.dispatchEvent(new ErrorEvent("error", eventInit))
     })
-  } else {
-    const event = new CustomEvent(name, { bubbles: true, ...detail })
-    el.dispatchEvent(event)
-    return event
   }
+
+  const event = new CustomEvent(name, { bubbles: true, ...detail })
+  el.dispatchEvent(event)
+  return event
 }

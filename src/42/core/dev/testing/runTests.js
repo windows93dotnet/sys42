@@ -3,6 +3,7 @@ import trap from "../../../fabric/type/error/trap.js"
 import idle from "../../../fabric/type/promise/idle.js"
 import stackTrace from "../../../fabric/type/error/stackTrace.js"
 import configure from "../../configure.js"
+import sleep from "../../../fabric/type/promise/sleep.js"
 
 const DEFAULTS = {
   serial: false,
@@ -11,7 +12,9 @@ const DEFAULTS = {
 const uncaughts = []
 
 const listen = () =>
-  trap((err) => {
+  trap(async (err, title, e) => {
+    await sleep(0)
+    if (e.defaultPrevented) return
     if ("module" in err) return
 
     let caughtByTest = false
@@ -57,6 +60,7 @@ export default async function runTests(options = {}) {
   await system.testing.root.init().runTests(config)
   await idle()
   forget()
+
   if (uncaughts.length > 0) {
     system.testing.root.ok = false
     system.testing.root.uncaughts.push(...uncaughts)

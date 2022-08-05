@@ -88,6 +88,13 @@ export const listen = inNode
     }
 
 export default function trap(cb) {
+  if (cb === undefined) {
+    cb = (err) => {
+      import("../../../core/log.js").then((m) => m.default(err))
+      return false
+    }
+  }
+
   const instance = [cb, new Error().stack]
   queue.push(instance)
   if (!isListening) listen()
