@@ -28,10 +28,10 @@ export default class DOMQuery extends Callabale {
           target.push(...this.el.querySelectorAll(`:scope ${selector}`))
         }
 
+        // array methods/properties
         if (Reflect.has(target, key)) return Reflect.get(target, key)
 
-        if (target.length === 0) return target
-
+        // events
         if (key === "on") {
           return (event, selector, fn) => {
             for (const item of target) {
@@ -44,11 +44,23 @@ export default class DOMQuery extends Callabale {
           }
         }
 
+        // fast return
+        if (target.length === 0) return target
+
+        // element native methods
         if (target.some((item) => typeof item[key] === "function")) {
-          return (...args) => target.map((item) => item[key]?.(...args))
+          return (...args) => {
+            const out = []
+            for (const item of target) out.push(item[key]?.(...args))
+            // if (out.every((x) => x === undefined)) return receiver
+            return out
+          }
         }
 
-        return target.map((item) => item[key])
+        // element native properties
+        const out = []
+        for (const item of target) out.push(item[key])
+        return out
       },
 
       set: (target, key, val) => {

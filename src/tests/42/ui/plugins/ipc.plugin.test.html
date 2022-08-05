@@ -7,67 +7,59 @@
 <div id="toto" style="width: 300px">hello</div>
 
 <script type="module">
-  import test from "../../../../42/test.js"
-  // import ui from "../../../../42/ui.js"
+  import ui from "../../../../42/ui.js"
 
-  // const app = await ui(
-  //   {
-  //     class: "box-fit desktop",
-  //     content: [
-  //       {
-  //         tag: "button#incr",
-  //         content: "{{cnt}}",
-  //         on: { click: "{{cnt += 1}}" },
-  //       },
+  const app = await ui(
+    {
+      class: "box-fit desktop",
+      content: [
+        {
+          tag: "button#incr",
+          content: "{{cnt}}",
+          on: { click: "{{cnt += 1}}" },
+        },
 
-  //       {
-  //         content: {
-  //           tag: "ui-sandbox",
-  //           permissions: "trusted",
-  //           content: [
-  //             {
-  //               tag: "button#iframe-incr",
-  //               content: "{{cnt}}",
-  //               on: { click: "{{cnt += 1}}" },
-  //             },
-  //             {
-  //               tag: "button#dialog",
-  //               content: "dialog",
-  //               dialog: {
-  //                 label: "iframe ({{x}},{{y}})",
-  //                 content: {
-  //                   tag: "button#dialog-incr",
-  //                   content: "{{cnt}}",
-  //                   on: { click: "{{cnt += 1}}" },
-  //                 },
-  //               },
-  //             },
-  //           ],
-  //           script: `app.query("#dialog")?.click()`,
-  //         },
-  //       },
-  //     ],
+        {
+          content: {
+            tag: "ui-sandbox",
+            permissions: "trusted",
+            content: [
+              {
+                tag: "button#iframe-incr",
+                content: "{{cnt}}",
+                on: { click: "{{cnt += 1}}" },
+              },
+              {
+                tag: "button#dialog",
+                content: "dialog",
+                dialog: {
+                  label: "iframe ({{x}},{{y}})",
+                  content: {
+                    tag: "button#dialog-incr",
+                    content: "{{cnt}} ({{x}},{{y}})",
+                    on: { click: "{{cnt += 1}}" },
+                  },
+                },
+              },
+            ],
+            script: `app.query("#dialog")?.click()`,
+          },
+        },
+      ],
 
-  //     state: {
-  //       cnt: 42,
-  //     },
-  //   },
-  //   { trusted: true }
-  // )
+      state: {
+        cnt: 42,
+      },
+    },
+    { trusted: true }
+  )
 
-  // globalThis.app = app
+  globalThis.app = app
 
-  const { $, documentReady } = test.utils
+  const $incr = app("button#incr")
 
-  test(async (t) => {
-    t.timeout(2000)
-    await documentReady()
-    const el = $("#toto")
-
-    el.textContent = "yo"
-    // document.querySelector("#toto").textContent = "yo"
-
-    const { width, height } = el.getBoundingClientRect()[0]
-    t.eq({ width, height }, { width: 300, height: 14 })
-  })
+  $incr.click()
+  $incr.click()
+  $incr.click()
+  $incr.click()
 </script>
