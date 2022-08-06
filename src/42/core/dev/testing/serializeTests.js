@@ -11,7 +11,7 @@ const DEFAULTS = {
   title: "line",
   details: "inspect",
   alike: { preset: "inspect", traceNullProto: false },
-  diff: "sample",
+  diff: "inspect",
   truncateTitleParts: 80,
   keepIframes: false,
 }

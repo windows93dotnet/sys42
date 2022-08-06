@@ -11,6 +11,7 @@ const DEFAULTS = {
   serializer: {
     title: "line",
     details: "inspect",
+    alike: { preset: "inspect", traceNullProto: false },
     diff: "inspect",
     truncateTitleParts: 80,
     keepIframes: false,

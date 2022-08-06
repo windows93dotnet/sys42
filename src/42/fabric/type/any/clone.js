@@ -78,7 +78,11 @@ function walk(
   } else if (source instanceof ArrayBuffer) {
     target = new ArrayBuffer(source.byteLength)
     if (deep) new Uint8Array(target).set(new Uint8Array(source))
-  } else if (globalThis.Node && source instanceof Node) {
+  } else if (
+    globalThis.Node &&
+    source.nodeType &&
+    typeof source.cloneNode === "function"
+  ) {
     target =
       typeof source.cloneNode === "function" ? source.cloneNode(true) : {}
   } else {
