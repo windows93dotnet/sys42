@@ -235,15 +235,14 @@ export default e2e(async (t, { container, cleanup }) => {
   })
 
   btnDialogs.dialog1.close()
-  t.is(document.activeElement.textContent, btnDialogs.btnDialog1.textContent)
-
-  await 0
+  await t.sleep(0)
+  t.is(document.activeElement.id, btnDialogs.btnDialog1.id)
 
   btnDialogs.dialog2.close()
-  t.is(document.activeElement.textContent, btnDialogs.btnDialog2.textContent)
-
-  await 0
+  await t.sleep(0)
+  t.is(sandbox1.activeElement.id, btnDialogs.btnDialog2.id)
 
   btnDialogs.dialog3.close()
-  t.is(document.activeElement.textContent, btnDialogs.btnDialog3.textContent)
+  await t.sleep(0)
+  t.is(sandbox2.activeElement.id, btnDialogs.btnDialog3.id)
 })

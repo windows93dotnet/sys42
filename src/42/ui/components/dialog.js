@@ -1,5 +1,5 @@
 import Component from "../class/Component.js"
-import realm from "../../core/realm.js"
+import xrealm from "../../core/xrealm.js"
 import omit from "../../fabric/type/object/omit.js"
 import dispatch from "../../fabric/dom/dispatch.js"
 import maxZIndex from "../../fabric/dom/maxZIndex.js"
@@ -60,7 +60,7 @@ export class Dialog extends Component {
     if (event.defaultPrevented) return
     const data = omit(this.ctx.reactive.data, ["ui"])
     this.emit("close", data)
-    document.querySelector(this.opener)?.focus()
+    // document.querySelector(this.opener)?.focus()
     await this.destroy()
     return data
   }
@@ -110,15 +110,21 @@ Component.define(Dialog)
 
 const tracker = new Map()
 
-const dialog = realm({
+const dialog = xrealm({
   name: "dialog",
 
-  args(def, ctx) {
-    if (realm.inTop) return [objectifyDef(def), { ...ctx }]
+  args(def = {}, ctx) {
+    def.opener ??= document.activeElement
+    if (xrealm.inTop) return [objectifyDef(def), { ...ctx }]
     return [forkDef(def, ctx), {}]
   },
 
-  async top(def, ctx) {
+  returns({ res, opener }) {
+    document.querySelector(opener)?.focus()
+    return res
+  },
+
+  async main(def, ctx) {
     const { steps } = ctx
     let n = tracker.has(steps) ? tracker.get(steps) : 0
     ctx = { ...ctx }
@@ -126,12 +132,14 @@ const dialog = realm({
     tracker.set(steps, n)
 
     const el = new Dialog(def, ctx)
-
+    const { opener } = el
     await el.ready
+
     document.body.append(el)
+
     autofocus(el.querySelector(":scope > .ui-dialog__body"))
 
-    return el.once("close")
+    return el.once("close").then((res) => ({ res, opener }))
   },
 })
 
