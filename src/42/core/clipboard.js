@@ -6,9 +6,9 @@ export const copy = async (text, options) => {
   if (options?.notif) {
     const type = typeof options.notif
     if (type === "string") {
-      system.emit("notif", options.notif)
+      system.emit("ui:notif", options.notif)
     } else {
-      system.emit("notif", `copied "${truncate(text)}" to clipboard`)
+      system.emit("ui:notif", `copied "${truncate(text)}" to clipboard`)
     }
   }
 }

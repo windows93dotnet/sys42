@@ -53,12 +53,14 @@
 </main>
 
 <script type="module">
-  import testRunner from "./42/core/dev/testRunner.js"
   import system from "./42/system.js"
+  import testRunner from "./42/core/dev/testRunner.js"
   import fs from "./42/core/fs.js"
   import disk from "./42/core/fs/disk.js"
   import create from "./42/ui/create.js"
   import stemname from "./42/fabric/type/path/extract/stemname.js"
+
+  system.DEV = true
 
   const main = document.querySelector("main")
   disk.glob("**/*.demo.html").forEach((href) => {
@@ -67,8 +69,6 @@
 
   // await disk.reinstall()
   await fs.deleteDir(disk.HOME + "/.ui").catch(() => {})
-
-  system.DEV = true
 
   testRunner(
     // disk.glob("**/*.test.js"),

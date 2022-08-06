@@ -3,7 +3,6 @@ import inAutomated from "./core/env/runtime/inAutomated.js"
 import system from "./system.js"
 import log from "./core/log.js"
 
-import testRunner from "./core/dev/testRunner.js"
 import getScriptData from "./fabric/getScriptData.js"
 const { config } = getScriptData(import.meta)
 
@@ -19,6 +18,8 @@ function greet() {
 
 if (inTop && inAutomated) {
   if (config.testFiles) {
+    const testRunner = await import("./fabric/dev/liveReload.js") //
+      .then((m) => m.default)
     testRunner(config.testFiles, { ...config.testRunner, report: false })
   }
 } else if (!inAutomated) {
@@ -60,6 +61,8 @@ if (inTop && inAutomated) {
       log(dev.sse.enabled ? "paused" : "resumed")
     },
     async test(options = config.testRunner) {
+      const testRunner = await import("./fabric/dev/liveReload.js") //
+        .then((m) => m.default)
       if (config.testFiles) return testRunner(config.testFiles, options)
     },
     async env(full) {

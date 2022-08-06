@@ -1,7 +1,7 @@
 /* eslint-disable unicorn/no-this-assignment */
 /* eslint-disable no-constructor-return */
-import FileIndex from "./FileIndex.js"
 import system from "../../system.js"
+import FileIndex from "./FileIndex.js"
 // import cbor from "../formats/cbor.js"
 
 export const MASKS = {

@@ -1,4 +1,6 @@
-export class System {}
+import Emitter from "./fabric/class/Emitter.js"
+
+export class System extends Emitter {}
 
 let system
 if (globalThis.sys42 && system instanceof System) {

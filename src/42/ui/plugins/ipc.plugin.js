@@ -1,24 +1,38 @@
 /* eslint-disable camelcase */
+import system from "../../system.js"
 import inIframe from "../../core/env/runtime/inIframe.js"
 import inTop from "../../core/env/runtime/inTop.js"
 import ipc from "../../core/ipc.js"
 import configure from "../../core/configure.js"
+import debounce from "../../fabric/type/function/debounce.js"
 
 let debug = 0
 
-let cnt = 0
-const max = 100
+let emitEnd
+if (system.DEV && inTop) {
+  emitEnd = debounce(() => {
+    system.emit("ipc.plugin:end")
+  }, 30)
+}
 
 if (debug) {
+  let cnt = 0
+  const max = 100
+
   document.addEventListener("click", () => {
-    console.log("////////////////////////////")
+    console.log(`---------------------- click ${inTop ? "inTop" : "inIframe"}`)
   })
 
   debug = (message) => {
+    emitEnd?.()
     console.log(message)
     if (cnt++ > max) throw new Error("maximum ipc debug call")
   }
-} else debug = undefined
+} else if (emitEnd) {
+  debug = emitEnd
+} else {
+  debug = undefined
+}
 
 const DEFAULTS = {
   parent_iframe_to_top: true,

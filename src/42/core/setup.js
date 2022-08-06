@@ -1,6 +1,6 @@
+import system from "../system.js"
 import configure, { merge } from "./configure.js"
 import freeze from "../fabric/type/object/freeze.js"
-import system from "../system.js"
 
 import exists from "../fabric/locator/exists.js"
 import allocate from "../fabric/locator/allocate.js"

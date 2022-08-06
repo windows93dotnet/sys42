@@ -10,26 +10,33 @@
 </script>
 
 <script type="module">
+  /* eslint-disable camelcase */
+  import system from "../../../42/system.js"
   import ui from "../../../42/ui.js"
+
+  system.DEV = true
+  // import sleep from "../../../42/fabric/type/promise/sleep.js"
 
   const app = await ui(
     {
       tag: "body.box-fit.desktop",
       content: [
         {
-          tag: "button#incr",
+          tag: "button#incr1",
           content: "{{cnt}}",
           click: "{{cnt += 1}}",
         },
 
         {
-          tag: "button#dialog",
-          content: "dialog",
+          tag: "button#btn_dialog1",
+          content: "dialog 1",
           dialog: {
+            id: "dialog1",
+            x: 100,
             y: 100,
-            label: "top ({{x}},{{y}})",
+            label: "1 ({{x}},{{y}})",
             content: {
-              tag: "button#dialog-incr",
+              tag: "button#dialog_incr1",
               content: "{{cnt}}",
               click: "{{cnt += 1}}",
             },
@@ -42,53 +49,57 @@
             permissions: "trusted",
             content: [
               {
-                tag: "button#iframe1-incr",
+                tag: "button#incr2",
                 content: "{{cnt}}",
                 click: "{{cnt += 1}}",
               },
               {
-                tag: "button#iframe1-dialog",
-                content: "dialog",
+                tag: "button#btn_dialog2",
+                content: "dialog 2",
                 dialog: {
+                  id: "dialog2",
+                  x: 100,
                   y: 200,
-                  label: "iframe ({{x}},{{y}})",
+                  label: "2 ({{x}},{{y}})",
                   content: {
-                    tag: "button#iframe1-dialog-incr",
+                    tag: "button#dialog_incr2",
                     content: "{{cnt}}",
                     click: "{{cnt += 1}}",
                   },
                 },
               },
             ],
-            script: `app.query("button#iframe1-dialog")?.click()`,
+            script: `app.query("#btn_dialog2")?.click()`,
           },
         },
 
         {
           content: {
-            tag: "ui-sandbox#sandbox2.ground",
+            tag: "ui-sandbox#sandbox2",
             permissions: "trusted",
             content: [
               {
-                tag: "button#iframe2-incr",
+                tag: "button#incr3",
                 content: "{{cnt}}",
                 click: "{{cnt += 1}}",
               },
               {
-                tag: "button#iframe2-dialog",
-                content: "dialog",
+                tag: "button#btn_dialog3",
+                content: "dialog 3",
                 dialog: {
+                  id: "dialog3",
+                  x: 100,
                   y: 300,
-                  label: "iframe ({{x}},{{y}})",
+                  label: "3 ({{x}},{{y}})",
                   content: {
-                    tag: "button#iframe2-dialog-incr",
+                    tag: "button#dialog_incr3",
                     content: "{{cnt}}",
                     click: "{{cnt += 1}}",
                   },
                 },
               },
             ],
-            script: `app.query("button#iframe2-dialog")?.click()`,
+            script: `app.query("#btn_dialog3")?.click()`,
           },
         },
       ],
@@ -102,9 +113,48 @@
 
   globalThis.app = app
 
-  app.query("button#dialog")?.click()
+  app.query("#btn_dialog1").click()
 
-  setTimeout(() => {
-    app.query("button#incr")?.click()
-  }, 1000)
+  await new Promise((resolve) => {
+    let cnt = 0
+    app.on("dialogopen", () => ++cnt === 3 && resolve())
+  })
+
+  const sandbox1 = app.query("#sandbox1 iframe").contentDocument
+  const sandbox2 = app.query("#sandbox2 iframe").contentDocument
+
+  const btn = {
+    incr1: document.querySelector("#incr1"),
+    incr2: sandbox1.querySelector("#incr2"),
+    incr3: sandbox2.querySelector("#incr3"),
+    btn_dialog1: document.querySelector("#btn_dialog1"),
+    btn_dialog2: sandbox1.querySelector("#btn_dialog2"),
+    btn_dialog3: sandbox2.querySelector("#btn_dialog3"),
+    dialog1: document.querySelector("#dialog1"),
+    dialog2: document.querySelector("#dialog2"),
+    dialog3: document.querySelector("#dialog3"),
+    dialog_incr1: document.querySelector("#dialog_incr1"),
+    dialog_incr2: document.querySelector("#dialog_incr2"),
+    dialog_incr3: document.querySelector("#dialog_incr3"),
+  }
+
+  // console.log(btn)
+
+  btn.incr1.click()
+  await system.once("ipc.plugin:end")
+  btn.incr2.click()
+  await system.once("ipc.plugin:end")
+  btn.incr3.click()
+
+  console.log(import.meta.url)
+
+  // await sleep(100)
+  // btn.incr2.click()
+  // await sleep(100)
+  // btn.incr3.click()
+
+  // await sleep(100)
+
+  // btn.dialog1.close()
+  // console.assert(document.activeElement === btn.btn_dialog1)
 </script>

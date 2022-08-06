@@ -207,4 +207,8 @@ opacity: 0.01;`
   return el
 }
 
+import getParentModule from "./fabric/getParentModule.js"
+
+console.warn(getParentModule())
+
 export default test
