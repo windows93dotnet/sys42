@@ -13,9 +13,8 @@ function getVal(btn) {
   return out
 }
 
-export default e2e(async (t, { container, cleanup }) => {
+export default e2e(async (t, { container, destroyable }) => {
   system.DEV = true
-  // import sleep from "../../../42/fabric/type/promise/sleep.js"
 
   const app = await ui(
     container,
@@ -38,6 +37,18 @@ export default e2e(async (t, { container, cleanup }) => {
             label: "1 ({{x}},{{y}})",
             content: {
               tag: "button#dialogIncr1",
+              content: "{{cnt}}",
+              click: "{{cnt += 1}}",
+            },
+          },
+        },
+
+        {
+          tag: "button#btnPopup1",
+          content: "popup 1",
+          popup: {
+            content: {
+              tag: "button#popupIncr1",
               content: "{{cnt}}",
               click: "{{cnt += 1}}",
             },
@@ -106,13 +117,13 @@ export default e2e(async (t, { container, cleanup }) => {
       ],
 
       state: {
-        cnt: 42,
+        cnt: 0,
       },
     },
     { trusted: true }
   )
 
-  cleanup(app)
+  destroyable(app)
 
   globalThis.app = app
 
@@ -120,7 +131,7 @@ export default e2e(async (t, { container, cleanup }) => {
 
   await new Promise((resolve) => {
     let cnt = 0
-    listen({ dialogopen: () => ++cnt === 3 && resolve() })
+    listen({ uidialogopen: () => ++cnt === 3 && resolve() })
   })
 
   const sandbox1 = app.query("#sandbox1 iframe").contentDocument
@@ -139,9 +150,9 @@ export default e2e(async (t, { container, cleanup }) => {
     btnDialog1: "dialog 1",
     btnDialog2: "dialog 2",
     btnDialog3: "dialog 3",
-    dialog1: "1 (100,100)42",
-    dialog2: "2 (100,200)42",
-    dialog3: "3 (100,300)42",
+    dialog1: "1 (100,100)0",
+    dialog2: "2 (100,200)0",
+    dialog3: "3 (100,300)0",
   })
 
   const btnIncr = {
@@ -154,84 +165,84 @@ export default e2e(async (t, { container, cleanup }) => {
   }
 
   t.eq(getVal(btnIncr), {
-    incr1: "42",
-    incr2: "42",
-    incr3: "42",
-    dialogIncr1: "42",
-    dialogIncr2: "42",
-    dialogIncr3: "42",
+    incr1: "0",
+    incr2: "0",
+    incr3: "0",
+    dialogIncr1: "0",
+    dialogIncr2: "0",
+    dialogIncr3: "0",
   })
 
   btnIncr.incr1.click()
   await system.once("ipc.plugin:end")
 
   t.eq(getVal(btnIncr), {
-    incr1: "43",
-    incr2: "43",
-    incr3: "43",
-    dialogIncr1: "43",
-    dialogIncr2: "43",
-    dialogIncr3: "43",
+    incr1: "1",
+    incr2: "1",
+    incr3: "1",
+    dialogIncr1: "1",
+    dialogIncr2: "1",
+    dialogIncr3: "1",
   })
 
   btnIncr.incr2.click()
   await system.once("ipc.plugin:end")
 
   t.eq(getVal(btnIncr), {
-    incr1: "44",
-    incr2: "44",
-    incr3: "44",
-    dialogIncr1: "44",
-    dialogIncr2: "44",
-    dialogIncr3: "44",
+    incr1: "2",
+    incr2: "2",
+    incr3: "2",
+    dialogIncr1: "2",
+    dialogIncr2: "2",
+    dialogIncr3: "2",
   })
 
   btnIncr.incr3.click()
   await system.once("ipc.plugin:end")
 
   t.eq(getVal(btnIncr), {
-    incr1: "45",
-    incr2: "45",
-    incr3: "45",
-    dialogIncr1: "45",
-    dialogIncr2: "45",
-    dialogIncr3: "45",
+    incr1: "3",
+    incr2: "3",
+    incr3: "3",
+    dialogIncr1: "3",
+    dialogIncr2: "3",
+    dialogIncr3: "3",
   })
 
   btnIncr.dialogIncr1.click()
   await system.once("ipc.plugin:end")
 
   t.eq(getVal(btnIncr), {
-    incr1: "46",
-    incr2: "46",
-    incr3: "46",
-    dialogIncr1: "46",
-    dialogIncr2: "46",
-    dialogIncr3: "46",
+    incr1: "4",
+    incr2: "4",
+    incr3: "4",
+    dialogIncr1: "4",
+    dialogIncr2: "4",
+    dialogIncr3: "4",
   })
 
   btnIncr.dialogIncr2.click()
   await system.once("ipc.plugin:end")
 
   t.eq(getVal(btnIncr), {
-    incr1: "47",
-    incr2: "47",
-    incr3: "47",
-    dialogIncr1: "47",
-    dialogIncr2: "47",
-    dialogIncr3: "47",
+    incr1: "5",
+    incr2: "5",
+    incr3: "5",
+    dialogIncr1: "5",
+    dialogIncr2: "5",
+    dialogIncr3: "5",
   })
 
   btnIncr.dialogIncr3.click()
   await system.once("ipc.plugin:end")
 
   t.eq(getVal(btnIncr), {
-    incr1: "48",
-    incr2: "48",
-    incr3: "48",
-    dialogIncr1: "48",
-    dialogIncr2: "48",
-    dialogIncr3: "48",
+    incr1: "6",
+    incr2: "6",
+    incr3: "6",
+    dialogIncr1: "6",
+    dialogIncr2: "6",
+    dialogIncr3: "6",
   })
 
   btnDialogs.dialog1.close()

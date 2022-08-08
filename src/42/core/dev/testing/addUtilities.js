@@ -73,6 +73,7 @@ export default function addUtilities(item, isExecutionContext) {
 
     return function (connect = options.connect) {
       const el = document.createElement(options.tag ?? "section")
+      if (options.visible !== true) el.style.opacity = 0.01
       if (options.id) el.id = options.id
       if (options.keep !== true) elements.push(el)
       if (connect) document.body.append(el)

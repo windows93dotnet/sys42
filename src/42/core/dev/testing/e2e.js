@@ -1,13 +1,19 @@
 import ExecutionContext from "./ExecutionContext.js"
 import addUtilities from "./addUtilities.js"
-import noop from "../../../fabric/type/function/noop.js"
 
 export default function e2e(fn) {
   let ran = false
 
-  requestIdleCallback(() => {
+  requestIdleCallback(async () => {
     if (ran) return
-    fn(new ExecutionContext(), { container: document.body, cleanup: noop })
+    const trap = await import("../../../fabric/type/error/trap.js").then(
+      (m) => m.default
+    )
+    trap()
+    fn(new ExecutionContext(), {
+      container: document.body,
+      destroyable: (item) => item,
+    })
   })
 
   return async (t, meta) => {

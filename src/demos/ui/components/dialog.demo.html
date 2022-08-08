@@ -53,8 +53,8 @@
   let closed
 
   listen({
-    async dialogopen(e) {
-      // console.log("dialogopen", e)
+    async uidialogopen(e) {
+      // console.log("uidialogopen", e)
       if (closed) return
       closed = true
       await sleep(500)
@@ -62,9 +62,9 @@
       e.target.close()
       app.query("button#dialog")?.click()
     },
-    // dialogclose(e) {
+    // uidialogclose(e) {
     //   // e.preventDefault()
-    //   console.log("dialogclose", e)
+    //   console.log("uidialogclose", e)
     // },
   })
 

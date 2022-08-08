@@ -1,9 +1,10 @@
 import Component from "../class/Component.js"
-import xrealm from "../../core/xrealm.js"
+import xrealm from "../../core/ipc/xrealm.js"
 import omit from "../../fabric/type/object/omit.js"
 import dispatch from "../../fabric/dom/dispatch.js"
 import maxZIndex from "../../fabric/dom/maxZIndex.js"
 import { objectifyDef, forkDef } from "../normalize.js"
+import uid from "../../core/uid.js"
 import { autofocus } from "../../fabric/dom/focus.js"
 
 const _axis = Symbol("axis")
@@ -56,7 +57,7 @@ export class Dialog extends Component {
   }
 
   async close() {
-    const event = dispatch(this, "dialogclose", { cancelable: true })
+    const event = dispatch(this, "uidialogclose", { cancelable: true })
     if (event.defaultPrevented) return
     const data = omit(this.ctx.reactive.data, ["ui"])
     this.emit("close", data)
@@ -102,7 +103,7 @@ export class Dialog extends Component {
     this.style.top = 0
     this.style.left = 0
     this.style.zIndex = maxZIndex("ui-dialog") + 1
-    dispatch(this, "dialogopen")
+    dispatch(this, "uidialogopen")
   }
 }
 
@@ -110,21 +111,8 @@ Component.define(Dialog)
 
 const tracker = new Map()
 
-const dialog = xrealm({
-  name: "dialog",
-
-  args(def = {}, ctx) {
-    def.opener ??= document.activeElement
-    if (xrealm.inTop) return [objectifyDef(def), { ...ctx }]
-    return [forkDef(def, ctx), {}]
-  },
-
-  returns({ res, opener }) {
-    document.querySelector(opener)?.focus()
-    return res
-  },
-
-  async main(def, ctx) {
+const dialog = xrealm(
+  async function dialog(def, ctx) {
     const { steps } = ctx
     let n = tracker.has(steps) ? tracker.get(steps) : 0
     ctx = { ...ctx }
@@ -141,6 +129,22 @@ const dialog = xrealm({
 
     return el.once("close").then((res) => ({ res, opener }))
   },
-})
+  {
+    input(def = {}, ctx) {
+      if (!def.opener) {
+        document.activeElement.id ||= uid()
+        def.opener ??= document.activeElement.id
+      }
+
+      if (xrealm.inTop) return [objectifyDef(def), { ...ctx }]
+      return [forkDef(def, ctx), {}]
+    },
+
+    output({ res, opener }) {
+      document.querySelector(opener)?.focus()
+      return res
+    },
+  }
+)
 
 export default dialog

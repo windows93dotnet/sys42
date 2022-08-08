@@ -60,6 +60,8 @@ function setPopupTrigger(el, ctx, key, def) {
   el.setAttribute("aria-expanded", "false")
   return async () => {
     el.setAttribute("aria-expanded", "true")
+    await import("../popup.js") //
+      .then((m) => m.default(def, ctx))
   }
 }
 
