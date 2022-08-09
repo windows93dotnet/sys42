@@ -19,8 +19,9 @@ export function countLetters(str) {
   return length
 }
 
-export function countBytes(str) {
-  return new TextEncoder().encode(str).byteLength
+export function countBytes(str, options) {
+  if (typeof options === "string") options = { encoding: options }
+  return new TextEncoder(options?.encoding).encode(str).byteLength
 }
 
 export function countWords(str) {

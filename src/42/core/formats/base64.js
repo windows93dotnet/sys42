@@ -150,7 +150,12 @@ export async function base64Encode(val) {
 
 export async function base64Decode(val, options) {
   const buffer = toArrayBuffer(val)
-  if (options?.output === "string") return new TextDecoder().decode(buffer)
+
+  if (typeof options === "string") options = { encoding: options }
+  if (options?.encoding) {
+    return new TextDecoder(options?.encoding).decode(buffer)
+  }
+
   return buffer
 }
 

@@ -93,6 +93,7 @@ module.exports = {
     "unicorn/relative-url-style": [2, "always"],
     "unicorn/prefer-dom-node-dataset": 0,
     "unicorn/no-thenable": 0,
+    "unicorn/text-encoding-identifier-case": 0,
 
     "unicorn/no-new-array": 0,
     "unicorn/no-hex-escape": 0,

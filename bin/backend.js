@@ -40,7 +40,7 @@ async function greet() {
     config.verbose > 1 ? ` verbose {magenta ${config.verbose}}` : ""
 
   const { version } = JSON.parse(
-    await fs.readFile(new URL("../package.json", import.meta.url), "utf8")
+    await fs.readFile(new URL("../package.json", import.meta.url), "utf-8")
   )
 
   log[config.dev ? "yellow" : "cyanBright"](`

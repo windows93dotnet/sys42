@@ -86,7 +86,7 @@ export default async function serve() {
 
       if (asset.ext === ".html" /*  || asset.ext === ".svg" */) {
         const devStream = makeDevScript(asset, reply.getHeader("user-agent"))
-        asset.headers["content-length"] += Buffer.byteLength(devStream, "utf8")
+        asset.headers["content-length"] += Buffer.byteLength(devStream, "utf-8")
         reply.headers(asset.headers)
         reply.raw.write(devStream)
       } else reply.headers(asset.headers)

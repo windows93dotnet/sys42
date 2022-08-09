@@ -34,7 +34,7 @@ export function rsSource(data, queuingStrategy) {
   if (data instanceof Response) return data.body
   if (data instanceof ReadableStream) return data
   if (Array.isArray(data)) {
-    const encoder = new TextEncoder("utf8")
+    const encoder = new TextEncoder()
     let i = 0
     const l = data.length
     return new ReadableStream(
@@ -63,7 +63,7 @@ export function rsWrap(stream, { before, after }, queuingStrategy) {
     {
       async pull(controller) {
         if (!reader) {
-          encoder = new TextEncoder("utf8")
+          encoder = new TextEncoder()
           reader = stream.getReader()
           if (before) controller.enqueue(encoder.encode(before))
         }

@@ -139,7 +139,7 @@ export const NAMES = {
 }
 
 CHARSETS.utf8.forEach((ext) => {
-  EXTENSIONS.charset[`.${ext}`] = "utf8"
+  EXTENSIONS.charset[`.${ext}`] = "utf-8"
 })
 
 Object.entries(MIMETYPES).forEach(([main, item]) => {
@@ -148,10 +148,10 @@ Object.entries(MIMETYPES).forEach(([main, item]) => {
       if (ext.charAt(0) === "^") {
         ext = ext.slice(1)
         NAMES.mimetype[ext] = `${main}/${sub}`
-        if (main === "text") NAMES.charset[ext] = "utf8"
+        if (main === "text") NAMES.charset[ext] = "utf-8"
       } else {
         EXTENSIONS.mimetype[`.${ext}`] = `${main}/${sub}`
-        if (main === "text") EXTENSIONS.charset[`.${ext}`] = "utf8"
+        if (main === "text") EXTENSIONS.charset[`.${ext}`] = "utf-8"
       }
     })
   })

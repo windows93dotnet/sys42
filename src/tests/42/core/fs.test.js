@@ -97,10 +97,10 @@ const makeSuite = (driver) => {
     const path = cleanFile(`42-${d}-foo`)
     const content = "hello 🌍"
     await fs.write(path, content)
-    const file = await fs.read(path, "utf8")
+    const file = await fs.read(path, "utf-8")
     t.is(file, content)
-    await fs.append(path, "🛰", "utf8")
-    t.is(await fs.read(path, "utf8"), content + "🛰")
+    await fs.append(path, "🛰", "utf-8")
+    t.is(await fs.read(path, "utf-8"), content + "🛰")
     await fs.delete(path)
     await checkError(t, path, () => fs.read(path))
   })
@@ -111,10 +111,10 @@ const makeSuite = (driver) => {
     const { buffer } = new TextEncoder().encode(content)
     await fs.write(path, content)
     t.eq(await fs.read(path), buffer)
-    t.is(await fs.read(path, "utf8"), content)
+    t.is(await fs.read(path, "utf-8"), content)
     await fs.write(path, buffer)
     t.eq(await fs.read(path), buffer)
-    t.is(await fs.read(path, "utf8"), content)
+    t.is(await fs.read(path, "utf-8"), content)
     await fs.delete(path)
   })
 
@@ -122,12 +122,12 @@ const makeSuite = (driver) => {
     const path = cleanFile(`42-${d}-foo-utf8`)
     const content = "hello 🌍"
     const { buffer } = new TextEncoder().encode(content)
-    await fs.write(path, content, "utf8")
+    await fs.write(path, content, "utf-8")
     t.eq(await fs.read(path), buffer)
-    t.is(await fs.read(path, "utf8"), content)
-    await fs.write(path, buffer, "utf8")
+    t.is(await fs.read(path, "utf-8"), content)
+    await fs.write(path, buffer, "utf-8")
     t.eq(await fs.read(path), buffer)
-    t.is(await fs.read(path, "utf8"), content)
+    t.is(await fs.read(path, "utf-8"), content)
     await fs.delete(path)
   })
 
@@ -151,28 +151,28 @@ const makeSuite = (driver) => {
     chunks.mixeds = [chunks.strings[0], chunks.buffers[1], chunks.buffers[2]]
 
     await stream.rs.array(chunks.strings).pipeTo(fs.sink(path + 1))
-    t.eq(await fs.read(path + 1, "utf8"), content)
+    t.eq(await fs.read(path + 1, "utf-8"), content)
     await stream.rs.array(chunks.buffers).pipeTo(fs.sink(path + 2))
-    t.eq(await fs.read(path + 2, "utf8"), content)
+    t.eq(await fs.read(path + 2, "utf-8"), content)
     await stream.rs.array(chunks.mixeds).pipeTo(fs.sink(path + 3))
-    t.eq(await fs.read(path + 3, "utf8"), content)
+    t.eq(await fs.read(path + 3, "utf-8"), content)
 
     // sink with encoding
-    await stream.rs.array(chunks.strings).pipeTo(fs.sink(path + 10, "utf8"))
-    t.eq(await fs.read(path + 10, "utf8"), content)
-    await stream.rs.array(chunks.buffers).pipeTo(fs.sink(path + 20, "utf8"))
-    t.eq(await fs.read(path + 20, "utf8"), content)
-    await stream.rs.array(chunks.mixeds).pipeTo(fs.sink(path + 30, "utf8"))
-    t.eq(await fs.read(path + 30, "utf8"), content)
+    await stream.rs.array(chunks.strings).pipeTo(fs.sink(path + 10, "utf-8"))
+    t.eq(await fs.read(path + 10, "utf-8"), content)
+    await stream.rs.array(chunks.buffers).pipeTo(fs.sink(path + 20, "utf-8"))
+    t.eq(await fs.read(path + 20, "utf-8"), content)
+    await stream.rs.array(chunks.mixeds).pipeTo(fs.sink(path + 30, "utf-8"))
+    t.eq(await fs.read(path + 30, "utf-8"), content)
 
     // intermediate folder creation
     const dir = cleanable(`42-${d}-sink-dir`) + "/"
     await stream.rs.array(chunks.strings).pipeTo(fs.sink(dir + path + 1))
-    t.eq(await fs.read(dir + path + 1, "utf8"), content)
+    t.eq(await fs.read(dir + path + 1, "utf-8"), content)
     await stream.rs.array(chunks.buffers).pipeTo(fs.sink(dir + path + 2))
-    t.eq(await fs.read(dir + path + 2, "utf8"), content)
+    t.eq(await fs.read(dir + path + 2, "utf-8"), content)
     await stream.rs.array(chunks.mixeds).pipeTo(fs.sink(dir + path + 3))
-    t.eq(await fs.read(dir + path + 3, "utf8"), content)
+    t.eq(await fs.read(dir + path + 3, "utf-8"), content)
   })
 
   test("source()", async (t) => {
@@ -180,7 +180,7 @@ const makeSuite = (driver) => {
     const content = "hello 🌍"
     const { buffer } = new TextEncoder().encode(content)
     await fs.write(path, content)
-    t.eq(await stream.ws.collect(fs.source(path, "utf8")), content)
+    t.eq(await stream.ws.collect(fs.source(path, "utf-8")), content)
     t.eq(await stream.ws.collect(fs.source(path)), buffer)
   })
 

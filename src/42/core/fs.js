@@ -9,6 +9,8 @@ import ipc from "./ipc.js"
 
 export { default as FileError } from "./fs/FileSystemError.js"
 
+const UTF8 = "utf-8"
+
 const DEFAULTS = {
   places: { "/": "indexeddb" },
 }
@@ -251,53 +253,50 @@ export async function fsMove(from, to, options) {
 /* sugar
 ======== */
 
-let JSON5
-let CBOR
-
 export async function fsWriteText(path, value) {
-  await fsWrite(path, value, "utf8")
+  await fsWrite(path, value, UTF8)
 }
 
 export async function fsReadText(path) {
-  return fsRead(path, "utf8")
+  return fsRead(path, UTF8)
 }
 
 export async function fsWriteJSON(path, value, replacer, space = 2) {
   let previous
 
   if (value === undefined) {
-    await fsWrite(path, "", "utf8")
+    await fsWrite(path, "", UTF8)
     return
   }
 
   try {
-    previous = await fsRead(path, "utf8")
+    previous = await fsRead(path, UTF8)
   } catch {}
 
   if (previous) {
-    JSON5 ??= await import("./formats/json5.js").then((m) => m.default)
+    const JSON5 = await import("./formats/json5.js").then((m) => m.default)
     try {
-      await fsWrite(path, JSON5.format(previous, value), "utf8")
+      await fsWrite(path, JSON5.format(previous, value), UTF8)
       return
     } catch {}
   }
 
-  await fsWrite(path, JSON.stringify(value, replacer, space), "utf8")
+  await fsWrite(path, JSON.stringify(value, replacer, space), UTF8)
 }
 
 export async function fsReadJSON(path) {
-  JSON5 ??= await import("./formats/json5.js").then((m) => m.default)
-  return fsRead(path, "utf8").then((value) => JSON5.parse(value))
+  const JSON5 = await import("./formats/json5.js").then((m) => m.default)
+  return fsRead(path, UTF8).then((value) => JSON5.parse(value))
 }
 
 export async function fsWriteCBOR(path, value) {
   // @read https://github.com/cbor-wg/cbor-magic-number
-  CBOR ??= await import("./formats/cbor.js").then((m) => m.default)
+  const CBOR = await import("./formats/cbor.js").then((m) => m.default)
   await fsWrite(path, CBOR.encode(value))
 }
 
 export async function fsReadCBOR(path) {
-  CBOR ??= await import("./formats/cbor.js").then((m) => m.default)
+  const CBOR = await import("./formats/cbor.js").then((m) => m.default)
   return fsRead(path).then((value) => CBOR.decode(value))
 }
 
