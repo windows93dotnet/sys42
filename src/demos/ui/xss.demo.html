@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>popup</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/style.css" id="theme" />
+
+<script type="module">
+  import trap from "../../42/fabric/type/error/trap.js"
+  trap()
+</script>
+
+<script type="_module">
+  import checksum from "../../42/fabric/type/file/checksum.js"
+
+  console.log(await checksum("doSomething();", { output: "base64" }))
+</script>
+
+<script type="module">
+  import ui from "../../42/ui.js"
+
+  const img = "../../tests/fixtures/formats/image/example.jpg"
+  // const img = "https://dummyimage.com/300"
+
+  ui([
+    {
+      tag: "ui-sandbox",
+      permissions: "app",
+      content: [
+        {
+          tag: "strong",
+          content: "hello",
+        },
+        {
+          tag: "img",
+          src: img,
+        },
+        // {
+        //   tag: "img",
+        //   src: "https://dummyimage.com/300",
+        // },
+        // {
+        //   tag: "ui-sandbox",
+        //   permissions: "app",
+        //   script: `console.log(1)`,
+        // },
+      ],
+    },
+    {
+      tag: "ui-sandbox",
+      permissions: "app",
+      script: `
+      console.log("sandbox script")
+      const nonce = document.querySelector('script').nonce
+      const script = document.createElement("script")
+      script.textContent = "console.log('untrusted script')"
+      script.nonce = nonce
+      document.body.append(script)
+      `,
+    },
+  ])
+</script>
+
+<script type="_module">
+  // Fail because Content-Security-Policy in Resource.js
+  // doesn't allow scripts without nonce
+
+  import ui from "../../42/ui.js"
+
+  localStorage.setItem("SECRET", "hello secret")
+
+  ui([
+    {
+      // dummy dialog to force top ipc response
+      tag: "ui-dialog",
+      label: "dummy dialog",
+    },
+    {
+      // try to use "app" permission only to get top level secret
+      tag: "ui-sandbox",
+      permissions: "app",
+
+      // override xrealm.js using importmap
+      // using malware-xrealm.js here but xrealm.js could be bundled
+      // to make it work as a base64 string
+      script: `
+  </${"script"}>
+  <script type="importmap">
+    { "imports": { "/42/core/ipc/xrealm.js": "../../tests/fixtures/security/malware-xrealm.js" } }
+  </${"script"}>
+  <script type="module">
+    import dialog from "../../42/ui/components/dialog.js"
+    import xrealm from "../../42/core/ipc/xrealm.js"
+    dialog(
+      {
+        label: "malware",
+        content: {
+          tag: "ui-sandbox",
+          permissions: "trusted",
+          script: "console.log(localStorage.getItem('SECRET'))"
+        }
+      },
+      { trusted: true }
+    )
+  </${"script"}>
+    `,
+    },
+  ])
+</script>
+
+<script type="_module">
+  // Fail because Content-Security-Policy in Resource.js
+  // doesn't allow scripts without nonce
+
+  import ui from "../../42/ui.js"
+
+  localStorage.setItem("SECRET", "hello secret")
+
+  ui([
+    {
+      // dummy dialog to force top ipc response
+      tag: "ui-dialog",
+      label: "dummy dialog",
+    },
+    {
+      // try to use "app" permission only to get top level secret
+      tag: "ui-sandbox",
+      permissions: "app",
+
+      // override xrealm.js using importmap
+      // using malware-xrealm.js here but xrealm.js could be bundled
+      // to make it work as a base64 string
+      html: `
+  <script type="importmap">
+    { "imports": { "/42/core/ipc/xrealm.js": "../../tests/fixtures/security/malware-xrealm.js" } }
+  </${"script"}>
+  <script type="module">
+    import dialog from "../../42/ui/components/dialog.js"
+    import xrealm from "../../42/core/ipc/xrealm.js"
+    dialog(
+      {
+        label: "malware",
+        content: {
+          tag: "ui-sandbox",
+          permissions: "trusted",
+          script: "console.log(localStorage.getItem('SECRET'))"
+        }
+      },
+      { trusted: true }
+    )
+  </${"script"}>
+    `,
+    },
+  ])
+</script>
+
+<script type="_module">
+  // Fail because overriding inTop.js using importmap
+  // doesn't prevent xrealm to fail
+
+  import ui from "../../42/ui.js"
+
+  localStorage.setItem("SECRET", "hello secret")
+
+  const inTop = btoa(`\
+  export default true
+  `)
+
+  ui([
+    {
+      // dummy dialog to force top ipc response
+      tag: "ui-dialog",
+      label: "dummy dialog",
+    },
+    {
+      // try to use "app" permission only to get top level secret
+      tag: "ui-sandbox",
+      permissions: "app",
+      // override inTop.js using importmap
+      html: `
+  <script type="importmap">
+    {
+      "imports": {
+        "/42/core/env/runtime/inTop.js": "data:text/javascript;charset=utf-8;base64,${inTop}"
+      }
+    }
+  </${"script"}>
+  <script type="module" nonce="2726c7f26c">
+    import dialog from "../../42/ui/components/dialog.js"
+    import xrealm from "../../42/core/ipc/xrealm.js"
+    dialog(
+      {
+        label: "malware",
+        content: {
+          tag: "ui-sandbox",
+          permissions: "trusted",
+          script: "console.log(localStorage.getItem('SECRET'))"
+        }
+      },
+      { trusted: true }
+    )
+  </${"script"}>
+    `,
+    },
+  ])
+</script>
+
+<script type="_module">
+    // Fail because xrealm.inTop is not writable
+
+    import ui from "../../42/ui.js"
+
+    localStorage.setItem("SECRET", "hello secret")
+
+    ui([
+      {
+        // dummy dialog to force top ipc response
+        tag: "ui-dialog",
+        label: "dummy dialog",
+      },
+      {
+        // try to use "app" permission only to get top level secret
+        tag: "ui-sandbox",
+        permissions: "app",
+        script: `
+  import dialog from "../../42/ui/components/dialog.js"
+  import xrealm from "../../42/core/ipc/xrealm.js"
+  // xrealm.inTop = true
+  // Object.defineProperty(xrealm, "inTop", {get: ()=> true})
+  dialog(
+    {
+      label: "malware",
+      content: {
+        tag: "ui-sandbox",
+        permissions: "trusted",
+        script: "console.log(localStorage.getItem('SECRET'))"
+      }
+    },
+    { trusted: true }
+  )
+  `,
+      },
+    ])
+</script>

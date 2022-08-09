@@ -2,7 +2,7 @@
 
 /* @read https://a11yproject.com/posts/how-to-hide-content/ */
 /* TODO: add dev.css with https://developer.chrome.com/blog/cvd/ */
-.sr-only:not(:focus):not(:active) {
+.sr-only:not(:focus,:active) {
   position: absolute !important;
   width: 1px !important;
   height: 1px !important;

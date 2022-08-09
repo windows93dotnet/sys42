@@ -8,7 +8,10 @@
  * @param {string} algorithm
  * @returns {string}
  */
-export default async function checksum(val, algorithm = "SHA-256") {
+export default async function checksum(val, options) {
+  const algo = options?.algo ?? "SHA-256"
+  const output = options?.output ?? "base64"
+
   const buffer =
     val instanceof ArrayBuffer
       ? val
@@ -22,10 +25,23 @@ export default async function checksum(val, algorithm = "SHA-256") {
     )
   }
 
-  const digest = await crypto.subtle.digest(algorithm, buffer)
+  const digest = await crypto.subtle.digest(algo, buffer)
+
+  if (output === "hex") {
+    let str = ""
+    for (const b of new Uint8Array(digest)) {
+      str += b.toString(16).padStart(2, "0")
+    }
+
+    return str
+  }
 
   let str = ""
-  for (const b of new Uint8Array(digest)) str += b.toString(16).padStart(2, "0")
+  for (const b of new Uint8Array(digest)) {
+    str += String.fromCharCode(b)
+  }
+
+  if (output === "base64") return btoa(str)
 
   return str
 }

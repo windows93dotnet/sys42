@@ -57,16 +57,26 @@ globalThis.addEventListener(
           const undones = []
 
           if (sources.has(source)) {
-            undones.push(sources.get(source).send(event, data, meta))
+            const dest = sources.get(source)
+            if (event in dest[Emitter.EVENTS]) {
+              undones.push(dest.send(event, data, meta))
+            }
           }
 
-          undones.push(ipc.send(event, data, meta))
+          if (event in ipc[Emitter.EVENTS]) {
+            undones.push(ipc.send(event, data, meta))
+          }
+
+          if (undones.length === 0) {
+            const err = new Error(`No ipc listener for ${event}`)
+            port.postMessage({ id, err })
+            return
+          }
 
           Promise.all(undones)
             .then((res) => {
               res = res.flat()
-              if (undones.length === 1) res = res[0]
-              port.postMessage({ id, res })
+              port.postMessage({ id, res: res[0], all: res })
             })
             .catch((err) => {
               port.postMessage({ id, err })

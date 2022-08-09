@@ -331,10 +331,10 @@ export function objectifyDef(def) {
 export function forkDef(def, ctx) {
   def = objectifyDef(def)
   if (ctx) {
-    def.scope = ctx.scope
-    def.scopeChain = structuredClone(ctx.scopeChain)
-    def.state = structuredClone(ctx.reactive.data)
-    def.parentId = ctx.id
+    if (ctx.scope) def.scope = ctx.scope
+    if (ctx.scopeChain) def.scopeChain = structuredClone(ctx.scopeChain)
+    if (ctx.reactive) def.state = structuredClone(ctx.reactive.data)
+    if (ctx.id) def.parentId = ctx.id
   }
 
   return def

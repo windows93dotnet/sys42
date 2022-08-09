@@ -6,6 +6,10 @@ import { forkDef } from "../normalize.js"
 
 const _setResource = Symbol("setResource")
 
+const styles = {
+  style: '<link rel="stylesheet" href="/style.css" id="theme" />',
+}
+
 export class Sandbox extends Component {
   static definition = {
     tag: "ui-sandbox",
@@ -19,11 +23,6 @@ export class Sandbox extends Component {
         update: _setResource,
       },
       path: {
-        type: "string",
-        fromView: true,
-        update: true,
-      },
-      document: {
         type: "string",
         fromView: true,
         update: true,
@@ -114,22 +113,24 @@ export class Sandbox extends Component {
     if (this.content) {
       const undones = []
       traverse(this.content, (key) => {
-        // Ensure realmed components can exectute function in top
+        // Ensure sandboxed content can execute xrealm functions in top
         if (key === "dialog") undones.push(import("./dialog.js"))
+        if (key === "popup") undones.push(import("../popup.js"))
       })
       await Promise.all(undones)
       const content = forkDef(this.content, this.ctx)
       content.plugins = ["ipc"]
-      return void this.resource.script(`\
+      const script = `\
 import ui from "/42/ui.js"
 const app = await ui(${JSON.stringify(content)})
 ${this.script ?? ""}
-`)
+`
+
+      return this.resource.script(script, styles)
     }
 
-    if (this.script) return void this.resource.script(this.script)
-    if (this.html) return void this.resource.html(this.html)
-    if (this.document) return void this.resource.document(this.document)
+    if (this.script) return this.resource.script(this.script, styles)
+    if (this.html) return this.resource.html(this.html, styles)
     if (!this.path) return
 
     this.toggleAttribute("loading", true)

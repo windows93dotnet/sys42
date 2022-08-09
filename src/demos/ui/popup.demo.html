@@ -11,74 +11,6 @@
 
 <script type="module">
   import ui from "../../42/ui.js"
-  import "../../42/ui/components/dialog.js"
-  import "../../42/ui/components/sandbox.js"
-
-  const button = {
-    tag: "button#incr",
-    content: "{{cnt}}",
-    click: "{{cnt += 1}}",
-  }
-
-  const dialogContent = {
-    tag: "ui-sandbox.inset",
-    permissions: "app",
-    content: {
-      tag: ".box-fit.box-center._ground",
-      content: [
-        { tag: "div", content: "x: {{x}}, y: {{y}}" }, //
-        { tag: "div", content: "cnt: {{cnt}}" }, //
-        button,
-      ],
-    },
-  }
-
-  // const dialog = {
-  //   tag: "ui-dialog",
-  //   // x: 100,
-  //   // y: 10,
-  //   content: dialogContent,
-  // }
-
-  const app = await ui(
-    {
-      tag: ".box-fit.pa-xxl",
-      content: [
-        button,
-        // dialog,
-        {
-          tag: "button#dialog",
-          content: "dialog",
-          dialog: { content: dialogContent },
-        },
-        "\n\n",
-        "\n\n",
-        {
-          tag: "ui-sandbox.inset",
-          permissions: "app",
-          content: {
-            tag: ".box-fit.box-center",
-            content: [
-              button,
-              // dialog,
-            ],
-          },
-        },
-      ],
-      state: {
-        cnt: 42,
-      },
-    },
-    { id: "popup-demo" }
-  )
-
-  setTimeout(() => {
-    app.query("button#dialog")?.click()
-  }, 800)
-</script>
-
-<script type="_module">
-  import ui from "../../42/ui.js"
 
   const button = {
     tag: "button#incr",
@@ -105,7 +37,10 @@
       {
         tag: "button#popup",
         content: "popup",
-        popup: { content: "hello" },
+        popup: {
+          tag: ".panel.outset.pa-xxl",
+          content: `hello from ${label}`,
+        },
       },
     ],
   })
@@ -122,33 +57,15 @@
             content: buttons("top"),
           },
           {
-            tag: "ui-dialog",
-            x: 10,
-            y: 10,
+            tag: "ui-sandbox",
+            permissions: "app",
             content: {
-              tag: "ui-sandbox",
-              permissions: "app",
-              content: {
-                tag: ".box-fit.box-center.desktop",
-                // content: buttons("dialog"),
-                content: [
-                  { tag: "div", content: "x: {{x}}" }, //
-                  { tag: "div", content: "cnt: {{cnt}}" }, //
-                  button,
-                ],
-              },
-              // script: `setTimeout(() => app.query("#dialog-iframe")?.click(), 500)`,
+              tag: ".box-fit.box-center.desktop",
+              content: buttons("iframe"),
             },
+            // script: `setTimeout(() => app.query("#dialog-iframe")?.click(), 500)`,
+            script: `app.query("#popup").click()`,
           },
-          // {
-          //   tag: "ui-sandbox",
-          //   permissions: "app",
-          //   content: {
-          //     tag: ".box-fit.box-center.desktop",
-          //     content: buttons("iframe"),
-          //   },
-          //   // script: `setTimeout(() => app.query("#dialog-iframe")?.click(), 500)`,
-          // },
         ],
       },
       state: {

@@ -17,7 +17,6 @@ test(1, async (t) => {
         root: {
           permissions: "app",
           path: undefined,
-          document: undefined,
           content: undefined,
           html: undefined,
           script: undefined,

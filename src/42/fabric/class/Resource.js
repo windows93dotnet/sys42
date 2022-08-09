@@ -3,6 +3,7 @@ import configure from "../../core/configure.js"
 import arrify from "../type/any/arrify.js"
 import listen from "../dom/listen.js"
 import isIframable from "../type/url/isIframable.js"
+import checksum from "../type/file/checksum.js"
 
 const DEFAULTS = {
   upgradeInsecureRequests: true,
@@ -139,27 +140,32 @@ export default class Resource {
     this.el.allow = allow.join("; ")
   }
 
-  document(document) {
-    this.el.removeAttribute("src")
-    this.el.srcdoc = document
-  }
-
-  html(html) {
+  async html(html, options) {
+    const { origin } = location
+    const scriptSrc = options["script-src"]
+    const style = options?.style ?? ""
     this.el.removeAttribute("src")
     this.el.srcdoc = `\
 <!DOCTYPE html>
 <meta charset="utf-8" />
-<link rel="stylesheet" href="/style.css" id="theme" />
+<meta
+  http-equiv="Content-Security-Policy"
+  content="\
+default-src ${origin} data:;\
+${scriptSrc ? `script-src 'sha256-${scriptSrc}' ${origin};` : ""}\
+">
+${style}
 ${html}
 `
+    await 0 // queueMicrotask
   }
 
-  script(script, type = "module") {
-    this.html(`\
-<script type="${type}">
-${script}
-</script>
-`)
+  async script(script, options) {
+    const type = options?.type ?? "module"
+    const style = options?.style
+    const config = { style }
+    config["script-src"] = await checksum(script)
+    await this.html(`<script type="${type}">${script}</script>`, config)
   }
 
   async go(url, { signal } = this.config) {
