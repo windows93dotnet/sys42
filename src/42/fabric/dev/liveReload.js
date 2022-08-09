@@ -63,7 +63,7 @@ async function updateElement(el, url, key) {
   el.after(clone)
   await Promise.race([
     sleep(500),
-    when(clone, "load error readystatechange", { race: true }),
+    when(clone, "load || error || readystatechange", { race: true }),
   ])
   el.remove()
   clone.style.display = display
@@ -74,21 +74,19 @@ export default function liveReload(path) {
     task.log(`⚡ hard reload ${log.format.file(path)}`)
     location.reload(true)
   } else {
-    document
-      .querySelectorAll(
-        `link[href]:not([href=""]),
-        iframe[src]:not([src=""]),
+    for (const el of document.querySelectorAll(
+      `link[href]:not([href=""]),
+        [src]:not([src=""]),
         object[data]:not([data=""])`
-      )
-      .forEach((el) => {
-        const key = el.src ? "src" : el.href ? "href" : "data"
-        let url = el[key]
-        url = url ? new URL(url, location.href) : undefined
-        if (url?.pathname === path || inOpaqueOrigin) {
-          task.log(` reload ${log.format.file(path)}`)
-          updateElement(el, url, key)
-        }
-      })
+    )) {
+      const key = el.src ? "src" : el.href ? "href" : "data"
+      let url = el[key]
+      url = url ? new URL(url, location.href) : undefined
+      if (url?.pathname === path || inOpaqueOrigin) {
+        task.log(` reload ${log.format.file(path)}`)
+        updateElement(el, url, key)
+      }
+    }
 
     if (inOpaqueOrigin) return
 

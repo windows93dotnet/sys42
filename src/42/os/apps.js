@@ -118,15 +118,14 @@ class AppManager extends ConfigFile {
       dialogConfig = { state: { files } }
     } else {
       sandboxConfig = {
-        html: `\
-<script type="module">
-  import App from "${APP_CLASS_URL}"
-  import manifest from "${app.manifest}"
-  manifest.dir = "${dir}"
-  manifest.state ??= {}
-  manifest.state.files = ${JSON.stringify(files)}
-  globalThis.app = await new App(manifest)
-</script>`,
+        script: `\
+import App from "${APP_CLASS_URL}"
+import manifest from "${app.manifest}"
+manifest.dir = "${dir}"
+manifest.state ??= {}
+manifest.state.files = ${JSON.stringify(files)}
+globalThis.app = await new App(manifest)
+`,
       }
     }
 

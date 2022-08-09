@@ -6,7 +6,7 @@ import log from "./core/log.js"
 import getScriptData from "./fabric/getScriptData.js"
 const { config } = getScriptData(import.meta)
 
-// config.verbose = 0
+// config.verbose = 2
 log.verbose = config.verbose
 
 function greet() {
