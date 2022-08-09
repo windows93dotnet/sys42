@@ -9,10 +9,13 @@ const PRIMITIVES = new Set(["boolean", "number", "string"])
 const checkNode = "Node" in globalThis
 const checkBlob = "Blob" in globalThis
 
+const TypedArray = Reflect.getPrototypeOf(Int8Array)
+
 const compareObjects = (a, b, config) => {
   const keysA = Reflect.ownKeys(a)
+  const keysB = Reflect.ownKeys(b)
   const l = keysA.length
-  if (l !== Reflect.ownKeys(b).length) return false
+  if (l !== keysB.length) return false
 
   for (let i = 0; i < l; i++) {
     if (Object.hasOwn(b, keysA[i]) === false) return false
@@ -63,10 +66,20 @@ const compareCollections = (a, b, config) => {
 }
 
 const compareTypedArrays = (a, b) => {
+  const l = a.length
+  if (l !== b.length) return false
+  for (let i = 0; i < l; i++) {
+    if (a[i] !== b[i]) return false
+  }
+
+  return true
+}
+
+const compareArrayBuffers = (a, b) => {
   if (a.byteLength !== b.byteLength) return false
   const dataViewA = new Int8Array(a)
   const dataViewB = new Int8Array(b)
-  for (let i = 0, l = a.byteLength; i !== l; i++) {
+  for (let i = 0, l = a.length; i < l; i++) {
     if (dataViewA[i] !== dataViewB[i]) return false
   }
 
@@ -117,7 +130,12 @@ function walk(a, b, config) {
 
         typeA = a instanceof ArrayBuffer
         typeB = b instanceof ArrayBuffer
-        if (typeA && typeB) return deep(compareTypedArrays, a, b, config)
+        if (typeA && typeB) return compareArrayBuffers(a, b)
+        if (typeA !== typeB) return false
+
+        typeA = a instanceof TypedArray
+        typeB = b instanceof TypedArray
+        if (typeA && typeB) return compareTypedArrays(a, b)
         if (typeA !== typeB) return false
 
         if (checkNode) {

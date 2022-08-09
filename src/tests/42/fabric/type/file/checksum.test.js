@@ -59,7 +59,7 @@ test("SHA-256", "hex", async (t) => {
 })
 
 test("SHA-384", async (t) => {
-  const text = "hello"
+  const text = "hello world"
   const file = new Blob([text])
   const buffer = await file.arrayBuffer()
   const view = new Uint8Array(buffer)
@@ -68,7 +68,7 @@ test("SHA-384", async (t) => {
     empty: "OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb",
   }
 
-  const options = { algo: "SHA-384" /* , output: "binary" */ }
+  const options = { algo: "SHA-384" }
 
   t.is(await checksum(text, options), hashs.hello)
   t.is(await checksum(file, options), hashs.hello)
@@ -81,17 +81,17 @@ test("SHA-384", async (t) => {
   t.is(await checksum(new Uint8Array(), options), hashs.empty)
 })
 
-test.skip("SHA-1", async (t) => {
-  const text = "hello"
+test("SHA-1", async (t) => {
+  const text = "hello world"
   const file = new Blob([text])
   const buffer = await file.arrayBuffer()
   const view = new Uint8Array(buffer)
   const hashs = {
-    hello: "aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d",
-    empty: "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+    hello: "Kq5sNclPz7QV2+lfQIuc6R7oRu0=",
+    empty: "2jmj7l5rSw0yVb/vlWAYkK/YBwk=",
   }
 
-  const options = { algo: "SHA-1", output: "hex" }
+  const options = { algo: "SHA-1" }
 
   t.is(await checksum(text, options), hashs.hello)
   t.is(await checksum(file, options), hashs.hello)
