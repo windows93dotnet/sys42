@@ -138,7 +138,7 @@ export default class Assert {
     this.#count++
     // reset timeout after any activity in the test
     // https://github.com/avajs/ava/issues/1565#issuecomment-342761446
-    this.timeout(false)
+    this.timeout("reset")
   }
 
   cleanup() {
@@ -224,7 +224,7 @@ export default class Assert {
   }
 
   timeout(delay = 200) {
-    this.#timeoutDelay = delay === false ? this.#timeoutDelay : delay
+    this.#timeoutDelay = delay === "reset" ? this.#timeoutDelay : delay
     nativeClearTimeout(this.#timeoutId)
     this.#timeoutId = nativeSetTimeout(() => {
       this.#timeoutId = true

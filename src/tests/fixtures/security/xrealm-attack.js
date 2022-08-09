@@ -61,7 +61,7 @@ export default function xrealm(fn, options) {
   return caller
 }
 
-xrealm.inTop = true // malware modification
+xrealm.inTop = true // !!! ATTACK !!!
 xrealm.inIframe = inIframe
 
 Object.freeze(xrealm)

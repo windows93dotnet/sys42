@@ -11,6 +11,7 @@ import resolveScope from "../resolveScope.js"
 import configure from "../../core/configure.js"
 import render from "../render.js"
 import isEmptyObject from "../../fabric/type/any/is/isEmptyObject.js"
+import dispatch from "../../fabric/dom/dispatch.js"
 import hash from "../../fabric/type/any/hash.js"
 import {
   ensureDef,
@@ -103,10 +104,16 @@ export default class Component extends HTMLElement {
     // TODO: test adoptedCallback usage
   }
 
-  connectedCallback() {
+  async connectedCallback() {
     if (!this.isConnected || this.hasAttribute("data-no-init")) return
-    if (this.#lifecycle === RENDER) this.#setup()
-    else if (this.#lifecycle === INIT) this.ready.then(() => this.#setup())
+    if (this.#lifecycle === RENDER) {
+      try {
+        await this.#setup()
+      } catch (err) {
+        if (this.ready.isPending) this.ready.reject(err)
+        else dispatch(this, err)
+      }
+    } else if (this.#lifecycle === INIT) this.ready.then(() => this.#setup())
     else if (this.#lifecycle === CREATE) this.init().then(() => this.#setup())
     else if (this.#lifecycle === RECYCLE) this.#lifecycle = SETUP
   }
@@ -122,11 +129,11 @@ export default class Component extends HTMLElement {
     return this
   }
 
-  #setup() {
+  async #setup() {
     if (this.#lifecycle === SETUP) return
     this.#lifecycle = SETUP
-    this.update?.()
-    this.setup?.(this.ctx)
+    await this.update?.()
+    await this.setup?.(this.ctx)
     this.ctx.postrender.call()
   }
 
@@ -282,8 +289,8 @@ export default class Component extends HTMLElement {
     this.ready ??= defer()
     try {
       await this.#init(...args)
+      if (this.isConnected) await this.#setup()
       this.ready.resolve()
-      if (this.isConnected) this.#setup()
     } catch (err) {
       this.ready.reject(err)
       throw err

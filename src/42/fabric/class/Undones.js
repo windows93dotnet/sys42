@@ -16,4 +16,8 @@ export default class Undones extends Array {
       return res
     })
   }
+
+  async clear() {
+    this.length = 0
+  }
 }

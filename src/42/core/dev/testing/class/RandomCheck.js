@@ -54,7 +54,7 @@ export default class RandomCheck {
     const trials = id === undefined ? config.trials : id
 
     while (attempts++ < trials) {
-      t.timeout(false) // reset timeout
+      t.timeout("reset")
 
       if (signature) {
         // TODO: generate JSON schema from signature to prevent incoherents shrunks

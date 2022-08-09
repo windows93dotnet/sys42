@@ -42,6 +42,7 @@ export default class Test {
       suiteTitle: this.suite.title,
       suiteOk: this.suite.ok,
       stackframe: this.stackframe,
+      failing: this.failing,
       ok: this.ok,
       ms: this.ms,
       skip: this.suite.skip || this.skip,

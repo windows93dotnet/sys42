@@ -27,7 +27,10 @@ const tasks = (list, cb, item) => {
     list.forEach((data, i) => {
       if (data.taskError) item = item.taskError(data.taskError)
       if (cb.length > 1) {
-        cb(data.only ? item.only : data.skip ? item.skip : item, data, i)
+        let fn = data.only ? item.only : data.skip ? item.skip : item
+        if (data.failing) fn = fn.failing
+        if (data.flaky) fn = fn.flaky
+        cb(fn, data, i)
       } else cb(data, i)
     })
   }
@@ -38,13 +41,31 @@ const tasks = (list, cb, item) => {
 export default function addUtilities(item, isExecutionContext) {
   if (isExecutionContext) {
     item.logs = []
-    item.log = new Log({ context: { config: { stringify: "inspect" } } })
+    item.log = new Log({
+      context: {
+        config: {
+          error: {
+            colors: {
+              message: "blue",
+              function: "blue.dim",
+            },
+            filename: {
+              colors: { line: "blue" },
+            },
+            entries: {
+              colors: { key: `blue.dim` },
+            },
+          },
+          stringify: "inspect",
+        },
+      },
+    })
 
     item.log.console = Object.fromEntries(
       CONSOLE_KEYS.map((type) => [
         type,
         (...args) => {
-          if (isExecutionContext) item.timeout(false)
+          if (isExecutionContext) item.timeout("reset")
           item.logs.push([new Error(), type, args])
         },
       ])

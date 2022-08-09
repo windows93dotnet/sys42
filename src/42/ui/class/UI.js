@@ -53,6 +53,10 @@ export default class UI extends DOMQuery {
 
   destroy() {
     this.ctx?.cancel("ui destroyed")
+    this.ctx?.components.clear()
+    this.ctx?.preload.clear()
+    this.ctx?.undones.clear()
+    this.ctx?.postrender.clear()
     delete this.ctx
     delete this.def
     delete this.el

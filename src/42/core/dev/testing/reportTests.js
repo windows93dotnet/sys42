@@ -125,7 +125,7 @@ const displayTest = (test, config, options) => {
   }
 
   let err = ""
-  if (test.error) {
+  if (test.error && !(test.ok && test.failing)) {
     err += "\n\n"
     err += formatError(test.error, {
       entries: {
@@ -154,7 +154,7 @@ const displayTest = (test, config, options) => {
   if (showError || config.verbose > 2) {
     if (showError) prefix = `\n${prefix}`
 
-    if (test.error && !inBackend) {
+    if (test.error && !(test.ok && test.failing) && !inBackend) {
       if (showError) {
         log.br()
         log.groupCollapsed((prefix + title + err).trimStart())
@@ -171,7 +171,7 @@ const displayTest = (test, config, options) => {
       log(prefix + title + err)
     }
   } else if (!test.suiteOk && !inBackend) {
-    if (test.error) {
+    if (test.error && !(test.ok && test.failing)) {
       log.groupCollapsed(prefix + getTestTitle(test))
       log.groupCollapsed(err.slice(1))
       console.log(test.error.original)
@@ -261,12 +261,21 @@ function displayFailedTests(failed, config) {
 }
 
 function displayLogs(logs) {
+  let previous
   for (const [icon, stackframe, type, args] of logs) {
-    log(`${icon}{blue •} ${log.format.file(stackframe)}`)
-    if (inBackend) log.hr()
+    if (previous !== stackframe.source) {
+      log(`${icon}{blue •} ${log.format.file(stackframe)}`)
+      if (inBackend) log.hr()
+    }
+
     console[type](...args)
-    if (inBackend) log.hr().br()
-    else log.br()
+
+    if (previous !== stackframe.source) {
+      if (inBackend) log.hr().br()
+      else log.br()
+    }
+
+    previous = stackframe.source
   }
 }
 
