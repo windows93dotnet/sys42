@@ -12,7 +12,18 @@ const functions = new Map()
 
 if (inTop) {
   ipc
-    .on(CALL, ([id, args]) => {
+    .on(CALL, ([id, args], meta) => {
+      if (
+        args.length > 1 &&
+        typeof args[1] === "object" &&
+        meta.iframe &&
+        meta.iframe.hasAttribute("sandbox") &&
+        !meta.iframe.sandbox.contains("allow-same-origin")
+      ) {
+        // ctx.trusted is not allowed from sandboxed iframes
+        delete args[1].trusted
+      }
+
       if (functions.has(id)) return functions.get(id)(...args)
       throw new Error("No corresponding function found in xrealm target")
     })
@@ -63,5 +74,4 @@ export default function xrealm(fn, options) {
 
 xrealm.inTop = inTop
 xrealm.inIframe = inIframe
-
 Object.freeze(xrealm)

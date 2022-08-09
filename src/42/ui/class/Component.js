@@ -110,8 +110,8 @@ export default class Component extends HTMLElement {
       try {
         await this.#setup()
       } catch (err) {
-        if (this.ready.isPending) this.ready.reject(err)
-        else dispatch(this, err)
+        if (this.ready.isPending) this.ready.resolve()
+        dispatch(this, err)
       }
     } else if (this.#lifecycle === INIT) this.ready.then(() => this.#setup())
     else if (this.#lifecycle === CREATE) this.init().then(() => this.#setup())
@@ -130,7 +130,14 @@ export default class Component extends HTMLElement {
   }
 
   async #setup() {
-    if (this.#lifecycle === SETUP) return
+    if (
+      this.#lifecycle === SETUP ||
+      this.#lifecycle === DESTROY ||
+      this.#lifecycle === CREATE
+    ) {
+      return
+    }
+
     this.#lifecycle = SETUP
     await this.update?.()
     await this.setup?.(this.ctx)
@@ -292,7 +299,7 @@ export default class Component extends HTMLElement {
       if (this.isConnected) await this.#setup()
       this.ready.resolve()
     } catch (err) {
-      this.ready.reject(err)
+      this.ready.resolve()
       throw err
     }
   }
@@ -323,7 +330,7 @@ export default class Component extends HTMLElement {
       this.ctx.reactive.emit("update", changes, changes) // prevent calling $ref renderers
     }
 
-    this.ready?.reject?.(new Error(reason))
+    this.ready.resolve()
     this.ready = undefined
     this.#observed = undefined
 
