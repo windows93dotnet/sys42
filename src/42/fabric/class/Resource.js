@@ -1,5 +1,7 @@
 import uid from "../../core/uid.js"
 import configure from "../../core/configure.js"
+import ipc from "../../core/ipc.js"
+import dispatch from "../dom/dispatch.js"
 import arrify from "../type/any/arrify.js"
 import listen from "../dom/listen.js"
 import isIframable from "../type/url/isIframable.js"
@@ -12,6 +14,27 @@ const DEFAULTS = {
   permissions: undefined,
   signal: undefined,
 }
+
+const errorCatcher = `
+import trap from "${new URL("../type/error/trap.js", import.meta.url).href}"
+import ipc from "${new URL("../../core/ipc.js", import.meta.url).href}"
+
+globalThis.ipc = ipc
+
+trap((err) => {
+  ipc.to.parent.emit("42-resource:error", [err])
+  return false
+})
+
+const options = { types: ["crash", "csp-violation"], buffered: true }
+const observer = new ReportingObserver((reports, observer) => {
+  const err = new Error("Report")
+  ipc.to.parent.emit("42-resource:error", [err, reports.map(x => x.toJSON())])
+}, options)
+observer.observe()
+`
+
+const errorCatcherHash = await checksum(errorCatcher)
 
 // @read https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy#directives
 // @read https://featurepolicy.info/
@@ -140,9 +163,20 @@ export default class Resource {
     this.el.allow = allow.join("; ")
   }
 
+  #listenErrors() {
+    this.bus?.destroy()
+    this.bus = ipc.from(this.el)
+    this.bus.on("42-resource:error", ([err, reports]) => {
+      if (reports) err.reports = reports
+      dispatch(this.el, err)
+    })
+  }
+
   async html(html, options) {
     const { origin } = location
-    const scriptSrc = options["script-src"]
+    const scriptHash = options?.scriptHash
+      ? `'sha256-${options.scriptHash}' `
+      : ""
     const style = options?.style ?? ""
     this.el.removeAttribute("src")
     this.el.srcdoc = `\
@@ -151,12 +185,16 @@ export default class Resource {
 <meta
   http-equiv="Content-Security-Policy"
   content="\
-default-src ${origin} data:;\
-${scriptSrc ? `script-src 'sha256-${scriptSrc}' ${origin};` : ""}\
+default-src ${origin} data:; \
+script-src 'sha256-${errorCatcherHash}' ${scriptHash}${origin}; \
 ">
 ${style}
+<script type="module">${errorCatcher}</script>
 ${html}
 `
+
+    this.#listenErrors()
+
     await 0 // queueMicrotask
   }
 
@@ -164,7 +202,7 @@ ${html}
     const type = options?.type ?? "module"
     const style = options?.style
     const config = { style }
-    config["script-src"] = await checksum(script)
+    config.scriptHash = await checksum(script)
     await this.html(`<script type="${type}">${script}</script>`, config)
   }
 

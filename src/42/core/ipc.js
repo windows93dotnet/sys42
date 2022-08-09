@@ -93,12 +93,14 @@ export class Receiver extends Emitter {
     options?.signal?.addEventListener("abort", () => this.destroy())
 
     if (source instanceof HTMLIFrameElement) source = source.contentWindow
+    this.source = source
     sources.set(source, this)
   }
 
   destroy() {
     this.emit("destroy", this)
     this.off("*")
+    sources.delete(this.source)
   }
 }
 

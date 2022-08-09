@@ -56,17 +56,6 @@ test("convert known data from string", (t) => {
 })
 
 test("decode url-safe style base64 strings", async (t) => {
-  t.is(await base64.encode("//++/++/++//"), "Ly8rKy8rKy8rKy8v")
-  t.is(await base64.encode("__--_--_--__"), "X18tLV8tLV8tLV9f")
-  t.is(
-    await base64.decode("Ly8rKy8rKy8rKy8v", { output: "string" }),
-    "//++/++/++//"
-  )
-  t.is(
-    await base64.decode("X18tLV8tLV8tLV9f", { output: "string" }),
-    "__--_--_--__"
-  )
-
   const expected = new Uint8Array([
     0xff, 0xff, 0xbe, 0xff, 0xef, 0xbf, 0xfb, 0xef, 0xff,
   ]).buffer
@@ -82,6 +71,15 @@ test("decode url-safe style base64 strings", async (t) => {
   t.eq(actual, expected)
 
   t.is(base64.byteLength(str), actual.byteLength)
+})
+
+test("utf-8 string", async (t) => {
+  t.is(btoa("hello 🌍"), "aGVsbG8g8J+MjQ==")
+  t.is(await base64.encode("hello 🌍"), "aGVsbG8g8J+MjQ==")
+  t.is(
+    await base64.decode("aGVsbG8g8J+MjQ==", { output: "string" }),
+    "hello 🌍"
+  )
 })
 
 test("padding bytes found inside base64 string", async (t) => {
