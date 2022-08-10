@@ -1,15 +1,23 @@
 import uid from "./uid.js"
 import defer from "../fabric/type/promise/defer.js"
 import Emitter from "../fabric/class/Emitter.js"
+import inIframe from "../core/env/runtime/inIframe.js"
+import inTop from "../core/env/runtime/inTop.js"
 
 const sources = new WeakMap()
+
+const PING = "IPC_PING"
+const PONG = "IPC_PONG"
+const EMIT = "IPC_EMIT"
+const CLOSE = "IPC_CLOSE"
+const HANDSHAKE = "IPC_HANDSHAKE"
 
 globalThis.addEventListener(
   "message",
   async ({ origin, data, source, ports }) => {
     if (origin !== "null" && origin !== location.origin) return
 
-    if (data?.type === "IPC_PING") {
+    if (data?.type === PING) {
       const port = ports[0]
       if (!port) throw new Error("IPC_PING: missing port")
 
@@ -42,12 +50,12 @@ globalThis.addEventListener(
         port,
         get emit() {
           return (events, ...args) => {
-            port.postMessage({ type: "IPC_EMIT", events, args })
+            port.postMessage({ type: EMIT, events, args })
           }
         },
       }
 
-      port.postMessage({ type: "IPC_PONG" })
+      port.postMessage({ type: PONG })
 
       port.onmessage = ({ data: { id, type, event, data } }) => {
         if (type === "emit") {
@@ -119,8 +127,8 @@ export class Sender extends Emitter {
     this.ready = defer()
 
     if (target instanceof HTMLIFrameElement) {
-      // default "targetOrigin" use wildcard only if iframe is sandboxed
-      // with "allow-same-origin" and is from same origin.
+      // default "options.origin" use wildcard only if iframe is sandboxed
+      // without "allow-same-origin" and is from same origin.
       const iframeOrigin = target.src
         ? new URL(target.src).origin
         : target.srcdoc
@@ -129,7 +137,7 @@ export class Sender extends Emitter {
 
       options.origin ??= target.sandbox.contains("allow-same-origin")
         ? iframeOrigin
-        : iframeOrigin === location.origin
+        : target.hasAttribute("sandbox") && iframeOrigin === location.origin
         ? "*"
         : iframeOrigin
 
@@ -138,34 +146,27 @@ export class Sender extends Emitter {
       options.origin ??= location.origin === "null" ? "*" : location.origin
     }
 
-    target.postMessage({ type: "IPC_PING" }, options.origin, [port2])
+    target.postMessage({ type: PING }, options.origin, [port2])
 
     this.port1.onmessage = ({ data }) => {
       if (data.id && this.#queue.has(data.id)) {
-        if (data.err) {
-          this.#queue.get(data.id).reject(data.err)
-        } else {
-          this.#queue.get(data.id).resolve(data.res)
-        }
-
-        this.#queue.delete(data.id)
-        return
+        if (data.err) this.#queue.get(data.id).reject(data.err)
+        else this.#queue.get(data.id).resolve(data.res)
+        return void this.#queue.delete(data.id)
       }
 
-      if (data.type === "IPC_EMIT") {
-        return super.emit(data.events, ...data.args)
-      }
+      if (data.type === EMIT) return super.emit(data.events, ...data.args)
 
-      if (data.type === "IPC_PONG") return this.ready.resolve()
+      if (data.type === PONG) return this.ready.resolve()
     }
   }
 
   emit(event, data) {
-    if (this.ready.isPending) {
-      this.ready.then(() => {
-        this.port1.postMessage({ type: "emit", event, data })
-      })
-    } else this.port1.postMessage({ type: "emit", event, data })
+    // emit() must be async to allow emiting in "pagehide" or "beforeunload" events
+    // but if ready is not resolved yet we wait for it
+    const msg = { type: "emit", event, data }
+    if (this.ready.isPending) this.ready.then(() => this.port1.postMessage(msg))
+    else this.port1.postMessage(msg)
     return this
   }
 
@@ -187,6 +188,11 @@ export class Sender extends Emitter {
 }
 
 export class IPC extends Emitter {
+  static inIframe = inIframe
+  static inTop = inTop
+
+  iframes = new Map()
+
   from(source, options) {
     return new Receiver(source, options)
   }
@@ -203,16 +209,42 @@ let parent
 Object.defineProperties(ipc.to, {
   top: {
     get() {
-      top ??= ipc.to(globalThis.top)
+      top ??= ipc //
+        .to(globalThis.top)
+        .on("destroy", () => {
+          top = undefined
+        })
       return top
     },
   },
   parent: {
     get() {
-      parent ??= ipc.to(globalThis.parent)
+      parent ??= ipc //
+        .to(globalThis.parent)
+        .on("destroy", () => {
+          parent = undefined
+        })
       return parent
     },
   },
 })
+
+if (inTop) {
+  ipc
+    .on(HANDSHAKE, (data, meta) => {
+      if (meta.iframe) ipc.iframes.set(meta.iframe, meta)
+    })
+    .on(CLOSE, (data, meta) => {
+      if (meta.iframe) ipc.iframes.delete(meta.iframe)
+    })
+}
+
+if (inIframe) {
+  ipc.to.top.emit(HANDSHAKE)
+  globalThis.addEventListener("pagehide", () => ipc.to.top.emit(CLOSE))
+}
+
+Object.freeze(ipc)
+Object.freeze(ipc.to)
 
 export default ipc

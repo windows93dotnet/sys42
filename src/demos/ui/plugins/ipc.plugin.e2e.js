@@ -176,7 +176,7 @@ export default e2e(async (t, { collect, dest }) => {
   })
 
   btnIncr.incr1.click()
-  await system.once("ipc.plugin:end")
+  await system.once("ipc.plugin:end-of-update")
 
   t.eq(getVal(btnIncr), {
     incr1: "1",
@@ -188,7 +188,7 @@ export default e2e(async (t, { collect, dest }) => {
   })
 
   btnIncr.incr2.click()
-  await system.once("ipc.plugin:end")
+  await system.once("ipc.plugin:end-of-update")
 
   t.eq(getVal(btnIncr), {
     incr1: "2",
@@ -200,7 +200,7 @@ export default e2e(async (t, { collect, dest }) => {
   })
 
   btnIncr.incr3.click()
-  await system.once("ipc.plugin:end")
+  await system.once("ipc.plugin:end-of-update")
 
   t.eq(getVal(btnIncr), {
     incr1: "3",
@@ -212,7 +212,7 @@ export default e2e(async (t, { collect, dest }) => {
   })
 
   btnIncr.dialogIncr1.click()
-  await system.once("ipc.plugin:end")
+  await system.once("ipc.plugin:end-of-update")
 
   t.eq(getVal(btnIncr), {
     incr1: "4",
@@ -224,7 +224,7 @@ export default e2e(async (t, { collect, dest }) => {
   })
 
   btnIncr.dialogIncr2.click()
-  await system.once("ipc.plugin:end")
+  await system.once("ipc.plugin:end-of-update")
 
   t.eq(getVal(btnIncr), {
     incr1: "5",
@@ -236,7 +236,7 @@ export default e2e(async (t, { collect, dest }) => {
   })
 
   btnIncr.dialogIncr3.click()
-  await system.once("ipc.plugin:end")
+  await system.once("ipc.plugin:end-of-update")
 
   t.eq(getVal(btnIncr), {
     incr1: "6",
