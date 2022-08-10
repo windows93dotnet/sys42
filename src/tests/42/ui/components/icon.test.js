@@ -32,7 +32,7 @@ test("html", async (t) => {
     `\
 <ui-icon path="/script.js" label="" tabindex="0" aria-description="file" role="button">
   <div aria-hidden="true" class="ui-icon__figure">
-    <img class="ui-icon__image" src="/42/themes/default/icons/subtype/javascript.png">
+    <img fetchpriority="high" decoding="async" class="ui-icon__image" src="/42/themes/default/icons/subtype/javascript.png">
     <div class="ui-icon__mask" style="-webkit-mask-image: url(&quot;/42/themes/default/icons/subtype/javascript.png&quot;);">
     </div>
   </div>

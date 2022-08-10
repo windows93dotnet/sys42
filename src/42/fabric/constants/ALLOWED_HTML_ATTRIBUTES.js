@@ -71,6 +71,7 @@ export default Object.freeze([
   "event",
   "exportparts",
   "face",
+  "fetchpriority",
   "for",
   "form",
   "formaction",

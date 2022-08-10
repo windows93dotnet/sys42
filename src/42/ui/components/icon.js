@@ -42,6 +42,8 @@ class Icon extends Component {
           content: [
             {
               tag: "img.ui-icon__image",
+              fetchpriority: "high",
+              decoding: "async",
               src: "{{image}}",
             },
             {

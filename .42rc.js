@@ -129,7 +129,9 @@ export default {
               "type",
               "vlink",
               "vspace",
-            ].map((deprecated) => [`"${deprecated}",\n`, ""]),
+            ]
+              .map((deprecated) => [`"${deprecated}",\n`, ""])
+              .concat(['"face",', '"face",\n  "fetchpriority",']),
           },
         ],
         [
