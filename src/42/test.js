@@ -165,6 +165,13 @@ export const suite = chainable(
 addUtilities(test)
 addUtilities(suite)
 
+Object.defineProperty(suite, "title", {
+  get() {
+    ensureCurrentSuite()
+    return sbs.current.title
+  },
+})
+
 test.suite = suite
 
 export function awaitTestFileReady(url, retry = 100) {

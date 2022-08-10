@@ -1,18 +1,14 @@
 import ExecutionContext from "./ExecutionContext.js"
-import addUtilities from "./addUtilities.js"
 
 export default function e2e(fn) {
   let ran = false
 
   requestIdleCallback(async () => {
     if (ran) return
-    const trap = await import("../../../fabric/type/error/trap.js").then(
-      (m) => m.default
-    )
-    trap()
+    await import("../../../fabric/type/error/trap.js").then((m) => m.default())
     fn(new ExecutionContext(), {
       container: document.body,
-      destroyable: (item) => item,
+      collect: (item) => item,
     })
   })
 
@@ -21,5 +17,3 @@ export default function e2e(fn) {
     await fn(t, meta)
   }
 }
-
-addUtilities(e2e)

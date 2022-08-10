@@ -15,8 +15,8 @@ import template from "../../../formats/template.js"
 
 const { isPromiseLike } = is
 
-const nativeSetTimeout = globalThis.setTimeout
-const nativeClearTimeout = globalThis.clearTimeout
+const setTimeoutNative = globalThis.setTimeout
+const clearTimeoutNative = globalThis.clearTimeout
 
 export class AssertionError extends Error {
   constructor(userMessage, message, details, stack) {
@@ -90,20 +90,22 @@ export const assertError = (err, expected, message, stack) => {
 }
 
 export default class Assert {
-  #count = 0
-  #pending = 0
-  #planned = false
-
-  spies = []
-  stubs = []
-  #stayings = []
-
   #timeoutDelay
   #timeoutId
   #resolveTimeout
 
+  #count = 0
+  #pending = 0
+  #planned = false
+
+  #stayings = []
+  #teardowns = []
+
+  spies = []
+  stubs = []
+
   constructor() {
-    // `tape` compatibility
+    // "tape" compatibility
     this.ok = this.truthy
     this.notOk = this.falsy
     this.equal = this.is
@@ -141,11 +143,16 @@ export default class Assert {
     this.timeout("reset")
   }
 
+  teardown(fn) {
+    this.#teardowns.push(fn)
+  }
+
   cleanup() {
     this.#count = 0
     this.#pending = 0
     this.#planned = false
     for (const spy of this.spies) spy.restore()
+    for (const fn of this.#teardowns) fn()
     this.spies.length = 0
     this.stubs.length = 0
     this.#stayings.length = 0
@@ -154,7 +161,7 @@ export default class Assert {
   verifyContext(failing, stackframe) {
     if (this.#timeoutId === true) {
       throw new VerifyError("Test timed out", stackframe)
-    } else nativeClearTimeout(this.#timeoutId)
+    } else clearTimeoutNative(this.#timeoutId)
 
     for (const { actual, expected, error } of this.#stayings) {
       if (equal(actual, expected) === false) {
@@ -197,7 +204,7 @@ export default class Assert {
     }
   }
 
-  // check that `actual` don't mutate
+  // check that "actual" don't mutate
   stays(actual, message) {
     this.#addCall()
     const expected = clone(actual)
@@ -220,13 +227,13 @@ export default class Assert {
 
   sleep(delay) {
     this.timeout(this.#timeoutDelay + delay)
-    return new Promise((resolve) => nativeSetTimeout(resolve, delay))
+    return new Promise((resolve) => setTimeoutNative(resolve, delay))
   }
 
   timeout(delay = 200) {
     this.#timeoutDelay = delay === "reset" ? this.#timeoutDelay : delay
-    nativeClearTimeout(this.#timeoutId)
-    this.#timeoutId = nativeSetTimeout(() => {
+    clearTimeoutNative(this.#timeoutId)
+    this.#timeoutId = setTimeoutNative(() => {
       this.#timeoutId = true
       this.#resolveTimeout()
       this.#resolveTimeout = undefined
@@ -327,7 +334,7 @@ export default class Assert {
     }
   }
 
-  // equal without check for prototypes
+  // "equal" without check for prototypes
   // simplify deep equal test for objects created using Object.create(null)
   alike(actual, expected, message, nested) {
     if (nested !== true) this.#addCall()
@@ -440,10 +447,10 @@ export default class Assert {
     }
   }
 
-  contain(actual, expected, message) {
+  contains(actual, expected, message) {
     this.#addCall()
     if (Array.isArray(actual) === false) {
-      throw new AssertionError("contain() must be called with an array", {
+      throw new AssertionError("contains() must be called with an array", {
         actual,
         expected,
       })

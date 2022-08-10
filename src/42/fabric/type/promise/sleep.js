@@ -1,3 +1,5 @@
-export default function sleep(delay = 100) {
-  return new Promise((resolve) => setTimeout(resolve, delay))
+const setTimeoutNative = globalThis.setTimeout
+
+export default function sleep(ms = 100) {
+  return new Promise((resolve) => setTimeoutNative(resolve, ms))
 }

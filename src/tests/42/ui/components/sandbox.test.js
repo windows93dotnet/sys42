@@ -3,13 +3,15 @@ import ui from "../../../../42/ui.js"
 
 test.suite.timeout(1000)
 
-const tmp = test.utils.container({ id: "ui-sandbox-tests", connect: true })
+const tmp = test.utils.container({ connect: true })
 
 test(1, async (t) => {
-  const app = await ui(tmp(), {
-    tag: "ui-sandbox",
-    permissions: "app",
-  })
+  const app = await t.utils.collect(
+    ui(tmp(), {
+      tag: "ui-sandbox",
+      permissions: "app",
+    })
+  )
 
   t.eq(app.reactive.data, {
     ui: {

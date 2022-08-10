@@ -2,8 +2,6 @@ import system from "../../../42/system.js"
 import ui from "../../../42/ui.js"
 import e2e from "../../../42/core/dev/testing/e2e.js"
 
-const { listen } = e2e.utils
-
 function getVal(btn) {
   const out = {}
   for (const [key, val] of Object.entries(btn)) {
@@ -13,117 +11,117 @@ function getVal(btn) {
   return out
 }
 
-export default e2e(async (t, { container, destroyable }) => {
+export default e2e(async (t, { container, collect }) => {
   system.DEV = true
 
-  const app = await ui(
-    container,
-    {
-      tag: "body.box-fit.desktop",
-      content: [
-        {
-          tag: "button#incr1",
-          content: "{{cnt}}",
-          click: "{{cnt += 1}}",
-        },
-
-        {
-          tag: "button#btnDialog1",
-          content: "dialog 1",
-          dialog: {
-            id: "dialog1",
-            x: 100,
-            y: 100,
-            label: "1 ({{x}},{{y}})",
-            content: {
-              tag: "button#dialogIncr1",
-              content: "{{cnt}}",
-              click: "{{cnt += 1}}",
-            },
+  const app = await collect(
+    ui(
+      container,
+      {
+        tag: "body.box-fit.desktop",
+        content: [
+          {
+            tag: "button#incr1",
+            content: "{{cnt}}",
+            click: "{{cnt += 1}}",
           },
-        },
 
-        {
-          tag: "button#btnPopup1",
-          content: "popup 1",
-          popup: {
-            content: {
-              tag: "button#popupIncr1",
-              content: "{{cnt}}",
-              click: "{{cnt += 1}}",
-            },
-          },
-        },
-
-        {
-          content: {
-            tag: "ui-sandbox#sandbox1",
-            permissions: "trusted",
-            content: [
-              {
-                tag: "button#incr2",
+          {
+            tag: "button#btnDialog1",
+            content: "dialog 1",
+            dialog: {
+              id: "dialog1",
+              x: 100,
+              y: 100,
+              label: "1 ({{x}},{{y}})",
+              content: {
+                tag: "button#dialogIncr1",
                 content: "{{cnt}}",
                 click: "{{cnt += 1}}",
               },
-              {
-                tag: "button#btnDialog2",
-                content: "dialog 2",
-                dialog: {
-                  id: "dialog2",
-                  x: 100,
-                  y: 200,
-                  label: "2 ({{x}},{{y}})",
-                  content: {
-                    tag: "button#dialogIncr2",
-                    content: "{{cnt}}",
-                    click: "{{cnt += 1}}",
-                  },
-                },
-              },
-            ],
-            script: `app.query("#btnDialog2")?.click()`,
+            },
           },
-        },
 
-        {
-          content: {
-            tag: "ui-sandbox#sandbox2",
-            permissions: "trusted",
-            content: [
-              {
-                tag: "button#incr3",
+          {
+            tag: "button#btnPopup1",
+            content: "popup 1",
+            popup: {
+              content: {
+                tag: "button#popupIncr1",
                 content: "{{cnt}}",
                 click: "{{cnt += 1}}",
               },
-              {
-                tag: "button#btnDialog3",
-                content: "dialog 3",
-                dialog: {
-                  id: "dialog3",
-                  x: 100,
-                  y: 300,
-                  label: "3 ({{x}},{{y}})",
-                  content: {
-                    tag: "button#dialogIncr3",
-                    content: "{{cnt}}",
-                    click: "{{cnt += 1}}",
+            },
+          },
+
+          {
+            content: {
+              tag: "ui-sandbox#sandbox1",
+              permissions: "trusted",
+              content: [
+                {
+                  tag: "button#incr2",
+                  content: "{{cnt}}",
+                  click: "{{cnt += 1}}",
+                },
+                {
+                  tag: "button#btnDialog2",
+                  content: "dialog 2",
+                  dialog: {
+                    id: "dialog2",
+                    x: 100,
+                    y: 200,
+                    label: "2 ({{x}},{{y}})",
+                    content: {
+                      tag: "button#dialogIncr2",
+                      content: "{{cnt}}",
+                      click: "{{cnt += 1}}",
+                    },
                   },
                 },
-              },
-            ],
-            script: `app.query("#btnDialog3")?.click()`,
+              ],
+              script: `app.query("#btnDialog2")?.click()`,
+            },
           },
-        },
-      ],
 
-      state: {
-        cnt: 0,
+          {
+            content: {
+              tag: "ui-sandbox#sandbox2",
+              permissions: "trusted",
+              content: [
+                {
+                  tag: "button#incr3",
+                  content: "{{cnt}}",
+                  click: "{{cnt += 1}}",
+                },
+                {
+                  tag: "button#btnDialog3",
+                  content: "dialog 3",
+                  dialog: {
+                    id: "dialog3",
+                    x: 100,
+                    y: 300,
+                    label: "3 ({{x}},{{y}})",
+                    content: {
+                      tag: "button#dialogIncr3",
+                      content: "{{cnt}}",
+                      click: "{{cnt += 1}}",
+                    },
+                  },
+                },
+              ],
+              script: `app.query("#btnDialog3")?.click()`,
+            },
+          },
+        ],
+
+        state: {
+          cnt: 0,
+        },
       },
-    },
-    { trusted: true }
+      { trusted: true }
+    )
   )
-
-  destroyable(app)
 
   globalThis.app = app
 
@@ -131,7 +129,7 @@ export default e2e(async (t, { container, destroyable }) => {
 
   await new Promise((resolve) => {
     let cnt = 0
-    listen({ uidialogopen: () => ++cnt === 3 && resolve() })
+    t.utils.listen({ uidialogopen: () => ++cnt === 3 && resolve() })
   })
 
   const sandbox1 = app.query("#sandbox1 iframe").contentDocument

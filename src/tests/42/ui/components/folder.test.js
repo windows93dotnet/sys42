@@ -3,20 +3,16 @@ import ui from "../../../../42/ui.js"
 
 test.suite.timeout(5000)
 
-const apps = []
-const cleanup = (app) => apps.push(app)
-const tmp = test.utils.container({ id: "ui-folder-tests", connect: true }, () =>
-  apps.forEach((app) => app?.destroy())
-)
+const tmp = test.utils.container({ connect: true })
 
 test("generate icon list", async (t) => {
-  const app = await ui(tmp(), {
-    tag: "ui-folder",
-    path: "/tests/fixtures/components/folder/",
-    selection: ["/tests/fixtures/components/folder/script.js"],
-  })
-
-  cleanup(app)
+  const app = await t.utils.collect(
+    ui(tmp(), {
+      tag: "ui-folder",
+      path: "/tests/fixtures/components/folder/",
+      selection: ["/tests/fixtures/components/folder/script.js"],
+    })
+  )
 
   t.eq(app.reactive.data, {
     ui: {

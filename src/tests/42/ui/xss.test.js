@@ -23,11 +23,7 @@ test.teardown(() => {
 
 test.suite.serial()
 
-const apps = []
-const cleanup = (app) => apps.push(app)
-const tmp = test.utils.container({ id: "xss-tests" }, () =>
-  apps.forEach((app) => app?.destroy())
-)
+const tmp = test.utils.container()
 
 const { task } = test
 
@@ -139,8 +135,14 @@ dialog(
     test.serial(title, async (t) => {
       t.timeout(ms + 100)
 
-      const app = ui(tmp(true), def, { trusted })
-      cleanup(app)
+      t.utils.listen({
+        uidialogopen(e, target) {
+          target.style.opacity = 0.01
+          t.utils.collect(target)
+        },
+      })
+
+      const app = t.utils.collect(ui(tmp(true), def, { trusted }))
 
       let res
 

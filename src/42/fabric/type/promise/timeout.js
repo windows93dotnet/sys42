@@ -1,6 +1,8 @@
+const setTimeoutNative = globalThis.setTimeout
+
 export default function timeout(
-  delay = 5000,
-  err = new Error(`Timed out: ${delay}ms`)
+  ms = 5000,
+  err = new Error(`Timed out: ${ms}ms`)
 ) {
-  return new Promise((_, reject) => setTimeout(() => reject(err), delay))
+  return new Promise((_, reject) => setTimeoutNative(() => reject(err), ms))
 }

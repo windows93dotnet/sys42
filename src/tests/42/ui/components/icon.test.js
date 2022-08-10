@@ -3,13 +3,15 @@ import ui from "../../../../42/ui.js"
 
 test.suite.timeout(5000)
 
-const tmp = test.utils.container({ id: "ui-icon-tests", connect: true })
+const tmp = test.utils.container({ connect: true })
 
 test("html", async (t) => {
-  const app = await ui(tmp(), {
-    tag: "ui-icon",
-    path: "/script.js",
-  })
+  const app = await t.utils.collect(
+    ui(tmp(), {
+      tag: "ui-icon",
+      path: "/script.js",
+    })
+  )
 
   t.eq(app.reactive.data, {
     ui: {
@@ -58,28 +60,30 @@ test("html", async (t) => {
 })
 
 test("infos", async (t) => {
-  const app = await ui(tmp(), [
-    {
-      tag: "ui-icon",
-      path: "/derp/foo.js",
-    },
-    {
-      tag: "ui-icon",
-      path: "/derp/foo/",
-    },
-    {
-      tag: "ui-icon",
-      path: "/derp/foo.bar/",
-    },
-    {
-      tag: "ui-icon",
-      path: "https://www.windows93.net/",
-    },
-    {
-      tag: "ui-icon",
-      path: "https://www.windows93.net/script.js",
-    },
-  ])
+  const app = await t.utils.collect(
+    ui(tmp(), [
+      {
+        tag: "ui-icon",
+        path: "/derp/foo.js",
+      },
+      {
+        tag: "ui-icon",
+        path: "/derp/foo/",
+      },
+      {
+        tag: "ui-icon",
+        path: "/derp/foo.bar/",
+      },
+      {
+        tag: "ui-icon",
+        path: "https://www.windows93.net/",
+      },
+      {
+        tag: "ui-icon",
+        path: "https://www.windows93.net/script.js",
+      },
+    ])
+  )
 
   t.eq(app.reactive.data, {
     ui: {
@@ -174,21 +178,23 @@ test("infos", async (t) => {
 })
 
 test("each", async (t) => {
-  const app = await ui(tmp(), {
-    content: {
-      scope: "arr",
-      each: {
-        tag: "ui-icon",
-        path: "{{x}}",
+  const app = await t.utils.collect(
+    ui(tmp(), {
+      content: {
+        scope: "arr",
+        each: {
+          tag: "ui-icon",
+          path: "{{x}}",
+        },
       },
-    },
-    state: {
-      arr: [
-        { x: "/derp/foo.js" }, //
-        { x: "/derp/" },
-      ],
-    },
-  })
+      state: {
+        arr: [
+          { x: "/derp/foo.js" }, //
+          { x: "/derp/" },
+        ],
+      },
+    })
+  )
 
   t.eq(app.reactive.data, {
     arr: [{ x: "/derp/foo.js" }, { x: "/derp/" }],
@@ -228,21 +234,23 @@ test("each", async (t) => {
 })
 
 test("each", 2, async (t) => {
-  const app = await ui(tmp(), {
-    content: {
-      scope: "arr",
-      each: {
-        tag: "ui-icon",
-        path: "{{.}}",
+  const app = await t.utils.collect(
+    ui(tmp(), {
+      content: {
+        scope: "arr",
+        each: {
+          tag: "ui-icon",
+          path: "{{.}}",
+        },
       },
-    },
-    state: {
-      arr: [
-        "/derp/foo.js", //
-        "/derp/",
-      ],
-    },
-  })
+      state: {
+        arr: [
+          "/derp/foo.js", //
+          "/derp/",
+        ],
+      },
+    })
+  )
 
   t.eq(app.reactive.data, {
     arr: ["/derp/foo.js", "/derp/"],

@@ -156,6 +156,8 @@ export default class Component extends HTMLElement {
   }
 
   async #init(def, ctx) {
+    if (ctx?.cancel?.signal.aborted) return
+
     this.removeAttribute("data-no-init")
     this.#lifecycle = INIT
 

@@ -7,7 +7,7 @@ import env from "../../env.js"
 import hashmap from "../../../fabric/type/object/hashmap.js"
 import http from "../../../core/http.js"
 import idle from "../../../fabric/type/promise/idle.js"
-import listen from "../../../fabric/dom/listen.js"
+import listenFn from "../../../fabric/dom/listen.js"
 import log, { Log, CONSOLE_KEYS } from "../../log.js"
 import noop from "../../../fabric/type/function/noop.js"
 import parallel from "../../../fabric/type/promise/parallel.js"
@@ -83,16 +83,59 @@ export default function addUtilities(item, isExecutionContext) {
     }
   }
 
+  const forgets = []
+  function listen(...args) {
+    if (forgets.length === 0) {
+      item.teardown(() => {
+        for (const forget of forgets) forget()
+        forgets.length = 0
+      })
+    }
+
+    forgets.push(listenFn(...args))
+  }
+
+  const collected = []
+  function collect(thing, cb) {
+    if (collected.length === 0) {
+      item.teardown(() => {
+        for (const item of collected) {
+          if (cb?.(item) === false) continue
+          try {
+            if (typeof item.destroy === "function") item.destroy()
+            else if (typeof item.remove === "function") item.remove()
+            else if (typeof item.close === "function") item.close()
+            else if (typeof item.clear === "function") item.clear()
+          } catch {}
+        }
+
+        collected.length = 0
+      })
+    }
+
+    collected.push(thing)
+
+    return thing
+  }
+
+  let containerUsed = false
   function container(options = {}, cb) {
     const elements = []
 
-    item.teardown(() => {
-      cb?.(elements)
-      for (const el of elements) el.remove()
-      elements.length = 0
-    })
+    options.id ??= item.suite.title
 
     return function (connect = options.connect) {
+      if (!containerUsed) {
+        item.teardown(() => {
+          setTimeout(() => {
+            cb?.(elements)
+            for (const el of elements) el.remove()
+            elements.length = 0
+          }, 0)
+        })
+        containerUsed = true
+      }
+
       const el = document.createElement(options.tag ?? "section")
       if (options.visible !== true) el.style.opacity = 0.01
       if (options.id) el.id = options.id
@@ -106,6 +149,7 @@ export default function addUtilities(item, isExecutionContext) {
     allKeys,
     arrify,
     clone,
+    collect,
     container,
     documentReady,
     hashmap,
@@ -127,4 +171,6 @@ export default function addUtilities(item, isExecutionContext) {
     when,
     $: new DOMQuery(),
   }
+
+  item._ = item.utils
 }

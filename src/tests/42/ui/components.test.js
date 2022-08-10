@@ -4,11 +4,7 @@ import Component from "../../../42/ui/class/Component.js"
 
 test.suite.timeout(1000)
 
-const apps = []
-const cleanup = (app) => apps.push(app)
-const tmp = test.utils.container({ id: "component-tests" }, () =>
-  apps.forEach((app) => app?.destroy())
-)
+const tmp = test.utils.container()
 
 Component.define({
   tag: "ui-t-props",
@@ -449,7 +445,7 @@ test.tasks(
         } else await checkDefine(component, t, args, expected)
       }
 
-      const app = await ui(tmp(connect), def)
+      const app = await t.utils.collect(ui(tmp(connect), def))
 
       if (expected) t.is(app.el.innerHTML, expected, "ui declaration error")
       if (check) await check(t, app)
@@ -469,17 +465,19 @@ test.tasks(
 )
 
 test("component child", async (t) => {
-  const app = await ui(tmp(true), {
-    content: {
-      tag: "ui-t-props",
-      bar: 4,
+  const app = await t.utils.collect(
+    ui(tmp(true), {
       content: {
-        tag: "em",
-        content: "derp:{{derp}}, bar:{{bar}}",
+        tag: "ui-t-props",
+        bar: 4,
+        content: {
+          tag: "em",
+          content: "derp:{{derp}}, bar:{{bar}}",
+        },
       },
-    },
-    state: { derp: 5 },
-  })
+      state: { derp: 5 },
+    })
+  )
 
   t.eq(app.reactive.data, {
     derp: 5,
@@ -526,12 +524,14 @@ Component.define({
 })
 
 test("state", async (t) => {
-  const app = await ui(tmp(), {
-    content: {
-      tag: "ui-t-state",
-      x: "foo",
-    },
-  })
+  const app = await t.utils.collect(
+    ui(tmp(), {
+      content: {
+        tag: "ui-t-state",
+        x: "foo",
+      },
+    })
+  )
 
   t.is(app.el.textContent, "x:foo-")
   t.eq(app.reactive.data, {
@@ -544,16 +544,18 @@ test("state", async (t) => {
 })
 
 test("state", "template", async (t) => {
-  const app = await ui(tmp(), {
-    content: {
-      tag: "ui-t-state",
-      x: "{{y}}",
-    },
+  const app = await t.utils.collect(
+    ui(tmp(), {
+      content: {
+        tag: "ui-t-state",
+        x: "{{y}}",
+      },
 
-    state: {
-      y: "foo",
-    },
-  })
+      state: {
+        y: "foo",
+      },
+    })
+  )
 
   t.eq(app.reactive.data, {
     y: "foo",
@@ -572,16 +574,18 @@ test("state", "template", async (t) => {
 })
 
 test("state", "template", "not a ref", async (t) => {
-  const app = await ui(tmp(), {
-    content: {
-      tag: "ui-t-state",
-      x: "prefix -> {{y}}",
-    },
+  const app = await t.utils.collect(
+    ui(tmp(), {
+      content: {
+        tag: "ui-t-state",
+        x: "prefix -> {{y}}",
+      },
 
-    state: {
-      y: "foo",
-    },
-  })
+      state: {
+        y: "foo",
+      },
+    })
+  )
 
   t.eq(app.reactive.data, {
     y: "foo",
@@ -598,18 +602,20 @@ test("state", "template", "not a ref", async (t) => {
 })
 
 test("state", "multiple", async (t) => {
-  const app = await ui(tmp(), {
-    content: [
-      {
-        tag: "ui-t-state",
-        x: "foo",
-      },
-      {
-        tag: "ui-t-state",
-        x: "bar",
-      },
-    ],
-  })
+  const app = await t.utils.collect(
+    ui(tmp(), {
+      content: [
+        {
+          tag: "ui-t-state",
+          x: "foo",
+        },
+        {
+          tag: "ui-t-state",
+          x: "bar",
+        },
+      ],
+    })
+  )
 
   t.is(app.el.textContent, "x:foo-x:bar-")
   t.eq(app.reactive.data, {
@@ -623,19 +629,21 @@ test("state", "multiple", async (t) => {
 })
 
 test("state", "scopped", async (t) => {
-  const app = await ui(tmp(), {
-    scope: "a",
-    content: [
-      {
-        tag: "ui-t-state",
-        x: "foo",
-      },
-      {
-        tag: "ui-t-state",
-        x: "bar",
-      },
-    ],
-  })
+  const app = await t.utils.collect(
+    ui(tmp(), {
+      scope: "a",
+      content: [
+        {
+          tag: "ui-t-state",
+          x: "foo",
+        },
+        {
+          tag: "ui-t-state",
+          x: "bar",
+        },
+      ],
+    })
+  )
 
   t.is(app.el.textContent, "x:foo-x:bar-")
   t.eq(app.reactive.data, {
@@ -649,15 +657,17 @@ test("state", "scopped", async (t) => {
 })
 
 test("state", "fixed", async (t) => {
-  const app = await ui(tmp(), {
-    content: {
-      tag: "ui-t-nested-fixed",
-      list: [
-        { foo: "a" }, //
-        { foo: "b" },
-      ],
-    },
-  })
+  const app = await t.utils.collect(
+    ui(tmp(), {
+      content: {
+        tag: "ui-t-nested-fixed",
+        list: [
+          { foo: "a" }, //
+          { foo: "b" },
+        ],
+      },
+    })
+  )
 
   t.is(app.el.textContent, "x:fixed-x:fixed-")
   t.eq(app.reactive.data, {
@@ -703,44 +713,45 @@ Component.define(
 )
 
 test("custom content", async (t) => {
-  const app = await ui(tmp(true), {
-    content: {
-      tag: "ui-one",
-      content: "hi {{bar}}",
-    },
-  })
-
-  cleanup(app)
+  const app = await t.utils.collect(
+    ui(tmp(true), {
+      content: {
+        tag: "ui-one",
+        content: "hi {{bar}}",
+      },
+    })
+  )
 
   t.is(app.el.innerHTML, '<ui-one bar="1" one="1">hi 1</ui-one>')
 })
 
 test("custom content", 2, async (t) => {
-  const app = await ui(tmp(true), {
-    content: {
-      tag: "ui-one",
-      bar: "{{bar}}",
-      content: "hi {{bar}}, root: {{root}}",
-    },
+  const app = await t.utils.collect(
+    ui(tmp(true), {
+      content: {
+        tag: "ui-one",
+        bar: "{{bar}}",
+        content: "hi {{bar}}, root: {{root}}",
+      },
 
-    state: {
-      bar: 5,
-      root: 0,
-    },
-  })
-
-  cleanup(app)
+      state: {
+        bar: 5,
+        root: 0,
+      },
+    })
+  )
 
   t.is(app.el.innerHTML, '<ui-one one="1" bar="5">hi 5, root: 0</ui-one>')
 })
 
 test("custom content", "nested components", 2, async (t) => {
-  const app = await ui(tmp(true), {
-    content: {
-      tag: "ui-one",
+  const app = await t.utils.collect(
+    ui(tmp(true), {
       content: {
-        tag: "ui-two",
-        content: `
+        tag: "ui-one",
+        content: {
+          tag: "ui-two",
+          content: `
 root: {{root}}
 one: {{one}}
 two: {{two}}
@@ -749,16 +760,15 @@ bar: {{bar}}
 ../../bar: {{../../bar}}
 /bar: {{/bar}}
 `,
+        },
       },
-    },
 
-    state: {
-      root: 0,
-      bar: -1,
-    },
-  })
-
-  cleanup(app)
+      state: {
+        root: 0,
+        bar: -1,
+      },
+    })
+  )
 
   t.eq(app.reactive.data, {
     root: 0,
@@ -816,14 +826,16 @@ Component.define({
 })
 
 test("state", "dynamic", "push", async (t) => {
-  const app = await ui(tmp(), {
-    content: {
-      tag: "ui-t-nested-dynamic",
-      list: [
-        { foo: "a" }, //
-      ],
-    },
-  })
+  const app = await t.utils.collect(
+    ui(tmp(), {
+      content: {
+        tag: "ui-t-nested-dynamic",
+        list: [
+          { foo: "a" }, //
+        ],
+      },
+    })
+  )
 
   t.eq(Object.keys(app.ctx.renderers), [
     "/ui/t-nested-dynamic/root/list",
@@ -868,15 +880,17 @@ test("state", "dynamic", "push", async (t) => {
 })
 
 test("state", "dynamic", "pop", async (t) => {
-  const app = await ui(tmp(true), {
-    content: {
-      tag: "ui-t-nested-dynamic",
-      list: [
-        { foo: "a" }, //
-        { foo: "b" }, //
-      ],
-    },
-  })
+  const app = await t.utils.collect(
+    ui(tmp(true), {
+      content: {
+        tag: "ui-t-nested-dynamic",
+        list: [
+          { foo: "a" }, //
+          { foo: "b" }, //
+        ],
+      },
+    })
+  )
 
   t.eq(Object.keys(app.ctx.renderers), [
     "/ui/t-nested-dynamic/root/list",
@@ -921,15 +935,17 @@ test("state", "dynamic", "pop", async (t) => {
 })
 
 test("state", "dynamic", "textContent", async (t) => {
-  const app = await ui(tmp(true), {
-    content: {
-      tag: "ui-t-nested-dynamic",
-      list: [
-        { foo: "a" }, //
-        { foo: "b" },
-      ],
-    },
-  })
+  const app = await t.utils.collect(
+    ui(tmp(true), {
+      content: {
+        tag: "ui-t-nested-dynamic",
+        list: [
+          { foo: "a" }, //
+          { foo: "b" },
+        ],
+      },
+    })
+  )
 
   t.is(app.el.textContent, "x:a-x:b-")
 
@@ -973,10 +989,12 @@ Component.define({
 })
 
 test("props", 1, async (t) => {
-  const app = await ui(tmp(), {
-    content: { tag: "ui-a" },
-    state: { foo: 1 },
-  })
+  const app = await t.utils.collect(
+    ui(tmp(), {
+      content: { tag: "ui-a" },
+      state: { foo: 1 },
+    })
+  )
 
   t.eq(app.reactive.data, {
     foo: 1,
@@ -1002,10 +1020,12 @@ test("props", 1, async (t) => {
 })
 
 test("props", 2, async (t) => {
-  const app = await ui(tmp(), {
-    content: { tag: "ui-a", bar: 0 },
-    state: { foo: 1 },
-  })
+  const app = await t.utils.collect(
+    ui(tmp(), {
+      content: { tag: "ui-a", bar: 0 },
+      state: { foo: 1 },
+    })
+  )
 
   t.eq(app.reactive.data, {
     foo: 1,
@@ -1021,14 +1041,16 @@ test("props", 2, async (t) => {
 })
 
 test("props", 3, async (t) => {
-  const app = await ui(tmp(), {
-    content: [
-      { tag: "ui-a#a1", bar: -1 }, //
-      "\n",
-      { tag: "ui-a#a2", bar: -2 },
-    ],
-    state: { foo: 1 },
-  })
+  const app = await t.utils.collect(
+    ui(tmp(), {
+      content: [
+        { tag: "ui-a#a1", bar: -1 }, //
+        "\n",
+        { tag: "ui-a#a2", bar: -2 },
+      ],
+      state: { foo: 1 },
+    })
+  )
 
   t.eq(app.reactive.data, {
     foo: 1,
@@ -1069,10 +1091,12 @@ test("props", 3, async (t) => {
 })
 
 test("props", 4, async (t) => {
-  const app = await ui(tmp(), {
-    content: { tag: "ui-a", bar: "{{foo}}" },
-    state: { foo: "a" },
-  })
+  const app = await t.utils.collect(
+    ui(tmp(), {
+      content: { tag: "ui-a", bar: "{{foo}}" },
+      state: { foo: "a" },
+    })
+  )
 
   t.eq(app.reactive.data, {
     foo: "a",
@@ -1110,10 +1134,12 @@ test("props", 4, async (t) => {
 test("props", 5, async (t) => {
   t.timeout(1000)
 
-  const app = await ui(tmp(), {
-    content: { tag: "ui-a", bar: "{{foo |> upperCase}}" },
-    state: { foo: "a" },
-  })
+  const app = await t.utils.collect(
+    ui(tmp(), {
+      content: { tag: "ui-a", bar: "{{foo |> upperCase}}" },
+      state: { foo: "a" },
+    })
+  )
 
   t.eq(app.reactive.data, {
     foo: "a",
@@ -1164,10 +1190,12 @@ Component.define({
 })
 
 test("props state", 1, async (t) => {
-  const app = await ui(tmp(), {
-    content: { tag: "ui-b" },
-    state: { foo: 1 },
-  })
+  const app = await t.utils.collect(
+    ui(tmp(), {
+      content: { tag: "ui-b" },
+      state: { foo: 1 },
+    })
+  )
 
   t.eq(app.reactive.data, {
     foo: 1,
@@ -1193,10 +1221,12 @@ test("props state", 1, async (t) => {
 })
 
 test("props state", 2, async (t) => {
-  const app = await ui(tmp(), {
-    content: { tag: "ui-b", bar: 0 },
-    state: { foo: 1 },
-  })
+  const app = await t.utils.collect(
+    ui(tmp(), {
+      content: { tag: "ui-b", bar: 0 },
+      state: { foo: 1 },
+    })
+  )
 
   t.eq(app.reactive.data, {
     foo: 1,
@@ -1222,14 +1252,16 @@ test("props state", 2, async (t) => {
 })
 
 test("scopped", 1, async (t) => {
-  const app = await ui(tmp(), {
-    content: [
-      { scope: "one", content: { tag: "ui-a", bar: 0 } }, //
-      "\n",
-      { scope: "two", content: { tag: "ui-a", bar: 1 } },
-    ],
-    state: { foo: 1 },
-  })
+  const app = await t.utils.collect(
+    ui(tmp(), {
+      content: [
+        { scope: "one", content: { tag: "ui-a", bar: 0 } }, //
+        "\n",
+        { scope: "two", content: { tag: "ui-a", bar: 1 } },
+      ],
+      state: { foo: 1 },
+    })
+  )
 
   t.eq(app.reactive.data, {
     foo: 1,
@@ -1250,22 +1282,24 @@ test("scopped", 1, async (t) => {
 })
 
 test("scopped", 2, async (t) => {
-  const app = await ui(tmp(), {
-    content: [
-      { tag: "ui-a", bar: -1 }, //
-      "\n",
-      { scope: "one", content: { tag: "ui-a", bar: 0 } }, //
-      "\n",
-      { scope: "one", content: { tag: "ui-a", bar: "{{foo}}" } }, //
-      "\n",
-      { scope: "one", content: { tag: "ui-a", bar: "{{../foo}}" } }, //
-      "\n",
-      { scope: "one", content: { tag: "ui-a", bar: "{{/foo}}" } }, //
-      "\n",
-      { scope: "two", content: { tag: "ui-a", bar: 3 } },
-    ],
-    state: { foo: 1, one: { foo: 2 } },
-  })
+  const app = await t.utils.collect(
+    ui(tmp(), {
+      content: [
+        { tag: "ui-a", bar: -1 }, //
+        "\n",
+        { scope: "one", content: { tag: "ui-a", bar: 0 } }, //
+        "\n",
+        { scope: "one", content: { tag: "ui-a", bar: "{{foo}}" } }, //
+        "\n",
+        { scope: "one", content: { tag: "ui-a", bar: "{{../foo}}" } }, //
+        "\n",
+        { scope: "one", content: { tag: "ui-a", bar: "{{/foo}}" } }, //
+        "\n",
+        { scope: "two", content: { tag: "ui-a", bar: 3 } },
+      ],
+      state: { foo: 1, one: { foo: 2 } },
+    })
+  )
 
   t.eq(app.reactive.data, {
     foo: 1,
@@ -1324,19 +1358,21 @@ test("scopped", 2, async (t) => {
 ======== */
 
 test("array", 1, async (t) => {
-  const app = await ui(tmp(true), {
-    content: {
-      scope: "arr",
-      each: [
-        "\n",
-        {
-          tag: "ui-a",
-          bar: "{{.}}",
-        },
-      ],
-    },
-    state: { arr: ["a", "b"], foo: 1 },
-  })
+  const app = await t.utils.collect(
+    ui(tmp(true), {
+      content: {
+        scope: "arr",
+        each: [
+          "\n",
+          {
+            tag: "ui-a",
+            bar: "{{.}}",
+          },
+        ],
+      },
+      state: { arr: ["a", "b"], foo: 1 },
+    })
+  )
 
   t.is(
     app.el.innerHTML,
@@ -1461,19 +1497,21 @@ test("array", 1, async (t) => {
 })
 
 test("array", 2, async (t) => {
-  const app = await ui(tmp(true), {
-    content: {
-      scope: "arr",
-      each: [
-        "\n",
-        {
-          tag: "ui-a",
-          bar: "{{@index}} - {{.}}",
-        },
-      ],
-    },
-    state: { arr: ["a", "b"], foo: 1 },
-  })
+  const app = await t.utils.collect(
+    ui(tmp(true), {
+      content: {
+        scope: "arr",
+        each: [
+          "\n",
+          {
+            tag: "ui-a",
+            bar: "{{@index}} - {{.}}",
+          },
+        ],
+      },
+      state: { arr: ["a", "b"], foo: 1 },
+    })
+  )
 
   t.is(
     app.el.innerHTML,
@@ -1533,19 +1571,21 @@ async function testStringArray(t, app) {
 }
 
 test("string array", async (t) => {
-  const app = await ui(tmp(), {
-    content: {
-      scope: "arr",
-      each: {
-        tag: "ui-t-state",
-        x: "{{.}}",
+  const app = await t.utils.collect(
+    ui(tmp(), {
+      content: {
+        scope: "arr",
+        each: {
+          tag: "ui-t-state",
+          x: "{{.}}",
+        },
       },
-    },
 
-    state: {
-      arr: ["a", "b"],
-    },
-  })
+      state: {
+        arr: ["a", "b"],
+      },
+    })
+  )
 
   await testStringArray(t, app)
 })
@@ -1587,34 +1627,38 @@ async function testStringArrayWithTransfers(t, app) {
 }
 
 test("string array", "using transfers", async (t) => {
-  const app = await ui(tmp(true), {
-    content: {
-      tag: "ui-t-nested-string-array",
-      list: "{{arr}}",
-    },
+  const app = await t.utils.collect(
+    ui(tmp(true), {
+      content: {
+        tag: "ui-t-nested-string-array",
+        list: "{{arr}}",
+      },
 
-    state: {
-      arr: ["a", "b"],
-    },
-  })
+      state: {
+        arr: ["a", "b"],
+      },
+    })
+  )
 
   await testStringArrayWithTransfers(t, app)
 })
 
 test("string array", "using transfers and async state", async (t) => {
-  const app = await ui(tmp(true), {
-    content: {
-      tag: "ui-t-nested-string-array",
-      list: "{{arr}}",
-    },
+  const app = await t.utils.collect(
+    ui(tmp(true), {
+      content: {
+        tag: "ui-t-nested-string-array",
+        list: "{{arr}}",
+      },
 
-    async state() {
-      await t.sleep(100)
-      return {
-        arr: ["a", "b"],
-      }
-    },
-  })
+      async state() {
+        await t.sleep(100)
+        return {
+          arr: ["a", "b"],
+        }
+      },
+    })
+  )
 
   await testStringArrayWithTransfers(t, app)
 })
@@ -1654,14 +1698,14 @@ test("computed", async (t) => {
     }
   )
 
-  const app = await ui(tmp(true), {
-    content: {
-      tag: "ui-t-computed",
-      formated: "FOO/BAR",
-    },
-  })
-
-  cleanup(app)
+  const app = await t.utils.collect(
+    ui(tmp(true), {
+      content: {
+        tag: "ui-t-computed",
+        formated: "FOO/BAR",
+      },
+    })
+  )
 
   t.eq(Object.keys(app.ctx.renderers), [
     "/ui/t-computed/root/formated",
@@ -1729,12 +1773,14 @@ test("computed", "from prop with state:true", async (t) => {
     }
   )
 
-  const app = await ui(tmp(), {
-    content: {
-      tag: "ui-t-compu-sta",
-      formated: "FOO/BAR",
-    },
-  })
+  const app = await t.utils.collect(
+    ui(tmp(), {
+      content: {
+        tag: "ui-t-compu-sta",
+        formated: "FOO/BAR",
+      },
+    })
+  )
 
   t.eq(Object.keys(app.ctx.renderers), [
     "/formated",
@@ -1807,14 +1853,14 @@ test("computed", "computed prop", async (t) => {
     }
   )
 
-  const app = await ui(tmp(true), {
-    content: {
-      tag: "ui-t-compu-prop",
-      formated: "FOO/BAR",
-    },
-  })
-
-  cleanup(app)
+  const app = await t.utils.collect(
+    ui(tmp(true), {
+      content: {
+        tag: "ui-t-compu-prop",
+        formated: "FOO/BAR",
+      },
+    })
+  )
 
   const el = app.query("ui-t-compu-prop")
 

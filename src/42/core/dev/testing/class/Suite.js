@@ -1,4 +1,5 @@
 import serial from "../../../../fabric/type/promise/serial.js"
+import sleep from "../../../../fabric/type/promise/sleep.js"
 import parallel from "../../../../fabric/type/promise/parallel.js"
 import groupBy from "../../../../fabric/type/array/groupBy.js"
 import noop from "../../../../fabric/type/function/noop.js"
@@ -22,6 +23,7 @@ export default class Suite {
     this.only = false
     this.skip = false
     this.serial = false
+    this.cumulated = 0
     this.init()
   }
 
@@ -56,18 +58,23 @@ export default class Suite {
       return
     }
 
+    await sleep(0)
+
     if (this.beforeEach) await this.warnOnThrow(this.beforeEach, "beforeEach")
 
     const t = new ExecutionContext()
 
+    const isAsync = test.fn.constructor.name === "AsyncFunction"
+
     try {
       test.timeStamp = performance.now()
       await Promise.race([
-        t.timeout(this.timeout),
-        test.fn(t),
+        t.timeout(this.timeout + (isAsync ? this.cumulated : 0)),
+        test.fn(t, t.utils),
         test.deferred.promise,
       ])
       test.ms = performance.now() - test.timeStamp
+      this.cumulated += test.ms
       t.verifyContext(test.failing, test.stackframe)
       test.ok = true
     } catch (err) {
@@ -107,12 +114,12 @@ export default class Suite {
     oneach(test)
 
     if (this.afterEach) await this.warnOnThrow(this.afterEach, "afterEach")
-    await 0
   }
 
   async runSuite(suite, options) {
     const results = await suite.runTests(options)
 
+    this.cumulated += results.cumulated
     this.stats.total += results.stats.total
     this.stats.ran += results.stats.ran
     this.stats.passed += results.stats.passed
