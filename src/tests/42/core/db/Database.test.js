@@ -98,7 +98,6 @@ test.teardown(() => {
 })
 
 test("default store with to auto increment", async (t) => {
-  t.timeout(1000)
   const name = cleanDB(`42-test-db-${test.utils.uid()}`)
   const db = new Database(name)
   await db.store.add("hello")

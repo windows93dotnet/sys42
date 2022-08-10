@@ -1,8 +1,6 @@
 import test from "../../../../42/test.js"
 import ui from "../../../../42/ui.js"
 
-test.suite.timeout(5000)
-
 test("render picto", async (t, { dest, collect }) => {
   const app = await collect(
     ui(dest(true), {

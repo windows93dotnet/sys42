@@ -123,6 +123,8 @@ export default e2e(async (t, { collect, dest }) => {
     )
   )
 
+  t.timeout("reset")
+
   globalThis.app = app
 
   app.query("#btnDialog1").click()
@@ -131,6 +133,8 @@ export default e2e(async (t, { collect, dest }) => {
     let cnt = 0
     t.utils.listen({ uidialogopen: () => ++cnt === 3 && resolve() })
   })
+
+  t.timeout("reset")
 
   const sandbox1 = app.query("#sandbox1 iframe").contentDocument
   const sandbox2 = app.query("#sandbox2 iframe").contentDocument

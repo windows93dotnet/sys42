@@ -1637,8 +1637,7 @@ test("stringify with async option return a promise", async (t) => {
 ======= */
 
 if ("Blob" in globalThis) {
-  test.serial("blob - sync stringify return blobs as objects", (t) => {
-    t.timeout(2000)
+  test("blob - sync stringify return blobs as objects", (t) => {
     const x = new Blob(["ab"], { type: "text/plain" })
     const a = stringify(x)
     t.true(a.startsWith("/* Blob */ {\n"))
@@ -1646,8 +1645,7 @@ if ("Blob" in globalThis) {
     t.true(a.includes('type: "text/plain",'))
   })
 
-  test.serial("blob", async (t) => {
-    t.timeout(2000)
+  test("blob", async (t) => {
     const x = new Blob(["ab"], { type: "text/plain" })
     // TODO: test Blob with extended properties
     let a
@@ -1657,8 +1655,7 @@ if ("Blob" in globalThis) {
     t.is(a, `new Blob(["ab"],{type:"text/plain"})`)
   })
 
-  test.serial("blob - arrayBuffer", async (t) => {
-    t.timeout(2000)
+  test("blob - arrayBuffer", async (t) => {
     const x = new Blob(["ab"])
     const a = await stringify(x, { async: true })
     t.is(
@@ -1671,8 +1668,7 @@ new Blob([new Uint8Array([
     t.is(await new Response(eval(a)).text(), "ab")
   })
 
-  test.serial("blob in object", async (t) => {
-    t.timeout(2000)
+  test("blob in object", async (t) => {
     const x = new Blob(["ab"])
     const a = await stringify({ x }, { async: true })
     t.is(
@@ -1691,8 +1687,7 @@ new Blob([new Uint8Array([
 
   const lastModified = new Date("2019-04-18T02:45:55.555Z")
 
-  test.serial("File - sync stringify return files as objects", (t) => {
-    t.timeout(2000)
+  test("File - sync stringify return files as objects", (t) => {
     const x = new File(["ab"], "a.txt", { type: "text/plain", lastModified })
     const a = stringify(x)
     t.true(a.startsWith("/* File */ {\n"))
@@ -1702,8 +1697,7 @@ new Blob([new Uint8Array([
     t.true(a.includes('name: "a.txt",'))
   })
 
-  test.serial("File", async (t) => {
-    t.timeout(2000)
+  test("File", async (t) => {
     const x = new File(["ab"], "a.txt", { type: "text/plain", lastModified })
     let a
     a = await stringify(x, { async: true })
@@ -1718,8 +1712,7 @@ new Blob([new Uint8Array([
     )
   })
 
-  test.serial("File - arrayBuffer", async (t) => {
-    t.timeout(2000)
+  test("File - arrayBuffer", async (t) => {
     const x = new File(["ab"], "a.exe", { lastModified })
     const a = await stringify(x, { async: true })
     t.is(
@@ -1732,8 +1725,7 @@ new File([new Uint8Array([
     t.is(await new Response(eval(a)).text(), "ab")
   })
 
-  test.serial("File in object", async (t) => {
-    t.timeout(2000)
+  test("File in object", async (t) => {
     const x = new File(["ab"], "a.exe", { lastModified })
     const a = await stringify({ x }, { async: true })
     t.is(

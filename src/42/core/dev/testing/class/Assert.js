@@ -90,6 +90,7 @@ export const assertError = (err, expected, message, stack) => {
 }
 
 export default class Assert {
+  #cumulated
   #timeoutDelay
   #timeoutId
   #resolveTimeout
@@ -225,19 +226,20 @@ export default class Assert {
     return spy
   }
 
-  sleep(delay) {
-    this.timeout(this.#timeoutDelay + delay)
-    return new Promise((resolve) => setTimeoutNative(resolve, delay))
+  sleep(ms) {
+    this.timeout(this.#timeoutDelay + ms)
+    return new Promise((resolve) => setTimeoutNative(resolve, ms))
   }
 
-  timeout(delay = 200) {
-    this.#timeoutDelay = delay === "reset" ? this.#timeoutDelay : delay
+  timeout(ms = 300, cumulated = 0) {
+    this.#cumulated ??= cumulated
+    this.#timeoutDelay = ms === "reset" ? this.#timeoutDelay : ms
     clearTimeoutNative(this.#timeoutId)
     this.#timeoutId = setTimeoutNative(() => {
       this.#timeoutId = true
       this.#resolveTimeout()
       this.#resolveTimeout = undefined
-    }, this.#timeoutDelay)
+    }, this.#timeoutDelay + this.#cumulated)
 
     if (this.#resolveTimeout === undefined) {
       return new Promise((resolve) => {

@@ -87,7 +87,7 @@ test("padding bytes found inside base64 string", async (t) => {
 })
 
 test.skip("convert big data to base64", async (t) => {
-  t.timeout(4000)
+  t.timeout(3000)
   const big = new Uint8Array(64 * 1024 * 1024)
   for (let i = 0, { length } = big; i < length; ++i) {
     big[i] = i % 256

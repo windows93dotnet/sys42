@@ -19,7 +19,7 @@ export default class Suite {
     this.teardowns = []
     this.warnings = []
     this.uncaughts = []
-    this.timeout = 200
+    this.timeout = 300
     this.only = false
     this.skip = false
     this.serial = false
@@ -63,14 +63,13 @@ export default class Suite {
     if (this.beforeEach) await this.warnOnThrow(this.beforeEach, "beforeEach")
 
     const t = new ExecutionContext()
-    t.utils.suiteTitle = this.title
 
-    const isAsync = test.fn.constructor.name === "AsyncFunction"
+    t.utils.suiteTitle = this.title
 
     try {
       test.timeStamp = performance.now()
       await Promise.race([
-        t.timeout(this.timeout + (isAsync ? this.cumulated : 0)),
+        t.timeout(this.timeout, this.cumulated),
         test.fn(t, t.utils),
         test.deferred.promise,
       ])

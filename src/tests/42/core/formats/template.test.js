@@ -2,8 +2,6 @@
 import test from "../../../../42/test.js"
 import template from "../../../../42/core/formats/template.js"
 
-test.suite.timeout(1000)
-
 const uppercase = (str) => str.toUpperCase()
 
 async function uppercaseAsync(str) {

@@ -107,7 +107,6 @@ test("classes", 2, (t) => {
 })
 
 test("ctx", async (t) => {
-  t.timeout(1000)
   const ctx = normalizeCtx()
   ctx.reactive.set("foo", "bar")
   const child = create(ctx, "span", { class: "{{foo}}" })

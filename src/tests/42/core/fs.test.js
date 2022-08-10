@@ -93,7 +93,6 @@ const makeSuite = (driver) => {
   ======= */
 
   test("file", async (t) => {
-    // t.timeout(1000)
     const path = cleanFile(`42-${d}-foo`)
     const content = "hello 🌍"
     await fs.write(path, content)

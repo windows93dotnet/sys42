@@ -1,8 +1,6 @@
 import test from "../../42/test.js"
 import ui from "../../42/ui.js"
 
-test.suite.timeout(1000)
-
 test("tag", (t) => {
   const app = t.utils.collect(ui(t.utils.dest(), { tag: "em" }))
   t.is(app.el.innerHTML, "<em></em>")

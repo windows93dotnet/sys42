@@ -1,7 +1,7 @@
 import test from "../../../../42/test.js"
 import ui from "../../../../42/ui.js"
 
-test.suite.timeout(5000)
+test.suite.timeout(1000)
 
 test("html", async (t) => {
   const app = await t.utils.collect(

@@ -2,8 +2,6 @@ import test from "../../../42/test.js"
 import ui from "../../../42/ui.js"
 import Component from "../../../42/ui/class/Component.js"
 
-test.suite.timeout(1000)
-
 Component.define({
   tag: "ui-t-props",
   props: {
@@ -1130,8 +1128,6 @@ test("props", 4, async (t) => {
 })
 
 test("props", 5, async (t) => {
-  t.timeout(1000)
-
   const app = await t.utils.collect(
     ui(t.utils.dest(), {
       content: { tag: "ui-a", bar: "{{foo |> upperCase}}" },

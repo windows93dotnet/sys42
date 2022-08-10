@@ -268,16 +268,14 @@ test("Math", (t) => {
 })
 
 if (test.env.runtime.inFrontend) {
-  test.serial("Blob", async (t) => {
-    t.timeout(2000)
+  test("Blob", async (t) => {
     const a = new Blob(["<h1>hello</h1>"], { type: "test/html" })
     const cloned = clone(a)
     t.eq(cloned, a)
     t.eq(await new Response(cloned).text(), await new Response(a).text())
   })
 
-  test.serial("File", async (t) => {
-    t.timeout(2000)
+  test("File", async (t) => {
     const a = new File(["<h1>hello</h1>"], "index.html", { type: "test/html" })
     const cloned = clone(a)
     t.eq(cloned, a)
