@@ -3,11 +3,9 @@ import ui from "../../../../42/ui.js"
 
 test.suite.timeout(5000)
 
-const tmp = test.utils.container({ connect: true })
-
 test("generate icon list", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(true), {
       tag: "ui-folder",
       path: "/tests/fixtures/components/folder/",
       selection: ["/tests/fixtures/components/folder/script.js"],

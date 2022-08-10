@@ -162,9 +162,6 @@ export const suite = chainable(
   }
 )
 
-addUtilities(test)
-addUtilities(suite)
-
 Object.defineProperty(suite, "title", {
   get() {
     ensureCurrentSuite()
@@ -173,6 +170,9 @@ Object.defineProperty(suite, "title", {
 })
 
 test.suite = suite
+
+addUtilities(test)
+addUtilities(suite)
 
 export function awaitTestFileReady(url, retry = 100) {
   return new Promise((resolve, reject) => {

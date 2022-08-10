@@ -22,6 +22,11 @@ import system from "../../../system.js"
 import uid from "../../uid.js"
 import when from "../../../fabric/type/promise/when.js"
 
+const idRegistry = {}
+const _forgets = Symbol("_forgets")
+const _collected = Symbol("_collected")
+const _elements = Symbol("_elements")
+
 const tasks = (list, cb, item) => {
   if (typeof cb === "function") {
     list.forEach((data, i) => {
@@ -70,6 +75,63 @@ export default function addUtilities(item, isExecutionContext) {
         },
       ])
     )
+
+    item.utils = {}
+
+    item.utils[_forgets] = []
+    item.utils.listen = (...args) => {
+      if (item.utils[_forgets].length === 0) {
+        item.teardown(() => {
+          for (const forget of item.utils[_forgets]) forget()
+          item.utils[_forgets].length = 0
+        })
+      }
+
+      item.utils[_forgets].push(listenFn(...args))
+    }
+
+    item.utils[_collected] = []
+    item.utils.collect = (thing, cb) => {
+      if (item.utils[_collected].length === 0) {
+        item.teardown(() => {
+          for (const obj of item.utils[_collected]) {
+            if (cb?.(obj) === false) continue
+            try {
+              if (typeof obj.destroy === "function") obj.destroy()
+              else if (typeof obj.remove === "function") obj.remove()
+              else if (typeof obj.close === "function") obj.close()
+              else if (typeof obj.clear === "function") obj.clear()
+            } catch {}
+          }
+
+          item.utils[_collected].length = 0
+        })
+      }
+
+      item.utils[_collected].push(thing)
+
+      return thing
+    }
+
+    item.utils[_elements] = []
+    item.utils.dest = (connect) => {
+      if (item.utils[_elements].length === 0) {
+        item.teardown(async () => {
+          await sleep(0)
+          for (const el of item.utils[_elements]) el.remove()
+          item.utils[_elements].length = 0
+        })
+      }
+
+      const el = document.createElement("section")
+      const { suiteTitle } = item.utils
+      idRegistry[suiteTitle] ??= 0
+      el.id = suiteTitle + "/" + idRegistry[suiteTitle]++
+      el.style.opacity = 0.01
+      if (connect) document.body.append(el)
+      item.utils[_elements].push(el)
+      return el
+    }
   } else {
     item.if = (condition) => (condition ? item : noop)
     item.skipIf = (condition) => (condition ? item.skip : item)
@@ -83,79 +145,16 @@ export default function addUtilities(item, isExecutionContext) {
     }
   }
 
-  const forgets = []
-  function listen(...args) {
-    if (forgets.length === 0) {
-      item.teardown(() => {
-        for (const forget of forgets) forget()
-        forgets.length = 0
-      })
-    }
+  item.utils ??= {}
 
-    forgets.push(listenFn(...args))
-  }
-
-  const collected = []
-  function collect(thing, cb) {
-    if (collected.length === 0) {
-      item.teardown(() => {
-        for (const item of collected) {
-          if (cb?.(item) === false) continue
-          try {
-            if (typeof item.destroy === "function") item.destroy()
-            else if (typeof item.remove === "function") item.remove()
-            else if (typeof item.close === "function") item.close()
-            else if (typeof item.clear === "function") item.clear()
-          } catch {}
-        }
-
-        collected.length = 0
-      })
-    }
-
-    collected.push(thing)
-
-    return thing
-  }
-
-  let containerUsed = false
-  function container(options = {}, cb) {
-    const elements = []
-
-    options.id ??= item.suite.title
-
-    return function (connect = options.connect) {
-      if (!containerUsed) {
-        item.teardown(() => {
-          setTimeout(() => {
-            cb?.(elements)
-            for (const el of elements) el.remove()
-            elements.length = 0
-          }, 0)
-        })
-        containerUsed = true
-      }
-
-      const el = document.createElement(options.tag ?? "section")
-      if (options.visible !== true) el.style.opacity = 0.01
-      if (options.id) el.id = options.id
-      if (options.keep !== true) elements.push(el)
-      if (connect) document.body.append(el)
-      return el
-    }
-  }
-
-  item.utils = {
+  Object.assign(item.utils, {
     allKeys,
     arrify,
     clone,
-    collect,
-    container,
     documentReady,
     hashmap,
     http,
     idle,
-    listen,
     log,
     noop,
     parallel,
@@ -170,7 +169,7 @@ export default function addUtilities(item, isExecutionContext) {
     uid,
     when,
     $: new DOMQuery(),
-  }
+  })
 
   item._ = item.utils
 }

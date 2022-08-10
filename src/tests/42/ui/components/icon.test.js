@@ -3,11 +3,9 @@ import ui from "../../../../42/ui.js"
 
 test.suite.timeout(5000)
 
-const tmp = test.utils.container({ connect: true })
-
 test("html", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(true), {
       tag: "ui-icon",
       path: "/script.js",
     })
@@ -61,7 +59,7 @@ test("html", async (t) => {
 
 test("infos", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), [
+    ui(t.utils.dest(true), [
       {
         tag: "ui-icon",
         path: "/derp/foo.js",
@@ -179,7 +177,7 @@ test("infos", async (t) => {
 
 test("each", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(true), {
       content: {
         scope: "arr",
         each: {
@@ -235,7 +233,7 @@ test("each", async (t) => {
 
 test("each", 2, async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(true), {
       content: {
         scope: "arr",
         each: {

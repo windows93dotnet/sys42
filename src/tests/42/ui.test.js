@@ -3,27 +3,27 @@ import ui from "../../42/ui.js"
 
 test.suite.timeout(1000)
 
-const tmp = test.utils.container()
-
 test("tag", (t) => {
-  const app = t.utils.collect(ui(tmp(), { tag: "em" }))
+  const app = t.utils.collect(ui(t.utils.dest(), { tag: "em" }))
   t.is(app.el.innerHTML, "<em></em>")
 })
 
 test("attributes", (t) => {
-  const app = t.utils.collect(ui(tmp(), { tag: "em", class: "foo" }))
+  const app = t.utils.collect(ui(t.utils.dest(), { tag: "em", class: "foo" }))
   t.is(app.el.innerHTML, '<em class="foo"></em>')
 })
 
 test("content", (t) => {
-  const app = t.utils.collect(ui(tmp(), { tag: "em", content: "hello" }))
+  const app = t.utils.collect(
+    ui(t.utils.dest(), { tag: "em", content: "hello" })
+  )
 
   t.is(app.el.innerHTML, "<em>hello</em>")
 })
 
 test("content", "array", (t) => {
   const app = t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       tag: "em",
       content: ["hello ", { tag: "strong", content: "world" }],
     })
@@ -34,7 +34,7 @@ test("content", "array", (t) => {
 
 test("content", "special strings", (t) => {
   const app = t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       tag: "h1",
       content: ["\n", "hello", "\n\n", "world", "---", "\n"],
     })
@@ -53,7 +53,7 @@ hello<br>world<hr>
 ============= */
 
 test("template", async (t) => {
-  const app = t.utils.collect(ui(tmp(), `Hello {{world}}`))
+  const app = t.utils.collect(ui(t.utils.dest(), `Hello {{world}}`))
   await app
   t.is(app.el.textContent, "Hello ")
 
@@ -80,7 +80,7 @@ test("template", async (t) => {
 
 test("reactive data", async (t) => {
   const app = t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       tag: "em",
       content: "{{foo}}",
       state: {
@@ -108,7 +108,7 @@ test("reactive data", async (t) => {
 
 test("reactive data", "attributes", async (t) => {
   const app = t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       tag: "em",
       content: "{{foo}}",
       class: "{{foo}}",
@@ -138,7 +138,7 @@ test("reactive data", "attributes", async (t) => {
 
 test("reactive async state", async (t) => {
   const app = t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       tag: "em",
       content: "{{foo}}",
       class: "{{foo}}",
@@ -171,7 +171,7 @@ test("reactive async state", async (t) => {
 
 test("reactive data", "array", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       tag: "em",
       scope: "arr",
       content: ["{{0}}", "{{1}}"],
@@ -184,7 +184,7 @@ test("reactive data", "array", async (t) => {
 
 test("reactive data", "array as data", async (t) => {
   let app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       tag: "em",
       content: ["{{/0}}", "{{/1}}"],
       state: ["a", "b"],
@@ -194,7 +194,7 @@ test("reactive data", "array as data", async (t) => {
   t.is(app.el.innerHTML, "<em>ab</em>")
 
   app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       tag: "em",
       content: ["{{./0}}", "{{./1}}"],
       state: ["a", "b"],
@@ -206,7 +206,7 @@ test("reactive data", "array as data", async (t) => {
 
 test("reactive data", "nested", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       tag: "em",
       content: "{{foo/bar}}",
       state: {
@@ -230,7 +230,7 @@ test("reactive data", "nested", async (t) => {
 
 test("reactive data", "styles", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       style: {
         color: "{{foo}}",
         display: "flex",
@@ -261,7 +261,7 @@ test("reactive data", "styles", async (t) => {
 
 test("update", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: "{{a}}{{b}}{{c}}",
       state: { a: "a", b: "b", c: "c" },
     })
@@ -299,7 +299,7 @@ One update every animation frame */
 
 test("update throttle", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: "{{a}}{{b}}{{c}}",
       state: { a: "a", b: "b", c: "c" },
     })
@@ -335,7 +335,7 @@ test("update throttle", async (t) => {
 
 test("update throttle", "using throttle:false", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: "{{a}}{{b}}{{c}}",
       state: { a: "a", b: "b", c: "c" },
     })
@@ -371,7 +371,7 @@ test("update throttle", "using throttle:false", async (t) => {
 
 test("update throttle", "using updateNow", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: "{{a}}{{b}}{{c}}",
       state: { a: "a", b: "b", c: "c" },
     })
@@ -408,7 +408,7 @@ test("update throttle", "using updateNow", async (t) => {
 
 test("update throttle", "using silent:true", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: "{{a}}{{b}}{{c}}",
       state: { a: "a", b: "b", c: "c" },
     })
@@ -448,7 +448,7 @@ test("update throttle", "using silent:true", async (t) => {
 
 test("scope", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       tag: "em",
       scope: "foo",
       content: "{{bar}}",
@@ -470,7 +470,7 @@ test("scope", async (t) => {
 
 test("scope", "relative scopes", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       scope: "a/b/c",
       content: [
         "{{d}}",
@@ -539,7 +539,7 @@ test("scope", "relative scopes", async (t) => {
 
 test("scope", "relative template keys", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       scope: "a/b/c",
       content: [
         "{{/a/b/c/d}}",
@@ -611,7 +611,7 @@ test("scope", "relative template keys", async (t) => {
 
 test("class", "string", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       tag: "em",
       class: "{{a}} {{b}}",
       state: {
@@ -636,7 +636,7 @@ test("class", "string", async (t) => {
 
 test("class", "array", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       tag: "em",
       class: ["{{a}}", "{{b}}"],
       state: {
@@ -661,7 +661,7 @@ test("class", "array", async (t) => {
 
 test("class", "object", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       tag: "em",
       class: { a: "{{a}}", b: "{{b}}" },
       state: {
@@ -714,7 +714,7 @@ test.tasks(
   ],
   (test, { def, expected }) => {
     test("abbr", "expand", def, async (t) => {
-      const app = await t.utils.collect(ui(tmp(), def))
+      const app = await t.utils.collect(ui(t.utils.dest(), def))
       t.is(app.el.innerHTML, expected)
     })
   }
@@ -722,7 +722,7 @@ test.tasks(
 
 test("abbr", "reactive", async (t) => {
   const app = t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       tag: "em#{{foo}}",
       state: {
         foo: "bar",
@@ -744,7 +744,7 @@ test("abbr", "reactive", async (t) => {
 
 test("abbr", "reactive", 2, async (t) => {
   const app = t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       tag: "em#{{foo}}.{{a}}.{{b}}",
       state: {
         foo: "bar",
@@ -789,7 +789,7 @@ const uppercase = (str) => str.toUpperCase()
 
 test("actions", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: "a {{foo|>uppercase}}",
       state: { foo: "b" },
       actions: { uppercase },
@@ -806,7 +806,7 @@ test("actions", async (t) => {
 
 test("actions", "error", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(true), {
+    ui(t.utils.dest(true), {
       content: "a {{foo|>uppercase}}",
       state: { foo: "b" },
       actions: {
@@ -835,7 +835,7 @@ test("actions", "error", async (t) => {
 
 test("actions", "as function", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: "a {{uppercase(foo)}}",
       state: { foo: "b" },
       actions: { uppercase },
@@ -852,7 +852,7 @@ test("actions", "as function", async (t) => {
 
 test("actions", "inline variable", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: "a {{'b'|>uppercase}}",
       actions: { uppercase },
     })
@@ -863,7 +863,7 @@ test("actions", "inline variable", async (t) => {
 
 test("actions", "inline variable", "as function", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: "a {{uppercase('b')}}",
       actions: { uppercase },
     })
@@ -874,7 +874,7 @@ test("actions", "inline variable", "as function", async (t) => {
 
 test("actions", "buildin actions", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       tag: "pre",
       content: "{{foo|>stringify}}",
       state: { foo: { a: 1 } },
@@ -893,7 +893,7 @@ test("actions", "buildin actions", async (t) => {
 test("actions", "thisArg", async (t) => {
   t.plan(3)
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       tag: "em",
       content: "a {{foo|>uppercase}}",
       state: { foo: "b" },
@@ -913,7 +913,7 @@ test("actions", "thisArg", async (t) => {
 test("actions", "nested action", async (t) => {
   t.plan(3)
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       tag: "em",
       content: "a {{foo|>foo.bar}}",
       state: { foo: "b" },
@@ -935,7 +935,7 @@ test("actions", "nested action", async (t) => {
 test("actions", "nested action", 2, async (t) => {
   t.plan(3)
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       tag: "em",
       content: "a {{foo.bar(foo)}}",
       state: { foo: "b" },
@@ -961,7 +961,7 @@ test("actions", "thisArg", "nested", async (t) => {
   let cnt = 0
 
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: [
         "{{foo|>uppercase}}",
         { tag: "em", content: "{{foo|>uppercase}}" },
@@ -988,7 +988,7 @@ test("actions", "thisArg", "nested", async (t) => {
 
 test("actions", "buildin actions locate", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       tag: "pre",
       content: "{{foo |> stringify('min')}}",
       // content: "{{foo|>stringify.min}}",
@@ -1001,7 +1001,7 @@ test("actions", "buildin actions locate", async (t) => {
 
 test("actions", "pluralize", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: "{{'apple'|>pluralize}}, {{'orange'|>pluralize(5)}}",
     })
   )
@@ -1014,7 +1014,7 @@ test("actions", "pluralize", async (t) => {
 
 test("if", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: { if: "{{a.b}}", content: "x" },
       state: {
         a: { b: false },
@@ -1037,7 +1037,7 @@ test("if", async (t) => {
 
 test("if", "manage renderers", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: { if: "{{a.b}}", content: "{{x}}" },
       state: {
         a: { b: false },
@@ -1071,7 +1071,7 @@ test("if", "manage renderers", async (t) => {
 
 test("if", "array", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: {
         scope: "arr",
         content: [{ if: "{{0}}", content: "x" }],
@@ -1097,7 +1097,7 @@ test("if", "array", async (t) => {
 
 test("if", "else", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: [{ if: "{{a.b}}", content: "x", else: "y" }],
       state: {
         a: { b: true },
@@ -1120,7 +1120,7 @@ test("if", "else", async (t) => {
 
 test("if", "else with empty content", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: [{ if: "{{a.b}}", content: "x", else: [] }],
       state: {
         a: { b: true },
@@ -1143,7 +1143,7 @@ test("if", "else with empty content", async (t) => {
 
 test("if", "nodes", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: [
         {
           if: "{{a.b}}",
@@ -1177,7 +1177,7 @@ test("if", "nodes", async (t) => {
 
 test("if", "element", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: [
         {
           if: "{{a.b}}",
@@ -1212,7 +1212,7 @@ test("if", "element", async (t) => {
 
 test("if", "bug using reactive.update", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: [
         {
           tag: "div",
@@ -1256,7 +1256,7 @@ test("if", "bug using reactive.update", async (t) => {
 
 test("array", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       tag: "em",
       content: [
         "{{arr/0}}", //
@@ -1291,7 +1291,7 @@ test("array", async (t) => {
 
 test("each", "manage childNodes", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: { scope: "arr", each: "{{.}}" },
     })
   )
@@ -1342,7 +1342,7 @@ test("each", "manage childNodes", async (t) => {
 
 test("each", "manage renderers", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: {
         scope: "arr",
         each: { tag: "em", content: "{{.}}" },
@@ -1403,7 +1403,7 @@ test("each", "manage renderers", async (t) => {
 
 test("each", "def", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: {
         scope: "arr",
         each: {
@@ -1451,7 +1451,7 @@ test("each", "def", async (t) => {
 
 test("each", "splice", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: { scope: "arr", each: "{{.}}" },
     })
   )
@@ -1469,7 +1469,7 @@ test("each", "splice", async (t) => {
 
 test("each", "array with objects", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: {
         scope: "arr",
         each: {
@@ -1506,7 +1506,7 @@ test("each", "array with objects", async (t) => {
 
 test("each", "render index 0 bug", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: {
         scope: "arr",
         each: {
@@ -1545,7 +1545,7 @@ test("each", "render index 0 bug", async (t) => {
 
 test("each", "innerHTML", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: [
         {
           scope: "arr",
@@ -1584,7 +1584,7 @@ test("each", "innerHTML", async (t) => {
 
 test("each", "element", "scopped", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: {
         tag: "ul",
         scope: "a.b",
@@ -1616,7 +1616,7 @@ test("each", "element", "scopped", async (t) => {
 
 test("each", "array of objects", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: { scope: "arr", each: "{{a}} - {{b}} - " },
       state: {
         arr: [
@@ -1632,7 +1632,7 @@ test("each", "array of objects", async (t) => {
 
 test("each", "array of objects", "scopped", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: { scope: "arr", each: "{{a}} - {{b}} - " },
       state: {
         arr: [
@@ -1677,7 +1677,7 @@ test("each", "array of objects", "scopped", async (t) => {
 
 test("each", "access root data", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: { scope: "arr", each: "{{a}} {{/foo}} " },
       state: {
         foo: "bar",
@@ -1691,7 +1691,7 @@ test("each", "access root data", async (t) => {
 
 test("each", "access data in previous level", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: {
         scope: "baz/arr",
         each: "{{a}} {{foo ?? ../../foo}} {{/x}} {{../../hello}} - ",
@@ -1713,7 +1713,7 @@ test("each", "access data in previous level", async (t) => {
 
 test("each", "lastChild bug", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: {
         scope: "arr",
         content: [{ each: [{ content: "{{a}}" }] }, { content: "z" }],
@@ -1744,7 +1744,7 @@ test("each", "lastChild bug", async (t) => {
 
 test("each", "range bug", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: {
         scope: "arr",
         content: [
@@ -1781,7 +1781,7 @@ test("each", "range bug", async (t) => {
 
 test("each", "relative paths", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: {
         scope: "baz/arr",
         each: "{{a}} {{foo ?? ../../foo}} {{../../foo}} {{/foo}} - ",
@@ -1801,7 +1801,7 @@ test("each", "relative paths", async (t) => {
 
 test("each", "@index", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: { scope: "arr", each: "{{@index}} {{a}} " },
       state: {
         foo: "bar",
@@ -1815,7 +1815,7 @@ test("each", "@index", async (t) => {
 
 test("each", "@index", "string array", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: { scope: "arr", each: "{{@index}} {{.}} " },
       state: {
         foo: "bar",
@@ -1829,7 +1829,7 @@ test("each", "@index", "string array", async (t) => {
 
 test("each", "#", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: {
         scope: "arr",
         each: ["{{#}} {{a}}\n", "{{##}} {{a}}\n", "{{###}} {{a}}\n"],
@@ -1856,7 +1856,7 @@ test("each", "#", async (t) => {
 
 test("each", "#", "string array", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: {
         scope: "arr",
         each: ["{{#}} {{.}}\n", "{{##}} {{.}}\n", "{{###}} {{.}}\n"],
@@ -1883,7 +1883,7 @@ test("each", "#", "string array", async (t) => {
 
 test("each", "@last", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: { scope: "arr", each: "{{##}}:{{a}}{{@last ? '' : ', '}}" },
       state: {
         foo: "bar",
@@ -1897,7 +1897,7 @@ test("each", "@last", async (t) => {
 
 test("each", "@first", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: { scope: "arr", each: "{{@first ? ' - ' : ''}}{{##}}:{{a}} " },
       state: {
         foo: "bar",
@@ -1911,7 +1911,7 @@ test("each", "@first", async (t) => {
 
 test("each", "@last element", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: {
         scope: "arr",
         each: ["{{@index}} {{a}}", { tag: "br", if: "{{!@last}}" }],
@@ -1931,7 +1931,7 @@ test("each", "@last element", async (t) => {
 
 test("each", "@first element", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: {
         scope: "arr",
         each: [{ tag: "hr", if: "{{!@last}}" }, "{{@index}} {{a}}"],
@@ -1951,7 +1951,7 @@ test("each", "@first element", async (t) => {
 
 test("each", "input element", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: {
         scope: "arr",
         each: [{ tag: "textarea", scope: "a" }],
@@ -1986,7 +1986,7 @@ test("computed", async (t) => {
   t.plan(6)
 
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: {
         scope: "parsed",
         content: "foo: {{0}}, bar: {{1}}",
@@ -2025,7 +2025,7 @@ test("computed", async (t) => {
 
 test("on", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: {
         tag: "button",
         content: "cnt: {{cnt}}",
@@ -2050,7 +2050,7 @@ test("on", async (t) => {
 
 test("on", "queued fast calls", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: {
         tag: "button",
         content: "cnt: {{cnt}}",
@@ -2079,7 +2079,7 @@ test("on", "queued fast calls", async (t) => {
 test("on", "actions", async (t) => {
   t.plan(4)
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: {
         tag: "button",
         content: "cnt: {{cnt}}",
@@ -2123,7 +2123,7 @@ function change(input, value) {
 
 test("input", async (t) => {
   const app = await t.utils.collect(
-    ui(tmp(), {
+    ui(t.utils.dest(), {
       content: {
         tag: "input",
         scope: "str",

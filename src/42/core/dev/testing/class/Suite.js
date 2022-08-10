@@ -63,6 +63,7 @@ export default class Suite {
     if (this.beforeEach) await this.warnOnThrow(this.beforeEach, "beforeEach")
 
     const t = new ExecutionContext()
+    t.utils.suiteTitle = this.title
 
     const isAsync = test.fn.constructor.name === "AsyncFunction"
 

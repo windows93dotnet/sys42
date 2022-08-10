@@ -3,11 +3,9 @@ import ui from "../../../../42/ui.js"
 
 test.suite.timeout(5000)
 
-const tmp = test.utils.container({ connect: true })
-
-test("render picto", async (t) => {
-  const app = await t.utils.collect(
-    ui(tmp(), {
+test("render picto", async (t, { dest, collect }) => {
+  const app = await collect(
+    ui(dest(true), {
       tag: "ui-picto",
       value: "puzzle",
     })

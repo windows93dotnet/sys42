@@ -6,14 +6,17 @@ export default function e2e(fn) {
   requestIdleCallback(async () => {
     if (ran) return
     await import("../../../fabric/type/error/trap.js").then((m) => m.default())
-    fn(new ExecutionContext(), {
-      container: document.body,
+
+    const t = new ExecutionContext()
+    Object.assign(t.utils, {
+      dest: () => document.body,
       collect: (item) => item,
     })
+    fn(t, t.utils)
   })
 
-  return async (t, meta) => {
+  return async (t) => {
     ran = true
-    await fn(t, meta)
+    await fn(t, t.utils)
   }
 }

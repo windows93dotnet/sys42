@@ -23,8 +23,6 @@ test.teardown(() => {
 
 test.suite.serial()
 
-const tmp = test.utils.container()
-
 const { task } = test
 
 test.tasks(
@@ -132,7 +130,7 @@ dialog(
 
   (test, { title, def, timeout: ms, working, trusted, description }) => {
     ms ??= 2000
-    test.serial(title, async (t) => {
+    test.serial(title, async (t, { collect, dest }) => {
       t.timeout(ms + 100)
 
       t.utils.listen({
@@ -142,7 +140,7 @@ dialog(
         },
       })
 
-      const app = t.utils.collect(ui(tmp(true), def, { trusted }))
+      const app = collect(ui(dest(true), def, { trusted }))
 
       let res
 

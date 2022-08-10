@@ -11,12 +11,12 @@ function getVal(btn) {
   return out
 }
 
-export default e2e(async (t, { container, collect }) => {
+export default e2e(async (t, { collect, dest }) => {
   system.DEV = true
 
   const app = await collect(
     ui(
-      container,
+      dest(true),
       {
         tag: "body.box-fit.desktop",
         content: [
