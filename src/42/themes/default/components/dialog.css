@@ -18,7 +18,8 @@ ui-dialog {
   display: flex;
   flex-direction: column;
   width: max-content;
-  min-width: min(var(--ctrl-w), 100%);
+  /* min-width: min(var(--ctrl-w), 100%); */
+  min-width: var(--ctrl-w);
 
   --bg: var(--dialog-bg);
   --fg: var(--dialog-fg);

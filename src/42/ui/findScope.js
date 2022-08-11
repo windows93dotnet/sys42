@@ -6,7 +6,7 @@ export default function findScope(ctx, loc) {
 
   let { scope } = ctx
 
-  if (ctx.computeds.has(scope)) return [scope, loc]
+  if (ctx.computeds.has(scope) && !ctx.actions.has(loc)) return [scope, loc]
 
   if (ctx.scopeChain.length > 0) {
     if (loc.startsWith("/")) {
@@ -31,7 +31,7 @@ export default function findScope(ctx, loc) {
     if (ctx.scopeChain.at(-1).props !== undefined) {
       while (i--) {
         const item = ctx.scopeChain[i]
-        if (item.props?.includes(loc)) break
+        if (item.props?.includes(loc)) return [scope, loc]
         scope = item.scope
       }
     }

@@ -1664,7 +1664,7 @@ test("computed", async (t) => {
   t.plan(9)
   let cnt = 0
 
-  await Component.define(
+  Component.define(
     class extends Component {
       static definition = {
         tag: "ui-t-computed",
@@ -1738,7 +1738,7 @@ test("computed", "from prop with state:true", async (t) => {
   t.plan(11)
   let cnt = 0
 
-  await Component.define(
+  Component.define(
     class extends Component {
       static definition = {
         tag: "ui-t-compu-sta",
@@ -1786,9 +1786,7 @@ test("computed", "from prop with state:true", async (t) => {
     formated: "FOO/BAR",
   })
   t.eq(app.ctx.computeds.value, {
-    ui: {
-      "t-compu-sta": { root: { parsed: ["FOO", "BAR"] } },
-    },
+    ui: { "t-compu-sta": { root: { parsed: ["FOO", "BAR"] } } },
   })
   t.is(app.el.innerHTML, "<ui-t-compu-sta>foo: FOO, bar: BAR</ui-t-compu-sta>")
 
@@ -1819,7 +1817,7 @@ test("computed", "computed prop", async (t) => {
   t.plan(12)
   let cnt = 0
 
-  await Component.define(
+  Component.define(
     class extends Component {
       static definition = {
         tag: "ui-t-compu-prop",
@@ -1904,4 +1902,35 @@ test("computed", "computed prop", async (t) => {
   t.throws(() => {
     el.parsed = "fail"
   })
+})
+
+/* actions
+========== */
+
+Component.define(
+  class extends Component {
+    static definition = {
+      tag: "ui-t-actions",
+      computed: { y: "y" },
+    }
+  }
+)
+
+test("actions", "bug: component with computed", async (t) => {
+  const deferred = t.utils.defer()
+  const app = await t.utils.collect(
+    ui(t.utils.dest(), {
+      content: {
+        tag: "ui-t-actions",
+        click: "{{foo()}}",
+      },
+      actions: {
+        foo() {
+          deferred.resolve("foo")
+        },
+      },
+    })
+  )
+  app.query("ui-t-actions").click()
+  t.is(await deferred, "foo")
 })

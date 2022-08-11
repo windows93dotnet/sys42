@@ -61,7 +61,7 @@ export class Sandbox extends Component {
     plugins: ["ipc"],
 
     content: [
-      { tag: ".ui-sandbox__scene" }, //
+      { tag: ".ui-sandbox__scene.zoom" }, //
       { tag: ".ui-sandbox__message" },
     ],
   }
@@ -92,6 +92,7 @@ export class Sandbox extends Component {
     const { sandbox } = this.resource.el
     if (
       this.ctx.trusted !== true &&
+      permissions !== "web" &&
       sandbox.contains("allow-scripts") &&
       sandbox.contains("allow-same-origin")
     ) {

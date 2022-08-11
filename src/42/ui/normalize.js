@@ -101,12 +101,12 @@ export function normalizeTokens(tokens, ctx, actions) {
       let action
       let thisArg
 
-      if (ctx.actions.has(loc)) {
-        thisArg = ctx
-        action = ctx.actions.get(loc)
-      } else if (ctx.component && token.value in ctx.component) {
+      if (ctx.component && token.value in ctx.component) {
         thisArg = ctx.component
         action = ctx.component[token.value]
+      } else if (ctx.actions.has(loc)) {
+        thisArg = ctx
+        action = ctx.actions.get(loc)
       }
 
       if (action) {

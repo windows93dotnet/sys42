@@ -13,6 +13,7 @@
   import ui from "../42/ui.js"
   import explorer from "../42/ui/components/explorer.js"
   import open from "../42/os/cmd/open.cmd.js"
+  import dialog from "../42/ui/components/dialog.js"
 
   const app = await ui({
     tag: "body.box-fit.box-h._debug",
@@ -25,7 +26,7 @@
             on: [
               {
                 selector: 'ui-icon[aria-description="folder"]',
-                dblclick: "{{openFolder(e, target.path)}}",
+                dblclick: "{{openFolder(target.path)}}",
               },
               {
                 selector: 'ui-icon[aria-description="file"]',
@@ -33,6 +34,16 @@
               },
             ],
           },
+          // {
+          //   tag: "ui-dialog",
+          //   content: {
+          //     tag: "ui-sandbox",
+          //     // permissions: "web",
+          //     // path: "https://zombect.ro",
+          //     permissions: "app",
+          //     path: "../demos/ui/fields.demo.html",
+          //   },
+          // },
         ],
       },
       {
@@ -42,30 +53,42 @@
           tag: "button",
           label: "Start",
           picto: "puzzle",
-          on: { click: "{{start()}}" },
+          on: { click: "{{start(e, target)}}" },
         },
       },
     ],
 
     actions: {
-      openFolder(e, path) {
+      openFolder(path) {
         explorer(path)
       },
       openFile(path) {
         open(path)
       },
       taskbar: {
-        start() {
-          console.log("start")
+        start(e, target) {
+          console.log("start", e, target)
         },
       },
     },
   })
 
+  dialog({
+    // style: { width: 100, height: 100 },
+    label: "ok",
+    content: "hello",
+    // content: {
+    //   tag: "ui-sandbox.inset.document",
+    //   zoom: 0.6,
+    //   permissions: "app",
+    //   path: "../tests/fixtures/formats/image/example.svg",
+    // },
+  })
+
   globalThis.app = app
 
   // app
-  //   .query('ui-icon[path="/index.html"]')
+  //   .query('ui-icon[path="/files.json"]')
   //   ?.dispatchEvent(new CustomEvent("dblclick", { bubbles: true }))
 
   // if (globalThis.top === globalThis) {

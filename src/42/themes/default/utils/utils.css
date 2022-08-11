@@ -114,6 +114,16 @@ body.pointer-iframes-0 iframe { pointer-events: none !important; }
   margin: 0;
 }
 
+.zoom {
+  --top: 0%;
+  --left: 0%;
+  --_zoom: var(--zoom, 1);
+  width: calc(100% / var(--_zoom));
+  height: calc(100% / var(--_zoom));
+  transform: scale(var(--_zoom));
+  transform-origin: var(--top) var(--left);
+}
+
 /* States
 ========= */
 

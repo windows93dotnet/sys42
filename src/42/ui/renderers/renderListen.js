@@ -16,19 +16,17 @@ const makeEventLocals = (loc, e, target) => {
 function compileRun(val, ctx) {
   const parsed = expr.parse(val)
 
-  const { actions } = normalizeTokens(parsed, ctx)
-
   const fn = expr.compile(parsed, {
     assignment: true,
     async: true,
     sep: "/",
-    actions,
+    actions: normalizeTokens(parsed, ctx).actions,
   })
 
-  const scope = ctx.scopeChain.at(0)?.scope ?? ctx.scope
-
-  return (e, target) =>
-    ctx.undones.push(fn(ctx.reactive.state, makeEventLocals(scope, e, target)))
+  return (e, target) => {
+    const eventLocals = makeEventLocals(ctx.scope, e, target)
+    ctx.undones.push(fn(ctx.reactive.state, eventLocals))
+  }
 }
 
 function forkCtx(ctx, key) {

@@ -2,10 +2,13 @@ ui-sandbox {
   --zoom: 1;
 
   display: block;
-  min-width: 310px;
-  min-height: 160px;
+  width: 310px;
+  height: 160px;
+  min-width: 100%;
   max-width: 100%;
+  min-height: 100%;
   max-height: 100%;
+
   flex: 1 0 auto;
   position: relative;
 }
@@ -13,17 +16,6 @@ ui-sandbox {
 ui-sandbox > * {
   position: absolute;
   inset: 0;
-}
-
-ui-sandbox[script] {
-  display: none;
-}
-
-.ui-sandbox__scene {
-  width: calc(100% / var(--zoom));
-  height: calc(100% / var(--zoom));
-  transform: scale(var(--zoom));
-  transform-origin: top left;
 }
 
 .ui-sandbox__scene > iframe {
