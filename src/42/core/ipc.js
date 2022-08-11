@@ -1,8 +1,8 @@
 import uid from "./uid.js"
 import defer from "../fabric/type/promise/defer.js"
 import Emitter from "../fabric/class/Emitter.js"
-import inIframe from "../core/env/runtime/inIframe.js"
-import inTop from "../core/env/runtime/inTop.js"
+import inIframe from "../core/env/realm/inIframe.js"
+import inTop from "../core/env/realm/inTop.js"
 
 const sources = new WeakMap()
 

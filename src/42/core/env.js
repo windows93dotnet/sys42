@@ -1,4 +1,5 @@
 import * as runtime from "./env/runtime.js"
+import * as realm from "./env/realm.js"
 import { UAParser } from "./env/parseUserAgent.js"
 import getGPU from "./env/getGPU.js"
 import languages from "./i18n/languages.js"
@@ -7,6 +8,10 @@ import disposable from "../fabric/traits/disposable.js"
 const getUAParse = disposable(() => new UAParser())
 
 export class ENV {
+  get realm() {
+    return Object.assign(Object.create(null), realm)
+  }
+
   get runtime() {
     return Object.assign(Object.create(null), runtime)
   }

@@ -1,3 +1,4 @@
-import isBackend from "./inBackend.js"
+import isNode from "./inNode.js"
+import isDeno from "./inDeno.js"
 
-export default !isBackend
+export default !isNode && !isDeno

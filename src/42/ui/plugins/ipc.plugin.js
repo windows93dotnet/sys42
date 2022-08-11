@@ -1,6 +1,6 @@
 import system from "../../system.js"
-import inIframe from "../../core/env/runtime/inIframe.js"
-import inTop from "../../core/env/runtime/inTop.js"
+import inIframe from "../../core/env/realm/inIframe.js"
+import inTop from "../../core/env/realm/inTop.js"
 import ipc from "../../core/ipc.js"
 import debounce from "../../fabric/type/function/debounce.js"
 

@@ -1,4 +1,4 @@
-import inTop from "./core/env/runtime/inTop.js"
+import inTop from "./core/env/realm/inTop.js"
 import inAutomated from "./core/env/runtime/inAutomated.js"
 import system from "./system.js"
 import log from "./core/log.js"

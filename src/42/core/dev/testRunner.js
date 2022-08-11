@@ -1,6 +1,6 @@
 import system from "../../system.js"
 import configure from "../configure.js"
-import isFrontend from "../env/runtime/inFrontend.js"
+import inFrontend from "../env/runtime/inFrontend.js"
 import { htmlTest } from "../../test.js"
 
 const DEFAULTS = {
@@ -38,7 +38,7 @@ export default async function testRunner(testFiles, options) {
     testFiles.map((url) => {
       url = new URL(url, location.href)
       return url.href.endsWith(".html")
-        ? isFrontend && htmlTest(url, options)
+        ? inFrontend && htmlTest(url, options)
         : import(/* @vite-ignore */ url)
     })
   )

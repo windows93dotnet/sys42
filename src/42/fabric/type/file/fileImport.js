@@ -2,7 +2,7 @@
 
 // @thanks https://stackoverflow.com/a/67603015
 
-import inOpaqueOrigin from "../../../core/env/runtime/inOpaqueOrigin.js"
+import inOpaqueOrigin from "../../../core/env/realm/inOpaqueOrigin.js"
 const supportShowOpenFilePicker = "showOpenFilePicker" in globalThis
 
 function legacyAccept(types) {

@@ -5,7 +5,7 @@ import parseCSSUrl from "../cssom/parseCSSUrl.js"
 import walkCSSRules from "../cssom/walkCSSRules.js"
 import log from "../../core/log.js"
 import preload from "../../core/load/preload.js"
-import inOpaqueOrigin from "../../core/env/runtime/inOpaqueOrigin.js"
+import inOpaqueOrigin from "../../core/env/realm/inOpaqueOrigin.js"
 
 import when from "../type/promise/when.js"
 import sleep from "../type/promise/sleep.js"

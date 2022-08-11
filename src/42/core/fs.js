@@ -1,5 +1,5 @@
-import inOpaqueOrigin from "./env/runtime/inOpaqueOrigin.js"
-import inTop from "./env/runtime/inTop.js"
+import inOpaqueOrigin from "./env/realm/inOpaqueOrigin.js"
+import inTop from "./env/realm/inTop.js"
 import configure from "./configure.js"
 import resolvePath from "../fabric/type/path/core/resolvePath.js"
 import FileSystemError from "./fs/FileSystemError.js"
