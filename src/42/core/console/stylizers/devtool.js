@@ -1,5 +1,5 @@
 import inWorker from "../../env/realm/inWorker.js"
-import inView from "../../env/realm/inView.js"
+import inWindow from "../../env/realm/inWindow.js"
 import inOpaqueOrigin from "../../env/realm/inOpaqueOrigin.js"
 import setup from "../../../core/setup.js"
 // import toggleable from "../../../fabric/traits/toggleable.js"
@@ -11,25 +11,7 @@ const capitalize = (word) => word[0].toUpperCase() + word.slice(1)
 const DEFAULTS = {
   css: "font: 8px/12px tomo, monospace;",
   colors: {
-    // Visual Studio Code colors
-    // @src https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit
     dim: "rgba(160,160,160,0.8)", // should work on light and dark theme
-    // black: "rgb(0,0,0)",
-    // red: "rgb(205,49,49)",
-    // green: "rgb(13,188,121)",
-    // yellow: "rgb(229,229,16)",
-    // blue: "rgb(36,114,200)",
-    // magenta: "rgb(188,63,188)",
-    // cyan: "rgb(17,168,205)",
-    // white: "rgb(229,229,229)",
-    // blackBright: "rgb(102,102,102)",
-    // redBright: "rgb(241,76,76)",
-    // greenBright: "rgb(35,209,139)",
-    // yellowBright: "rgb(245,245,67)",
-    // blueBright: "rgb(59,142,234)",
-    // magentaBright: "rgb(214,112,214)",
-    // cyanBright: "rgb(41,184,219)",
-    // whiteBright: "rgb(229,229,229)",
 
     black: "#232634",
     blackBright: "#616673",
@@ -84,7 +66,7 @@ SGR.STYLES.del = SGR.STYLES.strikethrough
 let colors
 let states
 
-const bc = inView && !inOpaqueOrigin && new BroadcastChannel("devtool")
+const bc = inWindow && !inOpaqueOrigin && new BroadcastChannel("devtool")
 
 const setColors = (...options) => {
   colors = {}
@@ -216,7 +198,7 @@ if (bc && inWorker) {
   }
 
   bc.postMessage("devtool-worker:active")
-} else if (bc && inView) {
+} else if (bc && inWindow) {
   bc.onmessage = ({ data }) => {
     if (data === "devtool-worker:active") bc.postMessage({ colors })
   }

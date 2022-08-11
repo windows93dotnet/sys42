@@ -67,9 +67,8 @@ if (inTop && inAutomated) {
     },
     async env(full) {
       const env = await import("./core/env.js").then((m) => m.default)
-      if (!full) return log(env.toString())
-      const json = env.toJSON()
-      log(json)
+      if (!full) return log(String(env))
+      log(env)
     },
     // async tree(el = document.body) {
     //   const printAccessibilityTree = await import(

@@ -1,8 +1,10 @@
+import inTop from "./env/realm/inTop.js"
+import inIframe from "./env/realm/inIframe.js"
+import inWorker from "./env/realm/inWorker.js"
 import uid from "./uid.js"
 import defer from "../fabric/type/promise/defer.js"
 import Emitter from "../fabric/class/Emitter.js"
-import inIframe from "../core/env/realm/inIframe.js"
-import inTop from "../core/env/realm/inTop.js"
+import Canceller from "../fabric/class/Canceller.js"
 
 const sources = new WeakMap()
 
@@ -12,95 +14,109 @@ const EMIT = "42_IPC_EMIT"
 const CLOSE = "42_IPC_CLOSE"
 const HANDSHAKE = "42_IPC_HANDSHAKE"
 
-globalThis.addEventListener(
-  "message",
-  async ({ origin, data, source, ports }) => {
-    if (origin !== "null" && origin !== location.origin) return
+async function messageHandler({ origin, data, source, ports, target }) {
+  const worker = target instanceof Worker ? target : undefined
 
-    if (data?.type === PING) {
-      const port = ports[0]
-      if (!port) throw new Error("IPC_PING: missing port")
+  if (!worker && origin !== "null" && origin !== location.origin) return
 
-      let iframe
+  if (data?.type === PING) {
+    const port = ports[0]
+    if (!port) throw new Error("IPC_PING: missing port")
+
+    let iframe
+    if (worker) {
+      source = worker
+    } else {
       for (const el of document.querySelectorAll("iframe")) {
         if (el.contentWindow === source) {
           iframe = el
           break
         }
       }
+    }
 
-      const trusted =
-        origin === location.origin ||
-        (iframe &&
-          (iframe.src
-            ? new URL(iframe.src).origin === location.origin
-            : Boolean(iframe.srcdoc)))
+    const trusted =
+      worker ||
+      origin === location.origin ||
+      (iframe &&
+        (iframe.src
+          ? new URL(iframe.src).origin === location.origin
+          : Boolean(iframe.srcdoc)))
 
-      if (!trusted) {
-        throw new DOMException(
-          `IPC_PING: untrusted origin: ${origin}`,
-          "SecurityError"
-        )
-      }
+    if (!trusted) {
+      throw new DOMException(
+        `IPC_PING: untrusted origin: ${origin}`,
+        "SecurityError"
+      )
+    }
 
-      const meta = {
-        origin,
-        source,
-        iframe,
-        port,
-        get emit() {
-          return (events, ...args) => {
-            port.postMessage({ type: EMIT, events, args })
-          }
-        },
-      }
-
-      port.postMessage({ type: PONG })
-
-      port.onmessage = ({ data: { id, type, event, data } }) => {
-        if (type === "emit") {
-          if (sources.has(source)) sources.get(source).emit(event, data, meta)
-          ipc.emit(event, data, meta)
-        } else if (type === "send") {
-          const undones = []
-
-          if (sources.has(source)) {
-            const dest = sources.get(source)
-            if (event in dest[Emitter.EVENTS]) {
-              undones.push(dest.send(event, data, meta))
-            }
-          }
-
-          if (event in ipc[Emitter.EVENTS]) {
-            undones.push(ipc.send(event, data, meta))
-          }
-
-          if (undones.length === 0) {
-            const err = new Error(`No ipc listener for ${event}`)
-            port.postMessage({ id, err })
-            return
-          }
-
-          Promise.all(undones)
-            .then((res) => {
-              res = res.flat()
-              port.postMessage({ id, res: res[0], all: res })
-            })
-            .catch((err) => {
-              port.postMessage({ id, err })
-            })
+    const meta = {
+      origin,
+      source,
+      iframe,
+      worker,
+      port,
+      get emit() {
+        return (events, ...args) => {
+          port.postMessage({ type: EMIT, events, args })
         }
+      },
+    }
+
+    port.postMessage({ type: PONG })
+
+    port.onmessage = ({ data: { id, type, event, data } }) => {
+      if (type === "emit") {
+        if (sources.has(source)) sources.get(source).emit(event, data, meta)
+        ipc.emit(event, data, meta)
+      } else if (type === "send") {
+        const undones = []
+
+        if (sources.has(source)) {
+          const dest = sources.get(source)
+          if (event in dest[Emitter.EVENTS]) {
+            undones.push(dest.send(event, data, meta))
+          }
+        }
+
+        if (event in ipc[Emitter.EVENTS]) {
+          undones.push(ipc.send(event, data, meta))
+        }
+
+        if (undones.length === 0) {
+          const err = new Error(`No ipc listener for ${event}`)
+          port.postMessage({ id, err })
+          return
+        }
+
+        Promise.all(undones)
+          .then((res) => {
+            res = res.flat()
+            port.postMessage({ id, res: res[0], all: res })
+          })
+          .catch((err) => {
+            port.postMessage({ id, err })
+          })
       }
     }
   }
-)
+}
 
 export class Receiver extends Emitter {
+  #cancel
+
   constructor(source, options) {
     super({ signal: options?.signal })
     options?.signal?.addEventListener("abort", () => this.destroy())
+    this.#cancel = new Canceller(options?.signal)
 
-    if (source instanceof HTMLIFrameElement) source = source.contentWindow
+    if (globalThis.HTMLIFrameElement && source instanceof HTMLIFrameElement) {
+      source = source.contentWindow
+    } else if ("onmessage" in source) {
+      const options = { signal: this.#cancel.signal }
+      source.addEventListener("message", messageHandler, options)
+    }
+
     this.source = source
     sources.set(source, this)
   }
@@ -109,6 +125,7 @@ export class Receiver extends Emitter {
     this.emit("destroy", this)
     this.off("*")
     sources.delete(this.source)
+    this.#cancel?.()
   }
 }
 
@@ -126,7 +143,7 @@ export class Sender extends Emitter {
     this.#queue = new Map()
     this.ready = defer()
 
-    if (target instanceof HTMLIFrameElement) {
+    if (globalThis.HTMLIFrameElement && target instanceof HTMLIFrameElement) {
       // default "options.origin" use wildcard only if iframe is sandboxed
       // without "allow-same-origin" and is from same origin.
       const iframeOrigin = target.src
@@ -146,7 +163,11 @@ export class Sender extends Emitter {
       options.origin ??= location.origin === "null" ? "*" : location.origin
     }
 
-    target.postMessage({ type: PING }, options.origin, [port2])
+    if (inWorker) {
+      globalThis.postMessage({ type: PING }, [port2])
+    } else {
+      target.postMessage({ type: PING }, options.origin, [port2])
+    }
 
     this.port1.onmessage = ({ data }) => {
       if (data.id && this.#queue.has(data.id)) {
@@ -188,8 +209,9 @@ export class Sender extends Emitter {
 }
 
 export class IPC extends Emitter {
-  inIframe = inIframe
   inTop = inTop
+  inIframe = inIframe
+  inWorker = inWorker
   iframes = new Map()
 
   from(source, options) {
@@ -209,7 +231,7 @@ Object.defineProperties(ipc.to, {
   top: {
     get() {
       top ??= ipc //
-        .to(globalThis.top)
+        .to(globalThis.opener ?? globalThis.top)
         .on("destroy", () => {
           top = undefined
         })
@@ -219,7 +241,7 @@ Object.defineProperties(ipc.to, {
   parent: {
     get() {
       parent ??= ipc //
-        .to(globalThis.parent)
+        .to(globalThis.opener ?? globalThis.parent)
         .on("destroy", () => {
           parent = undefined
         })
@@ -236,12 +258,22 @@ if (inTop) {
     .on(CLOSE, (data, meta) => {
       if (meta.iframe) ipc.iframes.delete(meta.iframe)
     })
-}
-
-if (inIframe) {
+} else if (inIframe) {
   globalThis.addEventListener("pageshow", () => ipc.to.top.emit(HANDSHAKE))
   globalThis.addEventListener("pagehide", () => ipc.to.top.emit(CLOSE))
 }
+
+const bc = new BroadcastChannel("42_WORKER_HANDSHAKE")
+if (inWorker) {
+  console.log(globalThis.opener)
+  bc.postMessage({ type: PING })
+} else {
+  bc.onmessage = (...args) => {
+    console.log(888, args)
+  }
+}
+
+globalThis.addEventListener("message", messageHandler)
 
 Object.freeze(ipc)
 Object.freeze(ipc.to)

@@ -1,2 +1,1 @@
-// window.location !== window.parent.location
-export default globalThis !== globalThis.top
+export default typeof window !== "undefined" && window !== window.top

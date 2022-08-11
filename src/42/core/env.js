@@ -7,14 +7,14 @@ import disposable from "../fabric/traits/disposable.js"
 
 const getUAParse = disposable(() => new UAParser())
 
-export class ENV {
+export default {
   get realm() {
     return Object.assign(Object.create(null), realm)
-  }
+  },
 
   get runtime() {
     return Object.assign(Object.create(null), runtime)
-  }
+  },
 
   get browser() {
     const uap = getUAParse()
@@ -32,15 +32,15 @@ export class ENV {
       isSafari: name.startsWith("safari"),
       ...browser,
     }
-  }
+  },
 
   get engine() {
     return getUAParse().getEngine()
-  }
+  },
 
   get os() {
     return getUAParse().getOS()
-  }
+  },
 
   get device() {
     const device = getUAParse().getDevice()
@@ -54,22 +54,22 @@ export class ENV {
         ? "desktop"
         : undefined)
     return device
-  }
+  },
 
   get cpu() {
     return {
       ...getUAParse().getCPU(),
       cores: globalThis.navigator?.hardwareConcurrency,
     }
-  }
+  },
 
   get memory() {
     return { gigabytes: globalThis.navigator?.deviceMemory }
-  }
+  },
 
   get gpu() {
     return getGPU()
-  }
+  },
 
   get network() {
     return {
@@ -83,34 +83,18 @@ export class ENV {
         return globalThis.navigator?.connection?.effectiveType
       },
     }
-  }
+  },
 
   get languages() {
     return languages
-  }
+  },
 
-  toJSON() {
-    const json = {}
-
-    const proto = Object.getPrototypeOf(this)
-    const descriptors = Object.getOwnPropertyDescriptors(proto)
-    for (const key in descriptors) {
-      if (!(key === "constructor" || key === "toString" || key === "toJSON")) {
-        json[key] = this[key]
-      }
-    }
-
-    return json
-  }
-
-  toString() {
+  [Symbol.toPrimitive]() {
     const { browser: b, os: o, device: d } = this
     let out = `${b.name ?? ""}${b.major ? ` ${b.major}` : ""}`
     if (d.type) out += ` (${d.type})`
     if (o.name) out += ` on ${o.name}${o.version ? ` ${o.version}` : ""}`
     if (d.vendor) out += `, ${d.vendor}${d.model ? ` ${d.model}` : ""}`
     return out
-  }
+  },
 }
-
-export default new ENV()

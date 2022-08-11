@@ -33,7 +33,7 @@ test.tasks(
     //   def: {
     //     tag: "ui-sandbox",
     //     permissions: "app",
-    //     script: `ipc.to.parent.emit('xss', "hello secret")`,
+    //     script: `ipc.to.top.emit('xss', "hello secret")`,
     //   },
     // }),
 
@@ -43,7 +43,7 @@ test.tasks(
     //   def: {
     //     tag: "ui-sandbox",
     //     permissions: "app",
-    //     script: `ipc.to.parent.emit('xss', new Error("Secret not found"))`,
+    //     script: `ipc.to.top.emit('xss', new Error("Secret not found"))`,
     //   },
     // }),
 
@@ -69,19 +69,17 @@ test.tasks(
           label: "dummy dialog",
         },
         {
-          // try to use "app" permission only to get top level secret
           tag: "ui-sandbox",
           permissions: "app",
           script: `
 import dialog from "../../42/ui/components/dialog.js"
-import xrealm from "../../42/core/ipc/xrealm.js"
 dialog(
   {
     label: "malware",
     content: {
       tag: "ui-sandbox",
       permissions: "trusted",
-      script: "ipc.to.parent.emit('xss', localStorage.getItem('SECRET'))"
+      script: "ipc.to.top.emit('xss', localStorage.getItem('SECRET'))"
     }
   },
   { trusted: true }
@@ -98,7 +96,6 @@ dialog(
       description: "XSS Work because iframe is not sandboxed",
       def: [
         {
-          // dummy dialog to force top ipc response
           tag: "ui-dialog",
           label: "dummy dialog",
         },
@@ -115,7 +112,6 @@ dialog(
         "XSS Fail because top level xrealm delete ctx.trusted from sandboxed iframes",
       def: [
         {
-          // dummy dialog to force top ipc response
           tag: "ui-dialog",
           label: "dummy dialog",
         },
@@ -164,7 +160,7 @@ dialog(
         return
       }
 
-      t.not(res, SECRET, "An untrusted context can access top localStorage")
+      t.not(res, SECRET, "An untrusted context can access localStorage.SECRET")
 
       if (res == null) return
 

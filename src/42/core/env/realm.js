@@ -1,6 +1,5 @@
 export { default as inWindow } from "./realm/inWindow.js"
 export { default as inChildWindow } from "./realm/inChildWindow.js"
-export { default as inView } from "./realm/inView.js"
 
 export { default as inTop } from "./realm/inTop.js"
 export { default as inIframe } from "./realm/inIframe.js"

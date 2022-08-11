@@ -1,3 +1,9 @@
+//! Copyright © 2012-2021 Faisal Salman <f@faisalman.com>. MIT License.
+// @src http://faisalman.github.io/ua-parser-js/js/ua-parser.js
+const GPU_VENDOR_REGEX = /(intel|nvidia|sis|amd|apple|powervr)\W? (.+)/i
+const GPU_RENDERER_REGEX = /(((?:radeon|adreno|geforce|mali).+))/i
+const GPU_CLEANUP_REGEX = / ?(\(.+?\)| direct3d.+| opengl.+|\/.+$| gpu$)/gi
+
 export default function getGPU() {
   const gpu = {
     supported: "WebGLRenderingContext" in globalThis,
@@ -6,11 +12,7 @@ export default function getGPU() {
     model: undefined,
   }
 
-  //! Copyright © 2012-2021 Faisal Salman <f@faisalman.com>. MIT License.
-  // @src http://faisalman.github.io/ua-parser-js/js/ua-parser.js
-  const GPU_VENDOR_REGEX = /(intel|nvidia|sis|amd|apple|powervr)\W? (.+)/i
-  const GPU_RENDERER_REGEX = /(((?:radeon|adreno|geforce|mali).+))/i
-  const GPU_CLEANUP_REGEX = / ?(\(.+?\)| direct3d.+| opengl.+|\/.+$| gpu$)/gi
+  if (typeof document === "undefined") return gpu
 
   const canvas = document.createElement("canvas")
   const gl = canvas.getContext
