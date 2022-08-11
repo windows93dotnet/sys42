@@ -1,7 +1,5 @@
 // @read https://www.wikiwand.com/en/Remote_procedure_call
 
-import inTop from "../../../42/core/env/runtime/inTop.js"
-import inIframe from "../../../42/core/env/runtime/inIframe.js"
 // import hash from "../../../42/fabric/type/any/hash.js"
 /* ATTACK: replace hash function to match top level dialog digest */
 import mark from "../../../42/fabric/type/any/mark.js"
@@ -19,8 +17,10 @@ function hash(val) {
 /*  */
 import ipc from "../../../42/core/ipc.js"
 
-const CALL = "42-xrealm:call"
-const DESTROY = "42-xrealm:call"
+const { inTop, inIframe } = ipc
+
+const CALL = "42_XREALM_CALL"
+const DESTROY = "42_XREALM_DESTROY"
 
 const functions = new Map()
 

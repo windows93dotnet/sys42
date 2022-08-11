@@ -122,6 +122,8 @@ export class Sandbox extends Component {
       content.plugins = ["ipc"]
       const script = `\
 import ui from "/42/ui.js"
+import "/42/core/ipc/xlisten.js"
+document.body.classList.add("in-iframe")
 const app = await ui(${JSON.stringify(content)})
 ${this.script ?? ""}
 `

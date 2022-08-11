@@ -6,11 +6,11 @@ import inTop from "../core/env/runtime/inTop.js"
 
 const sources = new WeakMap()
 
-const PING = "IPC_PING"
-const PONG = "IPC_PONG"
-const EMIT = "IPC_EMIT"
-const CLOSE = "IPC_CLOSE"
-const HANDSHAKE = "IPC_HANDSHAKE"
+const PING = "42_IPC_PING"
+const PONG = "42_IPC_PONG"
+const EMIT = "42_IPC_EMIT"
+const CLOSE = "42_IPC_CLOSE"
+const HANDSHAKE = "42_IPC_HANDSHAKE"
 
 globalThis.addEventListener(
   "message",
@@ -188,9 +188,8 @@ export class Sender extends Emitter {
 }
 
 export class IPC extends Emitter {
-  static inIframe = inIframe
-  static inTop = inTop
-
+  inIframe = inIframe
+  inTop = inTop
   iframes = new Map()
 
   from(source, options) {
@@ -240,7 +239,7 @@ if (inTop) {
 }
 
 if (inIframe) {
-  ipc.to.top.emit(HANDSHAKE)
+  globalThis.addEventListener("pageshow", () => ipc.to.top.emit(HANDSHAKE))
   globalThis.addEventListener("pagehide", () => ipc.to.top.emit(CLOSE))
 }
 

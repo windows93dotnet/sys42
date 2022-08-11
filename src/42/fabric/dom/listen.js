@@ -25,14 +25,12 @@ const handler = (fn) => (e) => {
 }
 
 export const eventsMap = ({ el, listeners }) => {
-  for (const { selector, events, options } of listeners) {
-    for (const [key, fn] of Object.entries(events)) {
+  for (let { selector, events, options } of listeners) {
+    options = { ...DEFAULTS, ...options }
+    for (let [key, fn] of Object.entries(events)) {
+      fn = selector ? delegate(selector, fn) : handler(fn)
       for (const event of key.split(OR_REGEX)) {
-        el.addEventListener(
-          event,
-          selector ? delegate(selector, fn) : handler(fn),
-          { ...DEFAULTS, ...options }
-        )
+        el.addEventListener(event, fn, options)
       }
     }
   }
@@ -47,17 +45,22 @@ export function normalizeListen(args, config) {
   const list = []
   let globalOptions
 
-  let current = { el: undefined, listeners: [] }
+  let current = { el: undefined, selector: undefined, listeners: [] }
 
   for (let arg of args.flat()) {
-    if (typeof arg === "string") arg = ensureElement(arg)
+    let selector
+    if (typeof arg === "string") {
+      selector = arg
+      arg = ensureElement(arg)
+    }
+
     if ("addEventListener" in arg) {
       if (list.length > 0) {
         current.el ??= globalThis
         list.push(current)
       }
 
-      current = { el: arg, listeners: [] }
+      current = { el: arg, selector, listeners: [] }
     } else {
       const [events, item, options] = distribute(arg, itemKeys, optionsKeys)
 

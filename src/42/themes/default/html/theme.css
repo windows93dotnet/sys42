@@ -117,10 +117,14 @@ samp,
 output,
 .panel,
 menu,
-body {
+:where(body) {
   background: var(--bg);
   color: var(--fg);
   /* user-select: auto; */
+}
+
+:where(body.in-iframe) {
+  background: transparent;
 }
 
 .inset {

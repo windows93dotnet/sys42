@@ -7,7 +7,7 @@ import Callabale from "./Callable.js"
 
 export default class DOMQuery extends Callabale {
   constructor(el = document.body) {
-    super((...args) => this.each(...args))
+    super((/* DOMQuery */ ...args) => this.each(...args))
     this.el = ensureElement(el)
   }
 
