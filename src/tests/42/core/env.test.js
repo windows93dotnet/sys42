@@ -6,6 +6,8 @@ import ui from "../../../42/ui.js"
 import template from "../../../42/core/formats/template.js"
 import timeout from "../../../42/fabric/type/promise/timeout.js"
 
+test.suite.serial()
+
 const code = template(`
 import ipc from "../../../42/core/ipc.js"
 import env from "../../../42/core/env.js"
@@ -13,10 +15,11 @@ ipc.to.top.emit("{{.}}", env)
 `)
 
 const check = {
-  iframe: 0,
-  sandbox: 0,
+  iframe: 1,
+  sandbox: 1,
   childWindow: 0,
   dedicatedWorker: 1,
+  sharedWorker: 1,
 }
 
 const expectedKeys = [
@@ -48,31 +51,16 @@ test("toPrimitive", (t) => {
   t.isNaN(+env)
 })
 
-test("realms", async (t, { collect, dest }) => {
-  t.timeout(1000)
+test.serial("realms", async (t, { collect, dest }) => {
+  t.timeout(2000)
 
-  const list = [
-    check.iframe &&
-      Promise.race([
-        timeout(500, "iframe timed out"),
-        new Promise((resolve) => ipc.on("42_ENV_IFRAME", resolve)),
-      ]),
-    check.sandbox &&
-      Promise.race([
-        timeout(500, "sandbox timed out"),
-        new Promise((resolve) => ipc.on("42_ENV_SANDBOX", resolve)),
-      ]),
-    check.childWindow &&
-      Promise.race([
-        timeout(500, "childWindow timed out"),
-        new Promise((resolve) => ipc.on("42_ENV_CHILDWINDOW", resolve)),
-      ]),
-    check.dedicatedWorker &&
-      Promise.race([
-        timeout(500, "dedicatedWorker timed out"),
-        new Promise((resolve) => ipc.on("42_ENV_DEDICATEDWORKER", resolve)),
-      ]),
-  ]
+  const list = Object.entries(check).map(([key, val]) => {
+    if (!val) return
+    return Promise.race([
+      timeout(1900, `${key} timed out`),
+      new Promise((resolve) => ipc.on(`42_ENV_${key.toUpperCase()}`, resolve)),
+    ])
+  })
 
   await collect(
     ui(
@@ -105,11 +93,17 @@ test("realms", async (t, { collect, dest }) => {
       "/tests/fixtures/ipc/rsvp.js?event=42_ENV_DEDICATEDWORKER",
       { type: "module" }
     )
+    collect(ipc.from(worker))
+    collect(worker)
+  }
 
-    // ipc.from(worker).on("42_ENV_DEDICATEDWORKER", () => {
-    //   // console.log("---- ipc.from(worker).on")
-    // })
+  if (check.sharedWorker) {
+    const worker = new SharedWorker(
+      "/tests/fixtures/ipc/rsvp.js?event=42_ENV_SHAREDWORKER",
+      { type: "module" }
+    )
 
+    collect(ipc.from(worker))
     collect(worker)
   }
 
@@ -169,11 +163,18 @@ test("realms", async (t, { collect, dest }) => {
       inWindow: false,
       inWorker: true,
     },
+    sharedWorker: {
+      inChildWindow: false,
+      inDedicatedWorker: false,
+      inIframe: false,
+      inOpaqueOrigin: false,
+      inServiceWorker: false,
+      inSharedWorker: true,
+      inTop: false,
+      inWindow: false,
+      inWorker: true,
+    },
   }
-
-  const [iframe, sandbox, childWindow, dedicatedWorker] = await Promise.all(
-    list
-  )
 
   const view = {
     inAutomated: false,
@@ -200,23 +201,11 @@ test("realms", async (t, { collect, dest }) => {
   t.alike(env.runtime, view)
   t.alike(env.realm, realms.top)
 
-  if (check.iframe) {
-    t.alike(iframe.runtime, view)
-    t.alike(iframe.realm, realms.iframe)
-  }
+  const res = await Promise.all(list)
 
-  if (check.sandbox) {
-    t.alike(sandbox.runtime, view)
-    t.alike(sandbox.realm, realms.sandbox)
-  }
-
-  if (check.childWindow) {
-    t.alike(childWindow.runtime, view)
-    t.alike(childWindow.realm, realms.childWindow)
-  }
-
-  if (check.dedicatedWorker) {
-    t.alike(dedicatedWorker.runtime, worker)
-    t.alike(dedicatedWorker.realm, realms.dedicatedWorker)
-  }
+  Object.entries(check).forEach(([key, val], i) => {
+    if (!val) return
+    t.alike(res[i].runtime, key.includes("Worker") ? worker : view)
+    t.alike(res[i].realm, realms[key])
+  })
 })

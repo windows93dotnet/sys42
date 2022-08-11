@@ -1,6 +1,8 @@
 import inTop from "./env/realm/inTop.js"
 import inIframe from "./env/realm/inIframe.js"
 import inWorker from "./env/realm/inWorker.js"
+import inDedicatedWorker from "./env/realm/inDedicatedWorker.js"
+import inSharedWorker from "./env/realm/inSharedWorker.js"
 import uid from "./uid.js"
 import defer from "../fabric/type/promise/defer.js"
 import Emitter from "../fabric/class/Emitter.js"
@@ -15,9 +17,14 @@ const CLOSE = "42_IPC_CLOSE"
 const HANDSHAKE = "42_IPC_HANDSHAKE"
 
 async function messageHandler({ origin, data, source, ports, target }) {
-  const worker = target instanceof Worker ? target : undefined
+  const worker =
+    target instanceof Worker || target instanceof MessagePort
+      ? target
+      : undefined
 
-  if (!worker && origin !== "null" && origin !== location.origin) return
+  if (!worker && origin !== "null" && origin !== location.origin) {
+    return
+  }
 
   if (data?.type === PING) {
     const port = ports[0]
@@ -110,21 +117,25 @@ export class Receiver extends Emitter {
     options?.signal?.addEventListener("abort", () => this.destroy())
     this.#cancel = new Canceller(options?.signal)
 
+    if ("port" in source) source = source.port // for shared workers
+
     if (globalThis.HTMLIFrameElement && source instanceof HTMLIFrameElement) {
       source = source.contentWindow
     } else if ("onmessage" in source) {
       const options = { signal: this.#cancel.signal }
       source.addEventListener("message", messageHandler, options)
+      source.start?.() // for shared workers
     }
 
     this.source = source
     sources.set(source, this)
   }
 
-  destroy() {
+  destroy({ close } = {}) {
     this.emit("destroy", this)
     this.off("*")
     sources.delete(this.source)
+    if (close) this.source?.close?.()
     this.#cancel?.()
   }
 }
@@ -139,7 +150,6 @@ export class Sender extends Emitter {
     const { port1, port2 } = new MessageChannel()
     this.port1 = port1
     this.port2 = port2
-
     this.#queue = new Map()
     this.ready = defer()
 
@@ -163,8 +173,13 @@ export class Sender extends Emitter {
       options.origin ??= location.origin === "null" ? "*" : location.origin
     }
 
-    if (inWorker) {
-      globalThis.postMessage({ type: PING }, [port2])
+    if (inSharedWorker) {
+      self.onconnect = function ({ ports }) {
+        const port = ports[0]
+        port.postMessage({ type: PING }, [port2])
+      }
+    } else if (inDedicatedWorker) {
+      self.postMessage({ type: PING }, [port2])
     } else {
       target.postMessage({ type: PING }, options.origin, [port2])
     }
@@ -176,9 +191,9 @@ export class Sender extends Emitter {
         return void this.#queue.delete(data.id)
       }
 
-      if (data.type === EMIT) return super.emit(data.events, ...data.args)
+      if (data.type === EMIT) return void super.emit(data.events, ...data.args)
 
-      if (data.type === PONG) return this.ready.resolve()
+      if (data.type === PONG) return void this.ready.resolve()
     }
   }
 
@@ -263,17 +278,9 @@ if (inTop) {
   globalThis.addEventListener("pagehide", () => ipc.to.top.emit(CLOSE))
 }
 
-const bc = new BroadcastChannel("42_WORKER_HANDSHAKE")
-if (inWorker) {
-  console.log(globalThis.opener)
-  bc.postMessage({ type: PING })
-} else {
-  bc.onmessage = (...args) => {
-    console.log(888, args)
-  }
+if (!inSharedWorker) {
+  globalThis.addEventListener("message", messageHandler)
 }
-
-globalThis.addEventListener("message", messageHandler)
 
 Object.freeze(ipc)
 Object.freeze(ipc.to)
