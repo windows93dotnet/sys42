@@ -1,9 +1,4 @@
-import inTop from "./env/realm/inTop.js"
-import inIframe from "./env/realm/inIframe.js"
-import inWorker from "./env/realm/inWorker.js"
-import inDedicatedWorker from "./env/realm/inDedicatedWorker.js"
-import inSharedWorker from "./env/realm/inSharedWorker.js"
-import inServiceWorker from "./env/realm/inServiceWorker.js"
+import * as realm from "./env/realm.js"
 import uid from "./uid.js"
 import defer from "../fabric/type/promise/defer.js"
 import Emitter from "../fabric/class/Emitter.js"
@@ -148,6 +143,61 @@ export class Receiver extends Emitter {
   }
 }
 
+function ping(target, port, origin) {
+  origin ??= location.origin === "null" ? "*" : location.origin
+  target.postMessage({ type: PING }, origin, [port])
+}
+
+function autoTarget(port, options) {
+  if (realm.inIframe) {
+    ping(window.parent, port, options.origin)
+  } else if (realm.inChildWindow) {
+    ping(window.opener, port, options.origin)
+  } else if (realm.inSharedWorker) {
+    self.addEventListener(
+      "connect",
+      ({ ports }) => ports[0].postMessage({ type: PING }, [port]),
+      { once: true }
+    )
+  } else if (realm.inDedicatedWorker) {
+    self.postMessage({ type: PING }, [port])
+  } else if (realm.inServiceWorker) {
+    self.clients.matchAll({ includeUncontrolled: true }).then((clients) => {
+      // console.log(clients)
+      for (const client of clients) {
+        if (client.frameType === "top-level" && client.focused) {
+          client.postMessage({ type: PING }, [port])
+          break
+        }
+      }
+    })
+  }
+}
+
+function normalizeTarget(target, port, options) {
+  if (globalThis.HTMLIFrameElement && target instanceof HTMLIFrameElement) {
+    // default "options.origin" use wildcard only if iframe is sandboxed
+    // without "allow-same-origin" and is from same origin.
+    const iframeOrigin = target.src
+      ? new URL(target.src).origin
+      : target.srcdoc
+      ? location.origin
+      : undefined
+
+    options.origin ??= target.sandbox.contains("allow-same-origin")
+      ? iframeOrigin
+      : target.hasAttribute("sandbox") && iframeOrigin === location.origin
+      ? "*"
+      : iframeOrigin
+
+    ping(target.contentWindow, port, options.origin)
+  } else if (target.self === target) {
+    ping(target, port, options.origin)
+  } else {
+    target.postMessage({ type: PING }, [port])
+  }
+}
+
 export class Sender extends Emitter {
   #queue
 
@@ -161,46 +211,8 @@ export class Sender extends Emitter {
     this.#queue = new Map()
     this.ready = defer()
 
-    if (globalThis.HTMLIFrameElement && target instanceof HTMLIFrameElement) {
-      // default "options.origin" use wildcard only if iframe is sandboxed
-      // without "allow-same-origin" and is from same origin.
-      const iframeOrigin = target.src
-        ? new URL(target.src).origin
-        : target.srcdoc
-        ? location.origin
-        : undefined
-
-      options.origin ??= target.sandbox.contains("allow-same-origin")
-        ? iframeOrigin
-        : target.hasAttribute("sandbox") && iframeOrigin === location.origin
-        ? "*"
-        : iframeOrigin
-
-      target = target.contentWindow
-    } else {
-      options.origin ??= location.origin === "null" ? "*" : location.origin
-    }
-
-    if (inSharedWorker) {
-      self.onconnect = function ({ ports }) {
-        const port = ports[0]
-        port.postMessage({ type: PING }, [port2])
-      }
-    } else if (inDedicatedWorker) {
-      self.postMessage({ type: PING }, [port2])
-    } else if (inServiceWorker) {
-      self.clients.matchAll({ includeUncontrolled: true }).then((clients) => {
-        // console.log(clients)
-        for (const client of clients) {
-          if (client.frameType === "top-level" && client.focused) {
-            client.postMessage({ type: PING }, [port2])
-            break
-          }
-        }
-      })
-    } else {
-      target.postMessage({ type: PING }, options.origin, [port2])
-    }
+    if (target === undefined) autoTarget(port2, options)
+    else normalizeTarget(target, port2, options)
 
     this.port1.onmessage = ({ data }) => {
       if (data.id && this.#queue.has(data.id)) {
@@ -210,26 +222,26 @@ export class Sender extends Emitter {
       }
 
       if (data.type === EMIT) return void super.emit(data.events, ...data.args)
-
       if (data.type === PONG) return void this.ready.resolve()
     }
   }
 
-  emit(event, data) {
+  emit(event, data, transfer) {
     // emit() must be async to allow emiting in "pagehide" or "beforeunload" events
     // but if ready is not resolved yet we wait for it
     const msg = { type: "emit", event, data }
-    if (this.ready.isPending) this.ready.then(() => this.port1.postMessage(msg))
-    else this.port1.postMessage(msg)
+    if (this.ready.isPending) {
+      this.ready.then(() => this.port1.postMessage(msg, transfer))
+    } else this.port1.postMessage(msg, transfer)
     return this
   }
 
-  async send(event, data) {
+  async send(event, data, transfer) {
     await this.ready
     const id = uid()
     const reply = defer()
     this.#queue.set(id, reply)
-    this.port1.postMessage({ id, type: "send", event, data })
+    this.port1.postMessage({ id, type: "send", event, data }, transfer)
     return reply
   }
 
@@ -245,9 +257,6 @@ export class IPC extends Emitter {
   #top
   #parent
 
-  inTop = inTop
-  inIframe = inIframe
-  inWorker = inWorker
   iframes = new Map()
 
   constructor() {
@@ -273,7 +282,7 @@ export class IPC extends Emitter {
   }
 
   get top() {
-    this.#top ??= new Sender(globalThis.opener ?? globalThis.top)
+    this.#top ??= new Sender()
     return this.#top
   }
 
@@ -298,13 +307,12 @@ export class IPC extends Emitter {
     this.emit("destroy", this)
     this.off("*")
     this.#top?.destroy()
-    this.#parent?.destroy()
   }
 }
 
 const ipc = new IPC()
 
-if (inTop) {
+if (realm.inTop) {
   ipc
     .on(HANDSHAKE, (data, meta) => {
       if (meta.iframe) ipc.iframes.set(meta.iframe, meta)
@@ -312,16 +320,16 @@ if (inTop) {
     .on(CLOSE, (data, meta) => {
       if (meta.iframe) ipc.iframes.delete(meta.iframe)
     })
-} else if (inIframe) {
+} else if (realm.inIframe) {
   globalThis.addEventListener("pageshow", () => ipc.emit(HANDSHAKE))
   globalThis.addEventListener("pagehide", () => ipc.emit(CLOSE))
 }
 
-if (!inSharedWorker) {
+if (!realm.inSharedWorker) {
   globalThis.addEventListener("message", messageHandler)
 }
 
+Object.assign(ipc, realm)
 Object.freeze(ipc)
-Object.freeze(ipc.to)
 
 export default ipc
