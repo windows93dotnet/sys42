@@ -3,23 +3,17 @@ import test from "../../../42/test.js"
 import env from "../../../42/core/env.js"
 import ipc from "../../../42/core/ipc.js"
 import ui from "../../../42/ui.js"
-import template from "../../../42/core/formats/template.js"
 import timeout from "../../../42/fabric/type/promise/timeout.js"
 
 test.suite.serial()
 
-const code = template(`
-import ipc from "../../../42/core/ipc.js"
-import env from "../../../42/core/env.js"
-ipc.to.top.emit("{{.}}", env)
-`)
-
 const check = {
   iframe: 1,
   sandbox: 1,
-  childWindow: 0,
+  childWindow: 1,
   dedicatedWorker: 1,
   sharedWorker: 1,
+  serviceWorker: 1,
 }
 
 const expectedKeys = [
@@ -54,11 +48,18 @@ test("toPrimitive", (t) => {
 test.serial("realms", async (t, { collect, dest }) => {
   t.timeout(2000)
 
+  let childWindow
+
   const list = Object.entries(check).map(([key, val]) => {
     if (!val) return
     return Promise.race([
       timeout(1900, `${key} timed out`),
-      new Promise((resolve) => ipc.on(`42_ENV_${key.toUpperCase()}`, resolve)),
+      new Promise((resolve) =>
+        ipc.on(`42_ENV_${key.toUpperCase()}`, (data) => {
+          if (key === "childWindow") childWindow.close()
+          resolve(data)
+        })
+      ),
     ])
   })
 
@@ -68,12 +69,12 @@ test.serial("realms", async (t, { collect, dest }) => {
       [
         check.iframe && {
           tag: "iframe",
-          srcdoc: `<script type="module">${code("42_ENV_IFRAME")}</script>`,
+          src: "/tests/fixtures/ipc/rsvp.html?e=42_ENV_IFRAME",
         },
         check.sandbox && {
           tag: "ui-sandbox",
           permissions: "app",
-          script: code("42_ENV_SANDBOX"),
+          path: "/tests/fixtures/ipc/rsvp.html?e=42_ENV_SANDBOX",
         },
       ],
       { trusted: true }
@@ -81,16 +82,18 @@ test.serial("realms", async (t, { collect, dest }) => {
   )
 
   if (check.childWindow) {
-    const windowHandle = window.open(
-      "/tests/fixtures/ipc/rsvp.html?event=42_ENV_CHILDWINDOW",
+    childWindow = window.open(
+      "/tests/fixtures/ipc/rsvp.html?e=42_ENV_CHILDWINDOW",
       "_blank"
     )
-    collect(windowHandle)
+    collect(childWindow)
+    await t.sleep(100)
+    window.focus()
   }
 
   if (check.dedicatedWorker) {
     const worker = new Worker(
-      "/tests/fixtures/ipc/rsvp.js?event=42_ENV_DEDICATEDWORKER",
+      "/tests/fixtures/ipc/rsvp.js?e=42_ENV_DEDICATEDWORKER",
       { type: "module" }
     )
     collect(ipc.from(worker))
@@ -99,12 +102,21 @@ test.serial("realms", async (t, { collect, dest }) => {
 
   if (check.sharedWorker) {
     const worker = new SharedWorker(
-      "/tests/fixtures/ipc/rsvp.js?event=42_ENV_SHAREDWORKER",
-      { type: "module" }
+      "/tests/fixtures/ipc/rsvp.js?e=42_ENV_SHAREDWORKER",
+      { type: "module", credentials: "same-origin", name: "hello" }
     )
 
     collect(ipc.from(worker))
-    collect(worker)
+    collect(worker.port)
+  }
+
+  if (check.serviceWorker) {
+    collect(ipc.from(navigator.serviceWorker))
+    const registration = await navigator.serviceWorker.register(
+      "/tests/fixtures/ipc/rsvp.js?e=42_ENV_SERVICEWORKER",
+      { type: "module" }
+    )
+    collect(registration)
   }
 
   const realms = {
@@ -170,6 +182,17 @@ test.serial("realms", async (t, { collect, dest }) => {
       inOpaqueOrigin: false,
       inServiceWorker: false,
       inSharedWorker: true,
+      inTop: false,
+      inWindow: false,
+      inWorker: true,
+    },
+    serviceWorker: {
+      inChildWindow: false,
+      inDedicatedWorker: false,
+      inIframe: false,
+      inOpaqueOrigin: false,
+      inServiceWorker: true,
+      inSharedWorker: false,
       inTop: false,
       inWindow: false,
       inWorker: true,

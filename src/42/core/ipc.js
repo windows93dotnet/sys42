@@ -3,6 +3,7 @@ import inIframe from "./env/realm/inIframe.js"
 import inWorker from "./env/realm/inWorker.js"
 import inDedicatedWorker from "./env/realm/inDedicatedWorker.js"
 import inSharedWorker from "./env/realm/inSharedWorker.js"
+import inServiceWorker from "./env/realm/inServiceWorker.js"
 import uid from "./uid.js"
 import defer from "../fabric/type/promise/defer.js"
 import Emitter from "../fabric/class/Emitter.js"
@@ -16,31 +17,35 @@ const EMIT = "42_IPC_EMIT"
 const CLOSE = "42_IPC_CLOSE"
 const HANDSHAKE = "42_IPC_HANDSHAKE"
 
-async function messageHandler({ origin, data, source, ports, target }) {
-  const worker =
-    target instanceof Worker || target instanceof MessagePort
-      ? target
-      : undefined
-
-  if (!worker && origin !== "null" && origin !== location.origin) {
-    return
+function findIframe(source) {
+  for (const el of document.querySelectorAll("iframe")) {
+    if (el.contentWindow === source) return el
   }
+}
+
+async function messageHandler(e) {
+  if (!e.isTrusted) return
+
+  let { origin, data, source, ports, target } = e
+  const isWindow = source && source.self === source
+
+  if (isWindow && origin !== "null" && origin !== location.origin) return
 
   if (data?.type === PING) {
     const port = ports[0]
     if (!port) throw new Error("IPC_PING: missing port")
 
-    let iframe
-    if (worker) {
-      source = worker
-    } else {
-      for (const el of document.querySelectorAll("iframe")) {
-        if (el.contentWindow === source) {
-          iframe = el
-          break
-        }
-      }
-    }
+    const [type, worker, iframe] = isWindow
+      ? source.opener
+        ? ["ChildWindow", undefined]
+        : ["Iframe", undefined, findIframe(source)]
+      : source instanceof ServiceWorker
+      ? ["ServiceWorker", source]
+      : target instanceof Worker
+      ? ["DedicatedWorker", target]
+      : target instanceof MessagePort && sources.has(target)
+      ? ["SharedWorker", target]
+      : []
 
     const trusted =
       worker ||
@@ -57,7 +62,10 @@ async function messageHandler({ origin, data, source, ports, target }) {
       )
     }
 
+    if (worker) source = worker
+
     const meta = {
+      type,
       origin,
       source,
       iframe,
@@ -180,6 +188,16 @@ export class Sender extends Emitter {
       }
     } else if (inDedicatedWorker) {
       self.postMessage({ type: PING }, [port2])
+    } else if (inServiceWorker) {
+      self.clients.matchAll({ includeUncontrolled: true }).then((clients) => {
+        // console.log(clients)
+        for (const client of clients) {
+          if (client.frameType === "top-level" && client.focused) {
+            client.postMessage({ type: PING }, [port2])
+            break
+          }
+        }
+      })
     } else {
       target.postMessage({ type: PING }, options.origin, [port2])
     }

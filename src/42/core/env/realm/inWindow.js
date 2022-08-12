@@ -1,2 +1,1 @@
-export default typeof window !== "undefined" &&
-  toString.call(window) === "[object Window]"
+export default typeof window !== "undefined" && window.self === window

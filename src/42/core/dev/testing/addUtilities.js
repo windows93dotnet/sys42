@@ -8,6 +8,7 @@ import env from "../../env.js"
 import hashmap from "../../../fabric/type/object/hashmap.js"
 import http from "../../../core/http.js"
 import idle from "../../../fabric/type/promise/idle.js"
+import kill from "../../../fabric/type/any/kill.js"
 import listenFn from "../../../fabric/dom/listen.js"
 import log, { Log, CONSOLE_KEYS } from "../../log.js"
 import noop from "../../../fabric/type/function/noop.js"
@@ -94,15 +95,12 @@ export default function addUtilities(item, isExecutionContext) {
     item.utils[_collected] = []
     item.utils.collect = (thing, cb) => {
       if (item.utils[_collected].length === 0) {
-        item.teardown(() => {
+        item.teardown(async () => {
           for (const obj of item.utils[_collected]) {
             if (cb?.(obj) === false) continue
-            try {
-              if (typeof obj.destroy === "function") obj.destroy()
-              else if (typeof obj.remove === "function") obj.remove()
-              else if (typeof obj.close === "function") obj.close()
-              else if (typeof obj.clear === "function") obj.clear()
-            } catch {}
+            if ((await kill(obj, console.warn)) === false) {
+              console.warn("collected object wasn't killed", obj)
+            }
           }
 
           item.utils[_collected].length = 0
@@ -127,6 +125,7 @@ export default function addUtilities(item, isExecutionContext) {
       const el = document.createElement("section")
       const { suiteTitle } = item.utils
       idRegistry[suiteTitle] ??= 0
+      el.title = suiteTitle
       el.id = suiteTitle + "/" + idRegistry[suiteTitle]++
       el.style.opacity = 0.01
       if (connect) document.body.append(el)
@@ -157,6 +156,7 @@ export default function addUtilities(item, isExecutionContext) {
     hashmap,
     http,
     idle,
+    kill,
     log,
     noop,
     parallel,
