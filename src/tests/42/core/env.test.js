@@ -13,7 +13,7 @@ const check = {
   childWindow: 1,
   dedicatedWorker: 1,
   sharedWorker: 1,
-  serviceWorker: 1,
+  serviceWorker: 0,
 }
 
 const expectedKeys = [
@@ -103,7 +103,7 @@ test.serial("realms", async (t, { collect, dest }) => {
   if (check.sharedWorker) {
     const worker = new SharedWorker(
       "/tests/fixtures/ipc/rsvp.js?e=42_ENV_SHAREDWORKER",
-      { type: "module", credentials: "same-origin", name: "hello" }
+      { type: "module" }
     )
 
     collect(ipc.from(worker))

@@ -33,7 +33,7 @@ test.tasks(
     //   def: {
     //     tag: "ui-sandbox",
     //     permissions: "app",
-    //     script: `ipc.to.top.emit('xss', "hello secret")`,
+    //     script: `ipc.emit('xss', "hello secret")`,
     //   },
     // }),
 
@@ -43,7 +43,7 @@ test.tasks(
     //   def: {
     //     tag: "ui-sandbox",
     //     permissions: "app",
-    //     script: `ipc.to.top.emit('xss', new Error("Secret not found"))`,
+    //     script: `ipc.emit('xss', new Error("Secret not found"))`,
     //   },
     // }),
 
@@ -79,7 +79,7 @@ dialog(
     content: {
       tag: "ui-sandbox",
       permissions: "trusted",
-      script: "ipc.to.top.emit('xss', localStorage.getItem('SECRET'))"
+      script: "ipc.emit('xss', localStorage.getItem('SECRET'))"
     }
   },
   { trusted: true }

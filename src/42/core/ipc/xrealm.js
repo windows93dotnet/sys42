@@ -40,17 +40,16 @@ export default function xrealm(fn, options) {
     const caller =
       output && input
         ? async (/* xrealm:subroutine */ ...args) =>
-            output(await ipc.to.top.send(CALL, [id, await input(...args)]))
+            output(await ipc.send(CALL, [id, await input(...args)]))
         : output
         ? async (/* xrealm:subroutine */ ...args) =>
-            output(await ipc.to.top.send(CALL, [id, args]))
+            output(await ipc.send(CALL, [id, args]))
         : input
         ? async (/* xrealm:subroutine */ ...args) =>
-            ipc.to.top.send(CALL, [id, await input(...args)])
-        : async (/* xrealm:subroutine */ ...args) =>
-            ipc.to.top.send(CALL, [id, args])
+            ipc.send(CALL, [id, await input(...args)])
+        : async (/* xrealm:subroutine */ ...args) => ipc.send(CALL, [id, args])
 
-    caller.destroy = async () => ipc.to.top.send(DESTROY, id)
+    caller.destroy = async () => ipc.send(DESTROY, id)
 
     return caller
   }

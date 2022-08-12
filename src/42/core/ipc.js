@@ -83,7 +83,7 @@ async function messageHandler(e) {
     port.onmessage = ({ data: { id, type, event, data } }) => {
       if (type === "emit") {
         if (sources.has(source)) sources.get(source).emit(event, data, meta)
-        ipc.emit(event, data, meta)
+        ipc.self.emit(event, data, meta)
       } else if (type === "send") {
         const undones = []
 
@@ -95,7 +95,7 @@ async function messageHandler(e) {
         }
 
         if (event in ipc[Emitter.EVENTS]) {
-          undones.push(ipc.send(event, data, meta))
+          undones.push(ipc.self.send(event, data, meta))
         }
 
         if (undones.length === 0) {
@@ -242,10 +242,40 @@ export class Sender extends Emitter {
 }
 
 export class IPC extends Emitter {
+  #top
+  #parent
+
   inTop = inTop
   inIframe = inIframe
   inWorker = inWorker
   iframes = new Map()
+
+  constructor() {
+    super()
+
+    this.self = {
+      emit: (...args) => super.emit(...args),
+      send: (...args) => super.send(...args),
+    }
+
+    this.super = {
+      emit: (...args) => {
+        this.top.emit(...args)
+        super.emit(...args)
+        return this
+      },
+      send: (...args) =>
+        Promise.all([
+          this.top.send(...args), //
+          super.send(...args),
+        ]),
+    }
+  }
+
+  get top() {
+    this.#top ??= new Sender(globalThis.opener ?? globalThis.top)
+    return this.#top
+  }
 
   from(source, options) {
     return new Receiver(source, options)
@@ -254,34 +284,25 @@ export class IPC extends Emitter {
   to(target, options) {
     return new Sender(target, options)
   }
+
+  emit(...args) {
+    this.top.emit(...args)
+    return this
+  }
+
+  async send(...args) {
+    return this.top.send(...args)
+  }
+
+  destroy() {
+    this.emit("destroy", this)
+    this.off("*")
+    this.#top?.destroy()
+    this.#parent?.destroy()
+  }
 }
 
 const ipc = new IPC()
-
-let top
-let parent
-Object.defineProperties(ipc.to, {
-  top: {
-    get() {
-      top ??= ipc //
-        .to(globalThis.opener ?? globalThis.top)
-        .on("destroy", () => {
-          top = undefined
-        })
-      return top
-    },
-  },
-  parent: {
-    get() {
-      parent ??= ipc //
-        .to(globalThis.opener ?? globalThis.parent)
-        .on("destroy", () => {
-          parent = undefined
-        })
-      return parent
-    },
-  },
-})
 
 if (inTop) {
   ipc
@@ -292,8 +313,8 @@ if (inTop) {
       if (meta.iframe) ipc.iframes.delete(meta.iframe)
     })
 } else if (inIframe) {
-  globalThis.addEventListener("pageshow", () => ipc.to.top.emit(HANDSHAKE))
-  globalThis.addEventListener("pagehide", () => ipc.to.top.emit(CLOSE))
+  globalThis.addEventListener("pageshow", () => ipc.emit(HANDSHAKE))
+  globalThis.addEventListener("pagehide", () => ipc.emit(CLOSE))
 }
 
 if (!inSharedWorker) {

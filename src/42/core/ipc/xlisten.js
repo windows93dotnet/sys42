@@ -92,7 +92,7 @@ if (inTop) {
 if (inIframe) {
   xlisten = noop
 
-  ipc.to.top.on(CALL, ([id, args]) => {
+  ipc.top.on(CALL, ([id, args]) => {
     for (let i = 0, l = args.length; i < l; i++) {
       const { selector, listeners } = args[i]
       const item = {
@@ -102,7 +102,7 @@ if (inIframe) {
             events.map((key) => [
               key,
               (e, target) => {
-                ipc.to.top.emit(DOM_EVENT, {
+                ipc.emit(DOM_EVENT, {
                   id,
                   i,
                   j,

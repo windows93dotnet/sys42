@@ -17,7 +17,7 @@
         permissions: "trusted",
         script: `
 import ipc from "../../../42/core/ipc.js"
-ipc.to.top.emit('xss', localStorage.getItem('SECRET'))
+ipc.emit('xss', localStorage.getItem('SECRET'))
 `,
       },
     },
