@@ -1,6 +1,6 @@
 import test from "../../../../42/test.js"
 
-test.suite.timeout(2000)
+test.suite.timeout(3000)
 test.suite.serial()
 
 test.serial("transfer state data cross-realms", async (t) => {

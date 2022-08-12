@@ -57,6 +57,7 @@ test.serial("realms", async (t, { collect, dest }) => {
       new Promise((resolve) =>
         ipc.on(`42_ENV_${key.toUpperCase()}`, (data) => {
           if (key === "childWindow") childWindow.close()
+          t.timeout("reset")
           resolve(data)
         })
       ),
@@ -87,7 +88,7 @@ test.serial("realms", async (t, { collect, dest }) => {
       "_blank"
     )
     collect(childWindow)
-    await t.sleep(100)
+    await t.sleep(0)
     window.focus()
   }
 

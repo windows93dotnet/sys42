@@ -11,7 +11,7 @@ const DEFAULTS = {
 
 const uncaughts = []
 
-const listen = () =>
+const listenUncaughts = () =>
   trap(async (err, title, e) => {
     await sleep(0)
     if (e.defaultPrevented) return
@@ -56,7 +56,7 @@ export default async function runTests(options = {}) {
   if (typeof options === "function") options = { oneach: options }
   const config = configure(DEFAULTS, options)
 
-  const forget = listen()
+  const forget = listenUncaughts()
   await system.testing.root.init().runTests(config)
   await idle()
   forget()

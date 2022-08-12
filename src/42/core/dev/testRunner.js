@@ -43,7 +43,9 @@ export default async function testRunner(testFiles, options) {
     })
   )
 
-  await system.testing.run()
+  if (config.cnt) config.runner.oneach = () => console.log(" ")
+
+  await system.testing.run(config.runner)
 
   system.testing.root.ms = performance.now() - time
   system.testing.ran = true
