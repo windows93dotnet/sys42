@@ -137,8 +137,6 @@ menu,
   border-radius: var(--inset-br);
   text-shadow: var(--inset-tsh, none);
   box-shadow: var(--inset-bsh);
-
-  /* height: 300; */
 }
 
 .inset-shallow {
@@ -197,10 +195,6 @@ menu,
 
 :not(.document) > :where(body,section,article,header,footer):is(.document) {
   padding: var(--breath);
-}
-
-.document > * {
-  max-width: var(--prose-w);
 }
 
 .panel,

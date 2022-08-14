@@ -39,9 +39,8 @@
           //   content: {
           //     tag: "ui-sandbox",
           //     // permissions: "web",
-          //     // path: "https://zombect.ro",
           //     permissions: "app",
-          //     path: "../demos/ui/fields.demo.html",
+          //     path: "../tests/fixtures/website/index.html",
           //   },
           // },
         ],
@@ -74,15 +73,15 @@
   })
 
   dialog({
-    // style: { width: 100, height: 100 },
+    style: { width: 400, height: 400 },
     label: "ok",
-    content: "hello",
-    // content: {
-    //   tag: "ui-sandbox.inset.document",
-    //   zoom: 0.6,
-    //   permissions: "app",
-    //   path: "../tests/fixtures/formats/image/example.svg",
-    // },
+    content: {
+      tag: "ui-sandbox.inset.document",
+      zoom: 0.6,
+      permissions: "app",
+      // path: "../tests/fixtures/formats/image/example.svg",
+      path: "../tests/fixtures/website/index.html",
+    },
   })
 
   globalThis.app = app
