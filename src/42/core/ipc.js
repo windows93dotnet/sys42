@@ -1,4 +1,4 @@
-import * as realm from "./env/realm.js"
+import realm from "./env/realm.js"
 import uid from "./uid.js"
 import defer from "../fabric/type/promise/defer.js"
 import Emitter from "../fabric/class/Emitter.js"
@@ -333,6 +333,10 @@ ipc.iframes = new Map()
 
 ipc.from = (source, options) => new Receiver(source, options)
 ipc.to = (target, options) => new Sender(target, options)
+
+if (!realm.inOpaqueOrigin) {
+  navigator.serviceWorker?.addEventListener("message", messageHandler)
+}
 
 if (realm.inTop) {
   ipc

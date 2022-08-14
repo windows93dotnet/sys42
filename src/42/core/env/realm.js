@@ -1,11 +1,25 @@
-export { default as inWindow } from "./realm/inWindow.js"
-export { default as inChildWindow } from "./realm/inChildWindow.js"
+import inWindow from "./realm/inWindow.js"
+import inChildWindow from "./realm/inChildWindow.js"
 
-export { default as inTop } from "./realm/inTop.js"
-export { default as inIframe } from "./realm/inIframe.js"
-export { default as inOpaqueOrigin } from "./realm/inOpaqueOrigin.js"
+import inTop from "./realm/inTop.js"
+import inIframe from "./realm/inIframe.js"
+import inOpaqueOrigin from "./realm/inOpaqueOrigin.js"
 
-export { default as inWorker } from "./realm/inWorker.js"
-export { default as inSharedWorker } from "./realm/inSharedWorker.js"
-export { default as inServiceWorker } from "./realm/inServiceWorker.js"
-export { default as inDedicatedWorker } from "./realm/inDedicatedWorker.js"
+import inWorker from "./realm/inWorker.js"
+import inSharedWorker from "./realm/inSharedWorker.js"
+import inServiceWorker from "./realm/inServiceWorker.js"
+import inDedicatedWorker from "./realm/inDedicatedWorker.js"
+
+export default {
+  inWindow,
+  inChildWindow,
+
+  inTop,
+  inIframe,
+  inOpaqueOrigin,
+
+  inWorker,
+  inSharedWorker,
+  inServiceWorker,
+  inDedicatedWorker,
+}

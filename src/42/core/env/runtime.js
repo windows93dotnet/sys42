@@ -1,10 +1,23 @@
-export { default as inBackend } from "./runtime/inBackend.js"
-export { default as inNode } from "./runtime/inNode.js"
-export { default as inDeno } from "./runtime/inDeno.js"
+import inBackend from "./runtime/inBackend.js"
+import inNode from "./runtime/inNode.js"
+import inDeno from "./runtime/inDeno.js"
 
-export { default as inElectron } from "./runtime/inElectron.js"
+import inElectron from "./runtime/inElectron.js"
 
-export { default as inFrontend } from "./runtime/inFrontend.js"
-export { default as inBrowser } from "./runtime/inBrowser.js"
-export { default as inAutomated } from "./runtime/inAutomated.js"
-export { default as inStandalone } from "./runtime/inStandalone.js"
+import inFrontend from "./runtime/inFrontend.js"
+import inBrowser from "./runtime/inBrowser.js"
+import inAutomated from "./runtime/inAutomated.js"
+import inStandalone from "./runtime/inStandalone.js"
+
+export default {
+  inBackend,
+  inNode,
+  inDeno,
+
+  inElectron,
+
+  inFrontend,
+  inBrowser,
+  inAutomated,
+  inStandalone,
+}

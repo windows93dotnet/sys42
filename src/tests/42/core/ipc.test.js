@@ -113,7 +113,6 @@ test.serial("realms", async (t, { collect, dest }) => {
   }
 
   if (check.serviceWorker) {
-    collect(ipc.from(navigator.serviceWorker))
     const registration = await navigator.serviceWorker.register(
       "/tests/fixtures/ipc/rsvp.js?e=42_ENV_SERVICEWORKER",
       { type: "module" }
