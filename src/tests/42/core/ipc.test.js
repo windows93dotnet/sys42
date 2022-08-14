@@ -30,13 +30,13 @@ const expectedKeys = [
   "languages",
 ]
 
-test("keys", (t) => {
+test("env", "keys", (t) => {
   t.eq(Object.keys(env), expectedKeys)
   t.eq(Object.keys(structuredClone(env)), expectedKeys)
   t.eq(Object.keys(JSON.parse(JSON.stringify(env))), expectedKeys)
 })
 
-test("toPrimitive", (t) => {
+test("env", "toPrimitive", (t) => {
   t.true(String(env).includes(" on "))
   t.true((env + "").includes(" on "))
   t.true((env + 2).includes(" on "))
@@ -48,7 +48,7 @@ test("toPrimitive", (t) => {
 test.serial("realms", async (t, { collect, dest }) => {
   t.timeout(2000)
 
-  let childWindow
+  const targets = {}
 
   const list = Object.entries(check).map(([key, val]) => {
     if (!val) return
@@ -56,7 +56,7 @@ test.serial("realms", async (t, { collect, dest }) => {
       timeout(1900, `${key} timed out`),
       new Promise((resolve) =>
         ipc.on(`42_ENV_${key.toUpperCase()}`, (data) => {
-          if (key === "childWindow") childWindow.close()
+          if (key === "childWindow") targets.childWindow.close()
           t.timeout("reset")
           resolve(data)
         })
@@ -64,51 +64,53 @@ test.serial("realms", async (t, { collect, dest }) => {
     ])
   })
 
-  await collect(
-    ui(
-      dest(true),
-      [
-        check.iframe && {
-          tag: "iframe",
-          src: "/tests/fixtures/ipc/rsvp.html?e=42_ENV_IFRAME",
-        },
-        check.sandbox && {
-          tag: "ui-sandbox",
-          permissions: "app",
-          path: "/tests/fixtures/ipc/rsvp.html?e=42_ENV_SANDBOX",
-        },
-      ],
-      { trusted: true }
+  if (check.iframe || check.sandbox) {
+    await collect(
+      ui(
+        dest(true),
+        [
+          check.iframe && {
+            tag: "iframe",
+            src: "/tests/fixtures/ipc/rsvp.html?e=42_ENV_IFRAME",
+          },
+          check.sandbox && {
+            tag: "ui-sandbox",
+            permissions: "app",
+            path: "/tests/fixtures/ipc/rsvp.html?e=42_ENV_SANDBOX",
+          },
+        ],
+        { trusted: true }
+      )
     )
-  )
+  }
 
   if (check.childWindow) {
-    childWindow = window.open(
+    targets.childWindow = window.open(
       "/tests/fixtures/ipc/rsvp.html?e=42_ENV_CHILDWINDOW",
       "_blank"
     )
-    collect(childWindow)
+    collect(targets.childWindow)
     await t.sleep(0)
     window.focus()
   }
 
   if (check.dedicatedWorker) {
-    const worker = new Worker(
+    targets.dedicatedWorker = new Worker(
       "/tests/fixtures/ipc/rsvp.js?e=42_ENV_DEDICATEDWORKER",
       { type: "module" }
     )
-    collect(ipc.from(worker))
-    collect(worker)
+    collect(ipc.from(targets.dedicatedWorker))
+    collect(targets.dedicatedWorker)
   }
 
   if (check.sharedWorker) {
-    const worker = new SharedWorker(
+    targets.sharedWorker = new SharedWorker(
       "/tests/fixtures/ipc/rsvp.js?e=42_ENV_SHAREDWORKER",
       { type: "module" }
     )
 
-    collect(ipc.from(worker))
-    collect(worker.port)
+    collect(ipc.from(targets.sharedWorker))
+    collect(targets.sharedWorker.port)
   }
 
   if (check.serviceWorker) {
@@ -117,6 +119,8 @@ test.serial("realms", async (t, { collect, dest }) => {
       "/tests/fixtures/ipc/rsvp.js?e=42_ENV_SERVICEWORKER",
       { type: "module" }
     )
+    // await navigator.serviceWorker.ready
+    // console.log(navigator.serviceWorker.controller)
     collect(registration)
   }
 
