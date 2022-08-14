@@ -92,7 +92,7 @@ if (inTop) {
 if (inIframe) {
   xlisten = noop
 
-  ipc.top.on(CALL, ([id, args]) => {
+  ipc.on(CALL, ([id, args]) => {
     for (let i = 0, l = args.length; i < l; i++) {
       const { selector, listeners } = args[i]
       const item = {

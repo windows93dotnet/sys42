@@ -73,14 +73,14 @@ export default async function ipcPlugin(ctx) {
       ipc.emit(`42-ui-ipc-${ctx.id}`, ctx.reactive.export(changes, deleteds))
     })
     // Parent Iframe <-- Top
-    ipc.top.on(`42-ui-ipc-${ctx.id}`, ctx, (data) => {
+    ipc.on(`42-ui-ipc-${ctx.id}`, ctx, (data) => {
       debug?.("Parent Iframe <-- Top")
       ctx.reactive.import(data, "top")
     })
 
     if (ctx.parentId) {
       // Iframe <-- Parent Top
-      ipc.top.on(`42-ui-ipc-${ctx.parentId}`, ctx, (data) => {
+      ipc.on(`42-ui-ipc-${ctx.parentId}`, ctx, (data) => {
         debug?.("Iframe <-- Parent Top")
         ctx.reactive.import(data, "parent")
       })

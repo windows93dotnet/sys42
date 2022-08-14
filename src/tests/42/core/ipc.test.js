@@ -10,10 +10,10 @@ test.suite.serial()
 const check = {
   iframe: 1,
   sandbox: 1,
-  childWindow: 0,
+  childWindow: 1,
   dedicatedWorker: 1,
   sharedWorker: 1,
-  serviceWorker: 0,
+  serviceWorker: 1,
 }
 
 const expectedKeys = [
@@ -108,7 +108,6 @@ test.serial("realms", async (t, { collect, dest }) => {
       "/tests/fixtures/ipc/rsvp.js?e=42_ENV_SHAREDWORKER",
       { type: "module" }
     )
-
     collect(ipc.from(targets.sharedWorker))
     collect(targets.sharedWorker.port)
   }
@@ -119,8 +118,6 @@ test.serial("realms", async (t, { collect, dest }) => {
       "/tests/fixtures/ipc/rsvp.js?e=42_ENV_SERVICEWORKER",
       { type: "module" }
     )
-    // await navigator.serviceWorker.ready
-    // console.log(navigator.serviceWorker.controller)
     collect(registration)
   }
 
@@ -233,7 +230,7 @@ test.serial("realms", async (t, { collect, dest }) => {
 
   Object.entries(check).forEach(([key, val], i) => {
     if (!val) return
-    t.alike(res[i].runtime, key.includes("Worker") ? worker : view)
+    t.alike(res[i].runtime, key.endsWith("Worker") ? worker : view)
     t.alike(res[i].realm, realms[key])
   })
 })

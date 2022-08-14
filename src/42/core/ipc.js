@@ -112,37 +112,6 @@ async function messageHandler(e) {
   }
 }
 
-export class Receiver extends Emitter {
-  #cancel
-
-  constructor(source, options) {
-    super({ signal: options?.signal })
-    options?.signal?.addEventListener("abort", () => this.destroy())
-    this.#cancel = new Canceller(options?.signal)
-
-    if ("port" in source) source = source.port // for shared workers
-
-    if (globalThis.HTMLIFrameElement && source instanceof HTMLIFrameElement) {
-      source = source.contentWindow
-    } else if ("onmessage" in source) {
-      const options = { signal: this.#cancel.signal }
-      source.addEventListener("message", messageHandler, options)
-      source.start?.() // for shared workers
-    }
-
-    this.source = source
-    sources.set(source, this)
-  }
-
-  destroy({ close } = {}) {
-    this.emit("destroy", this)
-    this.off("*")
-    sources.delete(this.source)
-    if (close) this.source?.close?.()
-    this.#cancel?.()
-  }
-}
-
 function ping(target, port, origin) {
   origin ??= location.origin === "null" ? "*" : location.origin
   target.postMessage({ type: PING }, origin, [port])
@@ -153,24 +122,8 @@ function autoTarget(port, options) {
     ping(window.parent, port, options.origin)
   } else if (realm.inChildWindow) {
     ping(window.opener, port, options.origin)
-  } else if (realm.inSharedWorker) {
-    self.addEventListener(
-      "connect",
-      ({ ports }) => ports[0].postMessage({ type: PING }, [port]),
-      { once: true }
-    )
   } else if (realm.inDedicatedWorker) {
     self.postMessage({ type: PING }, [port])
-  } else if (realm.inServiceWorker) {
-    self.clients.matchAll({ includeUncontrolled: true }).then((clients) => {
-      // console.log(clients)
-      for (const client of clients) {
-        if (client.frameType === "top-level" && client.focused) {
-          client.postMessage({ type: PING }, [port])
-          break
-        }
-      }
-    })
   }
 }
 
@@ -204,17 +157,21 @@ export class Sender extends Emitter {
   constructor(target, options = {}) {
     super({ signal: options?.signal })
     options?.signal?.addEventListener("abort", () => this.destroy())
+    this.self = {
+      emit: (...args) => super.emit(...args),
+      send: async (...args) => super.send(...args),
+    }
 
     const { port1, port2 } = new MessageChannel()
-    this.port1 = port1
-    this.port2 = port2
+    this.port = port1
+    this.remote = port2
     this.#queue = new Map()
     this.ready = defer()
 
     if (target === undefined) autoTarget(port2, options)
     else normalizeTarget(target, port2, options)
 
-    this.port1.onmessage = ({ data }) => {
+    this.port.onmessage = ({ data }) => {
       if (data.id && this.#queue.has(data.id)) {
         if (data.err) this.#queue.get(data.id).reject(data.err)
         else this.#queue.get(data.id).resolve(data.res)
@@ -231,8 +188,8 @@ export class Sender extends Emitter {
     // but if ready is not resolved yet we wait for it
     const msg = { type: "emit", event, data }
     if (this.ready.isPending) {
-      this.ready.then(() => this.port1.postMessage(msg, transfer))
-    } else this.port1.postMessage(msg, transfer)
+      this.ready.then(() => this.port.postMessage(msg, transfer))
+    } else this.port.postMessage(msg, transfer)
     return this
   }
 
@@ -241,76 +198,141 @@ export class Sender extends Emitter {
     const id = uid()
     const reply = defer()
     this.#queue.set(id, reply)
-    this.port1.postMessage({ id, type: "send", event, data }, transfer)
+    this.port.postMessage({ id, type: "send", event, data }, transfer)
     return reply
   }
 
   destroy() {
     this.emit("destroy", this)
     this.off("*")
-    this.port1.close()
-    this.port2.close()
+    this.port.close()
+    this.remote.close()
   }
 }
 
-export class IPC extends Emitter {
-  #top
-  #parent
-
-  iframes = new Map()
-
-  constructor() {
-    super()
-
+export class SharedWorkerSender extends Emitter {
+  constructor(options) {
+    super({ signal: options?.signal })
+    options?.signal?.addEventListener("abort", () => this.destroy())
     this.self = {
       emit: (...args) => super.emit(...args),
-      send: (...args) => super.send(...args),
+      send: async (...args) => super.send(...args),
     }
 
-    this.super = {
-      emit: (...args) => {
-        this.top.emit(...args)
-        super.emit(...args)
-        return this
-      },
-      send: (...args) =>
-        Promise.all([
-          this.top.send(...args), //
-          super.send(...args),
-        ]),
-    }
-  }
-
-  get top() {
-    this.#top ??= new Sender()
-    return this.#top
-  }
-
-  from(source, options) {
-    return new Receiver(source, options)
-  }
-
-  to(target, options) {
-    return new Sender(target, options)
+    this.clients = []
+    this.ready = defer()
+    self.addEventListener("connect", (e) => {
+      this.clients.push(new Sender(e.ports[0]))
+      this.ready.resolve()
+    })
   }
 
   emit(...args) {
-    this.top.emit(...args)
+    if (this.ready.isPending) {
+      this.ready.then(() => {
+        for (const client of this.clients) client.emit(...args)
+      })
+    } else {
+      for (const client of this.clients) client.emit(...args)
+    }
+
     return this
   }
 
   async send(...args) {
-    return this.top.send(...args)
-  }
-
-  destroy() {
-    this.emit("destroy", this)
-    this.off("*")
-    this.#top?.destroy()
+    await this.ready
+    const undones = []
+    for (const client of this.clients) undones.push(client.send(...args))
+    return Promise.all(undones)
   }
 }
 
-const ipc = new IPC()
+export class ServiceWorkerSender extends Emitter {
+  constructor(options) {
+    super({ signal: options?.signal })
+    options?.signal?.addEventListener("abort", () => this.destroy())
+    this.self = {
+      emit: (...args) => super.emit(...args),
+      send: async (...args) => super.send(...args),
+    }
+
+    this.map = new Map()
+  }
+
+  async #ping() {
+    const clients = await self.clients.matchAll({ includeUncontrolled: true })
+
+    // remove old clients
+    for (const [client, sender] of this.map.entries()) {
+      if (!clients.includes(client)) {
+        sender.destroy()
+        this.map.remove(client)
+      }
+    }
+
+    // map new clients
+    for (const client of clients) {
+      if (!this.map.has(client)) this.map.set(client, new Sender(client))
+    }
+  }
+
+  emit(...args) {
+    this.#ping().then(() => {
+      for (const client of this.map.values()) client.emit(...args)
+    })
+
+    return this
+  }
+
+  async send(...args) {
+    await this.#ping()
+    const undones = []
+    for (const client of this.map.values()) undones.push(client.send(...args))
+    return Promise.all(undones)
+  }
+}
+
+export class Receiver extends Emitter {
+  #cancel
+
+  constructor(source, options) {
+    super({ signal: options?.signal })
+    options?.signal?.addEventListener("abort", () => this.destroy())
+    this.#cancel = new Canceller(options?.signal)
+
+    if ("port" in source) source = source.port
+
+    if (globalThis.HTMLIFrameElement && source instanceof HTMLIFrameElement) {
+      source = source.contentWindow
+    } else if ("onmessage" in source) {
+      const options = { signal: this.#cancel.signal }
+      source.addEventListener("message", messageHandler, options)
+      source.start?.()
+    }
+
+    this.source = source
+    sources.set(source, this)
+  }
+
+  destroy(options) {
+    this.emit("destroy", this)
+    this.off("*")
+    sources.delete(this.source)
+    if (options?.close) this.source?.close?.()
+    this.#cancel?.()
+  }
+}
+
+const ipc = realm.inSharedWorker
+  ? new SharedWorkerSender()
+  : realm.inServiceWorker
+  ? new ServiceWorkerSender()
+  : new Sender()
+
+ipc.iframes = new Map()
+
+ipc.from = (source, options) => new Receiver(source, options)
+ipc.to = (target, options) => new Sender(target, options)
 
 if (realm.inTop) {
   ipc
