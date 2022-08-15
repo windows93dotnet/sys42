@@ -22,14 +22,14 @@ import ipc from "${new URL("../../core/ipc.js", import.meta.url).href}"
 globalThis.ipc = ipc
 
 trap((err) => {
-  ipc.to.parent.emit("42-resource:error", [err])
+  ipc.emit("42-resource:error", [err])
   return false
 })
 
 const options = { types: ["crash", "csp-violation"], buffered: true }
 const observer = new ReportingObserver((reports, observer) => {
   const err = new Error("Report")
-  ipc.to.parent.emit("42-resource:error", [err, reports.map(x => x.toJSON())])
+  ipc.emit("42-resource:error", [err, reports.map(x => x.toJSON())])
 }, options)
 observer.observe()
 `

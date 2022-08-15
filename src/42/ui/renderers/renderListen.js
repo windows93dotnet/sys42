@@ -39,9 +39,10 @@ const POPUP_TYPES = new Set(["menu", "listbox", "tree", "grid", "dialog"])
 function setOpener(el, ctx, key, def, type) {
   ctx = forkCtx(ctx, key)
   el.id ||= hash(String(ctx.steps))
-  def.opener = `#${el.id}`
+  def.opener = el.id
   type ??= def.tag?.startsWith("ui-") ? def.tag.slice(3) : def.role ?? def.tag
   el.setAttribute("aria-haspopup", POPUP_TYPES.has(type) ? type : "true")
+  if (type !== "dialog") el.setAttribute("aria-expanded", "false")
   return ctx
 }
 
@@ -55,11 +56,9 @@ function setDialogTrigger(el, ctx, key, def) {
 
 function setPopupTrigger(el, ctx, key, def) {
   ctx = setOpener(el, ctx, key, def)
-  el.setAttribute("aria-expanded", "false")
   return async () => {
-    el.setAttribute("aria-expanded", "true")
     await import("../popup.js") //
-      .then((m) => m.default(def, ctx))
+      .then((m) => m.default(el, def, ctx))
   }
 }
 

@@ -130,7 +130,7 @@ const dialog = xrealm(
     return el.once("close").then((res) => ({ res, opener }))
   },
   {
-    input(def = {}, ctx) {
+    inputs(def = {}, ctx) {
       if (!def.opener) {
         document.activeElement.id ||= uid()
         def.opener ??= document.activeElement.id
@@ -140,8 +140,8 @@ const dialog = xrealm(
       return [forkDef(def, ctx), {}]
     },
 
-    output({ res, opener }) {
-      document.querySelector(opener)?.focus()
+    outputs({ res, opener }) {
+      document.querySelector(`#${opener}`)?.focus()
       return res
     },
   }

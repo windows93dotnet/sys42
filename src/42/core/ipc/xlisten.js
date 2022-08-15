@@ -1,13 +1,14 @@
 import ipc from "../ipc.js"
 import noop from "../../fabric/type/function/noop.js"
 import ensureElement from "../../fabric/dom/ensureElement.js"
+import Canceller from "../../fabric/class/Canceller.js"
 import { normalizeListen, eventsMap } from "../../fabric/dom/listen.js"
 
 const { inTop, inIframe } = ipc
 
 const CALL = "42_XLISTEN_CALL"
 const DOM_EVENT = "42_XLISTEN_DOM_EVENT"
-// const DESTROY = "42_XLISTEN_DESTROY"
+const DESTROY = "42_XLISTEN_DESTROY"
 const HANDSHAKE = "42_IPC_HANDSHAKE"
 
 function serializeArgs(args) {
@@ -23,15 +24,24 @@ function serializeArgs(args) {
   return out
 }
 
+function serializeTarget(target) {
+  return {
+    inIframe: true,
+    isActive: target === document.activeElement,
+    id: target.id,
+    rect: target.getBoundingClientRect(),
+  }
+}
+
 function serializeEvent(e) {
-  const out = { ...e }
+  const out = {}
 
   // eslint-disable-next-line guard-for-in
   for (const key in e) {
     const val = e[key]
 
     if (key === "target") {
-      out[key] = { rect: val.getBoundingClientRect() }
+      out[key] = serializeTarget(val)
       continue
     }
 
@@ -46,8 +56,8 @@ function serializeEvent(e) {
 let xlisten
 
 if (inTop) {
-  const registry2 = []
   const registry1 = []
+  const registry2 = []
 
   xlisten = function xlisten(...args) {
     const { list, cancels } = normalizeListen(args)
@@ -60,23 +70,33 @@ if (inTop) {
       eventsMap(item)
     }
 
+    const id = registry2.length
+
     const serialized = serializeArgs(list)
-    for (const { emit } of ipc.iframes) {
-      emit(CALL, [registry2.length, serialized])
+    for (const { emit, iframe } of ipc.iframes.values()) {
+      iframe.classList.add("xlisten")
+      emit(CALL, [id, serialized])
     }
 
     registry1.push(list)
     registry2.push(serialized)
 
-    if (cancels) {
-      return () => {
-        for (const cancel of cancels) cancel()
+    return () => {
+      registry1.splice(id, 1)
+      registry2.splice(id, 1)
+
+      for (const { emit, iframe } of ipc.iframes.values()) {
+        iframe.classList.remove("xlisten")
+        emit(DESTROY, id)
       }
+
+      for (const cancel of cancels) cancel()
     }
   }
 
   ipc.on(HANDSHAKE, (data, meta) => {
     if (meta.iframe) {
+      meta.iframe.classList.add("xlisten")
       for (let i = 0, l = registry2.length; i < l; i++) {
         meta.emit(CALL, [i, registry2[i]])
       }
@@ -92,33 +112,40 @@ if (inTop) {
 if (inIframe) {
   xlisten = noop
 
-  ipc.on(CALL, ([id, args]) => {
-    for (let i = 0, l = args.length; i < l; i++) {
-      const { selector, listeners } = args[i]
-      const item = {
-        el: selector ? ensureElement(selector) : globalThis,
-        listeners: listeners.map((events, j) => ({
-          events: Object.fromEntries(
-            events.map((key) => [
-              key,
-              (e, target) => {
-                ipc.emit(DOM_EVENT, {
-                  id,
-                  i,
-                  j,
-                  key,
-                  e: serializeEvent(e),
-                  target: { rect: target.getBoundingClientRect() },
-                })
-              },
-            ])
-          ),
-        })),
-      }
+  const cancels = new Map()
 
-      eventsMap(item)
-    }
-  })
+  ipc
+    .on(DESTROY, (id) => {
+      cancels.get(id)?.()
+      cancels.delete(id)
+    })
+    .on(CALL, ([id, args]) => {
+      const cancel = new Canceller()
+      cancels.set(id, cancel)
+
+      for (let i = 0, l = args.length; i < l; i++) {
+        const { selector, listeners } = args[i]
+        const item = {
+          el: selector ? ensureElement(selector) : globalThis,
+          listeners: listeners.map((events, j) => ({
+            options: { signal: cancel.signal },
+            events: Object.fromEntries(
+              events.map((key) => [
+                key,
+                (e, target) => {
+                  const data = { id, i, j, key }
+                  data.e = serializeEvent(e)
+                  data.target = serializeTarget(target)
+                  ipc.emit(DOM_EVENT, data)
+                },
+              ])
+            ),
+          })),
+        }
+
+        eventsMap(item)
+      }
+    })
 }
 
 export default xlisten

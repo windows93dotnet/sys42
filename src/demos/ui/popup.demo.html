@@ -12,40 +12,39 @@
 <script type="module">
   import ui from "../../42/ui.js"
 
-  const button = {
-    tag: "button#incr",
+  const button = (label) => ({
+    tag: `button#btnIncr${label}`,
     content: "{{cnt}}",
     click: "{{cnt += 1}}",
-  }
+  })
 
   const buttons = (label) => ({
     tag: ".box-h",
     content: [
-      button,
+      button(label),
       {
-        tag: `button#dialog-${label}`,
+        tag: `button#btnDialog${label}`,
         content: "dialog",
         dialog: {
           x:
-            label === "top"
+            label === "Top"
               ? window.innerWidth / 2 - 200
               : window.innerWidth / 2 + 50,
           label,
-          content: button,
+          content: button(label),
         },
       },
       {
-        tag: "button#popup",
+        tag: `button#btnPopup${label}`,
         content: "popup",
         popup: {
           tag: ".panel.outset.pa-xxl",
-          content: `hello from ${label}`,
+          content: [`hello from ${label}`, "\n\n", button(label)],
         },
       },
     ],
   })
 
-  // eslint-disable-next-line no-unused-vars
   const app = await ui(
     {
       tag: ".box-fit.box-center",
@@ -54,17 +53,21 @@
         content: [
           {
             tag: ".box-center.ground",
-            content: buttons("top"),
+            content: buttons("Top"),
           },
           {
             tag: "ui-sandbox",
             permissions: "app",
             content: {
               tag: ".box-fit.box-center.desktop",
-              content: buttons("iframe"),
+              content: buttons("Iframe"),
             },
-            // script: `setTimeout(() => app.query("#dialog-iframe")?.click(), 500)`,
-            script: `app.query("#popup").click()`,
+            // script: `setTimeout(() => app.query("#btnDialogIframe")?.click(), 500)`,
+            // script: `app.query("#btnPopupIframe").click()`,
+          },
+          {
+            tag: "iframe.document",
+            srcdoc: 'iframe without xlisten <input type="checkbox"/>',
           },
         ],
       },
@@ -72,9 +75,10 @@
         cnt: 42,
       },
     },
-    { id: "popup-demo" }
+    { id: "popup-demo", trusted: true }
   )
 
-  // setTimeout(() => app.query("#dialog-top")?.click(), 500)
-  // app.query("#popup").click()
+  // setTimeout(() => app.query("#btnDialogTop")?.click(), 500)
+  app.query("#btnPopupTop").click()
+  // setTimeout(() => app.query("#btnPopupTop").click(), 100)
 </script>
