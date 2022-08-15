@@ -61,7 +61,6 @@ export class Dialog extends Component {
     if (event.defaultPrevented) return
     const data = omit(this.ctx.reactive.data, ["ui"])
     this.emit("close", data)
-    // document.querySelector(this.opener)?.focus()
     await this.destroy()
     return data
   }
@@ -130,7 +129,7 @@ const dialog = xrealm(
     return el.once("close").then((res) => ({ res, opener }))
   },
   {
-    input(def = {}, ctx) {
+    inputs(def = {}, ctx) {
       if (!def.opener) {
         document.activeElement.id ||= uid()
         def.opener ??= document.activeElement.id
@@ -140,8 +139,8 @@ const dialog = xrealm(
       return [forkDef(def, ctx), { trusted: true } /* ATTACK */]
     },
 
-    output({ res, opener }) {
-      document.querySelector(opener)?.focus()
+    outputs({ res, opener }) {
+      document.querySelector(`#${opener}`)?.focus()
       return res
     },
   }

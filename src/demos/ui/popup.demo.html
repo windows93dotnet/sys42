@@ -11,6 +11,7 @@
 
 <script type="module">
   import ui from "../../42/ui.js"
+  // import listen from "../../42/fabric/dom/listen.js"
 
   const button = (label) => ({
     tag: `button#btnIncr${label}`,
@@ -81,5 +82,10 @@
   )
 
   app.query("#btnDialogTop").click()
-  setTimeout(() => app.query("#btnIncrIframe").click(), 500)
+
+  // listen({
+  //   uipopupopen(e, target) {
+  //     target.querySelector("#btnIncrIframe").click()
+  //   },
+  // })
 </script>

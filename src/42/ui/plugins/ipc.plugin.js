@@ -37,13 +37,18 @@ export default async function ipcPlugin(ctx) {
   ctx.plugins.ipc = true
 
   if (inTop) {
-    // Parent Top --> Iframe
     ctx.reactive.on("update", ctx, (changes, deleteds, source) => {
       const data = ctx.reactive.export(changes, deleteds)
       for (const { iframe, emit } of ipc.iframes.values()) {
-        if (iframe !== source) emit(`42-ui-ipc-${ctx.id}`, data)
+        if (iframe !== source) {
+          // Parent Top --> Iframe
+          emit(`42-ui-ipc-${ctx.id}`, data)
+          // Top --> Parent Iframe
+          if (ctx.parentId) emit(`42-ui-ipc-${ctx.parentId}`, data)
+        }
       }
     })
+
     // Parent Top <-- Iframe
     ipc.on(`42-ui-ipc-${ctx.id}`, ctx, (data, { iframe }) => {
       debug?.("Parent Top <-- Iframe")
@@ -56,26 +61,26 @@ export default async function ipcPlugin(ctx) {
         debug?.("Top <-- Parent Iframe")
         ctx.reactive.import(data, iframe)
       })
-      // Top --> Parent Iframe
-      ctx.reactive.on("update", ctx, (changes, deleteds, source) => {
-        const data = ctx.reactive.export(changes, deleteds)
-        for (const { iframe, emit } of ipc.iframes.values()) {
-          if (iframe !== source) emit(`42-ui-ipc-${ctx.parentId}`, data)
-        }
-      })
     }
   }
 
   if (inIframe) {
-    // Parent Iframe --> Top
     ctx.reactive.on("update", ctx, (changes, deleteds, source) => {
-      if (source === "top") return
-      ipc.emit(`42-ui-ipc-${ctx.id}`, ctx.reactive.export(changes, deleteds))
+      const data = ctx.reactive.export(changes, deleteds)
+
+      // Parent Iframe --> Top
+      ipc.emit(`42-ui-ipc-${ctx.id}`, data)
+
+      // Iframe --> Parent Top
+      if (source !== "parent" && ctx.parentId) {
+        ipc.emit(`42-ui-ipc-${ctx.parentId}`, data)
+      }
     })
+
     // Parent Iframe <-- Top
     ipc.on(`42-ui-ipc-${ctx.id}`, ctx, (data) => {
       debug?.("Parent Iframe <-- Top")
-      ctx.reactive.import(data, "top")
+      ctx.reactive.import(data)
     })
 
     if (ctx.parentId) {
@@ -83,14 +88,6 @@ export default async function ipcPlugin(ctx) {
       ipc.on(`42-ui-ipc-${ctx.parentId}`, ctx, (data) => {
         debug?.("Iframe <-- Parent Top")
         ctx.reactive.import(data, "parent")
-      })
-      // Iframe --> Parent Top
-      ctx.reactive.on("update", ctx, (changes, deleteds, source) => {
-        if (source === "parent") return
-        ipc.emit(
-          `42-ui-ipc-${ctx.parentId}`,
-          ctx.reactive.export(changes, deleteds)
-        )
       })
     }
   }

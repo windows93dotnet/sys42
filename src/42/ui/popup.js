@@ -1,4 +1,5 @@
 import render from "./render.js"
+import dispatch from "../fabric/dom/dispatch.js"
 import maxZIndex from "../fabric/dom/maxZIndex.js"
 import xlisten from "../core/ipc/xlisten.js"
 import defer from "../fabric/type/promise/defer.js"
@@ -7,7 +8,7 @@ import setTemp from "../fabric/dom/setTemp.js"
 import { autofocus } from "../fabric/dom/focus.js"
 
 import xrealm from "../core/ipc/xrealm.js"
-import { objectifyDef, forkDef } from "./normalize.js"
+import normalize, { objectifyDef, forkDef } from "./normalize.js"
 import uid from "../core/uid.js"
 
 function combineRect(rect1, rect2) {
@@ -16,11 +17,11 @@ function combineRect(rect1, rect2) {
   return rect1
 }
 
-let destroyLastPopup
+let close
 
 const popup = xrealm(
   async function popup(def, ctx, rect, meta) {
-    destroyLastPopup?.()
+    close?.()
     ctx.cancel = new Canceller(ctx.cancel?.signal)
 
     def.positionable = {
@@ -30,34 +31,41 @@ const popup = xrealm(
         : rect,
     }
 
-    const el = render(def, ctx)
+    const normalized = normalize(def, ctx)
+    const el = render(...normalized, { skipNormalize: true })
     el.style.position = "fixed"
     el.style.transform = "translate(-200vw, -200vh)"
     el.style.zIndex = maxZIndex("ui-dialog, ui-menu") + 1
 
     setTemp(document.body, {
       signal: ctx.cancel.signal,
-      class: "pointer-unclickables-0",
+      class: { "pointer-unclickables-0": true },
     })
 
+    await normalized[1].preload.done()
     document.body.append(el)
+    await normalized[1].reactive.done()
+
+    dispatch(el, "uipopupopen")
 
     if (autofocus(el) === false) el.focus()
 
     const deferred = defer()
 
-    destroyLastPopup = (fromOpener) => {
+    close = (fromOpener) => {
+      const event = dispatch(el, "uipopupclose", { cancelable: true })
+      if (event.defaultPrevented) return
       ctx.cancel()
       el.remove()
       forget()
-      destroyLastPopup = undefined
+      close = undefined
       deferred.resolve({ opener: def.opener, fromOpener })
     }
 
     const forget = xlisten({
       click(e, target) {
         if (target.inIframe || !el.contains(target)) {
-          destroyLastPopup(target.id === def.opener)
+          close(target.id === def.opener)
         }
       },
     })

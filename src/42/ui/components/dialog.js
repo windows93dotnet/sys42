@@ -61,7 +61,6 @@ export class Dialog extends Component {
     if (event.defaultPrevented) return
     const data = omit(this.ctx.reactive.data, ["ui"])
     this.emit("close", data)
-    // document.querySelector(this.opener)?.focus()
     await this.destroy()
     return data
   }

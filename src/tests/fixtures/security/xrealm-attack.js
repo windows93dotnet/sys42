@@ -38,7 +38,7 @@ if (inTop) {
         delete args[1].trusted
       }
 
-      if (functions.has(id)) return functions.get(id)(...args)
+      if (functions.has(id)) return functions.get(id)(...args, meta)
       throw new Error("No corresponding function found in xrealm target")
     })
     .on(DESTROY, (id) => {
@@ -47,20 +47,26 @@ if (inTop) {
 }
 
 export default function xrealm(fn, options) {
-  const { input, output } = options
+  const { inputs, outputs } = options
   const id = hash([fn, options])
 
   if (!inTop) {
     const caller =
-      output && input
+      outputs && inputs
+        ? async (/* xrealm:subroutine */ ...args) => {
+            const res = await inputs(...args)
+            if (res === false) return
+            return outputs(await ipc.send(CALL, [id, res]))
+          }
+        : outputs
         ? async (/* xrealm:subroutine */ ...args) =>
-            output(await ipc.send(CALL, [id, await input(...args)]))
-        : output
-        ? async (/* xrealm:subroutine */ ...args) =>
-            output(await ipc.send(CALL, [id, args]))
-        : input
-        ? async (/* xrealm:subroutine */ ...args) =>
-            ipc.send(CALL, [id, await input(...args)])
+            outputs(await ipc.send(CALL, [id, args]))
+        : inputs
+        ? async (/* xrealm:subroutine */ ...args) => {
+            const res = await inputs(...args)
+            if (res === false) return
+            return ipc.send(CALL, [id, res])
+          }
         : async (/* xrealm:subroutine */ ...args) => ipc.send(CALL, [id, args])
 
     caller.destroy = async () => ipc.send(DESTROY, id)
@@ -71,13 +77,20 @@ export default function xrealm(fn, options) {
   functions.set(id, fn)
 
   const caller =
-    output && input
-      ? async (/* xrealm:top */ ...args) =>
-          output(await fn(...(await input(...args))))
-      : output
-      ? async (/* xrealm:top */ ...args) => output(await fn(...args))
-      : input
-      ? async (/* xrealm:top */ ...args) => fn(...(await input(...args)))
+    outputs && inputs
+      ? async (/* xrealm:top */ ...args) => {
+          const res = await inputs(...args)
+          if (res === false) return
+          return outputs(await fn(...res))
+        }
+      : outputs
+      ? async (/* xrealm:top */ ...args) => outputs(await fn(...args))
+      : inputs
+      ? async (/* xrealm:top */ ...args) => {
+          const res = await inputs(...args)
+          if (res === false) return
+          return fn(...res)
+        }
       : fn
 
   caller.destroy = async () => functions.delete(id)
