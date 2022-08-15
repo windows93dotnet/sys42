@@ -24,7 +24,7 @@ if (inTop) {
         delete args[1].trusted
       }
 
-      if (functions.has(id)) return functions.get(id)(...args)
+      if (functions.has(id)) return functions.get(id)(...args, meta)
       throw new Error("No corresponding function found in xrealm target")
     })
     .on(DESTROY, (id) => {
@@ -42,7 +42,7 @@ export default function xrealm(fn, options) {
         ? async (/* xrealm:subroutine */ ...args) => {
             const res = await inputs(...args)
             if (res === false) return
-            outputs(await ipc.send(CALL, [id, res]))
+            return outputs(await ipc.send(CALL, [id, res]))
           }
         : outputs
         ? async (/* xrealm:subroutine */ ...args) =>
@@ -51,7 +51,7 @@ export default function xrealm(fn, options) {
         ? async (/* xrealm:subroutine */ ...args) => {
             const res = await inputs(...args)
             if (res === false) return
-            ipc.send(CALL, [id, res])
+            return ipc.send(CALL, [id, res])
           }
         : async (/* xrealm:subroutine */ ...args) => ipc.send(CALL, [id, args])
 
@@ -67,7 +67,7 @@ export default function xrealm(fn, options) {
       ? async (/* xrealm:top */ ...args) => {
           const res = await inputs(...args)
           if (res === false) return
-          outputs(await fn(...res))
+          return outputs(await fn(...res))
         }
       : outputs
       ? async (/* xrealm:top */ ...args) => outputs(await fn(...args))
@@ -75,7 +75,7 @@ export default function xrealm(fn, options) {
       ? async (/* xrealm:top */ ...args) => {
           const res = await inputs(...args)
           if (res === false) return
-          fn(...res)
+          return fn(...res)
         }
       : fn
 

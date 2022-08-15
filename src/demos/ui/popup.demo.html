@@ -31,14 +31,14 @@
               ? window.innerWidth / 2 - 200
               : window.innerWidth / 2 + 50,
           label,
-          content: button(label),
+          content: button(`Dialog${label}`),
         },
       },
       {
         tag: `button#btnPopup${label}`,
         content: "popup",
         popup: {
-          tag: ".panel.outset.pa-xxl",
+          tag: ".panel.outset.pa-lg",
           content: [`hello from ${label}`, "\n\n", button(label)],
         },
       },
@@ -62,8 +62,10 @@
               tag: ".box-fit.box-center.desktop",
               content: buttons("Iframe"),
             },
-            // script: `setTimeout(() => app.query("#btnDialogIframe")?.click(), 500)`,
-            // script: `app.query("#btnPopupIframe").click()`,
+            script: `
+            app.query("#btnDialogIframe").click()
+            app.query("#btnPopupIframe").click()
+            `,
           },
           {
             tag: "iframe.document",
@@ -78,7 +80,6 @@
     { id: "popup-demo", trusted: true }
   )
 
-  // setTimeout(() => app.query("#btnDialogTop")?.click(), 500)
-  app.query("#btnPopupTop").click()
-  // setTimeout(() => app.query("#btnPopupTop").click(), 100)
+  app.query("#btnDialogTop").click()
+  setTimeout(() => app.query("#btnIncrIframe").click(), 500)
 </script>

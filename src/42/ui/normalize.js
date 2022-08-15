@@ -51,8 +51,9 @@ const DEF_KEYWORDS = new Set([
 ])
 
 const TRAIT_KEYWORDS = new Set([
-  "movable", //
   "emittable",
+  "movable",
+  "positionable",
   "selectable",
 ])
 
@@ -331,6 +332,7 @@ export function objectifyDef(def) {
 export function forkDef(def, ctx) {
   def = objectifyDef(def)
   if (ctx) {
+    if (ctx.plugins) def.plugins = Object.keys(ctx.plugins)
     if (ctx.scope) def.scope = ctx.scope
     if (ctx.scopeChain) def.scopeChain = structuredClone(ctx.scopeChain)
     if (ctx.reactive) def.state = structuredClone(ctx.reactive.data)

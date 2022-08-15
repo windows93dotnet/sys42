@@ -175,7 +175,7 @@ const makePlaceEventData = (changes, obj) => ({
 
 class Positionable extends Trait {
   constructor(el, options) {
-    super("positionable", el)
+    super(el, options)
 
     this.config = configure(options)
     emittable(this)

@@ -10,15 +10,29 @@ import xrealm from "../core/ipc/xrealm.js"
 import { objectifyDef, forkDef } from "./normalize.js"
 import uid from "../core/uid.js"
 
+function combineRect(rect1, rect2) {
+  rect1.x += rect2.x
+  rect1.y += rect2.y
+  return rect1
+}
+
 let destroyLastPopup
 
 const popup = xrealm(
-  async function popup(def, ctx) {
+  async function popup(def, ctx, rect, meta) {
     destroyLastPopup?.()
     ctx.cancel = new Canceller(ctx.cancel?.signal)
 
+    def.positionable = {
+      preset: "popup",
+      of: meta?.iframe
+        ? combineRect(rect, meta.iframe.getBoundingClientRect())
+        : rect,
+    }
+
     const el = render(def, ctx)
     el.style.position = "fixed"
+    el.style.transform = "translate(-200vw, -200vh)"
     el.style.zIndex = maxZIndex("ui-dialog, ui-menu") + 1
 
     setTemp(document.body, {
@@ -63,9 +77,10 @@ const popup = xrealm(
       }
 
       el.setAttribute("aria-expanded", "true")
+      const rect = el.getBoundingClientRect()
 
-      if (xrealm.inTop) return [objectifyDef(def), { ...ctx }]
-      return [forkDef(def, ctx), {}]
+      if (xrealm.inTop) return [objectifyDef(def), { ...ctx }, rect]
+      return [forkDef(def, ctx), {}, rect]
     },
 
     outputs({ res, opener, fromOpener }) {
