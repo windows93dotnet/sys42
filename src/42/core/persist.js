@@ -1,6 +1,6 @@
 import fs from "./fs.js"
 import systemPath from "./fs/systemPath.js"
-import disk from "./fs/disk.js"
+import disk from "./disk.js"
 
 if ("requestIdleCallback" in globalThis === false) {
   await import("./env/polyfills/globalThis.requestIdleCallback.js")

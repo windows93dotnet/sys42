@@ -1,6 +1,6 @@
 import system from "../../system.js"
 import fs from "../../core/fs.js"
-import disk from "../../core/fs/disk.js"
+import disk from "../../core/disk.js"
 import defer from "../../fabric/type/promise/defer.js"
 import extname from "../../fabric/type/path/extract/extname.js"
 import basename from "../../fabric/type/path/extract/basename.js"

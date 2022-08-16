@@ -1,4 +1,4 @@
-import disk from "../../core/fs/disk.js"
+import disk from "../../core/disk.js"
 import apps from "../apps.js"
 
 export default async function open(options) {

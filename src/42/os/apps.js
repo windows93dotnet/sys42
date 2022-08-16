@@ -2,7 +2,7 @@ import { ConfigFile } from "./class/ConfigFile.js"
 import parseFilename from "../fabric/type/path/parseFilename.js"
 import arrify from "../fabric/type/any/arrify.js"
 import pick from "../fabric/type/object/pick.js"
-import disk from "../core/fs/disk.js"
+import disk from "../core/disk.js"
 import dirname from "../fabric/type/path/extract/dirname.js"
 
 const DEFAULTS = {

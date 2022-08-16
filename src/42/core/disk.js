@@ -1,4 +1,4 @@
-import Disk from "./Disk.js"
+import Disk from "./fs/Disk.js"
 
 const disk = new Disk()
 await disk.init()

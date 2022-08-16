@@ -1,6 +1,6 @@
 import system from "./system.js"
 import fs from "./core/fs.js"
-import disk from "./core/fs/disk.js"
+import disk from "./core/disk.js"
 import exec from "./os/exec.js"
 import ui from "./ui.js"
 import theme from "./os/theme.js"

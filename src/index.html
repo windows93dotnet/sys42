@@ -40,6 +40,12 @@
     pointer-events: auto;
     margin-bottom: 0.8rem;
   }
+  main div a {
+    display: block;
+  }
+  main div a:hover {
+    color: #fff;
+  }
 </style>
 
 <main>
@@ -56,15 +62,18 @@
   import system from "./42/system.js"
   import testRunner from "./42/core/dev/testRunner.js"
   import fs from "./42/core/fs.js"
-  import disk from "./42/core/fs/disk.js"
+  import disk from "./42/core/disk.js"
   import create from "./42/ui/create.js"
-  import stemname from "./42/fabric/type/path/extract/stemname.js"
 
   system.DEV = true
 
   const main = document.querySelector("main")
+  const div = create("div")
+  main.append(div)
+  const CLEAN_REG = /^\/demos\/|(\.plugin)?\.demo\.html$/g
+
   disk.glob("**/*.demo.html").forEach((href) => {
-    main.append(create("a", stemname(href).replace(".demo", ""), { href }))
+    div.append(create("a", href.replace(CLEAN_REG, ""), { href }))
   })
 
   // await disk.reinstall()
@@ -105,15 +114,15 @@
       // "/tests/42/fabric/type/string/sdbm.test.js",
       // "/tests/42/fabric/type/string/textPosition.test.js",
       // "/tests/42/os/cli/argv.test.js",
-      "/tests/42/ui.test.js",
-      "/tests/42/ui/components.test.js",
-      "/tests/42/ui/components/folder.test.js",
-      "/tests/42/ui/components/icon.test.js",
-      "/tests/42/ui/components/picto.test.js",
-      "/tests/42/ui/components/sandbox.test.js",
+      // "/tests/42/ui.test.js",
+      // "/tests/42/ui/components.test.js",
+      // "/tests/42/ui/components/folder.test.js",
+      // "/tests/42/ui/components/icon.test.js",
+      // "/tests/42/ui/components/picto.test.js",
+      // "/tests/42/ui/components/sandbox.test.js",
       "/tests/42/ui/create.test.js",
-      "/tests/42/ui/plugins/ipc.plugin.test.js",
-      "/tests/42/ui/xss.test.js",
+      // "/tests/42/ui/plugins/ipc.plugin.test.js",
+      // "/tests/42/ui/xss.test.js",
     ],
     { verbose: 2, cnt: true }
   )

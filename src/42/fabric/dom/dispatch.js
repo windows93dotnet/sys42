@@ -1,4 +1,4 @@
-export default function dispatch(el, name, detail) {
+export default function dispatch(el, name, options) {
   el = el.isConnected ? el : globalThis
 
   if (name instanceof Error) {
@@ -14,14 +14,14 @@ export default function dispatch(el, name, detail) {
         lineno: stack.line,
         colno: stack.column,
         filename: stack.filename,
-        ...detail,
+        ...options,
       }
 
       el.dispatchEvent(new ErrorEvent("error", eventInit))
     })
   }
 
-  const event = new CustomEvent(name, { bubbles: true, ...detail })
+  const event = new CustomEvent(name, { bubbles: true, ...options })
   el.dispatchEvent(event)
   return event
 }

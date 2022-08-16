@@ -1,5 +1,5 @@
 import { default as fsModule } from "../../core/fs.js"
-import disk from "../../core/fs/disk.js"
+import disk from "../../core/disk.js"
 
 export const cli = {
   subcommands: ["read", "open", "write"],

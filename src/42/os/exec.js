@@ -1,4 +1,4 @@
-import realm from "../core/realm.js"
+import xrealm from "../core/ipc/xrealm.js"
 import getCWD from "../fabric/getCWD.js"
 
 import JSON5 from "../core/formats/json5.js"
@@ -6,15 +6,11 @@ import parseCommand from "./cli/parseCommand.js"
 import argv from "./cli/argv.js"
 import traverse from "../fabric/type/object/traverse.js"
 import resolvePath from "../fabric/type/path/core/resolvePath.js"
-import disk from "../core/fs/disk.js"
+import disk from "../core/disk.js"
 
 const { HOME } = disk
 
-export default realm(
-  (cmd, locals = {}) => {
-    locals.cwd ??= getCWD()
-    return [cmd, locals]
-  },
+export default xrealm(
   async (cmd, locals) => {
     const [name, ...rest] = parseCommand(cmd)
 
@@ -48,5 +44,12 @@ export default realm(
     })
 
     return program(args, locals)
+  },
+
+  {
+    inputs(cmd, locals = {}) {
+      locals.cwd ??= getCWD()
+      return [cmd, locals]
+    },
   }
 )
