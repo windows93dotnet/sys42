@@ -3,7 +3,6 @@ import FileSystemError from "./FileSystemError.js"
 import configure from "../configure.js"
 import joinPath from "../../fabric/type/path/core/joinPath.js"
 import sortPath from "../../fabric/type/path/core/sortPath.js"
-import sortGlobResults from "../../fabric/type/path/core/sortGlobResults.js"
 import glob from "../../fabric/type/path/glob.js"
 
 const DEFAULTS = {
@@ -53,8 +52,8 @@ export default class FileIndex extends Storable {
     return sortPath(names)
   }
 
-  glob(patterns, { sort } = {}) {
+  glob(patterns, options) {
     const paths = glob.locate(this.root, patterns)
-    return sort === false ? paths : sortGlobResults(paths)
+    return options?.sort === false ? paths : sortPath(paths)
   }
 }

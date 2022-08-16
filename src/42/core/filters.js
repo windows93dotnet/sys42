@@ -118,7 +118,6 @@ types.path = {
   removeExt: "path/core/removeExt",
   replaceExt: "path/core/replaceExt",
   resolvePath: "path/core/resolvePath",
-  // sortGlobResults: "path/core/sortGlobResults",
   sortPath: "path/core/sortPath",
 
   extname: "path/extract/extname",

@@ -5,7 +5,6 @@ import dispatch from "../dom/dispatch.js"
 import arrify from "../type/any/arrify.js"
 import listen from "../dom/listen.js"
 import isIframable from "../type/url/isIframable.js"
-import checksum from "../type/file/checksum.js"
 
 const DEFAULTS = {
   upgradeInsecureRequests: true,
@@ -21,20 +20,11 @@ import ipc from "${new URL("../../core/ipc.js", import.meta.url).href}"
 
 globalThis.ipc = ipc
 
-trap((err) => {
-  ipc.emit("42-resource:error", [err])
+trap((err, {title, reports}) => {
+  ipc.emit("42-resource:error", [err, reports])
   return false
 })
-
-const options = { types: ["crash", "csp-violation"], buffered: true }
-const observer = new ReportingObserver((reports, observer) => {
-  const err = new Error("Report")
-  ipc.emit("42-resource:error", [err, reports.map(x => x.toJSON())])
-}, options)
-observer.observe()
 `
-
-const errorCatcherHash = await checksum(errorCatcher)
 
 // @read https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy#directives
 // @read https://featurepolicy.info/
@@ -174,22 +164,18 @@ export default class Resource {
 
   async html(html, options) {
     const { origin } = location
-    const scriptHash = options?.scriptHash
-      ? `'sha256-${options.scriptHash}' `
-      : ""
     const style = options?.style ?? ""
+    const bodyAttributes = options?.body ?? ""
     this.el.removeAttribute("src")
     this.el.srcdoc = `\
 <!DOCTYPE html>
 <meta charset="utf-8" />
 <meta
   http-equiv="Content-Security-Policy"
-  content="\
-default-src ${origin} data:; \
-script-src 'sha256-${errorCatcherHash}' ${scriptHash}${origin}; \
-">
+  content="default-src ${origin} 'unsafe-inline' data:;">
 ${style}
 <script type="module">${errorCatcher}</script>
+<body${bodyAttributes}>
 ${html}
 `
 
@@ -200,10 +186,7 @@ ${html}
 
   async script(script, options) {
     const type = options?.type ?? "module"
-    const style = options?.style
-    const config = { style }
-    config.scriptHash = await checksum(script)
-    await this.html(`<script type="${type}">${script}</script>`, config)
+    await this.html(`<script type="${type}">${script}</script>`, options)
   }
 
   async go(url, { signal } = this.config) {

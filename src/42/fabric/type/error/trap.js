@@ -17,22 +17,30 @@ const traceErrorsInTrap = (message, object, originStack) => {
 }
 
 const handleError = (type, e, cb, originStack) => {
-  const error = normalizeError(e, originStack)
+  const error = type === "report" ? e : normalizeError(e, originStack)
 
   // close most opened console group
   for (let i = 100; i; i--) console.groupEnd()
 
-  const title = type === "rejection" ? "Unhandled Rejection" : "Uncaught Error"
+  const title =
+    type === "rejection"
+      ? "Unhandled Rejection"
+      : type === "report"
+      ? "Report"
+      : "Uncaught Error"
+
+  const { reports } = error
 
   try {
-    let res = // allow to write `trap(log)`
-      cb.length <= 1
-        ? cb(error)
-        : cb.length < 3
-        ? cb(error, title)
-        : cb(error, title, e)
+    let res
 
-    if (cb.name === "log") res = false
+    if (cb.name === "log") {
+      cb.red(title)
+      cb(reports ?? error)
+      res = false
+    } else {
+      res = cb(error, { title, reports, e })
+    }
 
     if (res === false) {
       if (!e.filename?.startsWith("blob:")) e.preventDefault?.()
@@ -59,6 +67,22 @@ const handler = (type, e, handlerStack) => {
 const errorHandler = (e) => handler("error", e)
 const rejectionHandler = (e) => handler("rejection", e)
 
+let observer
+
+if (!inNode) {
+  observer = new ReportingObserver(
+    (reports) => {
+      handler(
+        "report",
+        Object.assign(new Error("Report"), {
+          reports: reports.map((x) => x.toJSON()),
+        })
+      )
+    },
+    { types: ["crash", "csp-violation"], buffered: true }
+  )
+}
+
 export const forget = inNode
   ? () => {
       isListening = false
@@ -69,6 +93,7 @@ export const forget = inNode
   : () => {
       isListening = false
       Error.stackTraceLimit = stackTraceLimit
+      observer.disconnect()
       globalThis.removeEventListener("error", errorHandler)
       globalThis.removeEventListener("unhandledrejection", rejectionHandler)
     }
@@ -83,6 +108,7 @@ export const listen = inNode
   : () => {
       isListening = true
       Error.stackTraceLimit = stackTraceLimit
+      observer.observe()
       globalThis.addEventListener("error", errorHandler)
       globalThis.addEventListener("unhandledrejection", rejectionHandler)
     }

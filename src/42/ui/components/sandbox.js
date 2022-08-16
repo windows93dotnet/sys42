@@ -6,8 +6,9 @@ import { forkDef } from "../normalize.js"
 
 const _setResource = Symbol("setResource")
 
-const styles = {
+const options = {
   style: '<link rel="stylesheet" href="/style.css" id="theme" />',
+  body: ' class="in-iframe"',
 }
 
 export class Sandbox extends Component {
@@ -124,16 +125,15 @@ export class Sandbox extends Component {
       const script = `\
 import ui from "/42/ui.js"
 import "/42/core/ipc/xlisten.js"
-document.body.classList.add("in-iframe")
 const app = await ui(${JSON.stringify(content)})
 ${this.script ?? ""}
 `
 
-      return this.resource.script(script, styles)
+      return this.resource.script(script, options)
     }
 
-    if (this.script) return this.resource.script(this.script, styles)
-    if (this.html) return this.resource.html(this.html, styles)
+    if (this.script) return this.resource.script(this.script, options)
+    if (this.html) return this.resource.html(this.html, options)
     if (!this.path) return
 
     this.toggleAttribute("loading", true)
