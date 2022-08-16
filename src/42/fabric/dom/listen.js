@@ -16,11 +16,11 @@ const DEFAULTS_KEYS = Object.keys(DEFAULTS)
 const ITEM_KEYS = ["selector", "returnForget"]
 
 export const delegate = (selector, fn) => (e) => {
-  const target = e.target.closest(selector)
+  const target = e.target.closest?.(selector) ?? e.target
   if (target && fn(e, target) === false) stopEvent(e)
 }
 
-const handler = (fn) => (e) => {
+export const handler = (fn) => (e) => {
   if (fn(e, e.target) === false) stopEvent(e)
 }
 
