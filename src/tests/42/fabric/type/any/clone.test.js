@@ -269,6 +269,7 @@ test("Math", (t) => {
 
 if (test.env.runtime.inFrontend) {
   test("Blob", async (t) => {
+    t.timeout(1000)
     const a = new Blob(["<h1>hello</h1>"], { type: "test/html" })
     const cloned = clone(a)
     t.eq(cloned, a)
@@ -276,6 +277,7 @@ if (test.env.runtime.inFrontend) {
   })
 
   test("File", async (t) => {
+    t.timeout(1000)
     const a = new File(["<h1>hello</h1>"], "index.html", { type: "test/html" })
     const cloned = clone(a)
     t.eq(cloned, a)
