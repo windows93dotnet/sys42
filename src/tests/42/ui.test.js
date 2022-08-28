@@ -134,7 +134,7 @@ test("reactive data", "attributes", async (t) => {
   t.is(app.el.innerHTML, '<em style=""></em>')
 })
 
-test("reactive async state", async (t) => {
+test.only("reactive async state", async (t) => {
   const app = t.utils.collect(
     ui(t.utils.dest(), {
       tag: "em",
@@ -2090,7 +2090,7 @@ test("on", "actions", async (t) => {
 
       actions: {
         incr(n, e) {
-          t.instanceOf(e, PointerEvent)
+          t.instanceOf(e, Event)
           this.state.cnt += n
         },
       },

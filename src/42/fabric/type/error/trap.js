@@ -69,7 +69,7 @@ const rejectionHandler = (e) => handler("rejection", e)
 
 let observer
 
-if (!inNode) {
+if (!inNode && "ReportingObserver" in globalThis) {
   observer = new ReportingObserver(
     (reports) => {
       handler(
@@ -93,7 +93,7 @@ export const forget = inNode
   : () => {
       isListening = false
       Error.stackTraceLimit = stackTraceLimit
-      observer.disconnect()
+      observer?.disconnect()
       globalThis.removeEventListener("error", errorHandler)
       globalThis.removeEventListener("unhandledrejection", rejectionHandler)
     }
@@ -108,7 +108,7 @@ export const listen = inNode
   : () => {
       isListening = true
       Error.stackTraceLimit = stackTraceLimit
-      observer.observe()
+      observer?.observe()
       globalThis.addEventListener("error", errorHandler)
       globalThis.addEventListener("unhandledrejection", rejectionHandler)
     }

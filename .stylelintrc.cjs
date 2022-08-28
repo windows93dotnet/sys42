@@ -1,5 +1,5 @@
 module.exports = {
-  plugins: ["stylelint-import"],
+  // plugins: ["stylelint-import"],
   extends: ["stylelint-config-standard"],
   rules: {
     "declaration-block-single-line-max-declarations": 3,
@@ -8,7 +8,7 @@ module.exports = {
     "custom-property-pattern": null,
     "declaration-empty-line-before": null,
 
-    "import/rule": true,
+    // "import/rule": true,
 
     "custom-property-empty-line-before": null,
     "comment-empty-line-before": null,

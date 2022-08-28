@@ -12,7 +12,7 @@ const DEFAULTS = {
 const uncaughts = []
 
 const listenUncaughts = () =>
-  trap(async (err, title, e) => {
+  trap(async (err, { e }) => {
     await sleep(0)
     if (e.defaultPrevented) return
     if ("module" in err) return

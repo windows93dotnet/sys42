@@ -56,6 +56,8 @@ export const CONSOLE_KEYS = Object.keys(console)
 
 const GETTERS = stylizer[Symbol.for("chainable.GETTERS")]
 
+// [1] normalize node, firefox and chrome console output on empty string
+
 export default class Logger extends Callable {
   constructor(options, contextHandler = noop) {
     const config = configure(DEFAULTS, options)
@@ -94,8 +96,7 @@ export default class Logger extends Callable {
         const res = data.prefix + args.join(data.joiner) + data.suffix
 
         if (res === "") {
-          // normalize node, firefox and chrome console output on empty string
-          this.console[key](" ")
+          this.console[key](" ") // [1]
           return this
         }
 
@@ -111,7 +112,7 @@ export default class Logger extends Callable {
             out += str
             css.push(style)
           })
-          this.console[key](unescapeLog(out), ...css)
+          this.console[key](unescapeLog(out + " " /* [1] */), ...css)
         }
 
         if (logError) {

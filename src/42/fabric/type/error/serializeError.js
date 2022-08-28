@@ -25,6 +25,9 @@ export default function serializeError(error) {
 
   if (details.stack === error.stack) delete details.stack
   if (details.codeFrame) delete details.codeFrame
+  if (details.fileName) delete details.fileName
+  if (details.lineNumber) delete details.lineNumber
+  if (details.columnNumber) delete details.columnNumber
 
   if ("errorEvent" in details) {
     if (!message) message = details.errorEvent.message
@@ -36,11 +39,13 @@ export default function serializeError(error) {
     addStack(error, error.cause)
   }
 
+  const stack = stackTrace(error)
+
   return {
     name,
     message,
     details,
-    stack: stackTrace(error),
+    stack,
     original,
   }
 }
