@@ -131,10 +131,10 @@ test("reactive data", "attributes", async (t) => {
   delete app.state.foo
   await app
 
-  t.is(app.el.innerHTML, '<em style=""></em>')
+  t.is(app.el.innerHTML, '<em class="" style=""></em>')
 })
 
-test.only("reactive async state", async (t) => {
+test("reactive async state", async (t) => {
   const app = t.utils.collect(
     ui(t.utils.dest(), {
       tag: "em",
@@ -164,7 +164,7 @@ test.only("reactive async state", async (t) => {
   delete app.state.foo
   await app
 
-  t.is(app.el.innerHTML, '<em style=""></em>')
+  t.is(app.el.innerHTML, '<em class="" style=""></em>')
 })
 
 test("reactive data", "array", async (t) => {

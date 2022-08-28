@@ -29,6 +29,8 @@ const BUTTON_TYPES = new Set([
   "submit",
 ])
 
+const ATTRIBUTES_ORDER = ["id", "class"]
+
 export default function create(ctx, tag, ...args) {
   if (typeof ctx === "string") {
     if (tag) args.unshift(tag)
@@ -37,7 +39,7 @@ export default function create(ctx, tag, ...args) {
   }
 
   const content = []
-  let attrs = { id: undefined } // ensure "id" is the first attribute
+  let attrs = {}
 
   for (const arg of args) {
     if (arg != null) {
@@ -66,12 +68,15 @@ export default function create(ctx, tag, ...args) {
     ? document.createDocumentFragment()
     : document.createElement(tag)
 
-  attrs = ctx === undefined ? parsed.attrs : normalizeAttrs(parsed.attrs, ctx)
-  if (attrs.id === undefined) delete attrs.id
+  // sort attributes
+  const tmp = {}
+  for (const key of ATTRIBUTES_ORDER) if (key in attrs) tmp[key] = attrs[key]
+  attrs = Object.assign(tmp, attrs)
+
   renderAttributes(
     tag === "body" ? (inBody ? ctx.el : document.body) : el,
     ctx,
-    attrs
+    ctx === undefined ? attrs : normalizeAttrs(attrs, ctx)
   )
 
   el.append(...content)

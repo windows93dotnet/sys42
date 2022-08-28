@@ -52,6 +52,15 @@ test("abbr", "class", (t) => {
   )
 })
 
+test("abbr", "class + style", (t) => {
+  const el = create("div#uniq.bar", { style: "color:red" }, "hello")
+  t.true(el instanceof HTMLDivElement)
+  t.is(
+    el.outerHTML,
+    '<div id="uniq" class="bar" style="color: red;">hello</div>'
+  )
+})
+
 test("arguments order matter only for child nodes", (t) => {
   const el = create("div", "hello", create("strong", "world"), {
     class: "foo",

@@ -335,7 +335,10 @@ test.tasks(
         el.foo = "red"
         await app
 
-        t.is(app.el.innerHTML, '<ui-t-css style="--foo:red;"></ui-t-css>')
+        t.match(
+          app.el.innerHTML,
+          /<ui-t-css style="--foo:\s*red;"><\/ui-t-css>/
+        )
 
         el.foo = undefined
         await app
@@ -345,7 +348,10 @@ test.tasks(
         el.foo = "blue"
         await app
 
-        t.is(app.el.innerHTML, '<ui-t-css style="--foo:blue;"></ui-t-css>')
+        t.match(
+          app.el.innerHTML,
+          /<ui-t-css style="--foo:\s*blue;"><\/ui-t-css>/
+        )
 
         el.foo = undefined
         await app
@@ -373,9 +379,9 @@ test.tasks(
         app.reactive.set("foo", "red")
         await app
 
-        t.is(
+        t.match(
           app.el.innerHTML,
-          '<ui-t-css-state style="--foo:red;"></ui-t-css-state>'
+          /<ui-t-css-state style="--foo:\s*red;"><\/ui-t-css-state>/
         )
 
         app.reactive.set("foo", undefined)
@@ -386,9 +392,9 @@ test.tasks(
         app.reactive.set("foo", "blue")
         await app
 
-        t.is(
+        t.match(
           app.el.innerHTML,
-          '<ui-t-css-state style="--foo:blue;"></ui-t-css-state>'
+          /<ui-t-css-state style="--foo:\s*blue;"><\/ui-t-css-state>/
         )
 
         app.reactive.delete("foo")

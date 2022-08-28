@@ -43,7 +43,7 @@ export function setClasses(el, val) {
 export function setAttribute(el, key, val) {
   if (key === "class" || key === "className") {
     if (val) setClasses(el, val)
-    else el.removeAttribute("class")
+    else el.setAttribute("class", "") // preserve attribute order for testing
   } else if (key === "style") {
     if (val) setStyles(el, val)
     else el.removeAttribute(key)
