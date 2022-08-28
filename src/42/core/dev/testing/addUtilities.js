@@ -29,22 +29,6 @@ const _forgets = Symbol("_forgets")
 const _collected = Symbol("_collected")
 const _elements = Symbol("_elements")
 
-const tasks = (list, cb, item) => {
-  if (typeof cb === "function") {
-    list.forEach((data, i) => {
-      if (data.taskError) item = item.taskError(data.taskError)
-      if (cb.length > 1) {
-        let fn = data.only ? item.only : data.skip ? item.skip : item
-        if (data.failing) fn = fn.failing
-        if (data.flaky) fn = fn.flaky
-        cb(fn, data, i)
-      } else cb(data, i)
-    })
-  }
-
-  return list
-}
-
 export default function addUtilities(item, isExecutionContext) {
   if (isExecutionContext) {
     item.logs = []
@@ -138,7 +122,24 @@ export default function addUtilities(item, isExecutionContext) {
     item.onlyIf = (condition) => (condition ? item.only : item)
     item.sleep = sleep
     item.env = env
-    item.tasks = (list, cb) => tasks(list, cb, item)
+
+    item.tasks = (list, cb) => {
+      if (typeof cb === "function") {
+        list.forEach((data, i) => {
+          if (!data) return
+          if (data.taskError) item = item.taskError(data.taskError)
+          if (cb.length > 1) {
+            let fn = data.only ? item.only : data.skip ? item.skip : item
+            if (data.failing) fn = fn.failing
+            if (data.flaky) fn = fn.flaky
+            cb(fn, data, i)
+          } else cb(data, i)
+        })
+      }
+
+      return list
+    }
+
     item.task = (obj) => {
       obj.taskError = new Error()
       return obj

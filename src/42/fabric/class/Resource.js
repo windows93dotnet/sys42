@@ -59,7 +59,7 @@ const APP_FEATURES = [
   "autoplay",
   "camera",
   "display-capture",
-  "focus-without-user-activation", // TODO: add to mdn https://github.com/mdn/content/issues/1831
+  "focus-without-user-activation",
   "fullscreen",
   "gamepad",
   "geolocation",
@@ -127,6 +127,7 @@ export default class Resource {
     this.el.id = uid()
     this.el.name = `42-resource-${this.el.id}`
     this.el.referrerpolicy = this.config.referrerpolicy
+    this.el.fetchpriority = "high"
     this.el.toggleAttribute("sandbox", true)
 
     const allowList = []

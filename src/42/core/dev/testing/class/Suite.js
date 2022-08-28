@@ -69,7 +69,7 @@ export default class Suite {
     try {
       test.timeStamp = performance.now()
       await Promise.race([
-        t.timeout(this.timeout, this.cumulated + 20),
+        t.timeout(this.timeout, this.cumulated + 100),
         test.fn(t, t.utils),
         test.deferred.promise,
       ])

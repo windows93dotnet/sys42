@@ -25,6 +25,9 @@ test.suite.serial()
 
 const { task } = test
 
+const importmapSupport =
+  HTMLScriptElement.supports && HTMLScriptElement.supports("importmap")
+
 test.tasks(
   [
     // task({
@@ -90,6 +93,7 @@ dialog(
     }),
 
     task({
+      skip: !importmapSupport,
       working: true,
       trusted: true,
       title: "importmap attack on iframe",
@@ -107,6 +111,7 @@ dialog(
     }),
 
     task({
+      skip: !importmapSupport,
       title: "importmap attack on ui-sandbox",
       description:
         "XSS Fail because top level xrealm delete ctx.trusted from sandboxed iframes",

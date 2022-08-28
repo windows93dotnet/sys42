@@ -248,14 +248,14 @@ export default e2e(async (t, { collect, dest }) => {
   })
 
   btnDialogs.dialog1.close()
-  await t.sleep(0)
+  await t.sleep(1)
   t.is(document.activeElement.id, btnDialogs.btnDialog1.id)
 
   btnDialogs.dialog2.close()
-  await t.sleep(0)
+  await t.sleep(1)
   t.is(sandbox1.activeElement.id, btnDialogs.btnDialog2.id)
 
   btnDialogs.dialog3.close()
-  await t.sleep(0)
+  await t.sleep(1)
   t.is(sandbox2.activeElement.id, btnDialogs.btnDialog3.id)
 })
