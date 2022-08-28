@@ -81,7 +81,7 @@ test.tasks(
           "\x1b[33;32mA \x1b[39m\x1b[33;32;31mB\x1b[39m\x1b[33;32m C\x1b[39m\x1b[33m D\x1b[39m",
         ],
         frontend: [
-          "%cA %cB%c C%c D",
+          "%cA %cB%c C%c D ",
           "font-size:12px; color:yellow;color:lime;",
           "font-size:12px; color:yellow;color:lime;color:red;",
           "font-size:12px; color:yellow;color:lime;",
@@ -118,7 +118,7 @@ test.tasks(
         frontend: [
           {
             args: [
-              "%cA %cB %cC %cD",
+              "%cA %cB %cC %cD ",
               "font-size:12px; color:rgba(255,0,0,0.5);",
               "font-size:12px; color:red;",
               "font-size:12px; color:rgba(255,0,0,0.5);",
@@ -127,7 +127,7 @@ test.tasks(
           },
           {
             args: [
-              "%cA %cB %cC %cD",
+              "%cA %cB %cC %cD ",
               "font-size:12px; color:rgba(255,0,0,0.5);",
               "font-size:12px; color:red;",
               "font-size:12px; color:rgba(255,0,0,0.5);",
@@ -136,7 +136,7 @@ test.tasks(
           },
           {
             args: [
-              "%cA %cB %cC %cD",
+              "%cA %cB %cC %cD ",
               "font-size:12px; color:rgba(255,0,0,0.5);",
               "font-size:12px; color:red;",
               "font-size:12px; color:rgba(255,0,0,0.5);",
@@ -175,7 +175,7 @@ test.tasks(
         frontend: [
           {
             args: [
-              "%cA %cB %cC %cD",
+              "%cA %cB %cC %cD ",
               "font-size:12px; color:#b280f6;",
               "font-size:12px; color:magenta;",
               "font-size:12px; color:#b280f6;",
@@ -184,7 +184,7 @@ test.tasks(
           },
           {
             args: [
-              "%cA %cB %cC %cD",
+              "%cA %cB %cC %cD ",
               "font-size:12px; color:magenta;color:#b280f6;",
               "font-size:12px; color:magenta;",
               "font-size:12px; color:magenta;color:#b280f6;",
@@ -193,7 +193,7 @@ test.tasks(
           },
           {
             args: [
-              "%cA %cB %cC %cD",
+              "%cA %cB %cC %cD ",
               "font-size:12px; color:#b280f6;",
               "font-size:12px; color:magenta;",
               "font-size:12px; color:#b280f6;",
@@ -212,7 +212,7 @@ test.tasks(
           "\x1b[2;34;105m hello \x1b[49;39;22m\x1b[2;34;105;45m world \x1b[49;39;22m\x1b[2;34;105m \x1b[49;39;22m",
         ],
         frontend: [
-          "%c hello %c world %c ",
+          "%c hello %c world %c  ",
           "font-size:12px; color:rgba(0,0,255,0.5);background-color:#b280f6;",
           "font-size:12px; color:rgba(0,0,255,0.5);background-color:#b280f6;background-color:magenta;",
           "font-size:12px; color:rgba(0,0,255,0.5);background-color:#b280f6;",
@@ -234,13 +234,13 @@ test.tasks(
         frontend: [
           {
             args: [
-              "%c hello ",
+              "%c hello  ",
               "font-size:12px; color:rgba(195,255,0,1);background-color:rgba(17,17,17,1);",
             ],
           },
           {
             args: [
-              "%c hello ",
+              "%c hello  ",
               "font-size:12px; background-color:rgba(17,17,17,1);color:rgba(195,255,0,1);",
             ],
           },
@@ -255,7 +255,7 @@ test.tasks(
       },
       args: {
         frontend: [
-          "%cA %%c %cD C",
+          "%cA %%c %cD C ",
           "font-size:12px; color:red;",
           "font-size:12px; color:red;color:lime;",
         ],
@@ -269,7 +269,7 @@ test.tasks(
       },
       args: {
         frontend: [
-          "%c{ a:false }", //
+          "%c{ a:false } ", //
           "font-size:12px; ",
         ],
       },
@@ -282,7 +282,7 @@ test.tasks(
       },
       args: {
         frontend: [
-          "%c{a: false}", //
+          "%c{a: false} ", //
           "font-size:12px; ",
         ],
       },
@@ -295,7 +295,7 @@ test.tasks(
       },
       args: {
         frontend: [
-          "%c{abc: false}", //
+          "%c{abc: false} ", //
           "font-size:12px; ",
         ],
       },
@@ -308,7 +308,7 @@ test.tasks(
       },
       args: {
         frontend: [
-          "%c: false", //
+          "%c: false ", //
           "font-size:12px; color:rgba(170,187,204,1);",
         ],
       },
@@ -321,7 +321,7 @@ test.tasks(
       },
       args: {
         frontend: [
-          "%c{abc : false}", //
+          "%c{abc : false} ", //
           "font-size:12px; ",
         ],
       },
@@ -334,7 +334,7 @@ test.tasks(
       },
       args: {
         frontend: [
-          "%c{ abc }", //
+          "%c{ abc } ", //
           "font-size:12px; ",
         ],
       },
@@ -346,7 +346,7 @@ test.tasks(
         log("{abc }")
       },
       args: {
-        frontend: [""],
+        frontend: [" "],
       },
     }),
 
@@ -358,7 +358,7 @@ test.tasks(
       },
       args: {
         frontend: [
-          "%c ", //
+          "%c  ", //
           "font-size:12px; color:rgba(170,187,204,1);",
         ],
       },
@@ -371,7 +371,7 @@ test.tasks(
       },
       args: {
         frontend: [
-          "%c{abc }", //
+          "%c{abc } ", //
           "font-size:12px; ",
         ],
       },
@@ -392,7 +392,7 @@ test.tasks(
           "\n\x1b[36;44m     \x1b[49;39m\n\x1b[36;44m█\x1b[49;39m\x1b[36;44;41m▀\x1b[49;39m\x1b[36;44m█  \x1b[49;39m\n\x1b[36;44m█\x1b[49;39m\x1b[36;44;37;41m▀\x1b[49;39m\x1b[36;44m█  \x1b[49;39m\n\x1b[36;44m     \x1b[49;39m\n",
         ],
         frontend: [
-          "%c\n     \n█%c▀%c█  \n█%c▀%c█  \n     \n",
+          "%c\n     \n█%c▀%c█  \n█%c▀%c█  \n     \n ",
           "font-size:12px; color:cyan;background-color:blue;",
           "font-size:12px; color:cyan;background-color:blue;background-color:red;",
           "font-size:12px; color:cyan;background-color:blue;",
