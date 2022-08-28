@@ -1,5 +1,7 @@
 import test from "../../../../42/test.js"
 import ui from "../../../../42/ui.js"
+import cssPrefix from "../../../../42/fabric/dom/cssPrefix.js"
+import { toKebabCase } from "../../../../42/fabric/type/string/letters.js"
 
 test.suite.timeout(1000)
 
@@ -27,13 +29,17 @@ test("html", async (t) => {
     "/ui/icon/root/infos/ext",
   ])
 
+  const maskImage = "mask-image"
+  const prefix = cssPrefix(maskImage)
+  const cssKey = prefix ? "-" + toKebabCase(prefix) : maskImage
+
   t.is(
     test.utils.prettify(app.el.innerHTML),
     `\
 <ui-icon path="/script.js" label="" tabindex="0" aria-description="file" role="button">
-  <div aria-hidden="true" class="ui-icon__figure">
-    <img fetchpriority="high" decoding="async" class="ui-icon__image" src="/42/themes/default/icons/subtype/javascript.png">
-    <div class="ui-icon__mask" style="-webkit-mask-image: url(&quot;/42/themes/default/icons/subtype/javascript.png&quot;);">
+  <div class="ui-icon__figure" aria-hidden="true">
+    <img class="ui-icon__image" fetchpriority="high" decoding="async" src="/42/themes/default/icons/subtype/javascript.png">
+    <div class="ui-icon__mask" style="${cssKey}: url(&quot;/42/themes/default/icons/subtype/javascript.png&quot;);">
     </div>
   </div>
   <!--[if]-->
@@ -166,7 +172,7 @@ test("infos", async (t) => {
     "windows93\u200b.net/script\u200b.js",
   ])
 
-  t.eq(icons.ariaDescription, [
+  t.eq(icons.getAttribute("aria-description"), [
     "file", //
     "folder",
     "folder",

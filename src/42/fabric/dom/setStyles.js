@@ -1,15 +1,12 @@
 import cssPrefix from "./cssPrefix.js"
 
 export function setStyle(el, key, val) {
-  const firstLetter = key.charAt(0)
-  if (firstLetter === "_") return
-  if (firstLetter !== "-") {
+  if (key.startsWith("--")) el.style.setProperty(key, val)
+  else {
     const prefixed = cssPrefix(key)
-    if (prefixed) el.style[prefixed] = val
+    if (prefixed && prefixed in el.style) el.style[prefixed] = val
+    if (key in el.style) el.style[key] = val
   }
-
-  if (key in el.style) el.style[key] = val
-  else el.style.setProperty(key, val)
 }
 
 export default function setStyles(el, styles) {

@@ -11,6 +11,8 @@ const killKeys = [
 ]
 
 export default async function kill(val, report) {
+  if (!val) return true
+
   try {
     if (typeof val === "string") {
       if (val.startsWith("blob:")) return URL.revokeObjectURL(val) ?? true
