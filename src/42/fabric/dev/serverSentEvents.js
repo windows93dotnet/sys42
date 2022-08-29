@@ -1,6 +1,6 @@
 import configure from "../../core/configure.js"
-// import toggleable from "../../fabric/traits/toggleable.js"
 import Emitter from "../../fabric/class/Emitter.js"
+import Canceller from "../class/Canceller.js"
 
 const DEFAULTS = {
   withCredentials: false,
@@ -13,14 +13,14 @@ export class ServerSentEvents extends Emitter {
   #sse
   #timerID
   #attempt = 0
-  #events = {}
+  #beforeunload
 
   constructor(url, options) {
     super()
-    // toggleable(this)
     this.url = url
     this.enabled = true
     this.config = configure(DEFAULTS, options)
+    this.cancel = new Canceller(options?.signal)
   }
 
   #reconnect() {
@@ -39,48 +39,65 @@ export class ServerSentEvents extends Emitter {
     this.#sse?.close()
     this.#sse = new EventSource(this.url, this.config)
 
-    this.#events.open = () => {
-      this.emit("connect")
-      this.#attempt = 0
+    this.#sse.addEventListener(
+      "open",
+      () => {
+        this.emit("connect")
+        this.#attempt = 0
+      },
+      this.cancel
+    )
+
+    this.#sse.addEventListener(
+      "error",
+      () => {
+        this.emit("disconnect")
+        this.#sse.close()
+        this.#reconnect()
+      },
+      this.cancel
+    )
+
+    if (this.#beforeunload) {
+      window.removeEventListener(
+        "beforeunload",
+        this.#beforeunload,
+        this.cancel
+      )
     }
 
-    this.#sse.addEventListener("open", this.#events.open)
-
-    this.#events.error = () => {
-      this.emit("disconnect")
-      this.#sse.close()
-      this.#reconnect()
-    }
-
-    this.#sse.addEventListener("error", this.#events.error)
+    this.#beforeunload = () => this.destroy()
+    window.addEventListener("beforeunload", this.#beforeunload, this.cancel)
 
     return this
   }
 
   #addListener(event) {
-    if (!IGNORE_EVENTS.has(event) && event in this.#events === false) {
-      this.#events[event] = (...args) => {
-        if (this.enabled) this.emit(event, ...args)
-      }
-
-      this.#sse.addEventListener(event, this.#events[event])
+    if (!IGNORE_EVENTS.has(event)) {
+      this.#sse.addEventListener(
+        event,
+        (...args) => {
+          if (this.enabled) this.emit(event, ...args)
+        },
+        this.cancel
+      )
     }
   }
 
   on(event, fn, returnOff) {
+    if (!this.#sse) this.connect()
     this.#addListener(event)
     return super.on(event, fn, returnOff)
   }
 
   once(event, fn) {
+    if (!this.#sse) this.connect()
     this.#addListener(event)
     return super.once(event, fn)
   }
 
   destroy() {
-    Object.entries(this.#events).forEach(([event, fn]) =>
-      this.#sse.removeEventListener(event, fn)
-    )
+    this.cancel()
     this.#sse.close()
     this.emit("destroy", this)
     this.off("*")

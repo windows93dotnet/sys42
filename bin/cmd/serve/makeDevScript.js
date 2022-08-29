@@ -7,9 +7,6 @@ import memoize from "../../../src/42/fabric/type/function/memoize.js"
 const getUserAgent = memoize(parseUserAgent)
 
 export default function makeDevScript(asset, ua) {
-  const { run } = system.config
-  if (!(run.includes("test") || run.includes("watch"))) return ""
-
   const entry = asset.filename.slice(system.config.paths.dirs.src.length)
   const config = { entry, verbose: system.config.verbose }
 

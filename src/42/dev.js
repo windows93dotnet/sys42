@@ -87,7 +87,6 @@ if (inTop && inAutomated) {
       .prefix("┃ 📡")
 
     dev.sse
-      .connect()
       .on("connect", () => {
         if (inTop && dev.sse.enabled && dev.loaded) location.reload()
         dev.loaded = true
@@ -102,8 +101,6 @@ if (inTop && inAutomated) {
       .on("reload", () => {
         location.reload()
       })
-
-    window.addEventListener("pagehide", () => dev.sse.destroy())
 
     const hasTestFlag = new URL(location.href).searchParams.has("test")
     if (config.testRunner && hasTestFlag) await dev.test()

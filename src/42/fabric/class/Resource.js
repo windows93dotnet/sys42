@@ -31,12 +31,12 @@ trap((err, {title, reports}) => {
 // document.featurePolicy.features() https://developer.mozilla.org/en-US/docs/Web/API/FeaturePolicy
 
 const DISALLOWED_FEATURES = [
-  "ambient-light-sensor",
+  // "ambient-light-sensor",
   // "battery",
   "document-domain",
   "encrypted-media",
-  "execution-while-not-rendered",
-  "execution-while-out-of-viewport",
+  // "execution-while-not-rendered",
+  // "execution-while-out-of-viewport",
   // "layout-animations",
   // "legacy-image-formats",
   "magnetometer",
