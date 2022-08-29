@@ -7,7 +7,7 @@ import Canceller from "../fabric/class/Canceller.js"
 import setTemp from "../fabric/dom/setTemp.js"
 import { autofocus } from "../fabric/dom/focus.js"
 
-import xrealm from "../core/ipc/xrealm.js"
+import rpc from "../core/ipc/rpc.js"
 import normalize, { objectifyDef, forkDef } from "./normalize.js"
 import uid from "../core/uid.js"
 
@@ -19,7 +19,7 @@ function combineRect(rect1, rect2) {
 
 let close
 
-const popup = xrealm(
+const popup = rpc(
   async function popup(def, ctx, rect, meta) {
     close?.()
     ctx.cancel = new Canceller(ctx.cancel?.signal)
@@ -73,7 +73,7 @@ const popup = xrealm(
     return deferred
   },
   {
-    inputs(el, def = {}, ctx) {
+    marshalling(el, def = {}, ctx) {
       if (el.getAttribute("aria-expanded") === "true") {
         el.setAttribute("aria-expanded", "false")
         return false
@@ -87,11 +87,11 @@ const popup = xrealm(
       el.setAttribute("aria-expanded", "true")
       const rect = el.getBoundingClientRect()
 
-      if (xrealm.inTop) return [objectifyDef(def), { ...ctx }, rect]
+      if (rpc.inTop) return [objectifyDef(def), { ...ctx }, rect]
       return [forkDef(def, ctx), {}, rect]
     },
 
-    outputs({ res, opener, fromOpener }) {
+    unmarshalling({ res, opener, fromOpener }) {
       const el = document.querySelector(`#${opener}`)
       if (el) {
         if (document.activeElement === document.body) el.focus()

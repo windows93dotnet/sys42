@@ -105,7 +105,7 @@ dialog(
         },
         {
           tag: "iframe",
-          src: "/tests/fixtures/security/importmap-xrealm-attack.html",
+          src: "/tests/fixtures/security/importmap-rpc-attack.html",
         },
       ],
     }),
@@ -114,7 +114,7 @@ dialog(
       skip: !importmapSupport,
       title: "importmap attack on ui-sandbox",
       description:
-        "XSS Fail because top level xrealm delete ctx.trusted from sandboxed iframes",
+        "XSS Fail because top level rpc delete ctx.trusted from sandboxed iframes",
       def: [
         {
           tag: "ui-dialog",
@@ -123,7 +123,7 @@ dialog(
         {
           tag: "ui-sandbox",
           permissions: "trusted",
-          path: "/tests/fixtures/security/importmap-xrealm-attack.html",
+          path: "/tests/fixtures/security/importmap-rpc-attack.html",
         },
       ],
     }),

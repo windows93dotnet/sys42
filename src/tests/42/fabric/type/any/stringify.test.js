@@ -1638,6 +1638,7 @@ test("stringify with async option return a promise", async (t) => {
 
 if ("Blob" in globalThis) {
   test("blob - sync stringify return blobs as objects", (t) => {
+    t.timeout(1000)
     const x = new Blob(["ab"], { type: "text/plain" })
     const a = stringify(x)
     t.true(a.startsWith("/* Blob */ {\n"))
@@ -1646,6 +1647,7 @@ if ("Blob" in globalThis) {
   })
 
   test("blob", async (t) => {
+    t.timeout(1000)
     const x = new Blob(["ab"], { type: "text/plain" })
     // TODO: test Blob with extended properties
     let a
@@ -1656,6 +1658,7 @@ if ("Blob" in globalThis) {
   })
 
   test("blob - arrayBuffer", async (t) => {
+    t.timeout(1000)
     const x = new Blob(["ab"])
     const a = await stringify(x, { async: true })
     t.is(
@@ -1669,6 +1672,7 @@ new Blob([new Uint8Array([
   })
 
   test("blob in object", async (t) => {
+    t.timeout(1000)
     const x = new Blob(["ab"])
     const a = await stringify({ x }, { async: true })
     t.is(
@@ -1688,6 +1692,7 @@ new Blob([new Uint8Array([
   const lastModified = new Date("2019-04-18T02:45:55.555Z")
 
   test("File - sync stringify return files as objects", (t) => {
+    t.timeout(1000)
     const x = new File(["ab"], "a.txt", { type: "text/plain", lastModified })
     const a = stringify(x)
     t.true(a.startsWith("/* File */ {\n"))
@@ -1698,6 +1703,7 @@ new Blob([new Uint8Array([
   })
 
   test("File", async (t) => {
+    t.timeout(1000)
     const x = new File(["ab"], "a.txt", { type: "text/plain", lastModified })
     let a
     a = await stringify(x, { async: true })
@@ -1713,6 +1719,7 @@ new Blob([new Uint8Array([
   })
 
   test("File - arrayBuffer", async (t) => {
+    t.timeout(1000)
     const x = new File(["ab"], "a.exe", { lastModified })
     const a = await stringify(x, { async: true })
     t.is(
@@ -1726,6 +1733,7 @@ new File([new Uint8Array([
   })
 
   test("File in object", async (t) => {
+    t.timeout(1000)
     const x = new File(["ab"], "a.exe", { lastModified })
     const a = await stringify({ x }, { async: true })
     t.is(

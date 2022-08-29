@@ -1,4 +1,4 @@
-import xrealm from "../core/ipc/xrealm.js"
+import rpc from "../core/ipc/rpc.js"
 import getCWD from "../fabric/getCWD.js"
 
 import JSON5 from "../core/formats/json5.js"
@@ -10,7 +10,7 @@ import disk from "../core/disk.js"
 
 const { HOME } = disk
 
-export default xrealm(
+export default rpc(
   async (cmd, locals) => {
     const [name, ...rest] = parseCommand(cmd)
 

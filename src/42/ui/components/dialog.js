@@ -1,5 +1,5 @@
 import Component from "../class/Component.js"
-import xrealm from "../../core/ipc/xrealm.js"
+import rpc from "../../core/ipc/rpc.js"
 import omit from "../../fabric/type/object/omit.js"
 import dispatch from "../../fabric/dom/dispatch.js"
 import maxZIndex from "../../fabric/dom/maxZIndex.js"
@@ -110,7 +110,7 @@ Component.define(Dialog)
 
 const tracker = new Map()
 
-const dialog = xrealm(
+const dialog = rpc(
   async function dialog(def, ctx) {
     const { steps } = ctx
     let n = tracker.has(steps) ? tracker.get(steps) : 0
@@ -129,17 +129,17 @@ const dialog = xrealm(
     return el.once("close").then((res) => ({ res, opener }))
   },
   {
-    inputs(def = {}, ctx) {
+    marshalling(def = {}, ctx) {
       if (!def.opener) {
         document.activeElement.id ||= uid()
         def.opener ??= document.activeElement.id
       }
 
-      if (xrealm.inTop) return [objectifyDef(def), { ...ctx }]
+      if (rpc.inTop) return [objectifyDef(def), { ...ctx }]
       return [forkDef(def, ctx), {}]
     },
 
-    outputs({ res, opener }) {
+    unmarshalling({ res, opener }) {
       document.querySelector(`#${opener}`)?.focus()
       return res
     },

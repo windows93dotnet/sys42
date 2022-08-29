@@ -115,7 +115,7 @@ export class Sandbox extends Component {
     if (this.content) {
       const undones = []
       traverse(this.content, (key) => {
-        // Ensure sandboxed content can execute xrealm functions in top
+        // Ensure sandboxed content can execute rpc functions in top
         if (key === "dialog") undones.push(import("./dialog.js"))
         if (key === "popup") undones.push(import("../popup.js"))
       })
