@@ -124,6 +124,10 @@ test.e2e = (title, url, timeout = 3000) => {
         target.style.opacity = 0.01
         t.utils.collect(target)
       },
+      uipopupopen(e, target) {
+        target.style.opacity = 0.01
+        t.utils.collect(target)
+      },
     })
 
     await e2e(t)

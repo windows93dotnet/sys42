@@ -89,7 +89,8 @@ export default e2e(async (t, { collect, dest }) => {
 
   t.timeout("reset")
 
-  const sandbox = app.query("ui-sandbox iframe").contentDocument
+  const iframe = app.query("ui-sandbox iframe")
+  const sandbox = iframe.contentDocument
 
   const incrBtns = {
     top: document.querySelector("#btnIncrTop"),
@@ -108,16 +109,30 @@ export default e2e(async (t, { collect, dest }) => {
   async function checkPopupBtn(btn, label, options) {
     const sel = `#btnIncrPopup${label}`
 
-    t.is(btn.getAttribute("aria-expanded"), "false")
+    t.is(
+      btn.getAttribute("aria-expanded"),
+      "false",
+      "popup button should be closed"
+    )
 
     btn.click()
 
     await t.utils.when("uipopupopen")
 
-    t.is(btn.getAttribute("aria-expanded"), "true")
+    t.is(
+      btn.getAttribute("aria-expanded"),
+      "true",
+      "popup button should be open"
+    )
 
     let incr = document.querySelector(sel)
     t.isElement(incr)
+
+    if (options?.close) {
+      options.close.focus()
+      options.close.click()
+      await t.sleep(30)
+    }
 
     if (options?.incr) {
       t.is(incr.textContent, String(cnt))
@@ -131,7 +146,7 @@ export default e2e(async (t, { collect, dest }) => {
       incr.click()
       cnt++
       await system.once("ipc.plugin:end-of-update")
-      await t.sleep(20)
+      await t.sleep(30)
 
       t.is(incr.textContent, String(cnt))
       t.eq(getVal(incrBtns), {
@@ -144,16 +159,16 @@ export default e2e(async (t, { collect, dest }) => {
       // popup is still open
       incr = document.querySelector(sel)
       t.isElement(incr)
-      t.is(btn.getAttribute("aria-expanded"), "true")
+      t.is(
+        btn.getAttribute("aria-expanded"),
+        "true",
+        "popup button should be open"
+      )
 
+      options.incr.focus()
       options.incr.click()
       cnt++
-      await t.sleep(20)
-
-      // popup is closed
-      incr = document.querySelector(sel)
-      t.isNull(incr)
-      t.is(btn.getAttribute("aria-expanded"), "false")
+      await t.sleep(30)
 
       t.eq(getVal(incrBtns), {
         top: String(cnt),
@@ -162,9 +177,30 @@ export default e2e(async (t, { collect, dest }) => {
         dialogIframe: String(cnt),
       })
     }
+
+    // popup is closed
+    incr = document.querySelector(sel)
+    t.is(
+      btn.getAttribute("aria-expanded"),
+      "false",
+      "popup button should be closed"
+    )
+    t.isNull(incr)
   }
 
+  // self close
+  await checkPopupBtn(popupBtns.top, "Top", { close: popupBtns.top })
+  await checkPopupBtn(popupBtns.iframe, "Iframe", { close: popupBtns.iframe })
+
+  // close with click
+  await checkPopupBtn(popupBtns.top, "Top", { close: document.body })
+  await checkPopupBtn(popupBtns.top, "Top", { close: iframe })
+  await checkPopupBtn(popupBtns.iframe, "Iframe", { close: document.body })
+  await checkPopupBtn(popupBtns.iframe, "Iframe", { close: iframe })
+
+  // counter button
   await checkPopupBtn(popupBtns.top, "Top", { incr: incrBtns.top })
+  await checkPopupBtn(popupBtns.top, "Top", { incr: incrBtns.iframe })
   await checkPopupBtn(popupBtns.iframe, "Iframe", { incr: incrBtns.top })
-  // await checkPopupBtn(popupBtns.iframe, "Iframe", { incr: incrBtns.iframe })
+  await checkPopupBtn(popupBtns.iframe, "Iframe", { incr: incrBtns.iframe })
 })

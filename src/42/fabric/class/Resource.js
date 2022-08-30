@@ -31,8 +31,6 @@ trap((err, {title, reports}) => {
 
 const SUPPORTED_FEATURES = document.featurePolicy?.features() ?? []
 
-// console.log(SUPPORTED_FEATURES.sort())
-
 const DISALLOWED_FEATURES = [
   // "ambient-light-sensor",
   // "battery",
@@ -151,7 +149,7 @@ export default class Resource {
     const allow = []
     for (const perm of FEATURES) {
       if (SUPPORTED_FEATURES.includes(perm)) {
-        if (allowList.includes(perm)) allow.push(`${perm} *`)
+        if (allowList.includes(perm)) allow.push(`${perm} 'self' ${origin}`)
         else allow.push(`${perm} 'none'`)
       }
     }
