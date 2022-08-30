@@ -37,8 +37,8 @@ export const eventsMap = ({ el, listeners }) => {
 }
 
 export function normalizeListen(args, config) {
-  const optionsKeys = config?.optionsKeys ?? DEFAULTS_KEYS
   const itemKeys = config?.itemKeys ?? ITEM_KEYS
+  const optionsKeys = config?.optionsKeys ?? DEFAULTS_KEYS
   const getEvents = config?.getEvents ?? ((x) => x)
   let returnForget = config?.returnForget ?? true
 

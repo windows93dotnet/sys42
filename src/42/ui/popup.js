@@ -1,10 +1,9 @@
 import render from "./render.js"
 import dispatch from "../fabric/dom/dispatch.js"
 import maxZIndex from "../fabric/dom/maxZIndex.js"
-import xlisten from "../core/ipc/xlisten.js"
+import listen from "../fabric/dom/listen.js"
 import defer from "../fabric/type/promise/defer.js"
 import Canceller from "../fabric/class/Canceller.js"
-import setTemp from "../fabric/dom/setTemp.js"
 import { autofocus } from "../fabric/dom/focus.js"
 
 import rpc from "../core/ipc/rpc.js"
@@ -21,8 +20,7 @@ let close
 
 const popup = rpc(
   async function popup(def, ctx, rect, meta) {
-    close?.()
-    ctx.cancel = new Canceller(ctx.cancel?.signal)
+    if (close?.() === false) return
 
     def.positionable = {
       preset: "popup",
@@ -32,19 +30,19 @@ const popup = rpc(
     }
 
     const normalized = normalize(def, ctx)
+    ctx = normalized[1]
+
+    ctx.cancel = new Canceller(ctx.cancel?.signal)
+    ctx.signal = ctx.cancel.signal
+
     const el = render(...normalized, { skipNormalize: true })
     el.style.position = "fixed"
     el.style.transform = "translate(-200vw, -200vh)"
     el.style.zIndex = maxZIndex("ui-dialog, ui-menu") + 1
 
-    setTemp(document.body, {
-      signal: ctx.cancel.signal,
-      class: { "pointer-unclickables-0": true },
-    })
-
-    await normalized[1].preload.done()
+    await ctx.preload.done()
     document.body.append(el)
-    await normalized[1].reactive.done()
+    await ctx.reactive.done()
 
     dispatch(el, "uipopupopen")
 
@@ -52,20 +50,20 @@ const popup = rpc(
 
     const deferred = defer()
 
-    close = (fromOpener) => {
+    close = (fromOpener, fromBlur) => {
       const event = dispatch(el, "uipopupclose", { cancelable: true })
-      if (event.defaultPrevented) return
+      if (event.defaultPrevented) return false
       ctx.cancel()
       el.remove()
       forget()
       close = undefined
-      deferred.resolve({ opener: def.opener, fromOpener })
+      deferred.resolve({ opener: def.opener, fromOpener, fromBlur })
     }
 
-    const forget = xlisten({
-      click(e, target) {
-        if (target.inIframe || !el.contains(target)) {
-          close(target.id === def.opener)
+    const forget = listen({
+      "blur || click"(e, target) {
+        if (!(target.nodeType === Node.ELEMENT_NODE && el.contains(target))) {
+          close(target.id === def.opener, e.type === "blur")
         }
       },
     })
@@ -81,7 +79,7 @@ const popup = rpc(
 
       if (!def.opener) {
         el.id ||= uid()
-        def.opener ??= el.id
+        def.opener = el.id
       }
 
       el.setAttribute("aria-expanded", "true")
@@ -91,8 +89,11 @@ const popup = rpc(
       return [forkDef(def, ctx), {}, rect]
     },
 
-    unmarshalling({ res, opener, fromOpener }) {
+    unmarshalling({ res, opener, fromOpener, fromBlur }) {
       const el = document.querySelector(`#${opener}`)
+
+      if (fromBlur && document.activeElement === el) return res
+
       if (el) {
         if (document.activeElement === document.body) el.focus()
         if (!fromOpener) el.setAttribute("aria-expanded", "false")

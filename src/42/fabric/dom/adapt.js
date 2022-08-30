@@ -57,7 +57,7 @@ const setAttributes = (el, attr) => {
   }
 }
 
-export default function setTemp(el, ...options) {
+export default function adapt(el, ...options) {
   const restores = []
   const attributes = []
   const signals = []

@@ -41,21 +41,20 @@ export default function rpc(fn, options) {
   if (!inTop) {
     const caller =
       unmarshalling && marshalling
-        ? async (/* rpc:subroutine */ ...args) => {
+        ? async (...args) => {
             const res = await marshalling(...args)
             if (res === false) return
             return unmarshalling(await ipc.send(CALL, [id, res]))
           }
         : unmarshalling
-        ? async (/* rpc:subroutine */ ...args) =>
-            unmarshalling(await ipc.send(CALL, [id, args]))
+        ? async (...args) => unmarshalling(await ipc.send(CALL, [id, args]))
         : marshalling
-        ? async (/* rpc:subroutine */ ...args) => {
+        ? async (...args) => {
             const res = await marshalling(...args)
             if (res === false) return
             return ipc.send(CALL, [id, res])
           }
-        : async (/* rpc:subroutine */ ...args) => ipc.send(CALL, [id, args])
+        : async (...args) => ipc.send(CALL, [id, args])
 
     caller.destroy = async () => ipc.send(DESTROY, id)
 
@@ -66,15 +65,15 @@ export default function rpc(fn, options) {
 
   const caller =
     unmarshalling && marshalling
-      ? async (/* rpc:top */ ...args) => {
+      ? async (...args) => {
           const res = await marshalling(...args)
           if (res === false) return
           return unmarshalling(await fn(...res))
         }
       : unmarshalling
-      ? async (/* rpc:top */ ...args) => unmarshalling(await fn(...args))
+      ? async (...args) => unmarshalling(await fn(...args))
       : marshalling
-      ? async (/* rpc:top */ ...args) => {
+      ? async (...args) => {
           const res = await marshalling(...args)
           if (res === false) return
           return fn(...res)

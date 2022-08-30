@@ -1,6 +1,6 @@
 import listen from "../../fabric/dom/listen.js"
 import configure from "../../core/configure.js"
-import setTemp from "../../fabric/dom/setTemp.js"
+import adapt from "../../fabric/dom/adapt.js"
 import Canceller from "../../fabric/class/Canceller.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 import noop from "../../fabric/type/function/noop.js"
@@ -33,34 +33,34 @@ export default class Dragger {
     let offsetX = 0
     let offsetY = 0
 
-    const adapt = this.config.subpixel ? (val) => val : Math.round
+    const round = this.config.subpixel ? (val) => val : Math.round
 
     let getX = this.config.targetRelative
       ? this.config.subpixel
         ? (x) => x - offsetX
-        : (x) => adapt(x - offsetX)
-      : adapt
+        : (x) => round(x - offsetX)
+      : round
 
     let getY = this.config.targetRelative
       ? this.config.subpixel
         ? (y) => y - offsetY
-        : (y) => adapt(y - offsetY)
-      : adapt
+        : (y) => round(y - offsetY)
+      : round
 
     const { grid } = this.config
 
     if (grid) {
       const [gridX, gridY] = Array.isArray(grid) ? grid : [grid, grid]
-      const adaptX = getX
-      const adaptY = getY
+      const coordX = getX
+      const coordY = getY
 
       getX = (x) => {
-        x = adaptX(x)
+        x = coordX(x)
         return x - (x % gridX)
       }
 
       getY = (y) => {
-        y = adaptY(y)
+        y = coordY(y)
         return y - (y % gridY)
       }
     }
@@ -86,17 +86,17 @@ export default class Dragger {
     const start = (e, target) => {
       const { x, y } = e
 
-      fromX = adapt(x)
-      fromY = adapt(y)
+      fromX = round(x)
+      fromY = round(y)
 
       if (this.config.targetRelative) {
         const rect = this.el.getBoundingClientRect()
-        offsetX = adapt(e.x - rect.left)
-        offsetY = adapt(e.y - rect.top)
+        offsetX = round(e.x - rect.left)
+        offsetY = round(e.y - rect.top)
       }
 
       this.isDragging = true
-      restore = setTemp(document.body, {
+      restore = adapt(document.body, {
         signal,
         class: {
           "pointer-iframes-0": true,

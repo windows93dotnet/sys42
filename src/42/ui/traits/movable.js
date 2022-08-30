@@ -2,7 +2,7 @@
 import Trait from "../class/Trait.js"
 import Dragger from "../class/Dragger.js"
 import setup from "../../core/setup.js"
-import setTemp from "../../fabric/dom/setTemp.js"
+import adapt from "../../fabric/dom/adapt.js"
 import maxZIndex from "../../fabric/dom/maxZIndex.js"
 
 const DEFAULTS = {
@@ -71,7 +71,7 @@ class Movable extends Trait {
           target.y = y
         } else style.transform = `translate(${x}px, ${y}px)`
 
-        this.targets.set(target, setTemp(target, tempStyle, { style }))
+        this.targets.set(target, adapt(target, tempStyle, { style }))
       }
     }
 
