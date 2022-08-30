@@ -113,6 +113,23 @@ export const test = chainable(
   }
 )
 
+test.e2e = (title, url, timeout = 3000) => {
+  test.suite.serial()
+  test.serial(title, async (t) => {
+    t.timeout(timeout)
+    const e2e = await import(url).then((m) => m.default)
+
+    t.utils.listen({
+      uidialogopen(e, target) {
+        target.style.opacity = 0.01
+        t.utils.collect(target)
+      },
+    })
+
+    await e2e(t)
+  })
+}
+
 export const suite = chainable(
   [
     "only", //

@@ -42,6 +42,7 @@ function setOpener(el, ctx, key, def, type) {
   def.opener = el.id
   type ??= def.tag?.startsWith("ui-") ? def.tag.slice(3) : def.role ?? def.tag
   el.setAttribute("aria-haspopup", POPUP_TYPES.has(type) ? type : "true")
+  if (type !== "dialog") el.setAttribute("aria-expanded", "false")
   return ctx
 }
 

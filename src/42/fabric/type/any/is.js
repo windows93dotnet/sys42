@@ -106,4 +106,6 @@ export const isEmpty = (x) => {
   )
 }
 
+export const isElement = (x) => x?.nodeType === Node.ELEMENT_NODE
+
 // export const isCircular = (x) => isObjectLike(x) && detectCircular(x)

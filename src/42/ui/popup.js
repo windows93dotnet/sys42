@@ -44,8 +44,6 @@ const popup = rpc(
     document.body.append(el)
     await ctx.reactive.done()
 
-    dispatch(el, "uipopupopen")
-
     if (autofocus(el) === false) el.focus()
 
     const deferred = defer()
@@ -67,6 +65,8 @@ const popup = rpc(
         }
       },
     })
+
+    dispatch(el, "uipopupopen")
 
     return deferred
   },

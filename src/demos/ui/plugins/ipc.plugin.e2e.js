@@ -1,5 +1,5 @@
-import system from "../../../42/system.js"
 import ui from "../../../42/ui.js"
+import system from "../../../42/system.js"
 import e2e from "../../../42/core/dev/testing/e2e.js"
 
 function getVal(btn) {
@@ -12,8 +12,6 @@ function getVal(btn) {
 }
 
 export default e2e(async (t, { collect, dest }) => {
-  system.DEV = true
-
   const app = await collect(
     ui(
       dest(true),
@@ -36,18 +34,6 @@ export default e2e(async (t, { collect, dest }) => {
               label: "1 ({{x}},{{y}})",
               content: {
                 tag: "button#dialogIncr1",
-                content: "{{cnt}}",
-                click: "{{cnt += 1}}",
-              },
-            },
-          },
-
-          {
-            tag: "button#btnPopup1",
-            content: "popup 1",
-            popup: {
-              content: {
-                tag: "button#popupIncr1",
                 content: "{{cnt}}",
                 click: "{{cnt += 1}}",
               },

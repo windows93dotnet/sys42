@@ -1,4 +1,7 @@
 import ExecutionContext from "./ExecutionContext.js"
+import system from "../../../system.js"
+
+system.DEV = true
 
 export default function e2e(fn) {
   let ran = false
@@ -12,11 +15,13 @@ export default function e2e(fn) {
       dest: () => document.body,
       collect: (item) => item,
     })
+
     fn(t, t.utils)
   })
 
   return async (t) => {
     ran = true
+
     await fn(t, t.utils)
   }
 }

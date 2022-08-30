@@ -28,7 +28,10 @@ trap((err, {title, reports}) => {
 
 // @read https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy#directives
 // @read https://featurepolicy.info/
-// document.featurePolicy.features() https://developer.mozilla.org/en-US/docs/Web/API/FeaturePolicy
+
+const SUPPORTED_FEATURES = document.featurePolicy?.features() ?? []
+
+// console.log(SUPPORTED_FEATURES.sort())
 
 const DISALLOWED_FEATURES = [
   // "ambient-light-sensor",
@@ -147,8 +150,10 @@ export default class Resource {
 
     const allow = []
     for (const perm of FEATURES) {
-      if (allowList.includes(perm)) allow.push(`${perm} *`)
-      else allow.push(`${perm} 'none'`)
+      if (SUPPORTED_FEATURES.includes(perm)) {
+        if (allowList.includes(perm)) allow.push(`${perm} *`)
+        else allow.push(`${perm} 'none'`)
+      }
     }
 
     this.el.allow = allow.join("; ")
