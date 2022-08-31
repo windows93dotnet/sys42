@@ -302,6 +302,14 @@ test.tasks(
         { type: "arg", value: 1 },
       ],
     }),
+    task({
+      source: "a++",
+      parsed: [
+        { type: "key", value: "a" },
+        { type: "assignment", value: "+=" },
+        { type: "arg", value: 1 },
+      ],
+    }),
   ],
 
   (test, { source, parsed }) => {

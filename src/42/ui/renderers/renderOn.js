@@ -1,5 +1,5 @@
 /* eslint-disable max-params */
-import { normalizeListen, eventsMap } from "../../fabric/dom/listen.js"
+import { normalizeListen, eventsMap } from "../../fabric/dom/on.js"
 import { normalizeTokens } from "../normalize.js"
 import hash from "../../fabric/type/any/hash.js"
 import expr from "../../core/expr.js"
@@ -62,7 +62,7 @@ function setPopupTrigger(el, ctx, key, def) {
   }
 }
 
-export default function renderListen(el, defs, ctx) {
+export default function renderOn(el, defs, ctx) {
   const { list } = normalizeListen([{ signal: ctx.signal }, el, ...defs], {
     returnForget: false,
     getEvents(events) {

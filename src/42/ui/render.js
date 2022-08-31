@@ -8,7 +8,7 @@ import renderComponent from "./renderers/renderComponent.js"
 import renderField from "./renderers/renderField.js"
 import renderIf from "./renderers/renderIf.js"
 import renderEach from "./renderers/renderEach.js"
-import renderListen from "./renderers/renderListen.js"
+import renderOn from "./renderers/renderOn.js"
 import renderAnimation from "./renderers/renderAnimation.js"
 
 const { ELEMENT_NODE } = Node
@@ -120,7 +120,7 @@ export default function render(def, ctx, options) {
 
   def.traits?.(ctx.el)
 
-  if (def.on) renderListen(ctx.el, def.on, ctx)
+  if (def.on) renderOn(ctx.el, def.on, ctx)
 
   if (def.animate?.from) renderAnimation(ctx, ctx.el, "from", def.animate.from)
 

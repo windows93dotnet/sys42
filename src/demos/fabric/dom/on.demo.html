@@ -13,7 +13,18 @@
   import ui from "../../../42/ui.js"
   import on from "../../../42/fabric/dom/on.js"
 
-  await ui([{ tag: "button", content: "yo" }])
+  await ui([
+    {
+      tag: "button",
+      content: "yo {{cnt}}",
+      on: {
+        Enter: "{{cnt++}}",
+      },
+      state: {
+        cnt: 42,
+      },
+    },
+  ])
 
   // listen({
   //   selector: "ui-sandbox",

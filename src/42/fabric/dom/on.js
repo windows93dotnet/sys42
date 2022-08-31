@@ -1,12 +1,5 @@
 import { normalizeListen, delegate, handler } from "./listen.js"
 
-const DEFAULTS = {
-  passive: false,
-  capture: false,
-  once: false,
-  signal: undefined,
-}
-
 const aliases = {
   Ctrl: "Control",
   Down: "ArrowDown",
@@ -17,6 +10,8 @@ const aliases = {
   Del: "Delete",
   Esc: "Escape",
 }
+
+const itemKeys = ["selector", "returnForget", "preventDefault"]
 
 export function parseShortcut(source) {
   let buffer = ""
@@ -101,8 +96,7 @@ export function parseShortcut(source) {
 }
 
 export const eventsMap = ({ el, listeners }) => {
-  for (let { selector, events, options } of listeners) {
-    options = { ...DEFAULTS, ...options }
+  for (const { selector, events, options } of listeners) {
     for (let [key, fn] of Object.entries(events)) {
       fn = selector ? delegate(selector, fn) : handler(fn)
       for (const seq of parseShortcut(key)) handleSeq(seq, fn, el, options)
@@ -140,7 +134,7 @@ function handleSeq(seq, fn, el, options) {
 }
 
 export default function on(...args) {
-  const { list, cancels } = normalizeListen(args)
+  const { list, cancels } = normalizeListen(args, { itemKeys })
   for (const item of list) eventsMap(item)
   if (cancels) {
     return () => {
@@ -148,3 +142,5 @@ export default function on(...args) {
     }
   }
 }
+
+export { normalizeListen, delegate, handler } from "./listen.js"

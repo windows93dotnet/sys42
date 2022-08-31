@@ -298,7 +298,7 @@ export function normalizeTraits(def, ctx) {
   }
 }
 
-function normalizeListen(def) {
+function normalizeOn(def) {
   if (def.on) def.on = arrify(def.on)
 
   if (def.click) {
@@ -360,7 +360,7 @@ export function ensureDef(def = {}, ctx) {
 
 export function normalizeDefNoCtx(def = {}) {
   if (def.animate) def.animate = normalizeAnimate(def.animate)
-  normalizeListen(def)
+  normalizeOn(def)
   return def
 }
 

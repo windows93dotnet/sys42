@@ -5,15 +5,21 @@ import Canceller from "../class/Canceller.js"
 
 const OR_REGEX = /\s*\|\|\s*/
 
-const DEFAULTS = {
-  passive: false,
+const EVENT_DEFAULTS = {
   capture: false,
   once: false,
+  passive: undefined,
   signal: undefined,
 }
 
-const DEFAULTS_KEYS = Object.keys(DEFAULTS)
-const ITEM_KEYS = ["selector", "returnForget"]
+const ITEM_DEFAULTS = {
+  selector: undefined,
+  returnForget: true,
+  preventDefault: false,
+}
+
+const DEFAULTS_KEYS = Object.keys(EVENT_DEFAULTS)
+const ITEM_KEYS = Object.keys(ITEM_DEFAULTS)
 
 export const delegate = (selector, fn) => (e) => {
   const target = e.target.closest?.(selector) ?? e.target
@@ -25,8 +31,7 @@ export const handler = (fn) => (e) => {
 }
 
 export const eventsMap = ({ el, listeners }) => {
-  for (let { selector, events, options } of listeners) {
-    options = { ...DEFAULTS, ...options }
+  for (const { selector, events, options } of listeners) {
     for (let [key, fn] of Object.entries(events)) {
       fn = selector ? delegate(selector, fn) : handler(fn)
       for (const event of key.split(OR_REGEX)) {
