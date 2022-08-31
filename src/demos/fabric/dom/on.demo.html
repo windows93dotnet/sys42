@@ -23,13 +23,38 @@
   // })
 
   on({
-    "Control+click"(e) {
-      console.log(e)
-    },
-    "click"(e) {
-      console.log(e)
+    // "Control+click"() {
+    //   console.log("Control+click")
+    // },
+    // "Control+Enter"() {
+    //   console.log("Control+Enter")
+    // },
+    // "Control+p"() {
+    //   console.log("Control+p")
+    // },
+    // // "Control+c Control+l"() {
+    // //   console.log("Control+click")
+    // // },
+    // "click"() {
+    //   console.log("click")
+    // },
+    // "Enter"() {
+    //   console.log("Enter")
+    // },
+    // "Ctrl"() {
+    //   console.log("Ctrl")
+    // },
+    "Ctrl+Enter"() {
+      console.log("Ctrl+Enter")
     },
   })
+
+  globalThis.dispatchEvent(new KeyboardEvent("keydown", { key: "Control" }))
+  globalThis.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }))
+
+  // globalThis.addEventListener("keydown", ({ key, code, isComposing }) => {
+  //   console.log(key, code, isComposing)
+  // })
 
   // console.log(document.querySelector("ui-sandbox iframe"))
 </script>
