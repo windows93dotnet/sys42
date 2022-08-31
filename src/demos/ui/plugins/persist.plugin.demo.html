@@ -24,7 +24,7 @@
         {
           tag: "button#incr",
           content: "{{cnt}}",
-          on: { click: "{{cnt += 1}}" },
+          on: { click: "{{cnt++}}" },
         },
         {
           tag: "button#dialog-left",
@@ -36,7 +36,7 @@
             content: {
               tag: "button#incr",
               content: "{{cnt}}",
-              on: { click: "{{cnt += 1}}" },
+              on: { click: "{{cnt++}}" },
             },
           },
         },
@@ -50,7 +50,7 @@
               tag: "button#incr",
               autofocus: true,
               content: "{{cnt}}",
-              on: { click: "{{cnt += 1}}" },
+              on: { click: "{{cnt++}}" },
             },
           },
         },
@@ -74,7 +74,7 @@
         //           tag: "button#incr",
         //           autofocus: true,
         //           content: "{{cnt}}",
-        //           on: { click: "{{cnt += 1}}" },
+        //           on: { click: "{{cnt++}}" },
         //         },
         //       },
         //     },

@@ -17,7 +17,7 @@
   const app = await ui({
     tag: "body.desktop",
     content: [
-      { tag: "button", content: "{{cnt}}", click: "{{cnt += 1}}" },
+      { tag: "button", content: "{{cnt}}", click: "{{cnt++}}" },
       {
         tag: "button#dialog",
         content: "dialog",
@@ -25,9 +25,7 @@
           live: false,
           label: "live dialog",
           // animate: { translate: "0 -100%", opacity: 0 },
-          content: [
-            { tag: "button", content: "{{cnt}}", click: "{{cnt += 1}}" },
-          ],
+          content: [{ tag: "button", content: "{{cnt}}", click: "{{cnt++}}" }],
         },
       },
     ],

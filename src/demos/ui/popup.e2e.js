@@ -14,7 +14,7 @@ function getVal(btn) {
 const button = (label) => ({
   tag: `button#btnIncr${label}`,
   content: "{{cnt}}",
-  click: "{{cnt += 1}}",
+  click: "{{cnt++}}",
 })
 
 const buttons = (label) => ({

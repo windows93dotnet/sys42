@@ -295,7 +295,7 @@ test.tasks(
       ],
     }),
     task({
-      source: "a += 1",
+      source: ["a += 1", "a+=1", "a++", "a ++"],
       parsed: [
         { type: "key", value: "a" },
         { type: "assignment", value: "+=" },
@@ -303,10 +303,10 @@ test.tasks(
       ],
     }),
     task({
-      source: "a++",
+      source: ["a -= 1", "a-=1", "a--", "a --"],
       parsed: [
         { type: "key", value: "a" },
-        { type: "assignment", value: "+=" },
+        { type: "assignment", value: "-=" },
         { type: "arg", value: 1 },
       ],
     }),

@@ -21,7 +21,7 @@ export default e2e(async (t, { collect, dest }) => {
           {
             tag: "button#incr1",
             content: "{{cnt}}",
-            click: "{{cnt += 1}}",
+            click: "{{cnt++}}",
           },
 
           {
@@ -35,7 +35,7 @@ export default e2e(async (t, { collect, dest }) => {
               content: {
                 tag: "button#dialogIncr1",
                 content: "{{cnt}}",
-                click: "{{cnt += 1}}",
+                click: "{{cnt++}}",
               },
             },
           },
@@ -48,7 +48,7 @@ export default e2e(async (t, { collect, dest }) => {
                 {
                   tag: "button#incr2",
                   content: "{{cnt}}",
-                  click: "{{cnt += 1}}",
+                  click: "{{cnt++}}",
                 },
                 {
                   tag: "button#btnDialog2",
@@ -61,7 +61,7 @@ export default e2e(async (t, { collect, dest }) => {
                     content: {
                       tag: "button#dialogIncr2",
                       content: "{{cnt}}",
-                      click: "{{cnt += 1}}",
+                      click: "{{cnt++}}",
                     },
                   },
                 },
@@ -78,7 +78,7 @@ export default e2e(async (t, { collect, dest }) => {
                 {
                   tag: "button#incr3",
                   content: "{{cnt}}",
-                  click: "{{cnt += 1}}",
+                  click: "{{cnt++}}",
                 },
                 {
                   tag: "button#btnDialog3",
@@ -91,7 +91,7 @@ export default e2e(async (t, { collect, dest }) => {
                     content: {
                       tag: "button#dialogIncr3",
                       content: "{{cnt}}",
-                      click: "{{cnt += 1}}",
+                      click: "{{cnt++}}",
                     },
                   },
                 },

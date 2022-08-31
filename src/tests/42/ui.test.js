@@ -2027,7 +2027,7 @@ test("on", async (t) => {
       content: {
         tag: "button",
         content: "cnt: {{cnt}}",
-        on: { click: "{{cnt += 1}}" },
+        on: { click: "{{cnt++}}" },
       },
 
       state: {
@@ -2052,7 +2052,7 @@ test("on", "queued fast calls", async (t) => {
       content: {
         tag: "button",
         content: "cnt: {{cnt}}",
-        on: { click: "{{cnt += 1}}" },
+        on: { click: "{{cnt++}}" },
       },
 
       state: {
