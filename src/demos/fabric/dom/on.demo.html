@@ -12,15 +12,15 @@
 <script type="module">
   import ui from "../../../42/ui.js"
   import on from "../../../42/fabric/dom/on.js"
-  import keyboard from "../../../42/core/devices/keyboard.js"
-  import automaton from "../../../42/core/dev/automaton.js"
 
   await ui([
     {
       tag: "button",
       content: "yo {{cnt}}",
       on: {
-        Enter: "{{cnt++}}",
+        // "+ || click": "{{cnt++}}",
+        "+": "{{cnt++}}",
+        "-": "{{cnt--}}",
       },
       state: {
         cnt: 42,
@@ -57,8 +57,14 @@
     // "Ctrl"() {
     //   console.log("Ctrl")
     // },
-    "Ctrl+Enter"() {
-      console.log("Ctrl+Enter")
+    // "Ctrl+Enter"() {
+    //   console.log("Ctrl+Enter")
+    // },
+    // "Ctrl+click"() {
+    //   console.log("Ctrl+click")
+    // },
+    "+"() {
+      console.log("+++")
     },
     // repeatable: true,
     // p() {
@@ -66,17 +72,7 @@
     // },
   })
 
-  await automaton
-    .keydown({ key: "Control", code: "ControlLeft" })
-    .keydown({ key: "Enter", code: "Enter" })
-    .done()
-
-  // automaton.dispatch("keydown", { key: "p", code: "KeyP" })
-  // automaton.dispatch("keydown", { key: "p", code: "KeyP", repeat: true })
-
   // globalThis.addEventListener("keydown", ({ key, code, isComposing }) => {
   //   console.log(key, code, isComposing)
   // })
-
-  // console.log(document.querySelector("ui-sandbox iframe"))
 </script>

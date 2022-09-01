@@ -72,17 +72,19 @@ export class Automaton {
   }
 
   select() {
-    this.el.select()
+    this.el.select?.()
     return this
   }
 
   focus() {
-    this.el.focus()
+    if ("focus" in this.el) this.el.focus()
+    else this.dispatch("focus")
     return this
   }
 
   click() {
-    this.el.click()
+    if ("click" in this.el) this.el.click()
+    else this.dispatch("click")
     return this
   }
 

@@ -47,6 +47,7 @@ export function parseShortcut(source) {
   let sequence = 0
 
   const flush = () => {
+    if (!buffer) return
     tokens[or] ??= []
     tokens[or][sequence] ??= []
 
@@ -114,6 +115,7 @@ export function parseShortcut(source) {
     }
 
     if (char === "+") {
+      if (!buffer) buffer = "+"
       flush()
       current++
 
@@ -144,38 +146,43 @@ export const eventsMap = ({ el, listeners }) => {
 }
 
 function handleSeq(seq, fn, el, { repeatable, options }) {
+  console.log(seq)
   for (let i = 0, l = seq.length; i < l; i++) {
     const choords = seq[i]
-
-    for (let j = 0, l = choords.length; j < l; j++) {
-      const { event, key, code } = choords[j]
-      let exec = fn
-
-      if (key || code) {
-        if (!keyboard.isListening) keyboard.listen()
+    const events = {}
+    const choordCalls = []
+    for (const { event, key, code } of choords) {
+      if (event in events === false) {
+        if (key || (code && !keyboard.isListening)) keyboard.listen()
         if (choords.length > 1) {
-          const run = exec
-          exec = (e) => {
+          events[event] = (e) => {
             if (e.repeat && repeatable !== true) return
+            choordCalls.push(e.type)
             for (const choord of choords) {
+              if (!choordCalls.includes(choord.event)) return
               if ("key" in choord && !keyboard.keys[choord.key]) return
               if ("code" in choord && !keyboard.codes[choord.code]) return
             }
 
-            e.stopImmediatePropagation()
-
-            run(e)
+            choordCalls.length = 0
+            fn(e)
+          }
+        } else if (key || code) {
+          events[event] = (e) => {
+            if (e.repeat && repeatable !== true) return
+            if (e.key === key || e.code === code) fn(e)
           }
         } else {
-          const run = exec
-          exec = (e) => {
+          events[event] = (e) => {
             if (e.repeat && repeatable !== true) return
-            if (e.key === key || e.code === code) run(e)
+            fn(e)
           }
         }
       }
+    }
 
-      el.addEventListener(event, exec, options)
+    for (const [event, fn] of Object.entries(events)) {
+      el.addEventListener(event, fn, options)
     }
   }
 }
