@@ -146,7 +146,6 @@ export const eventsMap = ({ el, listeners }) => {
 }
 
 function handleSeq(seq, fn, el, { repeatable, options }) {
-  console.log(seq)
   for (let i = 0, l = seq.length; i < l; i++) {
     const choords = seq[i]
     const events = {}

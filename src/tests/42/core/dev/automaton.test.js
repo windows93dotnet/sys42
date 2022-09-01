@@ -20,7 +20,6 @@ test.serial("auto release keys", async (t) => {
   const promise = automaton
     .keydown({ key: "Control", code: "ControlLeft" })
     .keydown({ key: "Enter", code: "Enter" })
-    .done()
 
   t.alike(keyboard.keys, { Control: true, Enter: true })
 

@@ -148,9 +148,7 @@ suite.serial("globalThis", () => {
 
     const bot = t.automaton(dest)
 
-    await bot
-      .keystroke({ key: "Control", code: "ControlLeft" }) //
-      .done()
+    await bot.keystroke({ key: "Control", code: "ControlLeft" })
 
     t.eq(stub.count, 0)
 
@@ -161,7 +159,6 @@ suite.serial("globalThis", () => {
     await bot
       .keydown({ key: "Control", code: "ControlLeft" }) //
       .click()
-      .done()
 
     t.eq(stub.count, 1)
   })

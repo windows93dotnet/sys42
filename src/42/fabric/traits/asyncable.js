@@ -6,16 +6,16 @@ export default function asyncable(obj, options, fn) {
     options = undefined
   }
 
-  let init = fn()
+  let init = options?.lazy ? undefined : fn()
 
   const then = (resolve, reject) => {
     const promise = init ?? fn()
     if (!options?.once) init = undefined
 
     promise
-      .then(() => {
+      .then((res) => {
         obj[_RESOLVED] = true
-        resolve(obj)
+        resolve(res ?? obj)
         obj[_RESOLVED] = false
       })
       .catch((err) => {

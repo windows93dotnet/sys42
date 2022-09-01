@@ -3,6 +3,7 @@
 
 import defer from "../../fabric/type/promise/defer.js"
 import mark from "../../fabric/type/any/mark.js"
+import asyncable from "../../fabric/traits/asyncable.js"
 
 const { ELEMENT_NODE } = Node
 
@@ -39,6 +40,16 @@ const EVENTS = {}
 for (const [key, val] of Object.entries(EVENT_TYPES)) {
   for (const event of val.split(" ")) {
     if (key in globalThis) EVENTS[event] = globalThis[key]
+    else {
+      EVENTS[event] = class UnknownEvent extends Event {
+        constructor(...args) {
+          super(...args)
+          console.warn(
+            `${event} will not dispatch using ${key} because it is undefined`
+          )
+        }
+      }
+    }
   }
 }
 
@@ -47,13 +58,20 @@ const DEFAULT = {
   cancelable: true,
 }
 
-function normalizeEl(el) {
-  if (typeof el === "string") {
-    el = document.querySelector(el)
-    if (el?.nodeType === ELEMENT_NODE) return el
+function normalizeTarget(val) {
+  const type = typeof val
+  const target = type === "string" ? document.querySelector(val) : val
+  if (target?.nodeType === ELEMENT_NODE) return target
+
+  if (typeof target?.dispatchEvent !== "function") {
+    throw new TypeError(
+      `The "target" argument must be an EventTarget or a valid css selector: ${
+        type === "string" ? val : type
+      }`
+    )
   }
 
-  return el ?? globalThis
+  return target
 }
 
 export class Automaton {
@@ -61,12 +79,17 @@ export class Automaton {
   #pendingKeys = new Map()
   #instances = []
 
-  constructor(el) {
-    this.el = normalizeEl(el)
+  constructor(target) {
+    this.el = normalizeTarget(target)
+
+    asyncable(this, { lazy: true }, async () => {
+      this.cleanup()
+      await Promise.all(this.#deferred)
+    })
   }
 
-  target(el) {
-    const instance = new Automaton(el)
+  target(target) {
+    const instance = new Automaton(target)
     this.#instances.push(instance)
     return instance
   }
@@ -138,11 +161,6 @@ export class Automaton {
     this.#instances.length = 0
     return this
   }
-
-  async done() {
-    this.cleanup()
-    await Promise.all(this.#deferred)
-  }
 }
 
-export default new Automaton()
+export default new Automaton(globalThis)
