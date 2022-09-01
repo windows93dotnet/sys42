@@ -1,4 +1,5 @@
 import { normalizeListen, delegate, handler } from "./listen.js"
+import keyboard from "../../core/devices/keyboard.js"
 
 const aliases = {
   Ctrl: "Control",
@@ -11,7 +12,30 @@ const aliases = {
   Esc: "Escape",
 }
 
-const itemKeys = ["selector", "returnForget", "preventDefault"]
+const codes = new Set([
+  "ShiftLeft",
+  "ShiftRight",
+  "ControlLeft",
+  "ControlRight",
+  "AltLeft",
+  "AltRight",
+  "MetaLeft",
+  "MetaRight",
+  "Space",
+  "Semicolon",
+  "Equal",
+  "Comma",
+  "Minus",
+  "Period",
+  "Slash",
+  "Backquote",
+  "BracketLeft",
+  "Backslash",
+  "BracketRight",
+  "Quote",
+])
+
+const itemKeys = ["selector", "returnForget", "preventDefault", "repeatable"]
 
 export function parseShortcut(source) {
   let buffer = ""
@@ -26,15 +50,30 @@ export function parseShortcut(source) {
     tokens[or] ??= []
     tokens[or][sequence] ??= []
 
-    if (buffer.length > 1 && buffer.toLowerCase() === buffer) {
+    if (
+      buffer.length > 1 &&
+      (buffer.toLowerCase() === buffer || buffer === "DOMContentLoaded")
+    ) {
       tokens[or][sequence].push({ event: buffer })
     } else {
       if (buffer in aliases) buffer = aliases[buffer]
-      tokens[or][sequence].push({
-        event: "keydown",
-        key: buffer,
-        code: buffer.length === 1 ? undefined : buffer,
-      })
+      const item = { event: "keydown" }
+      if (buffer.length === 1 || buffer === "Enter") item.key = buffer
+      else if (
+        codes.has(buffer) ||
+        buffer.startsWith("Key") ||
+        buffer.startsWith("Digit") ||
+        buffer.startsWith("Numpad")
+      ) {
+        item.code = buffer
+      } else if (buffer === "Return") {
+        item.key = "Enter"
+        item.code = "Enter"
+      } else {
+        item.key = buffer
+      }
+
+      tokens[or][sequence].push(item)
     }
 
     buffer = ""
@@ -96,36 +135,44 @@ export function parseShortcut(source) {
 }
 
 export const eventsMap = ({ el, listeners }) => {
-  for (const { selector, events, options } of listeners) {
-    for (let [key, fn] of Object.entries(events)) {
-      fn = selector ? delegate(selector, fn) : handler(fn)
-      for (const seq of parseShortcut(key)) handleSeq(seq, fn, el, options)
+  for (const item of listeners) {
+    for (let [key, fn] of Object.entries(item.events)) {
+      fn = item.selector ? delegate(item.selector, fn) : handler(fn)
+      for (const seq of parseShortcut(key)) handleSeq(seq, fn, el, item)
     }
   }
 }
 
-function handleSeq(seq, fn, el, options) {
+function handleSeq(seq, fn, el, { repeatable, options }) {
   for (let i = 0, l = seq.length; i < l; i++) {
-    const choord = seq[i]
+    const choords = seq[i]
 
-    const activeChoords = new Array(choord.length)
-
-    for (let j = 0, l = choord.length; j < l; j++) {
-      const { event, key, code } = choord[j]
+    for (let j = 0, l = choords.length; j < l; j++) {
+      const { event, key, code } = choords[j]
       let exec = fn
 
-      if (choord.length > 1) {
-        exec = (e) => {
-          activeChoords[j] = true
-          for (const active of activeChoords) if (!active) return
-          activeChoords.fill(false)
-          fn(e)
-        }
-      }
-
       if (key || code) {
-        const check = exec
-        exec = (e) => (e.key === key || e.code === code) && check(e)
+        if (!keyboard.isListening) keyboard.listen()
+        if (choords.length > 1) {
+          const run = exec
+          exec = (e) => {
+            if (e.repeat && repeatable !== true) return
+            for (const choord of choords) {
+              if ("key" in choord && !keyboard.keys[choord.key]) return
+              if ("code" in choord && !keyboard.codes[choord.code]) return
+            }
+
+            e.stopImmediatePropagation()
+
+            run(e)
+          }
+        } else {
+          const run = exec
+          exec = (e) => {
+            if (e.repeat && repeatable !== true) return
+            if (e.key === key || e.code === code) run(e)
+          }
+        }
       }
 
       el.addEventListener(event, exec, options)

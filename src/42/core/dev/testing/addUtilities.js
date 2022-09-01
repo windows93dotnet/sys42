@@ -1,3 +1,4 @@
+import automaton from "../automaton.js"
 import allKeys from "../../../fabric/type/object/allKeys.js"
 import arrify from "../../../fabric/type/any/arrify.js"
 import clone from "../../../fabric/type/any/clone.js"
@@ -61,6 +62,12 @@ export default function addUtilities(item, isExecutionContext) {
         },
       ])
     )
+
+    item.automaton = (el) => {
+      const instance = automaton.target(el)
+      item.teardown(() => instance.cleanup())
+      return instance
+    }
 
     item.utils = {}
 
@@ -149,6 +156,7 @@ export default function addUtilities(item, isExecutionContext) {
   item.utils ??= {}
 
   Object.assign(item.utils, {
+    automaton,
     allKeys,
     arrify,
     clone,

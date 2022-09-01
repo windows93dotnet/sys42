@@ -42,7 +42,7 @@ test.tasks(
         [
           [
             { event: "keydown", key: "Control", code: "Control" },
-            { event: "keydown", key: "p", code: undefined },
+            { event: "keydown", key: "p" },
           ],
         ],
       ],
@@ -57,7 +57,7 @@ test.tasks(
           ],
           [
             { event: "keydown", key: "Control", code: "Control" },
-            { event: "keydown", key: "p", code: undefined },
+            { event: "keydown", key: "p" },
           ],
         ],
       ],
@@ -72,7 +72,7 @@ test.tasks(
           ],
           [
             { event: "keydown", key: "Control", code: "Control" },
-            { event: "keydown", key: "p", code: undefined },
+            { event: "keydown", key: "p" },
           ],
         ],
         [, [{ event: "keydown", key: "PrintScreen", code: "PrintScreen" }]],
@@ -84,7 +84,7 @@ test.tasks(
         [
           [
             { event: "keydown", key: "Control", code: "Control" },
-            { event: "keydown", key: "+", code: undefined },
+            { event: "keydown", key: "+" },
           ],
         ],
       ],
@@ -95,14 +95,39 @@ test.tasks(
         [
           [
             { event: "keydown", key: "Control", code: "Control" },
-            { event: "keydown", key: "+", code: undefined },
+            { event: "keydown", key: "+" },
           ],
           [
             { event: "keydown", key: "Control", code: "Control" },
-            { event: "keydown", key: "-", code: undefined },
+            { event: "keydown", key: "-" },
           ],
         ],
       ],
+    }),
+    task({
+      actual: "ControlLeft+KeyP+Digit1+NumpadEnter",
+      expected: [
+        [
+          [
+            { event: "keydown", code: "ControlLeft" },
+            { event: "keydown", code: "KeyP" },
+            { event: "keydown", code: "Digit1" },
+            { event: "keydown", code: "NumpadEnter" },
+          ],
+        ],
+      ],
+    }),
+    task({
+      actual: "Enter",
+      expected: [[[{ event: "keydown", key: "Enter" }]]],
+    }),
+    task({
+      actual: "NumpadEnter",
+      expected: [[[{ event: "keydown", code: "NumpadEnter" }]]],
+    }),
+    task({
+      actual: "Return",
+      expected: [[[{ event: "keydown", key: "Enter", code: "Enter" }]]],
     }),
   ],
   (test, { title, actual, expected }) => {
