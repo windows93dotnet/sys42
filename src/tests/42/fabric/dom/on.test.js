@@ -134,7 +134,7 @@ test.tasks(
   }
 )
 
-suite.serial("globalThis", () => {
+suite.only.serial("globalThis", () => {
   suite.tests({ serial: true })
 
   const dest = globalThis
@@ -161,5 +161,30 @@ suite.serial("globalThis", () => {
       .click()
 
     t.eq(stub.count, 1)
+  })
+
+  test.only("Ctrl+click & click", async (t) => {
+    const a = t.stub()
+    const b = t.stub()
+
+    on(dest, {
+      "focus": b,
+      "click": b,
+      "Ctrl+click": a,
+    })
+
+    const bot = t.automaton(dest)
+
+    t.eq([a.count, b.count], [0, 0])
+
+    bot.click()
+
+    t.eq([a.count, b.count], [0, 1])
+
+    await bot
+      .keydown({ key: "Control", code: "ControlLeft" }) //
+      .click()
+
+    t.eq([a.count, b.count], [1, 1])
   })
 })

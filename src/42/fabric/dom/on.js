@@ -136,11 +136,16 @@ export function parseShortcut(source) {
   return tokens
 }
 
-export const eventsMap = ({ el, listeners }) => {
-  for (const item of listeners) {
-    for (let [key, fn] of Object.entries(item.events)) {
-      fn = item.selector ? delegate(item.selector, fn) : handler(fn)
-      for (const seq of parseShortcut(key)) handleSeq(seq, fn, el, item)
+export const eventsMap = (list) => {
+  for (const { el, listeners } of list) {
+    for (const item of listeners) {
+      const sorted = Object.entries(item.events).sort(([a], [b]) =>
+        a.length === b.length ? 0 : a.length > b.length ? -1 : 1
+      )
+      for (let [key, fn] of sorted) {
+        fn = item.selector ? delegate(item.selector, fn) : handler(fn)
+        for (const seq of parseShortcut(key)) handleSeq(seq, fn, el, item)
+      }
     }
   }
 }
@@ -152,7 +157,7 @@ function handleSeq(seq, fn, el, { repeatable, options }) {
     const choordCalls = []
     for (const { event, key, code } of choords) {
       if (event in events === false) {
-        if (key || (code && !keyboard.isListening)) keyboard.listen()
+        if ((key || code) && !keyboard.isListening) keyboard.listen()
         if (choords.length > 1) {
           events[event] = (e) => {
             if (e.repeat && repeatable !== true) return
@@ -169,11 +174,12 @@ function handleSeq(seq, fn, el, { repeatable, options }) {
         } else if (key || code) {
           events[event] = (e) => {
             if (e.repeat && repeatable !== true) return
-            if (e.key === key || e.code === code) fn(e)
+            if (e.key === key || e.code === code) {
+              fn(e)
+            }
           }
         } else {
           events[event] = (e) => {
-            if (e.repeat && repeatable !== true) return
             fn(e)
           }
         }
@@ -188,7 +194,7 @@ function handleSeq(seq, fn, el, { repeatable, options }) {
 
 export default function on(...args) {
   const { list, cancels } = normalizeListen(args, { itemKeys })
-  for (const item of list) eventsMap(item)
+  eventsMap(list)
   if (cancels) {
     return () => {
       for (const cancel of cancels) cancel()

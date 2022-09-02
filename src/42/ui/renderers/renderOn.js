@@ -82,5 +82,5 @@ export default function renderOn(el, defs, ctx) {
     },
   })
 
-  for (const item of list) eventsMap(item)
+  eventsMap(list)
 }

@@ -30,12 +30,14 @@ export const handler = (fn) => (e) => {
   if (fn(e, e.target) === false) stopEvent(e)
 }
 
-export const eventsMap = ({ el, listeners }) => {
-  for (const { selector, events, options } of listeners) {
-    for (let [key, fn] of Object.entries(events)) {
-      fn = selector ? delegate(selector, fn) : handler(fn)
-      for (const event of key.split(OR_REGEX)) {
-        el.addEventListener(event, fn, options)
+export const eventsMap = (list) => {
+  for (const { el, listeners } of list) {
+    for (const { selector, events, options } of listeners) {
+      for (let [key, fn] of Object.entries(events)) {
+        fn = selector ? delegate(selector, fn) : handler(fn)
+        for (const event of key.split(OR_REGEX)) {
+          el.addEventListener(event, fn, options)
+        }
       }
     }
   }
@@ -86,8 +88,8 @@ export function normalizeListen(args, config) {
 
   const cancels = returnForget ? [] : undefined
 
-  for (const { listeners: map } of list) {
-    for (const item of map) {
+  for (const { listeners } of list) {
+    for (const item of listeners) {
       item.options = { ...globalOptions, ...item.options }
 
       if (returnForget) {
@@ -103,7 +105,7 @@ export function normalizeListen(args, config) {
 
 export default function listen(...args) {
   const { list, cancels } = normalizeListen(args)
-  for (const item of list) eventsMap(item)
+  eventsMap(list)
   if (cancels) {
     return () => {
       for (const cancel of cancels) cancel()
