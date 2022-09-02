@@ -128,11 +128,8 @@ export class Automaton {
   }
 
   keyup(init) {
-    const deferred = defer()
-    this.#deferred.push(deferred)
     this.#pendingKeys.delete(mark(init))
     this.dispatch("keyup", init)
-    requestIdleCallback(() => deferred.resolve())
     return this
   }
 
@@ -141,17 +138,20 @@ export class Automaton {
     this.#deferred.push(deferred)
     this.#pendingKeys.set(mark(init), init)
     this.dispatch("keydown", init)
-    requestIdleCallback(() => {
+    setTimeout(() => {
       this.dispatch("keyup", init)
       this.#pendingKeys.delete(mark(init))
-      requestIdleCallback(() => deferred.resolve())
-    })
+      setTimeout(() => deferred.resolve(), 0)
+    }, 0)
     return this
   }
 
   dispatch(event, init = {}) {
     const EventConstructor = event in EVENTS ? EVENTS[event] : CustomEvent
     this.el.dispatchEvent(new EventConstructor(event, { ...DEFAULT, ...init }))
+    const deferred = defer()
+    this.#deferred.push(deferred)
+    setTimeout(() => deferred.resolve(), 0)
     return this
   }
 

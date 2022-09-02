@@ -140,6 +140,7 @@ export function parseShortcut(source) {
 export const eventsMap = (list) => {
   const registry = {
     chordCalled: false,
+    seqIndex: 0,
   }
 
   for (const { el, listeners } of list) {
@@ -158,6 +159,18 @@ export const eventsMap = (list) => {
 }
 
 function handleSeq(seq, fn, el, { repeatable, options }, registry) {
+  if (seq.length > 1) {
+    const run = fn
+    fn = (e) => {
+      setTimeout(() => {
+        if (++registry.seqIndex === seq.length) {
+          run(e)
+          registry.seqIndex = 0
+        }
+      }, 0)
+    }
+  }
+
   for (let i = 0, l = seq.length; i < l; i++) {
     const chords = seq[i]
     const events = {}
@@ -170,6 +183,7 @@ function handleSeq(seq, fn, el, { repeatable, options }, registry) {
         if (chords.length > 1) {
           eventOptions.capture = true
           events[event] = (e) => {
+            if (registry.seqIndex !== i) return
             if (e.repeat && repeatable !== true) return
 
             for (let i = 0, l = chordCalls.length; i < l; i++) {
@@ -197,6 +211,7 @@ function handleSeq(seq, fn, el, { repeatable, options }, registry) {
                 ("code" in chord && chordCalls[i].code !== chord.code)
               ) {
                 chordCalls.length = i
+                registry.seqIndex = 0
                 return
               }
             }
@@ -212,13 +227,16 @@ function handleSeq(seq, fn, el, { repeatable, options }, registry) {
         } else if (key || code) {
           events[event] = (e) => {
             chordCalls.length = 0
+            if (registry.seqIndex !== i) return
             if (registry.chordCalled) return
             if (e.repeat && repeatable !== true) return
             if (e.key === key || e.code === code) fn(e)
+            else registry.seqIndex = 0
           }
         } else {
           events[event] = (e) => {
             chordCalls.length = 0
+            if (registry.seqIndex !== i) return
             if (registry.chordCalled) return
             fn(e)
           }

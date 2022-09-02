@@ -134,7 +134,7 @@ test.tasks(
   }
 )
 
-suite.only.serial("globalThis", () => {
+suite.serial("globalThis", () => {
   suite.timeout(1000)
   suite.tests({ serial: true })
 
@@ -182,31 +182,81 @@ suite.only.serial("globalThis", () => {
     t.eq([a.count, b.count], [0, 0])
 
     await bot.click()
-
     t.eq([a.count, b.count], [0, 1])
 
     await bot
       .keydown({ key: "Control", code: "ControlLeft" }) //
       .click()
-
     t.eq([a.count, b.count], [1, 1])
 
     await bot.click()
-
     t.eq([a.count, b.count], [1, 2])
 
     await bot.keydown({ key: "Control", code: "ControlLeft" })
-
     t.eq([a.count, b.count], [1, 2])
 
     await bot.click()
-
     t.eq([a.count, b.count], [1, 3])
 
     await bot
       .keydown({ key: "Control", code: "ControlLeft" }) //
       .click()
-
     t.eq([a.count, b.count], [2, 3])
+  })
+
+  test("a a", async (t, { collect }) => {
+    const stub = t.stub()
+
+    collect(
+      on(dest, {
+        "a a": stub,
+      })
+    )
+
+    const bot = t.automaton(dest)
+
+    await bot.keystroke({ key: "a", code: "KeyA" })
+    t.eq(stub.count, 0)
+
+    await bot.keystroke({ key: "a", code: "KeyA" })
+    t.eq(stub.count, 1)
+
+    /*  */
+
+    await bot.keystroke({ key: "a", code: "KeyA" })
+    t.eq(stub.count, 1)
+
+    await bot.keystroke({ key: "b", code: "KeyB" }) // reset seqIndex
+    t.eq(stub.count, 1)
+
+    await bot.keystroke({ key: "a", code: "KeyA" })
+    t.eq(stub.count, 1)
+
+    await bot.keystroke({ key: "a", code: "KeyA" })
+    t.eq(stub.count, 2)
+  })
+
+  test("click click", async (t, { collect }) => {
+    const stub = t.stub()
+
+    collect(
+      on(dest, {
+        "click click": stub,
+      })
+    )
+
+    const bot = t.automaton(dest)
+
+    await bot.click()
+    t.eq(stub.count, 0)
+
+    await bot.click()
+    t.eq(stub.count, 1)
+
+    await bot.click()
+    t.eq(stub.count, 1)
+
+    await bot.click()
+    t.eq(stub.count, 2)
   })
 })
