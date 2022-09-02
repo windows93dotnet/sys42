@@ -17,11 +17,11 @@
     {
       tag: "button",
       content: "yo {{cnt}}",
-      on: {
-        // "+ || click": "{{cnt++}}",
-        "+": "{{cnt++}}",
-        "-": "{{cnt--}}",
-      },
+      // on: {
+      //   // "+ || click": "{{cnt++}}",
+      //   "+": "{{cnt++}}",
+      //   "-": "{{cnt--}}",
+      // },
       state: {
         cnt: 42,
       },
@@ -60,12 +60,18 @@
     // "Ctrl+Enter"() {
     //   console.log("Ctrl+Enter")
     // },
-    // "Ctrl+click"() {
-    //   console.log("Ctrl+click")
-    // },
-    "+"() {
-      console.log("+++")
+    "Ctrl+click"() {
+      // document.body.append("Ctrl+click")
+      console.log("Ctrl+click")
+      return false
     },
+    "click"() {
+      // document.body.append("click")
+      console.log("click")
+    },
+    // "+"() {
+    //   console.log("+++")
+    // },
     // repeatable: true,
     // p() {
     //   console.log("p")

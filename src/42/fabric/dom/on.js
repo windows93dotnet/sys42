@@ -1,3 +1,4 @@
+/* eslint-disable max-params */
 import { normalizeListen, delegate, handler } from "./listen.js"
 import keyboard from "../../core/devices/keyboard.js"
 
@@ -137,6 +138,10 @@ export function parseShortcut(source) {
 }
 
 export const eventsMap = (list) => {
+  const registry = {
+    chordCalled: false,
+  }
+
   for (const { el, listeners } of list) {
     for (const item of listeners) {
       const sorted = Object.entries(item.events).sort(([a], [b]) =>
@@ -144,42 +149,77 @@ export const eventsMap = (list) => {
       )
       for (let [key, fn] of sorted) {
         fn = item.selector ? delegate(item.selector, fn) : handler(fn)
-        for (const seq of parseShortcut(key)) handleSeq(seq, fn, el, item)
+        for (const seq of parseShortcut(key)) {
+          handleSeq(seq, fn, el, item, registry)
+        }
       }
     }
   }
 }
 
-function handleSeq(seq, fn, el, { repeatable, options }) {
+function handleSeq(seq, fn, el, { repeatable, options }, registry) {
   for (let i = 0, l = seq.length; i < l; i++) {
-    const choords = seq[i]
+    const chords = seq[i]
     const events = {}
-    const choordCalls = []
-    for (const { event, key, code } of choords) {
+    const chordCalls = []
+    const eventOptions = { ...options }
+
+    for (const { event, key, code } of chords) {
       if (event in events === false) {
         if ((key || code) && !keyboard.isListening) keyboard.listen()
-        if (choords.length > 1) {
+        if (chords.length > 1) {
+          eventOptions.capture = true
           events[event] = (e) => {
             if (e.repeat && repeatable !== true) return
-            choordCalls.push(e.type)
-            for (const choord of choords) {
-              if (!choordCalls.includes(choord.event)) return
-              if ("key" in choord && !keyboard.keys[choord.key]) return
-              if ("code" in choord && !keyboard.codes[choord.code]) return
+
+            for (let i = 0, l = chordCalls.length; i < l; i++) {
+              if (
+                chordCalls[i].key === undefined ||
+                chordCalls[i].key in keyboard.keys === false
+              ) {
+                chordCalls.length = i
+                break
+              }
             }
 
-            choordCalls.length = 0
+            chordCalls.push({
+              type: e.type,
+              key: e.key,
+              code: e.code,
+            })
+
+            for (let i = 0, l = chords.length; i < l; i++) {
+              const chord = chords[i]
+              if (
+                i in chordCalls === false ||
+                chordCalls[i].type !== chord.event ||
+                ("key" in chord && chordCalls[i].key !== chord.key) ||
+                ("code" in chord && chordCalls[i].code !== chord.code)
+              ) {
+                chordCalls.length = i
+                return
+              }
+            }
+
+            registry.chordCalled = true
+
+            setTimeout(() => {
+              registry.chordCalled = false
+            }, 0)
+
             fn(e)
           }
         } else if (key || code) {
           events[event] = (e) => {
+            chordCalls.length = 0
+            if (registry.chordCalled) return
             if (e.repeat && repeatable !== true) return
-            if (e.key === key || e.code === code) {
-              fn(e)
-            }
+            if (e.key === key || e.code === code) fn(e)
           }
         } else {
           events[event] = (e) => {
+            chordCalls.length = 0
+            if (registry.chordCalled) return
             fn(e)
           }
         }
@@ -187,7 +227,7 @@ function handleSeq(seq, fn, el, { repeatable, options }) {
     }
 
     for (const [event, fn] of Object.entries(events)) {
-      el.addEventListener(event, fn, options)
+      el.addEventListener(event, fn, eventOptions)
     }
   }
 }
@@ -196,9 +236,12 @@ export default function on(...args) {
   const { list, cancels } = normalizeListen(args, { itemKeys })
   eventsMap(list)
   if (cancels) {
-    return () => {
+    const forget = () => {
       for (const cancel of cancels) cancel()
     }
+
+    forget.destroy = forget
+    return forget
   }
 }
 

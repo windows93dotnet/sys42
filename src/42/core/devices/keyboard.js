@@ -64,7 +64,7 @@ const keydown = ({ key, code, repeat }) => {
 const keyup = ({ code }) => {
   // allow non-capturing events to access "code"
   // before removing it from "codes" and "strokes"
-  requestAnimationFrame(() => {
+  queueMicrotask(() => {
     delete codes[code]
     if (strokes[code]) {
       strokes[code].keys.forEach((key) => delete keys[key])
@@ -78,10 +78,9 @@ const keyup = ({ code }) => {
 // call a function that focus outside the document (like alert()).
 // We must clean all pressed keys on blur.
 const cleanup = () => {
-  let key
-  for (key in keys) delete keys[key]
-  for (key in codes) delete codes[key]
-  for (key in strokes) delete strokes[key]
+  for (const key in keys) delete keys[key]
+  for (const key in codes) delete codes[key]
+  for (const key in strokes) delete strokes[key]
 }
 
 export const forget = () => {

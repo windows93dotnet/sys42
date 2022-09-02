@@ -73,7 +73,9 @@ export function normalizeListen(args, config) {
 
       if (Object.keys(events).length === 0 && Object.keys(options).length > 0) {
         if ("returnForget" in item) returnForget = item.returnForget
-        globalOptions = options
+        globalOptions = globalOptions
+          ? Object.assign(globalOptions, options)
+          : options
         continue
       }
 
@@ -107,8 +109,11 @@ export default function listen(...args) {
   const { list, cancels } = normalizeListen(args)
   eventsMap(list)
   if (cancels) {
-    return () => {
+    const forget = () => {
       for (const cancel of cancels) cancel()
     }
+
+    forget.destroy = forget
+    return forget
   }
 }

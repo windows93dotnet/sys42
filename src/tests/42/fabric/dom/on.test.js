@@ -135,16 +135,19 @@ test.tasks(
 )
 
 suite.only.serial("globalThis", () => {
+  suite.timeout(1000)
   suite.tests({ serial: true })
 
   const dest = globalThis
 
-  test("Ctrl+click", async (t) => {
+  test("Ctrl+click", async (t, { collect }) => {
     const stub = t.stub()
 
-    on(dest, {
-      "Ctrl+click": stub,
-    })
+    collect(
+      on(dest, {
+        "Ctrl+click": stub,
+      })
+    )
 
     const bot = t.automaton(dest)
 
@@ -152,7 +155,7 @@ suite.only.serial("globalThis", () => {
 
     t.eq(stub.count, 0)
 
-    bot.click()
+    await bot.click()
 
     t.eq(stub.count, 0)
 
@@ -163,21 +166,22 @@ suite.only.serial("globalThis", () => {
     t.eq(stub.count, 1)
   })
 
-  test.only("Ctrl+click & click", async (t) => {
+  test("Ctrl+click & click", async (t, { collect }) => {
     const a = t.stub()
     const b = t.stub()
 
-    on(dest, {
-      "focus": b,
-      "click": b,
-      "Ctrl+click": a,
-    })
+    collect(
+      on(dest, {
+        "Ctrl+click": a,
+        "click": b,
+      })
+    )
 
     const bot = t.automaton(dest)
 
     t.eq([a.count, b.count], [0, 0])
 
-    bot.click()
+    await bot.click()
 
     t.eq([a.count, b.count], [0, 1])
 
@@ -186,5 +190,23 @@ suite.only.serial("globalThis", () => {
       .click()
 
     t.eq([a.count, b.count], [1, 1])
+
+    await bot.click()
+
+    t.eq([a.count, b.count], [1, 2])
+
+    await bot.keydown({ key: "Control", code: "ControlLeft" })
+
+    t.eq([a.count, b.count], [1, 2])
+
+    await bot.click()
+
+    t.eq([a.count, b.count], [1, 3])
+
+    await bot
+      .keydown({ key: "Control", code: "ControlLeft" }) //
+      .click()
+
+    t.eq([a.count, b.count], [2, 3])
   })
 })

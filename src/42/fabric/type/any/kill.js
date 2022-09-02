@@ -8,6 +8,7 @@ const killKeys = [
   "resolve",
   "unregister",
   "terminate",
+  "forget",
 ]
 
 export default async function kill(val, report) {
