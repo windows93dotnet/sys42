@@ -1,14 +1,14 @@
 /* eslint-disable max-params */
 
-import env from "../../core/env.js"
-import parseCSSUrl from "../cssom/parseCSSUrl.js"
-import walkCSSRules from "../cssom/walkCSSRules.js"
-import log from "../../core/log.js"
-import preload from "../../core/load/preload.js"
-import inOpaqueOrigin from "../../core/env/realm/inOpaqueOrigin.js"
+import env from "../env.js"
+import parseCSSUrl from "../../fabric/cssom/parseCSSUrl.js"
+import walkCSSRules from "../../fabric/cssom/walkCSSRules.js"
+import log from "../log.js"
+import preload from "../load/preload.js"
+import inOpaqueOrigin from "../env/realm/inOpaqueOrigin.js"
 
-import when from "../type/promise/when.js"
-import sleep from "../type/promise/sleep.js"
+import when from "../../fabric/type/promise/when.js"
+import sleep from "../../fabric/type/promise/sleep.js"
 
 const task = {
   log: log

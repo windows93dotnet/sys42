@@ -18,16 +18,16 @@ function greet() {
 
 if (inTop && inAutomated) {
   if (config.testFiles) {
-    const testRunner = await import("./fabric/dev/liveReload.js") //
+    const testRunner = await import("./core/dev/testRunner.js") //
       .then((m) => m.default)
     testRunner(config.testFiles, { ...config.testRunner, report: false })
   }
 } else if (!inAutomated) {
   if (inTop || config.verbose > 2) greet()
 
-  const liveReload = await import("./fabric/dev/liveReload.js") //
+  const liveReload = await import("./core/dev/liveReload.js") //
     .then((m) => m.default)
-  const serverSentEvents = await import("./fabric/dev/serverSentEvents.js") //
+  const serverSentEvents = await import("./core/dev/serverSentEvents.js") //
     .then((m) => m.default)
 
   const dev = {
@@ -61,7 +61,7 @@ if (inTop && inAutomated) {
       log(dev.sse.enabled ? "paused" : "resumed")
     },
     async test(options = config.testRunner) {
-      const testRunner = await import("./fabric/dev/liveReload.js") //
+      const testRunner = await import("./core/dev/testRunner.js") //
         .then((m) => m.default)
       if (config.testFiles) return testRunner(config.testFiles, options)
     },
