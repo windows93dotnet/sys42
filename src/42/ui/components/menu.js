@@ -30,6 +30,20 @@ export class Menu extends Component {
         item.label += "…"
       }
 
+      if (item.shortcut) {
+        item.aria ??= {}
+        item.aria.keyshortcuts = item.shortcut
+        item.label = [
+          { tag: "span", content: item.label },
+          { tag: "kbd", aria: { hidden: true }, content: item.shortcut },
+        ]
+      } else {
+        item.label = {
+          tag: "span",
+          content: item.label,
+        }
+      }
+
       if (content) {
         item.type = "button"
         item.role = "menuitem"
@@ -43,10 +57,7 @@ export class Menu extends Component {
       } else {
         item.tag = "button"
         item.role = "menuitem"
-        item.content = {
-          tag: "span",
-          content: item.label,
-        }
+        item.content = item.label
       }
 
       delete item.label

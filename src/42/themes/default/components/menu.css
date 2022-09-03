@@ -82,7 +82,7 @@ ui-menu hr {
 
   padding: var(--unit-xs);
   padding-right: var(--unit-md);
-  padding-left: var(--unit-xs);
+  /* padding-left: var(--unit-xs); */
 
   --gap: var(--unit-sm);
   gap: var(--gap);
@@ -125,7 +125,7 @@ ui-menubar > li > button > kbd {
 }
 
 ui-menu > li > button :first-child:not(ui-picto) {
-  margin-left: calc(var(--gap) + var(--menu-picto-size));
+  margin-left: calc(calc(var(--gap) + var(--menu-picto-size)) - var(--unit-xs));
 }
 
 :is(ui-menu, ui-menubar) > li > button[aria-haspopup][aria-expanded="true"],
