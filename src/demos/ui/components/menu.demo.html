@@ -10,7 +10,9 @@
 </script>
 
 <script type="module">
+  /*  eslint-disable no-unused-vars  */
   import ui from "../../../42/ui.js"
+  import inTop from "../../../42/core/env/realm/inTop.js"
 
   const content = [
     {
@@ -33,12 +35,14 @@
     { label: "Ping", click: "{{ping()}}" },
   ]
 
-  ui({
-    tag: "body.pa-xxl",
+  const demo = {
+    tag: ".pa-xxl",
     content: [
       { tag: "input", placeholder: "tab order" },
       "---",
       { tag: "ui-menu", content },
+      "---",
+      { tag: "button#menuButton", content: "Menu", menu: content },
     ],
 
     actions: {
@@ -46,5 +50,30 @@
       save: () => console.log("save"),
       ping: () => console.log("ping"),
     },
-  })
+  }
+
+  let app
+
+  if (inTop) {
+    app = ui(
+      {
+        tag: ".box-fit.desktop",
+        content: {
+          tag: ".box-v.w-full",
+          content: [
+            demo,
+            {
+              tag: "ui-sandbox.panel",
+              permissions: "trusted",
+              path: "./menu.demo.html",
+            },
+          ],
+        },
+      },
+      { trusted: true }
+    )
+    app.query("#menuButton").click()
+  } else {
+    app = ui(demo)
+  }
 </script>

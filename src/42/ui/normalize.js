@@ -38,6 +38,7 @@ const DEF_KEYWORDS = new Set([
   "each",
   "else",
   "if",
+  "menu",
   "on",
   "parentId",
   "plugins",
@@ -309,6 +310,11 @@ function normalizeOn(def) {
   if (def.dialog) {
     def.on ??= []
     def.on.push({ click: { dialog: def.dialog } })
+  }
+
+  if (def.menu) {
+    def.on ??= []
+    def.on.push({ click: { popup: { tag: "ui-menu", content: def.menu } } })
   }
 
   if (def.popup) {

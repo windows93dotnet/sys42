@@ -1,5 +1,4 @@
 import Component from "../class/Component.js"
-import log from "../../core/log.js"
 
 export class Menu extends Component {
   static definition = {
@@ -8,8 +7,6 @@ export class Menu extends Component {
   }
 
   render({ content }) {
-    log(content)
-
     const inMenubar = this.constructor.name === "Menubar"
     const items = []
 
@@ -51,7 +48,7 @@ export class Menu extends Component {
           type: "ui-menu",
           content,
           // aria: { labelledby: item.id },
-          aria: { label: item.label },
+          // aria: { label: item.label },
           inMenubar,
         }
       } else {
