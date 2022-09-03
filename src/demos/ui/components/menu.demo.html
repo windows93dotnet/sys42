@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>ui-menu</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/style.css" id="theme" />
+
+<script type="module">
+  import trap from "../../../42/fabric/type/error/trap.js"
+  trap()
+</script>
+
+<script type="module">
+  import ui from "../../../42/ui.js"
+
+  const content = [
+    {
+      label: "Open",
+      picto: "folder-open",
+      shortcut: "Ctrl+O",
+      // click: "{{open()}}",
+      dialog: {
+        label: "coucou",
+        content: { tag: "input", placeholder: "tab order" },
+      },
+    },
+    {
+      label: "Save",
+      picto: "save",
+      shortcut: "Ctrl+S",
+      click: "{{save()}}",
+      disabled: true,
+    },
+    "---",
+    { label: "Ping", click: "{{ping()}}" },
+  ]
+
+  ui({
+    tag: "body.pa-xxl",
+    content: [
+      { tag: "input", placeholder: "tab order" },
+      "---",
+      { tag: "ui-menu", content },
+    ],
+
+    actions: {
+      open: () => console.log("open"),
+      save: () => console.log("save"),
+      ping: () => console.log("ping"),
+    },
+  })
+</script>

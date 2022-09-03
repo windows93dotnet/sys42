@@ -8,6 +8,7 @@
   --menu-br: var(--outset-br);
   --menu-tsh: var(--outset-tsh, none);
   --menu-bsh: var(--outset-bsh);
+  --menu-picto-size: 16px;
 }
 
 ui-menu,
@@ -101,14 +102,14 @@ ui-menubar > li > label {
 :is(ui-menu, ui-menubar) > li > button > ui-picto {
   all: unset;
   box-sizing: border-box;
-  flex: 0 1 16px;
+  flex: 0 1 var(--menu-picto-size);
 
   vertical-align: middle;
-  transform: translateY(-1px);
+  transform: translateY(-2px); /* ? */
 
-  width: 16px;
-  min-width: 16px;
-  height: 16px;
+  width: var(--menu-picto-size);
+  min-width: var(--menu-picto-size);
+  height: var(--menu-picto-size);
 }
 
 ui-menu button > kbd {
@@ -124,7 +125,7 @@ ui-menubar > li > button > kbd {
 }
 
 ui-menu > li > button :first-child:not(ui-picto) {
-  margin-left: calc(var(--unit-sm) + 16px);
+  margin-left: calc(var(--gap) + var(--menu-picto-size));
 }
 
 :is(ui-menu, ui-menubar) > li > button[aria-haspopup][aria-expanded="true"],
