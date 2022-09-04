@@ -11,12 +11,15 @@
 
 <script type="module">
   /*  eslint-disable no-unused-vars  */
+  import "../../../42/ui/components/dialog.js"
+  import "../../../42/ui/popup.js"
   import ui from "../../../42/ui.js"
   import inTop from "../../../42/core/env/realm/inTop.js"
 
   const content = [
     {
       label: "Open",
+      id: "btnOpen",
       picto: "folder-open",
       shortcut: "Ctrl+O",
       dialog: {
@@ -42,7 +45,7 @@
       "---",
       { tag: "ui-menu", content },
       "---",
-      { tag: "button#menuButton", content: "Menu", menu: content },
+      { tag: "button#btnMenu", content: "Menu", menu: content },
     ],
 
     actions: {
@@ -55,7 +58,7 @@
   let app
 
   if (inTop) {
-    app = ui(
+    app = await ui(
       {
         tag: ".box-fit.desktop",
         content: {
@@ -72,8 +75,10 @@
       },
       { trusted: true }
     )
-    app.query("#menuButton").click()
+    // app.query("#btnMenu").click()
   } else {
-    app = ui(demo)
+    app = await ui(demo)
+    // app.query("#btnOpen").click()
+    app.query("#btnMenu").click()
   }
 </script>

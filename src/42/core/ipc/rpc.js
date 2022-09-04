@@ -10,7 +10,7 @@ const functions = new Map()
 
 if (inTop) {
   ipc
-    .on(CALL, ([id, args], meta) => {
+    .on(CALL, ([id, args, info], meta) => {
       if (
         args.length > 1 &&
         typeof args[1] === "object" &&
@@ -23,7 +23,13 @@ if (inTop) {
       }
 
       if (functions.has(id)) return functions.get(id)(...args, meta)
-      throw new Error("No corresponding function found in rpc target")
+
+      const help = info.module
+        ? `.\nAdd this module in the Top realm ${info.module}`
+        : ""
+      throw new Error(
+        `The ${info.name} function isn't registered in the Top realm${help}`
+      )
     })
     .on(DESTROY, (id) => {
       functions.delete(id)
@@ -39,22 +45,27 @@ export default function rpc(fn, options) {
   const id = hash([fn, options])
 
   if (!inTop) {
+    const info = {
+      name: fn.name ? `"${fn.name}"` : "corresponding",
+      module: options.module,
+    }
     const caller =
       unmarshalling && marshalling
         ? async (...args) => {
             const res = await marshalling(...args)
             if (res === false) return
-            return unmarshalling(await ipc.send(CALL, [id, res]))
+            return unmarshalling(await ipc.send(CALL, [id, res, info]))
           }
         : unmarshalling
-        ? async (...args) => unmarshalling(await ipc.send(CALL, [id, args]))
+        ? async (...args) =>
+            unmarshalling(await ipc.send(CALL, [id, args, info]))
         : marshalling
         ? async (...args) => {
             const res = await marshalling(...args)
             if (res === false) return
-            return ipc.send(CALL, [id, res])
+            return ipc.send(CALL, [id, res, info])
           }
-        : async (...args) => ipc.send(CALL, [id, args])
+        : async (...args) => ipc.send(CALL, [id, args, info])
 
     caller.destroy = async () => ipc.send(DESTROY, id)
 

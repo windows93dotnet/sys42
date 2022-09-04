@@ -71,6 +71,8 @@ const popup = rpc(
     return deferred
   },
   {
+    module: import.meta.url,
+
     marshalling(el, def = {}, ctx) {
       if (el.getAttribute("aria-expanded") === "true") {
         el.setAttribute("aria-expanded", "false")
