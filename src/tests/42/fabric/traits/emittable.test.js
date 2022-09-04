@@ -385,3 +385,24 @@ test("the once event is called once also in a recursive function", (t) => {
   el.emit("event")
   t.is(counter, 2)
 })
+
+test("repeat off: true", (t) => {
+  const el = emittable()
+  let counter = 0
+  let off = el.on("event", { off: true }, () => {
+    counter++
+  })
+  el.emit("event")
+  t.is(counter, 1)
+  off()
+  el.emit("event")
+  t.is(counter, 1)
+  off = el.on("event", { off: true }, () => {
+    counter++
+  })
+  el.emit("event")
+  t.is(counter, 2)
+  off()
+  el.emit("event")
+  t.is(counter, 2)
+})

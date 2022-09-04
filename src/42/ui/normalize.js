@@ -16,6 +16,7 @@ import noop from "../fabric/type/function/noop.js"
 import arrify from "../fabric/type/any/arrify.js"
 import hash from "../fabric/type/any/hash.js"
 import getType from "../fabric/getType.js"
+import { merge } from "../core/configure.js"
 import ALLOWED_HTML_ATTRIBUTES from "../fabric/constants/ALLOWED_HTML_ATTRIBUTES.js"
 import ALLOWED_SVG_ATTRIBUTES from "../fabric/constants/ALLOWED_SVG_ATTRIBUTES.js"
 
@@ -337,13 +338,15 @@ export function objectifyDef(def) {
 
 export function forkDef(def, ctx) {
   def = objectifyDef(def)
+  def = { ...def }
+
   if (ctx) {
     if (ctx.plugins) def.plugins = Object.keys(ctx.plugins)
     if (ctx.scope) def.scope = ctx.scope
     if (ctx.scopeChain) def.scopeChain = structuredClone(ctx.scopeChain)
     if (ctx.reactive) def.state = structuredClone(ctx.reactive.data)
     if (ctx.id) def.parentId = ctx.id
-    if (ctx.actions) def.actions = ctx.actions.value
+    if (ctx.actions) def.actions = merge({}, ctx.actions.value)
   }
 
   return def
