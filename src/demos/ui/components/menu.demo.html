@@ -10,7 +10,6 @@
 </script>
 
 <script type="module">
-  /*  eslint-disable no-unused-vars  */
   import "../../../42/ui/components/dialog.js"
   import "../../../42/ui/popup.js"
   import ui from "../../../42/ui.js"
@@ -18,45 +17,68 @@
 
   const content = [
     {
-      label: "Open",
-      id: "btnOpen",
+      label: "Dialog",
+      id: "btnDialog",
       picto: "folder-open",
       shortcut: "Ctrl+O",
       dialog: {
-        label: "Open File",
-        content: { tag: "input", placeholder: "path" },
+        label: "Incr",
+        content: [
+          {
+            tag: "number",
+            placeholder: "tab order",
+            scope: "cnt",
+            // value: "{{cnt}}",
+            compact: true,
+          },
+          {
+            tag: "button",
+            content: "{{cnt}}++",
+            click: "{{cnt++}}",
+          },
+        ],
       },
     },
     {
-      label: "Save",
+      label: "Disabled",
       picto: "save",
       shortcut: "Ctrl+S",
       click: "{{save()}}",
       disabled: true,
     },
     "---",
-    { label: "Ping", click: "{{ping(42)}}" },
+    { label: "Incr {{cnt}}", click: "{{cnt = incr(cnt)}}" },
   ]
 
   const demo = {
     tag: ".pa-xxl",
     content: [
-      { tag: "input", placeholder: "tab order" },
+      { tag: "number", placeholder: "tab order", scope: "cnt", compact: true },
+      "\n\n",
+      "\n\n",
+      {
+        tag: "button.w-ctrl",
+        content: "{{cnt}}++",
+        click: "{{cnt++}}",
+      },
       "---",
       { tag: "ui-menu", content },
       "---",
       { tag: "button#btnMenu", content: "Menu", menu: content },
     ],
 
+    state: {
+      cnt: 42,
+    },
+
     actions: {
       open() {
-        console.log("open", /* this,  */ inTop)
+        console.log("open", inTop)
       },
       save() {
-        console.log("save", /* this,  */ inTop)
+        console.log("save", inTop)
       },
-      ping(n) {
-        console.log("ping", n, /* this,  */ inTop)
+      incr(n) {
         return n + 1
       },
     },
@@ -83,9 +105,10 @@
       { trusted: true }
     )
     // app.query("#btnMenu").click()
+    app.query("#btnDialog").click()
   } else {
     app = await ui(demo)
-    // app.query("#btnOpen").click()
-    app.query("#btnMenu").click()
+    // app.query("#btnMenu").click()
+    // app.query("#btnDialog").click()
   }
 </script>
