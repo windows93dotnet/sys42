@@ -1,4 +1,4 @@
-export default function getFieldData(el) {
+export default function getControlData(el) {
   let val =
     "valueAsDate" in el && el.valueAsDate !== null //
       ? el.valueAsDate

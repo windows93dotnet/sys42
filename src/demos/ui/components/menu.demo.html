@@ -26,9 +26,7 @@
         content: [
           {
             tag: "number",
-            placeholder: "tab order",
             scope: "cnt",
-            // value: "{{cnt}}",
             compact: true,
           },
           {
@@ -53,7 +51,7 @@
   const demo = {
     tag: ".pa-xxl",
     content: [
-      { tag: "number", placeholder: "tab order", scope: "cnt", compact: true },
+      { tag: "number", scope: "cnt", compact: true },
       "\n\n",
       "\n\n",
       {
@@ -94,11 +92,11 @@
           tag: ".box-v.w-full",
           content: [
             demo,
-            {
-              tag: "ui-sandbox.panel",
-              permissions: "trusted",
-              path: "./menu.demo.html",
-            },
+            // {
+            //   tag: "ui-sandbox.panel",
+            //   permissions: "trusted",
+            //   path: "./menu.demo.html",
+            // },
           ],
         },
       },

@@ -1,4 +1,4 @@
-export default function setFieldData(el, val) {
+export default function setControlData(el, val) {
   switch (el.type) {
     case "checkbox":
       if (val == null) el.indeterminate = true

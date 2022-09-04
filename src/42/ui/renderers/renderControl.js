@@ -1,6 +1,6 @@
 import register from "../register.js"
-import setFieldData from "../../fabric/dom/setFieldData.js"
-import getFieldData from "../../fabric/dom/getFieldData.js"
+import setControlData from "../../fabric/dom/setControlData.js"
+import getControlData from "../../fabric/dom/getControlData.js"
 import setAttributes from "../../fabric/dom/setAttributes.js"
 import create from "../create.js"
 import { toTitleCase } from "../../fabric/type/string/letters.js"
@@ -36,14 +36,14 @@ function setValidation(def) {
   return attr
 }
 
-export default function renderField(el, ctx, def) {
+export default function renderControl(el, ctx, def) {
   el.name ||= ctx.scope
   el.id ||= hash(ctx.steps)
 
   setAttributes(el, setValidation(def))
 
-  register(ctx, ctx.scope, (val) => setFieldData(el, val))
-  def.on ??= [{ input: () => ctx.reactive.set(el.name, getFieldData(el)) }]
+  register(ctx, ctx.scope, (val) => setControlData(el, val))
+  def.on ??= [{ input: () => ctx.reactive.set(el.name, getControlData(el)) }]
 
   // const field = create("fieldset", {
   //   role: "none",

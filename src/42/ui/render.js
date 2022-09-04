@@ -5,7 +5,7 @@ import ALLOWED_HTML_TAGS from "../fabric/constants/ALLOWED_HTML_TAGS.js"
 import ALLOWED_SVG_TAGS from "../fabric/constants/ALLOWED_SVG_TAGS.js"
 import preload from "../core/load/preload.js"
 import renderComponent from "./renderers/renderComponent.js"
-import renderField from "./renderers/renderField.js"
+import renderControl from "./renderers/renderControl.js"
 import renderIf from "./renderers/renderIf.js"
 import renderEach from "./renderers/renderEach.js"
 import renderOn from "./renderers/renderOn.js"
@@ -29,7 +29,7 @@ function renderTag(ctx, def) {
   }
 
   if (el.form !== undefined && def.scope) {
-    el = renderField(el, ctx, def)
+    el = renderControl(el, ctx, def)
   }
 
   if (def.picto) {
