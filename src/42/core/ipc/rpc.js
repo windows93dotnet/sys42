@@ -57,10 +57,10 @@ if (inTop) {
       }
 
       const help = info.module
-        ? `.\nAdd this module in the Top realm ${info.module}`
+        ? `.\nAdd this module in the top-level realm ${info.module}`
         : ""
       throw new Error(
-        `The ${info.name} function isn't registered in the Top realm${help}`
+        `The ${info.name} function isn't registered in the top-level realm${help}`
       )
     })
     .on(DESTROY, (id) => {

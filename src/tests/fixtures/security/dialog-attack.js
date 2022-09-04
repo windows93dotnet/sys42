@@ -129,6 +129,8 @@ const dialog = rpc(
     return el.once("close").then((res) => ({ res, opener }))
   },
   {
+    module: import.meta.url,
+
     marshalling(def = {}, ctx) {
       if (!def.opener) {
         document.activeElement.id ||= uid()
