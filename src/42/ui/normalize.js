@@ -343,6 +343,7 @@ export function forkDef(def, ctx) {
     if (ctx.scopeChain) def.scopeChain = structuredClone(ctx.scopeChain)
     if (ctx.reactive) def.state = structuredClone(ctx.reactive.data)
     if (ctx.id) def.parentId = ctx.id
+    if (ctx.actions) def.actions = ctx.actions.value
   }
 
   return def

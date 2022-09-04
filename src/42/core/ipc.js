@@ -9,6 +9,7 @@ const sources = new WeakMap()
 const PING = "42_IPC_PING"
 const PONG = "42_IPC_PONG"
 const EMIT = "42_IPC_EMIT"
+const SEND = "42_IPC_SEND"
 const CLOSE = "42_IPC_CLOSE"
 const HANDSHAKE = "42_IPC_HANDSHAKE"
 
@@ -59,6 +60,8 @@ async function messageHandler(e) {
 
     if (worker) source = worker
 
+    let rsvp
+
     const meta = {
       type,
       origin,
@@ -69,6 +72,15 @@ async function messageHandler(e) {
       get emit() {
         return (events, ...args) => {
           port.postMessage({ type: EMIT, events, args })
+        }
+      },
+      get send() {
+        rsvp ??= {}
+        return async (events, ...args) => {
+          const id = uid()
+          port.postMessage({ type: SEND, id, events, args })
+          rsvp[id] = defer()
+          return rsvp[id]
         }
       },
     }
@@ -107,6 +119,9 @@ async function messageHandler(e) {
           .catch((err) => {
             port.postMessage({ id, err })
           })
+      } else if (type === "reply") {
+        rsvp[id].resolve(data)
+        delete rsvp[id]
       }
     }
   }
@@ -179,6 +194,13 @@ export class Sender extends Emitter {
       }
 
       if (data.type === EMIT) return void super.emit(data.events, ...data.args)
+
+      if (data.type === SEND) {
+        return void super.send(data.events, ...data.args).then((res) => {
+          this.port.postMessage({ id: data.id, type: "reply", data: res })
+        })
+      }
+
       if (data.type === PONG) return void this.ready.resolve()
     }
   }

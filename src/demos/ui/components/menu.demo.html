@@ -35,7 +35,7 @@
       disabled: true,
     },
     "---",
-    { label: "Ping", click: "{{ping()}}" },
+    { label: "Ping", click: "{{ping(42)}}" },
   ]
 
   const demo = {
@@ -49,9 +49,16 @@
     ],
 
     actions: {
-      open: () => console.log("open"),
-      save: () => console.log("save"),
-      ping: () => console.log("ping"),
+      open() {
+        console.log("open", /* this,  */ inTop)
+      },
+      save() {
+        console.log("save", /* this,  */ inTop)
+      },
+      ping(n) {
+        console.log("ping", n, /* this,  */ inTop)
+        return n + 1
+      },
     },
   }
 

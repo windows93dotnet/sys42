@@ -1,5 +1,6 @@
 import ipc from "../ipc.js"
 import hash from "../../fabric/type/any/hash.js"
+import traverse from "../../fabric/type/object/traverse.js"
 
 const { inTop, inIframe } = ipc
 
@@ -8,12 +9,41 @@ const DESTROY = "42_RPC_DESTROY"
 
 const functions = new Map()
 
+const serialize = (val) => {
+  const forgets = []
+
+  traverse(val, (key, fn, obj) => {
+    if (typeof fn === "function") {
+      const id = "42_RPC_FUNCTION_" + hash(fn)
+      forgets.push(ipc.on(id, { off: true }, (args) => fn(...args)))
+      obj[key] = id
+    }
+  })
+
+  const destroy = () => {
+    for (const forget of forgets) forget()
+  }
+
+  return { val, destroy }
+}
+
+const deserialize = (val, { send }) =>
+  traverse(val, (key, id, obj) => {
+    if (typeof id === "string" && id.startsWith("42_RPC_FUNCTION_")) {
+      obj[key] = async (...args) => {
+        const [res] = await send(id, args)
+        return res
+      }
+    }
+  })
+
 if (inTop) {
   ipc
     .on(CALL, ([id, args, info], meta) => {
       if (
         args.length > 1 &&
         typeof args[1] === "object" &&
+        "trusted" in args[1] &&
         meta.iframe &&
         meta.iframe.hasAttribute("sandbox") &&
         !meta.iframe.sandbox.contains("allow-same-origin")
@@ -22,7 +52,9 @@ if (inTop) {
         delete args[1].trusted
       }
 
-      if (functions.has(id)) return functions.get(id)(...args, meta)
+      if (functions.has(id)) {
+        return functions.get(id)(...deserialize(args, meta), meta)
+      }
 
       const help = info.module
         ? `.\nAdd this module in the Top realm ${info.module}`
@@ -54,7 +86,12 @@ export default function rpc(fn, options) {
         ? async (...args) => {
             const res = await marshalling(...args)
             if (res === false) return
-            return unmarshalling(await ipc.send(CALL, [id, res, info]))
+            const { val, destroy } = serialize(res)
+            const out = await unmarshalling(
+              await ipc.send(CALL, [id, val, info])
+            )
+            destroy()
+            return out
           }
         : unmarshalling
         ? async (...args) =>
@@ -63,7 +100,10 @@ export default function rpc(fn, options) {
         ? async (...args) => {
             const res = await marshalling(...args)
             if (res === false) return
-            return ipc.send(CALL, [id, res, info])
+            const { val, destroy } = serialize(res)
+            const out = await ipc.send(CALL, [id, val, info])
+            destroy()
+            return out
           }
         : async (...args) => ipc.send(CALL, [id, args, info])
 

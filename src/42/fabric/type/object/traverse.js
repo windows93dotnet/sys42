@@ -1,6 +1,10 @@
 export default function traverse(obj, cb, parentKey) {
-  for (const key of Object.keys(obj)) {
-    cb(key, obj[key], obj, parentKey)
-    if (typeof obj[key] === "object") traverse(obj[key], cb, key)
+  if (parentKey === undefined && !(obj && typeof obj === "object")) return obj
+
+  for (const [key, val] of Object.entries(obj)) {
+    cb(key, val, obj, parentKey)
+    if (val && typeof val === "object") traverse(val, cb, key)
   }
+
+  return obj
 }
