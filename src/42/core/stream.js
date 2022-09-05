@@ -150,6 +150,7 @@ export function tsJSON() {
 
 // @src https://github.com/jakearchibald/streaming-html-spec/blob/master/ParseTransform.js
 // Apache License 2.0
+// TODO: test using document.implementation.createHTMLDocument()
 export function tsDOM() {
   let controller
   // Create iframe for piping the response

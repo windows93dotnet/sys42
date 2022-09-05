@@ -1,5 +1,4 @@
-/* eslint-disable default-case */
-const { alloc } = Buffer
+import Buffer from "../../../fabric/class/Buffer.js"
 
 const ZEROS = "0000000000000000000"
 const SEVENS = "7777777777777777777"
@@ -12,7 +11,11 @@ const MASK = 0o7777
 const MAGIC_OFFSET = 257
 const VERSION_OFFSET = 263
 
-const clamp = function (index, len, defaultValue) {
+function toString(bytes, encoding) {
+  return new TextDecoder().decode(bytes, encoding)
+}
+
+function clamp(index, len, defaultValue) {
   if (typeof index !== "number") return defaultValue
   index = ~~index // Coerce to integer.
   if (index >= len) return len
@@ -22,64 +25,43 @@ const clamp = function (index, len, defaultValue) {
   return 0
 }
 
-const toType = function (flag) {
+function toType(flag) {
+  // prettier-ignore
   switch (flag) {
-    case 0:
-      return "file"
-    case 1:
-      return "link"
-    case 2:
-      return "symlink"
-    case 3:
-      return "character-device"
-    case 4:
-      return "block-device"
-    case 5:
-      return "directory"
-    case 6:
-      return "fifo"
-    case 7:
-      return "contiguous-file"
-    case 72:
-      return "pax-header"
-    case 55:
-      return "pax-global-header"
-    case 27:
-      return "gnu-long-link-path"
+    case 0: return "file"
+    case 1: return "link"
+    case 2: return "symlink"
+    case 3: return "character-device"
+    case 4: return "block-device"
+    case 5: return "directory"
+    case 6: return "fifo"
+    case 7: return "contiguous-file"
+    case 72: return "pax-header"
+    case 55: return "pax-global-header"
+    case 27: return "gnu-long-link-path"
     case 28:
-    case 30:
-      return "gnu-long-path"
+    case 30: return "gnu-long-path"
+    default: return null
   }
-
-  return null
 }
 
-const toTypeflag = function (flag) {
+function toTypeflag(flag) {
+  // prettier-ignore
   switch (flag) {
-    case "file":
-      return 0
-    case "link":
-      return 1
-    case "symlink":
-      return 2
-    case "character-device":
-      return 3
-    case "block-device":
-      return 4
-    case "directory":
-      return 5
-    case "fifo":
-      return 6
-    case "contiguous-file":
-      return 7
-    case "pax-header":
-      return 72
+    case "file": return 0
+    case "link": return 1
+    case "symlink": return 2
+    case "character-device": return 3
+    case "block-device": return 4
+    case "directory": return 5
+    case "fifo": return 6
+    case "contiguous-file": return 7
+    case "pax-header": return 72
+    default: return 0
   }
-
-  return 0
 }
 
-const indexOf = function (block, num, offset, end) {
+function indexOf(block, num, offset, end) {
   for (; offset < end; offset++) {
     if (block[offset] === num) return offset
   }
@@ -87,14 +69,14 @@ const indexOf = function (block, num, offset, end) {
   return end
 }
 
-const cksum = function (block) {
+function cksum(block) {
   let sum = 8 * 32
   for (let i = 0; i < 148; i++) sum += block[i]
   for (let j = 156; j < 512; j++) sum += block[j]
   return sum
 }
 
-const encodeOct = function (val, n) {
+function encodeOct(val, n) {
   val = val.toString(8)
   if (val.length > n) return SEVENS.slice(0, n) + " "
   return ZEROS.slice(0, n - val.length) + val + " "
@@ -148,13 +130,14 @@ const decodeOct = function (val, offset, length) {
   )
   while (offset < end && val[offset] === 0) offset++
   if (end === offset) return 0
-  return Number.parseInt(val.slice(offset, end).toString(), 8)
+  return Number.parseInt(toString(val.slice(offset, end)), 8)
 }
 
 const decodeStr = function (val, offset, length, encoding) {
-  return val
-    .slice(offset, indexOf(val, 0, offset, offset + length))
-    .toString(encoding)
+  return toString(
+    val.slice(offset, indexOf(val, 0, offset, offset + length)),
+    encoding
+  )
 }
 
 const addLength = function (str) {
@@ -206,7 +189,7 @@ export function decodePax(buf) {
 }
 
 export function encode(opts) {
-  const buf = alloc(512)
+  const buf = Buffer.alloc(512)
   let { name } = opts
   let prefix = ""
 
@@ -259,7 +242,7 @@ export function decode(buf, filenameEncoding, allowUnknownFormat) {
   const uid = decodeOct(buf, 108, 8)
   const gid = decodeOct(buf, 116, 8)
   const size = decodeOct(buf, 124, 12)
-  const mtime = decodeOct(buf, 136, 12)
+  const mtime = decodeOct(buf, 136, 12) * 1000
   const type = toType(typeflag)
   const linkname =
     buf[157] === 0 ? null : decodeStr(buf, 157, 100, filenameEncoding)
@@ -303,7 +286,7 @@ export function decode(buf, filenameEncoding, allowUnknownFormat) {
     uid,
     gid,
     size,
-    mtime: new Date(1000 * mtime),
+    mtime,
     type,
     linkname,
     uname,
@@ -312,3 +295,5 @@ export function decode(buf, filenameEncoding, allowUnknownFormat) {
     devminor,
   }
 }
+
+export default { encode, decode }

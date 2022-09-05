@@ -86,15 +86,15 @@ const compareArrayBuffers = (a, b) => {
   return true
 }
 
-const deep = (compare, a, b, visited) =>
-  compare(a, b, visited) && compareObjects(a, b, visited)
-
 const compareBlob = (a, b) =>
   a.size === b.size &&
   a.type === b.type &&
   a.name === b.name &&
   a.lastModified === b.lastModified &&
   a.webkitRelativePath === b.webkitRelativePath
+
+const deep = (compare, a, b, visited) =>
+  compare(a, b, visited) && compareObjects(a, b, visited)
 
 function walk(a, b, config) {
   if (Object.is(a, b)) return true

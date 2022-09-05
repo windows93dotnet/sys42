@@ -48,50 +48,6 @@ export default function Buffer(arg, encodingOrOffset, length) {
   return from(arg, encodingOrOffset, length)
 }
 
-/**
- * If `Buffer.TYPED_ARRAY_SUPPORT`:
- *   === true    Use Uint8Array implementation (fastest)
- *   === false   Print warning and recommend using `buffer` v4.x which has an Object
- *               implementation (most compatible, even IE6)
- *
- * Browsers that support typed arrays are IE 10+, Firefox 4+, Chrome 7+, Safari 5.1+,
- * Opera 11.6+, iOS 4.2+.
- *
- * We report that the browser does not support typed arrays if the are not subclassable
- * using __proto__. Firefox 4-29 lacks support for adding new properties to `Uint8Array`
- * (See: https://bugzilla.mozilla.org/show_bug.cgi?id=695438). IE 10 lacks support
- * for __proto__ and has a buggy typed array implementation.
- */
-Buffer.TYPED_ARRAY_SUPPORT = typedArraySupport()
-
-if (
-  !Buffer.TYPED_ARRAY_SUPPORT &&
-  typeof console !== "undefined" &&
-  typeof console.error === "function"
-) {
-  console.error(
-    "This browser lacks typed array (Uint8Array) support which is required by " +
-      "`buffer` v5.x. Use `buffer` v4.x if you require old browser support."
-  )
-}
-
-function typedArraySupport() {
-  // Can typed array instances can be augmented?
-  try {
-    const arr = new Uint8Array(1)
-    const proto = {
-      foo() {
-        return 42
-      },
-    }
-    Object.setPrototypeOf(proto, Uint8Array.prototype)
-    Object.setPrototypeOf(arr, proto)
-    return arr.foo() === 42
-  } catch {
-    return false
-  }
-}
-
 Object.defineProperty(Buffer.prototype, "parent", {
   enumerable: true,
   get() {
@@ -490,9 +446,9 @@ function byteLength(string, encoding) {
   const mustMatch = arguments.length > 2 && arguments[2] === true
   if (!mustMatch && len === 0) return 0
 
-  // Use a for loop to avoid recursion
+  // Use while loop to avoid recursion
   let loweredCase = false
-  for (;;) {
+  while (true) {
     switch (encoding) {
       case "ascii":
       case "latin1":
@@ -511,10 +467,7 @@ function byteLength(string, encoding) {
       case "base64":
         return base64.byteLength(base64clean(string))
       default:
-        if (loweredCase) {
-          return mustMatch ? -1 : utf8ToBytes(string).length // assume utf8
-        }
-
+        if (loweredCase) return mustMatch ? -1 : utf8ToBytes(string).length
         encoding = String(encoding).toLowerCase()
         loweredCase = true
     }
