@@ -3,6 +3,8 @@ import setControlData from "../../fabric/dom/setControlData.js"
 import getControlData from "../../fabric/dom/getControlData.js"
 import setAttributes from "../../fabric/dom/setAttributes.js"
 import create from "../create.js"
+import findScope from "../findScope.js"
+import resolveScope from "../resolveScope.js"
 import { toTitleCase } from "../../fabric/type/string/letters.js"
 import hash from "../../fabric/type/any/hash.js"
 
@@ -37,13 +39,18 @@ function setValidation(def) {
 }
 
 export default function renderControl(el, ctx, def) {
+  ctx.scope = ctx.scopeBackup
+  ctx.scope = resolveScope(...findScope(ctx, def.scope), ctx)
+
   el.name ||= ctx.scope
   el.id ||= hash(ctx.steps)
 
   setAttributes(el, setValidation(def))
 
   register(ctx, ctx.scope, (val) => setControlData(el, val))
-  def.on ??= [{ input: () => ctx.reactive.set(el.name, getControlData(el)) }]
+
+  def.on ??= []
+  def.on.push({ input: () => ctx.reactive.set(el.name, getControlData(el)) })
 
   // const field = create("fieldset", {
   //   role: "none",

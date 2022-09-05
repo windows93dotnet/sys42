@@ -231,7 +231,10 @@ export function normalizeComputed(scope, val, ctx, cb = noop) {
 }
 
 export function normalizeScope(def, ctx) {
-  if (def?.scope) ctx.scope = resolveScope(ctx.scope, def.scope, ctx)
+  if (def?.scope) {
+    ctx.scopeBackup = ctx.scope
+    ctx.scope = resolveScope(ctx.scope, def.scope, ctx)
+  }
 }
 
 export function normalizeData(def, ctx, cb) {
