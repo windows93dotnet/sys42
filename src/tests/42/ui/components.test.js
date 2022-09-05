@@ -212,7 +212,7 @@ test.tasks(
           bar: {
             type: "number",
             default: 2,
-            state: true,
+            storeInRootState: true,
             reflect: true,
           },
         },
@@ -367,7 +367,7 @@ test.tasks(
           foo: {
             type: "string",
             css: true,
-            state: true,
+            storeInRootState: true,
           },
         },
       },
@@ -1004,8 +1004,8 @@ test("props", 1, async (t) => {
   })
 
   t.eq(Object.keys(app.ctx.renderers), [
-    "/foo", //
-    "/ui/a/root/bar",
+    "/ui/a/root/bar", //
+    "/foo",
   ])
 
   t.is(app.el.innerHTML, '<ui-a bar="-">foo: 1, bar: -</ui-a>')
@@ -1182,7 +1182,7 @@ Component.define({
   props: {
     bar: {
       default: 2,
-      state: true,
+      storeInRootState: true,
       reflect: true,
     },
   },
@@ -1752,7 +1752,7 @@ test("computed", "from prop with state:true", async (t) => {
         props: {
           formated: {
             type: "string",
-            state: true,
+            storeInRootState: true,
           },
         },
 

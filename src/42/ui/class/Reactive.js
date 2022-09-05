@@ -131,7 +131,7 @@ export default class Reactive extends Emitter {
       const type = oldVal && typeof oldVal === "object" ? "objects" : "paths"
       queue[type].add([path, true])
     } else if (path.endsWith("/length")) {
-      queue.objects.add(path.slice(0, -7))
+      queue.objects.add([path.slice(0, -7)])
     } else if (val && typeof val === "object") {
       if (
         oldVal !== undefined &&
@@ -183,7 +183,7 @@ export default class Reactive extends Emitter {
 
     // console.group("State Update")
     // console.log([...changes].join("\n"))
-    // console.log("%c" + Object.keys(ctx.renderers).join("\n"), "color:#999")
+    // console.log("%c" + Object.keys(this.ctx.renderers).join("\n"), "color:#999")
     // console.groupEnd()
 
     queue.objects.clear()

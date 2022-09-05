@@ -38,7 +38,8 @@ function filterPropsKeys(configProps) {
   for (const key in configProps) {
     if (
       Object.hasOwn(configProps, key) &&
-      configProps[key].state === undefined
+      configProps[key].storeInState !== false &&
+      configProps[key].storeInRootState !== true
     ) {
       out.push(key)
     }

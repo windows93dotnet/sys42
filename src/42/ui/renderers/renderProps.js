@@ -74,11 +74,12 @@ export default async function renderProps(el, props, def) {
   const { ctx } = el
 
   const observed = {}
-  let data = {}
+  let data
 
   if (ctx.reactive.has(ctx.scope)) {
     data = ctx.reactive.get(ctx.scope)
   } else {
+    data = {}
     ctx.reactive.set(ctx.scope, data, { silent: true })
   }
 
@@ -102,9 +103,9 @@ export default async function renderProps(el, props, def) {
     }
 
     const scope =
-      item.state === undefined //
-        ? resolveScope(ctx.scope, key, ctx)
-        : resolveScope(ctx.scopeChain.at(0)?.scope ?? ctx.scope, key, ctx)
+      item.storeInRootState === true //
+        ? resolveScope(ctx.scopeChain.at(0)?.scope ?? ctx.scope, key, ctx)
+        : resolveScope(ctx.scope, key, ctx)
 
     const attribute = item.attribute ?? toKebabCase(key)
     const converter = item.converter ?? CONVERTERS[item.type ?? "string"]
@@ -139,6 +140,7 @@ export default async function renderProps(el, props, def) {
 
     let ref
     let fromRender = false
+    let fromStore = false
     let update
 
     if (item.update) {
@@ -152,19 +154,26 @@ export default async function renderProps(el, props, def) {
       }
     }
 
-    const render = (val, silent = true) => {
-      if (ctx.cancel.signal.aborted === true) return
+    const store = (val, options) => {
+      if (ctx.cancel.signal.aborted === true || item.storeInState === false) {
+        return
+      }
 
       ctx.reactive.now(() => {
-        if (!item.computed && item.state !== false) {
-          ctx.reactive.set(scope, ref ?? val, { silent })
-        }
-
-        if (!el.ready.isPending && update?.(false) !== false && queue) {
-          queue.add(key)
-          componentUpdate()
-        }
+        const silent = options?.silent ?? false
+        fromStore = true
+        ctx.reactive.set(scope, ref ?? val, { silent })
+        if (silent) fromStore = false
       })
+    }
+
+    const render = (val) => {
+      if (ctx.cancel.signal.aborted === true) return
+
+      if (!el.ready.isPending && update?.(false) !== false && queue) {
+        queue.add(key)
+        componentUpdate()
+      }
 
       if (item.css) {
         const cssVar = `--${typeof item.css === "string" ? item.css : key}`
@@ -196,7 +205,9 @@ export default async function renderProps(el, props, def) {
     if (fromView) {
       observed[attribute] = (val) => {
         if (fromRender) return
-        render(fromView(val, attribute, el, item), false)
+        val = fromView(val, attribute, el, item)
+        store(val)
+        render(val)
       }
     }
 
@@ -219,17 +230,20 @@ export default async function renderProps(el, props, def) {
     Object.defineProperty(el, key, {
       configurable: true,
       set:
-        item.state === false
+        item.storeInState === false
           ? (value) => {
               val = value
-              render(value, false)
+              render(value)
             }
           : (val) => {
               if (ref) ctx.reactive.now(() => ctx.reactive.set(ref.$ref, val))
-              else render(val, false)
+              else {
+                store(val)
+                render(val)
+              }
             },
       get:
-        item.state === false
+        item.storeInState === false
           ? () => val
           : () => ctx.reactive.get(ref ? ref.$ref : scope),
     })
@@ -237,11 +251,21 @@ export default async function renderProps(el, props, def) {
     if (typeof val === "function") {
       const fn = val
       ref = fn.ref ? { $ref: fn.ref } : undefined
-      register(ctx, fn, (val, changed) => render(val, changed === scope))
+      register(ctx, fn, (val, changed) => {
+        if (changed !== scope) store(val)
+        render(val)
+      })
     } else {
-      render(val)
-      if (!item.state) continue
-      register(ctx, scope, (val, changed) => render(val, changed === scope))
+      store(val, { silent: true })
+      register(ctx, scope, (val, changed) => {
+        if (changed !== undefined && changed !== scope) store(val)
+        else if (fromStore) {
+          fromStore = false
+          return
+        }
+
+        render(val)
+      })
     }
   }
 

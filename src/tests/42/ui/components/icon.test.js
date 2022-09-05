@@ -21,9 +21,10 @@ test("html", async (t) => {
 
   t.eq(Object.keys(app.ctx.renderers), [
     "/ui/icon/root/path",
+    "/ui/icon/root/small",
+    "/ui/icon/root/label",
     "/ui/icon/root/infos/description",
     "/ui/icon/root/infos/image",
-    "/ui/icon/root/label",
     "/ui/icon/root/infos/stem",
     "/ui/icon/root/infos/isFile",
     "/ui/icon/root/infos/ext",
@@ -55,12 +56,34 @@ test("html", async (t) => {
 </ui-icon>`
   )
 
-  t.is(app.el.textContent, "script\u200b.js")
+  const el = app.query("ui-icon")
 
-  app.query("ui-icon").path = "/derp/foo.bar/"
+  t.is(el.textContent, "script\u200b.js")
+  t.is(el.getAttribute("aria-description"), "file")
+  t.is(
+    el.querySelector(":scope img").getAttribute("src"),
+    "/42/themes/default/icons/subtype/javascript.png"
+  )
+
+  el.path = "/derp/foo.bar/"
   await app
 
-  t.is(app.el.textContent, "foo\u200b.bar")
+  t.is(el.textContent, "foo\u200b.bar")
+  t.is(el.getAttribute("aria-description"), "folder")
+  t.is(
+    el.querySelector(":scope img").getAttribute("src"),
+    "/42/themes/default/icons/places/folder.png"
+  )
+
+  el.path = "https://www.windows93.net/"
+  await app
+
+  t.is(el.textContent, "windows93\u200b.net")
+  t.is(el.getAttribute("aria-description"), "uri")
+  t.is(
+    el.querySelector(":scope img").getAttribute("src"),
+    "/42/themes/default/icons/ext/url.png"
+  )
 })
 
 test("infos", async (t) => {
@@ -218,14 +241,17 @@ test("each", async (t) => {
     },
   })
 
-  t.eq(Object.keys(app.ctx.renderers).slice(0, 7), [
+  t.eq(Object.keys(app.ctx.renderers).slice(0, 10), [
     "/arr",
     "/arr/0/x",
     "/ui/icon/root,[0]/path",
+    "/ui/icon/root,[0]/small",
+    "/ui/icon/root,[0]/label",
     "/arr/1/x",
     "/ui/icon/root,[1]/path",
+    "/ui/icon/root,[1]/small",
+    "/ui/icon/root,[1]/label",
     "/ui/icon/root,[0]/infos/description",
-    "/ui/icon/root,[1]/infos/description",
   ])
 
   const icons = app.each("ui-icon", { live: true })
@@ -266,20 +292,54 @@ test("each", 2, async (t) => {
     },
   })
 
-  t.eq(Object.keys(app.ctx.renderers).slice(0, 6), [
+  t.eq(Object.keys(app.ctx.renderers).slice(0, 10), [
     "/arr",
     "/arr/0",
     "/ui/icon/root,[0]/path",
+    "/ui/icon/root,[0]/small",
+    "/ui/icon/root,[0]/label",
     "/arr/1",
     "/ui/icon/root,[1]/path",
+    "/ui/icon/root,[1]/small",
+    "/ui/icon/root,[1]/label",
     "/ui/icon/root,[0]/infos/description",
   ])
 
   const icons = app.each("ui-icon", { live: true })
   t.eq(icons.textContent, ["foo\u200b.js", "derp"])
+  t.eq(
+    icons.infos.map(({ image }) => image),
+    [
+      "/42/themes/default/icons/subtype/javascript.png",
+      "/42/themes/default/icons/places/folder.png",
+    ]
+  )
+  t.eq(icons.getAttribute("aria-description"), [
+    "file", //
+    "folder",
+  ])
 
   app.state.arr = ["bar.txt"]
   await app
 
   t.eq(icons.textContent, ["bar\u200b.txt"])
+  t.eq(
+    icons.infos.map(({ image }) => image),
+    ["/42/themes/default/icons/type/text.png"]
+  )
+  t.eq(icons.getAttribute("aria-description"), [
+    "file", //
+  ])
+
+  app.state.arr = ["derp/"]
+  await app
+
+  t.eq(icons.textContent, ["derp"])
+  t.eq(
+    icons.infos.map(({ image }) => image),
+    ["/42/themes/default/icons/places/folder.png"]
+  )
+  t.eq(icons.getAttribute("aria-description"), [
+    "folder", //
+  ])
 })

@@ -11,6 +11,8 @@ test("render picto", async (t, { dest, collect }) => {
 
   const el = app.query("ui-picto")
 
+  t.eq(app.reactive.data, {}, 'picto "value" should not register in state')
+
   t.is(el.value, "puzzle")
   t.is(el.className, "picto--puzzle")
 

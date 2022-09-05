@@ -45,7 +45,7 @@ export default persist
 const handler = (e) => {
   if (pending.size > 0) {
     queueMicrotask(() => {
-      // force blocking ui saving
+      // force saving
       for (const fn of pending.values()) {
         cancelIdleCallback(fn.id)
         fn()

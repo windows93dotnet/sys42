@@ -8,7 +8,7 @@ export class Picto extends Component {
       value: {
         type: "string",
         reflect: true,
-        state: false,
+        storeInState: false,
         update() {
           this.className = `picto--${this.value}`
         },

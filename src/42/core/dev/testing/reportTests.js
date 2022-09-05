@@ -19,6 +19,8 @@ const failed = []
 const logs = []
 const warnings = []
 
+const logged = new WeakSet()
+
 const getSuiteTitle = ({ title, skip }, highlightLast) =>
   title
     .split("/")
@@ -145,7 +147,10 @@ const displayTest = (test, config, options) => {
     }
   }
 
-  if (test.logs) logs.push(...test.logs.map((arr) => [test.icon, ...arr]))
+  if (test.logs && !logged.has(test.logs)) {
+    logs.push(...test.logs.map((arr) => [test.icon, ...arr]))
+    logged.add(test.logs)
+  }
 
   let prefix =
     test.icon +
