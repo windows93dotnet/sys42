@@ -87,7 +87,11 @@ const popup = rpc(
       el.setAttribute("aria-expanded", "true")
       const rect = el.getBoundingClientRect()
 
-      if (rpc.inTop) return [objectifyDef(def), { ...ctx }, rect]
+      if (rpc.inTop) {
+        ctx = { ...ctx }
+        return [objectifyDef(def), ctx, rect]
+      }
+
       return [forkDef(def, ctx), {}, rect]
     },
 

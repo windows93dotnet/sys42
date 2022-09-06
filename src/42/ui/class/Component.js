@@ -173,9 +173,10 @@ export default class Component extends HTMLElement {
       preload: undefined,
       components: undefined,
       postrender: undefined,
-      cancel: ctx?.cancel?.fork(),
+      cancel: ctx?.detached ? undefined : ctx?.cancel?.fork(),
       steps: ctx?.steps ?? this.localName,
     })
+    delete this.ctx.detached
 
     def = ensureDef(def, this.ctx)
     normalizeScope(def, this.ctx)

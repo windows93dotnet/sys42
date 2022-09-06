@@ -42,7 +42,7 @@ export class Puppet extends Callable {
     })
   }
 
-  query(target, timeout = 5000) {
+  query(target = globalThis, timeout = 5000) {
     const instance = new Puppet(target, this)
     this.#instances.push(instance)
     if (Number.isFinite(timeout)) setTimeout(() => instance.cleanup(), timeout)

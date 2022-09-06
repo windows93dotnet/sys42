@@ -41,16 +41,16 @@ const content = (label) => [
 const demo = {
   tag: ".pa-xxl",
   content: [
-    { tag: "number", scope: "cnt", compact: true },
-    "\n\n",
-    "\n\n",
+    // { tag: "number", scope: "cnt", compact: true },
+    // "\n\n",
+    // "\n\n",
     {
-      tag: "button.w-ctrl",
+      tag: "button#btnIncrTop.w-ctrl",
       content: "{{cnt}}",
       click: "{{cnt++}}",
     },
-    "---",
-    { tag: "ui-menu", content: content("Inline") },
+    // "---",
+    // { tag: "ui-menu", content: content("Inline") },
     "---",
     { tag: "button#btnMenu", content: "Menu", menu: content("Popup") },
   ],
@@ -73,7 +73,7 @@ const demo = {
 }
 
 if (inTop) {
-  test.intg(async (t, { collect, dest, when }) => {
+  test.intg(async (t, { collect, dest, when, pickValues, $ }) => {
     await collect(
       ui(
         dest(true),
@@ -95,11 +95,17 @@ if (inTop) {
       )
     )
 
+    const btnIncr = {
+      btnIncrTop: $.query("#btnIncrTop"),
+    }
+
     t.puppet("#btnMenu").click()
     await when("uipopupopen")
     t.puppet("#menuItemDialogPopup").click()
     await when("uidialogopen")
-    t.puppet(".ui-dialog__body input").input(5)
+    t.puppet().dispatch("blur")
+    await t.puppet(".ui-dialog__body input").input(5)
+    t.eq(pickValues(btnIncr), { btnIncrTop: "5" })
   })
 } else {
   await ui(demo)

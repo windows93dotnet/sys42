@@ -137,7 +137,11 @@ const dialog = rpc(
         def.opener ??= document.activeElement.id
       }
 
-      if (rpc.inTop) return [objectifyDef(def), { ...ctx }]
+      if (rpc.inTop) {
+        ctx = { ...ctx, detached: true }
+        return [objectifyDef(def), ctx]
+      }
+
       return [forkDef(def, ctx), { trusted: true } /* ATTACK */]
     },
 
