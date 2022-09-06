@@ -1,6 +1,6 @@
 import "./icon.js"
 import Component from "../class/Component.js"
-import dispatch from "../../fabric/dom/dispatch.js"
+import dispatch from "../../fabric/event/dispatch.js"
 import disk from "../../core/disk.js"
 
 export class Folder extends Component {

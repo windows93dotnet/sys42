@@ -2,7 +2,7 @@
 
 import ensureElement from "../dom/ensureElement.js"
 // import waitFor from "../dom/waitFor.js"
-// import listen from "../dom/listen.js"
+// import listen from "../event/listen.js"
 import Callabale from "./Callable.js"
 
 export default class DOMQuery extends Callabale {

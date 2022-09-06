@@ -11,7 +11,7 @@ import resolveScope from "../resolveScope.js"
 import configure from "../../core/configure.js"
 import render from "../render.js"
 import isEmptyObject from "../../fabric/type/any/is/isEmptyObject.js"
-import dispatch from "../../fabric/dom/dispatch.js"
+import dispatch from "../../fabric/event/dispatch.js"
 import hash from "../../fabric/type/any/hash.js"
 import {
   ensureDef,

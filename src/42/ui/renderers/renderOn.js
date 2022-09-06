@@ -1,5 +1,5 @@
 /* eslint-disable max-params */
-import { normalizeListen, eventsMap } from "../../fabric/dom/on.js"
+import { normalizeListen, eventsMap } from "../../fabric/event/on.js"
 import { normalizeTokens } from "../normalize.js"
 import hash from "../../fabric/type/any/hash.js"
 import expr from "../../core/expr.js"

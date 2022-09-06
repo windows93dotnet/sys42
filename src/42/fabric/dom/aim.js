@@ -1,7 +1,7 @@
 // @read https://bjk5.com/post/44698559168/breaking-down-amazons-mega-dropdown
 
 /* eslint-disable max-params */
-import listen from "./listen.js"
+import listen from "../event/listen.js"
 import throttle from "../type/function/throttle.js"
 
 const ns = "http://www.w3.org/2000/svg"

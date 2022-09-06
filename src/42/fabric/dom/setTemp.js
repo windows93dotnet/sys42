@@ -1,6 +1,6 @@
 import cssPrefix from "./cssPrefix.js"
 import setStyles from "./setStyles.js"
-import { setClasses } from "./setAttributes.js"
+import setClasses from "./setClasses.js"
 
 const saveStyles = ({ style }, list) => {
   const saved = Object.create(null)
@@ -57,7 +57,7 @@ const setAttributes = (el, attr) => {
   }
 }
 
-export default function adapt(el, ...options) {
+export default function setTemp(el, ...options) {
   const restores = []
   const attributes = []
   const signals = []

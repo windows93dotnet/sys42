@@ -1,6 +1,6 @@
 import animate from "../../fabric/dom/animate.js"
 import distribute from "../../fabric/type/object/distribute.js"
-import adapt from "../../fabric/dom/adapt.js"
+import setTemp from "../../fabric/dom/setTemp.js"
 
 const keyframeEffectKeys = [
   "composite",
@@ -23,7 +23,7 @@ function start(el, how, keyframe, options) {
     }
   }
 
-  const restore = adapt(el, temp)
+  const restore = setTemp(el, temp)
   return animate[how](el, keyframe, options).then(restore)
 }
 

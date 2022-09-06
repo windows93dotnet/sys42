@@ -1,6 +1,6 @@
-import listen from "../../fabric/dom/listen.js"
+import listen from "../../fabric/event/listen.js"
 import configure from "../../core/configure.js"
-import adapt from "../../fabric/dom/adapt.js"
+import setTemp from "../../fabric/dom/setTemp.js"
 import Canceller from "../../fabric/class/Canceller.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 import noop from "../../fabric/type/function/noop.js"
@@ -96,7 +96,7 @@ export default class Dragger {
       }
 
       this.isDragging = true
-      restore = adapt(document.body, {
+      restore = setTemp(document.body, {
         signal,
         class: {
           "pointer-iframes-0": true,

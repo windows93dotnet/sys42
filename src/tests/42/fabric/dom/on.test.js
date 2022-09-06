@@ -1,5 +1,5 @@
 import test, { suite } from "../../../../42/test.js"
-import on, { parseShortcut } from "../../../../42/fabric/dom/on.js"
+import on, { parseShortcut } from "../../../../42/fabric/event/on.js"
 
 const { task } = test
 

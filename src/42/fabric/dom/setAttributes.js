@@ -1,6 +1,7 @@
 /* eslint-disable complexity */
 import uid from "../../core/uid.js"
 import setStyles from "./setStyles.js"
+import setClasses from "./setClasses.js"
 
 export function setDataset(el, obj) {
   for (const [key, val] of Object.entries(obj)) {
@@ -18,23 +19,6 @@ export function setAriaAttribute(el, key, val) {
 export function setAriaAttributes(el, obj) {
   for (const [key, val] of Object.entries(obj)) {
     setAriaAttribute(el, `aria-${key}`, val)
-  }
-
-  return el
-}
-
-// [1] SVG doesn't support `className` // TODO: check browser compatibility
-export function setClasses(el, val) {
-  if (Array.isArray(val)) el.setAttribute("class", val.join(" ") /* [1] */)
-  else {
-    const type = typeof val
-    if (type === "string") el.setAttribute("class", val /* [1] */)
-    else if (val && type === "object") {
-      for (const [keys, value] of Object.entries(val)) {
-        const op = value ? "add" : "remove"
-        for (const key of keys.split(" ")) el.classList[op](key)
-      }
-    }
   }
 
   return el

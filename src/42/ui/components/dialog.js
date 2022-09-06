@@ -1,7 +1,7 @@
 import Component from "../class/Component.js"
 import rpc from "../../core/ipc/rpc.js"
 import omit from "../../fabric/type/object/omit.js"
-import dispatch from "../../fabric/dom/dispatch.js"
+import dispatch from "../../fabric/event/dispatch.js"
 import maxZIndex from "../../fabric/dom/maxZIndex.js"
 import { objectifyDef, forkDef } from "../normalize.js"
 import uid from "../../core/uid.js"

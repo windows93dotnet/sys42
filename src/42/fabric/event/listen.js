@@ -1,6 +1,6 @@
 import stopEvent from "./stopEvent.js"
 import distribute from "../type/object/distribute.js"
-import ensureElement from "./ensureElement.js"
+import ensureElement from "../dom/ensureElement.js"
 import Canceller from "../class/Canceller.js"
 
 const OR_REGEX = /\s*\|\|\s*/

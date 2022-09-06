@@ -5,10 +5,10 @@ import Trait from "../class/Trait.js"
 import setup from "../../core/setup.js"
 import documentReady from "../../fabric/dom/documentReady.js"
 import emittable from "../../fabric/traits/emittable.js"
-import listen from "../../fabric/dom/listen.js"
+import listen from "../../fabric/event/listen.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 import motionless from "../../fabric/dom/motionless.js"
-import adapt from "../../fabric/dom/adapt.js"
+import setTemp from "../../fabric/dom/setTemp.js"
 import setRelativeToViewport from "../../fabric/dom/setRelativeToViewport.js"
 
 const DEFAULTS = {
@@ -200,7 +200,7 @@ class Positionable extends Trait {
         ? document.querySelector(this.config.of)
         : this.config.of
 
-    adapt(this.el, {
+    setTemp(this.el, {
       signal: this.cancel.signal,
       style: {
         position: this.config.position,

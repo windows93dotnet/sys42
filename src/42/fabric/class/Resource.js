@@ -1,9 +1,9 @@
 import uid from "../../core/uid.js"
 import configure from "../../core/configure.js"
 import ipc from "../../core/ipc.js"
-import dispatch from "../dom/dispatch.js"
+import dispatch from "../event/dispatch.js"
 import arrify from "../type/any/arrify.js"
-import listen from "../dom/listen.js"
+import listen from "../event/listen.js"
 import isIframable from "../type/url/isIframable.js"
 
 const DEFAULTS = {

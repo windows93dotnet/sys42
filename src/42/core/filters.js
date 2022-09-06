@@ -5,7 +5,7 @@
 
 import locate from "../fabric/locator/locate.js"
 import bytesize from "../fabric/type/file/bytesize.js"
-import dispatch from "../fabric/dom/dispatch.js"
+import dispatch from "../fabric/event/dispatch.js"
 import { round, floor, ceil } from "../fabric/type/number/precision.js"
 
 const types = {}
