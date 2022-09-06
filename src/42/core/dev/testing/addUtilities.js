@@ -64,7 +64,7 @@ export default function addUtilities(item, isExecutionContext) {
     )
 
     item.puppet = (el) => {
-      const instance = puppet.aim(el)
+      const instance = puppet(el)
       item.teardown(() => instance.cleanup())
       return instance
     }

@@ -1,6 +1,7 @@
 // @related https://github.com/Rich-Harris/simulant
 // @related https://devexpress.github.io/testcafe/documentation/test-api/actions/action-options.html#click-action-options
 
+import Callable from "../../fabric/class/Callable.js"
 import defer from "../../fabric/type/promise/defer.js"
 import mark from "../../fabric/type/any/mark.js"
 import asyncable from "../../fabric/traits/asyncable.js"
@@ -74,14 +75,16 @@ function normalizeTarget(val) {
   return target
 }
 
-export class Puppet {
+export class Puppet extends Callable {
   #instances = []
   #deferred = []
   #pendingKeys = new Map()
 
-  constructor(target, parent) {
+  constructor(target, prev) {
+    super((/* Puppet.query */ ...args) => this.query(...args))
+
     this.el = normalizeTarget(target)
-    this.parent = parent
+    this.prev = prev
 
     asyncable(this, { lazy: true }, async () => {
       this.cleanup()
@@ -89,10 +92,21 @@ export class Puppet {
     })
   }
 
-  aim(target) {
+  query(target, timeout = 5000) {
     const instance = new Puppet(target, this)
     this.#instances.push(instance)
+    if (Number.isFinite(timeout)) setTimeout(() => instance.cleanup(), timeout)
     return instance
+  }
+
+  parent() {
+    return this.prev
+  }
+
+  root() {
+    let root = this.prev
+    while (root?.prev) root = root.prev
+    return root
   }
 
   select() {

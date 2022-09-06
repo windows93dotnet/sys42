@@ -85,10 +85,8 @@
     },
   }
 
-  let app
-
   if (inTop) {
-    app = await ui(
+    await ui(
       {
         tag: ".box-fit.desktop",
         content: {
@@ -106,29 +104,29 @@
       { trusted: true }
     )
 
-    puppet.aim("#btnMenu").click()
+    puppet("#btnMenu").click()
     await when("uipopupopen")
-    puppet.aim("#menuItemDialogPopup").click()
-    // puppet.aim("#menuItemDialogInline").click()
+    puppet("#menuItemDialogPopup").click()
+    // puppet("#menuItemDialogInline").click()
     await when("uidialogopen")
 
-    puppet.aim(".ui-dialog__body input").input(5)
+    puppet(".ui-dialog__body input").input(5)
 
     // console.log(bot)
 
-    // const el = puppet.aim(".ui-dialog__body input")
+    // const el = puppet(".ui-dialog__body input")
 
-    // puppet.aim(".ui-dialog__body input").value = 5
+    // puppet(".ui-dialog__body input").value = 5
 
     // listen({
     //   uipopupopen() {
-    //     puppet.aim("#menuItemDialog").click()
+    //     puppet("#menuItemDialog").click()
     //   },
     // })
-    // app.query("#btnDialog").click()
+    // puppet("#btnDialog").click()
   } else {
-    app = await ui(demo)
-    // app.query("#btnMenu").click()
-    // app.query("#btnDialog").click()
+    await ui(demo)
+    // puppet("#btnMenu").click()
+    // puppet("#btnDialog").click()
   }
 </script>

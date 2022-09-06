@@ -11,6 +11,7 @@
 
 <script type="module">
   import ui from "../../../42/ui.js"
+  import listen from "../../../42/fabric/dom/listen.js"
   import log from "../../../42/core/log.js"
 
   // import fs from "../../../42/core/fs.js"
@@ -101,7 +102,13 @@
     log(app.data)
   }
 
-  app.on("click", () => {
-    log(app.data)
+  listen({
+    click() {
+      log(app.data)
+    },
   })
+
+  // app.on("click", () => {
+  //   log(app.data)
+  // })
 </script>
