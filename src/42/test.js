@@ -9,11 +9,14 @@ import addUtilities from "./core/dev/testing/addUtilities.js"
 
 export { default as mock } from "./core/dev/testing/mock.js"
 
+system.DEV = true
+
 system.testing ??= {
   root: new Suite("#root"),
   testfiles: Object.create(null),
   suites: new Map(),
   iframes: [],
+  started: false,
   ran: false,
   run: (...args) =>
     import("./core/dev/testing/runTests.js") //
@@ -28,6 +31,8 @@ system.testing ??= {
 
 const sbs = system.testing
 sbs.current = sbs.root
+
+export { sbs }
 
 const suitesStack = []
 
@@ -46,6 +51,41 @@ const makeCallbackTest = (fn) => {
   return cb
 }
 
+const makeINTGTest = (fn) => {
+  requestIdleCallback(async () => {
+    // Integration tests self-execute if not started from a test runner
+    // it allow to manually debug GUI tests inside a webpage
+    if (system.testing.started) return
+
+    await import("./fabric/type/error/trap.js").then((m) => m.default())
+    const ExecutionContext = await import(
+      "./core/dev/testing/ExecutionContext.js"
+    ).then((m) => m.default)
+
+    const t = new ExecutionContext()
+    Object.assign(t.utils, {
+      dest: () => document.body,
+      collect: (item) => item,
+    })
+
+    fn(t, t.utils)
+  })
+
+  return async (t) => {
+    t.utils.listen({
+      uidialogopen(e, target) {
+        target.style.opacity = 0.01
+        t.utils.collect(target)
+      },
+      uipopupopen(e, target) {
+        target.style.opacity = 0.01
+        t.utils.collect(target)
+      },
+    })
+    await fn(t, t.utils)
+  }
+}
+
 export const test = chainable(
   [
     "only",
@@ -60,6 +100,7 @@ export const test = chainable(
     "beforeEach",
     "setup",
     "teardown",
+    "intg",
   ],
   {
     taskError({ data }, value) {
@@ -89,6 +130,12 @@ export const test = chainable(
       const title = args
 
       if (data.cb) fn = makeCallbackTest(fn)
+      if (data.intg) {
+        fn = makeINTGTest(fn)
+        data.serial = true
+        sbs.current.serial = true
+        sbs.current.timeout = 3000
+      }
 
       const test = new Test(sbs.current, title, fn)
       if (data.taskError) test.taskError = data.taskError
@@ -112,27 +159,6 @@ export const test = chainable(
     }
   }
 )
-
-test.e2e = (title, url, timeout = 3000) => {
-  test.suite.serial()
-  test.serial(title, async (t) => {
-    t.timeout(timeout)
-    const e2e = await import(url).then((m) => m.default)
-
-    t.utils.listen({
-      uidialogopen(e, target) {
-        target.style.opacity = 0.01
-        t.utils.collect(target)
-      },
-      uipopupopen(e, target) {
-        target.style.opacity = 0.01
-        t.utils.collect(target)
-      },
-    })
-
-    await e2e(t)
-  })
-}
 
 export const suite = chainable(
   [
@@ -194,45 +220,5 @@ test.suite = suite
 
 addUtilities(test)
 addUtilities(suite)
-
-export function awaitTestFileReady(url, retry = 100) {
-  return new Promise((resolve, reject) => {
-    const interval = setInterval(() => {
-      if (retry-- < 0) {
-        clearInterval(interval)
-        reject(new Error(`Testfile didn't load: ${url}`))
-      }
-
-      if (url in sbs.testfiles) {
-        clearInterval(interval)
-        resolve()
-      }
-    }, 10)
-  })
-}
-
-export async function htmlTest(url, options) {
-  const el = document.createElement("iframe")
-  el.src = url
-  el.style.cssText = `
-position: absolute;
-inset: 0;
-width: 800px;
-height: 600px;
-opacity: 0.01;`
-
-  if (options?.serializer?.keepIframes) el.style.opacity = 1
-
-  document.body.append(el)
-
-  try {
-    await awaitTestFileReady(el.src, options?.retry)
-    sbs.iframes.push(el)
-  } catch {
-    el.remove()
-  }
-
-  return el
-}
 
 export default test

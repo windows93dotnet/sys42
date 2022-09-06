@@ -1,7 +1,7 @@
-import system from "../../system.js"
+import { sbs } from "../../test.js"
 import configure from "../configure.js"
 import inFrontend from "../env/runtime/inFrontend.js"
-import { htmlTest } from "../../test.js"
+import htmlTest from "./testing/htmlTest.js"
 
 const DEFAULTS = {
   verbose: 1,
@@ -30,7 +30,8 @@ export default async function testRunner(testFiles, options) {
     config.reporter.verbose = config.verbose
   }
 
-  system.testing.ran = false
+  sbs.started = true
+  sbs.ran = false
 
   const time = performance.now()
 
@@ -45,16 +46,14 @@ export default async function testRunner(testFiles, options) {
 
   if (config.cnt) config.runner.oneach = () => console.log(" ")
 
-  await system.testing.run(config.runner)
+  await sbs.run(config.runner)
 
-  system.testing.root.ms = performance.now() - time
-  system.testing.ran = true
+  sbs.root.ms = performance.now() - time
+  sbs.started = false
+  sbs.ran = true
 
-  if (config.serialize) return system.testing.serialize(config.serializer)
+  if (config.serialize) return sbs.serialize(config.serializer)
   if (config.report) {
-    system.testing.report(
-      await system.testing.serialize(config.serializer),
-      config.reporter
-    )
+    sbs.report(await sbs.serialize(config.serializer), config.reporter)
   }
 }

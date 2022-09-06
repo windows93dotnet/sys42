@@ -59,11 +59,11 @@ const popup = rpc(
     }
 
     const forget = listen({
-      // "blur || click"(e, target) {
-      //   if (!(target.nodeType === Node.ELEMENT_NODE && el.contains(target))) {
-      //     close(target.id === def.opener, e.type === "blur")
-      //   }
-      // },
+      "blur || click"(e, target) {
+        if (!(target.nodeType === Node.ELEMENT_NODE && el.contains(target))) {
+          close(target.id === def.opener, e.type === "blur")
+        }
+      },
     })
 
     dispatch(el, "uipopupopen")
