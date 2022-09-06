@@ -2,15 +2,6 @@ import test from "../../../42/test.js"
 import ui from "../../../42/ui.js"
 import system from "../../../42/system.js"
 
-function getVal(btn) {
-  const out = {}
-  for (const [key, val] of Object.entries(btn)) {
-    out[key] = val.textContent
-  }
-
-  return out
-}
-
 const button = (label) => ({
   tag: `button#btnIncr${label}`,
   content: "{{cnt}}",
@@ -44,7 +35,7 @@ const buttons = (label) => ({
   ],
 })
 
-test.intg("popup behavior", async (t, { collect, dest }) => {
+test.intg("popup behavior", async (t, { collect, dest, pickValues }) => {
   const app = collect(
     await ui(
       dest(true),
@@ -133,7 +124,7 @@ test.intg("popup behavior", async (t, { collect, dest }) => {
 
     if (options?.incr) {
       t.is(incr.textContent, String(cnt))
-      t.eq(getVal(incrBtns), {
+      t.eq(pickValues(incrBtns), {
         top: String(cnt),
         dialogTop: String(cnt),
         iframe: String(cnt),
@@ -146,7 +137,7 @@ test.intg("popup behavior", async (t, { collect, dest }) => {
       await t.sleep(30)
 
       t.is(incr.textContent, String(cnt))
-      t.eq(getVal(incrBtns), {
+      t.eq(pickValues(incrBtns), {
         top: String(cnt),
         dialogTop: String(cnt),
         iframe: String(cnt),
@@ -167,7 +158,7 @@ test.intg("popup behavior", async (t, { collect, dest }) => {
       cnt++
       await t.sleep(30)
 
-      t.eq(getVal(incrBtns), {
+      t.eq(pickValues(incrBtns), {
         top: String(cnt),
         dialogTop: String(cnt),
         iframe: String(cnt),

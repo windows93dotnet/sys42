@@ -24,6 +24,14 @@ import stringify from "../../../fabric/type/any/stringify.js"
 import system from "../../../system.js"
 import uid from "../../uid.js"
 import when from "../../../fabric/type/promise/when.js"
+import pick from "../../../fabric/type/object/pick.js"
+import omit from "../../../fabric/type/object/omit.js"
+
+function pickValues(btn, key = "textContent") {
+  const out = {}
+  for (const [k, val] of Object.entries(btn)) out[k] = val[key]
+  return out
+}
 
 const idRegistry = {}
 const _forgets = Symbol("_forgets")
@@ -179,6 +187,9 @@ export default function addUtilities(item, isExecutionContext) {
     system,
     uid,
     when,
+    omit,
+    pick,
+    pickValues,
     $: new DOMQuery(),
   })
 
