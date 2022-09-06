@@ -74,13 +74,14 @@ function normalizeTarget(val) {
   return target
 }
 
-export class Automaton {
+export class Puppet {
+  #instances = []
   #deferred = []
   #pendingKeys = new Map()
-  #instances = []
 
-  constructor(target) {
+  constructor(target, parent) {
     this.el = normalizeTarget(target)
+    this.parent = parent
 
     asyncable(this, { lazy: true }, async () => {
       this.cleanup()
@@ -88,8 +89,8 @@ export class Automaton {
     })
   }
 
-  target(target) {
-    const instance = new Automaton(target)
+  aim(target) {
+    const instance = new Puppet(target, this)
     this.#instances.push(instance)
     return instance
   }
@@ -102,6 +103,12 @@ export class Automaton {
   focus() {
     if ("focus" in this.el) this.el.focus()
     else this.dispatch("focus")
+    return this
+  }
+
+  input(val) {
+    if (val !== undefined && "value" in this.el) this.el.value = val
+    this.dispatch("input")
     return this
   }
 
@@ -163,4 +170,4 @@ export class Automaton {
   }
 }
 
-export default new Automaton(globalThis)
+export default new Puppet(globalThis)

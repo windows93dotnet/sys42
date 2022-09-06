@@ -1,5 +1,5 @@
 import test from "../../../../42/test.js"
-import automaton from "../../../../42/core/dev/automaton.js"
+import puppet from "../../../../42/core/dev/puppet.js"
 import keyboard from "../../../../42/core/devices/keyboard.js"
 
 test.suite.serial()
@@ -17,7 +17,7 @@ test.teardown(() => {
 test.serial("auto release keys", async (t) => {
   t.alike(keyboard.keys, {})
 
-  const promise = automaton
+  const promise = puppet
     .keydown({ key: "Control", code: "ControlLeft" })
     .keydown({ key: "Enter", code: "Enter" })
 

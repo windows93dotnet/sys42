@@ -1,4 +1,3 @@
-import automaton from "../automaton.js"
 import allKeys from "../../../fabric/type/object/allKeys.js"
 import arrify from "../../../fabric/type/any/arrify.js"
 import clone from "../../../fabric/type/any/clone.js"
@@ -15,6 +14,7 @@ import log, { Log, CONSOLE_KEYS } from "../../log.js"
 import noop from "../../../fabric/type/function/noop.js"
 import parallel from "../../../fabric/type/promise/parallel.js"
 import prettify from "../../../fabric/type/markup/prettify.js"
+import puppet from "../puppet.js"
 import repaint from "../../../fabric/type/promise/repaint.js"
 import serial from "../../../fabric/type/promise/serial.js"
 import shell from "../../shell.js"
@@ -63,8 +63,8 @@ export default function addUtilities(item, isExecutionContext) {
       ])
     )
 
-    item.automaton = (el) => {
-      const instance = automaton.target(el)
+    item.puppet = (el) => {
+      const instance = puppet.aim(el)
       item.teardown(() => instance.cleanup())
       return instance
     }
@@ -156,7 +156,6 @@ export default function addUtilities(item, isExecutionContext) {
   item.utils ??= {}
 
   Object.assign(item.utils, {
-    automaton,
     allKeys,
     arrify,
     clone,
@@ -170,6 +169,7 @@ export default function addUtilities(item, isExecutionContext) {
     noop,
     parallel,
     prettify,
+    puppet,
     repaint,
     serial,
     shell,

@@ -13,22 +13,20 @@
   import "../../../42/ui/components/dialog.js"
   import "../../../42/ui/popup.js"
   import ui from "../../../42/ui.js"
-  import inTop from "../../../42/core/env/realm/inTop.js"
 
-  const content = [
+  import when from "../../../42/fabric/type/promise/when.js"
+  import inTop from "../../../42/core/env/realm/inTop.js"
+  import puppet from "../../../42/core/dev/puppet.js"
+
+  const content = (label) => [
     {
-      label: "Dialog",
-      id: "btnDialog",
+      label: `Dialog ${label}`,
+      id: `menuItemDialog${label}`,
       picto: "folder-open",
       shortcut: "Ctrl+O",
       dialog: {
-        label: "Incr",
+        label: `Dialog ${label}`,
         content: [
-          {
-            tag: "number",
-            scope: "x",
-            compact: true,
-          },
           {
             tag: "number",
             scope: "cnt",
@@ -65,9 +63,9 @@
         click: "{{cnt++}}",
       },
       "---",
-      { tag: "ui-menu", content },
+      { tag: "ui-menu", content: content("Inline") },
       "---",
-      { tag: "button#btnMenu", content: "Menu", menu: content },
+      { tag: "button#btnMenu", content: "Menu", menu: content("Popup") },
     ],
 
     state: {
@@ -107,8 +105,27 @@
       },
       { trusted: true }
     )
-    // app.query("#btnMenu").click()
-    app.query("#btnDialog").click()
+
+    puppet.aim("#btnMenu").click()
+    await when("uipopupopen")
+    puppet.aim("#menuItemDialogPopup").click()
+    // puppet.aim("#menuItemDialogInline").click()
+    await when("uidialogopen")
+
+    puppet.aim(".ui-dialog__body input").input(5)
+
+    // console.log(bot)
+
+    // const el = puppet.aim(".ui-dialog__body input")
+
+    // puppet.aim(".ui-dialog__body input").value = 5
+
+    // listen({
+    //   uipopupopen() {
+    //     puppet.aim("#menuItemDialog").click()
+    //   },
+    // })
+    // app.query("#btnDialog").click()
   } else {
     app = await ui(demo)
     // app.query("#btnMenu").click()

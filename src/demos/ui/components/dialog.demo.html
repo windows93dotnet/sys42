@@ -11,21 +11,44 @@
 
 <script type="module">
   import ui from "../../../42/ui.js"
-  import listen from "../../../42/fabric/dom/listen.js"
-  import sleep from "../../../42/fabric/type/promise/sleep.js"
 
   const app = await ui({
     tag: "body.desktop",
     content: [
-      { tag: "button", content: "{{cnt}}", click: "{{cnt++}}" },
+      { tag: "button", content: "{{cnt}}++", click: "{{cnt++}}" },
       {
         tag: "button#dialog",
         content: "dialog",
         dialog: {
-          live: false,
-          label: "live dialog",
-          // animate: { translate: "0 -100%", opacity: 0 },
-          content: [{ tag: "button", content: "{{cnt}}", click: "{{cnt++}}" }],
+          label: "Live Dialog",
+          animate: { translate: "0 -100%", opacity: 0 },
+          content: [
+            {
+              tag: ".box-v.ctrl-group.w-ctrl",
+              content: [
+                {
+                  tag: "number",
+                  scope: "x",
+                  compact: true,
+                },
+                {
+                  tag: "number",
+                  scope: "y",
+                  compact: true,
+                },
+              ],
+            },
+            {
+              tag: "number",
+              scope: "cnt",
+              compact: true,
+            },
+            {
+              tag: "button",
+              content: "{{cnt}}++",
+              click: "{{cnt++}}",
+            },
+          ],
         },
       },
     ],
@@ -34,44 +57,49 @@
     },
   })
 
-  // import log from "../../../42/core/log.js"
+  app.query("button#dialog")?.click()
+
+  // import listen from "../../../42/fabric/dom/listen.js"
+  // import sleep from "../../../42/fabric/type/promise/sleep.js"
+
+  // // import log from "../../../42/core/log.js"
+  // // listen({
+  // //   click() {
+  // //     setTimeout(() => {
+  // //       log(app.data)
+  // //     }, 0)
+  // //   },
+  // // })
+
+  // setTimeout(() => {
+  //   app.query("button#dialog")?.click()
+  //   // app.query("button#dialog")?.click()
+  // }, 100)
+
+  // let closed
+
   // listen({
-  //   click() {
-  //     setTimeout(() => {
-  //       log(app.data)
-  //     }, 0)
+  //   async uidialogopen(e) {
+  //     // console.log("uidialogopen", e)
+  //     if (closed) return
+  //     closed = true
+  //     await sleep(500)
+  //     // document.querySelector(".ui-dialog__close")?.click()
+  //     e.target.close()
+  //     app.query("button#dialog")?.click()
   //   },
+  //   // uidialogclose(e) {
+  //   //   // e.preventDefault()
+  //   //   console.log("uidialogclose", e)
+  //   // },
   // })
 
-  setTimeout(() => {
-    app.query("button#dialog")?.click()
-    // app.query("button#dialog")?.click()
-  }, 100)
-
-  let closed
-
-  listen({
-    async uidialogopen(e) {
-      // console.log("uidialogopen", e)
-      if (closed) return
-      closed = true
-      await sleep(500)
-      // document.querySelector(".ui-dialog__close")?.click()
-      e.target.close()
-      app.query("button#dialog")?.click()
-    },
-    // uidialogclose(e) {
-    //   // e.preventDefault()
-    //   console.log("uidialogclose", e)
-    // },
-  })
-
-  // import dialog from "../../../42/ui/components/dialog.js"
-  // const res = await dialog({
-  //   x: 100,
-  //   label: "standalone",
-  //   content: "hello {{cnt}}",
-  //   state: { cnt: 42 },
-  // })
-  // console.log("res", res)
+  // // import dialog from "../../../42/ui/components/dialog.js"
+  // // const res = await dialog({
+  // //   x: 100,
+  // //   label: "standalone",
+  // //   content: "hello {{cnt}}",
+  // //   state: { cnt: 42 },
+  // // })
+  // // console.log("res", res)
 </script>

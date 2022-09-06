@@ -149,7 +149,7 @@ suite.serial("globalThis", () => {
       })
     )
 
-    const bot = t.automaton(dest)
+    const bot = t.puppet(dest)
 
     await bot.keystroke({ key: "Control", code: "ControlLeft" })
 
@@ -177,7 +177,7 @@ suite.serial("globalThis", () => {
       })
     )
 
-    const bot = t.automaton(dest)
+    const bot = t.puppet(dest)
 
     t.eq([a.count, b.count], [0, 0])
 
@@ -213,7 +213,7 @@ suite.serial("globalThis", () => {
       })
     )
 
-    const bot = t.automaton(dest)
+    const bot = t.puppet(dest)
 
     await bot.keystroke({ key: "a", code: "KeyA" })
     t.eq(stub.count, 0)
@@ -245,7 +245,7 @@ suite.serial("globalThis", () => {
       })
     )
 
-    const bot = t.automaton(dest)
+    const bot = t.puppet(dest)
 
     await bot.click()
     t.eq(stub.count, 0)
