@@ -121,6 +121,17 @@ export async function wsSample(rs, fn) {
   return wsCollect(b)
 }
 
+export function wsEach(cb) {
+  let i = 0
+  const ws = new WritableStream({
+    async write(chunk, controller) {
+      const res = await cb(chunk, i++)
+      if (res === false) controller.error()
+    },
+  })
+  return ws
+}
+
 /* transform
 ============ */
 
@@ -245,6 +256,20 @@ export function tsJoin(separator = "\n") {
   })
 }
 
+export function tsCut(size) {
+  const buffer = absorb.arrayBuffer()
+  let offset = 0
+  return new TransformStream({
+    transform(chunk, controller) {
+      buffer.add(chunk)
+      while (buffer.pointer >= offset + size) {
+        controller.enqueue(new Uint8Array(buffer.memory.buffer, offset, size))
+        offset += size
+      }
+    },
+  })
+}
+
 export function tsCombine(a, ...transforms) {
   if (Array.isArray(a)) [a, ...transforms] = a
   let readable = a.readable || a
@@ -270,6 +295,7 @@ const stream = {
     collect: wsCollect,
     sink: wsSink,
     sample: wsSample,
+    each: wsEach,
   },
 
   transform: {
@@ -284,6 +310,7 @@ const stream = {
     filter: tsFilter,
     split: tsSplit,
     join: tsJoin,
+    cut: tsCut,
     combine: tsCombine,
   },
 }

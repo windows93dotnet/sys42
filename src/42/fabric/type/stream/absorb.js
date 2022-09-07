@@ -115,3 +115,7 @@ class Absorb {
 export default function absorb(encoding) {
   return new Absorb(encoding)
 }
+
+absorb.text = () => new AbsorbText()
+absorb.array = () => new AbsorbArray()
+absorb.arrayBuffer = () => new AbsorbArrayBuffer()

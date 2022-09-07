@@ -8,6 +8,10 @@ const ERROR_EVENT_INFOS = ["lineno", "colno", "filename"]
 export default function serializeError(error) {
   const details = {}
 
+  if (error === null || typeof error !== "object") {
+    error = new Error(String(error))
+  }
+
   const keys =
     error instanceof DOMException
       ? Object.keys(error) // prevent legacy constant codes

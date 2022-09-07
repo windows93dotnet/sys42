@@ -1,9 +1,15 @@
 import { AbsorbArrayBuffer } from "../../fabric/type/stream/absorb.js"
 import headers from "./tar/headers.js"
 
-const overflow = function (size) {
+function overflow(size) {
   size &= 511
   return size && 512 - size
+}
+
+function makeFile(buffer, header, enqueue) {
+  const file = new File([buffer], header.name, { lastModified: header.mtime })
+  enqueue({ header, file })
+  return header.size + overflow(header.size)
 }
 
 function createConsumer(enqueue) {
@@ -15,21 +21,13 @@ function createConsumer(enqueue) {
   function consume() {
     // console.log(offset, absorb.view.slice(offset, offset + 512))
     if (header) {
-      if (
-        header.type === "file" &&
-        absorb.view.length >= offset + header.size
-      ) {
-        const file = new File(
-          [absorb.view.slice(offset, offset + header.size)],
-          header.name,
-          { lastModified: header.mtime }
-        )
-        enqueue({ header, file })
-        offset += header.size + overflow(header.size)
+      if (header.type === "file" && absorb.pointer >= offset + header.size) {
+        const buffer = absorb.view.slice(offset, offset + header.size)
+        offset += makeFile(buffer, header, enqueue)
         header = undefined
         consume()
       }
-    } else if (absorb.view.length >= offset + 512) {
+    } else if (absorb.pointer >= offset + 512) {
       header = headers.decode(absorb.view.slice(offset, offset + 512))
       offset += 512
       consume()

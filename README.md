@@ -5,17 +5,19 @@
   └─┴─╴
 sys42
 
-<!-- It's like `system32.dll` but for making desktop GUI, for the web, and it's not a DLL at all. -->
 </pre>
 
-## Does this answer the Ultimate Question\* ?
+## Does this answer the Ultimate Question ?
 
 tl;dr: Nope, but it can help you build desktop interfaces using web technologies.
 
 ### Fine, but why making desktop-like GUI on the web ?
 
-Well, mostly because [Atwood's Law](https://blog.codinghorror.com/the-principle-of-least-power/) !
-And also, because this project started as a cleanup of the [windows93.net](https://windows93.net) codebase, a website mimicking old microsoft windows interface. [...]
+Because this project started as a cleanup of the [windows93.net](https://windows93.net) codebase, a website mimicking old microsoft windows interfaces.\
+[...]\
+Also, [Atwood's Law](https://blog.codinghorror.com/the-principle-of-least-power/) is very real.
+
+Here is a glimpse of what's inside :
 
 ## UI Toolkit
 
@@ -87,7 +89,7 @@ The project is still in an experimental phase, here are the current list of prio
 - Security
 - Performance
 
-> Totally suitable for production. Trust me... im a dolphin.
+> Totally suitable for use in production. Trust me... im a dolphin.
 
 ## Contributing
 
@@ -105,7 +107,7 @@ Also, please, before submiting a bug, note that we're currently only supporting 
 
 ## Code of Conduct
 
-We are not on windows93's trollbox, so like in any public project: No insults, disrespect or provocative material of any kind will be tolerated in any interactions here (commit message, issues, comments...).
+We are not on windows93's trollbox here, so like in any public project: No insults, disrespect or provocative material of any kind will be tolerated in any interactions here (commit message, issues, comments...).
 (And yes, even when "it's funny", "for roleplaying" or "just for trolling").
 
 ## Sources
@@ -115,9 +117,13 @@ As we wanted to gather together most tools possible for making desktop-like appl
 For consistant naming and API we refactored (and sometimes improved) many usefull scripts and styles from npm, github, stackoverflow, blogs and books.
 
 > Some original API were too good and didn't need any changes. We did some rewrite from scratch when original scripts didn't fit well our codebase, either because they was too big, too old (no ES modules) or not specific enough. \
-> While doing that an habit emmerged: STDD (Stolen Test Driven Development).
+> While doing that, an habit emmerged: STDD (Stolen Test Driven Development).
 
 Many thanks to all authors who shared that knowledge! We tried to mention licences and credits as much as possible, but please contact us if you think we forgot you or if you disagree with licence usage.
 
 We know it's far from a perfect solution when considering open source contribution.
 But the project modularity nature is a bit too much entangled to use most existing 3rd party modules.
+
+## How to use
+
+[...]

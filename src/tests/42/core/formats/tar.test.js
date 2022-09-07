@@ -1,12 +1,15 @@
 import test from "../../../../42/test.js"
 import tar from "../../../../42/core/formats/tar.js"
 
-const { stream } = test.utils
+const { stream, http } = test.utils
 
 test("extract", "multi-file", async (t) => {
-  const res = await fetch("/tests/fixtures/tar/multi-file.tar")
-
-  const blobs = await stream.ws.collect(res.body.pipeThrough(tar.extract()))
+  const blobs = await stream.ws.collect(
+    http
+      .stream("/tests/fixtures/tar/multi-file.tar")
+      .pipeThrough(stream.ts.cut(321))
+      .pipeThrough(tar.extract())
+  )
 
   t.is(blobs.length, 2)
   t.eq(await blobs[0].header, {

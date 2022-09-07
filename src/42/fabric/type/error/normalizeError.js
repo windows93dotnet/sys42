@@ -6,10 +6,8 @@ export default function normalizeError(e, originStack = new Error().stack) {
   if (!error) {
     error = new Error(e.message ?? "Unable to extract information from error")
     error.stack = originStack
-  }
-
-  if (typeof error === "string") {
-    error = new Error(error)
+  } else if (typeof error !== "object") {
+    error = new Error(String(error))
     error.stack = originStack
   }
 
