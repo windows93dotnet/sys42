@@ -35,8 +35,8 @@ const buttons = (label) => ({
   ],
 })
 
-test.intg("popup behavior", async (t, { collect, dest, pickValues }) => {
-  const app = collect(
+test.intg("popup behavior", async (t, { decay, dest, pickValues }) => {
+  const app = decay(
     await ui(
       dest(true),
       {

@@ -131,17 +131,17 @@ dialog(
 
   (test, { title, def, timeout: ms, working, trusted, description }) => {
     ms ??= 2000
-    test.serial(title, async (t, { collect, dest }) => {
+    test.serial(title, async (t, { decay, dest }) => {
       t.timeout(ms + 100)
 
       t.utils.listen({
         uidialogopen(e, target) {
           target.style.opacity = 0.01
-          t.utils.collect(target)
+          t.utils.decay(target)
         },
       })
 
-      const app = collect(ui(dest(true), def, { trusted }))
+      const app = decay(ui(dest(true), def, { trusted }))
 
       let res
 

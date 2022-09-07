@@ -4,7 +4,7 @@ import ui from "../../../../42/ui.js"
 test.suite.timeout(1000)
 
 test("generate icon list", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(true), {
       tag: "ui-folder",
       path: "/tests/fixtures/components/folder/",

@@ -1,8 +1,8 @@
 import test from "../../../../42/test.js"
 import ui from "../../../../42/ui.js"
 
-test("render picto", async (t, { dest, collect }) => {
-  const app = await collect(
+test("render picto", async (t, { dest, decay }) => {
+  const app = await decay(
     ui(dest(true), {
       tag: "ui-picto",
       value: "puzzle",

@@ -78,9 +78,9 @@ const makeDemo = (content) => {
 
 if (inTop) {
   test.intg("dialog from closed popup is detached", async (t) => {
-    const { collect, dest, when, $ } = t.utils
+    const { decay, dest, when, $ } = t.utils
 
-    const app = await collect(
+    const app = await decay(
       ui(
         dest(true),
         {
@@ -144,14 +144,14 @@ if (inTop) {
   })
 
   test.intg("top-level an iframe works the same", async (t) => {
-    const { collect, dest } = t.utils
+    const { decay, dest } = t.utils
 
     const { href } = new URL(
       "../../../../demos/ui/components/menu.demo.html",
       import.meta.url
     )
 
-    await collect(
+    await decay(
       ui(
         dest(true),
         {

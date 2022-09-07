@@ -2,25 +2,23 @@ import test from "../../42/test.js"
 import ui from "../../42/ui.js"
 
 test("tag", (t) => {
-  const app = t.utils.collect(ui(t.utils.dest(), { tag: "em" }))
+  const app = t.utils.decay(ui(t.utils.dest(), { tag: "em" }))
   t.is(app.el.innerHTML, "<em></em>")
 })
 
 test("attributes", (t) => {
-  const app = t.utils.collect(ui(t.utils.dest(), { tag: "em", class: "foo" }))
+  const app = t.utils.decay(ui(t.utils.dest(), { tag: "em", class: "foo" }))
   t.is(app.el.innerHTML, '<em class="foo"></em>')
 })
 
 test("content", (t) => {
-  const app = t.utils.collect(
-    ui(t.utils.dest(), { tag: "em", content: "hello" })
-  )
+  const app = t.utils.decay(ui(t.utils.dest(), { tag: "em", content: "hello" }))
 
   t.is(app.el.innerHTML, "<em>hello</em>")
 })
 
 test("content", "array", (t) => {
-  const app = t.utils.collect(
+  const app = t.utils.decay(
     ui(t.utils.dest(), {
       tag: "em",
       content: ["hello ", { tag: "strong", content: "world" }],
@@ -31,7 +29,7 @@ test("content", "array", (t) => {
 })
 
 test("content", "special strings", (t) => {
-  const app = t.utils.collect(
+  const app = t.utils.decay(
     ui(t.utils.dest(), {
       tag: "h1",
       content: ["\n", "hello", "\n\n", "world", "---", "\n"],
@@ -51,7 +49,7 @@ hello<br>world<hr>
 ============= */
 
 test("template", async (t) => {
-  const app = t.utils.collect(ui(t.utils.dest(), `Hello {{world}}`))
+  const app = t.utils.decay(ui(t.utils.dest(), `Hello {{world}}`))
   await app
   t.is(app.el.textContent, "Hello ")
 
@@ -77,7 +75,7 @@ test("template", async (t) => {
 })
 
 test("reactive data", async (t) => {
-  const app = t.utils.collect(
+  const app = t.utils.decay(
     ui(t.utils.dest(), {
       tag: "em",
       content: "{{foo}}",
@@ -105,7 +103,7 @@ test("reactive data", async (t) => {
 })
 
 test("reactive data", "attributes", async (t) => {
-  const app = t.utils.collect(
+  const app = t.utils.decay(
     ui(t.utils.dest(), {
       tag: "em",
       content: "{{foo}}",
@@ -135,7 +133,7 @@ test("reactive data", "attributes", async (t) => {
 })
 
 test("reactive async state", async (t) => {
-  const app = t.utils.collect(
+  const app = t.utils.decay(
     ui(t.utils.dest(), {
       tag: "em",
       content: "{{foo}}",
@@ -168,7 +166,7 @@ test("reactive async state", async (t) => {
 })
 
 test("reactive data", "array", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       tag: "em",
       scope: "arr",
@@ -181,7 +179,7 @@ test("reactive data", "array", async (t) => {
 })
 
 test("reactive data", "array as data", async (t) => {
-  let app = await t.utils.collect(
+  let app = await t.utils.decay(
     ui(t.utils.dest(), {
       tag: "em",
       content: ["{{/0}}", "{{/1}}"],
@@ -191,7 +189,7 @@ test("reactive data", "array as data", async (t) => {
 
   t.is(app.el.innerHTML, "<em>ab</em>")
 
-  app = await t.utils.collect(
+  app = await t.utils.decay(
     ui(t.utils.dest(), {
       tag: "em",
       content: ["{{./0}}", "{{./1}}"],
@@ -203,7 +201,7 @@ test("reactive data", "array as data", async (t) => {
 })
 
 test("reactive data", "nested", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       tag: "em",
       content: "{{foo/bar}}",
@@ -227,7 +225,7 @@ test("reactive data", "nested", async (t) => {
 })
 
 test("reactive data", "styles", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       style: {
         color: "{{foo}}",
@@ -258,7 +256,7 @@ test("reactive data", "styles", async (t) => {
 =============== */
 
 test("update", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: "{{a}}{{b}}{{c}}",
       state: { a: "a", b: "b", c: "c" },
@@ -296,7 +294,7 @@ test("update", async (t) => {
 One update every animation frame */
 
 test("update throttle", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: "{{a}}{{b}}{{c}}",
       state: { a: "a", b: "b", c: "c" },
@@ -332,7 +330,7 @@ test("update throttle", async (t) => {
 })
 
 test("update throttle", "using throttle:false", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: "{{a}}{{b}}{{c}}",
       state: { a: "a", b: "b", c: "c" },
@@ -368,7 +366,7 @@ test("update throttle", "using throttle:false", async (t) => {
 })
 
 test("update throttle", "using updateNow", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: "{{a}}{{b}}{{c}}",
       state: { a: "a", b: "b", c: "c" },
@@ -405,7 +403,7 @@ test("update throttle", "using updateNow", async (t) => {
 })
 
 test("update throttle", "using silent:true", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: "{{a}}{{b}}{{c}}",
       state: { a: "a", b: "b", c: "c" },
@@ -445,7 +443,7 @@ test("update throttle", "using silent:true", async (t) => {
 ======== */
 
 test("scope", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       tag: "em",
       scope: "foo",
@@ -467,7 +465,7 @@ test("scope", async (t) => {
 })
 
 test("scope", "relative scopes", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       scope: "a/b/c",
       content: [
@@ -536,7 +534,7 @@ test("scope", "relative scopes", async (t) => {
 })
 
 test("scope", "relative template keys", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       scope: "a/b/c",
       content: [
@@ -608,7 +606,7 @@ test("scope", "relative template keys", async (t) => {
 ======== */
 
 test("class", "string", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       tag: "em",
       class: "{{a}} {{b}}",
@@ -633,7 +631,7 @@ test("class", "string", async (t) => {
 })
 
 test("class", "array", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       tag: "em",
       class: ["{{a}}", "{{b}}"],
@@ -658,7 +656,7 @@ test("class", "array", async (t) => {
 })
 
 test("class", "object", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       tag: "em",
       class: { a: "{{a}}", b: "{{b}}" },
@@ -712,14 +710,14 @@ test.tasks(
   ],
   (test, { def, expected }) => {
     test("abbr", "expand", def, async (t) => {
-      const app = await t.utils.collect(ui(t.utils.dest(), def))
+      const app = await t.utils.decay(ui(t.utils.dest(), def))
       t.is(app.el.innerHTML, expected)
     })
   }
 )
 
 test("abbr", "reactive", async (t) => {
-  const app = t.utils.collect(
+  const app = t.utils.decay(
     ui(t.utils.dest(), {
       tag: "em#{{foo}}",
       state: {
@@ -741,7 +739,7 @@ test("abbr", "reactive", async (t) => {
 })
 
 test("abbr", "reactive", 2, async (t) => {
-  const app = t.utils.collect(
+  const app = t.utils.decay(
     ui(t.utils.dest(), {
       tag: "em#{{foo}}.{{a}}.{{b}}",
       state: {
@@ -786,7 +784,7 @@ test("abbr", "reactive", 2, async (t) => {
 const uppercase = (str) => str.toUpperCase()
 
 test("actions", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: "a {{foo|>uppercase}}",
       state: { foo: "b" },
@@ -803,7 +801,7 @@ test("actions", async (t) => {
 })
 
 test("actions", "error", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(true), {
       content: "a {{foo|>uppercase}}",
       state: { foo: "b" },
@@ -832,7 +830,7 @@ test("actions", "error", async (t) => {
 })
 
 test("actions", "as function", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: "a {{uppercase(foo)}}",
       state: { foo: "b" },
@@ -849,7 +847,7 @@ test("actions", "as function", async (t) => {
 })
 
 test("actions", "inline variable", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: "a {{'b'|>uppercase}}",
       actions: { uppercase },
@@ -860,7 +858,7 @@ test("actions", "inline variable", async (t) => {
 })
 
 test("actions", "inline variable", "as function", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: "a {{uppercase('b')}}",
       actions: { uppercase },
@@ -871,7 +869,7 @@ test("actions", "inline variable", "as function", async (t) => {
 })
 
 test("actions", "buildin actions", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       tag: "pre",
       content: "{{foo|>stringify}}",
@@ -890,7 +888,7 @@ test("actions", "buildin actions", async (t) => {
 
 test("actions", "thisArg", async (t) => {
   t.plan(3)
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       tag: "em",
       content: "a {{foo|>uppercase}}",
@@ -910,7 +908,7 @@ test("actions", "thisArg", async (t) => {
 
 test("actions", "nested action", async (t) => {
   t.plan(3)
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       tag: "em",
       content: "a {{foo|>foo.bar}}",
@@ -932,7 +930,7 @@ test("actions", "nested action", async (t) => {
 
 test("actions", "nested action", 2, async (t) => {
   t.plan(3)
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       tag: "em",
       content: "a {{foo.bar(foo)}}",
@@ -958,7 +956,7 @@ test("actions", "thisArg", "nested", async (t) => {
   const tags = ["section", "em", "strong"]
   let cnt = 0
 
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: [
         "{{foo|>uppercase}}",
@@ -985,7 +983,7 @@ test("actions", "thisArg", "nested", async (t) => {
 })
 
 test("actions", "buildin actions locate", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       tag: "pre",
       content: "{{foo |> stringify('min')}}",
@@ -998,7 +996,7 @@ test("actions", "buildin actions locate", async (t) => {
 })
 
 test("actions", "pluralize", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: "{{'apple'|>pluralize}}, {{'orange'|>pluralize(5)}}",
     })
@@ -1011,7 +1009,7 @@ test("actions", "pluralize", async (t) => {
 ======= */
 
 test("if", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: { if: "{{a.b}}", content: "x" },
       state: {
@@ -1034,7 +1032,7 @@ test("if", async (t) => {
 })
 
 test("if", "manage renderers", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: { if: "{{a.b}}", content: "{{x}}" },
       state: {
@@ -1068,7 +1066,7 @@ test("if", "manage renderers", async (t) => {
 })
 
 test("if", "array", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         scope: "arr",
@@ -1094,7 +1092,7 @@ test("if", "array", async (t) => {
 })
 
 test("if", "else", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: [{ if: "{{a.b}}", content: "x", else: "y" }],
       state: {
@@ -1117,7 +1115,7 @@ test("if", "else", async (t) => {
 })
 
 test("if", "else with empty content", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: [{ if: "{{a.b}}", content: "x", else: [] }],
       state: {
@@ -1140,7 +1138,7 @@ test("if", "else with empty content", async (t) => {
 })
 
 test("if", "nodes", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: [
         {
@@ -1174,7 +1172,7 @@ test("if", "nodes", async (t) => {
 })
 
 test("if", "element", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: [
         {
@@ -1209,7 +1207,7 @@ test("if", "element", async (t) => {
 })
 
 test("if", "bug using reactive.update", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: [
         {
@@ -1253,7 +1251,7 @@ test("if", "bug using reactive.update", async (t) => {
 ============= */
 
 test("array", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       tag: "em",
       content: [
@@ -1288,7 +1286,7 @@ test("array", async (t) => {
 ========= */
 
 test("each", "manage childNodes", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: { scope: "arr", each: "{{.}}" },
     })
@@ -1339,7 +1337,7 @@ test("each", "manage childNodes", async (t) => {
 })
 
 test("each", "manage renderers", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         scope: "arr",
@@ -1400,7 +1398,7 @@ test("each", "manage renderers", async (t) => {
 })
 
 test("each", "def", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         scope: "arr",
@@ -1448,7 +1446,7 @@ test("each", "def", async (t) => {
 })
 
 test("each", "splice", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: { scope: "arr", each: "{{.}}" },
     })
@@ -1466,7 +1464,7 @@ test("each", "splice", async (t) => {
 })
 
 test("each", "array with objects", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         scope: "arr",
@@ -1503,7 +1501,7 @@ test("each", "array with objects", async (t) => {
 })
 
 test("each", "render index 0 bug", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         scope: "arr",
@@ -1542,7 +1540,7 @@ test("each", "render index 0 bug", async (t) => {
 })
 
 test("each", "innerHTML", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: [
         {
@@ -1581,7 +1579,7 @@ test("each", "innerHTML", async (t) => {
 })
 
 test("each", "element", "scopped", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         tag: "ul",
@@ -1613,7 +1611,7 @@ test("each", "element", "scopped", async (t) => {
 })
 
 test("each", "array of objects", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: { scope: "arr", each: "{{a}} - {{b}} - " },
       state: {
@@ -1629,7 +1627,7 @@ test("each", "array of objects", async (t) => {
 })
 
 test("each", "array of objects", "scopped", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: { scope: "arr", each: "{{a}} - {{b}} - " },
       state: {
@@ -1674,7 +1672,7 @@ test("each", "array of objects", "scopped", async (t) => {
 })
 
 test("each", "access root data", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: { scope: "arr", each: "{{a}} {{/foo}} " },
       state: {
@@ -1688,7 +1686,7 @@ test("each", "access root data", async (t) => {
 })
 
 test("each", "access data in previous level", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         scope: "baz/arr",
@@ -1710,7 +1708,7 @@ test("each", "access data in previous level", async (t) => {
 })
 
 test("each", "lastChild bug", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         scope: "arr",
@@ -1741,7 +1739,7 @@ test("each", "lastChild bug", async (t) => {
 })
 
 test("each", "range bug", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         scope: "arr",
@@ -1778,7 +1776,7 @@ test("each", "range bug", async (t) => {
 })
 
 test("each", "relative paths", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         scope: "baz/arr",
@@ -1798,7 +1796,7 @@ test("each", "relative paths", async (t) => {
 })
 
 test("each", "@index", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: { scope: "arr", each: "{{@index}} {{a}} " },
       state: {
@@ -1812,7 +1810,7 @@ test("each", "@index", async (t) => {
 })
 
 test("each", "@index", "string array", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: { scope: "arr", each: "{{@index}} {{.}} " },
       state: {
@@ -1826,7 +1824,7 @@ test("each", "@index", "string array", async (t) => {
 })
 
 test("each", "#", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         scope: "arr",
@@ -1853,7 +1851,7 @@ test("each", "#", async (t) => {
 })
 
 test("each", "#", "string array", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         scope: "arr",
@@ -1880,7 +1878,7 @@ test("each", "#", "string array", async (t) => {
 })
 
 test("each", "@last", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: { scope: "arr", each: "{{##}}:{{a}}{{@last ? '' : ', '}}" },
       state: {
@@ -1894,7 +1892,7 @@ test("each", "@last", async (t) => {
 })
 
 test("each", "@first", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: { scope: "arr", each: "{{@first ? ' - ' : ''}}{{##}}:{{a}} " },
       state: {
@@ -1908,7 +1906,7 @@ test("each", "@first", async (t) => {
 })
 
 test("each", "@last element", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         scope: "arr",
@@ -1928,7 +1926,7 @@ test("each", "@last element", async (t) => {
 })
 
 test("each", "@first element", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         scope: "arr",
@@ -1948,7 +1946,7 @@ test("each", "@first element", async (t) => {
 })
 
 test("each", "input element", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         scope: "arr",
@@ -1983,7 +1981,7 @@ test("each", "input element", async (t) => {
 test("computed", async (t) => {
   t.plan(6)
 
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         scope: "parsed",
@@ -2022,7 +2020,7 @@ test("computed", async (t) => {
 ========== */
 
 test("on", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         tag: "button",
@@ -2047,7 +2045,7 @@ test("on", async (t) => {
 })
 
 test("on", "queued fast calls", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         tag: "button",
@@ -2076,7 +2074,7 @@ test("on", "queued fast calls", async (t) => {
 
 test("on", "actions", async (t) => {
   t.plan(4)
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         tag: "button",
@@ -2120,7 +2118,7 @@ function change(input, value) {
 }
 
 test("input", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         tag: "input",

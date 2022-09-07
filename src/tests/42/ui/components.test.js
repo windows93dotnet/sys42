@@ -447,7 +447,7 @@ test.tasks(
         } else await checkDefine(component, t, args, expected)
       }
 
-      const app = await t.utils.collect(ui(t.utils.dest(connect), def))
+      const app = await t.utils.decay(ui(t.utils.dest(connect), def))
 
       if (expected) t.is(app.el.innerHTML, expected, "ui declaration error")
       if (check) await check(t, app)
@@ -467,7 +467,7 @@ test.tasks(
 )
 
 test("component child", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(true), {
       content: {
         tag: "ui-t-props",
@@ -526,7 +526,7 @@ Component.define({
 })
 
 test("state", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         tag: "ui-t-state",
@@ -546,7 +546,7 @@ test("state", async (t) => {
 })
 
 test("state", "template", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         tag: "ui-t-state",
@@ -576,7 +576,7 @@ test("state", "template", async (t) => {
 })
 
 test("state", "template", "not a ref", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         tag: "ui-t-state",
@@ -604,7 +604,7 @@ test("state", "template", "not a ref", async (t) => {
 })
 
 test("state", "multiple", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: [
         {
@@ -631,7 +631,7 @@ test("state", "multiple", async (t) => {
 })
 
 test("state", "scopped", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       scope: "a",
       content: [
@@ -659,7 +659,7 @@ test("state", "scopped", async (t) => {
 })
 
 test("state", "fixed", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         tag: "ui-t-nested-fixed",
@@ -715,7 +715,7 @@ Component.define(
 )
 
 test("custom content", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(true), {
       content: {
         tag: "ui-one",
@@ -728,7 +728,7 @@ test("custom content", async (t) => {
 })
 
 test("custom content", 2, async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(true), {
       content: {
         tag: "ui-one",
@@ -747,7 +747,7 @@ test("custom content", 2, async (t) => {
 })
 
 test("custom content", "nested components", 2, async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(true), {
       content: {
         tag: "ui-one",
@@ -828,7 +828,7 @@ Component.define({
 })
 
 test("state", "dynamic", "push", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         tag: "ui-t-nested-dynamic",
@@ -882,7 +882,7 @@ test("state", "dynamic", "push", async (t) => {
 })
 
 test("state", "dynamic", "pop", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(true), {
       content: {
         tag: "ui-t-nested-dynamic",
@@ -937,7 +937,7 @@ test("state", "dynamic", "pop", async (t) => {
 })
 
 test("state", "dynamic", "textContent", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(true), {
       content: {
         tag: "ui-t-nested-dynamic",
@@ -991,7 +991,7 @@ Component.define({
 })
 
 test("props", 1, async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: { tag: "ui-a" },
       state: { foo: 1 },
@@ -1022,7 +1022,7 @@ test("props", 1, async (t) => {
 })
 
 test("props", 2, async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: { tag: "ui-a", bar: 0 },
       state: { foo: 1 },
@@ -1043,7 +1043,7 @@ test("props", 2, async (t) => {
 })
 
 test("props", 3, async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: [
         { tag: "ui-a#a1", bar: -1 }, //
@@ -1093,7 +1093,7 @@ test("props", 3, async (t) => {
 })
 
 test("props", 4, async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: { tag: "ui-a", bar: "{{foo}}" },
       state: { foo: "a" },
@@ -1134,7 +1134,7 @@ test("props", 4, async (t) => {
 })
 
 test("props", 5, async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: { tag: "ui-a", bar: "{{foo |> upperCase}}" },
       state: { foo: "a" },
@@ -1190,7 +1190,7 @@ Component.define({
 })
 
 test("props state", 1, async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: { tag: "ui-b" },
       state: { foo: 1 },
@@ -1221,7 +1221,7 @@ test("props state", 1, async (t) => {
 })
 
 test("props state", 2, async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: { tag: "ui-b", bar: 0 },
       state: { foo: 1 },
@@ -1252,7 +1252,7 @@ test("props state", 2, async (t) => {
 })
 
 test("scopped", 1, async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: [
         { scope: "one", content: { tag: "ui-a", bar: 0 } }, //
@@ -1282,7 +1282,7 @@ test("scopped", 1, async (t) => {
 })
 
 test("scopped", 2, async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: [
         { tag: "ui-a", bar: -1 }, //
@@ -1358,7 +1358,7 @@ test("scopped", 2, async (t) => {
 ======== */
 
 test("array", 1, async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(true), {
       content: {
         scope: "arr",
@@ -1497,7 +1497,7 @@ test("array", 1, async (t) => {
 })
 
 test("array", 2, async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(true), {
       content: {
         scope: "arr",
@@ -1571,7 +1571,7 @@ async function testStringArray(t, app) {
 }
 
 test("string array", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         scope: "arr",
@@ -1627,7 +1627,7 @@ async function testStringArrayWithTransfers(t, app) {
 }
 
 test("string array", "using transfers", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(true), {
       content: {
         tag: "ui-t-nested-string-array",
@@ -1644,7 +1644,7 @@ test("string array", "using transfers", async (t) => {
 })
 
 test("string array", "using transfers and async state", async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(true), {
       content: {
         tag: "ui-t-nested-string-array",
@@ -1698,7 +1698,7 @@ test("computed", async (t) => {
     }
   )
 
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(true), {
       content: {
         tag: "ui-t-computed",
@@ -1773,7 +1773,7 @@ test("computed", "from prop with state:true", async (t) => {
     }
   )
 
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         tag: "ui-t-compu-sta",
@@ -1851,7 +1851,7 @@ test("computed", "computed prop", async (t) => {
     }
   )
 
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(true), {
       content: {
         tag: "ui-t-compu-prop",
@@ -1924,7 +1924,7 @@ Component.define(
 
 test("actions", "bug: component with computed", async (t) => {
   const deferred = t.utils.defer()
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
         tag: "ui-t-actions",

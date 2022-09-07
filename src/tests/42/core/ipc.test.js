@@ -45,7 +45,7 @@ test("env", "toPrimitive", (t) => {
   t.isNaN(+env)
 })
 
-test.serial("realms", async (t, { collect, dest }) => {
+test.serial("realms", async (t, { decay, dest }) => {
   t.timeout(2000)
 
   const targets = {}
@@ -65,7 +65,7 @@ test.serial("realms", async (t, { collect, dest }) => {
   })
 
   if (check.iframe || check.sandbox) {
-    await collect(
+    await decay(
       ui(
         dest(true),
         [
@@ -89,7 +89,7 @@ test.serial("realms", async (t, { collect, dest }) => {
       "/tests/fixtures/ipc/rsvp.html?e=42_ENV_CHILDWINDOW",
       "_blank"
     )
-    collect(targets.childWindow)
+    decay(targets.childWindow)
     await t.sleep(0)
     window.focus()
   }
@@ -99,8 +99,8 @@ test.serial("realms", async (t, { collect, dest }) => {
       "/tests/fixtures/ipc/rsvp.js?e=42_ENV_DEDICATEDWORKER",
       { type: "module" }
     )
-    collect(ipc.from(targets.dedicatedWorker))
-    collect(targets.dedicatedWorker)
+    decay(ipc.from(targets.dedicatedWorker))
+    decay(targets.dedicatedWorker)
   }
 
   if (check.sharedWorker) {
@@ -108,8 +108,8 @@ test.serial("realms", async (t, { collect, dest }) => {
       "/tests/fixtures/ipc/rsvp.js?e=42_ENV_SHAREDWORKER",
       { type: "module" }
     )
-    collect(ipc.from(targets.sharedWorker))
-    collect(targets.sharedWorker.port)
+    decay(ipc.from(targets.sharedWorker))
+    decay(targets.sharedWorker.port)
   }
 
   if (check.serviceWorker) {
@@ -117,7 +117,7 @@ test.serial("realms", async (t, { collect, dest }) => {
       "/tests/fixtures/ipc/rsvp.js?e=42_ENV_SERVICEWORKER",
       { type: "module" }
     )
-    collect(registration)
+    decay(registration)
   }
 
   const realms = {

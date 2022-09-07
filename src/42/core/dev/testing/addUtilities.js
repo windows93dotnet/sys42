@@ -35,7 +35,7 @@ function pickValues(btn, key = "textContent") {
 
 const idRegistry = {}
 const _forgets = Symbol("_forgets")
-const _collected = Symbol("_collected")
+const _decays = Symbol("_decays")
 
 export default function addUtilities(item, isExecutionContext) {
   if (isExecutionContext) {
@@ -90,27 +90,27 @@ export default function addUtilities(item, isExecutionContext) {
       item.utils[_forgets].push(listenFn(...args))
     }
 
-    item.utils[_collected] = []
-    const collect = (thing, cb) => {
-      if (item.utils[_collected].length === 0) {
+    item.utils[_decays] = []
+    const decay = (thing, cb) => {
+      if (item.utils[_decays].length === 0) {
         item.teardown(async () => {
-          for (const obj of item.utils[_collected]) {
+          for (const obj of item.utils[_decays]) {
             if (cb?.(obj) === false) continue
             if ((await kill(obj, console.warn)) === false) {
-              console.warn("collected object wasn't killed", obj)
+              console.warn("decay object wasn't killed", obj)
             }
           }
 
-          item.utils[_collected].length = 0
+          item.utils[_decays].length = 0
         })
       }
 
-      item.utils[_collected].push(thing)
+      item.utils[_decays].push(thing)
 
       return thing
     }
 
-    item.utils.collect = collect
+    item.utils.decay = decay
 
     item.utils.dest = (connect, options) => {
       const el = document.createElement("section")
@@ -125,7 +125,10 @@ export default function addUtilities(item, isExecutionContext) {
         inset: 0;`
 
       if (options?.keep !== true) {
-        collect(el)
+        // Use queueMicrotask to register manual decays before
+        // e.g. In this situation the ui function should be killed before it's destination element is removed
+        // ```t.utils.decay(ui(dest() … ))```
+        queueMicrotask(() => decay(el))
         el.style.opacity = 0.01
       }
 

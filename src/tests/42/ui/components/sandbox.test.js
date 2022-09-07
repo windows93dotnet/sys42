@@ -4,7 +4,7 @@ import ui from "../../../../42/ui.js"
 test.suite.timeout(1000)
 
 test(1, async (t) => {
-  const app = await t.utils.collect(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       tag: "ui-sandbox",
       permissions: "app",

@@ -37,7 +37,7 @@ export default function intgTest(fn, sbs) {
     if (manual && index === total) {
       const { dest } = t.utils
       Object.assign(t.utils, {
-        collect: (item) => item,
+        decay: (item) => item,
         dest(connect, options = {}) {
           options.keep = true
           return dest(connect, options)
@@ -48,11 +48,11 @@ export default function intgTest(fn, sbs) {
       t.utils.listen({
         uidialogopen(e, target) {
           target.style.opacity = 0.01
-          t.utils.collect(target)
+          t.utils.decay(target)
         },
         uipopupopen(e, target) {
           target.style.opacity = 0.01
-          t.utils.collect(target)
+          t.utils.decay(target)
         },
       })
     }

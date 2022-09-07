@@ -140,10 +140,10 @@ suite.serial("globalThis", () => {
 
   const dest = globalThis
 
-  test("Ctrl+click", async (t, { collect }) => {
+  test("Ctrl+click", async (t, { decay }) => {
     const stub = t.stub()
 
-    collect(
+    decay(
       on(dest, {
         "Ctrl+click": stub,
       })
@@ -166,11 +166,11 @@ suite.serial("globalThis", () => {
     t.eq(stub.count, 1)
   })
 
-  test("Ctrl+click & click", async (t, { collect }) => {
+  test("Ctrl+click & click", async (t, { decay }) => {
     const a = t.stub()
     const b = t.stub()
 
-    collect(
+    decay(
       on(dest, {
         "Ctrl+click": a,
         "click": b,
@@ -204,10 +204,10 @@ suite.serial("globalThis", () => {
     t.eq([a.count, b.count], [2, 3])
   })
 
-  test("a a", async (t, { collect }) => {
+  test("a a", async (t, { decay }) => {
     const stub = t.stub()
 
-    collect(
+    decay(
       on(dest, {
         "a a": stub,
       })
@@ -236,10 +236,10 @@ suite.serial("globalThis", () => {
     t.eq(stub.count, 2)
   })
 
-  test("click click", async (t, { collect }) => {
+  test("click click", async (t, { decay }) => {
     const stub = t.stub()
 
-    collect(
+    decay(
       on(dest, {
         "click click": stub,
       })
