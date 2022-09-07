@@ -20,11 +20,11 @@ export default async function htmlTest(url, options) {
   const el = document.createElement("iframe")
   el.src = url
   el.style.cssText = `
-position: absolute;
-inset: 0;
-width: 800px;
-height: 600px;
-opacity: 0.01;`
+    position: absolute;
+    inset: 0;
+    width: 800px;
+    height: 600px;
+    opacity: 0.01;`
 
   if (options?.serializer?.keepIframes) el.style.opacity = 1
 

@@ -36,7 +36,6 @@ function pickValues(btn, key = "textContent") {
 const idRegistry = {}
 const _forgets = Symbol("_forgets")
 const _collected = Symbol("_collected")
-const _elements = Symbol("_elements")
 
 export default function addUtilities(item, isExecutionContext) {
   if (isExecutionContext) {
@@ -92,7 +91,7 @@ export default function addUtilities(item, isExecutionContext) {
     }
 
     item.utils[_collected] = []
-    item.utils.collect = (thing, cb) => {
+    const collect = (thing, cb) => {
       if (item.utils[_collected].length === 0) {
         item.teardown(async () => {
           for (const obj of item.utils[_collected]) {
@@ -111,24 +110,26 @@ export default function addUtilities(item, isExecutionContext) {
       return thing
     }
 
-    item.utils[_elements] = []
-    item.utils.dest = (connect) => {
-      if (item.utils[_elements].length === 0) {
-        item.teardown(async () => {
-          await sleep(0)
-          for (const el of item.utils[_elements]) el.remove()
-          item.utils[_elements].length = 0
-        })
-      }
+    item.utils.collect = collect
 
+    item.utils.dest = (connect, options) => {
       const el = document.createElement("section")
       const { suiteTitle } = item.utils
       idRegistry[suiteTitle] ??= 0
       el.title = suiteTitle
       el.id = suiteTitle + "/" + idRegistry[suiteTitle]++
-      el.style.opacity = 0.01
+      el.style.cssText = `
+        position: absolute;
+        overflow: auto;
+        margin: 0;
+        inset: 0;`
+
+      if (options?.keep !== true) {
+        collect(el)
+        el.style.opacity = 0.01
+      }
+
       if (connect) document.body.append(el)
-      item.utils[_elements].push(el)
       return el
     }
   } else {

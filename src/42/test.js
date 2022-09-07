@@ -6,6 +6,7 @@ import Suite from "./core/dev/testing/class/Suite.js"
 import Test from "./core/dev/testing/class/Test.js"
 import ensureCurrentSuite from "./core/dev/testing/ensureCurrentSuite.js"
 import addUtilities from "./core/dev/testing/addUtilities.js"
+import intgTest from "./core/dev/testing/intgTest.js"
 
 export { default as mock } from "./core/dev/testing/mock.js"
 
@@ -49,41 +50,6 @@ const makeCallbackTest = (fn) => {
     })
   cb.original = fn
   return cb
-}
-
-const makeINTGTest = (fn) => {
-  requestIdleCallback(async () => {
-    // Integration tests self-execute if not started from a test runner
-    // it allow to manually debug GUI tests inside a webpage
-    if (system.testing.started) return
-
-    await import("./fabric/type/error/trap.js").then((m) => m.default())
-    const ExecutionContext = await import(
-      "./core/dev/testing/ExecutionContext.js"
-    ).then((m) => m.default)
-
-    const t = new ExecutionContext()
-    Object.assign(t.utils, {
-      dest: () => document.body,
-      collect: (item) => item,
-    })
-
-    fn(t, t.utils)
-  })
-
-  return async (t) => {
-    t.utils.listen({
-      uidialogopen(e, target) {
-        target.style.opacity = 0.01
-        t.utils.collect(target)
-      },
-      uipopupopen(e, target) {
-        target.style.opacity = 0.01
-        t.utils.collect(target)
-      },
-    })
-    await fn(t, t.utils)
-  }
 }
 
 export const test = chainable(
@@ -131,7 +97,7 @@ export const test = chainable(
 
       if (data.cb) fn = makeCallbackTest(fn)
       if (data.intg) {
-        fn = makeINTGTest(fn)
+        fn = intgTest(fn, sbs)
         data.serial = true
         sbs.current.serial = true
         sbs.current.timeout = 3000

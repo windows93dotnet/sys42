@@ -6,6 +6,7 @@ import defer from "../../fabric/type/promise/defer.js"
 import mark from "../../fabric/type/any/mark.js"
 import asyncable from "../../fabric/traits/asyncable.js"
 import simulate from "../../fabric/event/simulate.js"
+import when from "../../fabric/type/promise/when.js"
 
 const { ELEMENT_NODE } = Node
 
@@ -30,16 +31,19 @@ export class Puppet extends Callable {
   #deferred = []
   #pendingKeys = new Map()
 
-  constructor(target, prev) {
+  constructor(target, parent) {
     super((/* Puppet.query */ ...args) => this.query(...args))
 
     this.el = normalizeTarget(target)
-    this.prev = prev
+    this.parent = parent
 
-    asyncable(this, { lazy: true }, async () => {
-      this.cleanup()
-      await Promise.all(this.#deferred)
-    })
+    asyncable(this, { lazy: true }, async () => this.done())
+  }
+
+  get root() {
+    let root = this.parent
+    while (root?.prev) root = root.prev
+    return root
   }
 
   query(target = globalThis, timeout = 5000) {
@@ -47,16 +51,6 @@ export class Puppet extends Callable {
     this.#instances.push(instance)
     if (Number.isFinite(timeout)) setTimeout(() => instance.cleanup(), timeout)
     return instance
-  }
-
-  parent() {
-    return this.prev
-  }
-
-  root() {
-    let root = this.prev
-    while (root?.prev) root = root.prev
-    return root
   }
 
   select() {
@@ -123,6 +117,16 @@ export class Puppet extends Callable {
     this.#deferred.push(deferred)
     setTimeout(() => deferred.resolve(), 0)
     return this
+  }
+
+  async done() {
+    this.cleanup()
+    return Promise.all(this.#deferred)
+  }
+
+  async when(events, options) {
+    await this.done()
+    await when(this.el, events, options)
   }
 
   cleanup() {
