@@ -262,9 +262,18 @@ export function tsCut(size) {
   return new TransformStream({
     transform(chunk, controller) {
       buffer.add(chunk)
+      const arrbuf = buffer.memory.buffer
+      let remain
       while (buffer.pointer >= offset + size) {
-        controller.enqueue(new Uint8Array(buffer.memory.buffer, offset, size))
-        offset += size
+        remain = buffer.pointer - (offset + size)
+        if (remain < size) {
+          controller.enqueue(new Uint8Array(arrbuf, offset, remain))
+          offset += remain
+          break
+        } else {
+          controller.enqueue(new Uint8Array(arrbuf, offset, size))
+          offset += size
+        }
       }
     },
   })

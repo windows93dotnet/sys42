@@ -169,12 +169,14 @@ export function encodePax(opts) {
 }
 
 export function decodePax(buf) {
+  buf = Buffer.from(buf)
   const result = {}
 
   while (buf.length > 0) {
     let i = 0
     while (i < buf.length && buf[i] !== 32) i++
     const len = Number.parseInt(buf.slice(0, i).toString(), 10)
+    // const len = Number.parseInt(buf[i].toString(), 10)
     if (!len) return result
 
     const b = buf.slice(i + 1, len - 1).toString()
@@ -296,4 +298,4 @@ export function decode(buf, filenameEncoding, allowUnknownFormat) {
   }
 }
 
-export default { encode, decode }
+export default { encode, decode, decodePax }
