@@ -1,4 +1,6 @@
+import inTop from "../../env/realm/inTop.js"
 import debounce from "../../../fabric/type/function/debounce.js"
+// import { whenTestFileReady } from "./htmlTest.js"
 
 // Integration tests self-execute if not started from a test runner.
 // It allow to manually debug GUI tests inside a webpage
@@ -26,7 +28,7 @@ export default function intgTest(fn, sbs) {
   let manual = false
 
   requestIdleCallback(async () => {
-    if (sbs.started) return
+    if (!inTop || sbs.started) return
     manual = true
     selfExecute(sbs)
   })
@@ -60,5 +62,19 @@ export default function intgTest(fn, sbs) {
     await 0
 
     await fn(t, t.utils)
+
+    // t.timeout("reset")
+
+    // const iframes = document.querySelectorAll('iframe[src$="test=true"]')
+    // if (iframes.length > 0) {
+    //   t.timeout(3000)
+    //   const undones = []
+
+    //   for (const iframe of iframes) {
+    //     undones.push(whenTestFileReady(iframe.src))
+    //   }
+
+    //   await Promise.all(undones)
+    // }
   }
 }

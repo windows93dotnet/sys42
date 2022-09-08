@@ -8,7 +8,7 @@ import isIframable from "../type/url/isIframable.js"
 
 const DEFAULTS = {
   upgradeInsecureRequests: true,
-  checkIframable: true,
+  checkIframable: false,
   referrerpolicy: "same-origin",
   permissions: undefined,
   signal: undefined,

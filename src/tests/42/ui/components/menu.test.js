@@ -5,22 +5,24 @@ import "../../../../42/ui/components/dialog.js"
 import "../../../../42/ui/popup.js"
 import inTop from "../../../../42/core/env/realm/inTop.js"
 
+const __ = inTop ? "Top" : "Iframe"
+
 const makeMenu = (label) => [
   {
     label: `Dialog ${label}`,
-    id: `menuItemDialog${label}`,
+    id: `menuItemDialog${label}${__}`,
     picto: "folder-open",
     shortcut: "Ctrl+O",
     dialog: {
-      label: `Dialog ${label}`,
+      label: `Dialog ${label} ${__}`,
       content: [
         {
-          tag: `number#inputIncrDialog${label}`,
+          tag: `number#inputIncrDialog${label}${__}`,
           scope: "cnt",
           compact: true,
         },
         {
-          tag: `button#btnIncrDialog${label}`,
+          tag: `button#btnIncrDialog${label}${__}`,
           content: "{{cnt}}",
           click: "{{cnt++}}",
         },
@@ -44,7 +46,7 @@ const makeDemo = (content) => {
     "\n\n",
     "\n\n",
     {
-      tag: "button#btnIncrTop.w-ctrl",
+      tag: `button#btnIncr${__}.w-ctrl`,
       content: "{{cnt}}",
       click: "{{cnt++}}",
     },
@@ -90,13 +92,13 @@ if (inTop) {
             content: [
               makeDemo([
                 {
-                  tag: "button#btnIncrTop.w-ctrl",
+                  tag: `button#btnIncr${__}.w-ctrl`,
                   content: "{{cnt}}",
                   click: "{{cnt++}}",
                 },
                 "\n\n",
                 {
-                  tag: "button#btnMenu",
+                  tag: `button#btnMenu${__}`,
                   content: "Menu",
                   menu: makeMenu("Popup"),
                 },
@@ -108,18 +110,18 @@ if (inTop) {
       )
     )
 
-    t.puppet("#btnMenu").click()
+    t.puppet("#btnMenuTop").click()
     /* const { target: menu } = */ await when("uipopupopen")
-    t.puppet("#menuItemDialogPopup").click()
+    t.puppet("#menuItemDialogPopupTop").click()
     /* const { target: dialog } = */ await when("uidialogopen")
     await t.puppet().dispatch("blur") // close menu
-    await t.puppet("#inputIncrDialogPopup").input(42)
+    await t.puppet("#inputIncrDialogPopupTop").input(42)
     await app
 
     const els = {
       btnIncrTop: $.query("#btnIncrTop"),
-      btnIncrDialogPopup: $.query("#btnIncrDialogPopup"),
-      inputIncrDialogPopup: $.query("#inputIncrDialogPopup"),
+      btnIncrDialogPopup: $.query("#btnIncrDialogPopupTop"),
+      inputIncrDialogPopup: $.query("#inputIncrDialogPopupTop"),
     }
     t.eq(
       [
@@ -144,15 +146,16 @@ if (inTop) {
   })
 
   test.intg("top-level an iframe works the same", async (t) => {
+    t.timeout(1000)
     const { decay, dest } = t.utils
 
     const { href } = new URL(
-      "../../../../demos/ui/components/menu.demo.html",
+      "../../../../demos/ui/components/menu.demo.html?test=true",
       import.meta.url
     )
 
-    await decay(
-      ui(
+    decay(
+      await ui(
         dest(true),
         {
           tag: ".box-fit.desktop",

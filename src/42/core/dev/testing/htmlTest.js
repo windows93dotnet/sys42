@@ -1,6 +1,6 @@
 import system from "./mainSystem.js"
 
-export function awaitTestFileReady(url, retry = 100) {
+export async function whenTestFileReady(url, retry = 100) {
   return new Promise((resolve, reject) => {
     const interval = setInterval(() => {
       if (retry-- < 0) {
@@ -31,7 +31,7 @@ export default async function htmlTest(url, options) {
   document.body.append(el)
 
   try {
-    await awaitTestFileReady(el.src, options?.retry)
+    await whenTestFileReady(el.src, options?.retry)
     system.testing.iframes.push(el)
   } catch {
     el.remove()

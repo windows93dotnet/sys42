@@ -1,4 +1,5 @@
 import system from "./mainSystem.js"
+import inIframe from "../../env/realm/inIframe.js"
 import getParentModule from "../../../fabric/getParentModule.js"
 import shortenFilename from "../../../fabric/type/path/shortenFilename.js"
 import Suite from "./class/Suite.js"
@@ -8,13 +9,17 @@ const TITLE_REGEX =
 
 let lastTitled
 export default function ensureCurrentSuite(titled) {
-  const parentModule = getParentModule(/\.test\.(js|html)/)
+  const parentModule = inIframe
+    ? { url: location.href, stack: [{ filename: location.href }] }
+    : getParentModule(/\.test\.(js|html)/)
+
   let exist
 
   const moduleTitle = shortenFilename(parentModule.url)
     .replace(TITLE_REGEX, "")
+    .replace(/^\//, "")
     .replace(/\?.*$/, "")
-    .replace(/\.test\.html/, " (html)")
+    .replace(/\.(test|demo)\.html/, " (html)")
 
   if (titled) lastTitled = titled
   else if (
@@ -27,10 +32,6 @@ export default function ensureCurrentSuite(titled) {
   const title = titled ? `${moduleTitle}/${titled}` : moduleTitle
 
   if (!system.testing.suites.has(title)) exist = false
-
-  if (titled === undefined && title === "42/fs" && exist === false) {
-    console.log(new Error("ok"))
-  }
 
   if (exist === false) {
     system.testing.current = system.testing.root

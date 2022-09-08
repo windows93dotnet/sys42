@@ -1,8 +1,8 @@
 // jQuery inspired class
 
 import ensureElement from "../dom/ensureElement.js"
-// import waitFor from "../dom/waitFor.js"
-// import listen from "../event/listen.js"
+import waitFor from "../dom/waitFor.js"
+import listen from "../event/listen.js"
 import Callabale from "./Callable.js"
 
 export default class DOMQuery extends Callabale {
@@ -22,7 +22,7 @@ export default class DOMQuery extends Callabale {
   each(selector, options) {
     const init = options?.live ? [] : this.queryAll(selector)
     return new Proxy(init, {
-      get: (target, key /* , receiver */) => {
+      get: (target, key, receiver) => {
         if (options?.live) {
           target.length = 0
           target.push(...this.el.querySelectorAll(`:scope ${selector}`))
@@ -32,17 +32,17 @@ export default class DOMQuery extends Callabale {
         if (Reflect.has(target, key)) return Reflect.get(target, key)
 
         // events
-        // if (key === "on") {
-        //   return (event, selector, fn) => {
-        //     for (const item of target) {
-        //       typeof selector === "function"
-        //         ? listen(item, { [event]: selector })
-        //         : listen(item, { selector, [event]: fn })
-        //     }
+        if (key === "on") {
+          return (event, selector, fn) => {
+            for (const item of target) {
+              typeof selector === "function"
+                ? listen(item, { [event]: selector })
+                : listen(item, { selector, [event]: fn })
+            }
 
-        //     return receiver
-        //   }
-        // }
+            return receiver
+          }
+        }
 
         // fast return
         if (target.length === 0) return target
@@ -76,14 +76,14 @@ export default class DOMQuery extends Callabale {
     })
   }
 
-  // async waitFor(selector, options = {}) {
-  //   options.parent = this.el
-  //   return waitFor(selector, options)
-  // }
+  async waitFor(selector, options = {}) {
+    options.parent = this.el
+    return waitFor(selector, options)
+  }
 
-  // on(event, selector, fn) {
-  //   return typeof selector === "function"
-  //     ? listen(this.el, { [event]: selector })
-  //     : listen(this.el, { selector, [event]: fn })
-  // }
+  on(event, selector, fn) {
+    return typeof selector === "function"
+      ? listen(this.el, { [event]: selector })
+      : listen(this.el, { selector, [event]: fn })
+  }
 }
