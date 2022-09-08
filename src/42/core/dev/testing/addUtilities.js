@@ -116,7 +116,6 @@ export default function addUtilities(item, isExecutionContext) {
       const el = document.createElement("section")
       const { suiteTitle } = item.utils
       idRegistry[suiteTitle] ??= 0
-      el.title = suiteTitle
       el.id = suiteTitle + "/" + idRegistry[suiteTitle]++
       el.style.cssText = `
         position: absolute;
@@ -125,9 +124,10 @@ export default function addUtilities(item, isExecutionContext) {
         inset: 0;`
 
       if (options?.keep !== true) {
-        // Use queueMicrotask to register manual decays before
-        // e.g. In this situation the ui function should be killed before it's destination element is removed
-        // ```t.utils.decay(ui(dest() … ))```
+        // Use queueMicrotask to register all manual decays before
+        // e.g.
+        // In this situation: t.utils.decay(ui(dest() … ))
+        // the ui function should be killed before it's destination element is removed
         queueMicrotask(() => decay(el))
         el.style.opacity = 0.01
       }

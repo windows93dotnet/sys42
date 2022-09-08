@@ -1,9 +1,10 @@
 import test from "../../../../42/test.js"
 import ui from "../../../../42/ui.js"
+import system from "../../../../42/system.js"
 
+import inTop from "../../../../42/core/env/realm/inTop.js"
 import "../../../../42/ui/components/dialog.js"
 import "../../../../42/ui/popup.js"
-import inTop from "../../../../42/core/env/realm/inTop.js"
 
 const __ = inTop ? "Top" : "Iframe"
 
@@ -37,7 +38,12 @@ const makeMenu = (label) => [
     disabled: true,
   },
   "---",
-  { picto: "plus-large", label: "{{cnt}}", click: "{{cnt = incr(cnt)}}" },
+  {
+    label: "{{cnt}}", //
+    id: `menuItemIncr${label}${__}`,
+    picto: "plus-large",
+    click: "{{cnt = incr(cnt)}}",
+  },
 ]
 
 const makeDemo = (content) => {
@@ -53,7 +59,7 @@ const makeDemo = (content) => {
     "---",
     { tag: "ui-menu", content: makeMenu("Inline") },
     "---",
-    { tag: "button#btnMenu", content: "Menu", menu: makeMenu("Popup") },
+    { tag: `button#btnMenu${__}`, content: "Menu", menu: makeMenu("Popup") },
   ]
 
   return {
@@ -145,9 +151,9 @@ if (inTop) {
     )
   })
 
-  test.intg("top-level an iframe works the same", async (t) => {
+  test.intg.only("top-level an iframe works the same", async (t) => {
     t.timeout(1000)
-    const { decay, dest } = t.utils
+    const { decay, dest, when, $ } = t.utils
 
     const { href } = new URL(
       "../../../../demos/ui/components/menu.demo.html?test=true",
@@ -171,14 +177,22 @@ if (inTop) {
             ],
           },
         },
-        { trusted: true }
+        { trusted: true, id: "menuDemo" }
       )
     )
 
-    t.is(1, 1)
+    t.pass()
+
+    const iframe = $.query("ui-sandbox iframe")
+
+    await when("uipopupopen")
+    t.puppet("#menuItemIncrPopupIframe").click()
+    await system.once("ipc.plugin:end-of-update")
+
+    t.is($.query("#btnIncrIframe", iframe).textContent, "1")
   })
 } else {
-  await ui(makeDemo())
-  // puppet("#btnMenu").click()
-  // puppet("#btnDialog").click()
+  await ui({ content: makeDemo(), parentId: "menuDemo" })
+  const { puppet } = test.utils
+  puppet("#btnMenuIframe").click()
 }

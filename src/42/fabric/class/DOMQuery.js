@@ -11,12 +11,22 @@ export default class DOMQuery extends Callabale {
     this.el = ensureElement(el)
   }
 
-  query(selector) {
-    return this.el.querySelector(`:scope ${selector}`)
+  query(selector, base) {
+    if (base) {
+      base = ensureElement(base)
+      if (base.localName === "iframe") base = base.contentDocument
+    } else base = this.el
+
+    return base.querySelector(`:scope ${selector}`)
   }
 
-  queryAll(selector) {
-    return [...this.el.querySelectorAll(`:scope ${selector}`)]
+  queryAll(selector, base) {
+    if (base) {
+      base = ensureElement(base)
+      if (base.localName === "iframe") base = base.contentDocument
+    } else base = this.el
+
+    return [...base.querySelectorAll(`:scope ${selector}`)]
   }
 
   each(selector, options) {

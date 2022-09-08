@@ -16,6 +16,7 @@ import noop from "../fabric/type/function/noop.js"
 import arrify from "../fabric/type/any/arrify.js"
 import hash from "../fabric/type/any/hash.js"
 import getType from "../fabric/getType.js"
+import inTop from "../core/env/realm/inTop.js"
 import { merge } from "../core/configure.js"
 import ALLOWED_HTML_ATTRIBUTES from "../fabric/constants/ALLOWED_HTML_ATTRIBUTES.js"
 import ALLOWED_SVG_ATTRIBUTES from "../fabric/constants/ALLOWED_SVG_ATTRIBUTES.js"
@@ -413,6 +414,11 @@ export function normalizeDef(def = {}, ctx, options) {
     }
 
     normalizeScope(def, ctx)
+
+    if (!inTop && ctx.parentId) {
+      def.plugins ??= []
+      if (!def.plugins.includes("ipc")) def.plugins.push("ipc")
+    }
 
     if (def.plugins) {
       normalizeData(def.plugins, ctx, (res) => {
