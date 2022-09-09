@@ -40,9 +40,9 @@ const DEF_KEYWORDS = new Set([
   "each",
   "else",
   "if",
+  "initiator",
   "menu",
   "on",
-  "parentId",
   "plugins",
   "popup",
   "schema",
@@ -349,7 +349,7 @@ export function forkDef(def, ctx) {
     if (ctx.scope) def.scope = ctx.scope
     if (ctx.scopeChain) def.scopeChain = structuredClone(ctx.scopeChain)
     if (ctx.reactive) def.state = structuredClone(ctx.reactive.data)
-    if (ctx.id) def.parentId = ctx.id
+    if (ctx.id) def.initiator = ctx.id
     if (ctx.actions) def.actions = merge({}, ctx.actions.value)
   }
 
@@ -359,9 +359,9 @@ export function forkDef(def, ctx) {
 export function ensureDef(def = {}, ctx) {
   def = { ...def }
 
-  if (def.parentId) {
-    ctx.parentId = def.parentId
-    delete def.parentId
+  if (def.initiator) {
+    ctx.initiator = def.initiator
+    delete def.initiator
   }
 
   if (def.scopeChain) {
@@ -415,7 +415,7 @@ export function normalizeDef(def = {}, ctx, options) {
 
     normalizeScope(def, ctx)
 
-    if (!inTop && ctx.parentId) {
+    if (!inTop && ctx.initiator) {
       def.plugins ??= []
       if (!def.plugins.includes("ipc")) def.plugins.push("ipc")
     }

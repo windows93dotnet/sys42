@@ -31,7 +31,7 @@ export class Puppet extends Callable {
   #deferred = []
   #pendingKeys = new Map()
 
-  constructor(target, parent) {
+  constructor(target, parent = globalThis) {
     super((/* Puppet.query */ ...args) => this.query(...args))
 
     this.el = normalizeTarget(target)
@@ -42,7 +42,7 @@ export class Puppet extends Callable {
 
   get root() {
     let root = this.parent
-    while (root?.prev) root = root.prev
+    while (root?.parent) root = root.parent
     return root
   }
 

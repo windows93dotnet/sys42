@@ -44,7 +44,7 @@ export default async function ipcPlugin(ctx) {
           // Parent Top --> Iframe
           emit(`42-ui-ipc-${ctx.id}`, data)
           // Top --> Parent Iframe
-          if (ctx.parentId) emit(`42-ui-ipc-${ctx.parentId}`, data)
+          if (ctx.initiator) emit(`42-ui-ipc-${ctx.initiator}`, data)
         }
       }
     })
@@ -55,9 +55,9 @@ export default async function ipcPlugin(ctx) {
       ctx.reactive.import(data, iframe)
     })
 
-    if (ctx.parentId) {
+    if (ctx.initiator) {
       // Top <-- Parent Iframe
-      ipc.on(`42-ui-ipc-${ctx.parentId}`, ctx, (data, { iframe }) => {
+      ipc.on(`42-ui-ipc-${ctx.initiator}`, ctx, (data, { iframe }) => {
         debug?.("Top <-- Parent Iframe")
         ctx.reactive.import(data, iframe)
       })
@@ -72,8 +72,8 @@ export default async function ipcPlugin(ctx) {
       ipc.emit(`42-ui-ipc-${ctx.id}`, data)
 
       // Iframe --> Parent Top
-      if (source !== "parent" && ctx.parentId) {
-        ipc.emit(`42-ui-ipc-${ctx.parentId}`, data)
+      if (source !== "parent" && ctx.initiator) {
+        ipc.emit(`42-ui-ipc-${ctx.initiator}`, data)
       }
     })
 
@@ -83,9 +83,9 @@ export default async function ipcPlugin(ctx) {
       ctx.reactive.import(data)
     })
 
-    if (ctx.parentId) {
+    if (ctx.initiator) {
       // Iframe <-- Parent Top
-      ipc.on(`42-ui-ipc-${ctx.parentId}`, ctx, (data) => {
+      ipc.on(`42-ui-ipc-${ctx.initiator}`, ctx, (data) => {
         debug?.("Iframe <-- Parent Top")
         ctx.reactive.import(data, "parent")
       })

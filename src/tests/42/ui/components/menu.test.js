@@ -192,7 +192,7 @@ if (inTop) {
     t.is($.query("#btnIncrIframe", iframe).textContent, "1")
   })
 } else {
-  await ui({ content: makeDemo(), parentId: "menuDemo" })
+  await ui({ content: makeDemo(), initiator: "menuDemo" })
   const { puppet } = test.utils
   puppet("#btnMenuIframe").click()
 }
