@@ -58,16 +58,17 @@ export class ServerSentEvents extends Emitter {
       this.cancel
     )
 
+    const options = {
+      capture: true,
+      signal: this.cancel.signal,
+    }
+
     if (this.#beforeunload) {
-      window.removeEventListener(
-        "beforeunload",
-        this.#beforeunload,
-        this.cancel
-      )
+      window.removeEventListener("beforeunload", this.#beforeunload, options)
     }
 
     this.#beforeunload = () => this.destroy()
-    window.addEventListener("beforeunload", this.#beforeunload, this.cancel)
+    window.addEventListener("beforeunload", this.#beforeunload, options)
 
     return this
   }
@@ -97,8 +98,8 @@ export class ServerSentEvents extends Emitter {
   }
 
   destroy() {
-    this.cancel()
     this.#sse.close()
+    this.cancel()
     this.emit("destroy", this)
     this.off("*")
     return this

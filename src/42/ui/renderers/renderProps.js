@@ -77,7 +77,7 @@ export default async function renderProps(el, props, def) {
   let data
 
   if (ctx.reactive.has(ctx.scope)) {
-    data = ctx.reactive.get(ctx.scope)
+    data = ctx.reactive.get(ctx.scope) ?? {} // TODO: check why ui-picto has undefined state
   } else {
     data = {}
     ctx.reactive.set(ctx.scope, data, { silent: true })
@@ -125,6 +125,10 @@ export default async function renderProps(el, props, def) {
     }
 
     let val
+    let ref
+    let update
+    let fromRender = false
+    let fromWrite = false
 
     if (key in data) {
       val = data[key]
@@ -138,11 +142,6 @@ export default async function renderProps(el, props, def) {
       val = item.default
     }
 
-    let ref
-    let fromRender = false
-    let fromStore = false
-    let update
-
     if (item.update) {
       const type = typeof item.update
       if (type === "string" || type === "symbol") {
@@ -154,16 +153,16 @@ export default async function renderProps(el, props, def) {
       }
     }
 
-    const store = (val, options) => {
+    const write = (val, options) => {
       if (ctx.cancel.signal.aborted === true || item.storeInState === false) {
         return
       }
 
       ctx.reactive.now(() => {
         const silent = options?.silent ?? false
-        fromStore = true
+        fromWrite = true
         ctx.reactive.set(scope, ref ?? val, { silent })
-        if (silent) fromStore = false
+        if (silent) fromWrite = false
       })
     }
 
@@ -206,7 +205,7 @@ export default async function renderProps(el, props, def) {
       observed[attribute] = (val) => {
         if (fromRender) return
         val = fromView(val, attribute, el, item)
-        store(val)
+        write(val)
         render(val)
       }
     }
@@ -238,7 +237,7 @@ export default async function renderProps(el, props, def) {
           : (val) => {
               if (ref) ctx.reactive.now(() => ctx.reactive.set(ref.$ref, val))
               else {
-                store(val)
+                write(val)
                 render(val)
               }
             },
@@ -252,15 +251,15 @@ export default async function renderProps(el, props, def) {
       const fn = val
       ref = fn.ref ? { $ref: fn.ref } : undefined
       register(ctx, fn, (val, changed) => {
-        if (changed !== scope) store(val)
+        if (changed !== scope) write(val)
         render(val)
       })
     } else {
-      store(val, { silent: true })
+      write(val, { silent: true })
       register(ctx, scope, (val, changed) => {
-        if (changed !== undefined && changed !== scope) store(val)
-        else if (fromStore) {
-          fromStore = false
+        if (changed !== undefined && changed !== scope) write(val)
+        else if (fromWrite) {
+          fromWrite = false
           return
         }
 
