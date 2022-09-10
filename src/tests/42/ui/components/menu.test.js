@@ -7,19 +7,37 @@ import "../../../../42/ui/popup.js"
 
 const __ = inTop ? "Top" : "Iframe"
 
+const { when, $ } = test.utils
+
 const makeMenu = (name) => {
   const submenu = [
     {
-      label: "{{cnt}}", //
-      id: `submenuItemIncr${name}${__}`,
-      picto: "plus-large",
-      click: "{{cnt = incr(cnt)}}",
-    },
-    {
       label: "Infinte",
+      // id: `submenuItemInfinite${name}${__}`,
       get content() {
         return submenu
       },
+    },
+    {
+      label: "3rd level",
+      // id: `submenuItem3rd${name}${__}`,
+      content: [
+        {
+          label: "Hello",
+          click: () => console.log("hello"),
+        },
+        {
+          label: "World",
+          click: () => console.log("world"),
+        },
+      ],
+    },
+    "---",
+    {
+      label: "{{cnt}}", //
+      // id: `submenuItemIncr${name}${__}`,
+      picto: "plus-large",
+      click: "{{cnt = incr(cnt)}}",
     },
   ]
 
@@ -107,7 +125,7 @@ const makeDemo = ({ content } = {}) => {
 
 if (inTop) {
   test.intg("dialog from closed popup is detached", async (t) => {
-    const { decay, dest, when, $ } = t.utils
+    const { decay, dest } = t.utils
 
     const app = await decay(
       ui(dest(true), {
@@ -172,7 +190,7 @@ if (inTop) {
 
   test.intg("top-level an iframe works the same", async (t) => {
     t.timeout(1000)
-    const { decay, dest, when, $ } = t.utils
+    const { decay, dest } = t.utils
 
     const { href } = new URL(
       "../../../../demos/ui/components/menu.demo.html?test=true",
@@ -227,7 +245,20 @@ if (inTop) {
       )
     )
 
-    t.puppet("#menuItemSubmenuInlineTop").click()
+    // t.puppet("#btnMenuTop").click()
+    // await t.sleep(10)
+    // await when("uipopupopen")
+    // await t.sleep(10)
+    // await t.puppet("#menuItemSubmenuPopupTop").click()
+    // await t.sleep(10)
+    // await when("uipopupopen")
+    // await t.sleep(10)
+    // await t.puppet("#submenuItemInfinitePopupTop").click()
+
+    // t.puppet("#menuItemSubmenuInlineTop").click()
+    // await when("uipopupopen")
+    // // await t.puppet("#submenuItemInfiniteInlineTop").focus()
+    // await t.puppet("#submenuItemInfiniteInlineTop").click()
 
     t.pass()
   })

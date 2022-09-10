@@ -1,7 +1,7 @@
 import render from "./render.js"
 import dispatch from "../fabric/event/dispatch.js"
 import maxZIndex from "../fabric/dom/maxZIndex.js"
-import listen from "../fabric/event/listen.js"
+import on from "../fabric/event/on.js"
 import defer from "../fabric/type/promise/defer.js"
 import Canceller from "../fabric/class/Canceller.js"
 import { autofocus } from "../fabric/dom/focus.js"
@@ -15,6 +15,35 @@ function combineRect(rect1, rect2) {
   rect1.y += rect2.y
   return rect1
 }
+
+const map = []
+
+const { ELEMENT_NODE } = Node
+
+on({
+  "click"(e, target) {
+    if (target.nodeType !== ELEMENT_NODE) return
+
+    let i = map.length
+    while (i--) {
+      const { close, opener, el } = map[i]
+
+      if (el.contains(target)) {
+        map.length = i + 1
+        return
+      }
+
+      close(target.id === opener)
+    }
+
+    map.length = 0
+  },
+  "blur || Escape"(e, target) {
+    let i = map.length
+    while (i--) map[i].close(target.id === opener, e.type === "blur")
+    map.length = 0
+  },
+})
 
 const popup = rpc(
   async function popup(def, ctx, rect, meta) {
@@ -44,22 +73,17 @@ const popup = rpc(
 
     const deferred = defer()
 
+    const { opener } = def
+
     const close = (fromOpener, fromBlur) => {
       const event = dispatch(el, "uipopupclose", { cancelable: true })
-      if (event.defaultPrevented) return false
+      if (event.defaultPrevented) return
       ctx.cancel()
       el.remove()
-      forget()
-      deferred.resolve({ opener: def.opener, fromOpener, fromBlur })
+      deferred.resolve({ opener, fromOpener, fromBlur })
     }
 
-    const forget = listen({
-      "blur || click"(e, target) {
-        if (!(target.nodeType === Node.ELEMENT_NODE && el.contains(target))) {
-          close(target.id === def.opener, e.type === "blur")
-        }
-      },
-    })
+    map.push({ el, close, opener })
 
     dispatch(el, "uipopupopen")
 
@@ -74,17 +98,20 @@ const popup = rpc(
         return false
       }
 
+      def = objectifyDef(def)
+
       if (!def.opener) {
         el.id ||= uid()
         def.opener = el.id
       }
 
       el.setAttribute("aria-expanded", "true")
+
       const rect = el.getBoundingClientRect()
 
       if (rpc.inTop) {
         ctx = { ...ctx }
-        return [objectifyDef(def), ctx, rect]
+        return [def, ctx, rect]
       }
 
       return [forkDef(def, ctx), {}, rect]
