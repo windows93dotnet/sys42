@@ -41,6 +41,15 @@ module.exports = {
       },
     },
   },
+  overrides: [
+    {
+      files: ["src/**/*.js"],
+      rules: {
+        "no-buffer-constructor": 0,
+        "unicorn/no-new-buffer": 0,
+      },
+    },
+  ],
   rules: {
     "curly": [2, "multi-line"],
     "func-names": 0,

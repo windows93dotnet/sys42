@@ -1,4 +1,4 @@
-import Buffer from "../../../fabric/class/Buffer.js"
+import Buffer from "../../../fabric/class/Buffer.compat.js"
 
 const ZEROS = "0000000000000000000"
 const SEVENS = "7777777777777777777"
