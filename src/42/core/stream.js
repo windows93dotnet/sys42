@@ -195,6 +195,7 @@ export function tsDOM() {
     flush() {
       queueChildNodes()
       iframe.contentDocument.close()
+      iframe.remove()
     },
   })
 }

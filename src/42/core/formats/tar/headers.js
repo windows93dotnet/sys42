@@ -155,13 +155,12 @@ export function decodeLongPath(buf, encoding) {
 export function encodePax(opts) {
   // TODO: encode more stuff in pax
   let result = ""
-  if (opts.name) result += addLength(" path=" + opts.name + "\n")
-  if (opts.linkname) result += addLength(" linkpath=" + opts.linkname + "\n")
+  if (opts.name) result += addLength(` path=${opts.name}\n`)
+  if (opts.linkname) result += addLength(` linkpath=${opts.linkname}\n`)
   const { pax } = opts
   if (pax) {
-    // eslint-disable-next-line guard-for-in
     for (const key in pax) {
-      result += addLength(" " + key + "=" + pax[key] + "\n")
+      if (Object.hasOwn(pax, key)) result += addLength(` ${key}=${pax[key]}\n`)
     }
   }
 
@@ -176,7 +175,6 @@ export function decodePax(buf) {
     let i = 0
     while (i < buf.length && buf[i] !== 32) i++
     const len = Number.parseInt(buf.slice(0, i).toString(), 10)
-    // const len = Number.parseInt(buf[i].toString(), 10)
     if (!len) return result
 
     const b = buf.slice(i + 1, len - 1).toString()
