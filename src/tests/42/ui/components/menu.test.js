@@ -7,54 +7,65 @@ import "../../../../42/ui/popup.js"
 
 const __ = inTop ? "Top" : "Iframe"
 
-const makeMenu = (name) => [
-  {
-    label: `Dialog ${name}`,
-    id: `menuItemDialog${name}${__}`,
-    picto: "folder-open",
-    shortcut: "Ctrl+O",
-    dialog: {
-      label: `Dialog ${name} ${__}`,
-      content: [
-        {
-          tag: `number#inputIncrDialog${name}${__}`,
-          scope: "cnt",
-          compact: true,
-        },
-        {
-          tag: `button#btnIncrDialog${name}${__}`,
-          content: "{{cnt}}",
-          click: "{{cnt++}}",
-        },
-      ],
+const makeMenu = (name) => {
+  const submenu = [
+    {
+      label: "{{cnt}}", //
+      id: `submenuItemIncr${name}${__}`,
+      picto: "plus-large",
+      click: "{{cnt = incr(cnt)}}",
     },
-  },
-  {
-    label: "Disabled",
-    picto: "save",
-    shortcut: "Ctrl+S",
-    click: "{{save()}}",
-    disabled: true,
-  },
-  {
-    label: "Submenu",
-    content: [
-      {
-        label: "{{cnt}}", //
-        id: `submenuItemIncr${name}${__}`,
-        picto: "plus-large",
-        click: "{{cnt = incr(cnt)}}",
+    {
+      label: "Infinte",
+      get content() {
+        return submenu
       },
-    ],
-  },
-  "---",
-  {
-    label: "{{cnt}}", //
-    id: `menuItemIncr${name}${__}`,
-    picto: "plus-large",
-    click: "{{cnt = incr(cnt)}}",
-  },
-]
+    },
+  ]
+
+  return [
+    {
+      label: `Dialog ${name}`,
+      id: `menuItemDialog${name}${__}`,
+      picto: "folder-open",
+      shortcut: "Ctrl+O",
+      dialog: {
+        label: `Dialog ${name} ${__}`,
+        content: [
+          {
+            tag: `number#inputIncrDialog${name}${__}`,
+            scope: "cnt",
+            compact: true,
+          },
+          {
+            tag: `button#btnIncrDialog${name}${__}`,
+            content: "{{cnt}}",
+            click: "{{cnt++}}",
+          },
+        ],
+      },
+    },
+    {
+      label: "Disabled",
+      picto: "save",
+      shortcut: "Ctrl+S",
+      click: "{{save()}}",
+      disabled: true,
+    },
+    {
+      label: "Submenu",
+      id: `menuItemSubmenu${name}${__}`,
+      content: submenu,
+    },
+    "---",
+    {
+      label: "{{cnt}}", //
+      id: `menuItemIncr${name}${__}`,
+      picto: "plus-large",
+      click: "{{cnt = incr(cnt)}}",
+    },
+  ]
+}
 
 const makeDemo = ({ content } = {}) => {
   content ??= [
@@ -196,6 +207,29 @@ if (inTop) {
     await iframe.contentWindow.sys42.once("ipc.plugin:end-of-update")
 
     t.is($.query("#btnIncrIframe", iframe).textContent, "1")
+  })
+
+  test.intg.only("submenu", async (t) => {
+    t.timeout(1000)
+    const { decay, dest } = t.utils
+
+    decay(
+      await ui(
+        dest(true),
+        {
+          tag: ".box-fit.desktop",
+          content: {
+            tag: ".box-v.w-full",
+            content: [makeDemo()],
+          },
+        },
+        { trusted: true, id: "menuDemo" }
+      )
+    )
+
+    t.puppet("#menuItemSubmenuInlineTop").click()
+
+    t.pass()
   })
 } else {
   await ui({ content: makeDemo(), initiator: "menuDemo" })

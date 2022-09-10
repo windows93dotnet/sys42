@@ -117,3 +117,26 @@ test("throw TypeError on non-option-objects", async (t) => {
     t.throws(() => configure({ foo: "bar" }, value), TypeError, msg)
   }
 })
+
+test("circular", async (t) => {
+  const obj = { a: 1, x: { foo: "bar" } }
+  obj.b = obj
+  obj.y = obj.x
+
+  const result = configure(obj)
+
+  t.is(result.a, 1)
+  t.is(result.b, result)
+  t.is(result.x, result.y)
+})
+
+test("circular", "array", async (t) => {
+  const obj = { a: [1], b: { x: [2] } }
+  obj.a.push(obj)
+  obj.b.y = obj.b.x
+
+  const result = configure(obj)
+
+  t.is(result.a[1], result)
+  t.is(result.b.x, result.b.y)
+})

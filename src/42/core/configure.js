@@ -1,16 +1,20 @@
 const OBJECT = "[object Object]"
 
-export function merge(target, source) {
+export function merge(target, source, memory = new WeakMap()) {
   for (const [key, val] of Object.entries(source)) {
-    if (Array.isArray(val)) {
+    if (memory.has(val)) {
+      target[key] = memory.get(val)
+    } else if (Array.isArray(val)) {
       target[key] = []
-      merge(target[key], val)
+      memory.set(val, target[key])
+      merge(target[key], val, memory)
     } else if (toString.call(val) === OBJECT && val.constructor === Object) {
       if (target[key] === null || typeof target[key] !== "object") {
         target[key] = {}
       }
 
-      merge(target[key], val)
+      memory.set(val, target[key])
+      merge(target[key], val, memory)
     } else {
       target[key] = val
     }
@@ -23,9 +27,13 @@ export default function configure(...options) {
   const config = {}
   if (options.length === 0) return config
 
+  const memory = new WeakMap()
+
   for (const opt of options) {
-    if (toString.call(opt) === OBJECT) merge(config, opt)
-    else if (opt != null) {
+    if (toString.call(opt) === OBJECT) {
+      memory.set(opt, config)
+      merge(config, opt, memory)
+    } else if (opt != null) {
       throw new TypeError(`Arguments must be objects or nullish: ${typeof opt}`)
     }
   }
