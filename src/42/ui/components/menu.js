@@ -42,13 +42,14 @@ export class Menu extends Component {
       }
 
       if (content) {
-        item.type = "button"
+        item.tag = "button"
         item.role = "menuitem"
-        item.popup = {
-          type: "ui-menu",
+        item.content = item.label
+        item.menu = {
           content,
           // aria: { labelledby: item.id },
           // aria: { label: item.label },
+          inMenuitem: true,
           inMenubar,
         }
       } else {

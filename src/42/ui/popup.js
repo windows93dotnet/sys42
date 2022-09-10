@@ -16,14 +16,10 @@ function combineRect(rect1, rect2) {
   return rect1
 }
 
-let close
-
 const popup = rpc(
   async function popup(def, ctx, rect, meta) {
-    if (close?.() === false) return
-
     def.positionable = {
-      preset: "popup",
+      preset: def.inMenuitem ? "menuitem" : "popup",
       of: meta?.iframe
         ? combineRect(rect, meta.iframe.getBoundingClientRect())
         : rect,
@@ -48,13 +44,12 @@ const popup = rpc(
 
     const deferred = defer()
 
-    close = (fromOpener, fromBlur) => {
+    const close = (fromOpener, fromBlur) => {
       const event = dispatch(el, "uipopupclose", { cancelable: true })
       if (event.defaultPrevented) return false
       ctx.cancel()
       el.remove()
       forget()
-      close = undefined
       deferred.resolve({ opener: def.opener, fromOpener, fromBlur })
     }
 

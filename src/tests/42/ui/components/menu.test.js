@@ -7,22 +7,22 @@ import "../../../../42/ui/popup.js"
 
 const __ = inTop ? "Top" : "Iframe"
 
-const makeMenu = (label) => [
+const makeMenu = (name) => [
   {
-    label: `Dialog ${label}`,
-    id: `menuItemDialog${label}${__}`,
+    label: `Dialog ${name}`,
+    id: `menuItemDialog${name}${__}`,
     picto: "folder-open",
     shortcut: "Ctrl+O",
     dialog: {
-      label: `Dialog ${label} ${__}`,
+      label: `Dialog ${name} ${__}`,
       content: [
         {
-          tag: `number#inputIncrDialog${label}${__}`,
+          tag: `number#inputIncrDialog${name}${__}`,
           scope: "cnt",
           compact: true,
         },
         {
-          tag: `button#btnIncrDialog${label}${__}`,
+          tag: `button#btnIncrDialog${name}${__}`,
           content: "{{cnt}}",
           click: "{{cnt++}}",
         },
@@ -36,16 +36,27 @@ const makeMenu = (label) => [
     click: "{{save()}}",
     disabled: true,
   },
+  {
+    label: "Submenu",
+    content: [
+      {
+        label: "{{cnt}}", //
+        id: `submenuItemIncr${name}${__}`,
+        picto: "plus-large",
+        click: "{{cnt = incr(cnt)}}",
+      },
+    ],
+  },
   "---",
   {
     label: "{{cnt}}", //
-    id: `menuItemIncr${label}${__}`,
+    id: `menuItemIncr${name}${__}`,
     picto: "plus-large",
     click: "{{cnt = incr(cnt)}}",
   },
 ]
 
-const makeDemo = (content) => {
+const makeDemo = ({ content } = {}) => {
   content ??= [
     { tag: "number", scope: "cnt", compact: true },
     "\n\n",
@@ -93,19 +104,21 @@ if (inTop) {
         content: {
           tag: ".box-v.w-full",
           content: [
-            makeDemo([
-              {
-                tag: `button#btnIncr${__}.w-ctrl`,
-                content: "{{cnt}}",
-                click: "{{cnt++}}",
-              },
-              "\n\n",
-              {
-                tag: `button#btnMenu${__}`,
-                content: "Menu",
-                menu: makeMenu("Popup"),
-              },
-            ]),
+            makeDemo({
+              content: [
+                {
+                  tag: `button#btnIncr${__}.w-ctrl`,
+                  content: "{{cnt}}",
+                  click: "{{cnt++}}",
+                },
+                "\n\n",
+                {
+                  tag: `button#btnMenu${__}`,
+                  content: "Menu",
+                  menu: makeMenu("Popup"),
+                },
+              ],
+            }),
           ],
         },
       })

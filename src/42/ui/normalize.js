@@ -319,7 +319,9 @@ function normalizeOn(def) {
 
   if (def.menu) {
     def.on ??= []
-    def.on.push({ click: { popup: { tag: "ui-menu", content: def.menu } } })
+    def.on.push({
+      click: { popup: { tag: "ui-menu", ...objectifyDef(def.menu) } },
+    })
   }
 
   if (def.popup) {
