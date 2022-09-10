@@ -2,12 +2,15 @@ import system from "../../system.js"
 import inIframe from "../../core/env/realm/inIframe.js"
 import inTop from "../../core/env/realm/inTop.js"
 import ipc from "../../core/ipc.js"
+
+/* <DEV> */
 import debounce from "../../fabric/type/function/debounce.js"
 
 let debug = 0
 
 let endOfUpdate
-if (system.DEV && inTop) {
+
+if (system.DEV) {
   endOfUpdate = debounce(() => {
     system.emit("ipc.plugin:end-of-update")
   }, 30)
@@ -17,9 +20,11 @@ if (debug) {
   let cnt = 0
   const max = 100
 
-  document.addEventListener("click", () => {
-    console.log(`---------------------- click ${inTop ? "inTop" : "inIframe"}`)
-  })
+  if (debug > 1) {
+    document.addEventListener("click", () => {
+      console.log(`------------- click ${inTop ? "inTop" : "inIframe"}`)
+    })
+  }
 
   debug = (message) => {
     endOfUpdate?.()
@@ -31,6 +36,7 @@ if (debug) {
 } else {
   debug = undefined
 }
+/* </DEV> */
 
 export default async function ipcPlugin(ctx) {
   if (ctx.plugins.ipc) return
@@ -51,15 +57,15 @@ export default async function ipcPlugin(ctx) {
 
     // Parent Top <-- Iframe
     ipc.on(`42-ui-ipc-${ctx.id}`, ctx, (data, { iframe }) => {
-      debug?.("Parent Top <-- Iframe")
       ctx.reactive.import(data, iframe)
+      debug?.("Parent Top <-- Iframe")
     })
 
     if (ctx.initiator) {
       // Top <-- Parent Iframe
       ipc.on(`42-ui-ipc-${ctx.initiator}`, ctx, (data, { iframe }) => {
-        debug?.("Top <-- Parent Iframe")
         ctx.reactive.import(data, iframe)
+        debug?.("Top <-- Parent Iframe")
       })
     }
   }
@@ -79,15 +85,15 @@ export default async function ipcPlugin(ctx) {
 
     // Parent Iframe <-- Top
     ipc.on(`42-ui-ipc-${ctx.id}`, ctx, (data) => {
-      debug?.("Parent Iframe <-- Top")
       ctx.reactive.import(data)
+      debug?.("Parent Iframe <-- Top")
     })
 
     if (ctx.initiator) {
       // Iframe <-- Parent Top
       ipc.on(`42-ui-ipc-${ctx.initiator}`, ctx, (data) => {
-        debug?.("Iframe <-- Parent Top")
         ctx.reactive.import(data, "parent")
+        debug?.("Iframe <-- Parent Top")
       })
     }
   }

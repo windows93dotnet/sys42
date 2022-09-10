@@ -1,6 +1,5 @@
 import test from "../../../../42/test.js"
 import ui from "../../../../42/ui.js"
-import system from "../../../../42/system.js"
 
 import inTop from "../../../../42/core/env/realm/inTop.js"
 import "../../../../42/ui/components/dialog.js"
@@ -89,31 +88,27 @@ if (inTop) {
     const { decay, dest, when, $ } = t.utils
 
     const app = await decay(
-      ui(
-        dest(true),
-        {
-          tag: ".box-fit.desktop",
-          content: {
-            tag: ".box-v.w-full",
-            content: [
-              makeDemo([
-                {
-                  tag: `button#btnIncr${__}.w-ctrl`,
-                  content: "{{cnt}}",
-                  click: "{{cnt++}}",
-                },
-                "\n\n",
-                {
-                  tag: `button#btnMenu${__}`,
-                  content: "Menu",
-                  menu: makeMenu("Popup"),
-                },
-              ]),
-            ],
-          },
+      ui(dest(true), {
+        tag: ".box-fit.desktop",
+        content: {
+          tag: ".box-v.w-full",
+          content: [
+            makeDemo([
+              {
+                tag: `button#btnIncr${__}.w-ctrl`,
+                content: "{{cnt}}",
+                click: "{{cnt++}}",
+              },
+              "\n\n",
+              {
+                tag: `button#btnMenu${__}`,
+                content: "Menu",
+                menu: makeMenu("Popup"),
+              },
+            ]),
+          ],
         },
-        { trusted: true }
-      )
+      })
     )
 
     t.puppet("#btnMenuTop").click()
@@ -151,7 +146,7 @@ if (inTop) {
     )
   })
 
-  test.intg.only("top-level an iframe works the same", async (t) => {
+  test.intg("top-level an iframe works the same", async (t) => {
     t.timeout(1000)
     const { decay, dest, when, $ } = t.utils
 
@@ -181,13 +176,11 @@ if (inTop) {
       )
     )
 
-    t.pass()
-
     const iframe = $.query("ui-sandbox iframe")
 
     await when("uipopupopen")
     t.puppet("#menuItemIncrPopupIframe").click()
-    await system.once("ipc.plugin:end-of-update")
+    await iframe.contentWindow.sys42.once("ipc.plugin:end-of-update")
 
     t.is($.query("#btnIncrIframe", iframe).textContent, "1")
   })

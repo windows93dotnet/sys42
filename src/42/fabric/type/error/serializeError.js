@@ -2,15 +2,14 @@ import stackTrace from "./stackTrace.js"
 import allKeys from "../object/allKeys.js"
 import addStack from "./addStack.js"
 import omit from "../object/omit.js"
+import normalizeError from "./normalizeError.js"
 
 const ERROR_EVENT_INFOS = ["lineno", "colno", "filename"]
 
 export default function serializeError(error) {
   const details = {}
 
-  if (error === null || typeof error !== "object") {
-    error = new Error(String(error))
-  }
+  error = normalizeError(error)
 
   const keys =
     error instanceof DOMException

@@ -1,4 +1,12 @@
-import sys42 from "../../../system.js"
+import system from "../../../system.js"
 import inIframe from "../../env/realm/inIframe.js"
 
-export default inIframe ? globalThis.top.sys42 : sys42
+let sys42 = system
+
+if (inIframe) {
+  try {
+    sys42 = globalThis.top.sys42
+  } catch {}
+}
+
+export default sys42
