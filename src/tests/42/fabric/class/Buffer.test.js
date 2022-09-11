@@ -24,6 +24,19 @@ test("Buffer", (t) => {
   t.is(String.fromCharCode(buf.at(-1)), "o")
 })
 
+test("Buffer.read", (t) => {
+  const buf = new Buffer()
+  buf.write("hello world")
+  t.is(buf.read(), "hello world")
+  buf.offset = 0
+
+  t.is(buf.read(1), "h")
+  t.is(buf.read(1), "e")
+  t.is(buf.read(2, 0), "he")
+  t.is(buf.read(2), "ll")
+  t.is(buf.read(), "o world")
+})
+
 test("Buffer.write", (t) => {
   const buf = new Buffer()
   t.eq(buf.value, new ArrayBuffer())
@@ -44,19 +57,6 @@ test("Buffer.write", (t) => {
   t.eq(buf.value, stringToBuffer("lorem ipsum dolor"))
 })
 
-test("Buffer.read", (t) => {
-  const buf = new Buffer()
-  buf.write("hello world")
-  t.is(buf.read(), "hello world")
-  buf.offset = 0
-
-  t.is(buf.read(1), "h")
-  t.is(buf.read(1), "e")
-  t.is(buf.read(2, 0), "he")
-  t.is(buf.read(2), "ll")
-  t.is(buf.read(), "o world")
-})
-
 test("Buffer.write", "auto grow", (t) => {
   const buf = new Buffer()
 
@@ -70,32 +70,62 @@ test("Buffer.write", "auto grow", (t) => {
   t.eq(buf.value, data.buffer)
 })
 
-test.only("Buffer.writeInt16", (t) => {
-  t.eq(
-    new Uint8Array([0, 42, 0, 9]).buffer,
-    new Uint8Array([0, 42, 0, 42]).buffer
-  )
-})
-
-test("Buffer.writeInt16", (t) => {
+test("Buffer.writeUint16", (t) => {
   const buf = new Buffer()
 
-  buf.writeInt16(42)
-  t.is(buf.view.getInt16(0), 42)
-  t.is(buf.readInt16(), 42)
-
+  buf.writeUint16(42)
+  t.is(buf.view.getUint16(0), 42)
   t.eq(buf.value, new Uint8Array([0, 42]).buffer)
 
-  buf.writeInt16(12)
-  t.eq(buf.value, new Uint8Array([0, 42, 0, 12]).buffer)
+  buf.writeUint16(256)
+  t.is(buf.view.getUint16(2), 256)
+  t.eq(buf.value, new Uint8Array([0, 42, 1, 0]).buffer)
+
+  t.is(buf.readUint16(), 42)
+  t.is(buf.readUint16(), 256)
+
+  t.eq(buf.toUint16Array(), new Uint16Array([42, 256]))
 })
 
 test("Buffer.writeBigInt64", (t) => {
   const buf = new Buffer()
 
-  buf.writeBigInt64(3n)
-  t.is(buf.view.getBigInt64(0), 3n)
-  t.is(buf.readBigInt64(), 3n)
+  buf.writeBigInt64(42n)
+  t.is(buf.view.getBigInt64(0), 42n)
 
-  t.eq(buf.value, new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0x03]).buffer)
+  t.eq(buf.value, new Uint8Array([0, 0, 0, 0, 0, 0, 0, 42]).buffer)
+
+  buf.writeBigInt64(9_007_199_254_740_991n)
+  t.is(buf.view.getBigInt64(8), 9_007_199_254_740_991n)
+
+  t.eq(
+    buf.value,
+    // prettier-ignore
+    new Uint8Array([
+      0, 0, 0, 0,  0, 0, 0, 42, //
+      0, 0x1f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    ]).buffer
+  )
+
+  buf.writeBigInt64(9_007_199_254_740_992n)
+  t.is(buf.view.getBigInt64(16), 9_007_199_254_740_992n)
+
+  t.eq(
+    buf.value,
+    // prettier-ignore
+    new Uint8Array([
+      0, 0, 0, 0,  0, 0, 0, 42, //
+      0, 0x1f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0, 0x20, 0, 0, 0, 0, 0, 0,
+    ]).buffer
+  )
+
+  t.is(buf.readBigInt64(), 42n)
+  t.is(buf.readBigInt64(), 9_007_199_254_740_991n)
+  t.is(buf.readBigInt64(), 9_007_199_254_740_992n)
+
+  t.eq(
+    buf.toBigInt64Array(),
+    new BigInt64Array([42n, 9_007_199_254_740_991n, 9_007_199_254_740_992n])
+  )
 })
