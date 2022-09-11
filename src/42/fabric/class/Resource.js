@@ -1,3 +1,7 @@
+// @read https://developer.chrome.com/blog/anonymous-iframe-origin-trial/
+// @read https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy#directives
+// @read https://featurepolicy.info/
+
 import uid from "../../core/uid.js"
 import configure from "../../core/configure.js"
 import ipc from "../../core/ipc.js"
@@ -25,9 +29,6 @@ trap((err, {title, reports}) => {
   return false
 })
 `
-
-// @read https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy#directives
-// @read https://featurepolicy.info/
 
 const SUPPORTED_FEATURES = document.featurePolicy?.features() ?? []
 

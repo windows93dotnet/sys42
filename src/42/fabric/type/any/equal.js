@@ -9,7 +9,7 @@ const PRIMITIVES = new Set(["boolean", "number", "string"])
 const checkNode = "Node" in globalThis
 const checkBlob = "Blob" in globalThis
 
-const TypedArray = Reflect.getPrototypeOf(Int8Array)
+const TypedArray = Reflect.getPrototypeOf(Uint8Array)
 
 const compareObjects = (a, b, config) => {
   const keysA = Reflect.ownKeys(a)
@@ -77,9 +77,9 @@ const compareTypedArrays = (a, b) => {
 
 const compareArrayBuffers = (a, b) => {
   if (a.byteLength !== b.byteLength) return false
-  const dataViewA = new Int8Array(a)
-  const dataViewB = new Int8Array(b)
-  for (let i = 0, l = a.length; i < l; i++) {
+  const dataViewA = new Uint8Array(a)
+  const dataViewB = new Uint8Array(b)
+  for (let i = 0, l = dataViewA.length; i < l; i++) {
     if (dataViewA[i] !== dataViewB[i]) return false
   }
 
