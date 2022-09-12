@@ -5,7 +5,7 @@ import { isIterable, isArray, isPlainObjectOrHashmap } from "./is.js"
 import allKeys from "../object/allKeys.js"
 
 /**
- * Converts any value into a readable, most unique possible string.
+ * Converts any value into a human readable, most unique possible string.
  *
  * @param {*} val
  * @returns {string}
