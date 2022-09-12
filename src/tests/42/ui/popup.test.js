@@ -103,8 +103,7 @@ test.intg("popup behavior", async (t, { decay, dest, pickValues }) => {
       "popup button should be closed"
     )
 
-    btn.click()
-
+    t.puppet(btn).dispatch("pointerdown")
     await t.utils.when("uipopupopen")
 
     t.is(
@@ -117,8 +116,7 @@ test.intg("popup behavior", async (t, { decay, dest, pickValues }) => {
     t.isElement(incr)
 
     if (options?.close) {
-      options.close.focus()
-      options.close.click()
+      await t.puppet(options.close).focus().dispatch("pointerdown")
       await t.sleep(30)
     }
 
@@ -153,8 +151,7 @@ test.intg("popup behavior", async (t, { decay, dest, pickValues }) => {
         "popup button should be open"
       )
 
-      options.incr.focus()
-      options.incr.click()
+      await t.puppet(options.incr).focus().dispatch("pointerdown").click()
       cnt++
       await t.sleep(30)
 

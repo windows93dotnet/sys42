@@ -58,7 +58,7 @@ function closeAll(e, target = e.target) {
 }
 
 on({
-  "click || ArrowUp || ArrowDown || ArrowLeft": closeOthers,
+  "pointerdown || ArrowUp || ArrowDown || ArrowLeft": closeOthers,
   "blur || Escape": closeAll,
 })
 
