@@ -10,7 +10,7 @@ import allKeys from "../object/allKeys.js"
  * @param {*} val
  * @returns {string}
  */
-export default function mark(val) {
+export default function mark(val, memory = new WeakSet()) {
   if (val == undefined) return String(val)
   const type = typeof val
   if (type === "string") return `"${val}"`
@@ -21,14 +21,20 @@ export default function mark(val) {
 
   if (type === "bigint") return `${val}n`
 
+  if (memory.has(val)) return "↖"
+
   if (isArray(val)) {
-    return val.length > 0 ? `[${val.map(mark).join()}]` : `[${mark(val[0])}]`
+    memory.add(val)
+    return val.length > 0
+      ? `[${val.map((x) => mark(x, memory)).join()}]`
+      : `[${mark(val[0], memory)}]`
   }
 
   if (isPlainObjectOrHashmap(val)) {
+    memory.add(val)
     const keys = allKeys(val)
     return `{${keys
-      .map((key) => `${key.toString()}:${mark(val[key])}`)
+      .map((key) => `${key.toString()}:${mark(val[key], memory)}`)
       .join()}}`
   }
 
@@ -59,7 +65,7 @@ export default function mark(val) {
   if (isIterable(val)) {
     return `new ${val.constructor.name}([${("byteLength" in val
       ? [...val]
-      : [...val].map(mark)
+      : [...val].map((x) => mark(x, memory))
     ).join()}])${closeTag}`
   }
 

@@ -7,12 +7,17 @@ import "../../../../42/ui/popup.js"
 
 const __ = inTop ? "Top" : "Iframe"
 
+const { href } = new URL(
+  "../../../../demos/ui/components/menu.demo.html?test=true",
+  import.meta.url
+)
+
 const { when, $ } = test.utils
 
 const makeMenu = (name) => {
   const submenu = [
     {
-      label: "Infinte",
+      label: "Infinite",
       // id: `submenuItemInfinite${name}${__}`,
       get content() {
         return submenu
@@ -74,6 +79,20 @@ const makeMenu = (name) => {
       label: "Submenu",
       id: `menuItemSubmenu${name}${__}`,
       content: submenu,
+    },
+    {
+      label: "3rd level",
+      id: `submenuItem3rd${name}${__}`,
+      content: [
+        {
+          label: "Hello",
+          click: () => console.log("hello"),
+        },
+        {
+          label: "World",
+          click: () => console.log("world"),
+        },
+      ],
     },
     "---",
     {
@@ -192,11 +211,6 @@ if (inTop) {
     t.timeout(1000)
     const { decay, dest } = t.utils
 
-    const { href } = new URL(
-      "../../../../demos/ui/components/menu.demo.html?test=true",
-      import.meta.url
-    )
-
     decay(
       await ui(
         dest(true),
@@ -238,7 +252,14 @@ if (inTop) {
           tag: ".box-fit.desktop",
           content: {
             tag: ".box-v.w-full",
-            content: [makeDemo()],
+            content: [
+              makeDemo(),
+              {
+                tag: "ui-sandbox.panel",
+                permissions: "trusted",
+                path: href,
+              },
+            ],
           },
         },
         { trusted: true, id: "menuDemo" }
@@ -264,6 +285,6 @@ if (inTop) {
   })
 } else {
   await ui({ content: makeDemo(), initiator: "menuDemo" })
-  const { puppet } = test.utils
-  puppet("#btnMenuIframe").click()
+  // const { puppet } = test.utils
+  // puppet("#btnMenuIframe").click()
 }

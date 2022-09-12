@@ -1,9 +1,39 @@
 import Component from "../class/Component.js"
 
+function seq(el, dir) {
+  const items = [
+    ...el.querySelectorAll(`
+    :scope > li > button:not([aria-disabled="true"]),
+    :scope > li > label > input:not([aria-disabled="true"])`),
+  ]
+
+  const index = items.indexOf(document.activeElement)
+
+  if (index !== -1) {
+    const { length } = items
+    const item = items[(index + length + dir) % length]
+    item.focus()
+    return item
+  }
+}
+
 export class Menu extends Component {
   static definition = {
     tag: "ui-menu",
     role: "menu",
+
+    on: {
+      ArrowUp: "{{focusPrev()}}",
+      ArrowDown: "{{focusNext()}}",
+    },
+  }
+
+  focusPrev() {
+    seq(this, -1)
+  }
+
+  focusNext() {
+    seq(this, 1)
   }
 
   render({ content }) {

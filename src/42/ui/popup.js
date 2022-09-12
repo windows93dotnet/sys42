@@ -21,7 +21,7 @@ const map = []
 const { ELEMENT_NODE } = Node
 
 on({
-  "click"(e, target) {
+  "click || ArrowUp || ArrowDown || ArrowLeft"(e, target) {
     if (target.nodeType !== ELEMENT_NODE) return
 
     let i = map.length
@@ -29,7 +29,13 @@ on({
       const { close, opener, el } = map[i]
 
       if (el.contains(target)) {
-        map.length = i + 1
+        if (e.key === "ArrowLeft") {
+          map.length = i
+          close(target.id === opener)
+        } else {
+          map.length = i + 1
+        }
+
         return
       }
 

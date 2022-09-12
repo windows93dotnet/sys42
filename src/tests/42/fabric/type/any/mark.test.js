@@ -11,62 +11,73 @@ class Bar {
 const { task } = test
 
 const list = [
-  task({ actual: undefined, expected: "undefined" }),
-  task({ actual: null, expected: "null" }),
-  task({ actual: false, expected: "false" }),
-  task({ actual: true, expected: "true" }),
-  task({ actual: 0, expected: "+0" }),
-  task({ actual: -0, expected: "-0" }),
-  task({ actual: 1, expected: "1" }),
-  task({ actual: 2, expected: "2" }),
-  task({ actual: "a", expected: '"a"' }),
-  task({ actual: /a/i, expected: "RegExp#/a/i" }),
-  task({ actual: Symbol("a"), expected: "Symbol(a)" }),
-  task({ actual: Symbol.for("a"), expected: "Symbol.for(a)" }),
-  task({ actual: BigInt("0x1fffffffffffff"), expected: "9007199254740991n" }),
-  task({ actual: (a) => a + 1, expected: "Function#(a) => a + 1" }),
-  task({ actual: [], expected: "[undefined]" }),
-  task({ actual: [0, -0], expected: "[+0,-0]" }),
-  task({ actual: [1, 2], expected: "[1,2]" }),
-  task({ actual: [1, { a: 1 }], expected: "[1,{a:1}]" }),
-  task({ actual: {}, expected: "{}" }),
-  task({ actual: { a: 1 }, expected: "{a:1}" }),
-  task({ actual: { a: 0, b: -0 }, expected: "{a:+0,b:-0}" }),
+  task({ input: undefined, expected: "undefined" }),
+  task({ input: null, expected: "null" }),
+  task({ input: false, expected: "false" }),
+  task({ input: true, expected: "true" }),
+  task({ input: 0, expected: "+0" }),
+  task({ input: -0, expected: "-0" }),
+  task({ input: 1, expected: "1" }),
+  task({ input: 2, expected: "2" }),
+  task({ input: "a", expected: '"a"' }),
+  task({ input: /a/i, expected: "RegExp#/a/i" }),
+  task({ input: Symbol("a"), expected: "Symbol(a)" }),
+  task({ input: Symbol.for("a"), expected: "Symbol.for(a)" }),
+  task({ input: BigInt("0x1fffffffffffff"), expected: "9007199254740991n" }),
+  task({ input: (a) => a + 1, expected: "Function#(a) => a + 1" }),
+  task({ input: [], expected: "[undefined]" }),
+  task({ input: [0, -0], expected: "[+0,-0]" }),
+  task({ input: [1, 2], expected: "[1,2]" }),
+  task({ input: [1, { a: 1 }], expected: "[1,{a:1}]" }),
+  task({ input: {}, expected: "{}" }),
+  task({ input: { a: 1 }, expected: "{a:1}" }),
+  task({ input: { a: 0, b: -0 }, expected: "{a:+0,b:-0}" }),
   task({
-    actual: { a: 1, b: { c: /a/i } },
+    input: { a: 1, b: { c: /a/i } },
     expected: "{a:1,b:{c:RegExp#/a/i}}",
   }),
-  task({ actual: Object.create(null), expected: "{}" }),
-  task({ actual: test.utils.hashmap({ a: 1 }), expected: "{a:1}" }),
-  task({ actual: new Foo(), expected: "Foo#[object Object]" }),
-  task({ actual: new Bar(), expected: "Bar#{bar}" }),
-  task({ actual: new Map([["a", 1]]), expected: 'new Map([["a",1]])' }),
-  task({ actual: new Set(["a", 1]), expected: 'new Set(["a",1])' }),
+  task({ input: Object.create(null), expected: "{}" }),
+  task({ input: test.utils.hashmap({ a: 1 }), expected: "{a:1}" }),
+  task({ input: new Foo(), expected: "Foo#[object Object]" }),
+  task({ input: new Bar(), expected: "Bar#{bar}" }),
+  task({ input: new Map([["a", 1]]), expected: 'new Map([["a",1]])' }),
+  task({ input: new Set(["a", 1]), expected: 'new Set(["a",1])' }),
   task({
-    actual: new Uint8Array(3),
+    input: new Uint8Array(3),
     expected: "new Uint8Array([0,0,0])",
   }),
   task({
-    actual: new Uint8Array(100),
+    input: new Uint8Array(100),
     startsWith:
       "new Uint8Array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,",
   }),
   task({
-    actual: new TextEncoder().encode("foo").buffer,
+    input: new TextEncoder().encode("foo").buffer,
     expected: "new Uint8Array([102,111,111]).buffer",
   }),
   task({
-    actual: Math,
+    input: Math,
     startsWith: test.env.browser.isFirefox
       ? "{abs:Function#function abs() {\n    [native code]\n},acos:Function"
       : "{abs:Function#function abs() { [native code] },acos:Function#fun",
   }),
 ]
 
+{
+  const obj = { a: 1 }
+  obj.b = obj
+  list.push(
+    task({
+      input: obj,
+      expected: "{a:1,b:↖}",
+    })
+  )
+}
+
 if (globalThis.navigator) {
   list.push(
     task({
-      actual: navigator,
+      input: navigator,
       expected: "Navigator#[object Navigator]",
     })
   )
@@ -75,7 +86,7 @@ if (globalThis.navigator) {
 if (globalThis.location) {
   list.push(
     task({
-      actual: location,
+      input: location,
       expected: `Location#${location.href}`,
     })
   )
@@ -84,12 +95,12 @@ if (globalThis.location) {
 if (globalThis.File) {
   list.push(
     task({
-      actual: new File(["foo"], "a", { lastModified: 1 }),
+      input: new File(["foo"], "a", { lastModified: 1 }),
       expected:
         'new File([],"a",{size:3,type:"",lastModified:1,webkitRelativePath:""})',
     }),
     task({
-      actual: new File(["foo"], "b", { lastModified: 1, type: "text/plain" }),
+      input: new File(["foo"], "b", { lastModified: 1, type: "text/plain" }),
       expected:
         'new File([],"b",{size:3,type:"text/plain",lastModified:1,webkitRelativePath:""})',
     })
@@ -99,7 +110,7 @@ if (globalThis.File) {
 if (globalThis.Blob) {
   list.push(
     task({
-      actual: new Blob(["foo"]),
+      input: new Blob(["foo"]),
       expected: 'new Blob([],{size:3,type:""})',
     })
   )
@@ -108,19 +119,19 @@ if (globalThis.Blob) {
 if (globalThis.document) {
   list.push(
     task({
-      actual: document.createTextNode("hello"),
+      input: document.createTextNode("hello"),
       expected: "Text#hello",
     }),
     task({
-      actual: document.createComment("hello"),
+      input: document.createComment("hello"),
       expected: "Comment#hello",
     }),
     task({
-      actual: document.createAttribute("hello"),
+      input: document.createAttribute("hello"),
       expected: "Attr#hello",
     }),
     task({
-      actual: document.createDocumentFragment(),
+      input: document.createDocumentFragment(),
       expected: "DocumentFragment##document-fragment",
     })
   )
@@ -129,7 +140,7 @@ if (globalThis.document) {
   el.style = "color:tan"
   list.push(
     task({
-      actual: el,
+      input: el,
       expected: '<div style="color: tan;"></div>',
     })
   )
@@ -139,7 +150,7 @@ if (globalThis.document) {
   el.dataset.foo = "bar"
   list.push(
     task({
-      actual: el,
+      input: el,
       expected: '<span id="foo" data-foo="bar"></span>',
     })
   )
@@ -152,7 +163,7 @@ if (globalThis.document) {
   el.append(document.createElement("section"))
   list.push(
     task({
-      actual: el,
+      input: el,
       startsWith:
         '<article id="very_very_long_id"><section></section><section></se',
     })
@@ -170,20 +181,20 @@ if (globalThis.document) {
 
   list.push(
     task({
-      actual: el,
+      input: el,
       expected:
         '<svg id="foo" data-foo="bar"><rect width="100%" height="100%" fill="red"></rect></svg>',
     })
   )
 }
 
-test.tasks(list, (test, { actual, expected, startsWith }) => {
-  test(actual, (t) => {
+test.tasks(list, (test, { title, input, expected, startsWith }) => {
+  test(title ?? input, (t) => {
     if (startsWith) {
       t.true(
-        mark(actual).startsWith(startsWith),
+        mark(input).startsWith(startsWith),
         `don't starts with '${startsWith}'`
       )
-    } else t.is(mark(actual), expected)
+    } else t.is(mark(input), expected)
   })
 })
