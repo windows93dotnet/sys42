@@ -20,35 +20,46 @@ const map = []
 
 const { ELEMENT_NODE } = Node
 
-on({
-  "click || ArrowUp || ArrowDown || ArrowLeft"(e, target) {
-    if (target.nodeType !== ELEMENT_NODE) return
+function closeOthers(e, target = e.target) {
+  if (target.nodeType !== ELEMENT_NODE) return
 
-    let i = map.length
-    while (i--) {
-      const { close, opener, el } = map[i]
+  let i = map.length
+  while (i--) {
+    const { close, opener, el } = map[i]
 
-      if (el.contains(target)) {
-        if (e.key === "ArrowLeft") {
-          map.length = i
-          close(target.id === opener)
-        } else {
-          map.length = i + 1
-        }
-
-        return
+    if (el.contains(target)) {
+      if (e.key === "ArrowLeft") {
+        map.length = i
+        close({ fromOpener: target?.id === opener })
+      } else {
+        map.length = i + 1
       }
 
-      close(target.id === opener)
+      return
     }
 
-    map.length = 0
-  },
-  "blur || Escape"(e, target) {
-    let i = map.length
-    while (i--) map[i].close(target.id === opener, e.type === "blur")
-    map.length = 0
-  },
+    close(i === 0 ? { fromOpener: target?.id === opener } : undefined)
+  }
+
+  map.length = 0
+}
+
+function closeAll(e, target = e.target) {
+  let i = map.length
+  while (i--) {
+    map[i].close(
+      i === 0
+        ? { fromOpener: target?.id === opener, fromBlur: e?.type === "blur" }
+        : undefined
+    )
+  }
+
+  map.length = 0
+}
+
+on({
+  "click || ArrowUp || ArrowDown || ArrowLeft": closeOthers,
+  "blur || Escape": closeAll,
 })
 
 const popup = rpc(
@@ -75,18 +86,24 @@ const popup = rpc(
     document.body.append(el)
     await ctx.reactive.done()
 
-    if (autofocus(el) === false) el.focus()
+    setTimeout(() => autofocus(el) || el.focus(), 0)
 
     const deferred = defer()
 
     const { opener } = def
 
-    const close = (fromOpener, fromBlur) => {
+    const close = (options) => {
       const event = dispatch(el, "uipopupclose", { cancelable: true })
       if (event.defaultPrevented) return
       ctx.cancel()
       el.remove()
-      deferred.resolve({ opener, fromOpener, fromBlur })
+      deferred.resolve({ opener, ...options })
+    }
+
+    if (el.closable === true) {
+      el.close = close
+      el.closeOthers = closeOthers
+      el.closeAll = closeAll
     }
 
     map.push({ el, close, opener })
@@ -123,17 +140,17 @@ const popup = rpc(
       return [forkDef(def, ctx), {}, rect]
     },
 
-    unmarshalling({ res, opener, fromOpener, fromBlur }) {
+    unmarshalling(options) {
+      if (!options) return
+      const { opener, fromOpener, fromBlur } = options
       const el = document.querySelector(`#${opener}`)
 
-      if (fromBlur && document.activeElement === el) return res
+      if (fromBlur && document.activeElement === el) return
 
       if (el) {
         if (document.activeElement === document.body) el.focus()
         if (!fromOpener) el.setAttribute("aria-expanded", "false")
       }
-
-      return res
     },
   }
 )

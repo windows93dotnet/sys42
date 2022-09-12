@@ -29,11 +29,11 @@ const makeMenu = (name) => {
       content: [
         {
           label: "Hello",
-          click: () => console.log("hello"),
+          click: '{{log("hello")}}',
         },
         {
           label: "World",
-          click: () => console.log("world"),
+          click: '{{log("world")}}',
         },
       ],
     },
@@ -86,11 +86,11 @@ const makeMenu = (name) => {
       content: [
         {
           label: "Hello",
-          click: () => console.log("hello"),
+          click: '{{log("hello")}}',
         },
         {
           label: "World",
-          click: () => console.log("world"),
+          click: '{{log("world")}}',
         },
       ],
     },
@@ -118,6 +118,9 @@ const makeDemo = ({ content } = {}) => {
     { tag: "ui-menu", content: makeMenu("Inline") },
     "---",
     { tag: `button#btnMenu${__}`, content: "Menu", menu: makeMenu("Popup") },
+    "\n\n",
+    "\n\n",
+    { tag: "number", scope: "cnt", compact: true },
   ]
 
   return {
@@ -134,6 +137,9 @@ const makeDemo = ({ content } = {}) => {
       },
       save() {
         console.log("save", inTop)
+      },
+      log(str) {
+        console.log(str, inTop)
       },
       incr(n) {
         return n + 1
@@ -284,6 +290,7 @@ if (inTop) {
     t.pass()
   })
 } else {
+  document.body.classList.add("debug")
   await ui({ content: makeDemo(), initiator: "menuDemo" })
   // const { puppet } = test.utils
   // puppet("#btnMenuIframe").click()

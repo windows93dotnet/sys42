@@ -15,7 +15,7 @@ export class Sandbox extends Component {
   static definition = {
     tag: "ui-sandbox",
 
-    tabIndex: 0,
+    tabIndex: -1,
 
     props: {
       permissions: {

@@ -25,7 +25,15 @@ export class Menu extends Component {
     on: {
       ArrowUp: "{{focusPrev()}}",
       ArrowDown: "{{focusNext()}}",
+      Tab: "{{focusOut(e, target)}}",
     },
+  }
+
+  closable = true
+
+  focusOut(e, target) {
+    console.log(this.ctx.initiator)
+    this.closeAll?.(e, target)
   }
 
   focusPrev() {
@@ -40,6 +48,7 @@ export class Menu extends Component {
     const inMenubar = this.constructor.name === "Menubar"
     const items = []
 
+    let first = true
     for (let item of content) {
       if (item === "---") {
         items.push(item)
@@ -48,6 +57,9 @@ export class Menu extends Component {
 
       item = { ...item }
       const { content } = item
+
+      item.tabIndex = first ? 0 : -1
+      first = false
 
       if (
         item.dialog &&

@@ -1,15 +1,18 @@
 import inTop from "../../env/realm/inTop.js"
+import trap from "../../../fabric/type/error/trap.js"
 import debounce from "../../../fabric/type/function/debounce.js"
 // import { whenTestFileReady } from "./htmlTest.js"
 
 // Integration tests self-execute if not started from a test runner.
 // It allow to manually debug GUI tests inside a webpage
-// because the last executed test will not recycle created elements/componenents
+// because the last executed test will not decay elements/componenents
 
 let total = 0
 let index = 0
 
 const selfExecute = debounce(async (sbs) => {
+  document.body.classList.add("debug")
+
   for (const suite of sbs.root.suites) {
     if (suite.onlies.size > 0) {
       total += suite.onlies.size
@@ -22,6 +25,9 @@ const selfExecute = debounce(async (sbs) => {
 
   await sbs.run()
   sbs.report(await sbs.serialize(), { verbose: 3 })
+
+  // listen to errors for further manual testing
+  trap()
 }, 1)
 
 export default function intgTest(fn, sbs) {
@@ -46,7 +52,8 @@ export default function intgTest(fn, sbs) {
         },
       })
     } else {
-      // TODO: use mutation observer to keep test.js decoupled from ui.js
+      // TODO: use mutation observer on document.body
+      // to keep test.js decoupled from ui.js
       t.utils.listen({
         uidialogopen(e, target) {
           target.style.opacity = 0.01
@@ -59,8 +66,7 @@ export default function intgTest(fn, sbs) {
       })
     }
 
-    await 0
-
+    await 0 // queueMicrotask
     await fn(t, t.utils)
 
     // t.timeout("reset")
