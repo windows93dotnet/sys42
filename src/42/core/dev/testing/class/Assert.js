@@ -493,28 +493,27 @@ export default class Assert {
   }
 
   #deferThrows(fn, expected, message, stack) {
-    const p = new Promise((resolve, reject) => {
-      fn.then(() =>
-        reject(
-          new AssertionError(
-            message,
-            "Function must throw",
-            { expected },
-            stack
-          )
-        )
-      )
-        .catch((err) => {
-          try {
-            resolve(assertError(err, expected, message, stack))
-          } catch (err_) {
-            reject(err_)
-          }
-        })
-        .finally(() => this.#pending--)
-    })
     this.#pending++
-    return p
+    return new Promise((resolve, reject) => {
+      fn.then(
+        () =>
+          reject(
+            new AssertionError(
+              message,
+              "Function must throw",
+              { expected },
+              stack
+            )
+          ),
+        (error) => {
+          try {
+            resolve(assertError(error, expected, message, stack))
+          } catch (err) {
+            reject(err)
+          }
+        }
+      ).finally(() => this.#pending--)
+    })
   }
 
   notThrows(fn, message) {
@@ -534,9 +533,11 @@ export default class Assert {
   }
 
   #deferNotThrows(fn, message, stack) {
-    const p = new Promise((resolve, reject) => {
-      fn.then(() => resolve())
-        .catch((error) => {
+    this.#pending++
+    return new Promise((resolve, reject) => {
+      fn.then(
+        () => resolve(),
+        (error) => {
           reject(
             new AssertionError(
               message,
@@ -545,10 +546,8 @@ export default class Assert {
               stack
             )
           )
-        })
-        .finally(() => this.#pending--)
+        }
+      ).finally(() => this.#pending--)
     })
-    this.#pending++
-    return p
   }
 }

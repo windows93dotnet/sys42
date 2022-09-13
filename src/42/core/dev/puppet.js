@@ -1,140 +1,143 @@
-// @related https://github.com/Rich-Harris/simulant
-// @related https://devexpress.github.io/testcafe/documentation/test-api/actions/action-options.html#click-action-options
-
-import Callable from "../../fabric/class/Callable.js"
-import defer from "../../fabric/type/promise/defer.js"
-import mark from "../../fabric/type/any/mark.js"
-import asyncable from "../../fabric/traits/asyncable.js"
+import chainable from "../../fabric/traits/chainable.js"
 import simulate from "../../fabric/event/simulate.js"
+import waitFor from "../../fabric/dom/waitFor.js"
+import mark from "../../fabric/type/any/mark.js"
+import sleep from "../../fabric/type/promise/sleep.js"
 import when from "../../fabric/type/promise/when.js"
+// import ensureElement from "../../fabric/dom/ensureElement.js"
 
-const { ELEMENT_NODE } = Node
+const clickOrder = [
+  "pointerdown",
+  "mousedown",
+  "focus",
+  "pointerup",
+  "mouseup",
+  "click",
+]
 
-function normalizeTarget(val) {
-  const type = typeof val
-  const target = type === "string" ? document.querySelector(val) : val
-  if (target?.nodeType === ELEMENT_NODE) return target
+const tapOrder = [
+  "pointerdown",
+  "touchstart",
+  "pointerup",
+  "touchend",
+  "mousedown",
+  "focus",
+  "mouseup",
+  "click",
+]
 
-  if (typeof target?.dispatchEvent !== "function") {
-    throw new TypeError(
-      `The "target" argument must be an EventTarget or a valid css selector: ${
-        type === "string" ? val : type
-      }`
-    )
-  }
-
-  return target
+function changeFocus(target) {
+  if (!target.ownerDocument.hasFocus()) target.ownerDocument.focus()
 }
 
-export class Puppet extends Callable {
-  #instances = []
-  #deferred = []
-  #pendingKeys = new Map()
+const allPendingKeys = new Set()
+let timeoutId
 
-  constructor(target, parent = globalThis) {
-    super((/* Puppet.query */ ...args) => this.query(...args))
-
-    this.el = normalizeTarget(target)
-    this.parent = parent
-
-    asyncable(this, { lazy: true }, async () => this.done())
-  }
-
-  get root() {
-    let root = this.parent
-    while (root?.parent) root = root.parent
-    return root
-  }
-
-  query(target = globalThis, timeout = 5000) {
-    const instance = new Puppet(target, this)
-    this.#instances.push(instance)
-    if (Number.isFinite(timeout)) setTimeout(() => instance.cleanup(), timeout)
-    return instance
-  }
-
-  select() {
-    this.el.select?.()
-    return this
-  }
-
-  focus() {
-    if ("focus" in this.el) this.el.focus()
-    else this.dispatch("focus")
-    return this
-  }
-
-  input(val) {
-    if (val !== undefined && "value" in this.el) this.el.value = val
-    this.dispatch("input")
-    return this
-  }
-
-  click() {
-    if ("click" in this.el) this.el.click()
-    else this.dispatch("click")
-    return this
-  }
-
-  dbclick() {
-    this.dispatch("dbclick")
-    return this
-  }
-
-  contextmenu() {
-    this.dispatch("contextmenu")
-    return this
-  }
-
-  keydown(init) {
-    this.#pendingKeys.set(mark(init), init)
-    this.dispatch("keydown", init)
-    return this
-  }
-
-  keyup(init) {
-    this.#pendingKeys.delete(mark(init))
-    this.dispatch("keyup", init)
-    return this
-  }
-
-  keystroke(init) {
-    const deferred = defer()
-    this.#deferred.push(deferred)
-    this.#pendingKeys.set(mark(init), init)
-    this.dispatch("keydown", init)
-    setTimeout(() => {
-      this.dispatch("keyup", init)
-      this.#pendingKeys.delete(mark(init))
-      setTimeout(() => deferred.resolve(), 0)
-    }, 0)
-    return this
-  }
-
-  dispatch(event, init = {}) {
-    simulate(this.el, event, init)
-    const deferred = defer()
-    this.#deferred.push(deferred)
-    setTimeout(() => deferred.resolve(), 0)
-    return this
-  }
-
-  async done() {
-    this.cleanup()
-    return Promise.all(this.#deferred)
-  }
-
-  async when(events, options) {
-    await this.done()
-    await when(this.el, events, options)
-  }
-
-  cleanup() {
-    for (const pending of this.#pendingKeys.values()) this.keyup(pending)
-    for (const instance of this.#instances) instance.cleanup()
-    this.#instances.length = 0
-    return this
+function cleanup() {
+  for (const pendingKeys of allPendingKeys) {
+    for (const keyup of pendingKeys.values()) keyup()
   }
 }
 
-export default new Puppet(globalThis)
+function autoCleanup({ pendingKeys }) {
+  allPendingKeys.add(pendingKeys)
+  clearTimeout(timeoutId)
+  timeoutId = setTimeout(() => cleanup(), 3000)
+}
+
+const puppet = chainable(
+  {
+    order: [],
+    pendingKeys: new Map(),
+
+    click({ data }) {
+      data.order.push(changeFocus)
+      for (const event of clickOrder) {
+        data.order.push(async (target) => simulate(target, event))
+      }
+    },
+
+    tap({ data }) {
+      data.order.push(changeFocus)
+      for (const event of tapOrder) {
+        data.order.push(async (target) => simulate(target, event))
+      }
+    },
+
+    keydown({ data }, init) {
+      data.order.push(async (target) => {
+        autoCleanup(data)
+        data.pendingKeys.set(mark(init), () => simulate(target, "keyup", init))
+        simulate(target, "keydown", init)
+      })
+    },
+
+    keyup({ data }, init) {
+      data.order.push(async (target) => {
+        autoCleanup(data)
+        simulate(target, "keydown", init)
+        data.pendingKeys.delete(mark(init))
+      })
+    },
+
+    keystroke({ data }, init) {
+      data.order.push(async (target) => {
+        autoCleanup(data)
+        data.pendingKeys.set(mark(init), () => simulate(target, "keyup", init))
+        simulate(target, "keydown", init)
+        await sleep(0)
+
+        simulate(target, "keyup", init)
+        data.pendingKeys.delete(mark(init))
+        await sleep(0)
+      })
+    },
+
+    dispatch({ data }, event, init) {
+      data.order.push(async (target) => simulate(target, event, init))
+    },
+
+    when({ data }, events, options) {
+      data.order.push(async (target) => when(target, events, options))
+    },
+
+    target({ data }, target, options) {
+      data.order.push({ target, options })
+    },
+
+    async then({ data }, resolve, reject) {
+      data.target = globalThis
+
+      for (const item of data.order) {
+        if (typeof item === "function") {
+          await item(data.target)
+        } else if ("target" in item) {
+          data.target = item.target
+          if (typeof data.target === "string") {
+            try {
+              data.target = await waitFor(data.target, item.options)
+            } catch (err) {
+              reject(err)
+              return
+            }
+          }
+        }
+      }
+
+      setTimeout(() => {
+        for (const keyup of data.pendingKeys.values()) keyup()
+      }, 0)
+
+      resolve(data.target)
+    },
+  },
+
+  function ({ data }, target, options) {
+    data.order.push({ target, options })
+    return this
+  }
+)
+
+puppet.cleanup = cleanup
+
+export default puppet

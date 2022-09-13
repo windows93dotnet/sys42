@@ -87,7 +87,7 @@ export default class DOMQuery extends Callabale {
   }
 
   async waitFor(selector, options = {}) {
-    options.parent = this.el
+    options.base = this.el
     return waitFor(selector, options)
   }
 

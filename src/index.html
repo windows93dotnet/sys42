@@ -86,7 +86,7 @@
       // "/tests/42/core/console/formats/highlight.test.js",
       // "/tests/42/core/console/parseLogTemplate.test.js",
       // "/tests/42/core/db/Database.test.js",
-      // "/tests/42/core/dev/puppet.test.js",
+      "/tests/42/core/dev/puppet.test.js",
       // "/tests/42/core/expr.test.js",
       // "/tests/42/core/formats/base64.test.js",
       // "/tests/42/core/formats/cbor.test.js",
@@ -102,7 +102,7 @@
       // "/tests/42/fabric/class/Buffer.compat.test.js",
       // "/tests/42/fabric/class/Buffer.test.js",
       // "/tests/42/fabric/dom/on.test.js",
-      // "/tests/42/fabric/traits/chainable.test.js",
+      "/tests/42/fabric/traits/chainable.test.js",
       // "/tests/42/fabric/traits/emittable.test.js",
       // "/tests/42/fabric/type/any/clone.test.js",
       // "/tests/42/fabric/type/any/equal.test.js",
@@ -130,10 +130,43 @@
       // "/tests/42/ui/components/picto.test.js",
       // "/tests/42/ui/components/sandbox.test.js",
       // "/tests/42/ui/create.test.js",
-      "/tests/42/ui/popup.test.js",
+      // "/tests/42/ui/popup.test.js",
       // "/tests/42/ui/plugins/ipc.plugin.test.js",
       // "/tests/42/ui/xss.test.js",
     ],
     { verbose: 2, cnt: !true }
   )
+
+  import on from "./42/fabric/event/on.js"
+
+  const el = create("button", "Test")
+  document.body.append(el)
+
+  on(el, {
+    capture: true,
+    focus() {
+      console.log("focus")
+    },
+    touchstart() {
+      console.log("touchstart")
+    },
+    touchend() {
+      console.log("touchend")
+    },
+    mousedown() {
+      console.log("mousedown")
+    },
+    pointerdown() {
+      console.log("pointerdown")
+    },
+    mouseup() {
+      console.log("mouseup")
+    },
+    pointerup() {
+      console.log("pointerup")
+    },
+    click() {
+      console.log("click")
+    },
+  })
 </script>

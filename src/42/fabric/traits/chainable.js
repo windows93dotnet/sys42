@@ -1,5 +1,6 @@
 import Callable from "../class/Callable.js"
 import hashmap from "../type/object/hashmap.js"
+import noop from "../type/function/noop.js"
 
 const GETTERS = Symbol.for("chainable.GETTERS")
 const METHODS = Symbol.for("chainable.METHODS")
@@ -46,7 +47,9 @@ function makeContext(chainlink, entries, tracker = Object.create(null)) {
 export class Chainlink extends Callable {
   constructor(previous, entries) {
     const fn = previous[FUNCTION]
-    super((/* Chainlink */ ...args) => fn(makeContext(this, entries), ...args))
+    super((/* Chainlink */ ...args) =>
+      fn.call(this, makeContext(this, entries), ...args)
+    )
     const descriptors = Object.getOwnPropertyDescriptors(previous)
     for (const key of Reflect.ownKeys(descriptors)) {
       const { writable, value } = descriptors[key]
@@ -56,12 +59,7 @@ export class Chainlink extends Callable {
 }
 
 export default function chainable(...args) {
-  const fn = args.pop()
-
-  const type = typeof fn
-  if (type !== "function") {
-    throw new TypeError(`Last argument must be a function: ${type}`)
-  }
+  const fn = typeof args.at(-1) === "function" ? args.pop() : noop
 
   const entries = []
 
@@ -73,9 +71,7 @@ export default function chainable(...args) {
 
   for (const arg of args) {
     if (Array.isArray(arg)) {
-      for (const x of arg) {
-        getters.push(x)
-      }
+      for (const x of arg) getters.push(x)
     } else if (typeof arg === "function") {
       methodsEntries.push([arg.name, arg])
       methods[arg.name] = arg

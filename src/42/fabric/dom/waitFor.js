@@ -4,9 +4,9 @@ function cleanup(intervalID, timeoutID) {
 }
 
 export default async function waitFor(selector, options) {
-  const timeout = options?.timeout ?? 5000
+  const timeout = options?.timeout ?? 3000
   const polling = options?.polling ?? 100
-  const parent = options?.parent ?? document.body
+  const base = options?.base ?? document.body
 
   return new Promise((resolve, reject) => {
     const intervalID = setInterval(() => {
@@ -15,7 +15,7 @@ export default async function waitFor(selector, options) {
         reject(options.signal.reason)
       }
 
-      const el = parent.querySelector(`:scope ${selector}`)
+      const el = base.querySelector(`:scope ${selector}`)
       if (el) {
         cleanup(intervalID, timeoutID)
         resolve(el)
@@ -24,7 +24,7 @@ export default async function waitFor(selector, options) {
 
     const timeoutID = setTimeout(() => {
       cleanup(intervalID, timeoutID)
-      reject(new Error(`wait for "${selector}" timed out`))
+      reject(new Error(`Waiting for "${selector}" selector timed out`))
     }, timeout)
   })
 }

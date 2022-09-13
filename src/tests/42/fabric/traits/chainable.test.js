@@ -1,13 +1,13 @@
 import test from "../../../../42/test.js"
 import chainable from "../../../../42/fabric/traits/chainable.js"
 
-test("throw a TypeError if there is no argument", (t) => {
-  t.throws(() => chainable(), TypeError)
-})
+// test("throw a TypeError if there is no argument", (t) => {
+//   t.throws(() => chainable(), TypeError)
+// })
 
-test("throw a TypeError if last argument is not a function", (t) => {
-  t.throws(() => chainable("derp"), TypeError)
-})
+// test("throw a TypeError if last argument is not a function", (t) => {
+//   t.throws(() => chainable("derp"), TypeError)
+// })
 
 test("return function with context as first argument", (t) => {
   const fn = (ctx, arg1, arg2) => {
