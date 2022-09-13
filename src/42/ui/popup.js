@@ -155,9 +155,12 @@ const popup = rpc(
 
       if (el) {
         if (focusOut) {
-          console.log(el)
-          el.focus()
           if (!fromOpener) el.setAttribute("aria-expanded", "false")
+          const menu = el.closest("ui-menu,ui-menubar")
+
+          if (menu) focus.autofocus(menu)
+          else el.focus()
+
           focus[focusOut]()
           return
         }

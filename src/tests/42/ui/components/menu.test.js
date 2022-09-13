@@ -17,14 +17,14 @@ const { when, $ } = test.utils
 const makeMenu = (name) => {
   const submenu = [
     {
-      label: "Infinite",
+      label: "Infinite Submenu",
       // id: `submenuItemInfinite${name}${__}`,
       get content() {
         return submenu
       },
     },
     {
-      label: "3rd level",
+      label: "Submenu",
       // id: `submenuItem3rd${name}${__}`,
       content: [
         {
@@ -48,6 +48,31 @@ const makeMenu = (name) => {
 
   return [
     {
+      label: "Disabled",
+      click: "{{save()}}",
+      disabled: true,
+    },
+    {
+      label: "Infinite Submenu",
+      id: `menuItemSubmenu${name}${__}`,
+      content: submenu,
+    },
+    {
+      label: "Submenu",
+      id: `submenuItem3rd${name}${__}`,
+      content: [
+        {
+          label: "Hello",
+          click: '{{log("hello")}}',
+        },
+        {
+          label: "World",
+          click: '{{log("world")}}',
+        },
+      ],
+    },
+    "---",
+    {
       label: `Dialog ${name}`,
       id: `menuItemDialog${name}${__}`,
       picto: "folder-open",
@@ -69,32 +94,12 @@ const makeMenu = (name) => {
       },
     },
     {
-      label: "Disabled",
+      label: "Save",
       picto: "save",
       shortcut: "Ctrl+S",
       click: "{{save()}}",
       disabled: true,
     },
-    {
-      label: "Submenu",
-      id: `menuItemSubmenu${name}${__}`,
-      content: submenu,
-    },
-    {
-      label: "3rd level",
-      id: `submenuItem3rd${name}${__}`,
-      content: [
-        {
-          label: "Hello",
-          click: '{{log("hello")}}',
-        },
-        {
-          label: "World",
-          click: '{{log("world")}}',
-        },
-      ],
-    },
-    "---",
     {
       label: "{{cnt}}", //
       id: `menuItemIncr${name}${__}`,
@@ -109,14 +114,11 @@ const makeDemo = ({ content } = {}) => {
     { tag: "number", scope: "cnt", compact: true },
     "\n\n",
     "\n\n",
-    {
-      tag: `button#btnIncr${__}.w-ctrl`,
-      content: "{{cnt}}",
-      click: "{{cnt++}}",
-    },
-    "---",
     { tag: "ui-menu", content: makeMenu("Inline") },
-    "---",
+    "\n\n",
+    { tag: "number", scope: "cnt", compact: true },
+    "\n\n",
+    "\n\n",
     { tag: `button#btnMenu${__}`, content: "Menu", menu: makeMenu("Popup") },
     "\n\n",
     "\n\n",

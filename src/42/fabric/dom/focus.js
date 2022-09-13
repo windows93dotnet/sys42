@@ -47,19 +47,19 @@ export function attemptFocus(el) {
   return document.activeElement === el
 }
 
-export function focusFirst(el) {
+export function focusInsideFirst(el) {
   for (let i = 0; i < el.children.length; i++) {
     const child = el.children[i]
-    if (attemptFocus(child) || focusFirst(child)) return true
+    if (attemptFocus(child) || focusInsideFirst(child)) return true
   }
 
   return false
 }
 
-export function focusLast(el) {
+export function focusInsideLast(el) {
   for (let i = el.children.length - 1; i >= 0; i--) {
     const child = el.children[i]
-    if (attemptFocus(child) || focusLast(child)) return true
+    if (attemptFocus(child) || focusInsideLast(child)) return true
   }
 
   return false
@@ -70,7 +70,7 @@ export function focusInside(el, target) {
     const type = typeof target
     if (type === "string") {
       target = el.querySelector(`:scope ${target}`)
-      if (focusFirst(target)) return true
+      if (focusInsideFirst(target)) return true
     }
 
     if (attemptFocus(target)) return true
@@ -78,7 +78,7 @@ export function focusInside(el, target) {
 
   target = el.querySelector(":scope [autofocus], :scope [data-autofocus]")
   if (attemptFocus(target)) return true
-  return focusFirst(el)
+  return focusInsideFirst(el)
 }
 
 const { FILTER_ACCEPT, FILTER_SKIP, SHOW_ELEMENT } = NodeFilter
@@ -148,6 +148,20 @@ export function focusNext(el, root) {
   return res
 }
 
+export function focusFirst(el, root) {
+  const tab = new TabOrder(root)
+  const res = tab.first(el)
+  tab.destroy()
+  return res
+}
+
+export function focusLast(el, root) {
+  const tab = new TabOrder(root)
+  const res = tab.last(el)
+  tab.destroy()
+  return res
+}
+
 export function autofocus(el, target) {
   return attemptFocus(el) || focusInside(el, target)
 }
@@ -156,6 +170,8 @@ export default {
   isFocusable,
   autofocus,
   inside: focusInside,
+  insideFirst: focusInsideFirst,
+  insideLast: focusInsideLast,
   first: focusFirst,
   last: focusLast,
   prev: focusPrev,

@@ -26,17 +26,19 @@ export class Menu extends Component {
     on: {
       "ArrowUp": "{{focusPrev()}}",
       "ArrowDown": "{{focusNext()}}",
-      "Tab": "{{focusOut('next', e, target)}}",
-      "Shift+Tab": "{{focusOut('prev', e, target)}}",
+      "Tab": "{{_focusOut('next', e)}}",
+      "Shift+Tab": "{{_focusOut('prev', e)}}",
     },
   }
 
   // close is implemented only for popup menu (in popup.js )
   close() {}
 
-  focusOut(dir, e, target) {
-    if (this.ctx.initiator) this.closeAll?.({ focusOut: dir })
-    else this.closeAll?.(e, target)
+  _focusOut(dir, e) {
+    if (this.closeAll) {
+      e.preventDefault()
+      this.closeAll({ focusOut: dir })
+    }
   }
 
   focusPrev() {
@@ -60,9 +62,6 @@ export class Menu extends Component {
 
       item = { ...item }
       const { content } = item
-
-      item.tabIndex = first ? 0 : -1
-      first = false
 
       if (
         item.dialog &&
@@ -109,6 +108,10 @@ export class Menu extends Component {
         item.aria ??= {}
         item.aria.disabled = item.disabled
         delete item.disabled
+        item.tabIndex = -1
+      } else {
+        item.tabIndex = first ? 0 : -1
+        first = false
       }
 
       items.push({ tag: "li", role: "none", content: item })
