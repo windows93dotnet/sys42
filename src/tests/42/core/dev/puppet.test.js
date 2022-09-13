@@ -42,7 +42,7 @@ test.serial("auto wait for element", async (t) => {
 
   t.sleep(50).then(() => document.body.append(el))
 
-  t.is(el, await promise)
+  t.is(await promise, undefined)
   t.is(stub.count, 2)
   t.eq(
     stub.calls.map(({ args: [e] }) => e.type),

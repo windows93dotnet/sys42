@@ -8,6 +8,13 @@ export default async function waitFor(selector, options) {
   const polling = options?.polling ?? 100
   const base = options?.base ?? document.body
 
+  if (options?.all) {
+    const res = base.querySelectorAll(`:scope ${selector}`)
+    if (res.length > 0) return [...res]
+  } else {
+    return base.querySelector(`:scope ${selector}`)
+  }
+
   return new Promise((resolve, reject) => {
     const intervalID = setInterval(() => {
       if (options?.signal?.aborted) {
@@ -15,10 +22,18 @@ export default async function waitFor(selector, options) {
         reject(options.signal.reason)
       }
 
-      const el = base.querySelector(`:scope ${selector}`)
+      let el
+
+      if (options?.all) {
+        const res = base.querySelectorAll(`:scope ${selector}`)
+        if (res.length > 0) el = [...res]
+      } else {
+        el = base.querySelector(`:scope ${selector}`)
+      }
+
       if (el) {
         cleanup(intervalID, timeoutID)
-        resolve(el)
+        resolve(options?.all ? [...el] : el)
       }
     }, polling)
 

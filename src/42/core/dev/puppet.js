@@ -4,7 +4,7 @@ import waitFor from "../../fabric/dom/waitFor.js"
 import mark from "../../fabric/type/any/mark.js"
 import sleep from "../../fabric/type/promise/sleep.js"
 import when from "../../fabric/type/promise/when.js"
-// import ensureElement from "../../fabric/dom/ensureElement.js"
+import DOMQuery from "../../fabric/class/DOMQuery.js"
 
 const clickOrder = [
   "pointerdown",
@@ -93,6 +93,47 @@ const puppet = chainable(
       })
     },
 
+    select({ data }) {
+      data.order.push(async (target) => target.select?.())
+    },
+
+    focus({ data }) {
+      data.order.push(async (target) => {
+        if ("focus" in target) target.focus()
+        else simulate(target, "focus")
+      })
+    },
+
+    blur({ data }) {
+      data.order.push(async (target) => {
+        if ("blur" in target) target.blur()
+        else simulate(target, "blur")
+      })
+    },
+
+    dbclick({ data }) {
+      data.order.push(async (target) => simulate(target, "dbclick"))
+    },
+
+    contextmenu({ data }) {
+      data.order.push(async (target) => simulate(target, "contextmenu"))
+    },
+
+    fill({ data }, val) {
+      data.order.push(async (target) => {
+        if (val !== undefined && "value" in target) target.value = val
+        simulate(target, "input")
+        simulate(target, "change")
+      })
+    },
+
+    input({ data }, val) {
+      data.order.push(async (target) => {
+        if (val !== undefined && "value" in target) target.value = val
+        simulate(target, "input")
+      })
+    },
+
     dispatch({ data }, event, init) {
       data.order.push(async (target) => simulate(target, event, init))
     },
@@ -106,16 +147,19 @@ const puppet = chainable(
     },
 
     async then({ data }, resolve, reject) {
-      data.target = globalThis
+      data.targets = [globalThis]
 
       for (const item of data.order) {
         if (typeof item === "function") {
-          await item(data.target)
+          await Promise.all(data.targets.map((target) => item(target)))
         } else if ("target" in item) {
-          data.target = item.target
-          if (typeof data.target === "string") {
+          data.targets = item.target
+          if (typeof data.targets === "string") {
             try {
-              data.target = await waitFor(data.target, item.options)
+              data.targets = await waitFor(data.targets, {
+                ...item.options,
+                all: true,
+              })
             } catch (err) {
               reject(err)
               return
@@ -128,7 +172,7 @@ const puppet = chainable(
         for (const keyup of data.pendingKeys.values()) keyup()
       }, 0)
 
-      resolve(data.target)
+      resolve()
     },
   },
 
@@ -139,5 +183,6 @@ const puppet = chainable(
 )
 
 puppet.cleanup = cleanup
+puppet.$ = new DOMQuery()
 
 export default puppet

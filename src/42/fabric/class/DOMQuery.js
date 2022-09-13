@@ -1,7 +1,6 @@
 // jQuery inspired class
 
 import ensureElement from "../dom/ensureElement.js"
-import waitFor from "../dom/waitFor.js"
 import listen from "../event/listen.js"
 import Callabale from "./Callable.js"
 
@@ -84,11 +83,6 @@ export default class DOMQuery extends Callabale {
         return out
       },
     })
-  }
-
-  async waitFor(selector, options = {}) {
-    options.base = this.el
-    return waitFor(selector, options)
   }
 
   on(event, selector, fn) {
