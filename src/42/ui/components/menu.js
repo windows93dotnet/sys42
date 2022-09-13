@@ -18,22 +18,25 @@ function seq(el, dir) {
 }
 
 export class Menu extends Component {
+  [Symbol.for("42_POPUP_CLOSE")] = true
+
   static definition = {
     tag: "ui-menu",
     role: "menu",
-
     on: {
-      ArrowUp: "{{focusPrev()}}",
-      ArrowDown: "{{focusNext()}}",
-      Tab: "{{focusOut(e, target)}}",
+      "ArrowUp": "{{focusPrev()}}",
+      "ArrowDown": "{{focusNext()}}",
+      "Tab": "{{focusOut('next', e, target)}}",
+      "Shift+Tab": "{{focusOut('prev', e, target)}}",
     },
   }
 
-  closable = true
+  // close is implemented only for popup menu (in popup.js )
+  close() {}
 
-  focusOut(e, target) {
-    console.log(this.ctx.initiator)
-    this.closeAll?.(e, target)
+  focusOut(dir, e, target) {
+    if (this.ctx.initiator) this.closeAll?.({ focusOut: dir })
+    else this.closeAll?.(e, target)
   }
 
   focusPrev() {

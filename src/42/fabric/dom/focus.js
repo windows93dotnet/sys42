@@ -8,7 +8,7 @@ const { ELEMENT_NODE } = Node
 export const isVisible = (el) =>
   Boolean(el.offsetWidth || el.offsetHeight || el.getClientRects().length > 0)
 
-export const isFocusable = (el) => {
+export function isFocusable(el) {
   if (
     el.tabIndex < 0 ||
     el.disabled ||
@@ -28,16 +28,16 @@ export const isFocusable = (el) => {
 
   // prettier-ignore
   switch (el.localName) {
-    case "a": return Boolean(el.href) && el.rel !== "ignore";
-    case "input": return el.type !== "hidden";
+    case "a": return Boolean(el.href) && el.rel !== "ignore"
+    case "input": return el.type !== "hidden"
     case "button":
     case "select":
-    case "textarea": return true;
-    default: return false;
+    case "textarea": return true
+    default: return false
   }
 }
 
-export const attemptFocus = (el) => {
+export function attemptFocus(el) {
   if (!el || el.nodeType !== ELEMENT_NODE || !isFocusable(el)) return false
   try {
     el.focus()
@@ -47,7 +47,7 @@ export const attemptFocus = (el) => {
   return document.activeElement === el
 }
 
-export const focusFirst = (el) => {
+export function focusFirst(el) {
   for (let i = 0; i < el.children.length; i++) {
     const child = el.children[i]
     if (attemptFocus(child) || focusFirst(child)) return true
@@ -56,7 +56,7 @@ export const focusFirst = (el) => {
   return false
 }
 
-export const focusLast = (el) => {
+export function focusLast(el) {
   for (let i = el.children.length - 1; i >= 0; i--) {
     const child = el.children[i]
     if (attemptFocus(child) || focusLast(child)) return true
@@ -65,7 +65,7 @@ export const focusLast = (el) => {
   return false
 }
 
-export const autofocus = (el, target) => {
+export function focusInside(el, target) {
   if (target) {
     const type = typeof target
     if (type === "string") {
@@ -116,14 +116,14 @@ export class TabOrder {
     return attemptFocus(this.list.at(-1))
   }
 
-  next(currentElement = document.activeElement) {
-    let index = this.list.indexOf(currentElement)
+  next(el = document.activeElement) {
+    let index = this.list.indexOf(el)
     if (index === this.list.length - 1) index = -1
     return attemptFocus(this.list[++index])
   }
 
-  prev(currentElement = document.activeElement) {
-    let index = this.list.indexOf(currentElement)
+  prev(el = document.activeElement) {
+    let index = this.list.indexOf(el)
     if (index === 0 || index === -1) index = this.list.length
     return attemptFocus(this.list[--index])
   }
@@ -134,4 +134,30 @@ export class TabOrder {
   }
 }
 
-export const tabOrder = (root) => new TabOrder(root)
+export function focusPrev(el, root) {
+  const tab = new TabOrder(root)
+  const res = tab.prev(el)
+  tab.destroy()
+  return res
+}
+
+export function focusNext(el, root) {
+  const tab = new TabOrder(root)
+  const res = tab.next(el)
+  tab.destroy()
+  return res
+}
+
+export function autofocus(el, target) {
+  return attemptFocus(el) || focusInside(el, target)
+}
+
+export default {
+  isFocusable,
+  autofocus,
+  inside: focusInside,
+  first: focusFirst,
+  last: focusLast,
+  prev: focusPrev,
+  next: focusNext,
+}

@@ -4,7 +4,7 @@ import maxZIndex from "../fabric/dom/maxZIndex.js"
 import on from "../fabric/event/on.js"
 import defer from "../fabric/type/promise/defer.js"
 import Canceller from "../fabric/class/Canceller.js"
-import { autofocus } from "../fabric/dom/focus.js"
+import focus from "../fabric/dom/focus.js"
 
 import rpc from "../core/ipc/rpc.js"
 import normalize, { objectifyDef, forkDef } from "./normalize.js"
@@ -49,7 +49,11 @@ function closeAll(e, target = e.target) {
   while (i--) {
     map[i].close(
       i === 0
-        ? { fromOpener: target?.id === opener, fromBlur: e?.type === "blur" }
+        ? {
+            fromOpener: target?.id === opener,
+            fromBlur: e?.type === "blur",
+            focusOut: e?.focusOut,
+          }
         : undefined
     )
   }
@@ -61,6 +65,8 @@ on({
   "pointerdown || ArrowUp || ArrowDown || ArrowLeft": closeOthers,
   "blur || Escape": closeAll,
 })
+
+const _close = Symbol.for("42_POPUP_CLOSE")
 
 const popup = rpc(
   async function popup(def, ctx, rect, meta) {
@@ -86,7 +92,7 @@ const popup = rpc(
     document.body.append(el)
     await ctx.reactive.done()
 
-    setTimeout(() => autofocus(el) || el.focus(), 0)
+    setTimeout(() => focus.autofocus(el), 0)
 
     const deferred = defer()
 
@@ -100,7 +106,7 @@ const popup = rpc(
       deferred.resolve({ opener, ...options })
     }
 
-    if (el.closable === true) {
+    if (el[_close] === true) {
       el.close = close
       el.closeOthers = closeOthers
       el.closeAll = closeAll
@@ -142,12 +148,20 @@ const popup = rpc(
 
     unmarshalling(options) {
       if (!options) return
-      const { opener, fromOpener, fromBlur } = options
+      const { opener, fromOpener, fromBlur, focusOut } = options
       const el = document.querySelector(`#${opener}`)
 
       if (fromBlur && document.activeElement === el) return
 
       if (el) {
+        if (focusOut) {
+          console.log(el)
+          el.focus()
+          if (!fromOpener) el.setAttribute("aria-expanded", "false")
+          focus[focusOut]()
+          return
+        }
+
         if (document.activeElement === document.body) el.focus()
         if (!fromOpener) el.setAttribute("aria-expanded", "false")
       }
