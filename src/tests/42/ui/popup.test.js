@@ -56,7 +56,7 @@ test.intg("popup behavior", async (t, { decay, dest, pickValues }) => {
                 tag: ".box-fit.box-center.desktop",
                 content: buttons("Iframe"),
               },
-              script: `app.query("#btnDialogIframe").click()`,
+              script: `app.el.querySelector("#btnDialogIframe").click()`,
             },
           ],
         },
@@ -68,7 +68,7 @@ test.intg("popup behavior", async (t, { decay, dest, pickValues }) => {
     )
   )
 
-  app.query("#btnDialogTop").click()
+  app.el.querySelector("#btnDialogTop").click()
 
   await new Promise((resolve) => {
     let cnt = 0
@@ -77,7 +77,7 @@ test.intg("popup behavior", async (t, { decay, dest, pickValues }) => {
 
   t.timeout("reset")
 
-  const iframe = app.query("ui-sandbox iframe")
+  const iframe = app.el.querySelector("ui-sandbox iframe")
   const sandbox = iframe.contentDocument
 
   const incrBtns = {
@@ -96,6 +96,7 @@ test.intg("popup behavior", async (t, { decay, dest, pickValues }) => {
 
   async function checkPopupBtn(btn, label, options) {
     const sel = `#btnIncrPopup${label}`
+    const puppet = t.puppet.makePuppet()
 
     t.is(
       btn.getAttribute("aria-expanded"),
@@ -103,8 +104,7 @@ test.intg("popup behavior", async (t, { decay, dest, pickValues }) => {
       "popup button should be closed"
     )
 
-    t.puppet(btn).dispatch("pointerdown")
-    await t.utils.when("uipopupopen")
+    await puppet(btn).dispatch("pointerdown").when("uipopupopen")
 
     t.is(
       btn.getAttribute("aria-expanded"),
@@ -116,7 +116,7 @@ test.intg("popup behavior", async (t, { decay, dest, pickValues }) => {
     t.isElement(incr)
 
     if (options?.close) {
-      await t.puppet(options.close).focus().dispatch("pointerdown")
+      await puppet(options.close).focus().dispatch("pointerdown")
       await t.sleep(30)
     }
 
@@ -151,7 +151,7 @@ test.intg("popup behavior", async (t, { decay, dest, pickValues }) => {
         "popup button should be open"
       )
 
-      await t.puppet(options.incr).focus().dispatch("pointerdown").click()
+      await puppet(options.incr).focus().dispatch("pointerdown").click()
       cnt++
       await t.sleep(30)
 

@@ -29,12 +29,20 @@ export default class DOMQuery extends Callabale {
   }
 
   each(selector, options) {
-    const init = options?.live ? [] : this.queryAll(selector)
+    const base =
+      (typeof options === "string" || options?.nodeType === Node.ELEMENT_NODE
+        ? options
+        : options?.base) ?? this.el
+
+    const init = options?.live
+      ? []
+      : [...base.querySelectorAll(`:scope ${selector}`)]
+
     return new Proxy(init, {
-      get: (target, key, receiver) => {
+      get(target, key, receiver) {
         if (options?.live) {
           target.length = 0
-          target.push(...this.el.querySelectorAll(`:scope ${selector}`))
+          target.push(...base.querySelectorAll(`:scope ${selector}`))
         }
 
         // array methods/properties
@@ -72,10 +80,10 @@ export default class DOMQuery extends Callabale {
         return out
       },
 
-      set: (target, key, val) => {
+      set(target, key, val) {
         if (options?.live) {
           target.length = 0
-          target.push(...this.el.querySelectorAll(`:scope ${selector}`))
+          target.push(...base.querySelectorAll(`:scope ${selector}`))
         }
 
         let out = false

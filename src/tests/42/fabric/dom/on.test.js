@@ -184,23 +184,19 @@ suite.serial("globalThis", () => {
     await bot.click()
     t.eq([a.count, b.count], [0, 1])
 
-    await bot
-      .keydown({ key: "Control", code: "ControlLeft" }) //
-      .click()
+    await bot.keydown({ key: "Control", code: "ControlLeft" }).click().keyup()
     t.eq([a.count, b.count], [1, 1])
 
     await bot.click()
     t.eq([a.count, b.count], [1, 2])
 
-    await bot.keydown({ key: "Control", code: "ControlLeft" })
+    await bot.keystroke({ key: "Control", code: "ControlLeft" })
     t.eq([a.count, b.count], [1, 2])
 
     await bot.click()
     t.eq([a.count, b.count], [1, 3])
 
-    await bot
-      .keydown({ key: "Control", code: "ControlLeft" }) //
-      .click()
+    await bot.keydown({ key: "Control", code: "ControlLeft" }).click().keyup()
     t.eq([a.count, b.count], [2, 3])
   })
 

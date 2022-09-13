@@ -15,7 +15,7 @@ test.teardown(() => {
   if (!wasListening) keyboard.forget()
 })
 
-test.serial("auto release keys", async (t) => {
+test.serial.skip("auto release keys", async (t) => {
   t.alike(keyboard.keys, {})
 
   await puppet

@@ -70,11 +70,13 @@ export default function addUtilities(item, isExecutionContext) {
       ])
     )
 
-    item.puppet = (el) => {
-      const instance = puppet(el)
-      item.teardown(() => instance.cleanup())
-      return instance
-    }
+    Object.defineProperty(item, "puppet", {
+      get() {
+        const instance = puppet.makePuppet()
+        item.teardown(() => instance.cleanup())
+        return instance
+      },
+    })
 
     item.utils = {}
 

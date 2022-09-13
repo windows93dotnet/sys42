@@ -57,7 +57,7 @@ test.intg("cross-realms state data", async (t, { decay, dest, pickValues }) => {
                   },
                 },
               ],
-              script: `app.query("#btnDialog2")?.click()`,
+              script: `app.el.querySelector("#btnDialog2")?.click()`,
             },
           },
 
@@ -87,7 +87,7 @@ test.intg("cross-realms state data", async (t, { decay, dest, pickValues }) => {
                   },
                 },
               ],
-              script: `app.query("#btnDialog3")?.click()`,
+              script: `app.el.querySelector("#btnDialog3")?.click()`,
             },
           },
         ],
@@ -104,7 +104,7 @@ test.intg("cross-realms state data", async (t, { decay, dest, pickValues }) => {
 
   globalThis.app = app
 
-  app.query("#btnDialog1").click()
+  app.el.querySelector("#btnDialog1").click()
 
   await new Promise((resolve) => {
     let cnt = 0
@@ -113,8 +113,8 @@ test.intg("cross-realms state data", async (t, { decay, dest, pickValues }) => {
 
   t.timeout("reset")
 
-  const sandbox1 = app.query("#sandbox1 iframe").contentDocument
-  const sandbox2 = app.query("#sandbox2 iframe").contentDocument
+  const sandbox1 = app.el.querySelector("#sandbox1 iframe").contentDocument
+  const sandbox2 = app.el.querySelector("#sandbox2 iframe").contentDocument
 
   const btnDialogs = {
     btnDialog1: document.querySelector("#btnDialog1"),

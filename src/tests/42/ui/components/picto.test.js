@@ -9,7 +9,7 @@ test("render picto", async (t, { dest, decay }) => {
     })
   )
 
-  const el = app.query("ui-picto")
+  const el = app.el.querySelector("ui-picto")
 
   t.eq(app.reactive.data, {}, 'picto "value" should not register in state')
 

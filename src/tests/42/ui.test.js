@@ -1958,7 +1958,7 @@ test("each", "input element", async (t) => {
     })
   )
 
-  let ta = app.queryAll("textarea")
+  let ta = app.el.querySelectorAll("textarea")
   t.is(ta.length, 2)
   t.is(ta[0].name, "/arr/0/a")
   t.is(ta[0].value, "x")
@@ -1969,7 +1969,7 @@ test("each", "input element", async (t) => {
   app.state.arr = [{ a: "z" }]
   await app
 
-  ta = app.queryAll("textarea")
+  ta = app.el.querySelectorAll("textarea")
   t.is(ta.length, 1)
   t.is(ta[0].name, "/arr/0/a")
   t.is(ta[0].value, "z")
@@ -2036,7 +2036,7 @@ test("on", async (t) => {
 
   t.eq(app.state, { cnt: 42 })
 
-  const el = app.query("button")
+  const el = app.el.querySelector("button")
 
   el.click()
   t.eq(app.state, { cnt: 42 })
@@ -2061,7 +2061,7 @@ test("on", "queued fast calls", async (t) => {
 
   t.eq(app.state, { cnt: 42 })
 
-  const el = app.query("button")
+  const el = app.el.querySelector("button")
 
   el.click()
   el.click()
@@ -2097,7 +2097,7 @@ test("on", "actions", async (t) => {
 
   t.eq(app.state, { cnt: 42 })
 
-  const el = app.query("button")
+  const el = app.el.querySelector("button")
 
   el.click()
   t.eq(app.state, { cnt: 42 })
@@ -2143,7 +2143,7 @@ test("input", async (t) => {
     // </fieldset>`
   )
 
-  const input = app.query("input")
+  const input = app.el.querySelector("input")
   t.eq(input.value, "foo")
 
   change(input, "bar")

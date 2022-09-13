@@ -93,12 +93,12 @@
   )
 
   if (app.ctx.plugins.persist.initial) {
-    app.query("#incr")?.click()
-    app.query("#dialog-left")?.click()
-    app.query("#dialog-right")?.click()
-    // app.query("#nested")?.click()
+    document.querySelector("#incr")?.click()
+    document.querySelector("#dialog-left")?.click()
+    document.querySelector("#dialog-right")?.click()
+    // document.querySelector("#nested")?.click()
     // await app
-    // app.query("#nested2")?.click()
+    // document.querySelector("#nested2")?.click()
     log(app.data)
   }
 

@@ -12,7 +12,7 @@
 <script type="module">
   import ui from "../../../42/ui.js"
 
-  const app = await ui({
+  await ui({
     tag: "body.desktop",
     content: [
       { tag: "button", content: "{{cnt}}++", click: "{{cnt++}}" },
@@ -57,7 +57,7 @@
     },
   })
 
-  app.query("button#dialog")?.click()
+  document.querySelector("button#dialog")?.click()
 
   // import listen from "../../../42/fabric/event/listen.js"
   // import sleep from "../../../42/fabric/type/promise/sleep.js"
@@ -72,8 +72,8 @@
   // // })
 
   // setTimeout(() => {
-  //   app.query("button#dialog")?.click()
-  //   // app.query("button#dialog")?.click()
+  //   document.querySelector("button#dialog")?.click()
+  //   // document.querySelector("button#dialog")?.click()
   // }, 100)
 
   // let closed
@@ -86,7 +86,7 @@
   //     await sleep(500)
   //     // document.querySelector(".ui-dialog__close")?.click()
   //     e.target.close()
-  //     app.query("button#dialog")?.click()
+  //     document.querySelector("button#dialog")?.click()
   //   },
   //   // uidialogclose(e) {
   //   //   // e.preventDefault()

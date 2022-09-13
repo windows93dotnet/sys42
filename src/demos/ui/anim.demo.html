@@ -12,7 +12,7 @@
 <script type="module">
   import ui from "../../42/ui.js"
 
-  const app = await ui({
+  await ui({
     tag: "body.box-fit.box-h.txt-center.pa-xxl.desktop",
 
     content: [
@@ -133,6 +133,6 @@
   })
 
   setTimeout(() => {
-    app.query("#toggle")?.click()
+    document.querySelector("#toggle")?.click()
   }, 1500)
 </script>

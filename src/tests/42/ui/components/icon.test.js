@@ -56,7 +56,7 @@ test("html", async (t) => {
 </ui-icon>`
   )
 
-  const el = app.query("ui-icon")
+  const el = app.el.querySelector("ui-icon")
 
   t.is(el.textContent, "script\u200b.js")
   t.is(el.getAttribute("aria-description"), "file")
@@ -132,7 +132,7 @@ test("infos", async (t) => {
     },
   })
 
-  const icons = app.each("ui-icon")
+  const icons = t.puppet.$("ui-icon", app.el)
   const { infos } = icons
 
   t.eq(
@@ -254,7 +254,7 @@ test("each", async (t) => {
     "/ui/icon/root,[0]/infos/description",
   ])
 
-  const icons = app.each("ui-icon", { live: true })
+  const icons = t.puppet.$("ui-icon", { live: true, base: app.el })
   t.eq(icons.textContent, ["foo\u200b.js", "derp"])
 
   app.state.arr = [{ x: "bar.txt" }]
@@ -305,7 +305,7 @@ test("each", 2, async (t) => {
     "/ui/icon/root,[0]/infos/description",
   ])
 
-  const icons = app.each("ui-icon", { live: true })
+  const icons = t.puppet.$("ui-icon", { live: true, base: app.el })
   t.eq(icons.textContent, ["foo\u200b.js", "derp"])
   t.eq(
     icons.infos.map(({ image }) => image),

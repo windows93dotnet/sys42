@@ -128,7 +128,7 @@ test.tasks(
         content: { tag: "ui-t-signal" },
       },
       async check(t, app) {
-        const el = app.query("ui-t-signal")
+        const el = app.el.querySelector("ui-t-signal")
         const [stub] = t.stubs
         t.is(stub.count, 0)
 
@@ -175,7 +175,7 @@ test.tasks(
       },
       expected: '<ui-t-props bar="2">foo: 1, bar: 2</ui-t-props>',
       async check(t, app) {
-        const el = app.query("ui-t-props")
+        const el = app.el.querySelector("ui-t-props")
 
         t.is(el.bar, 2)
 
@@ -224,7 +224,7 @@ test.tasks(
       },
       expected: '<ui-t-props-state bar="2">foo: 1, bar: 2</ui-t-props-state>',
       async check(t, app) {
-        const el = app.query("ui-t-props-state")
+        const el = app.el.querySelector("ui-t-props-state")
 
         t.is(app.reactive.get("bar"), 2)
         t.is(el.bar, 2)
@@ -855,7 +855,7 @@ test("state", "dynamic", "push", async (t) => {
     },
   })
 
-  const el = app.query("ui-t-nested-dynamic")
+  const el = app.el.querySelector("ui-t-nested-dynamic")
 
   el.list.push({ foo: "b" })
   await app
@@ -914,7 +914,7 @@ test("state", "dynamic", "pop", async (t) => {
     },
   })
 
-  const el = app.query("ui-t-nested-dynamic")
+  const el = app.el.querySelector("ui-t-nested-dynamic")
 
   el.list.pop()
   await app
@@ -951,7 +951,7 @@ test("state", "dynamic", "textContent", async (t) => {
 
   t.is(app.el.textContent, "x:a-x:b-")
 
-  const el = app.query("ui-t-nested-dynamic")
+  const el = app.el.querySelector("ui-t-nested-dynamic")
 
   el.list.push({ foo: "c" })
   await app
@@ -1010,7 +1010,7 @@ test("props", 1, async (t) => {
 
   t.is(app.el.innerHTML, '<ui-a bar="-">foo: 1, bar: -</ui-a>')
 
-  app.query("ui-a").bar = 0
+  app.el.querySelector("ui-a").bar = 0
   await app
 
   t.is(app.el.innerHTML, '<ui-a bar="0">foo: 1, bar: 0</ui-a>')
@@ -1071,7 +1071,7 @@ test("props", 3, async (t) => {
 <ui-a id="a2" bar="-2">foo: 1, bar: -2</ui-a>`
   )
 
-  app.query("#a1").bar = -3
+  app.el.querySelector("#a1").bar = -3
   await app
 
   t.is(
@@ -1112,7 +1112,7 @@ test("props", 4, async (t) => {
 
   t.is(app.el.innerHTML, '<ui-a bar="b">foo: b, bar: b</ui-a>')
 
-  app.query("ui-a").bar = "c"
+  app.el.querySelector("ui-a").bar = "c"
   await app
 
   t.eq(app.reactive.data, {
@@ -1153,7 +1153,7 @@ test("props", 5, async (t) => {
 
   t.is(app.el.innerHTML, '<ui-a bar="B">foo: b, bar: B</ui-a>')
 
-  app.query("ui-a").bar = "c"
+  app.el.querySelector("ui-a").bar = "c"
   await app
 
   t.eq(app.reactive.data, {
@@ -1327,7 +1327,7 @@ test("scopped", 2, async (t) => {
 <ui-a bar="3">foo: , bar: 3</ui-a>`
   )
 
-  app.query("ui-a:last-of-type").destroy()
+  app.el.querySelector("ui-a:last-of-type").destroy()
 
   t.eq(app.reactive.data, {
     foo: 1,
@@ -1615,7 +1615,7 @@ async function testStringArrayWithTransfers(t, app) {
     },
   })
 
-  app.query("ui-t-nested-string-array").destroy()
+  app.el.querySelector("ui-t-nested-string-array").destroy()
 
   t.eq(app.reactive.data, {
     arr: ["foo", "B"],
@@ -1725,7 +1725,7 @@ test("computed", async (t) => {
     t.is(updates.shift(), [...changes][0])
   })
 
-  app.query("ui-t-computed").formated = "HELLO/WORLD"
+  app.el.querySelector("ui-t-computed").formated = "HELLO/WORLD"
   await app
 
   t.is(
@@ -1860,7 +1860,7 @@ test("computed", "computed prop", async (t) => {
     })
   )
 
-  const el = app.query("ui-t-compu-prop")
+  const el = app.el.querySelector("ui-t-compu-prop")
 
   t.eq(Object.keys(app.ctx.renderers), [
     "/ui/t-compu-prop/root/formated",
@@ -1937,6 +1937,6 @@ test("actions", "bug: component with computed", async (t) => {
       },
     })
   )
-  app.query("ui-t-actions").click()
+  app.el.querySelector("ui-t-actions").click()
   t.is(await deferred, "foo")
 })
