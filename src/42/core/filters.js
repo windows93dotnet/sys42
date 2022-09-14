@@ -105,6 +105,7 @@ types.any = {
   clone: "any/clone",
   equal: "any/equal",
   stringify: "any/stringify",
+  log: (...args) => import("./log.js").then((m) => m.default(...args)),
 }
 
 types.path = {
@@ -149,7 +150,7 @@ types.file = {
   },
   text: async (file) => file?.text?.(),
   arrayBuffer: async (file) => file?.arrayBuffer?.(),
-  size: (file, options) => bytesize(file?.size ?? 0, options),
+  bytesize: (file, options) => bytesize(file?.size ?? 0, options),
 }
 
 types.ui = {

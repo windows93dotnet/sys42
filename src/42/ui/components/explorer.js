@@ -46,7 +46,7 @@ export class Explorer extends Component {
         ],
       },
       {
-        tag: "ui-folder.inset",
+        tag: "ui-folder.inset.paper",
         autofocus: true,
         glob: "{{glob}}",
         path: "{{path}}",
@@ -98,6 +98,7 @@ export class Explorer extends Component {
   }
 
   open(path) {
+    console.log("open", path)
     open(path)
   }
 

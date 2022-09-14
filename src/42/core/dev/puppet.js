@@ -130,8 +130,8 @@ const makePuppet = () => {
         })
       },
 
-      dbclick({ data }) {
-        data.order.push(async (target) => simulate(target, "dbclick"))
+      dblclick({ data }) {
+        data.order.push(async (target) => simulate(target, "dblclick"))
       },
 
       contextmenu({ data }) {

@@ -40,7 +40,7 @@ test.serial("auto wait for element", async (t) => {
     .dispatch("pointerdown")
     .dispatch("focus")
 
-  t.sleep(50).then(() => document.body.append(el))
+  const end = t.sleep(50).then(() => document.body.append(el))
 
   t.is(await promise, undefined)
   t.is(stub.count, 2)
@@ -48,6 +48,8 @@ test.serial("auto wait for element", async (t) => {
     stub.calls.map(({ args: [e] }) => e.type),
     ["pointerdown", "focus"]
   )
+
+  await end
 })
 
 test.serial("auto wait for element", "throws on timeout", async (t) => {
@@ -58,7 +60,9 @@ test.serial("auto wait for element", "throws on timeout", async (t) => {
     .dispatch("pointerdown")
     .dispatch("focus")
 
-  t.sleep(100).then(() => document.body.append(el))
+  const end = t.sleep(100).then(() => document.body.append(el))
 
   await t.throws(promise, /timed out/)
+
+  await end
 })

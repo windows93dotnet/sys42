@@ -1,14 +1,9 @@
 :root {
   --bg: Canvas;
   --fg: CanvasText;
-  /* --bg: #080a0c;
-  --fg: #595d69; */
   /* color-scheme: dark; */
 
   --prose-w: 80ch;
-
-  /* --document-pa: var(--unit-lg); */
-  /* --article-mw: var(--prose-w); */
 
   --breath: var(--unit-xl);
 
@@ -38,8 +33,6 @@
   --highlight-fg: var(--bg);
   --highlight-tsh: none;
 
-  /* --inset-bg: var(--fld-bg, var(--bg));
-  --inset-fg: var(--fld-fg, var(--fg)); */
   --inset-bg: var(--panel-bg);
   --inset-fg: var(--panel-fg);
   --inset-bdw: var(--fld-bdw);
@@ -60,8 +53,6 @@
   --inset-shallow-tsh: var(--inset-tsh);
   --inset-shallow-bsh: var(--inset-bsh);
 
-  /* --outset-bg: var(--btn-bg, var(--bg));
-  --outset-fg: var(--btn-fg, var(--fg)); */
   --outset-bg: var(--panel-bg);
   --outset-fg: var(--panel-fg);
   --outset-bdw: var(--btn-bdw);
@@ -81,6 +72,10 @@
   --outset-shallow-br: var(--outset-br);
   --outset-shallow-tsh: var(--outset-tsh);
   --outset-shallow-bsh: var(--outset-bsh);
+
+  --paper-bg: var(--document-bg, var(--fld-bg));
+  --paper-fg: var(--document-fg, var(--fld-fg));
+  --paper-tsh: var(--document-tsh, var(--fld-tsh));
 
   font: var(--font);
 }
@@ -185,6 +180,12 @@ menu,
   --bg: var(--ground-bg);
   --fg: var(--ground-fg);
   text-shadow: var(--ground-tsh, none);
+}
+
+.paper {
+  --bg: var(--paper-bg);
+  --fg: var(--paper-fg);
+  text-shadow: var(--paper-tsh, none);
 }
 
 .document {

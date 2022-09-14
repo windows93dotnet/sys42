@@ -22,7 +22,7 @@ const DEFAULTS_KEYS = Object.keys(EVENT_DEFAULTS)
 const ITEM_KEYS = Object.keys(ITEM_DEFAULTS)
 
 export const delegate = (selector, fn) => (e) => {
-  const target = e.target.closest?.(selector) ?? e.target
+  const target = e.target.closest?.(selector)
   if (target && fn(e, target) === false) stopEvent(e)
 }
 
