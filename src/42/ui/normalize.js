@@ -256,16 +256,29 @@ export function normalizeData(def, ctx, cb) {
 
 export function normalizePlugins(ctx, plugins) {
   for (const plugin of plugins) {
+    let promise
     if (typeof plugin === "string") {
-      ctx.preload.push(
-        import(`./plugins/${plugin}.plugin.js`) //
-          .then((m) => m.default(ctx))
-      )
+      promise = import(`./plugins/${plugin}.plugin.js`) //
+        .then((m) => m.default(ctx))
     } else if (Array.isArray(plugin)) {
-      ctx.preload.push(plugin[0](ctx, plugin[1]))
+      if (typeof plugin[0] === "string") {
+        promise = import(`./plugins/${plugin[0]}.plugin.js`) //
+          .then((m) => m.default(ctx, plugin[1]))
+      } else {
+        promise = plugin[0](ctx, plugin[1])
+      }
     } else {
-      ctx.preload.push(plugin(ctx))
+      promise = plugin(ctx)
     }
+
+    ctx.preload.push(
+      promise.then((res) => {
+        if (typeof res === "function") {
+          ctx.pluginHandlers ??= []
+          ctx.pluginHandlers.push(res)
+        }
+      })
+    )
   }
 }
 
@@ -387,7 +400,7 @@ export function normalizeDefNoCtx(def = {}) {
 }
 
 export function normalizeDef(def = {}, ctx, options) {
-  ctx.id ??= hash(def)
+  ctx.id ??= def.id ?? hash(def)
   ctx.type = getType(def)
 
   if (ctx.type === "string") {

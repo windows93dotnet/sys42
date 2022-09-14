@@ -283,6 +283,7 @@ if (inTop) {
       await ui(
         dest(true),
         {
+          id: "menuDemo",
           tag: ".box-fit.desktop",
           content: {
             tag: ".box-v.w-full",
@@ -295,8 +296,9 @@ if (inTop) {
               },
             ],
           },
+          plugins: ["autoIncrementId"],
         },
-        { trusted: true, id: "menuDemo" }
+        { trusted: true }
       )
     )
 
@@ -319,7 +321,11 @@ if (inTop) {
   })
 } else {
   document.body.classList.add("debug")
-  await ui({ content: makeDemo(), initiator: "menuDemo" })
+  await ui({
+    content: makeDemo(),
+    initiator: "menuDemo",
+    plugins: ["autoIncrementId"],
+  })
   // const { puppet } = test.utils
   // puppet("#btnMenuIframe").click()
 }
