@@ -61,10 +61,22 @@ function closeAll(e, target = e.target) {
   map.length = 0
 }
 
-on({
-  "pointerdown || ArrowUp || ArrowDown || ArrowLeft": closeOthers,
-  "blur || Escape": closeAll,
-})
+function focusOut(dir, e) {
+  if (map.length > 0) {
+    e.preventDefault()
+    closeAll({ focusOut: dir })
+  }
+}
+
+if (rpc.inTop) {
+  on({
+    // "pointerdown || ArrowUp || ArrowDown || ArrowLeft": closeOthers,
+    "pointerdown": closeOthers,
+    "blur || Escape": closeAll,
+    "Tab": (e) => focusOut("next", e),
+    "Shift+Tab": (e) => focusOut("prev", e),
+  })
+}
 
 const _close = Symbol.for("42_POPUP_CLOSE")
 

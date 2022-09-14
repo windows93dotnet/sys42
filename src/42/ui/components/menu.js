@@ -24,22 +24,13 @@ export class Menu extends Component {
     tag: "ui-menu",
     role: "menu",
     on: {
-      "ArrowUp": "{{focusPrev()}}",
-      "ArrowDown": "{{focusNext()}}",
-      "Tab": "{{focusOut('next', e)}}",
-      "Shift+Tab": "{{focusOut('prev', e)}}",
+      ArrowUp: "{{focusPrev()}}",
+      ArrowDown: "{{focusNext()}}",
     },
   }
 
   close() {
     this.destroy()
-  }
-
-  focusOut(dir, e) {
-    if (this.closeAll) {
-      e.preventDefault()
-      this.closeAll({ focusOut: dir })
-    }
   }
 
   focusPrev() {

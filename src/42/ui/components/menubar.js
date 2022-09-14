@@ -6,11 +6,8 @@ export class Menubar extends Menu {
     tag: "ui-menubar",
     role: "menubar",
     on: {
-      "ArrowLeft": "{{focusPrev()}}",
-      "ArrowRight": "{{focusNext()}}",
-      // "ArrowDown": "{{openCurrent()}}",
-      "Tab": "{{focusOut('next', e)}}",
-      "Shift+Tab": "{{focusOut('prev', e)}}",
+      ArrowLeft: "{{focusPrev()}}",
+      ArrowRight: "{{focusNext()}}",
     },
     defaults: {
       displayPicto: false,
