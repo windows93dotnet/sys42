@@ -1,6 +1,6 @@
 /* eslint-disable guard-for-in */
 
-const OR_REGEX = /\s*\|\|\s*/
+const SPLIT_REGEX = /\s*\|\|\s*/
 
 const _EVENTS = Symbol.for("_EVENTS")
 
@@ -26,7 +26,7 @@ export default class Emitter {
       options = undefined
     }
 
-    for (const event of events.split(OR_REGEX)) {
+    for (const event of events.split(SPLIT_REGEX)) {
       if (typeof fn === "function") {
         this[_EVENTS][event] ??= []
         this[_EVENTS][event].push(fn)
@@ -41,7 +41,7 @@ export default class Emitter {
   }
 
   off(events, fn) {
-    for (const event of events.split(OR_REGEX)) {
+    for (const event of events.split(SPLIT_REGEX)) {
       if (event === "*" && !fn) {
         for (const key in this[_EVENTS]) {
           delete this[_EVENTS][key]
@@ -79,7 +79,7 @@ export default class Emitter {
   }
 
   emit(events, ...args) {
-    for (const event of events.split(OR_REGEX)) {
+    for (const event of events.split(SPLIT_REGEX)) {
       if (event in this[_EVENTS]) {
         this[_EVENTS][event].forEach((fn) => fn(...args))
       }
@@ -95,7 +95,7 @@ export default class Emitter {
   // emit and wait all async callback to end
   send(events, ...args) {
     const undones = []
-    for (const event of events.split(OR_REGEX)) {
+    for (const event of events.split(SPLIT_REGEX)) {
       if (event in this[_EVENTS]) {
         this[_EVENTS][event].forEach((fn) => undones.push(fn(...args)))
       }

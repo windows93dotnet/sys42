@@ -68,10 +68,10 @@ function focusOut(dir, e) {
   }
 }
 
+let lastPopupForget
+
 if (rpc.inTop) {
   on({
-    // "pointerdown || ArrowUp || ArrowDown || ArrowLeft": closeOthers,
-    "pointerdown": closeOthers,
     "blur || Escape": closeAll,
     "Tab": (e) => focusOut("next", e),
     "Shift+Tab": (e) => focusOut("prev", e),
@@ -104,7 +104,8 @@ const popup = rpc(
     document.body.append(el)
     await ctx.reactive.done()
 
-    setTimeout(() => focus.autofocus(el), 0)
+    focus.autofocus(el)
+    setTimeout(() => focus.autofocus(el), 0) // TODO: check why it's needed in iframes
 
     const deferred = defer()
 
@@ -118,13 +119,17 @@ const popup = rpc(
       deferred.resolve({ opener, ...options })
     }
 
+    const closeEvents = def.closeEvents ?? "pointerdown"
+    lastPopupForget?.()
+    lastPopupForget = on({ [closeEvents]: closeOthers })
+
     if (el[_close] === true) {
       el.close = close
       el.closeOthers = closeOthers
       el.closeAll = closeAll
     }
 
-    map.push({ el, close, opener })
+    map.push({ el, close, opener, closeEvents })
 
     dispatch(el, "uipopupopen")
 

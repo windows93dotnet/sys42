@@ -1,6 +1,6 @@
 import normalizeError from "../error/normalizeError.js"
 
-const OR_REGEX = /\s*(\|\||&&|\+)\s*/
+const SPLIT_REGEX = /\s*(\|\||&&|\+)\s*/
 
 export default async function when(target, events, options) {
   if (typeof target === "string") {
@@ -19,7 +19,7 @@ export default async function when(target, events, options) {
   if (error === true) error = "error"
   if (error) originStack = new Error().stack
 
-  const list = events.split(OR_REGEX)
+  const list = events.split(SPLIT_REGEX)
   const res = await Promise[race ? "race" : "all"](
     list.map(
       (event) =>

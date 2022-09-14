@@ -3,7 +3,7 @@ import distribute from "../type/object/distribute.js"
 import ensureElement from "../dom/ensureElement.js"
 import Canceller from "../class/Canceller.js"
 
-const OR_REGEX = /\s*\|\|\s*/
+export const SPLIT_REGEX = /\s*\|\|\s*/
 
 const EVENT_DEFAULTS = {
   capture: false,
@@ -35,7 +35,7 @@ export const eventsMap = (list) => {
     for (const { selector, events, options } of listeners) {
       for (let [key, fn] of Object.entries(events)) {
         fn = selector ? delegate(selector, fn) : handler(fn)
-        for (const event of key.split(OR_REGEX)) {
+        for (const event of key.split(SPLIT_REGEX)) {
           el.addEventListener(event, fn, options)
         }
       }

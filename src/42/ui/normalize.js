@@ -331,16 +331,18 @@ function normalizeOn(def) {
 
   if (def.popup) {
     def.on ??= []
-    def.on.push({
-      "pointerdown || Enter || Space || ArrowRight": { popup: def.popup },
-    })
+    def.on.push({ "pointerdown || ArrowRight": { popup: def.popup } })
   }
 
   if (def.menu) {
     def.on ??= []
     def.on.push({
-      "pointerdown || Enter || Space || ArrowRight": {
-        popup: { tag: "ui-menu", ...objectifyDef(def.menu) },
+      "pointerdown || ArrowRight": {
+        popup: {
+          tag: "ui-menu",
+          closeEvents: "pointerdown || ArrowLeft",
+          ...objectifyDef(def.menu),
+        },
       },
     })
   }

@@ -1,4 +1,6 @@
+import inTop from "../../core/env/realm/inTop.js"
 import Component from "../class/Component.js"
+import uid from "../../core/uid.js"
 
 function seq(el, dir) {
   const items = [
@@ -27,6 +29,10 @@ export class Menu extends Component {
       ArrowUp: "{{focusPrev()}}",
       ArrowDown: "{{focusNext()}}",
     },
+    defaults: {
+      openEvents: "pointerdown || Enter || Space || ArrowRight",
+      closeEvents: "pointerdown || ArrowLeft",
+    },
   }
 
   close() {
@@ -41,7 +47,7 @@ export class Menu extends Component {
     seq(this, 1)
   }
 
-  render({ content, displayPicto }) {
+  render({ content, displayPicto, openEvents, closeEvents }) {
     const inMenubar = this.constructor.name === "Menubar"
     const items = []
 
@@ -53,7 +59,11 @@ export class Menu extends Component {
       }
 
       item = { ...item }
+      item.id ??= uid()
+
       const { content } = item
+
+      const { label } = item
 
       if (
         item.dialog &&
@@ -79,15 +89,21 @@ export class Menu extends Component {
       if (content) {
         item.tag = "button.ui-menu__menuitem--submenu"
         item.role = "menuitem"
-        item.content = item.label
-        item.menu = {
-          content,
-          // aria: { labelledby: item.id },
-          // aria: { label: item.label },
-          inMenuitem: true,
-          inMenubar,
+        item.on = {
+          [openEvents]: {
+            popup: {
+              tag: "ui-menu",
+              aria: inTop ? { labelledby: item.id } : { label },
+              inMenuitem: true,
+              inMenubar,
+              closeEvents,
+              content,
+            },
+          },
         }
+
         if (!inMenubar) item.label.push({ tag: "ui-picto", value: "right" })
+        item.content = item.label
       } else {
         item.tag = "button"
         item.role = "menuitem"

@@ -143,6 +143,8 @@ const makeDemo = ({ content } = {}) => {
           `Hello popup`,
           "\n\n",
           { tag: "number", scope: "cnt", compact: true },
+          "\n\n",
+          { tag: "textarea", compact: true },
         ],
       },
     },

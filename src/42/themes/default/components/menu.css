@@ -150,10 +150,6 @@ body.debug ui-menu {
   box-shadow: 0 0 7px 0 #0004;
 }
 
-/* body.debug :is(ui-menu, ui-menubar) ui-picto {
-  background-color: tan !important;
-} */
-
 body.debug :is(ui-menu, ui-menubar) > li > button[aria-haspopup][aria-expanded="true"] {
   background: red !important;
 }
@@ -165,3 +161,7 @@ body.debug :is(ui-menu, ui-menubar) > li > button[aria-haspopup][aria-expanded="
 body.debug .aim-polygon {
   fill: rgb(255 255 0 / 0.5) !important;
 }
+
+/* body.debug :is(ui-menu, ui-menubar) ui-picto {
+  background-color: tan !important;
+} */

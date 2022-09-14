@@ -263,4 +263,4 @@ export default function on(...args) {
   }
 }
 
-export { normalizeListen, delegate, handler } from "./listen.js"
+export { normalizeListen, delegate, handler, SPLIT_REGEX } from "./listen.js"
