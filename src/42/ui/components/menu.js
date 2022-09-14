@@ -80,14 +80,13 @@ export class Menu extends Component {
           { tag: "kbd", aria: { hidden: true }, content: item.shortcut },
         ]
       } else {
-        item.label = {
-          tag: "span",
-          content: item.label,
-        }
+        item.label = [
+          { tag: "span", content: item.label }, //
+        ]
       }
 
       if (content) {
-        item.tag = "button"
+        item.tag = "button.ui-menu__menuitem--submenu"
         item.role = "menuitem"
         item.content = item.label
         item.menu = {
@@ -97,6 +96,7 @@ export class Menu extends Component {
           inMenuitem: true,
           inMenubar,
         }
+        if (!inMenubar) item.label.push({ tag: "ui-picto", value: "right" })
       } else {
         item.tag = "button"
         item.role = "menuitem"

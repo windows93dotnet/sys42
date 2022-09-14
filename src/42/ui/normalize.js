@@ -273,10 +273,7 @@ export function normalizePlugins(ctx, plugins) {
 
     ctx.preload.push(
       promise.then((res) => {
-        if (typeof res === "function") {
-          ctx.pluginHandlers ??= []
-          ctx.pluginHandlers.push(res)
-        }
+        if (typeof res === "function") ctx.pluginHandlers.push(res)
       })
     )
   }
@@ -461,6 +458,7 @@ export function normalizeCtx(ctx = {}) {
   ctx.renderers ??= {}
   ctx.plugins ??= {}
   ctx.scopeChain ??= []
+  ctx.pluginHandlers ??= []
 
   ctx.components ??= new Undones()
   ctx.preload ??= new Undones()

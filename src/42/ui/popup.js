@@ -71,7 +71,7 @@ const _close = Symbol.for("42_POPUP_CLOSE")
 const popup = rpc(
   async function popup(def, ctx, rect, meta) {
     def.positionable = {
-      preset: def.inMenuitem ? "menuitem" : "popup",
+      preset: def.inMenuitem && !def.inMenubar ? "menuitem" : "popup",
       of: meta?.iframe
         ? combineRect(rect, meta.iframe.getBoundingClientRect())
         : rect,

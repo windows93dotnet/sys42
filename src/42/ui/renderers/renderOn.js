@@ -46,7 +46,7 @@ function setOpener(el, ctx, key, def, type) {
   return ctx
 }
 
-function setDialogTrigger(el, ctx, key, def) {
+function setDialogOpener(el, ctx, key, def) {
   ctx = setOpener(el, ctx, key, def, "dialog")
   return async () => {
     await import("../components/dialog.js") //
@@ -54,7 +54,7 @@ function setDialogTrigger(el, ctx, key, def) {
   }
 }
 
-function setPopupTrigger(el, ctx, key, def) {
+function setPopupOpener(el, ctx, key, def) {
   ctx = setOpener(el, ctx, key, def)
   return async () => {
     await import("../popup.js") //
@@ -70,9 +70,9 @@ export default function renderOn(el, defs, ctx) {
         if (typeof val === "string") {
           events[key] = compileRun(val, forkCtx(ctx, key))
         } else if ("dialog" in val) {
-          events[key] = setDialogTrigger(el, ctx, key, val.dialog)
+          events[key] = setDialogOpener(el, ctx, key, val.dialog)
         } else if ("popup" in val) {
-          events[key] = setPopupTrigger(el, ctx, key, val.popup)
+          events[key] = setPopupOpener(el, ctx, key, val.popup)
         } else {
           events[key] = val.bind(ctx)
         }
