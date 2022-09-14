@@ -51,6 +51,8 @@ const DEF_KEYWORDS = new Set([
   "state",
   "tag",
   "traits",
+  // TODO: implement once https://vuejs.org/api/built-in-directives.html#v-once
+  // TODO: implement memo https://vuejs.org/api/built-in-directives.html#v-memo
 ])
 
 const TRAIT_KEYWORDS = new Set([

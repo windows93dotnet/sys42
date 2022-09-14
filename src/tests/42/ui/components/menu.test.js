@@ -318,7 +318,7 @@ if (inTop) {
     t.pass()
   })
 } else {
-  // document.body.classList.add("debug")
+  document.body.classList.add("debug")
   await ui({ content: makeDemo(), initiator: "menuDemo" })
   // const { puppet } = test.utils
   // puppet("#btnMenuIframe").click()

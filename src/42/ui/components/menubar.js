@@ -12,6 +12,9 @@ export class Menubar extends Menu {
       "Tab": "{{focusOut('next', e)}}",
       "Shift+Tab": "{{focusOut('prev', e)}}",
     },
+    defaults: {
+      displayPicto: false,
+    },
   }
 }
 

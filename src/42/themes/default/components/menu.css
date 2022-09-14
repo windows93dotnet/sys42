@@ -91,11 +91,12 @@ ui-menu hr {
 
 ui-menubar > li > :is(button, label) {
   --gap: var(--unit-xs);
-  padding-left: var(--unit-md);
+  padding-inline: var(--unit-md);
 }
 
-ui-menubar > li > label {
-  padding-left: var(--unit-xs);
+:is(ui-menu, ui-menubar) > li > :is(button, label) > span {
+  /* ? */
+  padding-top: 2px;
 }
 
 :is(ui-menu, ui-menubar) > li > label > input[type="checkbox" i],
@@ -106,7 +107,7 @@ ui-menubar > li > label {
   flex: 0 1 var(--menu-picto-size);
 
   vertical-align: middle;
-  transform: translateY(-2px); /* ? */
+  /* transform: translateY(-2px);  */
 
   width: var(--menu-picto-size);
   min-width: var(--menu-picto-size);
@@ -121,13 +122,13 @@ ui-menu button > kbd {
   margin-right: var(--unit-sm);
 }
 
-/* ui-menubar > li > button > ui-picto, */
 ui-menubar > li > button > kbd {
   display: none;
 }
 
 ui-menu > li > button :first-child:not(ui-picto) {
-  margin-left: calc(calc(var(--gap) + var(--menu-picto-size)) - var(--unit-xs));
+  /* margin-left: calc(calc(var(--gap) + var(--menu-picto-size)) - var(--unit-xs)); */
+  margin-left: calc(calc(var(--gap) + var(--menu-picto-size)));
 }
 
 :is(ui-menu, ui-menubar) > li > button[aria-haspopup][aria-expanded="true"],
@@ -149,6 +150,10 @@ ui-menu > li > button :first-child:not(ui-picto) {
 body.debug ui-menu {
   box-shadow: 0 0 7px 0 #0004;
 }
+
+/* body.debug :is(ui-menu, ui-menubar) ui-picto {
+  background-color: tan !important;
+} */
 
 body.debug :is(ui-menu, ui-menubar) > li > button[aria-haspopup][aria-expanded="true"] {
   background: red !important;

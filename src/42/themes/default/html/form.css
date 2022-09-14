@@ -838,8 +838,8 @@ button[type="submit"]:not(:active),
 --------- */
 
 .btn-picto {
-  padding-inline: 0;
-  margin-inline: 0;
+  /* padding-inline: 0;
+  margin-inline: 0; */
   /* padding: 0;
   margin: 0; */
   /* margin-left: calc(-1 * var(--ctrl-px));
