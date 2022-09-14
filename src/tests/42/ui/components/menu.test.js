@@ -49,12 +49,14 @@ const makeMenu = (name) => {
   return [
     {
       label: "Disabled",
+      picto: "bolt",
       click: "{{save()}}",
       disabled: true,
     },
     {
       label: "Infinite Submenu",
       id: `menuItemSubmenu${name}${__}`,
+      picto: "cog",
       content: submenu,
     },
     {
@@ -114,12 +116,36 @@ const makeDemo = ({ content } = {}) => {
     { tag: "number", scope: "cnt", compact: true },
     "\n\n",
     "\n\n",
+    { tag: "ui-menubar", content: makeMenu("Inline") },
+    "\n\n",
+    { tag: "ui-menubar", content: makeMenu("Inline"), displayPicto: true },
+    "\n\n",
+    { tag: "number", scope: "cnt", compact: true },
+    "\n\n",
+    "\n\n",
     { tag: "ui-menu", content: makeMenu("Inline") },
     "\n\n",
     { tag: "number", scope: "cnt", compact: true },
     "\n\n",
     "\n\n",
     { tag: `button#btnMenu${__}`, content: "Menu", menu: makeMenu("Popup") },
+    "\n\n",
+    "\n\n",
+    { tag: "number", scope: "cnt", compact: true },
+    "\n\n",
+    "\n\n",
+    {
+      tag: `button`,
+      content: "Popup",
+      popup: {
+        tag: ".panel.outset.pa-lg",
+        content: [
+          `Hello popup`,
+          "\n\n",
+          { tag: "number", scope: "cnt", compact: true },
+        ],
+      },
+    },
     "\n\n",
     "\n\n",
     { tag: "number", scope: "cnt", compact: true },
@@ -292,7 +318,7 @@ if (inTop) {
     t.pass()
   })
 } else {
-  document.body.classList.add("debug")
+  // document.body.classList.add("debug")
   await ui({ content: makeDemo(), initiator: "menuDemo" })
   // const { puppet } = test.utils
   // puppet("#btnMenuIframe").click()

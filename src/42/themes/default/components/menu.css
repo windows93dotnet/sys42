@@ -16,6 +16,12 @@ ui-menubar {
   list-style: none;
   user-select: none;
   max-width: 100vw;
+
+  --bg: var(--menu-bg);
+  --fg: var(--menu-fg);
+  background: var(--bg);
+  color: var(--fg);
+  text-shadow: var(--menu-tsh, none);
 }
 
 ui-menubar {
@@ -28,16 +34,11 @@ ui-menu {
   min-width: min(var(--ctrl-w), 100%);
   z-index: var(--z-popups);
 
-  --bg: var(--menu-bg);
-  --fg: var(--menu-fg);
-  background: var(--bg);
-  color: var(--fg);
   border-width: var(--menu-bdw);
   border-style: var(--menu-bds);
   border-color: var(--menu-bdc);
   border-image: var(--menu-bdi);
   border-radius: var(--menu-br);
-  text-shadow: var(--menu-tsh, none);
   box-shadow: var(--menu-bsh);
 }
 
@@ -117,9 +118,10 @@ ui-menu button > kbd {
   box-sizing: border-box;
   flex: 0 1 auto;
   opacity: 0.5;
+  margin-right: var(--unit-sm);
 }
 
-ui-menubar > li > button > ui-picto,
+/* ui-menubar > li > button > ui-picto, */
 ui-menubar > li > button > kbd {
   display: none;
 }

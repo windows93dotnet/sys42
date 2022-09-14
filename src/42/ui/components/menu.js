@@ -26,15 +26,16 @@ export class Menu extends Component {
     on: {
       "ArrowUp": "{{focusPrev()}}",
       "ArrowDown": "{{focusNext()}}",
-      "Tab": "{{_focusOut('next', e)}}",
-      "Shift+Tab": "{{_focusOut('prev', e)}}",
+      "Tab": "{{focusOut('next', e)}}",
+      "Shift+Tab": "{{focusOut('prev', e)}}",
     },
   }
 
-  // close is implemented only for popup menu (in popup.js )
-  close() {}
+  close() {
+    this.destroy()
+  }
 
-  _focusOut(dir, e) {
+  focusOut(dir, e) {
     if (this.closeAll) {
       e.preventDefault()
       this.closeAll({ focusOut: dir })
@@ -49,7 +50,7 @@ export class Menu extends Component {
     seq(this, 1)
   }
 
-  render({ content }) {
+  render({ content, displayPicto }) {
     const inMenubar = this.constructor.name === "Menubar"
     const items = []
 
@@ -112,6 +113,10 @@ export class Menu extends Component {
       } else {
         item.tabIndex = first ? 0 : -1
         first = false
+      }
+
+      if (inMenubar && displayPicto !== true) {
+        delete item.picto
       }
 
       items.push({ tag: "li", role: "none", content: item })
