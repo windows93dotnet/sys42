@@ -27,6 +27,20 @@ export class Explorer extends Component {
       },
     },
 
+    on: [
+      {
+        selector: 'ui-icon[aria-description="folder"]',
+        dblclick: "{{go(target.path)}}",
+      },
+      {
+        selector: 'ui-icon[aria-description="file"]',
+        dblclick: "{{open(target.path)}}",
+      },
+      {
+        "Alt+Up": "{{folderUp()}}",
+      },
+    ],
+
     content: [
       {
         tag: "header.box-v.ctrl-group.mb-xs",
@@ -35,6 +49,7 @@ export class Explorer extends Component {
             tag: "button",
             picto: "up",
             click: "{{folderUp()}}",
+            disabled: "{{path === '/'}}",
           },
           {
             tag: "input",
@@ -71,20 +86,6 @@ export class Explorer extends Component {
         ],
       },
     ],
-
-    on: [
-      {
-        selector: 'ui-icon[aria-description="folder"]',
-        dblclick: "{{go(target.path)}}",
-      },
-      {
-        selector: 'ui-icon[aria-description="file"]',
-        dblclick: "{{open(target.path)}}",
-      },
-      // {
-      //   "alt+up": "{{folderUp()}}",
-      // },
-    ],
   }
 
   folderUp() {
@@ -98,7 +99,6 @@ export class Explorer extends Component {
   }
 
   open(path) {
-    console.log("open", path)
     open(path)
   }
 

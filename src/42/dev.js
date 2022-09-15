@@ -58,7 +58,7 @@ if (inTop && inAutomated) {
     },
     toggle() {
       dev.sse.enabled = !dev.sse.enabled
-      log(dev.sse.enabled ? "paused" : "resumed")
+      log(dev.sse.enabled ? "resumed" : "paused")
     },
     async test(options = config.testRunner) {
       const testRunner = await import("./core/dev/testRunner.js") //

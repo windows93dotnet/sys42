@@ -16,7 +16,6 @@ export class Folder extends Component {
         default: "/",
         update(init) {
           if (!init) this.selection.length = 0
-          // if (!init) this.selection = []
         },
       },
       glob: {

@@ -3,29 +3,29 @@ import { normalizeListen, eventsMap } from "../../fabric/event/on.js"
 import { normalizeTokens } from "../normalize.js"
 import hash from "../../fabric/type/any/hash.js"
 import expr from "../../core/expr.js"
-import allocate from "../../fabric/locator/allocate.js"
 
-const makeEventLocals = (loc, e, target) => {
-  const eventLocals = Object.defineProperties(
+const makeEventLocals = (loc, e, target) =>
+  Object.defineProperties(
     { target, e, event: e },
     { rect: { get: () => target.getBoundingClientRect() } }
   )
-  return allocate({}, loc, eventLocals, "/")
-}
 
 function compileRun(val, ctx) {
-  const parsed = expr.parse(val)
+  const tokens = expr.parse(val)
 
-  const fn = expr.compile(parsed, {
+  const { actions } = normalizeTokens(tokens, ctx)
+
+  const fn = expr.compile(tokens, {
     assignment: true,
     async: true,
     sep: "/",
-    actions: normalizeTokens(parsed, ctx).actions,
+    actions,
   })
 
   return (e, target) => {
-    const eventLocals = makeEventLocals(ctx.scope, e, target)
-    ctx.undones.push(fn(ctx.reactive.state, eventLocals))
+    ctx.undones.push(
+      fn(ctx.reactive.state, makeEventLocals(ctx.scope, e, target))
+    )
   }
 }
 
