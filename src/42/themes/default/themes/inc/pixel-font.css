@@ -6,13 +6,30 @@
   -moz-osx-font-smoothing: unset;
   font-smoothing: unset;
   font-smooth: never;
-  filter: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="f"><feComponentTransfer><feFuncA type="discrete" tableValues="0 0.1 0.5 0.9 1" /></feComponentTransfer></filter></svg>#f');
+  --pixel-font-filter: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="f"><feComponentTransfer><feFuncA type="discrete" tableValues="0 0 0.5 0.9 1" /></feComponentTransfer></filter></svg>#f');
+  /* filter: var(--pixel-font-filter); */
 }
 
-@-moz-document url-prefix("") {
+/* @-moz-document url-prefix("") {
   :root { filter: none; }
-}
+} */
 
 h1 { font-size: 300%; }
 h2 { font-size: 200%; }
 h3 { font-size: 200%; font-weight: normal; }
+
+.pixel-font-fix,
+.ui-icon__label {
+  transform: translateX(0.2px) scale(0.999);
+  filter: var(--pixel-font-filter);
+}
+
+@-moz-document url-prefix("") {
+  .pixel-font-fix,
+  .ui-icon__label,
+  ui-icon:focus .ui-icon__label {
+    transform: scale(1);
+    padding-left: 0.7px;
+    /* filter: none; */
+  }
+}
