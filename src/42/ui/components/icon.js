@@ -56,12 +56,17 @@ class Icon extends Component {
           tag: ".ui-icon__label",
           if: "{{../label}}",
           content: [
-            { tag: "svg", content: { tag: "rect" } },
-            { tag: "span", content: "{{stem}}" },
+            { tag: "svg", content: { tag: "rect.ui-icon__label__rect" } },
             {
-              tag: "span",
-              if: "{{isFile && ext}}",
-              content: "\u200B{{ext}}",
+              tag: ".ui-icon__label__text",
+              content: [
+                { tag: "span", content: "{{stem}}" },
+                {
+                  tag: "span",
+                  if: "{{isFile && ext}}",
+                  content: "\u200B{{ext}}",
+                },
+              ],
             },
           ],
         },

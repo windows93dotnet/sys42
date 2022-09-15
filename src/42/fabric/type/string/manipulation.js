@@ -37,6 +37,7 @@ export default {
   split: (str, sep) => str.split(sep),
   repeat: (str, num) => str.repeat(num),
   replace: (str, ...rest) => str.replace(...rest),
+  replaceAll: (str, ...rest) => str.replaceAll(...rest),
   padEnd: (str, length, padString) => str.padEnd(length, padString),
   padStart: (str, length, padString) => str.padStart(length, padString),
   endsWith: (str, search) => str.endsWith(search),

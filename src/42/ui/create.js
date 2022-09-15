@@ -1,7 +1,7 @@
 import renderAttributes from "./renderers/renderAttributes.js"
 import parseTagSelector from "../core/formats/emmet/parseTagSelector.js"
 import { normalizeAttrs } from "./normalize.js"
-import ALLOWED_SVG_ATTRIBUTES from "../fabric/constants/ALLOWED_SVG_ATTRIBUTES.js"
+import ALLOWED_SVG_TAGS from "../fabric/constants/ALLOWED_SVG_TAGS.js"
 
 const INPUT_TYPES = new Set([
   "checkbox",
@@ -62,7 +62,7 @@ export default function create(ctx, tag, ...args) {
     tag = "input"
   }
 
-  const el = ALLOWED_SVG_ATTRIBUTES.includes(tag)
+  const el = ALLOWED_SVG_TAGS.includes(tag)
     ? document.createElementNS("http://www.w3.org/2000/svg", tag)
     : tag === "body"
     ? document.createDocumentFragment()

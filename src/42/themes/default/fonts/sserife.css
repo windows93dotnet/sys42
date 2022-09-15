@@ -19,11 +19,10 @@
 }
 
 @font-face {
+  /* fallback for missing glyphes in sserife-bold */
   font-family: sserife-fallback;
   src:
     url("./sserife/sserife.woff2") format("woff2"),
     url("./sserife/sserife.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
   font-display: swap;
 }

@@ -146,7 +146,7 @@
 
   --desktop-bg: var(--Background);
   --desktop-fg: #fff;
-  --desktop-tsh: #000 0 1px;
+  /* --desktop-tsh: #000 0 1px; */
 
   --document-bg: var(--Window);
   --document-fg: var(--WindowText);

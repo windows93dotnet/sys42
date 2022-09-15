@@ -33,6 +33,7 @@ types.string = {
   split: MANIPULATION,
   repeat: MANIPULATION,
   replace: MANIPULATION,
+  replaceAll: MANIPULATION,
   padEnd: MANIPULATION,
   padStart: MANIPULATION,
   endsWith: MANIPULATION,

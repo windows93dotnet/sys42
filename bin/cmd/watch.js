@@ -121,7 +121,7 @@ export default async function watch() {
         doubleSave.clear()
       } else {
         doubleSave.add(filename)
-        setTimeout(() => doubleSave.delete(filename), 1500)
+        setTimeout(() => doubleSave.delete(filename), 1000)
       }
 
       refresh[event === "change" ? "change" : "other"](event, filename)
