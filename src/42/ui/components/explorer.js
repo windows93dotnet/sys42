@@ -33,13 +33,13 @@ export class Explorer extends Component {
         content: [
           {
             tag: "button",
-            picto: "arrow-up",
+            picto: "up",
             click: "{{folderUp()}}",
           },
           {
             tag: "input",
             scope: "path",
-            enterkeyhint: "go",
+            enterKeyHint: "go",
             compact: true,
             prose: false,
           },

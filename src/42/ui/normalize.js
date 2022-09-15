@@ -35,6 +35,7 @@ const DEF_KEYWORDS = new Set([
   "click",
   "computed",
   "content",
+  "contextmenu",
   "defaults",
   "dialog",
   "each",
@@ -43,6 +44,7 @@ const DEF_KEYWORDS = new Set([
   "initiator",
   "menu",
   "on",
+  "picto",
   "plugins",
   "popup",
   "schema",
@@ -177,16 +179,22 @@ function normalizeObject(item, ctx) {
   return out
 }
 
+function supportsAttribute(item, attribute) {
+  const tag = item.tag?.split(/[#.[]/)[0] || "div"
+  return Boolean(attribute in document.createElement(tag))
+}
+
 export function normalizeAttrs(item, ctx, ignore) {
   const attrs = {}
 
   for (const [key, val] of Object.entries(item)) {
     if (
       !DEF_KEYWORDS.has(key) &&
-      (ctx?.trusted ||
-        ATTRIBUTES.has(key.toLowerCase()) ||
-        ATTRIBUTES_WITHDASH.has(key)) &&
-      !(ignore && key in ignore)
+      !TRAIT_KEYWORDS.has(key) &&
+      !(ignore && key in ignore) &&
+      (ATTRIBUTES.has(key.toLowerCase()) ||
+        ATTRIBUTES_WITHDASH.has(key) ||
+        (ctx?.trusted && supportsAttribute(item, key)))
     ) {
       const type = typeof val
       if (val && type === "object") {
