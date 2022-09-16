@@ -5,6 +5,7 @@ import on from "../fabric/event/on.js"
 import defer from "../fabric/type/promise/defer.js"
 import Canceller from "../fabric/class/Canceller.js"
 import focus from "../fabric/dom/focus.js"
+import queueTask from "../fabric/type/function/queueTask.js"
 
 import rpc from "../core/ipc/rpc.js"
 import normalize, { objectifyDef, forkDef } from "./normalize.js"
@@ -104,8 +105,8 @@ const popup = rpc(
     document.body.append(el)
     await ctx.reactive.done()
 
-    focus.autofocus(el)
-    setTimeout(() => focus.autofocus(el), 0) // TODO: check why it's needed in iframes
+    // focus.autofocus(el)
+    queueTask(() => focus.autofocus(el)) // TODO: check why it's needed in iframes
 
     const deferred = defer()
 

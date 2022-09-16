@@ -90,7 +90,7 @@ test.serial("realms", async (t, { decay, dest }) => {
       "_blank"
     )
     decay(targets.childWindow)
-    await t.sleep(0)
+    await t.utils.nextCycle()
     window.focus()
   }
 

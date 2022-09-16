@@ -3,7 +3,6 @@ import arrify from "../../../fabric/type/any/arrify.js"
 import clone from "../../../fabric/type/any/clone.js"
 import defer from "../../../fabric/type/promise/defer.js"
 import documentReady from "../../../fabric/dom/documentReady.js"
-import DOMQuery from "../../../fabric/class/DOMQuery.js"
 import env from "../../env.js"
 import hashmap from "../../../fabric/type/object/hashmap.js"
 import http from "../../../core/http.js"
@@ -11,10 +10,14 @@ import idle from "../../../fabric/type/promise/idle.js"
 import kill from "../../../fabric/type/any/kill.js"
 import listenFn from "../../../fabric/event/listen.js"
 import log, { Log, CONSOLE_KEYS } from "../../log.js"
+import nextCycle from "../../../fabric/type/promise/nextCycle.js"
 import noop from "../../../fabric/type/function/noop.js"
+import omit from "../../../fabric/type/object/omit.js"
 import parallel from "../../../fabric/type/promise/parallel.js"
+import pick from "../../../fabric/type/object/pick.js"
 import prettify from "../../../fabric/type/markup/prettify.js"
 import puppet from "../puppet.js"
+import queueTask from "../../../fabric/type/function/queueTask.js"
 import repaint from "../../../fabric/type/promise/repaint.js"
 import serial from "../../../fabric/type/promise/serial.js"
 import shell from "../../shell.js"
@@ -24,12 +27,10 @@ import stringify from "../../../fabric/type/any/stringify.js"
 import system from "../../../system.js"
 import uid from "../../uid.js"
 import when from "../../../fabric/type/promise/when.js"
-import pick from "../../../fabric/type/object/pick.js"
-import omit from "../../../fabric/type/object/omit.js"
 
-function pickValues(btn, key = "textContent") {
+function pickValues(obj, key = "textContent") {
   const out = {}
-  for (const [k, val] of Object.entries(btn)) out[k] = val[key]
+  for (const [k, val] of Object.entries(obj)) out[k] = val[key]
   return out
 }
 
@@ -180,10 +181,15 @@ export default function addUtilities(item, isExecutionContext) {
     idle,
     kill,
     log,
+    nextCycle,
     noop,
+    omit,
     parallel,
+    pick,
+    pickValues,
     prettify,
     puppet,
+    queueTask,
     repaint,
     serial,
     shell,
@@ -193,10 +199,6 @@ export default function addUtilities(item, isExecutionContext) {
     system,
     uid,
     when,
-    omit,
-    pick,
-    pickValues,
-    $: new DOMQuery(),
   })
 
   item._ = item.utils

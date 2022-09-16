@@ -19,9 +19,7 @@ export class Folder extends Component {
         default: "/",
         update(init) {
           if (!init) this.selection.length = 0
-          setTimeout(() => {
-            focus.autofocus(this)
-          }, 0)
+          requestAnimationFrame(() => focus.autofocus(this))
         },
       },
       glob: {

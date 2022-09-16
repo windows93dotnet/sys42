@@ -6,6 +6,8 @@ import sleep from "../../fabric/type/promise/sleep.js"
 import when from "../../fabric/type/promise/when.js"
 import arrify from "../../fabric/type/any/arrify.js"
 import DOMQuery from "../../fabric/class/DOMQuery.js"
+import queueTask from "../../fabric/type/function/queueTask.js"
+import nextCycle from "../../fabric/type/promise/nextCycle.js"
 
 const clickOrder = [
   "pointerdown",
@@ -104,11 +106,11 @@ const makePuppet = () => {
             simulate(target, "keyup", init)
           )
           simulate(target, "keydown", init)
-          await sleep(0)
+          await nextCycle()
 
           simulate(target, "keyup", init)
           data.pendingKeys.delete(mark(init))
-          await sleep(0)
+          await nextCycle()
         })
       },
 
@@ -165,6 +167,10 @@ const makePuppet = () => {
         data.order.push(async (target) => sleep(target, ms))
       },
 
+      nextCycle({ data }, ms) {
+        data.order.push(async (target) => nextCycle(target, ms))
+      },
+
       target({ data }, target, options) {
         data.order.push({ target, options })
       },
@@ -208,10 +214,10 @@ const makePuppet = () => {
         data.targets.length = 0
         delete data._stack
 
-        setTimeout(() => {
+        queueTask(() => {
           for (const keyup of data.pendingKeys.values()) keyup()
           resolve()
-        }, 0)
+        })
       },
     },
 

@@ -460,7 +460,7 @@ test.tasks(
       }
 
       if (defer) {
-        await Promise.all([defer, t.sleep(0)])
+        await Promise.all([defer, t.utils.nextCycle()])
       }
     })
   }

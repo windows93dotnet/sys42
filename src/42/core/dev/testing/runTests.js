@@ -3,7 +3,7 @@ import trap from "../../../fabric/type/error/trap.js"
 import idle from "../../../fabric/type/promise/idle.js"
 import stackTrace from "../../../fabric/type/error/stackTrace.js"
 import configure from "../../configure.js"
-import sleep from "../../../fabric/type/promise/sleep.js"
+import nextCycle from "../../../fabric/type/promise/nextCycle.js"
 
 const DEFAULTS = {
   serial: false,
@@ -13,9 +13,10 @@ const uncaughts = []
 
 const listenUncaughts = () =>
   trap(async (err, { e }) => {
-    await sleep(0)
+    await nextCycle()
+
     if (e.defaultPrevented) return
-    if ("module" in err) return
+    // if ("module" in err) return // TODO: check purpose of this line
 
     let caughtByTest = false
 

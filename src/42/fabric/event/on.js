@@ -1,5 +1,6 @@
 /* eslint-disable max-params */
 import { normalizeListen, makeHandler } from "./listen.js"
+import queueTask from "../type/function/queueTask.js"
 import keyboard from "../../core/devices/keyboard.js"
 
 const aliases = {
@@ -168,12 +169,12 @@ function handleSeq(seq, fn, el, { repeatable, options }, registry) {
   if (seq.length > 1) {
     const run = fn
     fn = (e) => {
-      setTimeout(() => {
+      queueTask(() => {
         if (++registry.seqIndex === seq.length) {
           run(e)
           registry.seqIndex = 0
         }
-      }, 0)
+      })
     }
   }
 
@@ -224,9 +225,9 @@ function handleSeq(seq, fn, el, { repeatable, options }, registry) {
 
             registry.chordCalled = true
 
-            setTimeout(() => {
+            queueTask(() => {
               registry.chordCalled = false
-            }, 0)
+            })
 
             fn(e)
           }

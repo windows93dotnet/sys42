@@ -1,5 +1,5 @@
 import serial from "../../../../fabric/type/promise/serial.js"
-import sleep from "../../../../fabric/type/promise/sleep.js"
+import nextCycle from "../../../../fabric/type/promise/nextCycle.js"
 import parallel from "../../../../fabric/type/promise/parallel.js"
 import groupBy from "../../../../fabric/type/array/groupBy.js"
 import noop from "../../../../fabric/type/function/noop.js"
@@ -58,7 +58,7 @@ export default class Suite {
       return
     }
 
-    await sleep(0)
+    await nextCycle()
 
     if (this.beforeEach) await this.warnOnThrow(this.beforeEach, "beforeEach")
 

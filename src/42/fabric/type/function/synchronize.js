@@ -1,10 +1,9 @@
-import sleep from "../promise/sleep.js"
+import nextCycle from "../promise/nextCycle.js"
 
 export default function synchronize(fn) {
   const stack = []
   return async (...args) => {
-    await sleep(0)
-    await stack.pop()
+    await Promise.all([nextCycle(), stack.pop()])
     const res = fn(...args)
     stack.push(res)
     return res
