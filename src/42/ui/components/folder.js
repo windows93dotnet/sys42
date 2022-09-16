@@ -2,6 +2,9 @@ import "./icon.js"
 import Component from "../class/Component.js"
 import dispatch from "../../fabric/event/dispatch.js"
 import disk from "../../core/disk.js"
+import focus from "../../fabric/dom/focus.js"
+
+const { indexOf } = Array.prototype
 
 export class Folder extends Component {
   static definition = {
@@ -16,6 +19,9 @@ export class Folder extends Component {
         default: "/",
         update(init) {
           if (!init) this.selection.length = 0
+          setTimeout(() => {
+            focus.autofocus(this)
+          }, 0)
         },
       },
       glob: {
@@ -27,6 +33,16 @@ export class Folder extends Component {
         default: [],
       },
     },
+
+    on: [
+      {
+        repeatable: true,
+        ArrowUp: "{{moveFocusUp()}}",
+        ArrowDown: "{{moveFocusDown()}}",
+        ArrowLeft: "{{moveFocusLeft()}}",
+        ArrowRight: "{{moveFocusRight()}}",
+      },
+    ],
 
     computed: {
       items: "{{getItems(path)}}",
@@ -54,6 +70,48 @@ export class Folder extends Component {
     }
 
     return dir
+  }
+
+  moveFocusUp() {
+    const index = indexOf.call(this.children, document.activeElement)
+    this.children[index === -1 ? 0 : index - this.iconsPerLine]?.focus()
+  }
+
+  moveFocusDown() {
+    const index = indexOf.call(this.children, document.activeElement)
+    this.children[index === -1 ? 0 : index + this.iconsPerLine]?.focus()
+  }
+
+  moveFocusLeft() {
+    const index = indexOf.call(this.children, document.activeElement)
+    this.children[index === -1 ? 0 : index - 1]?.focus()
+  }
+
+  moveFocusRight() {
+    const index = indexOf.call(this.children, document.activeElement)
+    this.children[index === -1 ? 0 : index + 1]?.focus()
+  }
+
+  setup() {
+    this.iconsPerLine = 0
+    const ro = new ResizeObserver(() => {
+      if (this.children.length === 0) {
+        this.iconsPerLine = 0
+        return
+      }
+
+      const previousY = this.children[0].getBoundingClientRect().y
+
+      for (let i = 1, l = this.children.length; i < l; i++) {
+        const { y } = this.children[i].getBoundingClientRect()
+        if (y !== previousY) {
+          this.iconsPerLine = i
+          break
+        }
+      }
+    })
+    ro.observe(this)
+    this.ctx.signal.addEventListener("abort", () => ro.disconnect())
   }
 }
 

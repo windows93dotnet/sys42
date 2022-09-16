@@ -1,5 +1,5 @@
 /* eslint-disable max-params */
-import { normalizeListen, delegate, handler } from "./listen.js"
+import { normalizeListen, makeHandler } from "./listen.js"
 import keyboard from "../../core/devices/keyboard.js"
 
 const aliases = {
@@ -36,7 +36,13 @@ const codes = new Set([
   "Quote",
 ])
 
-const itemKeys = ["selector", "returnForget", "preventDefault", "repeatable"]
+const itemKeys = [
+  "selector",
+  "returnForget",
+  "stopPropagation",
+  "preventDefault",
+  "repeatable",
+]
 
 export function parseShortcut(source) {
   let buffer = ""
@@ -149,7 +155,7 @@ export const eventsMap = (list) => {
         a.length === b.length ? 0 : a.length > b.length ? -1 : 1
       )
       for (let [key, fn] of sorted) {
-        fn = item.selector ? delegate(item.selector, fn) : handler(fn)
+        fn = makeHandler(item, fn)
         for (const seq of parseShortcut(key)) {
           handleSeq(seq, fn, el, item, registry)
         }
@@ -263,4 +269,4 @@ export default function on(...args) {
   }
 }
 
-export { normalizeListen, delegate, handler, SPLIT_REGEX } from "./listen.js"
+export { normalizeListen, makeHandler, SPLIT_REGEX } from "./listen.js"

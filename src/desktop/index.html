@@ -28,16 +28,31 @@
         content: [
           {
             tag: "ui-folder.box-fit.scroll-auto",
-            on: [
-              {
-                selector: 'ui-icon[aria-description="folder"]',
-                dblclick: "{{openFolder(target.path)}}",
+            on: {
+              $patch: {
+                op: "add",
+                value: [
+                  {
+                    selector: 'ui-icon[aria-description="folder"]',
+                    dblclick: "{{openFolder(target.path)}}",
+                  },
+                  {
+                    selector: 'ui-icon[aria-description="file"]',
+                    dblclick: "{{openFile(target.path)}}",
+                  },
+                ],
               },
-              {
-                selector: 'ui-icon[aria-description="file"]',
-                dblclick: "{{openFile(target.path)}}",
-              },
-            ],
+            },
+            // on: [
+            //   {
+            //     selector: 'ui-icon[aria-description="folder"]',
+            //     dblclick: "{{openFolder(target.path)}}",
+            //   },
+            //   {
+            //     selector: 'ui-icon[aria-description="file"]',
+            //     dblclick: "{{openFile(target.path)}}",
+            //   },
+            // ],
           },
           // {
           //   tag: "ui-dialog",
@@ -91,9 +106,11 @@
 
   globalThis.app = app
 
-  explorer("/42/fabric/constants/")
+  explorer("/42/fabric/")
 
   // import puppet from "../42/core/dev/puppet.js"
+  // await puppet.when("uidialogopen")
+  // await puppet('ui-icon[path="/42/fabric/constants/"]').dblclick()
 
   // await puppet('ui-icon[path="/42/"]').dblclick().when("uidialogopen")
   // await puppet('ui-icon[path="/42/os.js"]').dblclick()

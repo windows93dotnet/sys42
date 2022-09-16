@@ -29,12 +29,14 @@ export class Explorer extends Component {
 
     on: [
       {
-        selector: 'ui-icon[aria-description="folder"]',
-        dblclick: "{{go(target.path)}}",
+        "stop": true,
+        "selector": 'ui-icon[aria-description="folder"]',
+        "dblclick || Enter || Space": "{{go(target.path)}}",
       },
       {
-        selector: 'ui-icon[aria-description="file"]',
-        dblclick: "{{open(target.path)}}",
+        "stop": true,
+        "selector": 'ui-icon[aria-description="file"]',
+        "dblclick || Enter || Space": "{{open(target.path)}}",
       },
       {
         "Alt+Up": "{{folderUp()}}",
@@ -111,9 +113,8 @@ export class Explorer extends Component {
 
 Component.define(Explorer)
 
-export default async function explorer(path = "/", options = {}) {
-  let { selection } = options
-  selection ??= []
+export default async function explorer(path = "/", options) {
+  const selection = options?.selection ?? []
 
   const parsed = parsePath(normalizePath(path), { checkDir: true })
 
@@ -135,5 +136,7 @@ export default async function explorer(path = "/", options = {}) {
     },
 
     state: { path, selection },
+
+    ...options?.dialog,
   })
 }

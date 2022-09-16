@@ -46,12 +46,14 @@ test("html", async (t) => {
   <!--[if]-->
   <div class="ui-icon__label">
     <svg>
-      <rect>
+      <rect class="ui-icon__label__rect">
       </rect>
     </svg>
-    <span>script</span>
-    <!--[if]-->
-    <span>\u200b.js</span>
+    <div class="ui-icon__label__text">
+      <span>script</span>
+      <!--[if]-->
+      <span>\u200b.js</span>
+    </div>
   </div>
 </ui-icon>`
   )
