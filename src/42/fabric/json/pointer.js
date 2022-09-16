@@ -2,16 +2,16 @@ import { isPositiveInteger } from "../type/any/is.js"
 import assertPath from "../type/path/assertPath.js"
 
 export const decodeJSONPointer = (key) =>
-  String(key).replace(/~1/g, "/").replace(/~0/g, "~")
+  String(key).replaceAll("~1", "/").replaceAll("~0", "~")
 
 export const encodeJSONPointer = (key) =>
-  String(key).replace(/~/g, "~0").replace(/\//g, "~1")
+  String(key).replaceAll("~", "~0").replaceAll("/", "~1")
 
 export const decodeJSONPointerURI = (key) =>
   decodeJSONPointer(decodeURIComponent(key))
 
 export const encodeJSONPointerURI = (key) =>
-  encodeJSONPointer(encodeURIComponent(key).replace(/%24/g, "$"))
+  encodeJSONPointer(encodeURIComponent(key).replaceAll("%24", "$"))
 
 export const isNextLevelAnArray = (key) =>
   key === "-" || isPositiveInteger(Number(key))

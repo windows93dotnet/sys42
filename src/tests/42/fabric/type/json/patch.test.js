@@ -5,28 +5,31 @@ import JSONPatchSuite from "../../../../annexes/JSONPatchSuite.js"
 
 const { clone } = test.utils
 
-test.tasks(JSONPatchSuite, ({ doc, patch, expected, error, comment }, i) => {
-  doc = clone(doc)
+test.tasks(
+  JSONPatchSuite,
+  ({ doc, patch: patches, expected, error, comment }, i) => {
+    doc = clone(doc)
 
-  test(comment ?? patch, (t) => {
-    const message = `${i}.\n
-patchable(${t.utils.stringify(doc)}, ${t.utils.stringify(patch)})\n`
+    test(comment ?? patches, (t) => {
+      const message = `${i}.\n
+patch(${t.utils.stringify(doc)}, ${t.utils.stringify(patches)})\n`
 
-    if (error) {
-      t.throws(
-        () => patch(doc, patch, { strict: true }),
-        false,
-        message + `\nshould throw: "${error}"`
-      )
-    } else {
-      t.eq(
-        patch(doc, patch, { strict: true }),
-        expected,
-        message + `\nexpected: ${t.utils.stringify(expected)}`
-      )
-    }
-  })
-})
+      if (error) {
+        t.throws(
+          () => patch(doc, patches, { strict: true }),
+          false,
+          message + `\nshould throw: "${error}"`
+        )
+      } else {
+        t.eq(
+          patch(doc, patches, { strict: true }),
+          expected,
+          message + `\nexpected: ${t.utils.stringify(expected)}`
+        )
+      }
+    })
+  }
+)
 
 test("use `-` keyword only on array-likes", (t) => {
   const [a, b] = [
