@@ -185,7 +185,7 @@ export default function patch(obj, patches, options) {
   let out = obj
 
   for (const patch of patches) {
-    const { op, path, from, value } = patch
+    let { op, path, from, value } = patch
 
     if (options?.strict) {
       if ((op === "add" || op === "replace") && "value" in patch === false) {
@@ -195,6 +195,8 @@ export default function patch(obj, patches, options) {
       if (path !== "" && path.startsWith("/") === false) {
         throw new Error(`JSON Pointer should start with a slash`)
       }
+    } else if (path === undefined && Array.isArray(obj)) {
+      path = "-"
     }
 
     // prettier-ignore

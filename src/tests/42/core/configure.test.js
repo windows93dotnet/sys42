@@ -140,3 +140,9 @@ test("circular", "array", async (t) => {
   t.is(result.a[1], result)
   t.is(result.b.x, result.b.y)
 })
+
+test("patch", async (t) => {
+  const obj = { a: 1, b: 2 }
+  const result = configure(obj, { $patch: { op: "add", path: "/c", value: 3 } })
+  t.eq(result, { a: 1, b: 2, c: 3 })
+})

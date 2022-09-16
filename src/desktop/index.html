@@ -33,26 +33,16 @@
                 op: "add",
                 value: [
                   {
-                    selector: 'ui-icon[aria-description="folder"]',
-                    dblclick: "{{openFolder(target.path)}}",
+                    "selector": 'ui-icon[aria-description="folder"]',
+                    "dblclick || Enter || Space": "{{openFolder(target.path)}}",
                   },
                   {
-                    selector: 'ui-icon[aria-description="file"]',
-                    dblclick: "{{openFile(target.path)}}",
+                    "selector": 'ui-icon[aria-description="file"]',
+                    "dblclick || Enter || Space": "{{openFile(target.path)}}",
                   },
                 ],
               },
             },
-            // on: [
-            //   {
-            //     selector: 'ui-icon[aria-description="folder"]',
-            //     dblclick: "{{openFolder(target.path)}}",
-            //   },
-            //   {
-            //     selector: 'ui-icon[aria-description="file"]',
-            //     dblclick: "{{openFile(target.path)}}",
-            //   },
-            // ],
           },
           // {
           //   tag: "ui-dialog",

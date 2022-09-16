@@ -1,7 +1,14 @@
+import patch from "../fabric/json/patch.js"
+
 const OBJECT = "[object Object]"
 
 export function merge(target, source, memory = new WeakMap()) {
   for (const [key, val] of Object.entries(source)) {
+    if (key === "$patch") {
+      patch(target, val)
+      continue
+    }
+
     if (memory.has(val)) {
       target[key] = memory.get(val)
     } else if (Array.isArray(val)) {
