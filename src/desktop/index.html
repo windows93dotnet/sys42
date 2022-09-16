@@ -25,34 +25,29 @@
     content: [
       {
         tag: "main#desktop.desktop",
+        on: [
+          {
+            "selector": 'ui-icon[aria-description="folder"]',
+            "dblclick || Enter || Space": "{{openFolder(target.path)}}",
+          },
+          {
+            "selector": 'ui-icon[aria-description="file"]',
+            "dblclick || Enter || Space": "{{openFile(target.path)}}",
+          },
+        ],
         content: [
           {
             tag: "ui-folder.box-fit.scroll-auto",
-            on: {
-              $patch: {
-                op: "add",
-                value: [
-                  {
-                    "selector": 'ui-icon[aria-description="folder"]',
-                    "dblclick || Enter || Space": "{{openFolder(target.path)}}",
-                  },
-                  {
-                    "selector": 'ui-icon[aria-description="file"]',
-                    "dblclick || Enter || Space": "{{openFile(target.path)}}",
-                  },
-                ],
-              },
+          },
+          {
+            tag: "ui-dialog",
+            content: {
+              tag: "ui-sandbox",
+              // permissions: "web",
+              permissions: "app",
+              path: "../tests/fixtures/website/index.html",
             },
           },
-          // {
-          //   tag: "ui-dialog",
-          //   content: {
-          //     tag: "ui-sandbox",
-          //     // permissions: "web",
-          //     permissions: "app",
-          //     path: "../tests/fixtures/website/index.html",
-          //   },
-          // },
         ],
       },
       {
@@ -96,7 +91,7 @@
 
   globalThis.app = app
 
-  explorer("/42/fabric/")
+  // explorer("/42/fabric/")
 
   // import puppet from "../42/core/dev/puppet.js"
   // await puppet.when("uidialogopen")

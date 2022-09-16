@@ -6,9 +6,10 @@
 // @implement https://tools.ietf.org/html/rfc6902
 
 import locate from "../locator/locate.js"
+import exists from "../locator/exists.js"
 import arrify from "../type/any/arrify.js"
 import equal from "../type/any/equal.js"
-import { splitJSONPointer, decodeJSONPointer } from "./pointer.js"
+import { splitJSONPointer } from "./pointer.js"
 
 function splice(str, index, count, add = "") {
   // We cannot pass negative indexes directly to the 2nd slicing operation.
@@ -135,12 +136,17 @@ export function copy(obj, from, path, options) {
     (str, index) => (value = str[index]),
     true
   )
-  add(path, value)
+  add(obj, path, value)
   return obj
 }
 
 export function move(obj, from, path, options) {
-  const value = locate(obj, decodeJSONPointer(from), "/")
+  const tokens = splitJSONPointer(from)
+  if (options?.strict && exists.evaluate(obj, tokens) === false) {
+    throw new RangeError(`path ${from} does not exist`)
+  }
+
+  const value = locate.evaluate(obj, tokens)
   remove(obj, from, options)
   add(obj, path, value, options)
   return obj
@@ -170,10 +176,11 @@ export function replace(obj, path, val, options) {
 }
 
 export function test(obj, path, expected) {
-  const actual = locate(obj, decodeJSONPointer(patch), "/")
+  const actual = locate.evaluate(obj, splitJSONPointer(path))
+
   if (equal(actual, expected) === false) {
     throw Object.assign(
-      new Error(`test failed: value at ${path} is not like expected`),
+      new Error(`patch test failed: value at ${path} is not like expected`),
       { actual, expected }
     )
   }
@@ -206,8 +213,8 @@ export default function patch(obj, patches, options) {
       case "copy": out = copy(out, from, path, options); break
       case "remove": out = remove(out, path, value, options); break
       case "replace": out = replace(out, path, value, options); break
-      case "test": out = test(out, path, value, options); break
-      default:
+      case "test": test(out, path, value, options); break
+      default: if (options?.strict) throw new Error(`unrecognized op: ${op}`)
     }
   }
 

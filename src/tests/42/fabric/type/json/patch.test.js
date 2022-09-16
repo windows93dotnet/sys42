@@ -7,12 +7,14 @@ const { clone } = test.utils
 
 test.tasks(
   JSONPatchSuite,
-  ({ doc, patch: patches, expected, error, comment }, i) => {
+  (test, { doc, patch: patches, expected, error, comment, disabled }, i) => {
+    if (disabled) return
+
     doc = clone(doc)
 
-    test(comment ?? patches, (t) => {
+    test(comment, patches, (t) => {
       const message = `${i}.\n
-patch(${t.utils.stringify(doc)}, ${t.utils.stringify(patches)})\n`
+patch(${t.utils.stringify.line(doc)}, ${t.utils.stringify(patches)})\n`
 
       if (error) {
         t.throws(

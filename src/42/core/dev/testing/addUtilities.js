@@ -150,12 +150,11 @@ export default function addUtilities(item, isExecutionContext) {
         list.forEach((data, i) => {
           if (!data) return
           if (data.taskError) item = item.taskError(data.taskError)
-          if (cb.length > 1) {
-            let fn = data.only ? item.only : data.skip ? item.skip : item
-            if (data.failing) fn = fn.failing
-            if (data.flaky) fn = fn.flaky
-            cb(fn, data, i)
-          } else cb(data, i)
+
+          let fn = data.only ? item.only : data.skip ? item.skip : item
+          if (data.failing) fn = fn.failing
+          if (data.flaky) fn = fn.flaky
+          cb(fn, data, i)
         })
       }
 

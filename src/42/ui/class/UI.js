@@ -1,13 +1,10 @@
-import DOMQuery from "../../fabric/class/DOMQuery.js"
 import ensureElement from "../../fabric/dom/ensureElement.js"
 import asyncable from "../../fabric/traits/asyncable.js"
 import render from "../render.js"
 import normalize from "../normalize.js"
 
-export default class UI extends DOMQuery {
+export default class UI {
   constructor(...args) {
-    super()
-
     if (args[0] instanceof Element || typeof args[0] === "string") {
       this.el = ensureElement(args[0])
       this.def = args[1]
@@ -25,9 +22,9 @@ export default class UI extends DOMQuery {
     this.def = def
     this.ctx = ctx
 
-    this.ctx.postrender.push(() => {
-      this.queryAll(":scope [data-autofocus]").at(-1)?.focus()
-    })
+    this.ctx.postrender.push(() =>
+      [...this.el.querySelectorAll(":scope [data-autofocus]")].at(-1)?.focus()
+    )
 
     asyncable(this, async () => {
       if (!this.ctx) return
