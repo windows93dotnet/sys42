@@ -97,8 +97,8 @@ export class Dialog extends Component {
 
   setup() {
     const rect = this.getBoundingClientRect()
-    this.x ??= Math.round(rect.left)
-    this.y ??= Math.round(rect.top)
+    this.x ??= Math.round(rect.x)
+    this.y ??= Math.round(rect.y)
     this.style.top = 0
     this.style.left = 0
     this.style.zIndex = maxZIndex("ui-dialog") + 1

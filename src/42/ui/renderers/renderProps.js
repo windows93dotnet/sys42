@@ -270,7 +270,9 @@ export default async function renderProps(el, props, def) {
 
   await ctx.undones.done()
 
-  for (const key of Reflect.ownKeys(updates)) updates[key](true)
+  el.ready.then(() => {
+    for (const key of Reflect.ownKeys(updates)) updates[key](true)
+  })
 
   return observed
 }

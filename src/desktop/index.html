@@ -18,7 +18,7 @@
   import ui from "../42/ui.js"
   import explorer from "../42/ui/components/explorer.js"
   import open from "../42/os/cmd/open.cmd.js"
-  // import dialog from "../42/ui/components/dialog.js"
+  import dialog from "../42/ui/components/dialog.js"
 
   const app = await ui({
     tag: "body.box-fit.box-h._debug",
@@ -41,6 +41,7 @@
           },
           {
             tag: "ui-dialog",
+            label: "Inline dialog",
             content: {
               tag: "ui-sandbox",
               // permissions: "web",
@@ -77,17 +78,17 @@
     },
   })
 
-  // dialog({
-  //   style: { width: 400, height: 400 },
-  //   label: "ok",
-  //   content: {
-  //     tag: "ui-sandbox.inset.document",
-  //     zoom: 0.6,
-  //     permissions: "app",
-  //     // path: "../tests/fixtures/formats/image/example.svg",
-  //     path: "../tests/fixtures/website/index.html",
-  //   },
-  // })
+  dialog({
+    style: { width: 400, height: 400 },
+    label: "Direct call",
+    content: {
+      tag: "ui-sandbox.inset.document",
+      zoom: 0.6,
+      permissions: "app",
+      // path: "../tests/fixtures/formats/image/example.svg",
+      path: "../tests/fixtures/website/index.html",
+    },
+  })
 
   globalThis.app = app
 
