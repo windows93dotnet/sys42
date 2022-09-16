@@ -7,7 +7,7 @@ import deallocate from "../../fabric/locator/deallocate.js"
 import defer from "../../fabric/type/promise/defer.js"
 import dispatch from "../../fabric/event/dispatch.js"
 import equal from "../../fabric/type/any/equal.js"
-import { merge } from "../../core/configure.js"
+import merge from "../../fabric/type/object/merge.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 
 const sep = "/"

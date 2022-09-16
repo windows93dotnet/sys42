@@ -2,7 +2,7 @@
 // @read https://rxdb.info/slow-indexeddb.html
 
 import DatabaseError from "./DatabaseError.js"
-import { merge } from "../configure.js"
+import merge from "../../fabric/type/object/merge.js"
 
 const DEFAULT_ITERATE = {
   value: true,

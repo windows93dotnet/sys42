@@ -17,7 +17,7 @@ import arrify from "../fabric/type/any/arrify.js"
 import hash from "../fabric/type/any/hash.js"
 import getType from "../fabric/getType.js"
 import inTop from "../core/env/realm/inTop.js"
-import { merge } from "../core/configure.js"
+import merge from "../fabric/type/object/merge.js"
 import ALLOWED_HTML_ATTRIBUTES from "../fabric/constants/ALLOWED_HTML_ATTRIBUTES.js"
 import ALLOWED_SVG_ATTRIBUTES from "../fabric/constants/ALLOWED_SVG_ATTRIBUTES.js"
 

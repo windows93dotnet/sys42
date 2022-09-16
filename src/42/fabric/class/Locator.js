@@ -2,7 +2,7 @@ import exists from "../locator/exists.js"
 import locate from "../locator/locate.js"
 import allocate from "../locator/allocate.js"
 import deallocate from "../locator/deallocate.js"
-import { merge } from "../../core/configure.js"
+import merge from "../type/object/merge.js"
 
 export default class Locator {
   constructor(value = {}, options) {
