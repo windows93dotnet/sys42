@@ -11,6 +11,7 @@ const DEFAULTS = {
   throttle: true,
   subpixel: false,
   selector: undefined,
+  ignore: undefined,
   targetRelative: false,
   signal: undefined,
 }
@@ -135,9 +136,11 @@ export default class Dragger {
 
     listen(this.el, {
       signal,
-      selector: this.selector,
+      selector: this.config.selector,
       pointerdown: (e, target) => {
-        target = this.selector ? target : this.el
+        target = this.config.selector ? target : this.el
+        if (this.config.ignore && e.target.closest(this.config.ignore)) return
+
         forget = listen({
           signal,
           "pointermove": (e) => drag(e, target),

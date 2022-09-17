@@ -35,20 +35,17 @@ class Movable extends Trait {
     let isComponent
 
     this.config = configure(options)
-    this.config.targetRelative = true
     this.config.signal = this.cancel.signal
 
     this.targets = new WeakMap()
 
     const tempStyle = { signal: this.cancel.signal, style: this.config.style }
 
+    this.config.targetRelative = true
     this.dragger = new Dragger(this.el, this.config)
 
     this.dragger.start = (x, y, e, target) => {
-      if (
-        (this.config.handler && !e.target.closest(this.config.handler)) ||
-        (this.config.ignore && e.target.closest(this.config.ignore))
-      ) {
+      if (this.config.handler && !e.target.closest(this.config.handler)) {
         return false
       }
 

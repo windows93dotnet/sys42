@@ -16,7 +16,7 @@ const ITEM_DEFAULTS = {
   selector: undefined,
   returnForget: true,
   repeatable: false,
-  break: false,
+  disrupt: false,
   stop: false,
   prevent: false,
   preventDefault: false,
@@ -34,11 +34,11 @@ function cleanup(item, e) {
 }
 
 export const makeHandler = ({ selector, ...item }, fn) => {
-  if (item.prevent || item.break) {
+  if (item.prevent || item.disrupt) {
     item.preventDefault = true
   }
 
-  if (item.stop || item.break) {
+  if (item.stop || item.disrupt) {
     item.stopPropagation = true
     item.stopImmediatePropagation = true
   }

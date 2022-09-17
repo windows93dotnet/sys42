@@ -20,6 +20,7 @@ export class Folder extends Component {
     traits: {
       selectable: {
         items: ":scope ui-icon",
+        dragger: { ignore: "ui-icon" },
         add({ path }) {
           if (!this.selection.includes(path)) this.selection.push(path)
         },

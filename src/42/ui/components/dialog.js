@@ -20,7 +20,7 @@ export class Dialog extends Component {
     traits: {
       emittable: true,
       movable: {
-        throttle: false,
+        // throttle: false,
         handler: ".ui-dialog__title",
       },
     },

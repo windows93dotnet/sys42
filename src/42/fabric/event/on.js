@@ -37,14 +37,6 @@ const codes = new Set([
   "Quote",
 ])
 
-const itemKeys = [
-  "selector",
-  "returnForget",
-  "stopPropagation",
-  "preventDefault",
-  "repeatable",
-]
-
 export function parseShortcut(source) {
   let buffer = ""
   let current = 0
@@ -258,7 +250,7 @@ function handleSeq(seq, fn, el, { repeatable, options }, registry) {
 }
 
 export default function on(...args) {
-  const { list, cancels } = normalizeListen(args, { itemKeys })
+  const { list, cancels } = normalizeListen(args)
   eventsMap(list)
   if (cancels) {
     const forget = () => {

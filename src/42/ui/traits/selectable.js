@@ -9,6 +9,7 @@ import on from "../../fabric/event/on.js"
 const DEFAULTS = {
   items: ":scope > *",
   check: "colliding",
+  dragger: { distance: 5 },
   shortcuts: {
     toggleSelectOne: "click || Space",
     toggleSelect: "Ctrl+click || Ctrl+Space",
@@ -38,11 +39,11 @@ class Selectable extends Trait {
 
   toggleSelectOne(e, target) {
     if (this.dragger.isDragging) return
+    for (const item of this.selection) this.#remove(item)
     this.selection.clear()
+
     const items = this.el.querySelectorAll(this.config.items)
-    for (const item of items) {
-      item.contains(target) ? this.#toggle(item) : this.#remove(item)
-    }
+    for (const item of items) if (item.contains(target)) this.#toggle(item)
   }
 
   toggleSelect(e, target) {
@@ -55,11 +56,10 @@ class Selectable extends Trait {
     if (this.dragger.isDragging) return
     const items = this.el.querySelectorAll(this.config.items)
     for (const item of items) this.#toggle(item, true)
-    return false
   }
 
   constructor(el, options) {
-    super(el)
+    super(el, options)
 
     this.config = configure(options)
 
@@ -73,15 +73,18 @@ class Selectable extends Trait {
     const sc = this.config.shortcuts
 
     on(this.el, {
-      // preventDefault: true,
+      signal: this.cancel.signal,
+      disrupt: true,
       [sc.toggleSelectOne]: (e, target) => this.toggleSelectOne(e, target),
       [sc.toggleSelect]: (e, target) => this.toggleSelect(e, target),
       [sc.selectAll]: (e, target) => this.selectAll(e, target),
     })
 
+    this.config.dragger.signal = this.cancel.signal
+
     this.dragger = new Dragger(this.el, {
-      ...this.config,
-      start: () => {
+      ...this.config.dragger,
+      start: (/* x, y, e, target */) => {
         items = this.el.querySelectorAll(this.config.items)
         document.body.append(this.svg)
       },
