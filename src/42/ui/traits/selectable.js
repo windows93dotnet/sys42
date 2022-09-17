@@ -3,16 +3,15 @@ import Trait from "../class/Trait.js"
 import setup from "../../core/setup.js"
 import Dragger from "../class/Dragger.js"
 import rect from "../../fabric/geometry/rect.js"
+import noop from "../../fabric/type/function/noop.js"
 import on from "../../fabric/event/on.js"
-
-// @read https://www.stefanjudis.com/blog/aria-selected-and-when-to-use-it/
 
 const DEFAULTS = {
   items: ":scope > *",
   check: "colliding",
   shortcuts: {
-    toggleSelectOne: "click",
-    toggleSelect: "Ctrl+click",
+    toggleSelectOne: "click || Space",
+    toggleSelect: "Ctrl+click || Ctrl+Space",
     selectAll: "Ctrl+a",
   },
 }
@@ -21,24 +20,20 @@ const configure = setup("ui.trait.selectable", DEFAULTS)
 
 const ns = "http://www.w3.org/2000/svg"
 
-function emit(item, event) {
-  item.dispatchEvent(new CustomEvent(event, { bubbles: true }))
-}
-
 class Selectable extends Trait {
-  add(item, force) {
+  #toggle(item, force) {
     if (force !== true && this.selection.has(item)) {
       this.selection.delete(item)
-      emit(item, "selectionremove")
+      this.remove.call(this.el, item)
     } else {
       this.selection.add(item)
-      emit(item, "selectionadd")
+      this.add.call(this.el, item)
     }
   }
 
-  remove(item) {
+  #remove(item) {
     this.selection.delete(item)
-    emit(item, "selectionremove")
+    this.remove.call(this.el, item)
   }
 
   toggleSelectOne(e, target) {
@@ -46,26 +41,31 @@ class Selectable extends Trait {
     this.selection.clear()
     const items = this.el.querySelectorAll(this.config.items)
     for (const item of items) {
-      this[item.contains(target) ? "add" : "remove"](item)
+      item.contains(target) ? this.#toggle(item) : this.#remove(item)
     }
   }
 
   toggleSelect(e, target) {
     if (this.dragger.isDragging) return
     const items = this.el.querySelectorAll(this.config.items)
-    for (const item of items) if (item.contains(target)) this.add(item)
+    for (const item of items) if (item.contains(target)) this.#toggle(item)
   }
 
   selectAll() {
     if (this.dragger.isDragging) return
     const items = this.el.querySelectorAll(this.config.items)
-    for (const item of items) this.add(item, true)
+    for (const item of items) this.#toggle(item, true)
+    return false
   }
 
   constructor(el, options) {
     super(el)
 
     this.config = configure(options)
+
+    this.add = this.config.add ?? noop
+    this.remove = this.config.remove ?? noop
+
     this.selection = new Set()
 
     this.el.tabIndex = this.el.tabIndex < 0 ? 0 : this.el.tabIndex
@@ -73,7 +73,7 @@ class Selectable extends Trait {
     const sc = this.config.shortcuts
 
     on(this.el, {
-      preventDefault: true,
+      // preventDefault: true,
       [sc.toggleSelectOne]: (e, target) => this.toggleSelectOne(e, target),
       [sc.toggleSelect]: (e, target) => this.toggleSelect(e, target),
       [sc.selectAll]: (e, target) => this.selectAll(e, target),
@@ -109,8 +109,8 @@ class Selectable extends Trait {
 
         for (const item of items) {
           const A = item.getBoundingClientRect()
-          if (check(A, B)) this.add(item, true)
-          else if (ctrlKey === false) this.remove(item)
+          if (check(A, B)) this.#toggle(item, true)
+          else if (ctrlKey === false) this.#remove(item)
         }
       },
       stop: () => {

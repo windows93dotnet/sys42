@@ -75,10 +75,16 @@ export class Dialog extends Component {
       },
     ]
 
+    const id = uid()
+    this.setAttribute("aria-labelledby", id)
+
     const def = [
       {
         tag: "header.ui-dialog__header",
-        content: [{ tag: "h2.ui-dialog__title", content: label }, ...buttons],
+        content: [
+          { tag: "h2.ui-dialog__title", id, content: label },
+          ...buttons,
+        ],
       },
       {
         tag: "section.ui-dialog__body",

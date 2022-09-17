@@ -46,16 +46,23 @@
 
 <script type="module">
   import selectable from "../../../42/ui/traits/selectable.js"
-  import listen from "../../../42/fabric/event/listen.js"
+  // import listen from "../../../42/fabric/event/listen.js"
 
-  selectable(".selectable")
-
-  listen(".selectable", {
-    selectionadd(e) {
-      e.target.classList.add("selected")
+  selectable(".selectable", {
+    add(item) {
+      item.classList.add("selected")
     },
-    selectionremove(e) {
-      e.target.classList.remove("selected")
+    remove(item) {
+      item.classList.remove("selected")
     },
   })
+
+  // listen(".selectable", {
+  //   selectionadd(e) {
+  //     e.target.classList.add("selected")
+  //   },
+  //   selectionremove(e) {
+  //     e.target.classList.remove("selected")
+  //   },
+  // })
 </script>

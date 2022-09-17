@@ -2,6 +2,7 @@ import "./icon.js"
 import Component from "../class/Component.js"
 import dispatch from "../../fabric/event/dispatch.js"
 import disk from "../../core/disk.js"
+import removeItem from "../../fabric/type/array/removeItem.js"
 
 const { indexOf } = Array.prototype
 
@@ -18,7 +19,13 @@ export class Folder extends Component {
 
     traits: {
       selectable: {
-        items: ":scope > ui-icon",
+        items: ":scope ui-icon",
+        add({ path }) {
+          if (!this.selection.includes(path)) this.selection.push(path)
+        },
+        remove({ path }) {
+          removeItem(this.selection, path)
+        },
       },
     },
 
@@ -87,26 +94,29 @@ export class Folder extends Component {
   }
 
   moveFocusUp() {
-    const index = indexOf.call(this.children, document.activeElement)
-    this.children[index === -1 ? 0 : index - this.iconsPerLine]?.focus()
+    const index = indexOf.call(this.#icons, document.activeElement)
+    this.#icons[index === -1 ? 0 : index - this.iconsPerLine]?.focus()
   }
 
   moveFocusDown() {
-    const index = indexOf.call(this.children, document.activeElement)
-    this.children[index === -1 ? 0 : index + this.iconsPerLine]?.focus()
+    const index = indexOf.call(this.#icons, document.activeElement)
+    this.#icons[index === -1 ? 0 : index + this.iconsPerLine]?.focus()
   }
 
   moveFocusLeft() {
-    const index = indexOf.call(this.children, document.activeElement)
-    this.children[index === -1 ? 0 : index - 1]?.focus()
+    const index = indexOf.call(this.#icons, document.activeElement)
+    this.#icons[index === -1 ? 0 : index - 1]?.focus()
   }
 
   moveFocusRight() {
-    const index = indexOf.call(this.children, document.activeElement)
-    this.children[index === -1 ? 0 : index + 1]?.focus()
+    const index = indexOf.call(this.#icons, document.activeElement)
+    this.#icons[index === -1 ? 0 : index + 1]?.focus()
   }
 
+  #icons
+
   setup() {
+    this.#icons = this.children[0].children
     this.iconsPerLine = 0
     const ro = new ResizeObserver(() => {
       if (this.children.length === 0) {
@@ -114,10 +124,10 @@ export class Folder extends Component {
         return
       }
 
-      const previousY = this.children[0].getBoundingClientRect().y
+      const previousY = this.#icons[0].getBoundingClientRect().y
 
-      for (let i = 1, l = this.children.length; i < l; i++) {
-        const { y } = this.children[i].getBoundingClientRect()
+      for (let i = 1, l = this.#icons.length; i < l; i++) {
+        const { y } = this.#icons[i].getBoundingClientRect()
         if (y !== previousY) {
           this.iconsPerLine = i
           break

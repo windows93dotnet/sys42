@@ -2,6 +2,8 @@ import Component from "../class/Component.js"
 import parseFilename from "../../fabric/type/path/parseFilename.js"
 import theme from "../../os/theme.js"
 
+// [1] @read https://www.stefanjudis.com/blog/aria-selected-and-when-to-use-it/
+
 const TREEITEM_PARENTS = new Set(["tree", "treegrid", "group"])
 const GRIDCELL_PARENTS = new Set(["grid", "row"])
 
@@ -79,10 +81,10 @@ class Icon extends Component {
     const parentRole = this.parentNode.getAttribute("role")
     if (TREEITEM_PARENTS.has(parentRole)) {
       this.setAttribute("role", "treeitem")
-      this.setAttribute("aria-selected", "false")
+      this.setAttribute("aria-selected", "false") // [1]
     } else if (GRIDCELL_PARENTS.has(parentRole)) {
       this.setAttribute("role", "gridcell")
-      this.setAttribute("aria-selected", "false")
+      this.setAttribute("aria-selected", "false") // [1]
     } else {
       this.setAttribute("role", "button")
     }
