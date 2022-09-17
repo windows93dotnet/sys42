@@ -1530,6 +1530,105 @@ test("array", 2, async (t) => {
   })
 })
 
+/* @index
+========= */
+
+Component.define({
+  tag: "ui-t-index-array",
+
+  props: {
+    list: {
+      type: "array",
+    },
+  },
+
+  content: {
+    scope: "list",
+    each: {
+      content: "{{@index}}:{{.}}{{@last ? '' : ', '}}",
+    },
+  },
+})
+
+test("@index", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest(), {
+      content: {
+        tag: "ui-t-index-array",
+        list: "{{arr}}",
+      },
+
+      state: {
+        arr: ["a", "b"],
+      },
+    })
+  )
+
+  t.is(app.el.textContent, "0:a, 1:b")
+
+  app.state.arr = ["A"]
+  await app
+
+  t.is(app.el.textContent, "0:A")
+
+  app.state.arr.push("B", "C")
+  await app
+
+  t.is(app.el.textContent, "0:A, 1:B, 2:C")
+})
+
+Component.define(
+  class extends Component {
+    static definition = {
+      tag: "ui-t-index-computed-array",
+
+      props: {
+        arr: {
+          type: "array",
+        },
+      },
+
+      computed: {
+        list: "{{getList(arr)}}",
+      },
+
+      content: {
+        scope: "list",
+        each: {
+          content: "{{@index}}:{{.}}{{@last ? '' : ', '}}",
+        },
+      },
+    }
+
+    getList(arr) {
+      return JSON.parse(arr)
+    }
+  }
+)
+
+test.only("@index", "computed", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest(), {
+      content: {
+        tag: "ui-t-index-computed-array",
+        arr: '["a", "b"]',
+      },
+    })
+  )
+
+  t.is(app.el.textContent, "0:a, 1:b")
+
+  app.el.arr = '["A"]'
+  await app
+
+  t.is(app.el.textContent, "0:A")
+
+  app.el.arr = '["A", "B", "C"]'
+  await app
+
+  t.is(app.el.textContent, "0:A, 1:B, 2:C")
+})
+
 /* string array
 =============== */
 

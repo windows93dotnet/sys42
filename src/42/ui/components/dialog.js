@@ -103,6 +103,7 @@ export class Dialog extends Component {
     this.style.left = 0
     this.style.zIndex = maxZIndex("ui-dialog") + 1
     dispatch(this, "uidialogopen")
+    autofocus(this.querySelector(":scope > .ui-dialog__body"))
   }
 }
 
@@ -123,8 +124,6 @@ const dialog = rpc(
     await el.ready
 
     document.body.append(el)
-
-    autofocus(el.querySelector(":scope > .ui-dialog__body"))
 
     return el.once("close").then((res) => ({ res, opener }))
   },

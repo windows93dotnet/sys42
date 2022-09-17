@@ -2,6 +2,8 @@ import Component from "../class/Component.js"
 import dirname from "../../fabric/type/path/extract/dirname.js"
 import dialog from "./dialog.js"
 import open from "../../os/cmd/open.cmd.js"
+import queueTask from "../../fabric/type/function/queueTask.js"
+import { focusInside } from "../../fabric/dom/focus.js"
 
 import parsePath from "../../fabric/type/path/core/parsePath.js"
 import joinPath from "../../fabric/type/path/core/joinPath.js"
@@ -20,6 +22,7 @@ export class Explorer extends Component {
       glob: {
         type: "boolean",
         fromView: true,
+        // default: true,
       },
       selection: {
         type: "array",
@@ -64,7 +67,6 @@ export class Explorer extends Component {
       },
       {
         tag: "ui-folder.inset.paper",
-        autofocus: true,
         glob: "{{glob}}",
         path: "{{path}}",
         selection: "{{selection}}",
@@ -90,14 +92,21 @@ export class Explorer extends Component {
     ],
   }
 
-  folderUp() {
+  folderUp(options) {
     let path = dirname(this.path)
     if (!path.endsWith("/")) path += "/"
     this.path = path
+    if (!options?.keepFocus) this.autofocus()
   }
 
-  go(path) {
+  go(path, options) {
     this.path = path
+    if (!options?.keepFocus) this.autofocus()
+  }
+
+  autofocus() {
+    document.activeElement.blur()
+    queueTask(() => focusInside(this))
   }
 
   open(path) {

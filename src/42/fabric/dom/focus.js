@@ -37,8 +37,15 @@ export function isFocusable(el) {
   }
 }
 
-export function attemptFocus(el) {
-  if (!el || el.nodeType !== ELEMENT_NODE || !isFocusable(el)) return false
+export function attemptFocus(el, options) {
+  if (
+    !el ||
+    el.nodeType !== ELEMENT_NODE ||
+    (options?.strict && !isFocusable(el))
+  ) {
+    return false
+  }
+
   try {
     el.focus()
     if (el.localName === "input") el.select()
@@ -77,7 +84,7 @@ export function focusInside(el, target) {
   }
 
   target = el.querySelector(":scope [autofocus], :scope [data-autofocus]")
-  if (attemptFocus(target)) return true
+  if (target && attemptFocus(target)) return true
   return focusInsideFirst(el)
 }
 
@@ -89,8 +96,8 @@ const acceptNode = (node) =>
     : FILTER_SKIP
 
 export class TabOrder {
-  constructor(root = document.body) {
-    this.walker = document.createTreeWalker(root, SHOW_ELEMENT, { acceptNode })
+  constructor(base = document.body) {
+    this.walker = document.createTreeWalker(base, SHOW_ELEMENT, { acceptNode })
     this.list = []
     this.scan()
   }
@@ -134,29 +141,29 @@ export class TabOrder {
   }
 }
 
-export function focusPrev(el, root) {
-  const tab = new TabOrder(root)
+export function focusPrev(el, base) {
+  const tab = new TabOrder(base)
   const res = tab.prev(el)
   tab.destroy()
   return res
 }
 
-export function focusNext(el, root) {
-  const tab = new TabOrder(root)
+export function focusNext(el, base) {
+  const tab = new TabOrder(base)
   const res = tab.next(el)
   tab.destroy()
   return res
 }
 
-export function focusFirst(el, root) {
-  const tab = new TabOrder(root)
+export function focusFirst(el, base) {
+  const tab = new TabOrder(base)
   const res = tab.first(el)
   tab.destroy()
   return res
 }
 
-export function focusLast(el, root) {
-  const tab = new TabOrder(root)
+export function focusLast(el, base) {
+  const tab = new TabOrder(base)
   const res = tab.last(el)
   tab.destroy()
   return res

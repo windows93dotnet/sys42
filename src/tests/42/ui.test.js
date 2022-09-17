@@ -1809,6 +1809,20 @@ test("each", "@index", async (t) => {
   t.is(app.el.textContent, "0 x 1 y ")
 })
 
+test("each", "@index", "operation", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest(), {
+      content: { scope: "arr", each: "{{@index + 1}} {{a}} " },
+      state: {
+        foo: "bar",
+        arr: [{ a: "x" }, { a: "y" }],
+      },
+    })
+  )
+
+  t.is(app.el.textContent, "1 x 2 y ")
+})
+
 test("each", "@index", "string array", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
