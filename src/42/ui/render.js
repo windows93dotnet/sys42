@@ -28,16 +28,16 @@ function renderTag(ctx, def) {
     ctx.el = el
   }
 
-  if (el.form !== undefined && def.scope) {
-    el = renderControl(el, ctx, def)
-  }
-
   if (def.picto) {
     if (el.localName === "button") {
       el.classList.add("btn-picto")
     }
 
     el.append(renderComponent(create("ui-picto"), { value: def.picto }, ctx))
+  }
+
+  if (el.form !== undefined) {
+    el = renderControl(el, ctx, def)
   }
 
   if (

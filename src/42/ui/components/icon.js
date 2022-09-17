@@ -3,6 +3,7 @@ import parseFilename from "../../fabric/type/path/parseFilename.js"
 import theme from "../../os/theme.js"
 
 const TREEITEM_PARENTS = new Set(["tree", "treegrid", "group"])
+const GRIDCELL_PARENTS = new Set(["grid", "row"])
 
 class Icon extends Component {
   static definition = {
@@ -78,6 +79,9 @@ class Icon extends Component {
     const parentRole = this.parentNode.getAttribute("role")
     if (TREEITEM_PARENTS.has(parentRole)) {
       this.setAttribute("role", "treeitem")
+      this.setAttribute("aria-selected", "false")
+    } else if (GRIDCELL_PARENTS.has(parentRole)) {
+      this.setAttribute("role", "gridcell")
       this.setAttribute("aria-selected", "false")
     } else {
       this.setAttribute("role", "button")

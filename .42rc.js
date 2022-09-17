@@ -120,6 +120,7 @@ export default {
               "bgcolor",
               "border",
               "clear",
+              "compact",
               "hspace",
               "language",
               "link",

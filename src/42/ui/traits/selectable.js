@@ -10,13 +10,11 @@ import on from "../../fabric/event/on.js"
 const DEFAULTS = {
   items: ":scope > *",
   check: "colliding",
-  // on: [
-  //   {
-  //     "click": "toggleSelectOne",
-  //     "Ctrl+click": "toggleSelect",
-  //     "Ctrl+a": "selectAll",
-  //   },
-  // ],
+  shortcuts: {
+    toggleSelectOne: "click",
+    toggleSelect: "Ctrl+click",
+    selectAll: "Ctrl+a",
+  },
 }
 
 const configure = setup("ui.trait.selectable", DEFAULTS)
@@ -72,11 +70,13 @@ class Selectable extends Trait {
 
     this.el.tabIndex = this.el.tabIndex < 0 ? 0 : this.el.tabIndex
 
+    const sc = this.config.shortcuts
+
     on(this.el, {
-      "preventDefault": true,
-      "click": (e, target) => this.toggleSelectOne(e, target),
-      "Ctrl+click": (e, target) => this.toggleSelect(e, target),
-      "Ctrl+a": (e, target) => this.selectAll(e, target),
+      preventDefault: true,
+      [sc.toggleSelectOne]: (e, target) => this.toggleSelectOne(e, target),
+      [sc.toggleSelect]: (e, target) => this.toggleSelect(e, target),
+      [sc.selectAll]: (e, target) => this.selectAll(e, target),
     })
 
     this.dragger = new Dragger(this.el, {

@@ -15,4 +15,6 @@ system.theme = theme
 system.devices = devices
 // system.apps = apps
 
+document.documentElement.lang = "en"
+
 export { default } from "./system.js"

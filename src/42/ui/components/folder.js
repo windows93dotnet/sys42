@@ -8,8 +8,19 @@ const { indexOf } = Array.prototype
 export class Folder extends Component {
   static definition = {
     tag: "ui-folder",
+    role: "grid",
+
+    aria: {
+      multiselectable: true,
+    },
 
     tabIndex: -1,
+
+    traits: {
+      selectable: {
+        items: ":scope > ui-icon",
+      },
+    },
 
     props: {
       path: {
@@ -45,12 +56,16 @@ export class Folder extends Component {
     },
 
     content: {
-      scope: "items",
-      each: {
-        tag: "ui-icon",
-        autofocus: "{{@first}}",
-        path: "{{.}}",
-        aria: { selected: "{{includes(../../selection, .)}}" },
+      role: "row",
+      content: {
+        scope: "items",
+        each: {
+          tag: "ui-icon",
+          role: "gridcell",
+          aria: { selected: "{{includes(../../selection, .)}}" },
+          autofocus: "{{@first}}",
+          path: "{{.}}",
+        },
       },
     },
   }

@@ -40,7 +40,6 @@ export default Object.freeze([
   "color",
   "cols",
   "colspan",
-  "compact",
   "content",
   "contenteditable",
   "controls",

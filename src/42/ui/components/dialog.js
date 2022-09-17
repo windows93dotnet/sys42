@@ -70,6 +70,7 @@ export class Dialog extends Component {
       {
         tag: "button.ui-dialog__close",
         picto: "close",
+        aria: { label: "Close" },
         on: { click: "{{close()}}" },
       },
     ]

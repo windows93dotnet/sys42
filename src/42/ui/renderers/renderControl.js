@@ -39,18 +39,20 @@ function setValidation(def) {
 }
 
 export default function renderControl(el, ctx, def) {
-  ctx.scope = ctx.scopeBackup
-  ctx.scope = resolveScope(...findScope(ctx, def.scope), ctx)
-
-  el.name ||= ctx.scope
   el.id ||= hash(ctx.steps)
 
   setAttributes(el, setValidation(def))
 
-  register(ctx, ctx.scope, (val) => setControlData(el, val))
+  if (def.scope) {
+    ctx.scope = ctx.scopeBackup
+    ctx.scope = resolveScope(...findScope(ctx, def.scope), ctx)
+    el.name ||= ctx.scope
 
-  def.on ??= []
-  def.on.push({ input: () => ctx.reactive.set(el.name, getControlData(el)) })
+    register(ctx, ctx.scope, (val) => setControlData(el, val))
+
+    def.on ??= []
+    def.on.push({ input: () => ctx.reactive.set(el.name, getControlData(el)) })
+  }
 
   // const field = create("fieldset", {
   //   role: "none",
@@ -62,22 +64,27 @@ export default function renderControl(el, ctx, def) {
       ? create(".check-cont")
       : document.createDocumentFragment()
 
-  const label = create(
-    "label",
-    { for: el.id },
-    def.label ?? el.type === "radio"
-      ? toTitleCase(el.value)
-      : toTitleCase(def.scope)
-  )
+  const labelText =
+    def.label ??
+    (el.type === "radio" ? toTitleCase(el.value) : toTitleCase(el.name))
 
-  if (def.compact === true) label.classList.add("sr-only")
+  if (labelText) {
+    el.removeAttribute("label")
 
-  if (def.required) {
-    label.append(
-      create("abbr", { "aria-hidden": "true", "title": "Required" }, "*")
-    )
+    const label = create(ctx, "label", { for: el.id }, labelText)
+
+    if (def.compact === true) label.classList.add("sr-only")
+
+    if (def.required) {
+      label.append(
+        create("abbr", { "aria-hidden": "true", "title": "Required" }, "*")
+      )
+    }
+
+    field.append(label)
   }
 
-  field.append(label, el)
+  field.append(el)
+
   return field
 }

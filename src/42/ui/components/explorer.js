@@ -34,12 +34,12 @@ export class Explorer extends Component {
       {
         "stop": true,
         "selector": 'ui-icon[aria-description="folder"]',
-        "dblclick || Enter || Space": "{{go(target.path)}}",
+        "dblclick || Enter": "{{go(target.path)}}",
       },
       {
         "stop": true,
         "selector": 'ui-icon[aria-description="file"]',
-        "dblclick || Enter || Space": "{{open(target.path)}}",
+        "dblclick || Enter": "{{open(target.path)}}",
       },
       {
         "Alt+Up": "{{folderUp()}}",
@@ -53,6 +53,7 @@ export class Explorer extends Component {
           {
             tag: "button",
             picto: "up",
+            aria: { label: "Go up" },
             click: "{{folderUp()}}",
             disabled: "{{path === '/'}}",
           },
@@ -84,6 +85,7 @@ export class Explorer extends Component {
           {
             tag: "input.inset-shallow.panel",
             value: "{{displaySelection(selection)}}",
+            label: "Selected paths",
             readonly: true,
             compact: true,
           },
