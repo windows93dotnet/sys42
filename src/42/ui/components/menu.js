@@ -52,6 +52,7 @@ export class Menu extends Component {
     const items = []
 
     let first = true
+
     for (let item of content) {
       if (item === "---") {
         items.push(item)
@@ -61,9 +62,11 @@ export class Menu extends Component {
       item = { ...item }
       item.id ??= uid()
 
-      const { content } = item
+      const { content, label, bind } = item
 
-      const { label } = item
+      if (bind) {
+        console.log(bind, this.ctx)
+      }
 
       if (
         item.dialog &&

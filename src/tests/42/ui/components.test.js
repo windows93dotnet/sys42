@@ -2015,7 +2015,7 @@ test("computed", "computed prop", async (t) => {
 Component.define(
   class extends Component {
     static definition = {
-      tag: "ui-t-actions",
+      tag: "ui-t-computed-actions-bug",
       computed: { y: "y" },
     }
   }
@@ -2026,7 +2026,7 @@ test("actions", "bug: component with computed", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
-        tag: "ui-t-actions",
+        tag: "ui-t-computed-actions-bug",
         click: "{{foo()}}",
       },
       actions: {
@@ -2036,6 +2036,313 @@ test("actions", "bug: component with computed", async (t) => {
       },
     })
   )
-  app.el.querySelector("ui-t-actions").click()
+  app.el.querySelector("ui-t-computed-actions-bug").click()
   t.is(await deferred, "foo")
+})
+
+Component.define(
+  class extends Component {
+    static definition = {
+      tag: "ui-t-actions",
+    }
+
+    x() {
+      this.ctx.state.from = ["x", "ui-t-actions"]
+    }
+
+    y() {
+      this.ctx.state.from = ["y", "ui-t-actions"]
+    }
+
+    z() {
+      this.ctx.state.from = ["z", "ui-t-actions"]
+    }
+
+    a = {
+      b() {
+        this.ctx.state.from = ["a.b", "ui-t-actions"]
+      },
+      c() {
+        this.ctx.state.from = ["a.c", "ui-t-actions"]
+      },
+      d() {
+        this.ctx.state.from = ["a.d", "ui-t-actions"]
+      },
+    }
+  }
+)
+
+test("actions", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest(), {
+      content: {
+        tag: "ui-t-actions",
+        click: "{{x()}}",
+      },
+      actions: {
+        x() {
+          this.state.from = ["x", "ui"]
+        },
+      },
+    })
+  )
+
+  app.el.querySelector("ui-t-actions").click()
+  await app
+  t.eq(app.data.from, ["x", "ui-t-actions"])
+})
+
+test("actions", "dot notation", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest(), {
+      content: {
+        tag: "ui-t-actions",
+        click: "{{a.b()}}",
+      },
+    })
+  )
+
+  app.el.querySelector("ui-t-actions").click()
+  await app
+  t.eq(app.data.from, ["a.b", "ui-t-actions"])
+})
+
+test("actions", "auto resolve", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest(), {
+      content: {
+        tag: "ui-t-actions",
+        content: [
+          { tag: "button#a", click: "{{x()}}" },
+          { tag: "button#b", click: "{{w()}}" },
+          { tag: "button#c", click: "{{/x()}}" },
+        ],
+      },
+      actions: {
+        x() {
+          this.state.from = ["x", "ui"]
+        },
+        w() {
+          this.state.from = ["w", "ui"]
+        },
+      },
+    })
+  )
+
+  app.el.querySelector("#a").click()
+  await app
+  t.eq(app.data.from, ["x", "ui-t-actions"])
+
+  app.el.querySelector("#b").click()
+  await app
+  t.eq(app.data.from, ["w", "ui"])
+
+  app.el.querySelector("#c").click()
+  await app
+  t.eq(app.data.from, ["x", "ui"])
+})
+
+Component.define(
+  class extends Component {
+    static definition = {
+      tag: "ui-t-actions-child",
+    }
+
+    x() {
+      this.ctx.state.from = ["x", "ui-t-actions-child"]
+    }
+
+    a = {
+      b() {
+        this.ctx.state.from = ["a.b", "ui-t-actions-child"]
+      },
+    }
+  }
+)
+
+Component.define(
+  class extends Component {
+    static definition = {
+      tag: "ui-t-actions-child-child",
+    }
+
+    x() {
+      this.ctx.state.from = ["x", "ui-t-actions-child-child"]
+    }
+
+    a = {
+      b() {
+        this.ctx.state.from = ["a.b", "ui-t-actions-child-child"]
+      },
+    }
+  }
+)
+
+test("actions", "nested component", "auto resolve", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest(), {
+      content: {
+        tag: "ui-t-actions",
+        content: [
+          {
+            tag: "ui-t-actions-child",
+            content: [
+              { tag: "button#a", click: "{{x()}}" },
+              { tag: "button#b", click: "{{y()}}" },
+              { tag: "button#c", click: "{{a.b()}}" },
+              { tag: "button#d", click: "{{a.c()}}" },
+            ],
+          },
+        ],
+      },
+    })
+  )
+
+  app.el.querySelector("#a").click()
+  await app
+  t.eq(app.data.from, ["x", "ui-t-actions-child"])
+
+  app.el.querySelector("#b").click()
+  await app
+  t.eq(app.data.from, ["y", "ui-t-actions"])
+
+  app.el.querySelector("#c").click()
+  await app
+  t.eq(app.data.from, ["a.b", "ui-t-actions-child"])
+
+  app.el.querySelector("#d").click()
+  await app
+  t.eq(app.data.from, ["a.c", "ui-t-actions"])
+})
+
+test("actions", "nested component", "path", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest(), {
+      content: {
+        tag: "ui-t-actions",
+        content: [
+          {
+            tag: "ui-t-actions-child",
+            content: [
+              { tag: "button#a", click: "{{/x()}}" },
+              { tag: "button#b", click: "{{x()}}" },
+              { tag: "button#c", click: "{{../x()}}" },
+              {
+                tag: "ui-t-actions-child-child",
+                content: [
+                  { tag: "button#child-a", click: "{{/x()}}" },
+                  { tag: "button#child-b", click: "{{x()}}" },
+                  { tag: "button#child-c", click: "{{../x()}}" },
+                  { tag: "button#child-d", click: "{{../../x()}}" },
+                  { tag: "button#child-e", click: "{{../../../x()}}" },
+                  { tag: "button#child-b2", click: "{{./x()}}" },
+                  { tag: "button#child-c2", click: "{{./../x()}}" },
+                  { tag: "button#child-d2", click: "{{./../../x()}}" },
+                  { tag: "button#child-e2", click: "{{./../../../x()}}" },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+
+      actions: {
+        x() {
+          this.state.from = ["x", "ui"]
+        },
+      },
+    })
+  )
+
+  app.el.querySelector("#a").click()
+  await app
+  t.eq(app.data.from, ["x", "ui"])
+
+  app.el.querySelector("#b").click()
+  await app
+  t.eq(app.data.from, ["x", "ui-t-actions-child"])
+
+  app.el.querySelector("#c").click()
+  await app
+  t.eq(app.data.from, ["x", "ui-t-actions"])
+
+  /*  */
+
+  app.el.querySelector("#child-a").click()
+  await app
+  t.eq(app.data.from, ["x", "ui"])
+
+  app.el.querySelector("#child-b").click()
+  await app
+  t.eq(app.data.from, ["x", "ui-t-actions-child-child"])
+
+  app.el.querySelector("#child-c").click()
+  await app
+  t.eq(app.data.from, ["x", "ui-t-actions-child"])
+
+  app.el.querySelector("#child-d").click()
+  await app
+  t.eq(app.data.from, ["x", "ui-t-actions"])
+
+  app.el.querySelector("#child-e").click()
+  await app
+  t.eq(app.data.from, ["x", "ui"])
+
+  /*  */
+
+  app.el.querySelector("#child-b2").click()
+  await app
+  t.eq(app.data.from, ["x", "ui-t-actions-child-child"])
+
+  app.el.querySelector("#child-c2").click()
+  await app
+  t.eq(app.data.from, ["x", "ui-t-actions-child"])
+
+  app.el.querySelector("#child-d2").click()
+  await app
+  t.eq(app.data.from, ["x", "ui-t-actions"])
+
+  app.el.querySelector("#child-e2").click()
+  await app
+  t.eq(app.data.from, ["x", "ui"])
+})
+
+test("actions", "nested component", "path not found", async (t) => {
+  t.plan(1)
+
+  const app = t.utils.decay(
+    ui(t.utils.dest(true), {
+      content: {
+        tag: "ui-t-actions",
+        content: [
+          {
+            tag: "ui-t-actions-child",
+            content: [
+              {
+                tag: "ui-t-actions-child-child",
+                content: [
+                  { tag: "button#child-e2", click: "{{../../../x()}}" },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+
+      actions: {
+        x() {
+          this.state.from = ["x", "ui"]
+        },
+      },
+    })
+  )
+
+  const p = t.utils.when(app.el, "error").then((e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    e.stopImmediatePropagation()
+    t.is(e.message, "Impossible to resolve action path: ../../../x")
+  })
+
+  await Promise.all([app, p])
 })

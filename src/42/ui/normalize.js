@@ -3,13 +3,14 @@ import resolveScope from "./resolveScope.js"
 import findScope from "./findScope.js"
 import register from "./register.js"
 import Locator from "../fabric/class/Locator.js"
+import locate from "../fabric/locator/locate.js"
+import allocate from "../fabric/locator/allocate.js"
 import template from "../core/formats/template.js"
 import Canceller from "../fabric/class/Canceller.js"
 import Undones from "../fabric/class/Undones.js"
 import filters from "../core/filters.js"
 import dirname from "../fabric/type/path/extract/dirname.js"
 import dispatch from "../fabric/event/dispatch.js"
-import allocate from "../fabric/locator/allocate.js"
 import isEmptyObject from "../fabric/type/any/is/isEmptyObject.js"
 import isArrayLike from "../fabric/type/any/is/isArrayLike.js"
 import noop from "../fabric/type/function/noop.js"
@@ -65,6 +66,7 @@ const TRAIT_KEYWORDS = new Set([
 ])
 
 const _INSTANCES = Symbol.for("Trait.INSTANCES")
+const _isComponent = Symbol.for("Component.isComponent")
 
 const sep = "/"
 
@@ -72,11 +74,49 @@ const makeActionFn =
   (filter, thisArg, el) =>
   async (...args) => {
     try {
+      if (thisArg === undefined) return await filter(...args)
       return await filter.call(thisArg, ...args)
     } catch (err) {
       dispatch(el, err)
     }
   }
+
+function findComponentAction(ctx, cpn, value) {
+  let loc = value
+  if (loc.startsWith("/")) return
+  if (loc.startsWith("./")) loc = loc.slice(2)
+
+  const parents = loc.split("../")
+  const tokens = locate.parse(parents.pop())
+  let i = parents.length
+  let cpnCnt = 1
+
+  while (cpn) {
+    if (cpn[_isComponent]) {
+      cpnCnt++
+      if (i-- < 1) {
+        let fn = locate.evaluate(cpn, tokens)
+        if (fn) return [cpn, fn]
+        fn = locate.evaluate(cpn[_INSTANCES], tokens)
+        if (fn) return [cpn[_INSTANCES], fn]
+        if (parents.length > 0) break
+      }
+    }
+
+    cpn = cpn.parentElement
+  }
+
+  if (parents.length > 0) {
+    if (cpnCnt === parents.length) {
+      const fn = locate.evaluate(ctx.actions.value, tokens)
+      if (fn) return [ctx, fn]
+    }
+
+    ctx.postrender.push(async () => {
+      dispatch(ctx.el, new Error(`Impossible to resolve action path: ${value}`))
+    })
+  }
+}
 
 export function normalizeTokens(tokens, ctx, actions) {
   let hasFilter = false
@@ -109,10 +149,15 @@ export function normalizeTokens(tokens, ctx, actions) {
       let action
       let thisArg
 
-      if (ctx.component && token.value in ctx.component) {
-        thisArg = ctx.component
-        action = ctx.component[token.value]
-      } else if (ctx.actions.has(loc)) {
+      if (ctx.component) {
+        const res = findComponentAction(ctx, ctx.component, token.value)
+        if (res) {
+          thisArg = res[0]
+          action = res[1]
+        }
+      }
+
+      if (!action && ctx.actions.has(loc)) {
         thisArg = ctx
         action = ctx.actions.get(loc)
       }

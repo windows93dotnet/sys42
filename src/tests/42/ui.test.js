@@ -800,7 +800,7 @@ test("actions", async (t) => {
   t.is(app.el.innerHTML, "a X")
 })
 
-test("actions", "error", async (t) => {
+test.serial("actions", "error", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(true), {
       content: "a {{foo|>uppercase}}",

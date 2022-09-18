@@ -10,7 +10,11 @@ locate.evaluate = (obj, tokens) => {
   let current = obj
 
   for (const key of tokens) {
-    if (key.startsWith("-") && typeof current?.at === "function") {
+    if (
+      key.startsWith("-") &&
+      key !== "-" &&
+      typeof current?.at === "function"
+    ) {
       current = current.at(key)
       continue
     }
