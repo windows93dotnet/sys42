@@ -37,7 +37,7 @@ test("html", async (t) => {
   t.is(
     test.utils.prettify(app.el.innerHTML),
     `\
-<ui-icon path="/script.js" label="" tabindex="0" aria-description="file" role="button">
+<ui-icon path="/script.js" label="" tabindex="0" aria-description="file">
   <div class="ui-icon__figure" aria-hidden="true">
     <img class="ui-icon__image" fetchpriority="high" decoding="async" src="/42/themes/default/icons/subtype/javascript.png">
     <div class="ui-icon__mask" style="${cssKey}: url(&quot;/42/themes/default/icons/subtype/javascript.png&quot;);">
@@ -46,10 +46,10 @@ test("html", async (t) => {
   <!--[if]-->
   <div class="ui-icon__label">
     <svg>
-      <rect class="ui-icon__label__rect">
+      <rect class="ui-icon__focusring">
       </rect>
     </svg>
-    <div class="ui-icon__label__text">
+    <div class="ui-icon__text">
       <span>script</span>
       <!--[if]-->
       <span>\u200b.js</span>

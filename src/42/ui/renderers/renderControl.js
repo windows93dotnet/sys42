@@ -5,6 +5,7 @@ import setAttributes from "../../fabric/dom/setAttributes.js"
 import create from "../create.js"
 import findScope from "../findScope.js"
 import resolveScope from "../resolveScope.js"
+import basename from "../../fabric/type/path/extract/basename.js"
 import { toTitleCase } from "../../fabric/type/string/letters.js"
 import hash from "../../fabric/type/any/hash.js"
 
@@ -54,11 +55,6 @@ export default function renderControl(el, ctx, def) {
     def.on.push({ input: () => ctx.reactive.set(el.name, getControlData(el)) })
   }
 
-  // const field = create("fieldset", {
-  //   role: "none",
-  //   ...def.fieldset,
-  // })
-
   const field =
     el.type === "radio" || el.type === "checkbox"
       ? create(".check-cont")
@@ -66,7 +62,9 @@ export default function renderControl(el, ctx, def) {
 
   const labelText =
     def.label ??
-    (el.type === "radio" ? toTitleCase(el.value) : toTitleCase(el.name))
+    (el.type === "radio"
+      ? toTitleCase(el.value)
+      : toTitleCase(basename(el.name)))
 
   if (labelText) {
     el.removeAttribute("label")

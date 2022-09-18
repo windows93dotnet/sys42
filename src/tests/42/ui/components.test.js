@@ -1606,7 +1606,7 @@ Component.define(
   }
 )
 
-test.only("@index", "computed", async (t) => {
+test.failing("@index", "computed", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {

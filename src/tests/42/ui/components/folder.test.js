@@ -22,17 +22,17 @@ test("generate icon list", async (t) => {
         },
       },
       icon: {
-        "root,ui-folder,[0]": {
+        "root,ui-folder,div,[0]": {
           small: undefined,
           label: true,
           path: { $ref: "/ui/folder/root/items/0" },
         },
-        "root,ui-folder,[1]": {
+        "root,ui-folder,div,[1]": {
           small: undefined,
           label: true,
           path: { $ref: "/ui/folder/root/items/1" },
         },
-        "root,ui-folder,[2]": {
+        "root,ui-folder,div,[2]": {
           small: undefined,
           label: true,
           path: { $ref: "/ui/folder/root/items/2" },

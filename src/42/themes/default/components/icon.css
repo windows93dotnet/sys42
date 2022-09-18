@@ -37,7 +37,7 @@ ui-icon {
   top: calc(var(--icon-size) + var(--icon-gap));
 }
 
-.ui-icon__label__text {
+.ui-icon__text {
   contain: paint;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -64,11 +64,11 @@ ui-icon:focus .ui-icon__label {
   background-color: var(--bg);
 }
 
-ui-icon:focus .ui-icon__label__rect {
+ui-icon:focus .ui-icon__focusring {
   position: absolute; /* force retrigger rect size */
 }
 
-ui-icon:focus .ui-icon__label__text {
+ui-icon:focus .ui-icon__text {
   -webkit-line-clamp: 8;
 }
 
@@ -89,7 +89,7 @@ ui-icon:is([aria-pressed="true"],[aria-selected="true"]) .ui-icon__label {
   mix-blend-mode: difference;
 }
 
-.ui-icon__label__rect {
+.ui-icon__focusring {
   rx: 0.2;
   ry: 0.2;
   x: 0.5;

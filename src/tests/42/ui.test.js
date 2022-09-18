@@ -2126,11 +2126,6 @@ test("on", "actions", async (t) => {
 /* fields
 ========= */
 
-function change(input, value) {
-  input.value = value
-  input.dispatchEvent(new Event("input", { bubbles: true }))
-}
-
 test("input", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
@@ -2149,18 +2144,13 @@ test("input", async (t) => {
     test.utils.prettify(app.el.innerHTML),
     `\
 <label for="a59j5pfmedwe">Str</label>
-<input name="/str" id="a59j5pfmedwe" autocomplete="off">`
-    //     `\
-    // <fieldset role="none">
-    //   <label for="a59j5pfmedwe">Str</label>
-    //   <input name="/str" id="a59j5pfmedwe">
-    // </fieldset>`
+<input id="a59j5pfmedwe" autocomplete="off" name="/str">`
   )
 
   const input = app.el.querySelector("input")
   t.eq(input.value, "foo")
 
-  change(input, "bar")
+  await t.puppet(input).input("bar")
   await app
 
   t.eq(app.data.str, "bar")

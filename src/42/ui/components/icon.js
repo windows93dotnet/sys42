@@ -59,9 +59,9 @@ class Icon extends Component {
           tag: ".ui-icon__label",
           if: "{{../label}}",
           content: [
-            { tag: "svg", content: { tag: "rect.ui-icon__label__rect" } },
+            { tag: "svg", content: { tag: "rect.ui-icon__focusring" } },
             {
-              tag: ".ui-icon__label__text",
+              tag: ".ui-icon__text",
               content: [
                 { tag: "span", content: "{{stem}}" },
                 {
@@ -81,10 +81,14 @@ class Icon extends Component {
     const parentRole = this.parentNode.getAttribute("role")
     if (TREEITEM_PARENTS.has(parentRole)) {
       this.setAttribute("role", "treeitem")
-      this.setAttribute("aria-selected", "false") // [1]
+      if (!this.hasAttribute("aria-selected")) {
+        this.setAttribute("aria-selected", "false") // [1]
+      }
     } else if (GRIDCELL_PARENTS.has(parentRole)) {
       this.setAttribute("role", "gridcell")
-      this.setAttribute("aria-selected", "false") // [1]
+      if (!this.hasAttribute("aria-selected")) {
+        this.setAttribute("aria-selected", "false") // [1]
+      }
     }
   }
 

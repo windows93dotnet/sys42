@@ -1,34 +1,35 @@
+/* Remove aliasing for pixel fonts */
+
 :root {
   --unit: 8px;
   --pixel-font-filter: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="f"><feComponentTransfer><feFuncA type="discrete" tableValues="0 0 0.5 0.9 1 1" /></feComponentTransfer></filter></svg>#f');
 }
 
 body {
-  /* remove aliasing for pixel fonts */
   -webkit-font-smoothing: none;
   -moz-osx-font-smoothing: unset;
   font-smoothing: unset;
   font-smooth: never;
 }
 
-h1 { font-size: 300%; }
-h2 { font-size: 200%; }
-h3 { font-size: 200%; font-weight: normal; }
-h4, h5, h6 { font-size: 100%; font-weight: bold; }
+:where(h1) { font-size: 300%; }
+:where(h2) { font-size: 200%; }
+:where(h3) { font-size: 200%; font-weight: normal; }
+:where(h4, h5, h6) { font-size: 100%; font-weight: bold; }
 
 :where(
 .txt-center,
-.ui-icon__label__text,
+.ui-icon__text,
 .pixel-font) {
   transform: translateX(0.16px) scale(1.001);
   filter: var(--pixel-font-filter);
 }
 
-/* firefox */
+/* Firefox */
 @-moz-document url-prefix("") {
   :where(
   .txt-center,
-  .ui-icon__label__text,
+  .ui-icon__text,
   .pixel-font) {
     transform: translateX(0.7px);
     margin-right: 0.7px; /* ok magic number */

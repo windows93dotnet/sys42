@@ -47,6 +47,22 @@ export class Explorer extends Component {
     ],
 
     content: [
+      // {
+      //   tag: "header.box-v",
+      //   content: [
+      //     {
+      //       tag: "ui-menubar",
+      //       content: [
+      //         {
+      //           label: "File",
+      //           content: [
+      //             { label: "Edit" }, //
+      //           ],
+      //         },
+      //       ],
+      //     },
+      //   ],
+      // },
       {
         tag: "header.box-v.ctrl-group.mb-xs",
         content: [
