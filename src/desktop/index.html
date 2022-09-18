@@ -9,13 +9,44 @@
   trap()
 </script>
 
-<script type="module">
+<script type="_module">
   import "../42/os.js"
   import explorer from "../42/ui/components/explorer.js"
-  explorer("/42/fabric/")
+  // import ui from "../42/ui.js"
+  import on from "../42/fabric/event/on.js"
+  // import normalizeDataTransfert from "../42/fabric/type/file/normalizeDataTransfert.js"
+
+  explorer("/tests/fixtures/formats/")
+
+  // ui({
+  //   on: {
+  //     drop(e) {
+  //       console.log(e)
+  //     },
+  //   },
+  // })
+
+  on({
+    dragover(e) {
+      // console.log(e.target)
+      e.preventDefault()
+    },
+    dragenter(e) {
+      console.log(e.target)
+      // e.preventDefault()
+    },
+    async drop(e) {
+      e.preventDefault()
+      // console.log("drop", await normalizeDataTransfert(e.dataTransfer))
+      console.log("drop")
+      for (const item of e.dataTransfer.items) {
+        item.getAsString((text) => console.log(text))
+      }
+    },
+  })
 </script>
 
-<script type="_module">
+<script type="module">
   import "../42/os.js"
   import ui from "../42/ui.js"
   import explorer from "../42/ui/components/explorer.js"

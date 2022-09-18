@@ -3,6 +3,8 @@ import Component from "../class/Component.js"
 import dispatch from "../../fabric/event/dispatch.js"
 import disk from "../../core/disk.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
+import dataTransfertImport from "../../fabric/type/file/dataTransfertImport.js"
+import dataTransfertExport from "../../fabric/type/file/dataTransfertExport.js"
 
 const { indexOf } = Array.prototype
 
@@ -57,6 +59,36 @@ export class Folder extends Component {
         ArrowLeft: "{{moveFocusLeft()}}",
         ArrowRight: "{{moveFocusRight()}}",
       },
+      {
+        dragover(e) {
+          e.preventDefault()
+        },
+        async drop(e) {
+          e.preventDefault()
+          const { items, paths } = await dataTransfertImport(e.dataTransfer)
+          if (paths) console.log(paths)
+          else console.table(items)
+        },
+      },
+      {
+        selector: "ui-icon",
+        dragstart(e, target) {
+          if (this.el.selection.length === 0) {
+            this.el.selection.push(target.path)
+          } else if (!this.el.selection.includes(target.path)) {
+            this.el.selection.length = 0
+            this.el.selection.push(target.path)
+          }
+
+          dataTransfertExport(e.dataTransfer, { paths: this.el.selection })
+        },
+        // drag(e) {
+        //   console.log(e.x, e.y)
+        // },
+        // dragend(e) {
+        //   console.log("dragend", e)
+        // },
+      },
     ],
 
     computed: {
@@ -69,7 +101,7 @@ export class Folder extends Component {
         scope: "items",
         each: {
           tag: "ui-icon",
-          role: "gridcell",
+          draggable: true,
           aria: { selected: "{{includes(../../selection, .)}}" },
           autofocus: "{{@first}}",
           path: "{{.}}",

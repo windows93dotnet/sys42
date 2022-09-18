@@ -28,13 +28,14 @@ async function normalize(item) {
   return { kind, type, string, file, entry, handle, data }
 }
 
-export default async function normalizeDataTransfert(dataTransfer) {
-  const out = { transfers: [] }
+export default async function dataTransfertImport(dataTransfer) {
+  const out = { transfers: [], paths: undefined }
 
   out.items = (
     await Promise.all(Array.from(dataTransfer.items).map((x) => normalize(x)))
-  ).filter(({ kind, type, entry, file, handle, string }) => {
+  ).filter(({ kind, type, entry, file, handle, string, data }) => {
     out.transfers.push(`${kind}:${type}`)
+    if (string.startsWith('{"42_DT_PATHS')) out.paths = data.paths
     return !(!string && !file && !entry && !handle)
   })
 

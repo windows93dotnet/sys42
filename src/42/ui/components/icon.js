@@ -85,8 +85,6 @@ class Icon extends Component {
     } else if (GRIDCELL_PARENTS.has(parentRole)) {
       this.setAttribute("role", "gridcell")
       this.setAttribute("aria-selected", "false") // [1]
-    } else {
-      this.setAttribute("role", "button")
     }
   }
 
