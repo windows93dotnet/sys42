@@ -1,12 +1,20 @@
 import Canceller from "../../fabric/class/Canceller.js"
 import ensureElement from "../../fabric/dom/ensureElement.js"
 
+const { ELEMENT_NODE } = Node
+
 const _INSTANCES = Symbol.for("Trait.INSTANCES")
 const _EVENTS = Symbol.for("Emitter.EVENTS")
 const _isComponent = Symbol.for("Component.isComponent")
-const { ELEMENT_NODE } = Node
+const _isTrait = Symbol.for("Trait.isTrait")
 
 export default class Trait {
+  [_isTrait] = true
+
+  static isTrait(val) {
+    return val?.[_isTrait]
+  }
+
   static INSTANCES = _INSTANCES
 
   #hasGetter = false
@@ -21,9 +29,10 @@ export default class Trait {
     if (previous) previous.destroy()
     el[_INSTANCES][name] = this
 
-    if (el[_isComponent] && name in el) {
+    if (el[_isComponent] && name in el === false) {
       this.#hasGetter = true
       Object.defineProperty(el, name, {
+        configurable: true,
         get: () => this,
       })
     }

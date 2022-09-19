@@ -56,21 +56,21 @@ export class Explorer extends Component {
               // {
               //   label: "File",
               //   content: [
-              //     { label: "Exit", click: "{{close()}}" }, //
+              //     { label: "Exit", click: "{{../../close()}}" }, //
               //   ],
               // },
               // {
               //   label: "View",
               //   content: [
-              //     { label: "Select all", click: "{{selectable.selectAll()}}" },
+              //     {
+              //       label: "Select all",
+              //       click: "{{folder.selectable.selectAll()}}",
+              //     },
               //   ],
               // },
-              // { label: "Select all", bind: "selectable.selectAll" },
-              // { label: "Select all", click: "{{hello()}}" },
               {
                 label: "Select all",
-                // click: "{{folder.selectable.selectAll()}}",
-                click: "{{folder.hello()}}",
+                click: "{{folder.selectable.selectAll()}}",
               },
               { label: "Exit", click: "{{../../close()}}" },
             ],

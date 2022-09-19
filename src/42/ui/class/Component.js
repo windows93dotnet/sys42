@@ -52,6 +52,12 @@ function filterPropsKeys(configProps) {
 const _isComponent = Symbol.for("Component.isComponent")
 
 export default class Component extends HTMLElement {
+  [_isComponent] = true
+
+  static isComponent(val) {
+    return val?.[_isComponent]
+  }
+
   static define(Class) {
     if (typeof Class === "object") {
       Class = class extends Component {
@@ -81,12 +87,6 @@ export default class Component extends HTMLElement {
 
     customElements.define(tag, Class)
     return out
-  }
-
-  [_isComponent] = true
-
-  static isComponent(el) {
-    return el?.[_isComponent]
   }
 
   #observed

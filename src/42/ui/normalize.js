@@ -67,6 +67,7 @@ const TRAIT_KEYWORDS = new Set([
 
 const _INSTANCES = Symbol.for("Trait.INSTANCES")
 const _isComponent = Symbol.for("Component.isComponent")
+const _isTrait = Symbol.for("Trait.isTrait")
 
 const sep = "/"
 
@@ -80,6 +81,22 @@ const makeActionFn =
       dispatch(el, err)
     }
   }
+
+const findAction = (obj, tokens) => {
+  let current = obj
+  let thisArg = obj
+  let lastObj
+
+  for (const key of tokens) {
+    if (typeof current !== "object" || key in current === false) return
+    lastObj = current
+    current = current[key]
+  }
+
+  if (lastObj[_isComponent] || lastObj[_isTrait]) thisArg = lastObj
+
+  return [thisArg, current]
+}
 
 function findComponentAction(ctx, cpn, value) {
   let loc = value
@@ -95,10 +112,8 @@ function findComponentAction(ctx, cpn, value) {
     if (cpn[_isComponent]) {
       cpnCnt++
       if (i-- < 1) {
-        let fn = locate.evaluate(cpn, tokens)
-        if (fn) return [cpn, fn]
-        fn = locate.evaluate(cpn[_INSTANCES], tokens)
-        if (fn) return [cpn[_INSTANCES], fn]
+        const res = findAction(cpn, tokens)
+        if (res) return res
         if (parents.length > 0) break
       }
     }
