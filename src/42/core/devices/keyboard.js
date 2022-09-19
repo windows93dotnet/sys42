@@ -81,12 +81,22 @@ const cleanup = () => {
   for (const key in keys) delete keys[key]
   for (const key in codes) delete codes[key]
   for (const key in strokes) delete strokes[key]
+  globalThis.addEventListener("pointerdown", pressedMods, { once: true })
+}
+
+// Register modifier keys pressed before the window is focused
+const pressedMods = (e) => {
+  if (e.ctrlKey && "Control" in keys === false) keys.Control = true
+  if (e.shiftKey && "Shift" in keys === false) keys.Shift = true
+  if (e.metaKey && "Meta" in keys === false) keys.Meta = true
+  if (e.altKey && "Alt" in keys === false) keys.Alt = true
 }
 
 export const forget = () => {
   globalThis.removeEventListener("keydown", keydown, true)
   globalThis.removeEventListener("keyup", keyup, true)
   globalThis.removeEventListener("blur", cleanup)
+  globalThis.removeEventListener("pointerdown", pressedMods, { once: true })
   keyboard.isListening = false
 }
 
@@ -95,6 +105,7 @@ export const listen = () => {
   globalThis.addEventListener("keydown", keydown, true /* [1] */)
   globalThis.addEventListener("keyup", keyup, true /* [1] */)
   globalThis.addEventListener("blur", cleanup /* [2] */)
+  globalThis.addEventListener("pointerdown", pressedMods, { once: true })
   keyboard.isListening = true
   return forget
 }

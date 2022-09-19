@@ -70,6 +70,30 @@ export const eventsMap = (list) => {
   }
 }
 
+const validEventTypes = new Set(["string", "function", "object"])
+
+function ensureEvents(events) {
+  for (const key in events) {
+    if (Object.hasOwn(events, key)) {
+      const value = events[key]
+
+      if (value === false) {
+        events[key] = () => false
+        continue
+      }
+
+      const type = typeof value
+      if (!(value && validEventTypes.has(type))) {
+        throw Object.assign(new TypeError(`"${key}" is not a valid event`), {
+          value,
+        })
+      }
+    }
+  }
+
+  return events
+}
+
 export function normalizeListen(args, config) {
   const itemKeys = config?.itemKeys ?? ITEM_KEYS
   const optionsKeys = config?.optionsKeys ?? DEFAULTS_KEYS
@@ -106,7 +130,7 @@ export function normalizeListen(args, config) {
         continue
       }
 
-      item.events = getEvents(events)
+      item.events = getEvents(ensureEvents(events))
       item.options = options
       current.listeners.push(item)
     }

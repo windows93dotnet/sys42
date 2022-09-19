@@ -56,7 +56,11 @@ function setDialogOpener(el, ctx, key, def) {
 
 function setPopupOpener(el, ctx, key, def) {
   ctx = setOpener(el, ctx, key, def)
-  return async () => {
+  return async (e) => {
+    if (e.type === "contextmenu" && e.x > 0 && e.y > 0) {
+      def.rect = { x: e.x, y: e.y }
+    }
+
     await import("../popup.js") //
       .then((m) => m.default(el, def, ctx))
   }

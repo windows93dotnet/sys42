@@ -414,6 +414,20 @@ function normalizeOn(def) {
       },
     })
   }
+
+  if (def.contextmenu) {
+    def.on ??= []
+    def.on.push({
+      disrupt: true,
+      contextmenu: {
+        popup: {
+          tag: "ui-menu",
+          closeEvents: "pointerdown",
+          ...objectifyDef(def.contextmenu),
+        },
+      },
+    })
+  }
 }
 
 /* def

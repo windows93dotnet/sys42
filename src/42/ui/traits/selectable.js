@@ -6,13 +6,14 @@ import rect from "../../fabric/geometry/rect.js"
 import on from "../../fabric/event/on.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
+import setTemp from "../../fabric/dom/setTemp.js"
 
 const DEFAULTS = {
   items: ":scope > *",
   check: "colliding",
   dragger: { distance: 5 },
   shortcuts: {
-    toggleSelectOne: "click || Space",
+    selectOne: "click || Space",
     toggleSelect: "Ctrl+click || Ctrl+Space",
     selectAll: "Ctrl+a",
   },
@@ -38,17 +39,17 @@ class Selectable extends Trait {
     removeItem(this.selection, this.key(item))
   }
 
-  toggleSelectOne(e, target) {
-    if (this.dragger.isDragging) return
-    const items = this.el.querySelectorAll(this.config.items)
-    this.selection.length = 0
-    for (const item of items) if (item.contains(target)) this.#add(item)
-  }
-
   toggleSelect(e, target) {
     if (this.dragger.isDragging) return
     const items = this.el.querySelectorAll(this.config.items)
     for (const item of items) if (item.contains(target)) this.#toggle(item)
+  }
+
+  selectOne(e, target) {
+    if (this.dragger.isDragging) return
+    const items = this.el.querySelectorAll(this.config.items)
+    this.selection.length = 0
+    for (const item of items) if (item.contains(target)) this.#add(item)
   }
 
   selectAll() {
@@ -70,13 +71,23 @@ class Selectable extends Trait {
 
     const sc = this.config.shortcuts
 
-    on(this.el, {
+    setTemp(this.el, {
       signal: this.cancel.signal,
-      disrupt: true,
-      [sc.toggleSelectOne]: (e, target) => this.toggleSelectOne(e, target),
-      [sc.toggleSelect]: (e, target) => this.toggleSelect(e, target),
-      [sc.selectAll]: (e, target) => this.selectAll(e, target),
+      class: { "selection-0": true },
     })
+
+    on(
+      this.el,
+      { signal: this.cancel.signal },
+      {
+        [sc.selectOne]: (e, target) => this.selectOne(e, target),
+      },
+      {
+        disrupt: true,
+        [sc.toggleSelect]: (e, target) => this.toggleSelect(e, target),
+        [sc.selectAll]: (e, target) => this.selectAll(e, target),
+      }
+    )
 
     this.config.dragger.signal = this.cancel.signal
 

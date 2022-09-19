@@ -59,11 +59,9 @@ export class Folder extends Component {
         ArrowRight: "{{moveFocusRight()}}",
       },
       {
-        dragover(e) {
-          e.preventDefault()
-        },
+        prevent: true,
+        dragover: false,
         async drop(e) {
-          e.preventDefault()
           const { items, paths } = await dataTransfertImport(e.dataTransfer)
           if (paths) console.log(paths)
           else console.table(items)
@@ -71,14 +69,11 @@ export class Folder extends Component {
       },
       {
         selector: "ui-icon",
+        pointerdown(e, target) {
+          if (e.button === 2) this.el.autoSelect(target)
+        },
         dragstart(e, target) {
-          if (this.el.selection.length === 0) {
-            this.el.selection.push(target.path)
-          } else if (!this.el.selection.includes(target.path)) {
-            this.el.selection.length = 0
-            this.el.selection.push(target.path)
-          }
-
+          this.el.autoSelect(target)
           dataTransfertExport(e.dataTransfer, { paths: this.el.selection })
         },
         // drag(e) {
@@ -88,6 +83,10 @@ export class Folder extends Component {
         //   console.log("dragend", e)
         // },
       },
+    ],
+
+    contextmenu: [
+      { label: "coucou", click: "{{hello(e)}}" }, //
     ],
 
     computed: {
@@ -105,12 +104,25 @@ export class Folder extends Component {
           autofocus: "{{@first}}",
           path: "{{.}}",
           contextmenu: [
-            { label: "Hello" }, //
+            { label: "Hello {{basename(path)}}", click: "{{hello(.)}}" }, //
             { label: "World" },
           ],
         },
       },
     },
+  }
+
+  hello(target) {
+    console.log(777, target, target?.path)
+  }
+
+  autoSelect(target) {
+    if (this.selection.length === 0) {
+      this.selection.push(target.path)
+    } else if (!this.selection.includes(target.path)) {
+      this.selection.length = 0
+      this.selection.push(target.path)
+    }
   }
 
   getItems(path) {

@@ -109,6 +109,10 @@ types.any = {
   log: (...args) => import("./log.js").then((m) => m.default(...args)),
 }
 
+types.function = {
+  noop: "function/noop",
+}
+
 types.path = {
   // formatPath: "path/core/formatPath",
   // joinPath: "path/core/joinPath",

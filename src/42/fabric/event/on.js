@@ -182,13 +182,21 @@ function handleSeq(seq, fn, el, { repeatable, options }, registry) {
         if (chords.length > 1) {
           eventOptions.capture = true
           events[event] = (e) => {
+            if (chordCalls.length === 0) {
+              for (const key in keyboard.keys) {
+                if (Object.hasOwn(keyboard.keys, key)) {
+                  chordCalls.push({ type: "keydown", key })
+                }
+              }
+            }
+
             if (registry.seqIndex !== i) return
             if (e.repeat && repeatable !== true) return
 
             for (let i = 0, l = chordCalls.length; i < l; i++) {
               if (
-                chordCalls[i].code === undefined ||
-                chordCalls[i].code in keyboard.codes === false
+                chordCalls[i].key === undefined ||
+                chordCalls[i].key in keyboard.keys === false
               ) {
                 chordCalls.length = i
                 break

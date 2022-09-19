@@ -154,7 +154,7 @@ const popup = rpc(
 
       el.setAttribute("aria-expanded", "true")
 
-      const rect = el.getBoundingClientRect()
+      const rect = def.rect ?? el.getBoundingClientRect()
 
       if (rpc.inTop) {
         ctx = { ...ctx }

@@ -26,6 +26,8 @@ export class Menu extends Component {
     tag: "ui-menu",
     role: "menu",
     on: {
+      prevent: true,
+      contextmenu: false,
       ArrowUp: "{{focusPrev()}}",
       ArrowDown: "{{focusNext()}}",
     },
