@@ -3,8 +3,9 @@ import Trait from "../class/Trait.js"
 import setup from "../../core/setup.js"
 import Dragger from "../class/Dragger.js"
 import rect from "../../fabric/geometry/rect.js"
-import noop from "../../fabric/type/function/noop.js"
 import on from "../../fabric/event/on.js"
+import removeItem from "../../fabric/type/array/removeItem.js"
+import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 
 const DEFAULTS = {
   items: ":scope > *",
@@ -22,28 +23,26 @@ const configure = setup("ui.trait.selectable", DEFAULTS)
 const ns = "http://www.w3.org/2000/svg"
 
 class Selectable extends Trait {
-  #toggle(item, force) {
-    if (force !== true && this.selection.has(item)) {
-      this.selection.delete(item)
-      this.remove.call(this.el, item)
-    } else {
-      this.selection.add(item)
-      this.add.call(this.el, item)
-    }
+  #toggle(item) {
+    const val = this.key(item)
+    if (this.selection.includes(val)) removeItem(this.selection, val)
+    else this.selection.push(val)
+  }
+
+  #add(item) {
+    const val = this.key(item)
+    if (!this.selection.includes(val)) this.selection.push(val)
   }
 
   #remove(item) {
-    this.selection.delete(item)
-    this.remove.call(this.el, item)
+    removeItem(this.selection, this.key(item))
   }
 
   toggleSelectOne(e, target) {
     if (this.dragger.isDragging) return
-    for (const item of this.selection) this.#remove(item)
-    this.selection.clear()
-
     const items = this.el.querySelectorAll(this.config.items)
-    for (const item of items) if (item.contains(target)) this.#toggle(item)
+    this.selection.length = 0
+    for (const item of items) if (item.contains(target)) this.#add(item)
   }
 
   toggleSelect(e, target) {
@@ -55,7 +54,7 @@ class Selectable extends Trait {
   selectAll() {
     if (this.dragger.isDragging) return
     const items = this.el.querySelectorAll(this.config.items)
-    for (const item of items) this.#toggle(item, true)
+    for (const item of items) this.#add(item)
   }
 
   constructor(el, options) {
@@ -63,10 +62,9 @@ class Selectable extends Trait {
 
     this.config = configure(options)
 
-    this.add = this.config.add ?? noop
-    this.remove = this.config.remove ?? noop
-
-    this.selection = new Set()
+    this.init = this.config.init ?? (() => [])
+    this.key = this.config.key ?? ((el) => el)
+    this.selection = this.config.selection ?? this.init.call(el)
 
     this.el.tabIndex = this.el.tabIndex < 0 ? 0 : this.el.tabIndex
 
@@ -82,9 +80,20 @@ class Selectable extends Trait {
 
     this.config.dragger.signal = this.cancel.signal
 
+    let items
+    const check = rect[this.config.check]
+
+    const handleBoxSelction = paintThrottle((B, ctrlKey) => {
+      for (const item of items) {
+        const A = item.getBoundingClientRect()
+        if (check(A, B)) this.#add(item)
+        else if (ctrlKey === false) this.#remove(item)
+      }
+    })
+
     this.dragger = new Dragger(this.el, {
       ...this.config.dragger,
-      start: (/* x, y, e, target */) => {
+      start: () => {
         items = this.el.querySelectorAll(this.config.items)
         document.body.append(this.svg)
       },
@@ -110,11 +119,7 @@ class Selectable extends Trait {
           B.bottom = y
         }
 
-        for (const item of items) {
-          const A = item.getBoundingClientRect()
-          if (check(A, B)) this.#toggle(item, true)
-          else if (ctrlKey === false) this.#remove(item)
-        }
+        handleBoxSelction(B, ctrlKey)
       },
       stop: () => {
         this.polygon.setAttribute("points", points)
@@ -137,10 +142,6 @@ class Selectable extends Trait {
       z-index: 10000;`
 
     this.svg.append(this.polygon)
-
-    const check = rect[this.config.check]
-
-    let items
   }
 
   destroy() {

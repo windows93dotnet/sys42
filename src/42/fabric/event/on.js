@@ -187,8 +187,8 @@ function handleSeq(seq, fn, el, { repeatable, options }, registry) {
 
             for (let i = 0, l = chordCalls.length; i < l; i++) {
               if (
-                chordCalls[i].key === undefined ||
-                chordCalls[i].key in keyboard.keys === false
+                chordCalls[i].code === undefined ||
+                chordCalls[i].code in keyboard.codes === false
               ) {
                 chordCalls.length = i
                 break

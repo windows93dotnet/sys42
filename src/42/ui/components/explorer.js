@@ -3,6 +3,7 @@ import dirname from "../../fabric/type/path/extract/dirname.js"
 import dialog from "./dialog.js"
 import open from "../../os/cmd/open.cmd.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
+import keyboard from "../../core/devices/keyboard.js"
 import { focusInside } from "../../fabric/dom/focus.js"
 
 import parsePath from "../../fabric/type/path/core/parsePath.js"
@@ -120,6 +121,11 @@ export class Explorer extends Component {
     ],
   }
 
+  autofocus() {
+    document.activeElement.blur()
+    queueTask(() => focusInside(this))
+  }
+
   folderUp(options) {
     let path = dirname(this.path)
     if (!path.endsWith("/")) path += "/"
@@ -128,16 +134,13 @@ export class Explorer extends Component {
   }
 
   go(path, options) {
+    if (keyboard.keys.Control) return // TODO: check how to do this in template
     this.path = path
     if (!options?.keepFocus) this.autofocus()
   }
 
-  autofocus() {
-    document.activeElement.blur()
-    queueTask(() => focusInside(this))
-  }
-
   open(path) {
+    if (keyboard.keys.Control) return
     open(path)
   }
 

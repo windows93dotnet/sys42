@@ -12,7 +12,18 @@
 <script type="module">
   import "../42/os.js"
   import explorer from "../42/ui/components/explorer.js"
+  import puppet from "../42/core/dev/puppet.js"
   explorer("/tests/fixtures/formats/example.url")
+  // explorer("/tests/fixtures/formats/", {
+  //   selection: [
+  //     "/tests/fixtures/formats/example.url",
+  //     "/tests/fixtures/formats/example.xml",
+  //   ],
+  // })
+
+  await puppet(
+    'ui-icon[path="/tests/fixtures/formats/example.xml"]'
+  ).contextmenu()
 </script>
 
 <script type="_module">

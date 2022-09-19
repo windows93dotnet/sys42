@@ -2,7 +2,6 @@ import "./icon.js"
 import Component from "../class/Component.js"
 import dispatch from "../../fabric/event/dispatch.js"
 import disk from "../../core/disk.js"
-import removeItem from "../../fabric/type/array/removeItem.js"
 import dataTransfertImport from "../../fabric/type/file/dataTransfertImport.js"
 import dataTransfertExport from "../../fabric/type/file/dataTransfertExport.js"
 
@@ -23,11 +22,11 @@ export class Folder extends Component {
       selectable: {
         items: ":scope ui-icon",
         dragger: { ignore: "ui-icon" },
-        add({ path }) {
-          if (!this.selection.includes(path)) this.selection.push(path)
+        init() {
+          return this.selection
         },
-        remove({ path }) {
-          removeItem(this.selection, path)
+        key({ path }) {
+          return path
         },
       },
     },
@@ -105,6 +104,10 @@ export class Folder extends Component {
           aria: { selected: "{{includes(../../selection, .)}}" },
           autofocus: "{{@first}}",
           path: "{{.}}",
+          contextmenu: [
+            { label: "Hello" }, //
+            { label: "World" },
+          ],
         },
       },
     },
