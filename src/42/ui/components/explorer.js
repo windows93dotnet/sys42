@@ -53,26 +53,21 @@ export class Explorer extends Component {
           {
             tag: "ui-menubar",
             content: [
-              // {
-              //   label: "File",
-              //   content: [
-              //     { label: "Exit", click: "{{../../close()}}" }, //
-              //   ],
-              // },
-              // {
-              //   label: "View",
-              //   content: [
-              //     {
-              //       label: "Select all",
-              //       click: "{{folder.selectable.selectAll()}}",
-              //     },
-              //   ],
-              // },
               {
-                label: "Select all",
-                click: "{{folder.selectable.selectAll()}}",
+                label: "File",
+                content: [
+                  { label: "Exit", click: "{{dialog.close()}}" }, //
+                ],
               },
-              { label: "Exit", click: "{{../../close()}}" },
+              {
+                label: "View",
+                content: [
+                  {
+                    label: "Select all",
+                    click: "{{folder.selectable.selectAll()}}",
+                  },
+                ],
+              },
             ],
           },
         ],
@@ -175,6 +170,7 @@ export default async function explorer(path = "/", options) {
       tag: "ui-explorer",
       path: "{{path}}",
       selection: "{{selection}}",
+      parent: "dialog",
     },
 
     state: { path, selection },

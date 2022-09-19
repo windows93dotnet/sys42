@@ -109,16 +109,14 @@ function findComponentAction(ctx, cpn, value) {
   let cpnCnt = 1
 
   while (cpn) {
-    if (cpn[_isComponent]) {
-      cpnCnt++
-      if (i-- < 1) {
-        const res = findAction(cpn, tokens)
-        if (res) return res
-        if (parents.length > 0) break
-      }
+    cpnCnt++
+    if (i-- < 1) {
+      const res = findAction(cpn, tokens)
+      if (res) return res
+      if (parents.length > 0) break
     }
 
-    cpn = cpn.parentElement
+    cpn = cpn.parentComponent
   }
 
   if (parents.length > 0) {

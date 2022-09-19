@@ -173,6 +173,20 @@ export default class Component extends HTMLElement {
 
     const { definition } = this.constructor
 
+    if (ctx?.component) this.parentComponent = ctx.component
+
+    const as = def.as ?? definition.as
+    delete def.as
+    if (as && ctx.component) {
+      allocate(ctx.component, as, this)
+    }
+
+    const parent = def.parent ?? definition.parent
+    delete def.parent
+    if (parent && this.parentComponent) {
+      allocate(this, parent, this.parentComponent)
+    }
+
     /* handle ctx
     ------------- */
     this.ctx = normalizeCtx({
@@ -214,13 +228,6 @@ export default class Component extends HTMLElement {
           options[key] = val
         } else def[key] = val
       }
-    }
-
-    const as = def.as ?? definition.as
-    delete def.as
-
-    if (as && ctx.component) {
-      allocate(ctx.component, as, this)
     }
 
     /* handle def attrs
