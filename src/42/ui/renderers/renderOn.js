@@ -4,7 +4,7 @@ import { normalizeTokens } from "../normalize.js"
 import hash from "../../fabric/type/any/hash.js"
 import expr from "../../core/expr.js"
 
-const makeEventLocals = (loc, e, target) =>
+const makeEventLocals = (e, target) =>
   Object.defineProperties(
     { target, e, event: e },
     { rect: { get: () => target.getBoundingClientRect() } }
@@ -23,9 +23,7 @@ function compileRun(val, ctx) {
   })
 
   return (e, target) => {
-    ctx.undones.push(
-      fn(ctx.reactive.state, makeEventLocals(ctx.scope, e, target))
-    )
+    ctx.undones.push(fn(ctx.reactive.state, makeEventLocals(e, target)))
   }
 }
 

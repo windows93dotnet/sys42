@@ -103,31 +103,36 @@ function findComponentAction(ctx, cpn, value) {
   if (loc.startsWith("/")) return
   if (loc.startsWith("./")) loc = loc.slice(2)
 
-  const parents = loc.split("../")
-  const tokens = locate.parse(parents.pop())
-  let i = parents.length
-  let cpnCnt = 1
+  const levels = loc.split("../")
+  const tokens = locate.parse(levels.pop())
+  let i = levels.length
+  let cpnCnt = 0
 
   while (cpn) {
     cpnCnt++
     if (i-- < 1) {
       const res = findAction(cpn, tokens)
       if (res) return res
-      if (parents.length > 0) break
+      if (levels.length > 0) break
     }
 
     cpn = cpn.parentComponent
   }
 
-  if (parents.length > 0) {
-    if (cpnCnt === parents.length) {
+  if (levels.length > 0) {
+    if (cpnCnt === levels.length) {
       const fn = locate.evaluate(ctx.actions.value, tokens)
       if (fn) return [ctx, fn]
     }
 
-    ctx.postrender.push(async () => {
-      dispatch(ctx.el, new Error(`Impossible to resolve action path: ${value}`))
-    })
+    dispatch(
+      ctx.el,
+      new Error(
+        `Action path is going above root by ${
+          levels.length - cpnCnt
+        } level(s): ${value}`
+      )
+    )
   }
 }
 
@@ -548,8 +553,8 @@ export function normalizeCtx(ctx = {}) {
   ctx.preload ??= new Undones()
   ctx.undones ??= new Undones()
   ctx.postrender ??= new Undones()
-  ctx.actions ??= new Locator({}, { sep: "/" })
   ctx.computeds ??= new Locator({}, { sep: "/" })
+  ctx.actions ??= new Locator({}, { sep: "/" })
 
   ctx.cancel ??= new Canceller()
   ctx.signal = ctx.cancel.signal

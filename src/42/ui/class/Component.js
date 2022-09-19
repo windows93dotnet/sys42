@@ -175,16 +175,16 @@ export default class Component extends HTMLElement {
 
     if (ctx?.component) this.parentComponent = ctx.component
 
-    const as = def.as ?? definition.as
-    delete def.as
+    const as = def?.as ?? definition?.as
     if (as && ctx.component) {
-      allocate(ctx.component, as, this)
+      delete def.as
+      if (ctx.component) allocate(ctx.component, as, this)
     }
 
-    const parent = def.parent ?? definition.parent
-    delete def.parent
-    if (parent && this.parentComponent) {
-      allocate(this, parent, this.parentComponent)
+    const parent = def?.parent ?? definition?.parent
+    if (parent) {
+      delete def.parent
+      if (this.parentComponent) allocate(this, parent, this.parentComponent)
     }
 
     /* handle ctx
@@ -247,6 +247,7 @@ export default class Component extends HTMLElement {
     delete def.props
     delete def.tag
     delete def.as
+    delete def.parent
 
     /* apply props
     -------------- */

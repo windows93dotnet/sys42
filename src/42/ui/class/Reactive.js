@@ -95,10 +95,10 @@ export default class Reactive extends Emitter {
       await this.done(n--)
     }
 
-    if (this.firstUpdateDone === false) this.setup()
+    if (this.firstUpdateDone === false) await this.#setup()
   }
 
-  async setup() {
+  async #setup() {
     this.firstUpdateDone = true
     this.throttle = true
     await this.ctx.postrender.call()
