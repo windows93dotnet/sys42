@@ -12,6 +12,7 @@ import configure from "../../core/configure.js"
 import render from "../render.js"
 import isEmptyObject from "../../fabric/type/any/is/isEmptyObject.js"
 import dispatch from "../../fabric/event/dispatch.js"
+import allocate from "../../fabric/locator/allocate.js"
 import hash from "../../fabric/type/any/hash.js"
 import {
   ensureDef,
@@ -215,6 +216,13 @@ export default class Component extends HTMLElement {
       }
     }
 
+    const as = def.as ?? definition.as
+    delete def.as
+
+    if (as && ctx.component) {
+      allocate(ctx.component, as, this)
+    }
+
     /* handle def attrs
     ------------------- */
     let attrs = normalizeAttrs(def, this.ctx, definition.defaults)
@@ -231,6 +239,7 @@ export default class Component extends HTMLElement {
     delete def.scope
     delete def.props
     delete def.tag
+    delete def.as
 
     /* apply props
     -------------- */

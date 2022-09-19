@@ -77,8 +77,8 @@ module.exports = {
 
     "getter-return": [2, { allowImplicit: true }],
 
-    // // make use of Object.create(null) easier
-    // "guard-for-in": 0,
+    // make debug harder with autofix
+    "unicorn/no-lonely-if": 0,
 
     // can't ignore performance gain
     "unicorn/prefer-math-trunc": 0,
@@ -87,7 +87,7 @@ module.exports = {
     "no-await-in-loop": 0,
 
     /* TODO: consider using theses rules */
-    // "unicorn/no-unsafe-regex": 2,
+    "unicorn/no-unsafe-regex": 0,
     "unicorn/no-array-for-each": 0,
     "unicorn/prefer-code-point": 0,
     /* --- */

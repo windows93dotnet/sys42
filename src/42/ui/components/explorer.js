@@ -47,22 +47,36 @@ export class Explorer extends Component {
     ],
 
     content: [
-      // {
-      //   tag: "header.box-v",
-      //   content: [
-      //     {
-      //       tag: "ui-menubar",
-      //       content: [
-      //         {
-      //           label: "File",
-      //           content: [
-      //             { label: "Edit" }, //
-      //           ],
-      //         },
-      //       ],
-      //     },
-      //   ],
-      // },
+      {
+        tag: "header.box-v",
+        content: [
+          {
+            tag: "ui-menubar",
+            content: [
+              // {
+              //   label: "File",
+              //   content: [
+              //     { label: "Exit", click: "{{close()}}" }, //
+              //   ],
+              // },
+              // {
+              //   label: "View",
+              //   content: [
+              //     { label: "Select all", click: "{{selectable.selectAll()}}" },
+              //   ],
+              // },
+              // { label: "Select all", bind: "selectable.selectAll" },
+              // { label: "Select all", click: "{{hello()}}" },
+              {
+                label: "Select all",
+                // click: "{{folder.selectable.selectAll()}}",
+                click: "{{folder.hello()}}",
+              },
+              { label: "Exit", click: "{{../../close()}}" },
+            ],
+          },
+        ],
+      },
       {
         tag: "header.box-v.ctrl-group.mb-xs",
         content: [
@@ -87,6 +101,7 @@ export class Explorer extends Component {
         glob: "{{glob}}",
         path: "{{path}}",
         selection: "{{selection}}",
+        as: "folder",
       },
       {
         tag: ".message",

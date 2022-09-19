@@ -146,6 +146,10 @@ export class Folder extends Component {
     this.#icons[index === -1 ? 0 : index + 1]?.focus()
   }
 
+  hello() {
+    console.log("hello", this)
+  }
+
   #icons
 
   setup() {

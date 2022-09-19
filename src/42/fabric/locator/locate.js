@@ -6,7 +6,7 @@ export default function locate(obj, loc, sep = ".") {
 
 locate.parse = parseDotNotation
 
-locate.evaluate = (obj, tokens) => {
+locate.evaluate = (obj, tokens, options) => {
   let current = obj
 
   for (const key of tokens) {
@@ -20,7 +20,11 @@ locate.evaluate = (obj, tokens) => {
     }
 
     if (typeof current !== "object" || key in current === false) return
-    current = current[key]
+
+    current =
+      options?.autobind && typeof current[key] === "function"
+        ? current[key].bind(current)
+        : current[key]
   }
 
   return current

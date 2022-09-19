@@ -162,21 +162,23 @@ export function normalizeTokens(tokens, ctx, actions) {
         action = ctx.actions.get(loc)
       }
 
+      let fn
+
       if (action) {
-        const fn = makeActionFn(action, thisArg, ctx.el)
-        allocate(actions, loc, fn, sep)
+        fn = makeActionFn(action, thisArg, ctx.el)
       } else {
         const thisArg = ctx
         const { value } = token
         const err = new TypeError(
           `Template filter is not a function: "${value}"`
         )
-        const fn = filters(value).then((filter) => {
+        fn = filters(value).then((filter) => {
           if (typeof filter !== "function") return void dispatch(ctx.el, err)
           return makeActionFn(filter, thisArg, ctx.el)
         })
-        allocate(actions, loc, fn, sep)
       }
+
+      allocate(actions, loc, fn, sep)
 
       token.value = loc
     }
