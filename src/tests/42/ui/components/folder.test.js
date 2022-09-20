@@ -12,7 +12,7 @@ test("generate icon list", async (t) => {
     })
   )
 
-  t.eq(app.reactive.data, {
+  t.eq(t.utils.omit(app.reactive.data, ["$computed"]), {
     ui: {
       folder: {
         root: {

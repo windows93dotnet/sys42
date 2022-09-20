@@ -2020,6 +2020,7 @@ test("computed", async (t) => {
   t.eq(app.state.parsed, ["FOO", "BAR"])
   t.eq(app.reactive.data, {
     formated: "FOO/BAR",
+    $computed: { parsed: ["FOO", "BAR"] },
   })
 
   t.is(app.el.innerHTML, "foo: FOO, bar: BAR")

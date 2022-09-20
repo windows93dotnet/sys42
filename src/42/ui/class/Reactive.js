@@ -60,7 +60,7 @@ export default class Reactive extends Emitter {
 
       has: (path, { key }) => {
         if (key.startsWith("@") || key.startsWith("#")) return true
-        if (this.ctx.computeds.has(path)) return true
+        if (exists(this.data, `$computed${path}`, sep)) return true
         return false
       },
 
@@ -79,7 +79,9 @@ export default class Reactive extends Emitter {
           }
         }
 
-        if (this.ctx.computeds.has(path)) return this.ctx.computeds.get(path)
+        if (exists(this.data, `$computed${path}`, sep)) {
+          return locate(this.state, `$computed${path}`, sep)
+        }
       },
     })
   }

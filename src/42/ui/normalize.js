@@ -296,10 +296,10 @@ export function normalizeComputeds(computeds, ctx) {
 
 export function normalizeComputed(scope, val, ctx, cb = noop) {
   const fn = typeof val === "string" ? normalizeString(val, ctx) : val
-  ctx.computeds.set(scope, undefined)
   if (fn.scopes) {
+    ctx.reactive.set(`$computed${scope}`, undefined, { silent: true })
     register(ctx, fn, (val, changed) => {
-      ctx.computeds.set(scope, val)
+      ctx.reactive.set(`$computed${scope}`, val, { silent: true })
       if (changed !== scope) ctx.reactive.updateNow(scope, val)
       cb(val)
     })
@@ -553,7 +553,6 @@ export function normalizeCtx(ctx = {}) {
   ctx.preload ??= new Undones()
   ctx.undones ??= new Undones()
   ctx.postrender ??= new Undones()
-  ctx.computeds ??= new Locator({}, { sep: "/" })
   ctx.actions ??= new Locator({}, { sep: "/" })
 
   ctx.cancel ??= new Canceller()

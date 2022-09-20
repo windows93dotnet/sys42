@@ -10,7 +10,7 @@ export default function findScope(ctx, loc) {
 
   if (
     !ctx.actions.has(loc) &&
-    ctx.computeds.has(dirname(resolveScope(scope, loc, ctx)))
+    ctx.reactive.has("$computed" + dirname(resolveScope(scope, loc, ctx)))
   ) {
     return [scope, loc]
   }
@@ -46,7 +46,7 @@ export default function findScope(ctx, loc) {
 
   // console.group("findScope", ctx.scope)
   // console.log({ scope, loc })
-  // console.log(ctx.scopeChain)
+  // console.log(ctx.reactive.data)
   // console.groupEnd()
 
   return [scope, loc]

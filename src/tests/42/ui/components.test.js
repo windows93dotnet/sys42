@@ -1606,7 +1606,7 @@ Component.define(
   }
 )
 
-test.failing("@index", "computed", async (t) => {
+test("@index", "computed", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
@@ -1616,14 +1616,16 @@ test.failing("@index", "computed", async (t) => {
     })
   )
 
+  const el = app.el.querySelector("ui-t-index-computed-array")
+
   t.is(app.el.textContent, "0:a, 1:b")
 
-  app.el.arr = '["A"]'
+  el.arr = '["A"]'
   await app
 
   t.is(app.el.textContent, "0:A")
 
-  app.el.arr = '["A", "B", "C"]'
+  el.arr = '["A", "B", "C"]'
   await app
 
   t.is(app.el.textContent, "0:A, 1:B, 2:C")
@@ -1816,6 +1818,9 @@ test("computed", async (t) => {
     ui: {
       "t-computed": { root: { formated: "FOO/BAR" } },
     },
+    $computed: {
+      ui: { "t-computed": { root: { parsed: ["FOO", "BAR"] } } },
+    },
   })
   t.is(app.el.innerHTML, "<ui-t-computed>foo: FOO, bar: BAR</ui-t-computed>")
 
@@ -1832,7 +1837,7 @@ test("computed", async (t) => {
     "<ui-t-computed>foo: HELLO, bar: WORLD</ui-t-computed>"
   )
   t.is(cnt, 2)
-  t.eq(app.reactive.data, {
+  t.eq(t.utils.omit(app.reactive.data, ["$computed"]), {
     ui: {
       "t-computed": { root: { formated: "HELLO/WORLD" } },
     },
@@ -1840,7 +1845,7 @@ test("computed", async (t) => {
 })
 
 test("computed", "from prop with state:true", async (t) => {
-  t.plan(11)
+  t.plan(9)
   let cnt = 0
 
   Component.define(
@@ -1889,9 +1894,7 @@ test("computed", "from prop with state:true", async (t) => {
   t.is(cnt, 1)
   t.eq(app.reactive.data, {
     formated: "FOO/BAR",
-  })
-  t.eq(app.ctx.computeds.value, {
-    ui: { "t-compu-sta": { root: { parsed: ["FOO", "BAR"] } } },
+    $computed: { ui: { "t-compu-sta": { root: { parsed: ["FOO", "BAR"] } } } },
   })
   t.is(app.el.innerHTML, "<ui-t-compu-sta>foo: FOO, bar: BAR</ui-t-compu-sta>")
 
@@ -1905,10 +1908,8 @@ test("computed", "from prop with state:true", async (t) => {
 
   t.eq(app.reactive.data, {
     formated: "HELLO/WORLD",
-  })
-  t.eq(app.ctx.computeds.value, {
-    ui: {
-      "t-compu-sta": { root: { parsed: ["HELLO", "WORLD"] } },
+    $computed: {
+      ui: { "t-compu-sta": { root: { parsed: ["HELLO", "WORLD"] } } },
     },
   })
   t.is(cnt, 2)
@@ -1968,9 +1969,8 @@ test("computed", "computed prop", async (t) => {
   ])
   t.is(cnt, 1)
   t.eq(app.reactive.data, {
-    ui: {
-      "t-compu-prop": { root: { formated: "FOO/BAR" } },
-    },
+    ui: { "t-compu-prop": { root: { formated: "FOO/BAR" } } },
+    $computed: { ui: { "t-compu-prop": { root: { parsed: ["FOO", "BAR"] } } } },
   })
 
   t.eq(el.parsed, ["FOO", "BAR"])
@@ -1997,8 +1997,9 @@ test("computed", "computed prop", async (t) => {
   )
   t.is(cnt, 2)
   t.eq(app.reactive.data, {
-    ui: {
-      "t-compu-prop": { root: { formated: "HELLO/WORLD" } },
+    ui: { "t-compu-prop": { root: { formated: "HELLO/WORLD" } } },
+    $computed: {
+      ui: { "t-compu-prop": { root: { parsed: ["HELLO", "WORLD"] } } },
     },
   })
 

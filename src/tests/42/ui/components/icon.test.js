@@ -13,7 +13,7 @@ test("html", async (t) => {
     })
   )
 
-  t.eq(app.reactive.data, {
+  t.eq(t.utils.omit(app.reactive.data, ["$computed"]), {
     ui: {
       icon: { root: { path: "/script.js", small: undefined, label: true } },
     },
@@ -114,7 +114,7 @@ test("infos", async (t) => {
     ])
   )
 
-  t.eq(app.reactive.data, {
+  t.eq(t.utils.omit(app.reactive.data, ["$computed"]), {
     ui: {
       icon: {
         "root,0": { path: "/derp/foo.js", small: undefined, label: true },
@@ -225,7 +225,7 @@ test("each", async (t) => {
     })
   )
 
-  t.eq(app.reactive.data, {
+  t.eq(t.utils.omit(app.reactive.data, ["$computed"]), {
     arr: [{ x: "/derp/foo.js" }, { x: "/derp/" }],
     ui: {
       icon: {
@@ -284,7 +284,7 @@ test("each", 2, async (t) => {
     })
   )
 
-  t.eq(app.reactive.data, {
+  t.eq(t.utils.omit(app.reactive.data, ["$computed"]), {
     arr: ["/derp/foo.js", "/derp/"],
     ui: {
       icon: {
