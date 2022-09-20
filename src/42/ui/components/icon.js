@@ -11,7 +11,7 @@ class Icon extends Component {
   static definition = {
     tag: "ui-icon",
 
-    tabIndex: 0,
+    // tabIndex: 0,
     aria: {
       description: "{{infos.description}}",
     },

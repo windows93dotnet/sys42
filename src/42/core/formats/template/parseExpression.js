@@ -15,8 +15,8 @@ const pairs = {
   "{": "}",
 }
 
-const regexFlags = new Set(["d", "g", "i", "m", "s", "u", "y"])
-
+const numbers = new Set("0123456789".split(""))
+const regexFlags = new Set("dgimsuy".split(""))
 const pairsKeys = new Set(Object.keys(pairs))
 
 export default function parseExpression(source, jsonParse = JSON.parse) {
@@ -45,11 +45,10 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
       } else if (state === "arg" || state === "key") {
         negated = buffer.startsWith("!")
         if (negated) buffer = buffer.slice(1)
-        if (
-          buffer.startsWith("/") ||
-          buffer.startsWith("./") ||
-          buffer.startsWith("../")
-        ) {
+        if (buffer.startsWith("./")) {
+          buffer = buffer.slice(2)
+          state = "key"
+        } else if (buffer.startsWith("/") || buffer.startsWith("../")) {
           state = "key"
         } else {
           try {
@@ -213,6 +212,10 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
         )
         state = "arg"
         current += 2
+        continue
+      } else if (numbers.has(next)) {
+        eat(char)
+        eat(next)
         continue
       }
     }

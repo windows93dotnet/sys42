@@ -52,6 +52,12 @@ test("generate icon list", async (t) => {
     "style\u200b.css",
   ])
 
+  t.eq(icons.tabIndex, [
+    0, //
+    -1,
+    -1,
+  ])
+
   t.eq(icons.getAttribute("aria-description"), [
     "folder", //
     "file",

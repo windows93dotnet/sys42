@@ -85,16 +85,14 @@ test.tasks(
       expected: "a 0",
     }),
     task({
-      title: "ignore numeric arg when data is an array",
       source: "a {{0}}",
       data: ["b"],
-      expected: "a b",
+      expected: "a 0",
     }),
     task({
-      title: "ignore numeric arg when data is an empty array",
-      source: "a {{0}}",
-      data: [],
-      expected: "a ",
+      source: "a {{./0}}",
+      data: ["b"],
+      expected: "a b",
     }),
 
     task({
@@ -107,15 +105,27 @@ test.tasks(
           [{ type: "arg", value: 1 }],
         ],
       },
+      expected: "a 0 b 1",
+    }),
+    task({
+      source: "a {{./0}} b {{./1}}",
+      data: ["x", "y"],
+      parsed: {
+        strings: ["a ", " b ", ""],
+        substitutions: [
+          [{ type: "key", value: "0" }],
+          [{ type: "key", value: "1" }],
+        ],
+      },
       expected: "a x b y",
     }),
     task({
-      source: "a {{1}} b {{0}}",
+      source: "a {{./1}} b {{./0}}",
       data: ["x", "y"],
       expected: "a y b x",
     }),
     task({
-      source: "a {{x}} b {{0}}",
+      source: "a {{x}} b {{./0}}",
       data: ["x", "y"],
       expected: "a  b x",
     }),

@@ -149,18 +149,6 @@ export function normalizeTokens(tokens, ctx, actions) {
     if (token.type === "key") {
       token.value = loc
       scopes.push(token.value)
-    } else if (
-      token.type === "arg" &&
-      !token.negated &&
-      Number.isInteger(token.value)
-    ) {
-      scopes.push(loc)
-      if (isArrayLike(ctx.reactive.get(dirname(loc)))) {
-        token.type = "key"
-        token.value = loc
-      } else {
-        token.loc = loc
-      }
     } else if (token.type === "function") {
       hasFilter = true
 

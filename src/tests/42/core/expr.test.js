@@ -56,6 +56,10 @@ test.tasks(
     task({ str: "{{e =~ /^H(.*)o$/}}", res: /^H(.*)o$/.test(targ.e) }),
     task({ str: "{{e =~ /^h(.*)o$/}}", res: /^h(.*)o$/.test(targ.e) }),
     task({ str: "{{e =~ /^h(.*)o$/i}}", res: /^h(.*)o$/i.test(targ.e) }),
+    task({ str: "{{d ? 'x' : 'y'}}", res: "x" }),
+    task({ str: "{{d ? 0 : -1}}", res: 0 }),
+    task({ str: "{{c ? 'x' : 'y'}}", res: "y" }),
+    task({ str: "{{c ? 0 : -1}}", res: -1 }),
   ],
 
   (test, { str, res }) => {

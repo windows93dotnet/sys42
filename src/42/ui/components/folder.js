@@ -102,6 +102,7 @@ export class Folder extends Component {
           draggable: true,
           aria: { selected: "{{includes(../../selection, .)}}" },
           autofocus: "{{@first}}",
+          tabIndex: "{{@first ? 0 : -1}}",
           path: "{{.}}",
           contextmenu: [
             { label: "Hello {{basename(path)}}", click: "{{hello(.)}}" }, //

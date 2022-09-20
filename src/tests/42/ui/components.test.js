@@ -1788,7 +1788,7 @@ test("computed", async (t) => {
 
         content: {
           scope: "parsed",
-          content: "foo: {{0}}, bar: {{1}}",
+          content: "foo: {{./0}}, bar: {{./1}}",
         },
       }
 
@@ -1866,7 +1866,7 @@ test("computed", "from prop with state:true", async (t) => {
 
         content: {
           scope: "parsed",
-          content: "foo: {{0}}, bar: {{1}}",
+          content: "foo: {{./0}}, bar: {{./1}}",
         },
       }
 
@@ -1940,7 +1940,7 @@ test("computed", "computed prop", async (t) => {
 
         content: {
           scope: "parsed",
-          content: "foo: {{0}}, bar: {{1}}",
+          content: "foo: {{./0}}, bar: {{./1}}",
         },
       }
 

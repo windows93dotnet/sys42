@@ -170,7 +170,7 @@ test("reactive data", "array", async (t) => {
     ui(t.utils.dest(), {
       tag: "em",
       scope: "arr",
-      content: ["{{0}}", "{{1}}"],
+      content: ["{{./0}}", "{{./1}}"],
       state: { arr: ["a", "b"] },
     })
   )
@@ -179,20 +179,10 @@ test("reactive data", "array", async (t) => {
 })
 
 test("reactive data", "array as data", async (t) => {
-  let app = await t.utils.decay(
+  const app = await t.utils.decay(
     ui(t.utils.dest(), {
       tag: "em",
       content: ["{{/0}}", "{{/1}}"],
-      state: ["a", "b"],
-    })
-  )
-
-  t.is(app.el.innerHTML, "<em>ab</em>")
-
-  app = await t.utils.decay(
-    ui(t.utils.dest(), {
-      tag: "em",
-      content: ["{{./0}}", "{{./1}}"],
       state: ["a", "b"],
     })
   )
@@ -1070,7 +1060,7 @@ test("if", "array", async (t) => {
     ui(t.utils.dest(), {
       content: {
         scope: "arr",
-        content: [{ if: "{{0}}", content: "x" }],
+        content: [{ if: "{{./0}}", content: "x" }],
       },
       state: {
         arr: [false],
@@ -1999,7 +1989,7 @@ test("computed", async (t) => {
     ui(t.utils.dest(), {
       content: {
         scope: "parsed",
-        content: "foo: {{0}}, bar: {{1}}",
+        content: "foo: {{./0}}, bar: {{./1}}",
       },
 
       state: {

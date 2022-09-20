@@ -1,6 +1,8 @@
 import test from "../../../../42/test.js"
 import ui from "../../../../42/ui.js"
 
+test.suite.timeout(1000)
+
 test("render picto", async (t, { dest, decay }) => {
   const app = await decay(
     ui(dest(true), {

@@ -49,7 +49,7 @@ export function setAttribute(el, key, val) {
     setAriaAttributes(el, val)
   } else if (key.startsWith("aria-")) {
     setAriaAttribute(el, key, val)
-  } else if (key !== "childs") {
+  } else {
     const type = typeof val
     if (type === "boolean" || val === undefined) {
       val = Boolean(val)
@@ -63,6 +63,10 @@ export function setAttribute(el, key, val) {
         }
       }
     } else {
+      // if (key === "tabIndex") {
+      //   console.log(key, val)
+      // }
+
       el.setAttribute(key, val)
     }
   }

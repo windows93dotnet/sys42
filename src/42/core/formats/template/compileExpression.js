@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import { operators, assignments } from "./operators.js"
 import allocate from "../../../fabric/locator/allocate.js"
 import synchronize from "../../../fabric/type/function/synchronize.js"
@@ -6,7 +5,7 @@ import synchronize from "../../../fabric/type/function/synchronize.js"
 const PIPE = Symbol("pipe")
 
 function compileToken(i, list, tokens, options) {
-  const { type, value, negated, loc } = tokens[i]
+  const { type, value, negated /* , loc */ } = tokens[i]
   const { locate, actions, sep } = options
 
   if (type === "function") {
@@ -82,39 +81,7 @@ function compileToken(i, list, tokens, options) {
           }
     )
   } else if (type === "arg") {
-    if (!negated && Number.isInteger(value)) {
-      if (loc) {
-        const baseLoc = loc.replace(new RegExp(`${sep}${value}$`), "")
-        list.push((locals) => {
-          let res
-          let isArray
-          for (const obj of locals) {
-            const base = locate(obj, baseLoc, sep)
-            if (Array.isArray(base)) {
-              isArray = true
-              res ??= base.at(value)
-              if (res !== undefined) break
-            }
-          }
-
-          return isArray ? res : value
-        })
-      } else {
-        list.push((locals) => {
-          let res
-          let isArray
-          for (const obj of locals) {
-            if (Array.isArray(obj)) {
-              isArray = true
-              res ??= locate(obj, value, sep)
-              if (res !== undefined) break
-            }
-          }
-
-          return isArray ? res : value
-        })
-      }
-    } else list.push(negated ? () => !value : () => value)
+    list.push(negated ? () => !value : () => value)
   }
 
   if (tokens[i + 1]?.type === "assignment") {

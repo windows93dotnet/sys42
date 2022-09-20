@@ -11,6 +11,18 @@ test.tasks(
       parsed: [{ type: "arg", value: 0 }],
     }),
     task({
+      source: "-0",
+      parsed: [{ type: "arg", value: -0 }],
+    }),
+    task({
+      source: "1",
+      parsed: [{ type: "arg", value: 1 }],
+    }),
+    task({
+      source: "-1",
+      parsed: [{ type: "arg", value: -1 }],
+    }),
+    task({
       source: "a",
       parsed: [{ type: "key", value: "a" }],
     }),
@@ -165,6 +177,16 @@ test.tasks(
         { type: "arg", value: "?" },
         { type: "ternary", value: false },
         { type: "arg", value: ":" },
+      ],
+    }),
+    task({
+      source: "a ? 0 : -1",
+      parsed: [
+        { type: "key", value: "a" },
+        { type: "ternary", value: true },
+        { type: "arg", value: 0 },
+        { type: "ternary", value: false },
+        { type: "arg", value: -1 },
       ],
     }),
     task({
