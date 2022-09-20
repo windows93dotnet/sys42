@@ -16,8 +16,6 @@ export class Folder extends Component {
       multiselectable: true,
     },
 
-    tabIndex: -1,
-
     traits: {
       selectable: {
         items: ":scope ui-icon",

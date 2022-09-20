@@ -67,15 +67,18 @@ class Selectable extends Trait {
     this.key = this.config.key ?? ((el) => el)
     this.selection = this.config.selection ?? this.init.call(el)
 
-    this.el.tabIndex = this.el.tabIndex < 0 ? 0 : this.el.tabIndex
-
-    const sc = this.config.shortcuts
+    const tmp = {}
+    if (this.el.getAttribute("tabindex") === null && this.el.tabIndex === -1) {
+      tmp.tabIndex = -1
+    }
 
     setTemp(this.el, {
       signal: this.cancel.signal,
       class: { "selection-0": true },
+      ...tmp,
     })
 
+    const sc = this.config.shortcuts
     on(
       this.el,
       { signal: this.cancel.signal },

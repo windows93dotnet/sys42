@@ -11,7 +11,8 @@ class Icon extends Component {
   static definition = {
     tag: "ui-icon",
 
-    // tabIndex: 0,
+    // tabIndex: 0, // TODO: check merge with def
+
     aria: {
       description: "{{infos.description}}",
     },
