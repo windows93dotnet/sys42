@@ -137,6 +137,8 @@ textarea.box-fit {
   footer,
   header,
   button,
+  select,
+  textarea,
   input,
   form,
   label,
@@ -152,14 +154,14 @@ textarea.box-fit {
 
 :is(.box-h,.box-v) > :not(:only-child,:first-child,:last-child),
 .ctrl-group:is(.box-h,.box-v) > :not(:only-child,:first-child,:last-child) > :is(
-  select,button,.button,input:not([type="radio"],[type="checkbox"])
+  textarea,select,button,.button,input:not([type="radio"],[type="checkbox"])
 ) {
   border-radius: 0;
 }
 
 .box-h > :first-child:not(:only-child),
 .ctrl-group.box-h > :first-child:not(:only-child) > :is(
-  select,button,.button,input:not([type="radio"],[type="checkbox"])
+  textarea,select,button,.button,input:not([type="radio"],[type="checkbox"])
 ) {
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
@@ -167,7 +169,7 @@ textarea.box-fit {
 
 .box-h > :last-child:not(:only-child),
 .ctrl-group.box-h > :last-child:not(:only-child) > :is(
-  select,button,.button,input:not([type="radio"],[type="checkbox"])
+  textarea,select,button,.button,input:not([type="radio"],[type="checkbox"])
 ) {
   border-top-right-radius: 0;
   border-top-left-radius: 0;
@@ -175,7 +177,7 @@ textarea.box-fit {
 
 .box-v > :first-child:not(:only-child),
 .ctrl-group.box-v > :first-child:not(:only-child) > :is(
-  select,button,.button,input:not([type="radio"],[type="checkbox"])
+  textarea,select,button,.button,input:not([type="radio"],[type="checkbox"])
 ) {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
@@ -183,7 +185,7 @@ textarea.box-fit {
 
 .box-v > :last-child:not(:only-child),
 .ctrl-group.box-v > :last-child:not(:only-child) > :is(
-  select,button,.button,input:not([type="radio"],[type="checkbox"])
+  textarea,select,button,.button,input:not([type="radio"],[type="checkbox"])
 ) {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;

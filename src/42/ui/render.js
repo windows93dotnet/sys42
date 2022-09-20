@@ -36,7 +36,9 @@ function renderTag(ctx, def) {
     el.append(renderComponent(create("ui-picto"), { value: def.picto }, ctx))
   }
 
-  if (el.form !== undefined && el.localName !== "button") {
+  if (el.localName === "button") {
+    def.content ??= def.label
+  } else if (el.form !== undefined) {
     el = renderControl(el, ctx, def)
   }
 

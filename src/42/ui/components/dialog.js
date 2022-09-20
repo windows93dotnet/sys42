@@ -19,10 +19,7 @@ export class Dialog extends Component {
 
     traits: {
       emittable: true,
-      movable: {
-        // throttle: false,
-        handler: ".ui-dialog__title",
-      },
+      movable: { handler: ".ui-dialog__title" },
     },
 
     props: {
@@ -56,13 +53,18 @@ export class Dialog extends Component {
     this.style.transform = `translate(${this.x}px, ${this.y}px)`
   }
 
-  async close() {
+  async close(ok = false) {
     const event = dispatch(this, "uidialogclose", { cancelable: true })
     if (event.defaultPrevented) return
-    const data = omit(this.ctx.reactive.data, ["ui"])
+    if (ok) this.ctx.reactive.data.ok = true
+    const data = omit(this.ctx.reactive.data, ["ui", "$computed"])
     this.emit("close", data)
     await this.destroy()
     return data
+  }
+
+  async ok() {
+    return this.close(true)
   }
 
   render({ content, label, footer }) {
@@ -109,6 +111,7 @@ export class Dialog extends Component {
     this.style.top = 0
     this.style.left = 0
     this.style.zIndex = maxZIndex("ui-dialog") + 1
+    this.emit("open", this)
     dispatch(this, "uidialogopen")
     autofocus(this.querySelector(":scope > .ui-dialog__body"))
   }
@@ -138,6 +141,8 @@ const dialog = rpc(
     module: import.meta.url,
 
     marshalling(def = {}, ctx) {
+      def = objectifyDef(def)
+
       if (!def.opener) {
         document.activeElement.id ||= uid()
         def.opener ??= document.activeElement.id
@@ -145,7 +150,7 @@ const dialog = rpc(
 
       if (rpc.inTop) {
         ctx = { ...ctx, detached: true }
-        return [objectifyDef(def), ctx]
+        return [def, ctx]
       }
 
       return [forkDef(def, ctx), {}]

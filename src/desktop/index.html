@@ -9,68 +9,21 @@
   trap()
 </script>
 
-<script type="_module">
-  import ui from "../42/ui.js"
-  import Component from "../42/ui/class/Component.js"
-
-  Component.define(
-    class Voila extends Component {
-      static definition = {
-        tag: "ui-voila",
-        content: "hello {{lol(5)}}",
-        props: {
-          a: {
-            type: "string",
-            default: "yo",
-          },
-        },
-
-        computed: {
-          items: 1,
-        },
-
-        on: {
-          click: "{{foo(a)}}",
-        },
-      }
-
-      lol(arg) {
-        return "lol" + arg
-      }
-
-      foo(e) {
-        console.log(777, e)
-      }
-    }
-  )
-
-  ui({
-    tag: "body.pa-xxl",
-    content: {
-      tag: "ui-voila",
-    },
-
-    state: {
-      a: "lol",
-    },
-  })
-</script>
-
 <script type="module">
   import "../42/os.js"
-  import explorer from "../42/ui/components/explorer.js"
-  // import puppet from "../42/core/dev/puppet.js"
-  explorer("/tests/fixtures/formats/example.url")
-  // explorer("/tests/fixtures/formats/", {
-  //   selection: [
-  //     "/tests/fixtures/formats/example.url",
-  //     "/tests/fixtures/formats/example.xml",
-  //   ],
-  // })
+  import prompt from "../42/ui/invocables/prompt.js"
+  console.log(
+    await prompt("Yo ?", {
+      // field: "textarea.font-mono",
+      value: "Yo",
+    })
+  )
+</script>
 
-  // await puppet(
-  //   'ui-icon[path="/tests/fixtures/formats/example.xml"]'
-  // ).contextmenu()
+<script type="_module">
+  import "../42/os.js"
+  import explorer from "../42/ui/components/explorer.js"
+  explorer("/tests/fixtures/formats/example.url")
 </script>
 
 <script type="_module">
