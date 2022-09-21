@@ -2135,7 +2135,43 @@ test("input", async (t) => {
     test.utils.prettify(app.el.innerHTML),
     `\
 <label for="a59j5pfmedwe">Str</label>
-<input id="a59j5pfmedwe" autocomplete="off" name="/str">`
+<input id="a59j5pfmedwe" name="/str" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" translate="no">`
+  )
+
+  const input = app.el.querySelector("input")
+  t.eq(input.value, "foo")
+
+  await t.puppet(input).input("bar")
+  await app
+
+  t.eq(app.data.str, "bar")
+
+  app.state.str = "baz"
+  await app
+
+  t.eq(input.value, "baz")
+})
+
+test("input", "prose:true", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest(), {
+      content: {
+        tag: "input",
+        scope: "str",
+        prose: true,
+      },
+
+      state: {
+        str: "foo",
+      },
+    })
+  )
+
+  t.eq(
+    test.utils.prettify(app.el.innerHTML),
+    `\
+<label for="a59j5pfmedwe">Str</label>
+<input id="a59j5pfmedwe" name="/str" autocomplete="off">`
   )
 
   const input = app.el.querySelector("input")

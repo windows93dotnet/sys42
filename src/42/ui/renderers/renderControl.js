@@ -21,15 +21,15 @@ function setValidation(def) {
 
     // number
     if ("multipleOf" in schema) attr.step = schema.multipleOf
-    if ("minimum" in schema) attr.min = schema.minimum
-    if ("maximum" in schema) attr.max = schema.maximum
     if ("exclusiveMinimum" in schema) attr.min = schema.exclusiveMinimum + 1
+    else if ("minimum" in schema) attr.min = schema.minimum
     if ("exclusiveMaximum" in schema) attr.max = schema.exclusiveMaximum - 1
+    else if ("maximum" in schema) attr.max = schema.maximum
   }
 
-  attr.autocomplete = "off"
+  attr.autocomplete = def.autocomplete ?? "off" // opt-in autocomplete
 
-  if (def.prose === false) {
+  if (def.prose !== true) {
     attr.autocapitalize = "none"
     attr.autocorrect = "off"
     attr.spellcheck = "false"
@@ -42,8 +42,6 @@ function setValidation(def) {
 export default function renderControl(el, ctx, def) {
   el.id ||= hash(ctx.steps)
 
-  setAttributes(el, setValidation(def))
-
   if (def.scope) {
     ctx.scope = ctx.scopeBackup
     ctx.scope = resolveScope(...findScope(ctx, def.scope), ctx)
@@ -52,7 +50,20 @@ export default function renderControl(el, ctx, def) {
     register(ctx, ctx.scope, (val) => setControlData(el, val))
 
     def.on ??= []
-    def.on.push({ input: () => ctx.reactive.set(el.name, getControlData(el)) })
+    def.on.push({
+      [def.lazy
+        ? def.enterKeyHint === "enter"
+          ? "change"
+          : "change || Enter"
+        : "input"]: () => ctx.reactive.set(el.name, getControlData(el)),
+    })
+  }
+
+  setAttributes(el, setValidation(def))
+
+  if (def.enterKeyHint && def.enterKeyHint !== "enter") {
+    def.on ??= []
+    def.on.push({ Enter: `{{${def.enterKeyHint}(target, e)}}` })
   }
 
   const field =
