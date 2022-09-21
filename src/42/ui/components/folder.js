@@ -2,6 +2,7 @@ import "./icon.js"
 import Component from "../class/Component.js"
 import dispatch from "../../fabric/event/dispatch.js"
 import disk from "../../core/disk.js"
+import prompt from "../invocables/prompt.js"
 import dataTransfertImport from "../../fabric/type/file/dataTransfertImport.js"
 import dataTransfertExport from "../../fabric/type/file/dataTransfertExport.js"
 
@@ -103,16 +104,18 @@ export class Folder extends Component {
           tabIndex: "{{@first ? 0 : -1}}",
           path: "{{.}}",
           contextmenu: [
-            { label: "Hello {{basename(path)}}", click: "{{hello(.)}}" }, //
-            { label: "World" },
+            { label: "Copy" }, //
+            "---",
+            { label: "Rename", click: "{{rename(.)}}" },
           ],
         },
       },
     },
   }
 
-  hello(target) {
-    console.log(777, target, target?.path)
+  async rename(icon) {
+    const name = await prompt("Rename", { value: icon?.path })
+    console.log("rename", name)
   }
 
   autoSelect(target) {

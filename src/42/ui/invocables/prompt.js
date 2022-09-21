@@ -1,6 +1,16 @@
 import dialog from "../components/dialog.js"
+import configure from "../../core/configure.js"
 
-export default async function prompt(message = "", options = {}) {
+const DEFAULT = {
+  label: "Prompt",
+  class: "ui-prompt",
+  field: "text",
+  value: "",
+  prose: true,
+  enterKeyHint: undefined,
+}
+
+export default async function prompt(message = "", options) {
   if (typeof message === "object") {
     options = message
     message = options.message
@@ -8,24 +18,31 @@ export default async function prompt(message = "", options = {}) {
 
   if (typeof options === "string") options = { value: options }
 
+  const config = configure(DEFAULT, options)
+
   const res = await dialog({
-    label: options.label ?? "Prompt",
-    class: "ui-prompt" + (options.class ? ` ${options.class}` : ""),
+    label: config.label,
+    class: config.class,
     content: {
       tag: ".box-h._my",
       content: {
-        tag: options.field ?? "input",
+        tag: config.field,
         scope: "text",
+        // lazy: true,
         label: message,
-        enterKeyHint: options.field?.startsWith("textarea") ? "enter" : "done",
+        prose: config.prose,
+        enterKeyHint:
+          config.enterKeyHint ?? config.field.startsWith("textarea")
+            ? "enter"
+            : "done",
       },
     },
-    footer: options.footer ?? [
+    footer: config.footer ?? [
       { tag: "button", label: "Cancel", click: "{{close()}}" },
-      { tag: "button.btn-default", label: "Ok", click: "{{ok()}}" },
+      { tag: "button.btn-default", label: "Ok", click: "{{done()}}" },
     ],
     state: {
-      text: options.value ?? "",
+      text: config.value,
     },
   })
 

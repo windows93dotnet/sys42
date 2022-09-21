@@ -6,6 +6,7 @@ import maxZIndex from "../../fabric/dom/maxZIndex.js"
 import { objectifyDef, forkDef } from "../normalize.js"
 import uid from "../../core/uid.js"
 import { autofocus } from "../../fabric/dom/focus.js"
+import nextCycle from "../../fabric/type/promise/nextCycle.js"
 
 const _axis = Symbol("axis")
 
@@ -63,7 +64,9 @@ export class Dialog extends Component {
     return data
   }
 
-  async ok() {
+  async done(val, e) {
+    console.log(1, val, e)
+    await nextCycle()
     return this.close(true)
   }
 
