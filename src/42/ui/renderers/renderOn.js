@@ -14,13 +14,23 @@ const makeEventLocals = (loc, e, target) => {
 }
 
 function compileRun(val, ctx) {
-  const parsed = expr.parse(val)
+  const tokens = expr.parse(val)
 
-  const fn = expr.compile(parsed, {
+  const { actions } = normalizeTokens(tokens, ctx)
+
+  if (val === "{{hello(e)}}") {
+    console.table(tokens)
+  }
+
+  if (val === "{{open(target.path)}}") {
+    console.table(tokens)
+  }
+
+  const fn = expr.compile(tokens, {
     assignment: true,
     async: true,
     sep: "/",
-    actions: normalizeTokens(parsed, ctx).actions,
+    actions,
   })
 
   return (e, target) => {

@@ -113,6 +113,10 @@ export class Folder extends Component {
     },
   }
 
+  hello(e) {
+    console.log("hello", e)
+  }
+
   async rename(icon) {
     const name = await prompt("Rename", { value: icon?.path })
     console.log("rename", name)

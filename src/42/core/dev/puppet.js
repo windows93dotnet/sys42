@@ -57,9 +57,6 @@ const makePuppet = () => {
       order: [],
       whens: [],
       pendingKeys: new Map(),
-      // $: new DOMQuery(),
-      // makePuppet,
-      // simulate,
 
       click({ data }) {
         data.order.push(changeFocus)
@@ -157,6 +154,10 @@ const makePuppet = () => {
         data.order.push(async (target) => simulate(target, event, init))
       },
 
+      simulate(ctx, target, event, init) {
+        simulate(target, event, init)
+      },
+
       when({ data }, ...args) {
         data.whens.push(() => when(...args))
       },
@@ -185,7 +186,6 @@ const makePuppet = () => {
         for (const item of data.order) {
           if (typeof item === "function") {
             undones.push(...data.targets.map((target) => item(target)))
-            // await Promise.all(data.targets.map((target) => item(target)))
           } else if ("target" in item) {
             if (typeof item.target === "string") {
               try {
@@ -209,12 +209,13 @@ const makePuppet = () => {
 
         data.whens.length = 0
         data.order.length = 0
-        data.targets.length = 0
+        undones.length = 0
         delete data._stack
 
         queueTask(() => {
           for (const keyup of data.pendingKeys.values()) keyup()
-          resolve()
+          resolve([...data.targets])
+          data.targets.length = 0
         })
       },
     },
@@ -227,7 +228,6 @@ const makePuppet = () => {
 
   instance.$ = $
   instance.makePuppet = makePuppet
-  // instance.simulate = simulate
 
   return instance
 }
