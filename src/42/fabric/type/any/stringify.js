@@ -439,7 +439,7 @@ ${indentSpace.repeat(depth - 1)})`
       el.dataset = { ...val.dataset }
     }
 
-    if (val.tabIndex !== -1) el.tabIndex = val.tabIndex
+    if (val.tabIndex !== 0) el.tabIndex = val.tabIndex
 
     if (val.attributes && val.attributes.length > 0) {
       for (let i = val.attributes.length - 1; i--; ) {

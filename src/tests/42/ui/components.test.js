@@ -2026,6 +2026,8 @@ Component.define(
   class extends Component {
     static definition = {
       tag: "ui-t-actions",
+      // props: { foo: { type: "string", default: "foo" } },
+      // computed: { bar: "{{[1,2]}}" },
     }
 
     x(arg) {
@@ -2058,6 +2060,8 @@ Component.define(
   class extends Component {
     static definition = {
       tag: "ui-t-actions-child",
+      // props: { foo: { type: "string", default: "foo" } },
+      // computed: { bar: "{{[1,2]}}" },
     }
 
     x(arg) {
@@ -2076,6 +2080,8 @@ Component.define(
   class extends Component {
     static definition = {
       tag: "ui-t-actions-child-child",
+      // props: { foo: { type: "string", default: "foo" } },
+      // computed: { bar: "{{[1,2]}}" },
     }
 
     x(arg) {
@@ -2216,7 +2222,7 @@ test("actions", "nested component", "auto resolve", async (t) => {
   t.eq(app.data.from, ["a.c", "ui-t-actions", 4])
 })
 
-test("actions", "nested component", "path", async (t) => {
+test.only("actions", "nested component", "path", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest({ connect: true }), {
       content: {
