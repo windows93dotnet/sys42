@@ -56,8 +56,14 @@ export default function simulate(el, event, init) {
     el = globalThis
   }
 
-  const EventConstructor = event in EVENTS ? EVENTS[event] : CustomEvent
-  const e = new EventConstructor(event, { ...DEFAULT, ...init })
-  el.dispatchEvent(e)
-  return e
+  if (event === "focus" && typeof el.focus === "function") {
+    if (el !== window && !document.hasFocus()) window.focus()
+    el.focus()
+  } else if (event === "blur" && typeof el.blur === "function") {
+    el.blur()
+  } else {
+    const EventConstructor = event in EVENTS ? EVENTS[event] : CustomEvent
+    const e = new EventConstructor(event, { ...DEFAULT, ...init })
+    el.dispatchEvent(e)
+  }
 }

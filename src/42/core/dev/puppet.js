@@ -120,15 +120,13 @@ const makePuppet = () => {
 
       focus({ data }) {
         data.order.push(async (target) => {
-          if ("focus" in target) target.focus()
-          else simulate(target, "focus")
+          simulate(target, "focus")
         })
       },
 
       blur({ data }) {
         data.order.push(async (target) => {
-          if ("blur" in target) target.blur()
-          else simulate(target, "blur")
+          simulate(target, "blur")
         })
       },
 
