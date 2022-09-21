@@ -113,7 +113,7 @@ export function normalizeListen(args, config) {
     }
 
     if ("addEventListener" in arg) {
-      if (list.length > 0) {
+      if (current.listeners.length > 0) {
         current.el ??= globalThis
         list.push(current)
       }

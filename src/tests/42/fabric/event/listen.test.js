@@ -10,6 +10,7 @@ test.tasks(
     task({
       args: [],
       expected: [{ el: globalThis, selector: undefined, listeners: [] }],
+      // expected: [],
     }),
 
     task({
@@ -58,6 +59,58 @@ test.tasks(
           listeners: [
             {
               events: { focus: PLACEHOLDER },
+              options: { signal: PLACEHOLDER },
+            },
+          ],
+        },
+      ],
+    }),
+
+    task({
+      args: [{ focus() {} }, el, { click() {} }],
+      expected: [
+        {
+          el: globalThis,
+          selector: undefined,
+          listeners: [
+            {
+              events: { focus: PLACEHOLDER },
+              options: { signal: PLACEHOLDER },
+            },
+          ],
+        },
+        {
+          el,
+          selector: undefined,
+          listeners: [
+            {
+              events: { click: PLACEHOLDER },
+              options: { signal: PLACEHOLDER },
+            },
+          ],
+        },
+      ],
+    }),
+
+    task({
+      args: [{ focus() {}, blur() {} }, el, { click() {}, keydown() {} }],
+      expected: [
+        {
+          el: globalThis,
+          selector: undefined,
+          listeners: [
+            {
+              events: { focus: PLACEHOLDER, blur: PLACEHOLDER },
+              options: { signal: PLACEHOLDER },
+            },
+          ],
+        },
+        {
+          el,
+          selector: undefined,
+          listeners: [
+            {
+              events: { click: PLACEHOLDER, keydown: PLACEHOLDER },
               options: { signal: PLACEHOLDER },
             },
           ],
