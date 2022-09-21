@@ -4,16 +4,19 @@
 // @thanks https://github.com/lodash/lodash/blob/master/isLength.js
 // @related https://github.com/chaijs/type-detect/blob/master/index.js
 
-// import detectCircular from "./object/detectCircular.js"
 import isEmptyObject from "./is/isEmptyObject.js"
 import isLength from "./is/isLength.js"
 
 // TODO: move more usefull is* functions in 'any' folder
 export { default as isObject } from "./is/isObject.js"
+export { default as isHashmap } from "./is/isHashmap.js"
+export { default as isPlainObject } from "./is/isPlainObject.js"
+export { default as isHashmapLike } from "./is/isHashmapLike.js"
 export { default as isEmptyObject } from "./is/isEmptyObject.js"
-export { default as isLength } from "./is/isLength.js"
 export { default as isProxy } from "./is/isProxy.js"
+export { default as isLength } from "./is/isLength.js"
 export { default as isArrayLike } from "./is/isArrayLike.js"
+export { default as isIterable } from "./is/isIterable.js"
 export { default as isPromiseLike } from "./is/isPromiseLike.js"
 export { default as isTemplateObject } from "./is/isTemplateObject.js"
 export { default as isMultipleOf } from "../number/isMultipleOf.js"
@@ -57,9 +60,6 @@ export const isErrorLike = (x) =>
 // export const isGeneratorFunction = (x) => x instanceof GeneratorFunction
 // export const isAsyncFunction = (x) => x instanceof AsyncFunction
 
-export const isIterable = (x) =>
-  Boolean(x) && typeof x[Symbol.iterator] === "function"
-
 export const isIterator = (x) =>
   x !== null &&
   typeof x === "object" &&
@@ -68,17 +68,6 @@ export const isIterator = (x) =>
   x[Symbol.iterator]() === x
 
 export const isObjectLike = (x) => x !== null && typeof x === "object"
-
-export const isPlainObject = (x) =>
-  x !== null && typeof x === "object" && x.constructor === Object
-
-export const isHashmap = (x) =>
-  x !== null && typeof x === "object" && Object.getPrototypeOf(x) === null
-
-export const isPlainObjectOrHashmap = (x) =>
-  x !== null &&
-  typeof x === "object" &&
-  (Object.getPrototypeOf(x) === null || x.constructor === Object)
 
 export const isEmptyArray = (x) => x?.length === 0
 
@@ -107,5 +96,3 @@ export const isEmpty = (x) => {
 }
 
 export const isElement = (x) => x?.nodeType === Node.ELEMENT_NODE
-
-// export const isCircular = (x) => isObjectLike(x) && detectCircular(x)

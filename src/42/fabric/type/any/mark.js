@@ -1,8 +1,10 @@
 /* eslint-disable complexity */
 /* eslint-disable eqeqeq */
 
-import { isIterable, isArray, isPlainObjectOrHashmap } from "./is.js"
 import allKeys from "../object/allKeys.js"
+import isIterable from "./is/isIterable.js"
+import isHashmapLike from "./is/isHashmapLike.js"
+const { isArray } = Array
 
 /**
  * Converts any value into a human readable, most unique possible string.
@@ -30,7 +32,7 @@ export default function mark(val, memory = new WeakSet()) {
       : `[${mark(val[0], memory)}]`
   }
 
-  if (isPlainObjectOrHashmap(val)) {
+  if (isHashmapLike(val)) {
     memory.add(val)
     const keys = allKeys(val)
     return `{${keys

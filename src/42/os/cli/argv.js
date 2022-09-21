@@ -2,7 +2,7 @@
 import allocate from "../../fabric/locator/allocate.js"
 import setup from "../../core/setup.js"
 import locate from "../../fabric/locator/locate.js"
-import { isObject, isArray } from "../../fabric/type/any/is.js"
+import isHashmapLike from "../../fabric/type/any/is/isHashmapLike.js"
 
 export const _undefined = Symbol("argv.undefined")
 
@@ -114,7 +114,7 @@ export default function argv(args, options) {
 
   const subcommands = []
   const cmdHashMap = {}
-  if (isObject(config.subcommands)) {
+  if (isHashmapLike(config.subcommands)) {
     for (const [key, val] of Object.entries(config.subcommands)) {
       for (const item of val) {
         cmdHashMap[item] = !key || key === "." ? item : `${key}.${item}`
@@ -122,7 +122,7 @@ export default function argv(args, options) {
 
       subcommands.push(...val)
     }
-  } else if (isArray(config.subcommands)) {
+  } else if (Array.isArray(config.subcommands)) {
     subcommands.push(...config.subcommands)
   }
 

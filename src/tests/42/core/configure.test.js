@@ -146,3 +146,10 @@ test("patch", async (t) => {
   const result = configure(obj, { $patch: { op: "add", path: "/c", value: 3 } })
   t.eq(result, { a: 1, b: 2, c: 3 })
 })
+
+test("Object.create(null)", async (t) => {
+  const obj = { a: 1, b: Object.create(null) }
+  obj.b.c = 2
+  const result = configure(obj)
+  t.eq(result, { a: 1, b: { c: 2 } })
+})

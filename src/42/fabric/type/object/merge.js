@@ -1,4 +1,4 @@
-const OBJECT = "[object Object]"
+import isHashmapLike from "../any/is/isHashmapLike.js"
 
 export default function merge(target, source, memory = new WeakMap()) {
   for (const [key, val] of Object.entries(source)) {
@@ -8,7 +8,7 @@ export default function merge(target, source, memory = new WeakMap()) {
       target[key] = []
       memory.set(val, target[key])
       merge(target[key], val, memory)
-    } else if (toString.call(val) === OBJECT && val.constructor === Object) {
+    } else if (isHashmapLike(val)) {
       if (target[key] === null || typeof target[key] !== "object") {
         target[key] = {}
       }

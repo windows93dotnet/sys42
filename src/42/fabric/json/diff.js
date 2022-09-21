@@ -6,7 +6,7 @@
 
 import equal from "../type/any/equal.js"
 import { joinJSONPointer } from "./pointer.js"
-import { isPlainObjectOrHashmap /* , isIterable */ } from "../type/any/is.js"
+import isHashmapLike from "../type/any/is/isHashmapLike.js"
 
 import LinkedListNode from "../structure/LinkedListNode.js"
 
@@ -217,10 +217,7 @@ function valueDiff(a, b, path, options, parents = {}) {
     if (typeA !== typeB) return replaceWithB(path, b)
   }
 
-  if (
-    isPlainObjectOrHashmap(a) === false ||
-    isPlainObjectOrHashmap(b) === false
-  ) {
+  if (isHashmapLike(a) === false || isHashmapLike(b) === false) {
     return equal(a, b) ? [] : replaceWithB(path, b)
   }
 

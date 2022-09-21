@@ -1,6 +1,5 @@
 import patch from "../fabric/json/patch.js"
-
-const OBJECT = "[object Object]"
+import isHashmapLike from "../fabric/type/any/is/isHashmapLike.js"
 
 export function merge(target, source, memory = new WeakMap()) {
   for (const [key, val] of Object.entries(source)) {
@@ -15,7 +14,7 @@ export function merge(target, source, memory = new WeakMap()) {
       target[key] = []
       memory.set(val, target[key])
       merge(target[key], val, memory)
-    } else if (toString.call(val) === OBJECT && val.constructor === Object) {
+    } else if (isHashmapLike(val)) {
       if (target[key] === null || typeof target[key] !== "object") {
         target[key] = {}
       }
@@ -37,7 +36,7 @@ export default function configure(...options) {
   const memory = new WeakMap()
 
   for (const opt of options) {
-    if (toString.call(opt) === OBJECT) {
+    if (isHashmapLike(opt)) {
       memory.set(opt, config)
       merge(config, opt, memory)
     } else if (opt != null) {

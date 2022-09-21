@@ -1,7 +1,3 @@
 export default function isObject(val) {
-  return (
-    val !== null &&
-    typeof val === "object" &&
-    toString.call(val) === "[object Object]"
-  )
+  return val !== null && typeof val === "object" && !Array.isArray(val)
 }
