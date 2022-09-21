@@ -315,8 +315,7 @@ export default class Assert {
     }
   }
 
-  eq(actual, expected, message, nested) {
-    if (nested !== true) this.#addCall()
+  eq(actual, expected, message) {
     if (equal(actual, expected) === false) {
       const clonedActual = clone(actual)
       throw new AssertionError(message, "Values are not deeply equal", {
@@ -338,8 +337,7 @@ export default class Assert {
 
   // "equal" without check for prototypes
   // simplify deep equal test for objects created using Object.create(null)
-  alike(actual, expected, message, nested) {
-    if (nested !== true) this.#addCall()
+  alike(actual, expected, message) {
     if (equal(actual, expected, { proto: false }) === false) {
       const clonedActual = clone(actual)
       throw new AssertionError(message, "Values are not deeply alike", {
@@ -413,14 +411,7 @@ export default class Assert {
           this.fail(`"${path}" is not defined`)
         }
 
-        if ("Node" in globalThis && val instanceof Node) {
-          this.is(
-            actual[key],
-            val,
-            `"${path}" is a different node than the expected one`,
-            path
-          )
-        } else if (is.isObjectLike(val)) {
+        if (is.isHashmapLike(val) || is.isArray(val)) {
           this.hasSubset(
             actual[key], //
             val,
@@ -428,10 +419,10 @@ export default class Assert {
             path
           )
         } else {
-          this.eq(
+          this.is(
             actual[key],
             val,
-            `"${path}" is not deeply equal to the expected one`,
+            `"${path}" is not the same as the expected one`,
             path
           )
         }
