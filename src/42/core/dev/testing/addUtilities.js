@@ -1,6 +1,7 @@
 import allKeys from "../../../fabric/type/object/allKeys.js"
 import arrify from "../../../fabric/type/any/arrify.js"
 import clone from "../../../fabric/type/any/clone.js"
+import create from "../../../ui/create.js"
 import defer from "../../../fabric/type/promise/defer.js"
 import documentReady from "../../../fabric/dom/documentReady.js"
 import env from "../../env.js"
@@ -78,66 +79,6 @@ export default function addUtilities(item, isExecutionContext) {
         return instance
       },
     })
-
-    item.utils = {}
-
-    item.utils[_forgets] = []
-    item.utils.listen = (...args) => {
-      if (item.utils[_forgets].length === 0) {
-        item.teardown(() => {
-          for (const forget of item.utils[_forgets]) forget()
-          item.utils[_forgets].length = 0
-        })
-      }
-
-      item.utils[_forgets].push(listenFn(...args))
-    }
-
-    item.utils[_decays] = []
-    const decay = (thing, cb) => {
-      if (item.utils[_decays].length === 0) {
-        item.teardown(async () => {
-          for (const obj of item.utils[_decays]) {
-            if (cb?.(obj) === false) continue
-            if ((await kill(obj, console.warn)) === false) {
-              console.warn("decay object wasn't killed", obj)
-            }
-          }
-
-          item.utils[_decays].length = 0
-        })
-      }
-
-      item.utils[_decays].push(thing)
-
-      return thing
-    }
-
-    item.utils.decay = decay
-
-    item.utils.dest = (connect, options) => {
-      const el = document.createElement("section")
-      const { suiteTitle } = item.utils
-      idRegistry[suiteTitle] ??= 0
-      el.id = suiteTitle + "/" + idRegistry[suiteTitle]++
-      el.style.cssText = `
-        position: absolute;
-        overflow: auto;
-        margin: 0;
-        inset: 0;`
-
-      if (options?.keep !== true) {
-        // Use queueMicrotask to register all manual decays before
-        // e.g.
-        // In this situation: t.utils.decay(ui(dest() … ))
-        // the ui function should be killed before it's destination element is removed
-        queueMicrotask(() => decay(el))
-        el.style.opacity = 0.01
-      }
-
-      if (connect) document.body.append(el)
-      return el
-    }
   } else {
     item.if = (condition) => (condition ? item : noop)
     item.skipIf = (condition) => (condition ? item.skip : item)
@@ -167,7 +108,75 @@ export default function addUtilities(item, isExecutionContext) {
     }
   }
 
+  item.PLACEHOLDER = Symbol.for("Assert.PLACEHOLDER")
+
   item.utils ??= {}
+
+  item.utils[_forgets] = []
+  item.utils.listen = (...args) => {
+    if (item.utils[_forgets].length === 0) {
+      item.teardown(() => {
+        for (const forget of item.utils[_forgets]) forget()
+        item.utils[_forgets].length = 0
+      })
+    }
+
+    item.utils[_forgets].push(listenFn(...args))
+  }
+
+  item.utils[_decays] = []
+  const decay = (thing, cb) => {
+    if (item.utils[_decays].length === 0) {
+      item.teardown(async () => {
+        for (const obj of item.utils[_decays]) {
+          if (cb?.(obj) === false) continue
+          if ((await kill(obj, console.warn)) === false) {
+            console.warn("decay object wasn't killed", obj)
+          }
+        }
+
+        item.utils[_decays].length = 0
+      })
+    }
+
+    item.utils[_decays].push(thing)
+
+    return thing
+  }
+
+  item.utils.decay = decay
+
+  item.utils.dest = (options) => {
+    const el = create(
+      options?.tag ?? "section",
+      options ? omit(options, ["tag", "keep", "connect"]) : undefined
+    )
+    const suiteTitle = item.suite.title
+    idRegistry[suiteTitle] ??= 0
+    el.id = suiteTitle + "/" + idRegistry[suiteTitle]++
+    el.style.cssText = `
+        position: absolute;
+        overflow: auto;
+        margin: 0;
+        inset: 0;`
+
+    if (options?.keep !== true) {
+      if (isExecutionContext) {
+        // Use queueMicrotask to remove all manual decays first
+        // e.g.
+        // In this situation: t.utils.decay(ui(t.utils.dest() … ))
+        // the ui function should be killed before it's destination element is removed
+        queueMicrotask(() => decay(el))
+      } else {
+        decay(el)
+      }
+
+      el.style.opacity = 0.01
+    }
+
+    if (options?.connect) document.body.append(el)
+    return el
+  }
 
   Object.assign(item.utils, {
     allKeys,

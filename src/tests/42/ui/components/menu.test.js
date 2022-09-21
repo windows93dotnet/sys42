@@ -183,7 +183,7 @@ if (inTop) {
     const { decay, dest } = t.utils
 
     const app = await decay(
-      ui(dest(true), {
+      ui(dest({ connect: true }), {
         tag: ".box-fit.desktop",
         content: {
           tag: ".box-v.w-full",
@@ -249,7 +249,7 @@ if (inTop) {
 
     decay(
       await ui(
-        dest(true),
+        dest({ connect: true }),
         {
           tag: ".box-fit.desktop",
           content: {
@@ -283,7 +283,7 @@ if (inTop) {
 
     decay(
       await ui(
-        dest(true),
+        dest({ connect: true }),
         {
           id: "menuDemo",
           tag: ".box-fit.desktop",

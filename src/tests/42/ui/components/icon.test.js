@@ -7,7 +7,7 @@ test.suite.timeout(1000)
 
 test("html", async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       tag: "ui-icon",
       path: "/script.js",
     })
@@ -90,7 +90,7 @@ test("html", async (t) => {
 
 test("infos", async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), [
+    ui(t.utils.dest({ connect: true }), [
       {
         tag: "ui-icon",
         path: "/derp/foo.js",
@@ -208,7 +208,7 @@ test("infos", async (t) => {
 
 test("each", async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       content: {
         scope: "arr",
         each: {
@@ -267,7 +267,7 @@ test("each", async (t) => {
 
 test("each", 2, async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       content: {
         scope: "arr",
         each: {

@@ -141,7 +141,7 @@ dialog(
         },
       })
 
-      const app = decay(ui(dest(true), def, { trusted }))
+      const app = decay(ui(dest({ connect: true }), def, { trusted }))
 
       let res
 

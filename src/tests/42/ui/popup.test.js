@@ -38,7 +38,7 @@ const buttons = (label) => ({
 test.intg("popup behavior", async (t, { decay, dest, pickValues }) => {
   const app = decay(
     await ui(
-      dest(true),
+      dest({ connect: true }),
       {
         tag: ".box-fit.box-center",
         content: {

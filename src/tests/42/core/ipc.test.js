@@ -67,7 +67,7 @@ test.serial("realms", async (t, { decay, dest }) => {
   if (check.iframe || check.sandbox) {
     await decay(
       ui(
-        dest(true),
+        dest({ connect: true }),
         [
           check.iframe && {
             tag: "iframe",

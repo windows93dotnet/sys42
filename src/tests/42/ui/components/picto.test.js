@@ -5,7 +5,7 @@ test.suite.timeout(1000)
 
 test("render picto", async (t, { dest, decay }) => {
   const app = await decay(
-    ui(dest(true), {
+    ui(dest({ connect: true }), {
       tag: "ui-picto",
       value: "puzzle",
     })

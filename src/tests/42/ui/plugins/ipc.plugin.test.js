@@ -5,7 +5,7 @@ import ui from "../../../../42/ui.js"
 test.intg("cross-realms state data", async (t, { decay, dest, pickValues }) => {
   const app = await decay(
     ui(
-      dest(true),
+      dest({ connect: true }),
       {
         tag: "body.box-fit.desktop",
         content: [

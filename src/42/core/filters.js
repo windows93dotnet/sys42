@@ -167,17 +167,22 @@ types.ui = {
       this.el.replaceChildren(render(item, this))
     })
   },
+  prompt: "prompt",
 }
 
 const entries = Object.entries(types)
 
 export default async function filters(name) {
-  for (const [, val] of entries) {
+  for (const [group, val] of entries) {
     if (name in val) {
       const item = val[name]
       let fn = item.url ?? item
       if (typeof fn === "string") {
-        fn = await import(`../fabric/type/${fn}.js`).then((m) =>
+        fn = await import(
+          group === "ui"
+            ? `../ui/invocables/${fn}.js` //
+            : `../fabric/type/${fn}.js`
+        ).then((m) =>
           item.key
             ? locate(m.default, name)
             : item.import

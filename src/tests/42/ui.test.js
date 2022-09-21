@@ -792,7 +792,7 @@ test("actions", async (t) => {
 
 test.serial("actions", "error", async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       content: "a {{foo|>uppercase}}",
       state: { foo: "b" },
       actions: {

@@ -64,7 +64,7 @@ export default class Suite {
 
     const t = new ExecutionContext()
 
-    t.utils.suiteTitle = this.title
+    t.suite = { title: this.title }
 
     try {
       test.timeStamp = performance.now()

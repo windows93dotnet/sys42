@@ -102,7 +102,10 @@ function walk(a, b, config) {
   let typeA = typeof a
   let typeB = typeof b
 
-  if (typeA !== typeB || PRIMITIVES.has(typeA)) return false
+  if (typeA !== typeB || PRIMITIVES.has(typeA)) {
+    if (config.placeholder && b === config.placeholder) return true
+    return false
+  }
 
   if (a && b) {
     const protoA = Object.getPrototypeOf(a)
@@ -175,6 +178,7 @@ function walk(a, b, config) {
 export default function equal(a, b, options) {
   const config = {}
   config.visited = new WeakSet()
-  config.proto = options && "proto" in options ? options.proto : true
+  config.proto = options?.proto ?? true
+  config.placeholder = options?.placeholder
   return walk(a, b, config)
 }

@@ -18,6 +18,8 @@ const { isPromiseLike } = is
 const setTimeoutNative = globalThis.setTimeout
 const clearTimeoutNative = globalThis.clearTimeout
 
+const PLACEHOLDER = Symbol.for("Assert.PLACEHOLDER")
+
 export class AssertionError extends Error {
   constructor(userMessage, message, details, stack) {
     if (typeof userMessage === "string") {
@@ -316,7 +318,8 @@ export default class Assert {
   }
 
   eq(actual, expected, message) {
-    if (equal(actual, expected) === false) {
+    this.#addCall()
+    if (equal(actual, expected, { placeholder: PLACEHOLDER }) === false) {
       const clonedActual = clone(actual)
       throw new AssertionError(message, "Values are not deeply equal", {
         actual: clonedActual,
@@ -338,6 +341,7 @@ export default class Assert {
   // "equal" without check for prototypes
   // simplify deep equal test for objects created using Object.create(null)
   alike(actual, expected, message) {
+    this.#addCall()
     if (equal(actual, expected, { proto: false }) === false) {
       const clonedActual = clone(actual)
       throw new AssertionError(message, "Values are not deeply alike", {
@@ -418,6 +422,13 @@ export default class Assert {
             false,
             path
           )
+        } else if (val === PLACEHOLDER) {
+          if (key in actual !== true) {
+            throw new AssertionError(
+              message,
+              `"${path}" is not the same as the expected one`
+            )
+          }
         } else {
           this.is(
             actual[key],

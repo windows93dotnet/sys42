@@ -447,13 +447,13 @@ test.tasks(
         } else await checkDefine(component, t, args, expected)
       }
 
-      const app = await t.utils.decay(ui(t.utils.dest(connect), def))
+      const app = await t.utils.decay(ui(t.utils.dest({ connect }), def))
 
       if (expected) t.is(app.el.innerHTML, expected, "ui declaration error")
       if (check) await check(t, app)
 
       if (html) {
-        const el = t.utils.dest(connect)
+        const el = t.utils.dest({ connect })
         el.innerHTML = html
         await el.firstChild.ready
         t.is(el.innerHTML, expected, "html declaration error")
@@ -468,7 +468,7 @@ test.tasks(
 
 test("component child", async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       content: {
         tag: "ui-t-props",
         bar: 4,
@@ -716,7 +716,7 @@ Component.define(
 
 test("custom content", async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       content: {
         tag: "ui-one",
         content: "hi {{bar}}",
@@ -729,7 +729,7 @@ test("custom content", async (t) => {
 
 test("custom content", 2, async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       content: {
         tag: "ui-one",
         bar: "{{bar}}",
@@ -748,7 +748,7 @@ test("custom content", 2, async (t) => {
 
 test("custom content", "nested components", 2, async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       content: {
         tag: "ui-one",
         content: {
@@ -883,7 +883,7 @@ test("state", "dynamic", "push", async (t) => {
 
 test("state", "dynamic", "pop", async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       content: {
         tag: "ui-t-nested-dynamic",
         list: [
@@ -938,7 +938,7 @@ test("state", "dynamic", "pop", async (t) => {
 
 test("state", "dynamic", "textContent", async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       content: {
         tag: "ui-t-nested-dynamic",
         list: [
@@ -1359,7 +1359,7 @@ test("scopped", 2, async (t) => {
 
 test("array", 1, async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       content: {
         scope: "arr",
         each: [
@@ -1498,7 +1498,7 @@ test("array", 1, async (t) => {
 
 test("array", 2, async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       content: {
         scope: "arr",
         each: [
@@ -1729,7 +1729,7 @@ async function testStringArrayWithTransfers(t, app) {
 
 test("string array", "using transfers", async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       content: {
         tag: "ui-t-nested-string-array",
         list: "{{arr}}",
@@ -1746,7 +1746,7 @@ test("string array", "using transfers", async (t) => {
 
 test("string array", "using transfers and async state", async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       content: {
         tag: "ui-t-nested-string-array",
         list: "{{arr}}",
@@ -1800,7 +1800,7 @@ test("computed", async (t) => {
   )
 
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       content: {
         tag: "ui-t-computed",
         formated: "FOO/BAR",
@@ -1952,7 +1952,7 @@ test("computed", "computed prop", async (t) => {
   )
 
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       content: {
         tag: "ui-t-compu-prop",
         formated: "FOO/BAR",
@@ -2093,7 +2093,7 @@ Component.define(
 test("actions", "bug: component with computed", async (t) => {
   const deferred = t.utils.defer()
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       content: {
         tag: "ui-t-computed-actions-bug",
         click: "{{foo()}}",
@@ -2111,7 +2111,7 @@ test("actions", "bug: component with computed", async (t) => {
 
 test("actions", async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       content: {
         tag: "ui-t-actions",
         click: "{{x(1)}}",
@@ -2131,7 +2131,7 @@ test("actions", async (t) => {
 
 test("actions", "dot notation", async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       content: {
         tag: "ui-t-actions",
         click: "{{a.b(1)}}",
@@ -2146,7 +2146,7 @@ test("actions", "dot notation", async (t) => {
 
 test("actions", "auto resolve", async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       content: {
         tag: "ui-t-actions",
         content: [
@@ -2181,7 +2181,7 @@ test("actions", "auto resolve", async (t) => {
 
 test("actions", "nested component", "auto resolve", async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       content: {
         tag: "ui-t-actions",
         content: [
@@ -2218,7 +2218,7 @@ test("actions", "nested component", "auto resolve", async (t) => {
 
 test("actions", "nested component", "path", async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       content: {
         tag: "ui-t-actions",
         content: [
@@ -2326,7 +2326,7 @@ test("actions", "above root path", async (t) => {
   t.plan(1)
 
   const app = t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       content: {
         tag: "ui-t-actions",
         content: [
