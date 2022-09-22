@@ -87,8 +87,17 @@ export class Explorer extends Component {
             tag: "input",
             scope: "path",
             enterKeyHint: "go",
+            debounce: true,
             compact: true,
             prose: false,
+            on: {
+              Enter: "{{go(target.value)}}",
+              focus({ target }) {
+                const { length } = target.value
+                target.selectionStart = length
+                target.selectionEnd = length
+              },
+            },
           },
         ],
       },
@@ -101,13 +110,16 @@ export class Explorer extends Component {
       },
       {
         tag: ".message",
+        // as: "message",
       },
       {
         tag: "footer.w-full.mt-xs.ma-0.box-v",
         content: [
           {
             tag: ".py-xs.px-md.mr-xs.inset-shallow.panel.item-shrink",
-            content: "{{items.length}} {{pluralize('item', items.length)}}",
+            content: "--- {{folder}}",
+            // content:
+            //   "{{folder.items.length}} {{pluralize('item', folder.items.length)}}",
           },
           {
             tag: "input.inset-shallow.panel",
@@ -123,7 +135,7 @@ export class Explorer extends Component {
 
   autofocus() {
     document.activeElement.blur()
-    queueTask(() => focusInside(this))
+    queueTask(() => focusInside(this.folder))
   }
 
   folderUp(options) {
@@ -134,14 +146,20 @@ export class Explorer extends Component {
   }
 
   go(path, options) {
-    console.log("go", path)
     if (keyboard.keys.Control) return // TODO: check how to do this in template
     this.path = path
-    if (!options?.keepFocus) this.autofocus()
+
+    this.message = this.querySelector(".message") // TODO: write `elementAs` ui keyword
+
+    if (this.folder.err) {
+      this.message.textContent = this.folder.err
+    } else {
+      this.message.textContent = ""
+      if (!options?.keepFocus) this.autofocus()
+    }
   }
 
   open(path) {
-    console.log("open", path)
     if (keyboard.keys.Control) return
     open(path)
   }
@@ -157,6 +175,7 @@ Component.define(Explorer)
 
 export default async function explorer(path = "/", options) {
   const selection = options?.selection ?? []
+  const glob = options?.glob ?? false
 
   const parsed = parsePath(normalizePath(path), { checkDir: true })
 
@@ -175,10 +194,11 @@ export default async function explorer(path = "/", options) {
       tag: "ui-explorer",
       path: "{{path}}",
       selection: "{{selection}}",
+      glob: "{{glob}}",
       parent: "dialog",
     },
 
-    state: { path, selection },
+    state: { path, selection, glob },
 
     ...options?.dialog,
   })

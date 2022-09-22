@@ -1,6 +1,5 @@
 import "./icon.js"
 import Component from "../class/Component.js"
-import dispatch from "../../fabric/event/dispatch.js"
 import disk from "../../core/disk.js"
 import prompt from "../invocables/prompt.js"
 import dataTransfertImport from "../../fabric/type/file/dataTransfertImport.js"
@@ -14,7 +13,7 @@ export class Folder extends Component {
     role: "grid",
 
     aria: {
-      multiselectable: true,
+      multiselectable: "{{multiselectable}}",
     },
 
     traits: {
@@ -46,6 +45,11 @@ export class Folder extends Component {
       selection: {
         type: "array",
         default: [],
+      },
+      multiselectable: {
+        type: "boolean",
+        fromView: true,
+        default: true,
       },
     },
 
@@ -85,7 +89,7 @@ export class Folder extends Component {
     ],
 
     contextmenu: [
-      { label: "coucou", click: "{{hello(e)}}" }, //
+      { label: "Select all", click: "{{selectable.selectAll()}}" }, //
     ],
 
     computed: {
@@ -113,12 +117,8 @@ export class Folder extends Component {
     },
   }
 
-  hello(e) {
-    console.log("hello", e)
-  }
-
   async rename(icon) {
-    const name = await prompt("Rename", { value: icon?.path })
+    const name = await prompt("Rename", { value: icon.path })
     console.log("rename", name)
   }
 
@@ -139,9 +139,10 @@ export class Folder extends Component {
             path.endsWith("*") || path.includes(".") ? path : path + "*"
           )
         : disk.readDir(path, { absolute: true })
+      this.err = undefined
     } catch (err) {
+      this.err = err.message
       dir = []
-      dispatch(this, err)
     }
 
     return dir
@@ -173,7 +174,7 @@ export class Folder extends Component {
     this.#icons = this.children[0].children
     this.iconsPerLine = 0
     const ro = new ResizeObserver(() => {
-      if (this.children.length === 0) {
+      if (this.#icons.length === 0) {
         this.iconsPerLine = 0
         return
       }

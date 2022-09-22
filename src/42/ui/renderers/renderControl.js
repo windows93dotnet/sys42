@@ -6,6 +6,7 @@ import create from "../create.js"
 import findScope from "../findScope.js"
 import resolveScope from "../resolveScope.js"
 import basename from "../../fabric/type/path/extract/basename.js"
+import debounce from "../../fabric/type/function/debounce.js"
 import { toTitleCase } from "../../fabric/type/string/letters.js"
 import hash from "../../fabric/type/any/hash.js"
 
@@ -49,22 +50,24 @@ export default function renderControl(el, ctx, def) {
 
     register(ctx, ctx.scope, (val) => setControlData(el, val))
 
+    const fn = () => ctx.reactive.set(el.name, getControlData(el))
+
     def.on ??= []
     def.on.push({
       [def.lazy
         ? def.enterKeyHint === "enter"
           ? "change"
           : "change || Enter"
-        : "input"]: () => ctx.reactive.set(el.name, getControlData(el)),
+        : "input"]: def.debounce ? debounce(fn, def.debounce) : fn,
     })
   }
 
   setAttributes(el, setValidation(def))
 
-  if (def.enterKeyHint && def.enterKeyHint !== "enter") {
-    def.on ??= []
-    def.on.push({ Enter: `{{${def.enterKeyHint}(target, e)}}` })
-  }
+  // if (def.enterKeyHint && def.enterKeyHint !== "enter") {
+  //   def.on ??= []
+  //   def.on.push({ Enter: `{{${def.enterKeyHint}(target, e)}}` })
+  // }
 
   const field =
     el.type === "radio" || el.type === "checkbox"
