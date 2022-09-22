@@ -151,7 +151,6 @@ export default class Component extends HTMLElement {
     this.#lifecycle = SETUP
     await this.update?.()
     await this.setup?.(this.ctx)
-    this.ctx.postrender.call()
   }
 
   #setNewScope(props) {
@@ -317,6 +316,7 @@ export default class Component extends HTMLElement {
 
     await this.ctx.components.done()
     await this.ctx.undones.done()
+    await this.ctx.postrender.call()
 
     if (this.#lifecycle === INIT) this.#lifecycle = RENDER
   }

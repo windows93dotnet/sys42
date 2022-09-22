@@ -34,19 +34,19 @@ test.serial("auto wait for element", async (t) => {
   const id = t.utils.uid()
   const el = t.utils.decay(create("button", { id }))
   el.addEventListener("pointerdown", stub)
-  el.addEventListener("focus", stub)
+  el.addEventListener("pointerup", stub)
 
   const promise = puppet(`#${id}`, { timeout: 100 }) //
     .dispatch("pointerdown")
-    .dispatch("focus")
+    .dispatch("pointerup")
 
   const end = t.sleep(50).then(() => document.body.append(el))
 
-  t.is(await promise, undefined)
+  t.is((await promise)[0], el)
   t.is(stub.count, 2)
   t.eq(
     stub.calls.map(({ args: [e] }) => e.type),
-    ["pointerdown", "focus"]
+    ["pointerdown", "pointerup"]
   )
 
   await end

@@ -544,16 +544,17 @@ export function normalizeCtx(ctx = {}) {
   ctx.computeds ??= {}
   ctx.scopeChain ??= []
   ctx.pluginHandlers ??= []
+  ctx.actions ??= new Locator({}, { sep: "/" })
 
-  ctx.components ??= new Undones()
   ctx.preload ??= new Undones()
+  ctx.components ??= new Undones()
   ctx.undones ??= new Undones()
   ctx.postrender ??= new Undones()
-  ctx.actions ??= new Locator({}, { sep: "/" })
 
   ctx.cancel ??= new Canceller()
   ctx.signal = ctx.cancel.signal
   ctx.reactive ??= new Reactive(ctx)
+
   return ctx
 }
 
