@@ -2,7 +2,7 @@
 // @read https://www.x.org/archive/X11R6.7.0/doc/X.7.html#sect6
 
 import Trait from "../class/Trait.js"
-import setup from "../../core/setup.js"
+import settings from "../../core/settings.js"
 import documentReady from "../../fabric/dom/documentReady.js"
 import emittable from "../../fabric/traits/emittable.js"
 import listen from "../../fabric/event/listen.js"
@@ -32,7 +32,7 @@ const PRESETS = {
   popup: { my: "left top", at: "left bottom", collision: "flipfit" },
 }
 
-const configure = setup("ui.trait.positionable", DEFAULTS, PRESETS)
+const configure = settings("ui.trait.positionable", DEFAULTS, PRESETS)
 
 const { round } = Math
 const { ELEMENT_NODE } = Node

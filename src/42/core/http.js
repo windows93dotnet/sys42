@@ -2,10 +2,10 @@
 // @related https://github.com/sindresorhus/ky
 // @read https://developer.mozilla.org/en-US/docs/Web/API/AbortController
 
-import setup from "./setup.js"
+import settings from "./settings.js"
 import noop from "../fabric/type/function/noop.js"
 
-const configure = setup("http", {
+const configure = settings("http", {
   headers: { "X-Requested-With": "XMLHttpRequest" },
   referrerPolicy: "same-origin",
 })

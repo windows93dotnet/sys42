@@ -1,4 +1,4 @@
-import setup from "../../../core/setup.js"
+import settings from "../../settings.js"
 import { escapeLog, removeStyles } from "../logUtils.js"
 
 const DEFAULTS = {
@@ -40,7 +40,7 @@ const PRESETS = {
   },
 }
 
-const configure = setup("formatEntries", DEFAULTS, PRESETS)
+const configure = settings("formatEntries", DEFAULTS, PRESETS)
 
 export default function formatEntries(entries, options) {
   const config = configure(options)

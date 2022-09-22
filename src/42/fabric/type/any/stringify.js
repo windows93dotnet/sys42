@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 
-import setup from "../../../core/setup.js"
+import settings from "../../../core/settings.js"
 import uid from "../../../core/uid.js"
 import allKeys from "../object/allKeys.js"
 import omit from "../object/omit.js"
@@ -120,7 +120,7 @@ const DEFAULTS = {
   clean: (x) => x,
 }
 
-const configure = setup("stringify", DEFAULTS, PRESETS)
+const configure = settings("stringify", DEFAULTS, PRESETS)
 
 const makeConfig = (config) => ({
   sp: config.indentSpace,

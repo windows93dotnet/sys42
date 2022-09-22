@@ -2,7 +2,7 @@
 // @thanks http://prismjs.com
 
 import { escapeLog } from "../logUtils.js"
-import setup from "../../../core/setup.js"
+import settings from "../../settings.js"
 
 const DEFAULTS = {
   colors: {
@@ -21,7 +21,7 @@ const DEFAULTS = {
   },
 }
 
-const configure = setup("highlight", DEFAULTS)
+const configure = settings("highlight", DEFAULTS)
 
 const COMMENT_PLACEHOLDER = `#COMMENT_${42}`
 const NUMBER_PLACEHOLDER = `#NUMBER_${42}`

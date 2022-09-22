@@ -1,6 +1,6 @@
 /* eslint-disable max-params */
 import Trait from "../class/Trait.js"
-import setup from "../../core/setup.js"
+import settings from "../../core/settings.js"
 import Dragger from "../class/Dragger.js"
 import rect from "../../fabric/geometry/rect.js"
 import on from "../../fabric/event/on.js"
@@ -19,7 +19,7 @@ const DEFAULTS = {
   },
 }
 
-const configure = setup("ui.trait.selectable", DEFAULTS)
+const configure = settings("ui.trait.selectable", DEFAULTS)
 
 const ns = "http://www.w3.org/2000/svg"
 

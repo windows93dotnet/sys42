@@ -19,6 +19,7 @@ test("generate icon list", async (t) => {
           path: "/tests/fixtures/components/folder/",
           glob: undefined,
           selection: ["/tests/fixtures/components/folder/script.js"],
+          multiselectable: true,
         },
       },
       icon: {

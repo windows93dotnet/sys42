@@ -1,5 +1,5 @@
 import inBackend from "../../../core/env/runtime/inBackend.js"
-import setup from "../../../core/setup.js"
+import settings from "../../../core/settings.js"
 import arrify from "../any/arrify.js"
 import getCWD from "./cwd.js"
 
@@ -18,7 +18,7 @@ const DEFAULTS = {
   object: false,
 }
 
-const configure = setup("shortenFilename", DEFAULTS)
+const configure = settings("shortenFilename", DEFAULTS)
 
 export default function shortenFilename(str, options) {
   if (typeof options === "string") options = { base: options }

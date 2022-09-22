@@ -1,4 +1,4 @@
-import setup from "../../src/42/core/setup.js"
+import settings from "../../src/42/core/settings.js"
 import argv from "../../src/42/os/cli/argv.js"
 import parseCommand from "../../src/42/os/cli/parseCommand.js"
 // import validator from "../type/json/validator.js"
@@ -23,7 +23,7 @@ export const PRESETS = {
   },
 }
 
-const configure = setup("CLI", DEFAULTS, PRESETS)
+const configure = settings("CLI", DEFAULTS, PRESETS)
 
 export default class CLI extends Callable {
   constructor(...options) {

@@ -30,7 +30,7 @@ class Config {
   }
 }
 
-export default function setup(name, defaults, presets) {
+export default function settings(name, defaults, presets) {
   let config
 
   const tokens = exists.parse(name)

@@ -1,7 +1,7 @@
 import inWorker from "../../env/realm/inWorker.js"
 import inWindow from "../../env/realm/inWindow.js"
 import inOpaqueOrigin from "../../env/realm/inOpaqueOrigin.js"
-import setup from "../../../core/setup.js"
+import settings from "../../settings.js"
 // import toggleable from "../../../fabric/traits/toggleable.js"
 import chainable from "../../../fabric/traits/chainable.js"
 import Color from "../../../fabric/class/Color.js"
@@ -39,7 +39,7 @@ const DEFAULTS = {
   },
 }
 
-const configure = setup("devtool", DEFAULTS)
+const configure = settings("devtool", DEFAULTS)
 
 const ALIASES = {}
 const ALIASES_DIM = {}

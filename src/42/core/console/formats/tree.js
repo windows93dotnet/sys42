@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-import setup from "../../setup.js"
+import settings from "../../settings.js"
 import { addStyle } from "../logUtils.js"
 import mark from "../../../fabric/type/any/mark.js"
 import truncate from "../../../fabric/type/string/truncate.js"
@@ -38,7 +38,7 @@ const PRESETS = {
   },
 }
 
-const configure = setup("tree", DEFAULTS, PRESETS)
+const configure = settings("tree", DEFAULTS, PRESETS)
 
 const CLEAN_KEY_REGEX = /^\.[^.]|\n.*?$/g
 

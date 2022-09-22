@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 import allocate from "../../fabric/locator/allocate.js"
-import setup from "../../core/setup.js"
+import settings from "../../core/settings.js"
 import locate from "../../fabric/locator/locate.js"
 import isHashmapLike from "../../fabric/type/any/is/isHashmapLike.js"
 
@@ -52,7 +52,7 @@ export const PRESETS = {
   },
 }
 
-const configure = setup("argv", DEFAULTS, PRESETS)
+const configure = settings("argv", DEFAULTS, PRESETS)
 
 function autocast(config, val) {
   if (config.autocast) {

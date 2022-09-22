@@ -1,7 +1,7 @@
 /* eslint-disable max-params */
 import Trait from "../class/Trait.js"
 import Dragger from "../class/Dragger.js"
-import setup from "../../core/setup.js"
+import settings from "../../core/settings.js"
 import setTemp from "../../fabric/dom/setTemp.js"
 import maxZIndex from "../../fabric/dom/maxZIndex.js"
 
@@ -26,7 +26,7 @@ const DEFAULTS = {
   },
 }
 
-const configure = setup("ui.trait.movable", DEFAULTS)
+const configure = settings("ui.trait.movable", DEFAULTS)
 
 class Movable extends Trait {
   constructor(el, options) {
