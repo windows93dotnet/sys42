@@ -41,7 +41,7 @@ export function attemptFocus(el, options) {
   if (
     !el ||
     el.nodeType !== ELEMENT_NODE ||
-    (options?.strict && !isFocusable(el))
+    (options?.strict !== true && !isFocusable(el))
   ) {
     return false
   }

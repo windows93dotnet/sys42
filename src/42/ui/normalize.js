@@ -399,13 +399,13 @@ function normalizeOn(def) {
 
   if (def.popup) {
     def.on ??= []
-    def.on.push({ "pointerdown || ArrowRight": { popup: def.popup } })
+    def.on.push({ "pointerdown || Enter || ArrowRight": { popup: def.popup } })
   }
 
   if (def.menu) {
     def.on ??= []
     def.on.push({
-      "pointerdown || ArrowRight": {
+      "pointerdown || Enter || ArrowRight": {
         popup: {
           tag: "ui-menu",
           closeEvents: "pointerdown || ArrowLeft",

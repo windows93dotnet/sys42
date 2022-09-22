@@ -12,7 +12,7 @@ const { href } = new URL(
   import.meta.url
 )
 
-const { when, $ } = test.utils
+const { when } = test.utils
 
 const makeMenu = (name) => {
   const submenu = [
@@ -113,7 +113,7 @@ const makeMenu = (name) => {
 
 const makeDemo = ({ content } = {}) => {
   content ??= [
-    { tag: "number", scope: "cnt", compact: true },
+    { tag: "number", scope: "cnt", id: `cnt${__}`, compact: true },
     "\n\n",
     "\n\n",
     { tag: "ui-menubar", content: makeMenu("Inline") },
@@ -208,18 +208,18 @@ if (inTop) {
       })
     )
 
-    t.puppet("#btnMenuTop").click()
-    /* const { target: menu } = */ await when("uipopupopen")
-    t.puppet("#menuItemDialogPopupTop").click()
-    /* const { target: dialog } = */ await when("uidialogopen")
+    await t.puppet("#btnMenuTop").click()
+    await when("uipopupopen")
+    await t.puppet("#menuItemDialogPopupTop").click()
+    await when("uidialogopen")
     await t.puppet().dispatch("blur") // close menu
     await t.puppet("#inputIncrDialogPopupTop").input(42)
     await app
 
     const els = {
-      btnIncrTop: $.query("#btnIncrTop"),
-      btnIncrDialogPopup: $.query("#btnIncrDialogPopupTop"),
-      inputIncrDialogPopup: $.query("#inputIncrDialogPopupTop"),
+      btnIncrTop: t.puppet.$.query("#btnIncrTop"),
+      btnIncrDialogPopup: t.puppet.$.query("#btnIncrDialogPopupTop"),
+      inputIncrDialogPopup: t.puppet.$.query("#inputIncrDialogPopupTop"),
     }
     t.eq(
       [
@@ -241,40 +241,6 @@ if (inTop) {
       ],
       ["43", "43", "43"]
     )
-  })
-
-  test.intg("top-level an iframe works the same", async (t) => {
-    t.timeout(1000)
-    const { decay, dest } = t.utils
-
-    decay(
-      await ui(
-        dest({ connect: true }),
-        {
-          tag: ".box-fit.desktop",
-          content: {
-            tag: ".box-v.w-full",
-            content: [
-              makeDemo(),
-              {
-                tag: "ui-sandbox.panel",
-                permissions: "trusted",
-                path: href,
-              },
-            ],
-          },
-        },
-        { trusted: true, id: "menuDemo" }
-      )
-    )
-
-    const iframe = $.query("ui-sandbox iframe")
-
-    await when("uipopupopen")
-    t.puppet("#menuItemIncrPopupIframe").click()
-    await iframe.contentWindow.sys42.once("ipc.plugin:end-of-update")
-
-    t.is($.query("#btnIncrIframe", iframe).textContent, "1")
   })
 
   test.intg.only("submenu", async (t) => {
@@ -304,20 +270,13 @@ if (inTop) {
       )
     )
 
-    // t.puppet("#btnMenuTop").click()
-    // await t.sleep(10)
-    // await when("uipopupopen")
-    // await t.sleep(10)
-    // await t.puppet("#menuItemSubmenuPopupTop").click()
-    // await t.sleep(10)
-    // await when("uipopupopen")
-    // await t.sleep(10)
-    // await t.puppet("#submenuItemInfinitePopupTop").click()
+    // const iframe = t.puppet.$.query("ui-sandbox iframe")
 
-    // t.puppet("#menuItemSubmenuInlineTop").click()
     // await when("uipopupopen")
-    // // await t.puppet("#submenuItemInfiniteInlineTop").focus()
-    // await t.puppet("#submenuItemInfiniteInlineTop").click()
+    // await t.puppet("#menuItemIncrPopupIframe").click()
+    // await iframe.contentWindow.sys42.once("ipc.plugin:end-of-update")
+
+    // t.is(t.puppet.$.query("#cntIframe", iframe)?.value, "1")
 
     t.pass()
   })
@@ -329,5 +288,5 @@ if (inTop) {
     plugins: ["autoIncrementId"],
   })
   // const { puppet } = test.utils
-  // puppet("#btnMenuIframe").click()
+  // await puppet("#btnMenuIframe").click()
 }

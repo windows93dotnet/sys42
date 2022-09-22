@@ -73,7 +73,7 @@ let lastPopupForget
 
 if (rpc.inTop) {
   on({
-    "blur || Escape": closeAll,
+    // "blur || Escape": closeAll,
     "Tab": (e) => focusOut("next", e),
     "Shift+Tab": (e) => focusOut("prev", e),
   })
@@ -103,9 +103,13 @@ const popup = rpc(
 
     await ctx.preload.done()
     document.body.append(el)
+    dispatch(el, "uipopupopen")
     await ctx.reactive.done()
 
-    // focus.autofocus(el)
+    // console.log(el)
+
+    focus.autofocus(el)
+    // console.log(document.activeElement)
     queueTask(() => focus.autofocus(el)) // TODO: check why it's needed in iframes
 
     const deferred = defer()
@@ -131,8 +135,6 @@ const popup = rpc(
     }
 
     map.push({ el, close, opener, closeEvents })
-
-    dispatch(el, "uipopupopen")
 
     return deferred
   },

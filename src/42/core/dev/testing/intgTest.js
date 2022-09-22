@@ -46,9 +46,9 @@ export default function intgTest(fn, sbs) {
       const { dest } = t.utils
       Object.assign(t.utils, {
         decay: (item) => item,
-        dest(connect, options = {}) {
+        dest(options = {}) {
           options.keep = true
-          return dest(connect, options)
+          return dest(options)
         },
       })
     } else {
