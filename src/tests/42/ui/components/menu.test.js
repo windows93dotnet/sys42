@@ -243,7 +243,7 @@ if (inTop) {
     )
   })
 
-  test.intg.only("submenu", async (t) => {
+  test.intg("submenu", async (t) => {
     t.timeout(1000)
     const { decay, dest } = t.utils
 
@@ -270,15 +270,15 @@ if (inTop) {
       )
     )
 
-    // const iframe = t.puppet.$.query("ui-sandbox iframe")
+    const iframe = t.puppet.$.query("ui-sandbox iframe")
 
-    // await when("uipopupopen")
-    // await t.puppet("#menuItemIncrPopupIframe").click()
-    // await iframe.contentWindow.sys42.once("ipc.plugin:end-of-update")
+    await when("uipopupopen")
+    await t.puppet("#menuItemIncrPopupIframe").click()
+    await iframe.contentWindow.sys42.once("ipc.plugin:end-of-update")
 
-    // t.is(t.puppet.$.query("#cntIframe", iframe)?.value, "1")
+    t.is(t.puppet.$.query("#cntIframe", iframe)?.value, "1")
 
-    t.pass()
+    // t.pass()
   })
 } else {
   document.body.classList.add("debug")
@@ -287,6 +287,6 @@ if (inTop) {
     initiator: "menuDemo",
     plugins: ["autoIncrementId"],
   })
-  // const { puppet } = test.utils
-  // await puppet("#btnMenuIframe").click()
+  const { puppet } = test.utils
+  await puppet("#btnMenuIframe").click()
 }
