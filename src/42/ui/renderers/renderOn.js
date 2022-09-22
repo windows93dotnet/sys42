@@ -20,6 +20,10 @@ function compileRun(val, ctx) {
     specials: ["e", "event", "target", "rect"],
   })
 
+  // console.group(ctx.scope)
+  // console.table(tokens)
+  // console.groupEnd(ctx.scope)
+
   const fn = expr.compile(tokens, {
     assignment: true,
     async: true,

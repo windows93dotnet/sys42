@@ -1,4 +1,5 @@
 import test from "../../../42/test.js"
+import "../../../42/ui/components/dialog.js"
 import ui from "../../../42/ui.js"
 import system from "../../../42/system.js"
 
@@ -116,7 +117,8 @@ test.intg("popup behavior", async (t, { decay, dest, pickValues }) => {
     t.isElement(incr)
 
     if (options?.close) {
-      await puppet(options.close).focus().dispatch("pointerdown")
+      // await puppet(options.close).focus().dispatch("pointerdown")
+      await puppet(options.close).click()
       await t.sleep(30)
     }
 
@@ -151,7 +153,8 @@ test.intg("popup behavior", async (t, { decay, dest, pickValues }) => {
         "popup button should be open"
       )
 
-      await puppet(options.incr).focus().dispatch("pointerdown").click()
+      // await puppet(options.incr).focus().dispatch("pointerdown").click()
+      await puppet(options.incr).click()
       cnt++
       await t.sleep(30)
 

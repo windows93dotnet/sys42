@@ -69,11 +69,11 @@ function focusOut(dir, e) {
   }
 }
 
-let lastPopupForget
+let forgetLastPopupClose
 
 if (rpc.inTop) {
   on({
-    // "blur || Escape": closeAll,
+    "blur || Escape": closeAll,
     "Tab": (e) => focusOut("next", e),
     "Shift+Tab": (e) => focusOut("prev", e),
   })
@@ -96,20 +96,18 @@ const popup = rpc(
     ctx.cancel = new Canceller(ctx.cancel?.signal)
     ctx.signal = ctx.cancel.signal
 
+    await ctx.preload.done()
     const el = render(...normalized, { skipNormalize: true })
     el.style.position = "fixed"
     el.style.transform = "translate(-200vw, -200vh)"
     el.style.zIndex = maxZIndex("ui-dialog, ui-menu") + 1
 
-    await ctx.preload.done()
     document.body.append(el)
     dispatch(el, "uipopupopen")
     await ctx.reactive.done()
-
-    // console.log(el)
+    await ctx.postrender.call()
 
     focus.autofocus(el)
-    // console.log(document.activeElement)
     queueTask(() => focus.autofocus(el)) // TODO: check why it's needed in iframes
 
     const deferred = defer()
@@ -125,8 +123,8 @@ const popup = rpc(
     }
 
     const closeEvents = def.closeEvents ?? "pointerdown"
-    lastPopupForget?.()
-    lastPopupForget = on({ [closeEvents]: closeOthers })
+    forgetLastPopupClose?.()
+    forgetLastPopupClose = on({ [closeEvents]: closeOthers })
 
     if (el[_close] === true) {
       el.close = close
