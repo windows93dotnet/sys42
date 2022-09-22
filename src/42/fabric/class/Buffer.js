@@ -1,10 +1,15 @@
 // @read https://github.com/tc39/proposal-resizablearraybuffer
 // @read https://chromestatus.com/feature/4668361878274048
 
+const isLittleEndianMachine =
+  new Uint8Array(new Uint16Array([1]).buffer)[0] === 1
+
 export default class Buffer {
   #view
   #arr
   #length
+
+  static isLittleEndianMachine = isLittleEndianMachine
 
   constructor(options) {
     this.encoding = options?.encoding ?? "utf8"

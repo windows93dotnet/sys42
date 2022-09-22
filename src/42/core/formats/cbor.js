@@ -2,11 +2,11 @@
 /* eslint-disable complexity */
 
 // @read https://github.com/kriszyp/cbor-x
+// @read https://github.com/hildjj/cbor-wasm
 // @read https://github.com/rvagg/cborg
-// TODO: add commits from https://github.com/rinq/cbor-js/commits/master
 
-// @src https://github.com/paroga/cbor-js/blob/master/cbor.js
-//! Copyright (c) 2014-2016 Patrick Gansterer <paroga@paroga.com>. MIT License.
+// @src https://github.com/rinq/cbor-js
+//! Copyright (c) 2018 Patrick Gansterer <paroga@paroga.com>. MIT License.
 
 import noop from "../../fabric/type/function/noop.js"
 
@@ -15,6 +15,32 @@ const POW_2_32 = 4_294_967_296
 const POW_2_53 = 9_007_199_254_740_992
 
 const BUF_NEG_ZERO = [0xf9, 0x80, 0x00]
+
+// Based on http://stackoverflow.com/a/22747272/680742, the browser with
+// the lowest limit is Chrome, with 0x1_00_00 args.
+const MAX_ARGUMENTS_LENGTH = 0xff_ff
+
+/**
+ * @param {number[]} codePoints
+ * @returns {string}
+ */
+export function decodeCodePointsArray(codePoints) {
+  const len = codePoints.length
+  if (len < MAX_ARGUMENTS_LENGTH) {
+    return String.fromCharCode(...codePoints)
+  }
+
+  // Decode in chunks to avoid "call stack size exceeded".
+  let res = ""
+  let i = 0
+  while (i < len) {
+    res += String.fromCharCode(
+      ...codePoints.slice(i, (i += MAX_ARGUMENTS_LENGTH))
+    )
+  }
+
+  return res
+}
 
 export function encode(value) {
   let data = new ArrayBuffer(256)
@@ -72,7 +98,6 @@ export function encode(value) {
 
   function writeUint8Array(value) {
     const dataView = prepareWrite(value.length)
-    // for (const [i, element] of value.entries()) {
     for (let i = 0, l = value.length; i < l; i++) {
       dataView.setUint8(offset + i, value[i])
     }
@@ -359,7 +384,7 @@ export function decode(data, tagger = (val) => val, simpleValue = noop) {
           appendUtf16Data(utf16data, length)
         }
 
-        return String.fromCharCode.apply(null, utf16data)
+        return decodeCodePointsArray(utf16data)
       }
 
       case 4: {
