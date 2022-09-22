@@ -169,7 +169,7 @@ const makeDemo = ({ content } = {}) => {
         console.log("save", inTop)
       },
       log(str) {
-        console.log(str, inTop)
+        console.log(str, inTop, this)
       },
       incr(n) {
         return n + 1
@@ -179,7 +179,7 @@ const makeDemo = ({ content } = {}) => {
 }
 
 if (inTop) {
-  test.intg("dialog from closed popup is detached", async (t) => {
+  test.ui("dialog from closed popup is detached", async (t) => {
     const { decay, dest } = t.utils
 
     const app = await decay(
@@ -243,7 +243,7 @@ if (inTop) {
     )
   })
 
-  test.intg("submenu", async (t) => {
+  test.ui("submenu", async (t) => {
     t.timeout(1000)
     const { decay, dest } = t.utils
 

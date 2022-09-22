@@ -6,7 +6,7 @@ import Suite from "./core/dev/testing/class/Suite.js"
 import Test from "./core/dev/testing/class/Test.js"
 import ensureCurrentSuite from "./core/dev/testing/ensureCurrentSuite.js"
 import addUtilities from "./core/dev/testing/addUtilities.js"
-import intgTest from "./core/dev/testing/intgTest.js"
+import uiTest from "./core/dev/testing/uiTest.js"
 
 export { default as mock } from "./core/dev/testing/mock.js"
 
@@ -66,7 +66,7 @@ export const test = chainable(
     "beforeEach",
     "setup",
     "teardown",
-    "intg",
+    "ui",
   ],
   {
     taskError({ data }, value) {
@@ -96,8 +96,8 @@ export const test = chainable(
       const title = args
 
       if (data.cb) fn = makeCallbackTest(fn)
-      if (data.intg) {
-        fn = intgTest(fn, sbs)
+      if (data.ui) {
+        fn = uiTest(fn, sbs)
         data.serial = true
         sbs.current.serial = true
         sbs.current.timeout = 3000

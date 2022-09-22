@@ -70,11 +70,11 @@ const _isTrait = Symbol.for("Trait.isTrait")
 const sep = "/"
 
 const makeActionFn =
-  (filter, thisArg, el) =>
+  (fn, thisArg, el) =>
   async (...args) => {
     try {
-      if (thisArg === undefined) return await filter(...args)
-      return await filter.call(thisArg, ...args)
+      if (thisArg === undefined) return await fn(...args)
+      return await fn.call(thisArg, ...args)
     } catch (err) {
       dispatch(el, err)
     }

@@ -30,7 +30,7 @@ const selfExecute = debounce(async (sbs) => {
   trap()
 }, 1)
 
-export default function intgTest(fn, sbs) {
+export default function uiTest(fn, sbs) {
   let manual = false
 
   requestIdleCallback(async () => {

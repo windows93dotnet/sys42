@@ -2,7 +2,7 @@ import test from "../../../../42/test.js"
 import system from "../../../../42/system.js"
 import ui from "../../../../42/ui.js"
 
-test.intg("cross-realms state data", async (t, { decay, dest, pickValues }) => {
+test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
   const app = await decay(
     ui(
       dest({ connect: true }),
