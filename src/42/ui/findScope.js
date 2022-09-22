@@ -8,11 +8,13 @@ export default function findScope(ctx, loc) {
 
   let { scope } = ctx
 
-  if (
-    !ctx.actions.has(loc) &&
-    ctx.reactive.has("$computed" + dirname(resolveScope(scope, loc, ctx)))
-  ) {
-    return [scope, loc]
+  if (!ctx.actions.has(loc)) {
+    const baseLoc = dirname(resolveScope(scope, loc, ctx))
+    if (baseLoc === ctx.scope) {
+      if (ctx.computeds[ctx.scope]) return [scope, loc]
+    } else if (ctx.reactive.has("$computed" + baseLoc)) {
+      return [scope, loc]
+    }
   }
 
   if (ctx.scopeChain.length > 0) {

@@ -114,6 +114,7 @@ async function makeSuite(name, def) {
 
     { click: "{{/x(e, target)}}", level: 1, res: ["x", `ui`] },
     { click: "{{x(e, target)}}", level: 1, res: ["x", `ui-t-${name}-child`] },
+    // { click: "{{x(e.target, foo, bar/0)}}", level: 1, res: ["x", `ui-t-${name}-child`] },
     { click: "{{../x(e, target)}}", level: 1, res: ["x", `ui-t-${name}`] },
     { click: "{{../../x(e, target)}}", level: 1, res: ["x", `ui`] },
 
@@ -147,17 +148,22 @@ async function makeSuite(name, def) {
     ])
   }
 
-  const app = await test.utils.decay(
-    ui(test.utils.dest({ connect: true }), { content, actions })
-  )
+  let app
+
+  async function makeApp() {
+    app = await test.utils.decay(
+      ui(test.utils.dest({ connect: true }), { content, actions })
+    )
+  }
 
   for (const [click, level, check] of checks) {
     test.serial(click, level, async (t) => {
+      if (!app) await makeApp()
       await check(t)
     })
   }
 }
 
 await makeSuite("actions")
-// await makeSuite("actions-props", { props: { foo: "foo" } })
-await makeSuite("actions-computed", { computed: { bar: "{{[1,2]}}" } })
+await makeSuite("actions-props", { props: { foo: ["foo"] } })
+await makeSuite("actions-computed", { computed: { bar: "{{['bar']}}" } })

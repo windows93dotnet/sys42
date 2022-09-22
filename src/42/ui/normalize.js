@@ -134,15 +134,23 @@ function findComponentAction(ctx, cpn, value) {
   }
 }
 
-export function normalizeTokens(tokens, ctx, actions) {
+export function normalizeTokens(tokens, ctx, options) {
   let hasFilter = false
   const scopes = []
-  actions ??= { ...ctx.actions.value }
+  const actions = options?.actions ?? { ...ctx.actions.value }
 
   for (const token of tokens) {
     if (token.value === undefined) continue
 
-    const loc = resolveScope(...findScope(ctx, token.value), ctx)
+    let loc = resolveScope(...findScope(ctx, token.value), ctx)
+
+    if (options?.specials) {
+      for (const special of options.specials) {
+        if (special === loc.split("/")[1]) {
+          loc = resolveScope(ctx.scope, token.value)
+        }
+      }
+    }
 
     if (token.type === "key") {
       token.value = loc
@@ -199,7 +207,7 @@ export function normalizeString(item, ctx) {
     const scopes = []
     let hasFilter = false
     for (const tokens of parsed.substitutions) {
-      const res = normalizeTokens(tokens, ctx, actions)
+      const res = normalizeTokens(tokens, ctx, { actions })
       hasFilter ||= res.hasFilter
       scopes.push(...res.scopes)
     }
@@ -281,6 +289,7 @@ export function normalizeComputeds(computeds, ctx) {
 }
 
 export function normalizeComputed(scope, val, ctx, cb = noop) {
+  ctx.computeds[scope] = true
   const fn = typeof val === "string" ? normalizeString(val, ctx) : val
   if (fn.scopes) {
     ctx.reactive.set(`$computed${scope}`, undefined, { silent: true })
@@ -532,6 +541,7 @@ export function normalizeCtx(ctx = {}) {
   ctx.steps ??= "?"
   ctx.renderers ??= {}
   ctx.plugins ??= {}
+  ctx.computeds ??= {}
   ctx.scopeChain ??= []
   ctx.pluginHandlers ??= []
 

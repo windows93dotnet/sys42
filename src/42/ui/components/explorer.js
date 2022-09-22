@@ -134,14 +134,14 @@ export class Explorer extends Component {
   }
 
   go(path, options) {
-    // console.log("go", path)
+    console.log("go", path)
     if (keyboard.keys.Control) return // TODO: check how to do this in template
     this.path = path
     if (!options?.keepFocus) this.autofocus()
   }
 
   open(path) {
-    // console.log("open", path)
+    console.log("open", path)
     if (keyboard.keys.Control) return
     open(path)
   }
