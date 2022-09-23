@@ -241,6 +241,26 @@ test("transform", "text() + arrayBuffer()", async (t) => {
     .pipeTo(stream.ws.sink((item) => t.is(item, "abc")))
 })
 
+test("transform", "cut()", async (t) => {
+  t.plan(2)
+
+  const chunks = [new Uint8Array(42), new Uint8Array(42)]
+  chunks[0].fill(1)
+  chunks[1].fill(2)
+
+  const expected = t.utils.combine(...chunks).buffer
+
+  const parts = []
+
+  await stream.rs
+    .array(chunks)
+    .pipeThrough(stream.ts.cut(20))
+    .pipeThrough(stream.ts.each((x) => parts.push(x.length)))
+    .pipeTo(stream.ws.sink((item) => t.eq(item, expected)))
+
+  t.eq(parts, [20, 20, 20, 20, 4])
+})
+
 if ("CompressionStream" in globalThis) {
   test.serial("transform", "compress() + decompress()", async (t) => {
     t.timeout(1000)

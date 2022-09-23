@@ -5,6 +5,9 @@
 // @read https://whatwg-stream-visualizer.glitch.me/
 // @read https://web.dev/websocketstream/
 // @read https://github.com/SocketDev/wormhole-crypto
+// @read https://github.com/surma/observables-with-streams
+
+import combine from "../fabric/type/typedarray/combine.js"
 
 import pump from "../fabric/type/stream/pump.js"
 export { default as pump } from "../fabric/type/stream/pump.js"
@@ -135,6 +138,8 @@ export function wsEach(cb) {
 /* transform
 ============ */
 
+const DEFAULT_WATERMARK = [{ highWaterMark: 1 }, { highWaterMark: 0 }]
+
 export function tsText(encoding) {
   return new TextDecoderStream(encoding)
 }
@@ -152,11 +157,14 @@ export function tsDecompress(type = "gzip") {
 }
 
 export function tsJSON() {
-  return new TransformStream({
-    transform(chunk, controller) {
-      controller.enqueue(JSON.parse(chunk))
+  return new TransformStream(
+    {
+      transform(chunk, controller) {
+        controller.enqueue(JSON.parse(chunk))
+      },
     },
-  })
+    ...DEFAULT_WATERMARK
+  )
 }
 
 // @src https://github.com/jakearchibald/streaming-html-spec/blob/master/ParseTransform.js
@@ -185,99 +193,134 @@ export function tsDOM() {
     childList: true,
   })
 
-  return new TransformStream({
-    start(c) {
-      controller = c
+  return new TransformStream(
+    {
+      start(c) {
+        controller = c
+      },
+      transform(chunk) {
+        iframe.contentDocument.write(chunk)
+      },
+      flush() {
+        queueChildNodes()
+        iframe.contentDocument.close()
+        iframe.remove()
+      },
     },
-    transform(chunk) {
-      iframe.contentDocument.write(chunk)
-    },
-    flush() {
-      queueChildNodes()
-      iframe.contentDocument.close()
-      iframe.remove()
-    },
-  })
+    ...DEFAULT_WATERMARK
+  )
 }
 
 export function tsMap(cb) {
   let i = 0
-  return new TransformStream({
-    async transform(chunk, controller) {
-      controller.enqueue(await cb(chunk, i++))
+  return new TransformStream(
+    {
+      async transform(chunk, controller) {
+        controller.enqueue(await cb(chunk, i++))
+      },
     },
-  })
+    ...DEFAULT_WATERMARK
+  )
 }
 
 export function tsEach(cb) {
   let i = 0
-  return new TransformStream({
-    async transform(chunk, controller) {
-      await cb(chunk, i++)
-      controller.enqueue(chunk)
+  return new TransformStream(
+    {
+      async transform(chunk, controller) {
+        await cb(chunk, i++)
+        controller.enqueue(chunk)
+      },
     },
-  })
+    ...DEFAULT_WATERMARK
+  )
 }
 
 export function tsFilter(cb) {
-  return new TransformStream({
-    async transform(chunk, controller) {
-      if (await cb(chunk)) controller.enqueue(chunk)
+  return new TransformStream(
+    {
+      async transform(chunk, controller) {
+        if (await cb(chunk)) controller.enqueue(chunk)
+      },
     },
-  })
+    ...DEFAULT_WATERMARK
+  )
 }
 
 export function tsSplit(separator = "\n") {
   let buffer = ""
-  return new TransformStream({
-    transform(chunk, controller) {
-      buffer += chunk
-      const parts = buffer.split(separator)
-      parts.slice(0, -1).forEach((part) => controller.enqueue(part))
-      buffer = parts[parts.length - 1]
+  return new TransformStream(
+    {
+      transform(chunk, controller) {
+        buffer += chunk
+        const parts = buffer.split(separator)
+        parts.slice(0, -1).forEach((part) => controller.enqueue(part))
+        buffer = parts[parts.length - 1]
+      },
+      flush(controller) {
+        if (buffer) controller.enqueue(buffer)
+      },
     },
-    flush(controller) {
-      if (buffer) controller.enqueue(buffer)
-    },
-  })
+    ...DEFAULT_WATERMARK
+  )
 }
 
 export function tsJoin(separator = "\n") {
   let buffer = ""
   let first = false
-  return new TransformStream({
-    transform(chunk, controller) {
-      if (first) controller.enqueue(buffer + separator)
-      else first = true
-      buffer = chunk
+  return new TransformStream(
+    {
+      transform(chunk, controller) {
+        if (first) controller.enqueue(buffer + separator)
+        else first = true
+        buffer = chunk
+      },
+      flush(controller) {
+        if (buffer) controller.enqueue(buffer)
+      },
     },
-    flush(controller) {
-      if (buffer) controller.enqueue(buffer)
-    },
-  })
+    ...DEFAULT_WATERMARK
+  )
 }
 
 export function tsCut(size) {
-  const buffer = absorb.arrayBuffer()
-  let offset = 0
-  return new TransformStream({
-    transform(chunk, controller) {
-      buffer.add(chunk)
-      const arrbuf = buffer.memory.buffer
-      let remain
-      while (buffer.pointer >= offset + size) {
-        remain = buffer.pointer - (offset + size)
-        if (remain < size) {
-          controller.enqueue(new Uint8Array(arrbuf, offset, remain))
-          offset += remain
-          break
-        } else {
-          controller.enqueue(new Uint8Array(arrbuf, offset, size))
-          offset += size
+  let prev
+  return new TransformStream(
+    {
+      async transform(chunk, controller) {
+        let i = 0
+
+        if (prev) {
+          i = size - prev.length
+          controller.enqueue(combine(prev, chunk.slice(0, i)))
+          prev = undefined
         }
-      }
+
+        for (let l = chunk.length; i < l; i += size) {
+          if (i + size > l) prev = chunk.slice(i)
+          else controller.enqueue(chunk.slice(i, i + size))
+        }
+      },
+      flush(controller) {
+        controller.enqueue(prev)
+      },
     },
-  })
+    ...DEFAULT_WATERMARK
+  )
+}
+
+export function tsPercent(total, cb) {
+  let bytes = 0
+  return new TransformStream(
+    {
+      transform(chunk, controller) {
+        bytes += chunk.length
+        cb((100 * bytes) / total, bytes, total)
+        controller.enqueue(chunk)
+      },
+    },
+    ...DEFAULT_WATERMARK
+  )
 }
 
 export function tsCombine(a, ...transforms) {
@@ -321,6 +364,7 @@ const stream = {
     split: tsSplit,
     join: tsJoin,
     cut: tsCut,
+    percent: tsPercent,
     combine: tsCombine,
   },
 }
