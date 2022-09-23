@@ -6,6 +6,7 @@ import on from "../fabric/event/on.js"
 import defer from "../fabric/type/promise/defer.js"
 import Canceller from "../fabric/class/Canceller.js"
 import focus from "../fabric/dom/focus.js"
+import queueTask from "../fabric/type/function/queueTask.js"
 
 import rpc from "../core/ipc/rpc.js"
 import normalize, { objectifyDef, forkDef } from "./normalize.js"
@@ -130,12 +131,13 @@ const popup = rpc(
       const event = dispatch(el, "uipopupclose", { cancelable: true })
       if (event.defaultPrevented) return
       unsee(el)
+      if (el.contains(document.activeElement)) document.activeElement.blur()
       requestIdleCallback(async () => {
-        await ctx.reactive.ready
+        await ctx.reactive.pendingUpdate
         ctx.cancel()
         el.remove()
-        deferred.resolve({ opener, ...options })
       })
+      queueTask(() => deferred.resolve({ opener, ...options }))
     }
 
     if (map.length === 0) listenGlobalEvents()
@@ -190,8 +192,9 @@ const popup = rpc(
       if (fromBlur && document.activeElement === el) return
 
       if (el) {
+        if (!fromOpener) el.setAttribute("aria-expanded", "false")
+
         if (focusOut) {
-          if (!fromOpener) el.setAttribute("aria-expanded", "false")
           const menu = el.closest("ui-menu,ui-menubar")
 
           if (menu) focus.autofocus(menu)
@@ -202,7 +205,6 @@ const popup = rpc(
         }
 
         if (document.activeElement === document.body) el.focus()
-        if (!fromOpener) el.setAttribute("aria-expanded", "false")
       }
     },
   }

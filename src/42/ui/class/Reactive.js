@@ -35,8 +35,8 @@ export default class Reactive extends Emitter {
 
     const update = () => {
       const res = this.render(this.queue)
-      this.ready?.resolve?.()
-      this.ready = 0
+      this.pendingUpdate?.resolve?.()
+      this.pendingUpdate = false
       try {
         this.emit("update", ...res)
       } catch (err) {
@@ -47,7 +47,7 @@ export default class Reactive extends Emitter {
     this.#update.onrepaint = paintThrottle(update)
     this.#update.now = update
     this.#update.fn = this.#update.now
-    this.ready = false
+    this.pendingUpdate = false
 
     this.state = observe(this.data, {
       signal: this.ctx.cancel.signal,
@@ -87,9 +87,8 @@ export default class Reactive extends Emitter {
   }
 
   async done(n = 10) {
-    await this.ctx.components.done()
-    await this.ctx.undones.done()
-    await this.ready
+    await Promise.all([this.ctx.components.done(), this.ctx.undones.done()])
+    await this.pendingUpdate
     await 0 // queueMicrotask
 
     if (this.ctx.undones.length > 0 || this.ctx.components.length > 0) {
@@ -97,13 +96,11 @@ export default class Reactive extends Emitter {
       await this.done(n--)
     }
 
-    if (this.firstUpdateDone === false) await this.#setup()
-  }
-
-  async #setup() {
-    this.firstUpdateDone = true
-    this.throttle = true
-    await this.ctx.postrender.call()
+    if (this.firstUpdateDone === false) {
+      this.firstUpdateDone = true
+      this.throttle = true
+      await this.ctx.postrender.call()
+    }
   }
 
   get throttle() {
@@ -151,7 +148,7 @@ export default class Reactive extends Emitter {
   }
 
   update(path, val, oldVal, deleted) {
-    this.ready ||= defer()
+    this.pendingUpdate ||= defer()
     this.enqueue(this.queue, path, val, oldVal, deleted)
     this.#update.fn()
   }
@@ -262,7 +259,7 @@ export default class Reactive extends Emitter {
     this.off("*")
     this.queue.paths.clear()
     this.queue.objects.clear()
-    this.ready = false
+    this.pendingUpdate = false
     delete this.data
     delete this.state
     this.ctx.cancel("Reactive instance destroyed")

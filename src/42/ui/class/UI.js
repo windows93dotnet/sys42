@@ -58,8 +58,4 @@ export default class UI {
     delete this.def
     delete this.el
   }
-
-  get [Symbol.toStringTag]() {
-    return "UI"
-  }
 }
