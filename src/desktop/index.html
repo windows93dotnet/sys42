@@ -19,163 +19,47 @@
   }
 </style>
 
-<script type="_module">
-  let resolve
-  const p = new Promise((r) => {
-    console.log(111)
-    resolve = r
-  })
-
-  setTimeout(() => {
-    resolve("coucou")
-  }, 100)
-
-  console.log(await p)
-</script>
-
-<script type="_module">
+<script type="module">
+  /* eslint-disable unicorn/prefer-top-level-await */
   import ui from "../42/ui.js"
   import http from "../42/core/http.js"
   import stream from "../42/core/stream.js"
-  // import idle from "../42/fabric/type/promise/idle.js"
-  import repaint from "../42/fabric/type/promise/repaint.js"
-  import paintThrottle from "../42/fabric/type/function/paintThrottle.js"
-  import defer from "../42/fabric/type/promise/defer.js"
-  import { round } from "../42/fabric/type/number/precision.js"
+  import sinkField from "../42/fabric/type/stream/sinkField.js"
+  import Canceller from "../42/fabric/class/Canceller.js"
+  import noop from "../42/fabric/type/function/noop.js"
+  import puppet from "../42/core/dev/puppet.js"
 
-  ui({
+  const { cancel, signal } = new Canceller()
+
+  await ui({
     tag: ".box-h.box-fit",
     content: [
-      { tag: "input" }, //
-      // { tag: "textarea.font-mono" },
-      { tag: "div.font-mono.w-full.scroll" },
-    ],
-  })
-
-  const input = document.querySelector("input")
-  const textarea = document.querySelector(".font-mono")
-
-  function sinkToElement(el) {
-    const _line = document.createElement("div")
-    return new WritableStream(
       {
-        async write(chunk) {
-          const line = _line.cloneNode(true)
-          line.textContent = chunk
-          el.append(line)
-
-          // console.log(el.scrollHeight / 2, el.clientHeight + el.scrollTop)
-
-          if (el.scrollHeight / 2 > el.clientHeight + el.scrollTop) {
-            await new Promise((resolve) => {
-              const onscroll = () => {
-                el.removeEventListener("scroll", onscroll)
-                resolve()
-              }
-
-              el.addEventListener("scroll", onscroll)
-            })
-          }
-        },
-
-        close() {
-          // update()
+        tag: "button",
+        label: "Cancel",
+        click() {
+          console.log(8788)
+          cancel()
         },
       },
-      { highWaterMark: 1 }
-    )
-  }
-
-  http
-    .stream("../tests/fixtures/stream/html_standard.html.gz")
-    .headers((headers, rs) => {
-      const len = Number(headers.get("content-length"))
-      rs.pipeThrough(stream.ts.cut(1500))
-        .pipeThrough(
-          stream.ts.percent(len, (percent) => {
-            input.value = round(percent)
-          })
-        )
-        .pipeThrough(stream.ts.decompress())
-        .pipeThrough(stream.ts.text())
-        .pipeThrough(stream.ts.split())
-        .pipeTo(sinkToElement(textarea, len))
-    })
-</script>
-
-<script type="module">
-  import ui from "../42/ui.js"
-  import http from "../42/core/http.js"
-  import stream from "../42/core/stream.js"
-  import idle from "../42/fabric/type/promise/idle.js"
-  import repaint from "../42/fabric/type/promise/repaint.js"
-  import paintThrottle from "../42/fabric/type/function/paintThrottle.js"
-  import defer from "../42/fabric/type/promise/defer.js"
-  import { round } from "../42/fabric/type/number/precision.js"
-
-  ui({
-    tag: ".box-h.box-fit",
-    content: [
-      { tag: "input" }, //
       { tag: "textarea.font-mono" },
     ],
   })
 
-  const input = document.querySelector("input")
   const textarea = document.querySelector("textarea")
 
-  function sinkToElement(el) {
-    let buffer = ""
-    function update() {
-      el.value = buffer
-      return idle().then(() => {
-        pending = false
-      })
-    }
-
-    let pending = false
-
-    return new WritableStream(
-      {
-        async write(chunk) {
-          buffer += chunk
-
-          if (pending) return
-          if (el.scrollHeight / 2 > el.clientHeight + el.scrollTop) return
-
-          pending = true
-          await update()
-        },
-
-        close() {
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              update()
-            })
-          })
-        },
-      },
-      { highWaterMark: 1 }
-    )
-  }
+  setTimeout(async () => {
+    await puppet("button").click()
+  }, 500)
 
   http
     .stream("../tests/fixtures/stream/html_standard.html.gz")
-    .headers((headers, rs) => {
-      const len = Number(headers.get("content-length"))
-      rs
-        // .pipeThrough(stream.ts.cut(1500))
-        .pipeThrough(
-          stream.ts.percent(len, (percent) => {
-            input.value = round(percent)
-          })
-        )
-        .pipeThrough(stream.ts.decompress())
-        .pipeThrough(stream.ts.cut(1500))
-        .pipeThrough(stream.ts.text())
-        // .pipeThrough(stream.ts.split())
-        .pipeTo(sinkToElement(textarea, len))
-    })
+    .pipeThrough(stream.ts.decompress())
+    // .stream("../tests/fixtures/website/index.html")
+    .pipeThrough(stream.ts.cut(0x03_ff))
+    .pipeThrough(stream.ts.text())
+    .pipeTo(sinkField(textarea), { signal })
+    .catch(noop)
 </script>
 
 <script type="_module">

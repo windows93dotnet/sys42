@@ -284,32 +284,52 @@ export function tsJoin(separator = "\n") {
   )
 }
 
-import nextCycle from "../fabric/type/promise/nextCycle.js"
-
-export function tsCut(size) {
-  let prev
+export function tsCut(size, options) {
+  let prevArr
+  let prevStr
   return new TransformStream(
     {
-      async transform(chunk, controller) {
-        let i = 0
+      transform:
+        options?.exact === true
+          ? async (chunk, controller) => {
+              let i = 0
 
-        if (prev) {
-          i = size - prev.length
-          controller.enqueue(combine(prev, chunk.slice(0, i)))
-          prev = undefined
-        }
+              if (prevArr) {
+                i = size - prevArr.length
+                controller.enqueue(combine(prevArr, chunk.slice(0, i)))
+                prevArr = undefined
+              }
 
-        for (let l = chunk.length; i < l; i += size) {
-          if (i + size > l) prev = chunk.slice(i)
-          else controller.enqueue(chunk.slice(i, i + size))
-          await nextCycle()
-        }
-      },
-      flush(controller) {
-        controller.enqueue(prev)
-      },
+              if (prevStr) {
+                i = size - prevStr.length
+                controller.enqueue(prevStr + chunk.slice(0, i))
+                prevStr = undefined
+              }
+
+              for (let l = chunk.length; i < l; i += size) {
+                if (i + size > l) {
+                  if (typeof chunk === "string") prevStr = chunk.slice(i)
+                  else prevArr = chunk.slice(i)
+                } else controller.enqueue(chunk.slice(i, i + size))
+                await 0
+              }
+            }
+          : async (chunk, controller) => {
+              for (let i = 0, l = chunk.length; i < l; i += size) {
+                controller.enqueue(chunk.slice(i, i + size))
+                await 0
+              }
+            },
+      flush:
+        options?.exact === true
+          ? (controller) => {
+              if (prevArr) controller.enqueue(prevArr)
+              if (prevStr) controller.enqueue(prevStr)
+            }
+          : undefined,
     },
-    ...DEFAULT_WATERMARK
+    { highWaterMark: 1 },
+    { highWaterMark: 0 }
   )
 }
 
