@@ -5,6 +5,8 @@ import inTop from "../../../../42/core/env/realm/inTop.js"
 import "../../../../42/ui/components/dialog.js"
 import "../../../../42/ui/popup.js"
 
+const manual = 0
+
 const __ = inTop ? "Top" : "Iframe"
 
 const { href } = new URL(
@@ -270,15 +272,20 @@ if (inTop) {
       )
     )
 
-    const iframe = t.puppet.$.query("ui-sandbox iframe")
+    if (manual) {
+      t.pass()
+    } else {
+      const iframe = t.puppet.$.query("ui-sandbox iframe")
+      console.log(1)
+      await when("uipopupopen")
+      console.log(2)
+      await t.puppet("#menuItemIncrPopupIframe").click()
+      console.log(3)
+      await iframe.contentWindow.sys42.once("ipc.plugin:end-of-update")
+      console.log(4)
 
-    await when("uipopupopen")
-    await t.puppet("#menuItemIncrPopupIframe").click()
-    await iframe.contentWindow.sys42.once("ipc.plugin:end-of-update")
-
-    t.is(t.puppet.$.query("#cntIframe", iframe)?.value, "1")
-
-    // t.pass()
+      t.is(t.puppet.$.query("#cntIframe", iframe)?.value, "1")
+    }
   })
 } else {
   document.body.classList.add("debug")
@@ -287,6 +294,8 @@ if (inTop) {
     initiator: "menuDemo",
     plugins: ["autoIncrementId"],
   })
-  const { puppet } = test.utils
-  await puppet("#btnMenuIframe").click()
+  if (!manual) {
+    const { puppet } = test.utils
+    await puppet("#btnMenuIframe").click()
+  }
 }

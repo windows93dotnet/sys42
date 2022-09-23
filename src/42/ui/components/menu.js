@@ -121,6 +121,7 @@ export class Menu extends Component {
         item.aria ??= {}
         item.aria.disabled = item.disabled
         delete item.disabled
+        // delete item.click
         item.tabIndex = -1
       } else {
         item.tabIndex = first ? 0 : -1

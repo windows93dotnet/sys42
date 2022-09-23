@@ -1,8 +1,8 @@
 export default {
   paths: {
     files: {
-      // scan: "/src/files.cbor",
-      scan: "/src/files.json",
+      scan: "/src/files.cbor",
+      // scan: "/src/files.json",
       devScript: "/src/42/dev.js",
     },
     dirs: {

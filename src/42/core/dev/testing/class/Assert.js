@@ -101,6 +101,7 @@ export default class Assert {
   #pending = 0
   #planned = false
 
+  #laps = []
   #stayings = []
   #teardowns = []
 
@@ -158,6 +159,7 @@ export default class Assert {
     for (const fn of this.#teardowns) fn()
     this.spies.length = 0
     this.stubs.length = 0
+    this.#laps.length = 0
     this.#stayings.length = 0
   }
 
@@ -231,6 +233,12 @@ export default class Assert {
   sleep(ms) {
     this.timeout(this.#timeoutDelay + ms)
     return new Promise((resolve) => setTimeoutNative(resolve, ms))
+  }
+
+  lap(val) {
+    this.timeout("reset")
+    this.#laps.push(new Error())
+    return val
   }
 
   timeout(ms = 300, cumulated = 0) {
