@@ -34,6 +34,15 @@ async function serializeTest(test, config) {
 
     const { details } = test.error
 
+    const laps = []
+    if (Array.isArray(details.laps)) {
+      for (const lap of details.laps) {
+        laps.push(serializeError(lap).stack[0])
+      }
+
+      delete details.laps
+    }
+
     if (
       "actual" in details &&
       "expected" in details &&
@@ -64,6 +73,15 @@ async function serializeTest(test, config) {
         ])
       )
     )
+
+    if (laps.length > 0) {
+      test.error.details.laps = laps
+      test.error.original +=
+        "\n\nlaps:" +
+        laps.map(
+          ({ filename, line, column }) => `\n  ${filename}:${line}:${column}`
+        )
+    }
 
     if (
       tmpDiff &&

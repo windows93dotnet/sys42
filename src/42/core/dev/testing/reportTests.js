@@ -132,13 +132,24 @@ const displayTest = (test, config, options) => {
     err += formatError(test.error, {
       entries: {
         newline: "\n\n",
-        valueFormater: (x) =>
-          typeof x === "string"
-            ? highlight(x)
-            : "\n{dim.grey ┌╴}\n{dim.grey │} " +
-              formatError(x, { compact: true })
-                .replaceAll("\n", "\n{dim.grey │} ")
-                .replace(/│} $/, "└╴} "),
+        valueFormater(x) {
+          if (typeof x === "string") return highlight(x)
+          if (Array.isArray(x)) {
+            let laps = ""
+            for (const item of x) {
+              laps += "\n  {grey.dim •} " + formatFilename(item, "red")
+            }
+
+            return laps
+          }
+
+          return (
+            "\n{dim.grey ┌╴}\n{dim.grey │} " +
+            formatError(x, { compact: true })
+              .replaceAll("\n", "\n{dim.grey │} ")
+              .replace(/│} $/, "└╴} ")
+          )
+        },
       },
     })
 

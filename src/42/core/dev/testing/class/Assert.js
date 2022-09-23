@@ -31,16 +31,16 @@ export class AssertionError extends Error {
 
     super(userMessage ?? message ?? "Unspecified AssertionError")
     Object.defineProperty(this, "name", { value: "AssertionError" })
-
     if (details) Object.assign(this, clone(details))
     if (stack) addStack(this, stack)
   }
 }
 
 export class VerifyError extends Error {
-  constructor(message, stack) {
+  constructor(message, stack, details) {
     super(message)
     Object.defineProperty(this, "name", { value: "VerifyError" })
+    if (details) Object.assign(this, clone(details))
     if (stack) addStack(this, stack)
   }
 }
@@ -165,7 +165,9 @@ export default class Assert {
 
   verifyContext(failing, stackframe) {
     if (this.#timeoutId === true) {
-      throw new VerifyError("Test timed out", stackframe)
+      let details
+      if (this.#laps.length > 0) details = { laps: this.#laps }
+      throw new VerifyError("Test timed out", stackframe, details)
     } else clearTimeoutNative(this.#timeoutId)
 
     for (const { actual, expected, error } of this.#stayings) {
