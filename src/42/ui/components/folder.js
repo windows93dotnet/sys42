@@ -2,8 +2,7 @@ import "./icon.js"
 import Component from "../class/Component.js"
 import disk from "../../core/disk.js"
 import prompt from "../invocables/prompt.js"
-import dataTransfertImport from "../../fabric/type/file/dataTransfertImport.js"
-import dataTransfertExport from "../../fabric/type/file/dataTransfertExport.js"
+import dt from "../../core/dt.js"
 
 const { indexOf } = Array.prototype
 
@@ -65,7 +64,7 @@ export class Folder extends Component {
         prevent: true,
         dragover: false,
         async drop(e) {
-          const { items, paths } = await dataTransfertImport(e.dataTransfer)
+          const { items, paths } = await dt.import(e.dataTransfer)
           if (paths) console.log(paths)
           else console.table(items)
         },
@@ -77,7 +76,7 @@ export class Folder extends Component {
         },
         dragstart(e, target) {
           this.el.autoSelect(target)
-          dataTransfertExport(e.dataTransfer, { paths: this.el.selection })
+          dt.export(e.dataTransfer, { paths: this.el.selection })
         },
         // drag(e) {
         //   console.log(e.x, e.y)
