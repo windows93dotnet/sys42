@@ -1,6 +1,7 @@
 import inTop from "../../env/realm/inTop.js"
 import trap from "../../../fabric/type/error/trap.js"
 import debounce from "../../../fabric/type/function/debounce.js"
+import unsee from "../../../fabric/dom/unsee.js"
 // import { whenTestFileReady } from "./htmlTest.js"
 
 // Integration tests self-execute if not started from a test runner.
@@ -52,22 +53,18 @@ export default function uiTest(fn, sbs) {
         },
       })
     } else {
-      // TODO: use mutation observer on document.body
-      // to keep test.js decoupled from ui.js
-      t.utils.listen({
-        uidialogopen(e, target) {
-          target.style.opacity = 0.01
-          t.utils.decay(target)
-        },
-        uipopupopen(e, target) {
-          target.style.opacity = 0.01
-          t.utils.decay(target)
+      t.utils.on({
+        "uidialogopen || uipopupopen"(e, target) {
+          t.utils.decay(unsee(target))
         },
       })
     }
 
     await 0 // queueMicrotask
     await fn(t, t.utils)
+
+    // TODO: check tests loaded in an iframe
+    // -------------------------------------
 
     // t.timeout("reset")
 

@@ -9,11 +9,11 @@ import hashmap from "../../../fabric/type/object/hashmap.js"
 import http from "../../../core/http.js"
 import idle from "../../../fabric/type/promise/idle.js"
 import kill from "../../../fabric/type/any/kill.js"
-import listenFn from "../../../fabric/event/listen.js"
 import log, { Log, CONSOLE_KEYS } from "../../log.js"
 import nextCycle from "../../../fabric/type/promise/nextCycle.js"
 import noop from "../../../fabric/type/function/noop.js"
 import omit from "../../../fabric/type/object/omit.js"
+import on from "../../../fabric/event/on.js"
 import parallel from "../../../fabric/type/promise/parallel.js"
 import pick from "../../../fabric/type/object/pick.js"
 import prettify from "../../../fabric/type/markup/prettify.js"
@@ -113,7 +113,7 @@ export default function addUtilities(item, isExecutionContext) {
   item.utils ??= {}
 
   item.utils[_forgets] = []
-  item.utils.listen = (...args) => {
+  item.utils.on = (...args) => {
     if (item.utils[_forgets].length === 0) {
       item.teardown(() => {
         for (const forget of item.utils[_forgets]) forget()
@@ -121,7 +121,7 @@ export default function addUtilities(item, isExecutionContext) {
       })
     }
 
-    item.utils[_forgets].push(listenFn(...args))
+    item.utils[_forgets].push(on(...args))
   }
 
   item.utils[_decays] = []
@@ -172,6 +172,7 @@ export default function addUtilities(item, isExecutionContext) {
       }
 
       el.style.opacity = 0.01
+      el.style.pointerEvents = "none"
     }
 
     if (options?.connect) document.body.append(el)
@@ -208,6 +209,4 @@ export default function addUtilities(item, isExecutionContext) {
     uid,
     when,
   })
-
-  item._ = item.utils
 }

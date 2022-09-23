@@ -131,15 +131,8 @@ dialog(
 
   (test, { title, def, timeout: ms, working, trusted, description }) => {
     ms ??= 2000
-    test.serial(title, async (t, { decay, dest }) => {
+    test.ui(title, async (t, { decay, dest }) => {
       t.timeout(ms + 100)
-
-      t.utils.listen({
-        uidialogopen(e, target) {
-          target.style.opacity = 0.01
-          t.utils.decay(target)
-        },
-      })
 
       const app = decay(ui(dest({ connect: true }), def, { trusted }))
 

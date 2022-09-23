@@ -73,7 +73,7 @@ test.ui("popup behavior", async (t, { decay, dest, pickValues }) => {
 
   await new Promise((resolve) => {
     let cnt = 0
-    t.utils.listen({ uidialogopen: () => ++cnt === 2 && resolve() })
+    t.utils.on({ uidialogopen: () => ++cnt === 2 && resolve() })
   })
 
   t.timeout("reset")

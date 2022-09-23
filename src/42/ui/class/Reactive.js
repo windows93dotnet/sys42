@@ -35,8 +35,8 @@ export default class Reactive extends Emitter {
 
     const update = () => {
       const res = this.render(this.queue)
-      this.#update.ready?.resolve?.()
-      this.#update.ready = 0
+      this.ready?.resolve?.()
+      this.ready = 0
       try {
         this.emit("update", ...res)
       } catch (err) {
@@ -47,7 +47,7 @@ export default class Reactive extends Emitter {
     this.#update.onrepaint = paintThrottle(update)
     this.#update.now = update
     this.#update.fn = this.#update.now
-    this.#update.ready = false
+    this.ready = false
 
     this.state = observe(this.data, {
       signal: this.ctx.cancel.signal,
@@ -89,7 +89,7 @@ export default class Reactive extends Emitter {
   async done(n = 10) {
     await this.ctx.components.done()
     await this.ctx.undones.done()
-    await this.#update.ready
+    await this.ready
     await 0 // queueMicrotask
 
     if (this.ctx.undones.length > 0 || this.ctx.components.length > 0) {
@@ -151,8 +151,8 @@ export default class Reactive extends Emitter {
   }
 
   update(path, val, oldVal, deleted) {
+    this.ready ||= defer()
     this.enqueue(this.queue, path, val, oldVal, deleted)
-    this.#update.ready ||= defer()
     this.#update.fn()
   }
 
@@ -262,7 +262,7 @@ export default class Reactive extends Emitter {
     this.off("*")
     this.queue.paths.clear()
     this.queue.objects.clear()
-    this.#update.ready = false
+    this.ready = false
     delete this.data
     delete this.state
     this.ctx.cancel("Reactive instance destroyed")

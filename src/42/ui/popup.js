@@ -1,4 +1,5 @@
 import render from "./render.js"
+import unsee from "../fabric/dom/unsee.js"
 import dispatch from "../fabric/event/dispatch.js"
 import maxZIndex from "../fabric/dom/maxZIndex.js"
 import on from "../fabric/event/on.js"
@@ -128,9 +129,13 @@ const popup = rpc(
     const close = (options) => {
       const event = dispatch(el, "uipopupclose", { cancelable: true })
       if (event.defaultPrevented) return
-      ctx.cancel()
-      el.remove()
-      deferred.resolve({ opener, ...options })
+      unsee(el)
+      requestIdleCallback(async () => {
+        await ctx.reactive.ready
+        ctx.cancel()
+        el.remove()
+        deferred.resolve({ opener, ...options })
+      })
     }
 
     if (map.length === 0) listenGlobalEvents()
