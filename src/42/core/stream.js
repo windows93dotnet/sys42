@@ -247,15 +247,16 @@ export function tsFilter(cb) {
   )
 }
 
-export function tsSplit(separator = "\n") {
+export function tsSplit(sep = "\n", options) {
   let buffer = ""
+  const end = options?.exclude ? "" : sep
   return new TransformStream(
     {
       transform(chunk, controller) {
         buffer += chunk
-        const parts = buffer.split(separator)
-        parts.slice(0, -1).forEach((part) => controller.enqueue(part))
-        buffer = parts[parts.length - 1]
+        const parts = buffer.split(sep)
+        for (const part of parts.slice(0, -1)) controller.enqueue(part + end)
+        buffer = parts.at(-1)
       },
       flush(controller) {
         if (buffer) controller.enqueue(buffer)
@@ -283,6 +284,8 @@ export function tsJoin(separator = "\n") {
   )
 }
 
+import nextCycle from "../fabric/type/promise/nextCycle.js"
+
 export function tsCut(size) {
   let prev
   return new TransformStream(
@@ -299,6 +302,7 @@ export function tsCut(size) {
         for (let l = chunk.length; i < l; i += size) {
           if (i + size > l) prev = chunk.slice(i)
           else controller.enqueue(chunk.slice(i, i + size))
+          await nextCycle()
         }
       },
       flush(controller) {

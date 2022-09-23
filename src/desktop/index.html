@@ -13,40 +13,77 @@
   textarea {
     caret: steelblue;
   }
+
+  div > pre {
+    display: block;
+  }
 </style>
 
-<script type="module">
+<script type="_module">
+  let resolve
+  const p = new Promise((r) => {
+    console.log(111)
+    resolve = r
+  })
+
+  setTimeout(() => {
+    resolve("coucou")
+  }, 100)
+
+  console.log(await p)
+</script>
+
+<script type="_module">
   import ui from "../42/ui.js"
   import http from "../42/core/http.js"
   import stream from "../42/core/stream.js"
-  import idle from "../42/fabric/type/promise/idle.js"
+  // import idle from "../42/fabric/type/promise/idle.js"
+  import repaint from "../42/fabric/type/promise/repaint.js"
+  import paintThrottle from "../42/fabric/type/function/paintThrottle.js"
+  import defer from "../42/fabric/type/promise/defer.js"
   import { round } from "../42/fabric/type/number/precision.js"
 
   ui({
     tag: ".box-h.box-fit",
-    content: [{ tag: "input" }, { tag: "textarea.font-mono" }],
+    content: [
+      { tag: "input" }, //
+      // { tag: "textarea.font-mono" },
+      { tag: "div.font-mono.w-full.scroll" },
+    ],
   })
 
   const input = document.querySelector("input")
-  const textarea = document.querySelector("textarea")
+  const textarea = document.querySelector(".font-mono")
 
   function sinkToElement(el) {
-    return new WritableStream({
-      async write(chunk) {
-        el.textContent += chunk
-        await (el.scrollHeight > el.clientHeight
-          ? new Promise((resolve) => {
+    const _line = document.createElement("div")
+    return new WritableStream(
+      {
+        async write(chunk) {
+          const line = _line.cloneNode(true)
+          line.textContent = chunk
+          el.append(line)
+
+          // console.log(el.scrollHeight / 2, el.clientHeight + el.scrollTop)
+
+          if (el.scrollHeight / 2 > el.clientHeight + el.scrollTop) {
+            await new Promise((resolve) => {
               const onscroll = () => {
-                // console.log(el.scrollTop, el.clientHeight, el.scrollHeight)
                 el.removeEventListener("scroll", onscroll)
-                requestAnimationFrame(() => resolve())
+                resolve()
               }
 
               el.addEventListener("scroll", onscroll)
             })
-          : idle())
+          }
+        },
+
+        close() {
+          // update()
+        },
       },
-    })
+      { highWaterMark: 1 }
+    )
   }
 
   http
@@ -61,6 +98,82 @@
         )
         .pipeThrough(stream.ts.decompress())
         .pipeThrough(stream.ts.text())
+        .pipeThrough(stream.ts.split())
+        .pipeTo(sinkToElement(textarea, len))
+    })
+</script>
+
+<script type="module">
+  import ui from "../42/ui.js"
+  import http from "../42/core/http.js"
+  import stream from "../42/core/stream.js"
+  import idle from "../42/fabric/type/promise/idle.js"
+  import repaint from "../42/fabric/type/promise/repaint.js"
+  import paintThrottle from "../42/fabric/type/function/paintThrottle.js"
+  import defer from "../42/fabric/type/promise/defer.js"
+  import { round } from "../42/fabric/type/number/precision.js"
+
+  ui({
+    tag: ".box-h.box-fit",
+    content: [
+      { tag: "input" }, //
+      { tag: "textarea.font-mono" },
+    ],
+  })
+
+  const input = document.querySelector("input")
+  const textarea = document.querySelector("textarea")
+
+  function sinkToElement(el) {
+    let buffer = ""
+    function update() {
+      el.value = buffer
+      return idle().then(() => {
+        pending = false
+      })
+    }
+
+    let pending = false
+
+    return new WritableStream(
+      {
+        async write(chunk) {
+          buffer += chunk
+
+          if (pending) return
+          if (el.scrollHeight / 2 > el.clientHeight + el.scrollTop) return
+
+          pending = true
+          await update()
+        },
+
+        close() {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              update()
+            })
+          })
+        },
+      },
+      { highWaterMark: 1 }
+    )
+  }
+
+  http
+    .stream("../tests/fixtures/stream/html_standard.html.gz")
+    .headers((headers, rs) => {
+      const len = Number(headers.get("content-length"))
+      rs
+        // .pipeThrough(stream.ts.cut(1500))
+        .pipeThrough(
+          stream.ts.percent(len, (percent) => {
+            input.value = round(percent)
+          })
+        )
+        .pipeThrough(stream.ts.decompress())
+        .pipeThrough(stream.ts.cut(1500))
+        .pipeThrough(stream.ts.text())
+        // .pipeThrough(stream.ts.split())
         .pipeTo(sinkToElement(textarea, len))
     })
 </script>
