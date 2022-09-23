@@ -138,7 +138,6 @@ textarea.box-fit {
   header,
   button,
   select,
-  textarea,
   input,
   form,
   label,
@@ -149,6 +148,10 @@ textarea.box-fit {
 )) {
   margin-block: 0;
   flex: 0 0 auto;
+  width: auto;
+}
+
+:where(.box-h > textarea) {
   width: auto;
 }
 

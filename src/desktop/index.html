@@ -9,7 +9,63 @@
   trap()
 </script>
 
+<style>
+  textarea {
+    caret: steelblue;
+  }
+</style>
+
 <script type="module">
+  import ui from "../42/ui.js"
+  import http from "../42/core/http.js"
+  import stream from "../42/core/stream.js"
+  import idle from "../42/fabric/type/promise/idle.js"
+  import { round } from "../42/fabric/type/number/precision.js"
+
+  ui({
+    tag: ".box-h.box-fit",
+    content: [{ tag: "input" }, { tag: "textarea.font-mono" }],
+  })
+
+  const input = document.querySelector("input")
+  const textarea = document.querySelector("textarea")
+
+  function sinkToElement(el) {
+    return new WritableStream({
+      async write(chunk) {
+        el.textContent += chunk
+        await (el.scrollHeight > el.clientHeight
+          ? new Promise((resolve) => {
+              const onscroll = () => {
+                // console.log(el.scrollTop, el.clientHeight, el.scrollHeight)
+                el.removeEventListener("scroll", onscroll)
+                requestAnimationFrame(() => resolve())
+              }
+
+              el.addEventListener("scroll", onscroll)
+            })
+          : idle())
+      },
+    })
+  }
+
+  http
+    .stream("../tests/fixtures/stream/html_standard.html.gz")
+    .headers((headers, rs) => {
+      const len = Number(headers.get("content-length"))
+      rs.pipeThrough(stream.ts.cut(1500))
+        .pipeThrough(
+          stream.ts.percent(len, (percent) => {
+            input.value = round(percent)
+          })
+        )
+        .pipeThrough(stream.ts.decompress())
+        .pipeThrough(stream.ts.text())
+        .pipeTo(sinkToElement(textarea, len))
+    })
+</script>
+
+<script type="_module">
   import "../42/os.js"
   import explorer from "../42/ui/components/explorer.js"
   explorer("/tests/fixtures/website/", { _glob: true })
