@@ -57,15 +57,14 @@ export class Dialog extends Component {
   async close(ok = false) {
     const event = dispatch(this, "uidialogclose", { cancelable: true })
     if (event.defaultPrevented) return
-    if (ok) this.ctx.reactive.data.ok = true
     const data = omit(this.ctx.reactive.data, ["ui", "$computed"])
+    if (ok) data.ok = true
     this.emit("close", data)
     await this.destroy()
     return data
   }
 
-  async done(val, e) {
-    console.log(1, val, e)
+  async ok() {
     await nextCycle()
     return this.close(true)
   }
