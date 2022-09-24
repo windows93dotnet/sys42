@@ -11,6 +11,12 @@
 
 <script type="module">
   import "../42/os.js"
+  import filePickerOpen from "../42/ui/invocables/filePickerOpen.js"
+  console.log(111, await filePickerOpen("/42/test.js"))
+</script>
+
+<script type="_module">
+  import "../42/os.js"
   import open from "../42/os/cmd/open.cmd.js"
   open("/tests/fixtures/website/style.css")
 </script>

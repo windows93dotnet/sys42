@@ -23,7 +23,14 @@ export class Explorer extends Component {
       glob: {
         type: "boolean",
         fromView: true,
-        // default: true,
+      },
+      isPicker: {
+        type: "boolean",
+      },
+      multiselectable: {
+        type: "boolean",
+        fromView: true,
+        default: true,
       },
       selection: {
         type: "array",
@@ -40,14 +47,20 @@ export class Explorer extends Component {
       {
         "stop": true,
         "selector": 'ui-icon[aria-description="file"]',
-        "dblclick || Enter": "{{open(target.path)}}",
+        "dblclick || Enter": "{{isPicker ? ok() : open(target.path)}}",
+      },
+      {
+        stop: true,
+        Enter: "{{isPicker && ok()}}",
       },
       {
         "Alt+Up": "{{folderUp()}}",
       },
     ],
+  }
 
-    content: [
+  render() {
+    return [
       {
         tag: "header.box-v",
         content: [
@@ -103,9 +116,10 @@ export class Explorer extends Component {
       },
       {
         tag: "ui-folder.inset.paper",
-        glob: "{{glob}}",
         path: "{{path}}",
+        glob: "{{glob}}",
         selection: "{{selection}}",
+        multiselectable: "{{multiselectable}}",
         as: "folder",
       },
       {
@@ -113,6 +127,7 @@ export class Explorer extends Component {
         // as: "message",
       },
       {
+        if: "{{!isPicker}}",
         tag: "footer.w-full.mt-xs.ma-0.box-v",
         content: [
           {
@@ -130,7 +145,7 @@ export class Explorer extends Component {
           },
         ],
       },
-    ],
+    ]
   }
 
   autofocus() {
@@ -186,8 +201,9 @@ export default async function explorer(path = "/", options) {
   path = parsed.dir === "/" ? parsed.dir : parsed.dir + "/"
 
   return dialog({
-    label: "{{path}}",
+    label: options.label ?? "{{path}}",
     icon: "{{path}}",
+    class: "dialog-explorer",
     style: { width: "400px", height: "350px" },
 
     content: {
@@ -195,7 +211,9 @@ export default async function explorer(path = "/", options) {
       path: "{{path}}",
       selection: "{{selection}}",
       glob: "{{glob}}",
+      isPicker: options.isPicker,
       parent: "dialog",
+      as: "explorer",
     },
 
     state: { path, selection, glob },

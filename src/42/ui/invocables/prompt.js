@@ -3,7 +3,7 @@ import configure from "../../core/configure.js"
 
 const DEFAULT = {
   label: "Prompt",
-  class: "ui-prompt",
+  class: "dialog-prompt",
   field: "text",
   value: "",
   prose: true,
@@ -20,6 +20,11 @@ export default async function prompt(message = "", options) {
 
   const config = configure(DEFAULT, options)
 
+  const onEnter =
+    config.enterKeyHint ?? config.field.startsWith("textarea")
+      ? { enterKeyHint: "enter", on: { Enter: "{{ok()}}" } }
+      : { enterKeyHint: "done" }
+
   const res = await dialog({
     label: config.label,
     class: config.class,
@@ -31,15 +36,12 @@ export default async function prompt(message = "", options) {
         // lazy: true,
         label: message,
         prose: config.prose,
-        enterKeyHint:
-          config.enterKeyHint ?? config.field.startsWith("textarea")
-            ? "enter"
-            : "done",
+        ...onEnter,
       },
     },
     footer: config.footer ?? [
       { tag: "button", label: "Cancel", click: "{{close()}}" },
-      { tag: "button.btn-default", label: "Ok", click: "{{done()}}" },
+      { tag: "button.btn-default", label: "Ok", click: "{{ok()}}" },
     ],
     state: {
       text: config.value,
