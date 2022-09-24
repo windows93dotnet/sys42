@@ -132,7 +132,7 @@ types.path = {
   stemname: "path/extract/stemname",
 }
 
-types.file = {
+types.fs = {
   async open(path, fallback = "") {
     if (path === undefined) return fallback
     const fs = await import("./fs.js").then((m) => m.default)
@@ -153,6 +153,20 @@ types.file = {
       return fallback
     }
   },
+  async source(path) {
+    const [fs, sinkField] = await Promise.all([
+      import("./fs.js").then((m) => m.default),
+      import("../fabric/type/stream/sinkField.js").then((m) => m.default),
+    ])
+    fs.source(path, "utf8")
+      .pipeTo(sinkField(this.el))
+      .catch((err) => {
+        dispatch(this.el, err)
+      })
+  },
+}
+
+types.file = {
   text: async (file) => file?.text?.(),
   arrayBuffer: async (file) => file?.arrayBuffer?.(),
   bytesize: (file, options) => bytesize(file?.size ?? 0, options),

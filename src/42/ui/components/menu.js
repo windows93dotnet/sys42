@@ -64,11 +64,7 @@ export class Menu extends Component {
       item = { ...item }
       item.id ??= uid()
 
-      const { content, label, bind } = item
-
-      if (bind) {
-        console.log(bind, this.ctx)
-      }
+      const { content, label } = item
 
       if (
         item.dialog &&
@@ -117,11 +113,10 @@ export class Menu extends Component {
 
       delete item.label
 
-      if ("disabled" in item) {
+      if (item.disabled) {
         item.aria ??= {}
         item.aria.disabled = item.disabled
         delete item.disabled
-        // delete item.click
         item.tabIndex = -1
       } else {
         item.tabIndex = first ? 0 : -1

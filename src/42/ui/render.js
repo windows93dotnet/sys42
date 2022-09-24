@@ -106,17 +106,17 @@ export default function render(def, ctx, options) {
   if (def.if) return renderIf(def, ctx)
   if (def.each) return renderEach(def, ctx)
 
-  const el =
+  const out =
     def.tag || def.attrs
       ? renderTag(ctx, def)
       : document.createDocumentFragment()
 
   if (def.content) {
-    el.append(
+    out.append(
       render(def.content, ctx, {
         step:
-          el.nodeType === ELEMENT_NODE
-            ? el.localName + (el.id ? `#${el.id}` : "")
+          out.nodeType === ELEMENT_NODE
+            ? out.localName + (out.id ? `#${out.id}` : "")
             : undefined,
       })
     )
@@ -128,5 +128,5 @@ export default function render(def, ctx, options) {
 
   if (def.animate?.from) renderAnimation(ctx, ctx.el, "from", def.animate.from)
 
-  return el
+  return out
 }

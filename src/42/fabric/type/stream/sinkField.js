@@ -3,10 +3,12 @@ import idle from "../promise/idle.js"
 import listen from "../../event/listen.js"
 import defer from "../promise/defer.js"
 
-export default function sinkField(el) {
+export default function sinkField(el, options) {
+  const size = options?.size ?? 0x03_ff
   let pendingEdits // debounce
   let pendingScroll // throttle
   let timerId
+
   const off = listen(el, {
     "keydown || pointerdown || paste"(e) {
       if (e.key === "PageDown") return // handled by scroll event
@@ -15,7 +17,7 @@ export default function sinkField(el) {
       timerId = setTimeout(() => {
         pendingEdits?.resolve()
         pendingEdits = undefined
-      }, 100)
+      }, 300)
     },
     "scroll"() {
       if (pendingScroll) return
@@ -26,20 +28,38 @@ export default function sinkField(el) {
       })
     },
   })
-  return new WritableStream(
-    {
-      async write(chunk) {
-        await Promise.all([pendingEdits, pendingScroll, repaint()])
 
+  let isRunning = true
+  function stop() {
+    isRunning = false
+    pendingEdits?.reject(options?.signal.reason)
+    pendingScroll?.reject(options?.signal.reason)
+    pendingEdits = undefined
+    pendingScroll = undefined
+    off()
+  }
+
+  options?.signal.addEventListener("abort", stop)
+
+  return new WritableStream({
+    async write(chunk, controller) {
+      for (let i = 0, l = chunk.length; i < l; i += size) {
+        if (!isRunning) {
+          return controller.error((options?.signal ?? controller.signal).reason)
+        }
+
+        await Promise.all([pendingEdits, pendingScroll, repaint()])
         const { length } = el.value
-        el.setRangeText(chunk, length, length + chunk.length)
+        const text = chunk.slice(i, i + size)
+        el.setRangeText(text, length, length + text.length)
         await idle()
-      },
-      close() {
-        off()
-        console.log("close")
-      },
+      }
     },
-    { highWaterMark: 1 }
-  )
+    close() {
+      stop()
+    },
+    abort() {
+      stop()
+    },
+  })
 }

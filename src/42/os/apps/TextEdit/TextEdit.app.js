@@ -23,12 +23,13 @@ export default {
   // menubar,
 
   content: {
-    scope: "files/0",
+    scope: "$files/0",
     content: {
       scope: "text",
       tag: "textarea",
       label: "{{path}}",
-      value: "{{text ? text : read(path)}}",
+      // value: "{{text ? text : read(path)}}",
+      value: "{{text ? text : source(path)}}",
       class: "w-full {{/monospace ? 'font-mono' : ''}}",
       spellcheck: "{{/spellcheck}}",
       wrap: "{{/wrap ? 'soft' : 'off'}}",
@@ -41,7 +42,7 @@ export default {
   // content: [
   //   {
   //     tag: "ui-tabs",
-  //     items: "{{files}}",
+  //     items: "{{$files}}",
   //     each: {
   //       label: "{{path ?? 'Untitled' |> basename}}{{dirty ? '*' : ''}}",
   //       content: {
