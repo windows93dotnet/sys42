@@ -9,5 +9,5 @@ export default {
   },
 
   inset: true,
-  path: "{{files/0/path}}",
+  path: "{{$files/0/path}}",
 }

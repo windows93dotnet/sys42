@@ -150,7 +150,7 @@ export default class Resource {
     const allow = []
     for (const perm of FEATURES) {
       if (SUPPORTED_FEATURES.includes(perm)) {
-        if (allowList.includes(perm)) allow.push(`${perm} 'self' ${origin}`)
+        if (allowList.includes(perm)) allow.push(`${perm} 'src' ${origin}`)
         else allow.push(`${perm} 'none'`)
       }
     }

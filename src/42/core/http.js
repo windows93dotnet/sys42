@@ -168,13 +168,13 @@ export const makeStream = (requestMethod, withBody = true) =>
         requestMethod(url, readable, ...rest).then(cb)
         return writable
       }
-    : (url, { queuingStrategy, onheaders = noop } = {}, ...rest) => {
+    : (url, { queuingStrategy, onheaders = noop, signal } = {}, ...rest) => {
         let reader
         const rs = new ReadableStream(
           {
             async pull(controller) {
               if (!reader) {
-                const res = await requestMethod(url, ...rest)
+                const res = await requestMethod(url, { signal }, ...rest)
                 onheaders(res.headers, rs)
                 reader = res.body.getReader()
               }

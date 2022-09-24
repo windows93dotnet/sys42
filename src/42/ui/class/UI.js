@@ -47,6 +47,9 @@ export default class UI {
   get state() {
     return this.ctx.reactive.state
   }
+  get run() {
+    return this.ctx.actions.value
+  }
 
   destroy() {
     this.ctx?.cancel("ui destroyed")

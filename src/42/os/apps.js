@@ -5,6 +5,8 @@ import pick from "../fabric/type/object/pick.js"
 import disk from "../core/disk.js"
 import dirname from "../fabric/type/path/extract/dirname.js"
 
+import "../ui/popup.js" // TODO: check if it can be injected
+
 const DEFAULTS = {
   defaultApps: {
     mimetypes: {},
@@ -110,27 +112,23 @@ class AppManager extends ConfigFile {
     const dialog = await import("../ui/components/dialog.js") //
       .then((m) => m.default)
 
-    let sandboxConfig
-    let dialogConfig
+    const dialogConfig = { state: { $app: app } }
 
-    if (app.path) {
-      sandboxConfig = { path: app.path }
-      dialogConfig = { state: { files } }
-    } else {
-      sandboxConfig = {
-        script: `\
+    const sandboxConfig = app.path
+      ? { path: app.path }
+      : {
+          script: `\
 import App from "${APP_CLASS_URL}"
 import manifest from "${app.manifest}"
 manifest.dir = "${dir}"
 manifest.state ??= {}
-manifest.state.files = ${JSON.stringify(files)}
+manifest.state.$files = ${JSON.stringify(files)}
 globalThis.app = await new App(manifest)
 `,
-      }
-    }
+        }
 
     return dialog({
-      label: appName,
+      label: "{{$app.name}}",
       content: {
         style: { width: "400px", height: "350px" },
         tag: "ui-sandbox" + (app.inset ? ".inset" : ""),

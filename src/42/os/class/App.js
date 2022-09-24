@@ -18,41 +18,41 @@ const menubar = [
         label: "New",
         picto: "file",
         shortcut: "Ctrl+N",
-        run: "new",
+        click: "{{new()}}",
       },
       {
         label: "Open…",
         picto: "folder-open",
         shortcut: "Ctrl+O",
         id: "open",
-        run: "open",
+        click: "{{open()}}",
       },
       {
         label: "Save",
         picto: "save",
         shortcut: "Ctrl+S",
         id: "save",
-        run: "save",
+        click: "{{save()}}",
       },
       {
         label: "Save As…",
         picto: "save",
         shortcut: "Ctrl+Shift+S",
         id: "saveAs",
-        run: "saveAs",
+        click: "{{saveAs()}}",
       },
       "---",
       {
         label: "Import…",
         picto: "import",
         id: "import",
-        run: "import",
+        click: "{{import()}}",
       },
       {
         label: "Export…",
         picto: "export",
         id: "export",
-        run: "export",
+        click: "{{export()}}",
       },
     ],
   },
@@ -61,7 +61,7 @@ const menubar = [
     content: [
       {
         label: "Fullscreen",
-        run: "fullscreen",
+        click: "{{fullscreen()}}",
         disabled: !document.fullscreenEnabled,
       },
       "---",
@@ -85,7 +85,7 @@ const menubar = [
     content: [
       {
         label: "Install Web App",
-        run: "install",
+        click: "{{install()}}",
       },
     ],
   },
@@ -98,18 +98,21 @@ export default class App extends UI {
 
     const install = preinstall({ name, categories, dir })
 
-    state.files ??= [{ dirty: false, path: undefined }]
+    state.$files ??= [{ dirty: false, path: undefined }]
 
     super({
       tag: ".box-fit.box-h",
-      content: [/* { tag: "ui-menubar", content: menubar }, */ content],
+      content: [{ tag: "ui-menubar", content: menubar }, content],
 
       state,
 
       actions: {
         new() {
-          this.currentTab = this.files.length
-          this.files.push({ dirty: false, path: undefined })
+          // console.log(this.run)
+          // console.log($files)
+          $files[0].text = "hello empty"
+          // this.currentTab = this.files.length
+          // this.files.push({ dirty: false, path: undefined })
         },
 
         async open() {
@@ -182,5 +185,6 @@ export default class App extends UI {
 
     this.manifest = manifest
     const app = this
+    const $files = this.reactive.get("$files")
   }
 }

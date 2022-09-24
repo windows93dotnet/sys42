@@ -17,7 +17,8 @@
 
 @import "../default/index.css";
 @import "../default/fonts/sserife.css";
-@import "../default/fonts/fixedsys.css";
+/* @import "../default/fonts/fixedsys.css"; */
+@import "../default/fonts/tomo.css";
 @import "../default/themes/inc/pixel-font.css";
 
 :root {
@@ -137,7 +138,7 @@
 
   /* --ff-mono: fixedsys;
   --fs-mono: 16px; */
-  --ff-mono: tomo;
+  --ff-mono: tomo-web;
   --fs-mono: 8px;
   --lh-mono: 1.5;
 
