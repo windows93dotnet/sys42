@@ -133,9 +133,8 @@ export class Explorer extends Component {
         content: [
           {
             tag: ".py-xs.px-md.mr-xs.inset-shallow.panel.item-shrink",
-            content: "--- {{folder}}",
-            // content:
-            //   "{{folder.items.length}} {{pluralize('item', folder.items.length)}}",
+            content:
+              "{{folder.items.length}} {{pluralize('item', folder.items.length)}}",
           },
           {
             tag: "input.inset-shallow.panel",
@@ -151,7 +150,7 @@ export class Explorer extends Component {
 
   autofocus() {
     document.activeElement.blur()
-    queueTask(() => focusInside(this.folder))
+    queueTask(() => focusInside(this.folder) || this.folder.focus())
   }
 
   folderUp(options) {

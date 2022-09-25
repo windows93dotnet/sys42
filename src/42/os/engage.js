@@ -1,11 +1,9 @@
 import fs from "../core/fs.js"
 import prompt from "../ui/invocables/prompt.js"
-import assertPath from "../fabric/type/path/assertPath.js"
-
-function sanitizeDirname(path) {
-  assertPath(path)
-  return path.endsWith("/") ? path : `${path}/`
-}
+import queueTask from "../fabric/type/function/queueTask.js"
+import normalizeDirname from "../fabric/type/path/normalizeDirname.js"
+import resolvePath from "../fabric/type/path/core/resolvePath.js"
+import tokenizePath from "../fabric/type/path/tokenizePath.js"
 
 // function sanitizeName(path) {
 //   assertPath(path)
@@ -34,9 +32,19 @@ export async function createFolder(path) {
   })
 
   if (name) {
-    path = sanitizeDirname(path)
-    name = assertPath(name)
-    return fs.writeDir(path + name)
+    path = normalizeDirname(resolvePath(path))
+    name = resolvePath(name)
+    const filename = path + name
+    const write = await fs.writeDir(filename)
+
+    queueTask(() => {
+      const sel = `ui-icon[path^="${path + tokenizePath(name).at(0)}"]`
+      const el = document.querySelector(sel)
+      el?.focus()
+      // el?.click()
+    })
+
+    return { write, path, name }
   }
 }
 

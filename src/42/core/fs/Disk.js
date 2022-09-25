@@ -2,7 +2,7 @@
 /* eslint-disable no-constructor-return */
 import system from "../../system.js"
 import FileIndex from "./FileIndex.js"
-// import cbor from "../formats/cbor.js"
+import CBOR from "../formats/cbor.js"
 
 export const MASKS = {
   0x00: "fetch",
@@ -15,14 +15,14 @@ export const MASKS = {
 export const RESERVED_BYTES = 0x80
 
 const getFiles = async () => {
-  // const url = new URL("../../../files.cbor", import.meta.url)
-  // const res = await fetch(url)
-  // return res.status === 200 ? cbor.decode(await res.arrayBuffer()) : {}
-
-  // TODO: fix files.cbor
-  const url = "/files.json"
+  const url = new URL("/files.cbor", import.meta.url)
   const res = await fetch(url)
-  return res.status === 200 ? JSON.parse(await res.text()) : {}
+  return res.status === 200 ? CBOR.decode(await res.arrayBuffer()) : {}
+
+  // // TODO: fix files.cbor
+  // const url = "/files.json"
+  // const res = await fetch(url)
+  // return res.status === 200 ? JSON.parse(await res.text()) : {}
 }
 
 let instance
