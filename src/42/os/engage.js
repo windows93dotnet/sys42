@@ -1,9 +1,9 @@
 import fs from "../core/fs.js"
 import prompt from "../ui/invocables/prompt.js"
 import queueTask from "../fabric/type/function/queueTask.js"
-import normalizeDirname from "../fabric/type/path/utils/normalizeDirname.js"
-import resolvePath from "../fabric/type/path/core/resolvePath.js"
-import tokenizePath from "../fabric/type/path/utils/tokenizePath.js"
+import normalizeDirname from "../core/path/utils/normalizeDirname.js"
+import resolvePath from "../core/path/core/resolvePath.js"
+import tokenizePath from "../core/path/utils/tokenizePath.js"
 
 // function sanitizeName(path) {
 //   assertPath(path)

@@ -27,7 +27,7 @@ function fromElement(el) {
 
 let parseFilename
 async function fromURL(url) {
-  parseFilename ??= await import("../../fabric/type/path/parseFilename.js") //
+  parseFilename ??= await import("../../core/path/parseFilename.js") //
     .then((m) => m.default)
   const { mimetype } = parseFilename(url)
   if (mimetype in MIMETYPES) return [MIMETYPES[mimetype], mimetype]

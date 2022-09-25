@@ -2,8 +2,8 @@ import system from "../../system.js"
 import fs from "../../core/fs.js"
 import disk from "../../core/disk.js"
 import defer from "../../fabric/type/promise/defer.js"
-import getExtname from "../../fabric/type/path/core/getExtname.js"
-import getBasename from "../../fabric/type/path/core/getBasename.js"
+import getExtname from "../../core/path/core/getExtname.js"
+import getBasename from "../../core/path/core/getBasename.js"
 import configure from "../../core/configure.js"
 
 const VALID_TYPES = new Set([".json", ".json5", ".cbor"])

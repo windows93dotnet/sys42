@@ -6,7 +6,7 @@ import log, { Log } from "../../src/42/core/log.js"
 import normalizeConfig from "./userConfig/normalizeConfig.js"
 import normalizePaths from "./userConfig/normalizePaths.js"
 import configure from "../../src/42/core/configure.js"
-import cwd from "../../src/42/fabric/type/path/cwd.js"
+import cwd from "../../src/42/core/path/cwd.js"
 
 import normalizeTestContexts, {
   TEST_CTX,

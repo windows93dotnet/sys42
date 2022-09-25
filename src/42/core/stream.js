@@ -9,11 +9,11 @@
 
 import combine from "../fabric/type/typedarray/combine.js"
 
-import pump from "../fabric/type/stream/pump.js"
-export { default as pump } from "../fabric/type/stream/pump.js"
+import pump from "./stream/pump.js"
+export { default as pump } from "./stream/pump.js"
 
-import absorb from "../fabric/type/stream/absorb.js"
-export { default as absorb } from "../fabric/type/stream/absorb.js"
+import absorb from "./stream/absorb.js"
+export { default as absorb } from "./stream/absorb.js"
 
 /* readable
 =========== */

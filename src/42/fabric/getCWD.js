@@ -1,5 +1,5 @@
 import getParentModule from "./getParentModule.js"
-import getDirname from "./type/path/core/getDirname.js"
+import getDirname from "../core/path/core/getDirname.js"
 
 export default function getCWD(reg) {
   let { url } = getParentModule(reg)

@@ -1,6 +1,6 @@
 import occurences from "../fabric/type/string/occurences.js"
 import resolveScope from "./resolveScope.js"
-import getDirname from "../fabric/type/path/core/getDirname.js"
+import getDirname from "../core/path/core/getDirname.js"
 
 export default function findScope(ctx, loc) {
   if (loc == null) throw new Error("Undefined path")

@@ -3,7 +3,7 @@ import chokidar from "chokidar"
 import system from "../../src/42/system.js"
 import { format } from "../../src/42/core/log.js"
 import debounce from "../../src/42/fabric/type/function/debounce.js"
-import joinPath from "../../src/42/fabric/type/path/core/joinPath.js"
+import joinPath from "../../src/42/core/path/core/joinPath.js"
 import graph from "../utils/graph.js"
 import lookupTestfiles from "../utils/graph/lookupTestfiles.js"
 

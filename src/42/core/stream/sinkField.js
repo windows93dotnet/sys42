@@ -1,7 +1,7 @@
-import repaint from "../promise/repaint.js"
-import idle from "../promise/idle.js"
-import listen from "../../event/listen.js"
-import defer from "../promise/defer.js"
+import repaint from "../../fabric/type/promise/repaint.js"
+import idle from "../../fabric/type/promise/idle.js"
+import defer from "../../fabric/type/promise/defer.js"
+import listen from "../../fabric/event/listen.js"
 
 export default function sinkField(el, options) {
   const size = options?.size ?? 0x03_ff

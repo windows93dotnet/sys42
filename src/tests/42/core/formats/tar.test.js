@@ -1,6 +1,6 @@
 import test from "../../../../42/test.js"
 import tar from "../../../../42/core/formats/tar.js"
-import getBasename from "../../../../42/fabric/type/path/core/getBasename.js"
+import getBasename from "../../../../42/core/path/core/getBasename.js"
 
 const { stream, http } = test.utils
 const { task } = test

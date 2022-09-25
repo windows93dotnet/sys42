@@ -1,4 +1,4 @@
-import resolvePath from "../../fabric/type/path/core/resolvePath.js"
+import resolvePath from "../../core/path/core/resolvePath.js"
 
 export default class BrowserShell {
   #cwd = "/"

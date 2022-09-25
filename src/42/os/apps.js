@@ -1,9 +1,9 @@
 import { ConfigFile } from "./class/ConfigFile.js"
-import parseFilename from "../fabric/type/path/parseFilename.js"
+import parseFilename from "../core/path/parseFilename.js"
 import arrify from "../fabric/type/any/arrify.js"
 import pick from "../fabric/type/object/pick.js"
 import disk from "../core/disk.js"
-import getDirname from "../fabric/type/path/core/getDirname.js"
+import getDirname from "../core/path/core/getDirname.js"
 
 import "../ui/popup.js" // TODO: check if it can be injected
 

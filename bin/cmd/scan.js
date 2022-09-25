@@ -2,10 +2,10 @@ import globby from "globby"
 import cbor from "cbor"
 import fs from "node:fs/promises"
 
-import getExtname from "../../src/42/fabric/type/path/core/getExtname.js"
+import getExtname from "../../src/42/core/path/core/getExtname.js"
 import system from "../../src/42/system.js"
 import allocate from "../../src/42/fabric/locator/allocate.js"
-import sortPath from "../../src/42/fabric/type/path/core/sortPath.js"
+import sortPath from "../../src/42/core/path/core/sortPath.js"
 
 const task = system.config.tasks.scan
 

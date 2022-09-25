@@ -1,17 +1,17 @@
-import format from "../fabric/type/path/core/formatPath.js"
-import join from "../fabric/type/path/core/joinPath.js"
-import normalize from "../fabric/type/path/core/normalizePath.js"
-import parse from "../fabric/type/path/core/parsePath.js"
-import resolve from "../fabric/type/path/core/resolvePath.js"
-import sort from "../fabric/type/path/core/sortPath.js"
-import relative from "../fabric/type/path/core/relativePath.js"
+import format from "../core/path/core/formatPath.js"
+import join from "../core/path/core/joinPath.js"
+import normalize from "../core/path/core/normalizePath.js"
+import parse from "../core/path/core/parsePath.js"
+import resolve from "../core/path/core/resolvePath.js"
+import sort from "../core/path/core/sortPath.js"
+import relative from "../core/path/core/relativePath.js"
 
-import dirname from "../fabric/type/path/core/getDirname.js"
-import extname from "../fabric/type/path/core/getExtname.js"
-import basename from "../fabric/type/path/core/getBasename.js"
+import dirname from "../core/path/core/getDirname.js"
+import extname from "../core/path/core/getExtname.js"
+import basename from "../core/path/core/getBasename.js"
 
-import isAbsolute from "../fabric/type/path/utils/isAbsolute.js"
-import hasTrailingSlash from "../fabric/type/path/utils/hasTrailingSlash.js"
+import isAbsolute from "../core/path/utils/isAbsolute.js"
+import hasTrailingSlash from "../core/path/utils/hasTrailingSlash.js"
 
 export default {
   format,

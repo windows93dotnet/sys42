@@ -1,7 +1,7 @@
 import globby from "globby"
 
 import js from "./graph/js.js"
-import getExtname from "../../src/42/fabric/type/path/core/getExtname.js"
+import getExtname from "../../src/42/core/path/core/getExtname.js"
 
 const GLOBBY_DEFAULTS = {
   gitignore: true,

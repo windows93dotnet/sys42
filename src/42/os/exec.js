@@ -5,7 +5,7 @@ import JSON5 from "../core/formats/json5.js"
 import parseCommand from "./cli/parseCommand.js"
 import argv from "./cli/argv.js"
 import traverse from "../fabric/type/object/traverse.js"
-import resolvePath from "../fabric/type/path/core/resolvePath.js"
+import resolvePath from "../core/path/core/resolvePath.js"
 import disk from "../core/disk.js"
 
 const { HOME } = disk

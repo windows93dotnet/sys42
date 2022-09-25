@@ -1,5 +1,5 @@
 import fs from "node:fs/promises"
-import parseFilename from "../../src/42/fabric/type/path/parseFilename.js"
+import parseFilename from "../../src/42/core/path/parseFilename.js"
 
 class StaticFile {
   constructor(filename, index = "index.html") {

@@ -1,4 +1,4 @@
-import glob from "../../../src/42/fabric/type/path/glob.js"
+import glob from "../../../src/42/core/path/glob.js"
 
 export default function lookupTestfiles(
   graphResult,

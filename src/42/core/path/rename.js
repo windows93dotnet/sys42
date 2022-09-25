@@ -1,9 +1,9 @@
 import { normalizeString } from "./core/normalizePath.js"
 import parsePath from "./core/parsePath.js"
 import formatPath from "./core/formatPath.js"
-import parseRegexLiteral from "../regex/parseRegexLiteral.js"
-import arrify from "../any/arrify.js"
-import manipulation from "../string/manipulation.js"
+import parseRegexLiteral from "../../fabric/type/regex/parseRegexLiteral.js"
+import arrify from "../../fabric/type/any/arrify.js"
+import manipulation from "../../fabric/type/string/manipulation.js"
 
 const makePlaceholder = (i) => `#PLACEHOLDER_${42}_${i}`
 

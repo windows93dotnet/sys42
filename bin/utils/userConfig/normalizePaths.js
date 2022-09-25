@@ -1,4 +1,4 @@
-import joinPath from "../../../src/42/fabric/type/path/core/joinPath.js"
+import joinPath from "../../../src/42/core/path/core/joinPath.js"
 
 export default function normalizePaths(cwd, paths) {
   const out = {}
