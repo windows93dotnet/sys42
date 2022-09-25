@@ -11,6 +11,12 @@ export default class Buffer {
 
   static isLittleEndianMachine = isLittleEndianMachine
 
+  static of(value) {
+    const buffer = new Buffer()
+    buffer.write(value)
+    return buffer
+  }
+
   constructor(options) {
     this.encoding = options?.encoding ?? "utf8"
     this.memory = new WebAssembly.Memory({ initial: 1 })

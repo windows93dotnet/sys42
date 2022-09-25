@@ -10,6 +10,7 @@ import hashmap from "../../../fabric/type/object/hashmap.js"
 import http from "../../../core/http.js"
 import idle from "../../../fabric/type/promise/idle.js"
 import kill from "../../../fabric/type/any/kill.js"
+import load from "../../load.js"
 import log, { Log, CONSOLE_KEYS } from "../../log.js"
 import nextCycle from "../../../fabric/type/promise/nextCycle.js"
 import noop from "../../../fabric/type/function/noop.js"
@@ -191,6 +192,7 @@ export default function addUtilities(item, isExecutionContext) {
     http,
     idle,
     kill,
+    load,
     log,
     nextCycle,
     noop,
