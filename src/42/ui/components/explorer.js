@@ -1,15 +1,15 @@
 import Component from "../class/Component.js"
 import configure from "../../core/configure.js"
-import getDirname from "../../fabric/type/path/core/getDirname.js"
+import getDirname from "../../core/path/core/getDirname.js"
 import dialog from "./dialog.js"
 import open from "../../os/cmd/open.cmd.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
 import keyboard from "../../core/devices/keyboard.js"
 import { focusInside } from "../../fabric/dom/focus.js"
 
-import parsePath from "../../fabric/type/path/core/parsePath.js"
-import joinPath from "../../fabric/type/path/core/joinPath.js"
-import normalizePath from "../../fabric/type/path/core/normalizePath.js"
+import parsePath from "../../core/path/core/parsePath.js"
+import joinPath from "../../core/path/core/joinPath.js"
+import normalizePath from "../../core/path/core/normalizePath.js"
 
 export class Explorer extends Component {
   static definition = {

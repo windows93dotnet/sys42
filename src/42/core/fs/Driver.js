@@ -1,4 +1,4 @@
-import absorb from "../../fabric/type/stream/absorb.js"
+import absorb from "../stream/absorb.js"
 import addStack from "../../fabric/type/error/addStack.js"
 
 export default class Driver {

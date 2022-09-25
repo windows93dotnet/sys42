@@ -1,6 +1,6 @@
-import test from "../../../../../42/test.js"
-import shortenFilename from "../../../../../42/fabric/type/path/shortenFilename.js"
-import resolvePath from "../../../../../42/fabric/type/path/core/resolvePath.js"
+import test from "../../../../42/test.js"
+import shortenFilename from "../../../../42/core/path/shortenFilename.js"
+import resolvePath from "../../../../42/core/path/core/resolvePath.js"
 
 const { task } = test
 

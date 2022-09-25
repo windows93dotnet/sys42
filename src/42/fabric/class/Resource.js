@@ -8,7 +8,7 @@ import ipc from "../../core/ipc.js"
 import dispatch from "../event/dispatch.js"
 import arrify from "../type/any/arrify.js"
 import listen from "../event/listen.js"
-import isIframable from "../type/url/isIframable.js"
+import isIframable from "../url/isIframable.js"
 
 const DEFAULTS = {
   upgradeInsecureRequests: true,

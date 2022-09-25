@@ -1,6 +1,6 @@
-import resolvePath from "../fabric/type/path/core/resolvePath.js"
+import resolvePath from "../core/path/core/resolvePath.js"
 import parseDotNotation from "../fabric/locator/parseDotNotation.js"
-import getBasename from "../fabric/type/path/core/getBasename.js"
+import getBasename from "../core/path/core/getBasename.js"
 import locate from "../fabric/locator/locate.js"
 
 const sep = "/"

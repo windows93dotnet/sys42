@@ -1,5 +1,5 @@
-import test from "../../../../../42/test.js"
-import glob from "../../../../../42/fabric/type/path/glob.js"
+import test from "../../../../42/test.js"
+import glob from "../../../../42/core/path/glob.js"
 
 test("*", (t) => {
   t.eq(glob("foo", "f"), [])

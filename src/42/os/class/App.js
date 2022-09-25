@@ -2,8 +2,8 @@
 import inIframe from "../../core/env/realm/inIframe.js"
 import preinstall from "../utils/preinstall.js"
 import UI from "../../ui/class/UI.js"
-import getBasename from "../../fabric/type/path/core/getBasename.js"
-import getDirname from "../../fabric/type/path/core/getDirname.js"
+import getBasename from "../../core/path/core/getBasename.js"
+import getDirname from "../../core/path/core/getDirname.js"
 
 let toggleFullscreen
 let fileImport

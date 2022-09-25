@@ -1,6 +1,6 @@
-import inBackend from "../../../core/env/runtime/inBackend.js"
-import settings from "../../../core/settings.js"
-import arrify from "../any/arrify.js"
+import inBackend from "../env/runtime/inBackend.js"
+import settings from "../settings.js"
+import arrify from "../../fabric/type/any/arrify.js"
 import getCWD from "./cwd.js"
 
 const origin = globalThis?.location?.origin

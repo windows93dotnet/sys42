@@ -1,5 +1,5 @@
-import test from "../../../../../42/test.js"
-import rename from "../../../../../42/fabric/type/path/rename.js"
+import test from "../../../../42/test.js"
+import rename from "../../../../42/core/path/rename.js"
 
 const { task } = test
 

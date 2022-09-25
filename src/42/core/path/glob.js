@@ -6,13 +6,17 @@
 // {} allows for a comma-separated list of "or" expressions
 // !  at the beginning of a pattern will negate the match
 
-import arrify from "../any/arrify.js"
-import uniq from "../array/uniq.js"
-import union from "../array/union.js"
-import difference from "../array/difference.js"
-import escapeRegex from "../string/escapeRegex.js"
-import locate from "../../locator/locate.js"
-import exists from "../../locator/exists.js"
+import arrify from "../../fabric/type/any/arrify.js"
+import uniq from "../../fabric/type/array/uniq.js"
+import union from "../../fabric/type/array/union.js"
+import difference from "../../fabric/type/array/difference.js"
+import escapeRegex from "../../fabric/type/string/escapeRegex.js"
+import locate from "../../fabric/locator/locate.js"
+import exists from "../../fabric/locator/exists.js"
+
+const DEFAULTS = {
+  onlyFiles: false,
+}
 
 export const parseGlob = (source) => {
   let current = 0
@@ -130,15 +134,9 @@ export class Glob extends RegExp {
   }
 }
 
-import configure from "../../../core/configure.js"
-
-const DEFAULTS = {
-  onlyFiles: false,
-}
-
 function tokensToRegexArguments(tokens, options = {}) {
   if (typeof options === "string") options = { flags: options }
-  const config = configure(DEFAULTS, options)
+  const config = { ...DEFAULTS, ...options }
   const { flags } = config
   let body = ""
   for (let i = 0, l = tokens.length; i < l; i++) body += tokens[i].regex

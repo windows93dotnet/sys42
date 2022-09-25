@@ -1,13 +1,13 @@
 import Storable from "../../fabric/class/Storable.js"
 import FileSystemError from "./FileSystemError.js"
 import configure from "../configure.js"
-import assertPath from "../../fabric/type/path/assertPath.js"
-import joinPath from "../../fabric/type/path/core/joinPath.js"
-import sortPath from "../../fabric/type/path/core/sortPath.js"
+import assertPath from "../../core/path/assertPath.js"
+import joinPath from "../../core/path/core/joinPath.js"
+import sortPath from "../../core/path/core/sortPath.js"
 import emittable from "../../fabric/traits/emittable.js"
-import glob from "../../fabric/type/path/glob.js"
-import normalizeDirname from "../../fabric/type/path/utils/normalizeDirname.js"
-import tokenizePath from "../../fabric/type/path/utils/tokenizePath.js"
+import glob from "../../core/path/glob.js"
+import normalizeDirname from "../../core/path/utils/normalizeDirname.js"
+import tokenizePath from "../../core/path/utils/tokenizePath.js"
 
 const DEFAULTS = {
   name: "fileindex",

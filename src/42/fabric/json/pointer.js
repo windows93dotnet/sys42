@@ -1,5 +1,5 @@
 import { isPositiveInteger } from "../type/any/is.js"
-import assertPath from "../type/path/assertPath.js"
+import assertPath from "../../core/path/assertPath.js"
 
 export const decodeJSONPointer = (key) =>
   String(key).replaceAll("~1", "/").replaceAll("~0", "~")

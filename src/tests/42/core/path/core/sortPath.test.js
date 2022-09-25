@@ -1,5 +1,5 @@
 import test from "../../../../../../42/test.js"
-import sortPath from "../../../../../../42/fabric/type/path/core/sortPath.js"
+import sortPath from "../../../../../../42/core/path/core/sortPath.js"
 
 const { task } = test
 

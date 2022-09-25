@@ -1,7 +1,7 @@
 import Walker from "node-source-walk"
 
 import fs from "node:fs/promises"
-import isGlob from "../../../src/42/fabric/type/path/isGlob.js"
+import isGlob from "../../../src/42/core/path/isGlob.js"
 
 function add(url, dynamic = false, glob = false) {
   return { url, dynamic, glob }

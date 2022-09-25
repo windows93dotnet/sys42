@@ -1,4 +1,4 @@
-import { AbsorbArrayBuffer } from "../../fabric/type/stream/absorb.js"
+import { AbsorbArrayBuffer } from "../stream/absorb.js"
 import headers from "./tar/headers.js"
 
 function overflow(size) {

@@ -1,5 +1,5 @@
 import Component from "../class/Component.js"
-import parseFilename from "../../fabric/type/path/parseFilename.js"
+import parseFilename from "../../core/path/parseFilename.js"
 import theme from "../../os/theme.js"
 
 // [1] @read https://www.stefanjudis.com/blog/aria-selected-and-when-to-use-it/

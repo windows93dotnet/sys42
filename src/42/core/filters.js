@@ -114,22 +114,22 @@ types.function = {
 }
 
 types.path = {
-  // formatPath: "path/core/formatPath",
-  // joinPath: "path/core/joinPath",
-  // normalizePath: "path/core/normalizePath",
-  // parsePath: "path/core/parsePath",
-  postfixPath: "path/core/postfixPath",
-  prefixPath: "path/core/prefixPath",
-  relativePath: "path/core/relativePath",
-  removeExt: "path/core/removeExt",
-  replaceExt: "path/core/replaceExt",
-  resolvePath: "path/core/resolvePath",
-  sortPath: "path/core/sortPath",
+  // formatPath: "core/formatPath",
+  // joinPath: "core/joinPath",
+  // normalizePath: "core/normalizePath",
+  // parsePath: "core/parsePath",
+  postfixPath: "core/postfixPath",
+  prefixPath: "core/prefixPath",
+  relativePath: "core/relativePath",
+  removeExt: "core/removeExt",
+  replaceExt: "core/replaceExt",
+  resolvePath: "core/resolvePath",
+  sortPath: "core/sortPath",
 
-  getExtname: "path/core/getExtname",
-  getDirname: "path/core/getDirname",
-  getBasename: "path/core/getBasename",
-  getStemname: "path/core/getStemname",
+  getExtname: "core/getExtname",
+  getDirname: "core/getDirname",
+  getBasename: "core/getBasename",
+  getStemname: "core/getStemname",
 }
 
 types.fs = {
@@ -156,7 +156,7 @@ types.fs = {
   async source(path) {
     const [fs, sinkField] = await Promise.all([
       import("./fs.js").then((m) => m.default),
-      import("../fabric/type/stream/sinkField.js").then((m) => m.default),
+      import("./stream/sinkField.js").then((m) => m.default),
     ])
     fs.source(path, "utf8")
       .pipeTo(sinkField(this.el))
@@ -195,6 +195,8 @@ export default async function filters(name) {
         fn = await import(
           group === "ui"
             ? `../ui/invocables/${fn}.js` //
+            : group === "path"
+            ? `../core/path/${fn}.js`
             : `../fabric/type/${fn}.js`
         ).then((m) =>
           item.key

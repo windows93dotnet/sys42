@@ -1,9 +1,9 @@
-import memoize from "../function/memoize.js"
+import memoize from "../../fabric/type/function/memoize.js"
 import assertPath from "./assertPath.js"
-import pick from "../object/pick.js"
-import parseMimetype from "../file/parseMimetype.js"
+import pick from "../../fabric/type/object/pick.js"
+import parseMimetype from "../../fabric/type/file/parseMimetype.js"
 import parsePath from "./core/parsePath.js"
-import { EXTENSIONS, NAMES } from "../../constants/FILE_TYPES.js"
+import { EXTENSIONS, NAMES } from "../../fabric/constants/FILE_TYPES.js"
 
 const urlKeys = [
   "origin",

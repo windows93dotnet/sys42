@@ -1,5 +1,5 @@
 import explorer from "../components/explorer.js"
-import getStemname from "../../fabric/type/path/core/getStemname.js"
+import getStemname from "../../core/path/core/getStemname.js"
 import isHashmapLike from "../../fabric/type/any/is/isHashmapLike.js"
 
 export default async function filePickerSave(path, options) {
