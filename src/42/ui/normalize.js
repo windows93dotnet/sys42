@@ -212,10 +212,30 @@ export function normalizeString(item, ctx) {
       scopes.push(...res.scopes)
     }
 
+    const locals = {}
+
+    // queueMicrotask(() => {
+    //   // TODO: check possible xss vector attack
+    //   locals.this = ctx.el
+    // })
+
+    locals.this = {
+      get value() {
+        return ctx.el.value
+      },
+      get textContent() {
+        return ctx.el.textContent
+      },
+      get rect() {
+        return ctx.el.getBoundingCLientRect()
+      },
+    }
+
     item = template.compile(parsed, {
       async: true,
       sep: "/",
       actions,
+      locals,
     })
 
     item.scopes = scopes
