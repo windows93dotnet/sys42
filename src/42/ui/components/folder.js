@@ -2,9 +2,12 @@ import "./icon.js"
 import Component from "../class/Component.js"
 import disk from "../../core/disk.js"
 import engage from "../../os/engage.js"
+import normalizeDirname from "../../fabric/type/path/normalizeDirname.js"
 import dt from "../../core/dt.js"
 
 const { indexOf } = Array.prototype
+
+const _forgetWatch = Symbol("Folder.forgetWatch")
 
 export class Folder extends Component {
   static definition = {
@@ -34,7 +37,18 @@ export class Folder extends Component {
         reflect: true,
         default: "/",
         update(init) {
+          if (this[_forgetWatch]?.path === this.path) return
           if (!init) this.selection.length = 0
+
+          const path = normalizeDirname(this.path)
+
+          this[_forgetWatch]?.()
+          this[_forgetWatch] = disk.watchDir(path, () => {
+            this.ctx.reactive.now(() => {
+              this.ctx.reactive.refresh(this.ctx.scope + "/path")
+            })
+          })
+          this[_forgetWatch].path = this.path
         },
       },
       glob: {

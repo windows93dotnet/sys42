@@ -22,6 +22,7 @@ export default class Reactive extends Emitter {
     this.ctx = ctx
     this.data = data
     this.firstUpdateDone = false
+    this.bypassEqualCheck = false
 
     Object.defineProperty(this.ctx, "state", {
       enumerable: true,
@@ -124,6 +125,15 @@ export default class Reactive extends Emitter {
     this.throttle = throttle
   }
 
+  refresh(path) {
+    const { bypassEqualCheck } = this
+    this.bypassEqualCheck = true
+    const val = locate(this.data, path, sep)
+    if (val?.$ref) this.update(val.$ref, locate(this.data, val.$ref, sep))
+    else this.update(path, val)
+    this.bypassEqualCheck = bypassEqualCheck
+  }
+
   // eslint-disable-next-line max-params
   enqueue(queue, path, val, oldVal, deleted) {
     if (deleted) {
@@ -135,6 +145,7 @@ export default class Reactive extends Emitter {
       if (
         oldVal !== undefined &&
         "$ref" in val === false &&
+        !this.bypassEqualCheck &&
         equal(val, oldVal)
       ) {
         return
@@ -142,7 +153,14 @@ export default class Reactive extends Emitter {
 
       queue.objects.add([path])
     } else {
-      if (oldVal !== undefined && equal(val, oldVal)) return
+      if (
+        oldVal !== undefined &&
+        !this.bypassEqualCheck &&
+        equal(val, oldVal)
+      ) {
+        return
+      }
+
       queue.paths.add([path])
     }
   }
