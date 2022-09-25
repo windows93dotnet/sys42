@@ -29,7 +29,7 @@
     "stylelint-config-standard": "^26.0.0"
   },
   "dependencies": {
-    "cbor": "^8.1.0",
+    "cborg": "^1.9.5",
     "chokidar": "^3.5.3",
     "fastify": "^4.2.1",
     "fastify-disablecache": "^3.0.0",

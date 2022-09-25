@@ -131,13 +131,13 @@ test.tasks(testcases, (test, { title, args }) => {
   })
 })
 
-test("Big Array", (t) => {
+test("big Array", (t) => {
   const value = new Array(0x1_00_01)
   for (let i = 0; i < value.length; ++i) value[i] = i
   t.eq(CBOR.decode(CBOR.encode(value)), value)
 })
 
-test("Big String", (t) => {
+test("big String", (t) => {
   let value = ""
   for (let i = 0; i < 126_000; ++i) {
     value += Math.floor(i % 10).toString()
@@ -146,42 +146,42 @@ test("Big String", (t) => {
   t.eq(CBOR.decode(CBOR.encode(value)), value)
 })
 
-test("Remaining Bytes", (t) => {
+test("remaining Bytes", (t) => {
   t.throws(
     () => CBOR.decode(new ArrayBuffer(2)), //
     "Remaining bytes"
   )
 })
 
-test("Invalid length encoding", (t) => {
+test("invalid length encoding", (t) => {
   t.throws(
     () => CBOR.decode(hex2arrayBuffer("1e")), //
     "Invalid length encoding"
   )
 })
 
-test("Invalid length", (t) => {
+test("invalid length", (t) => {
   t.throws(
     () => CBOR.decode(hex2arrayBuffer("1f")), //
     "Invalid length"
   )
 })
 
-test("Invalid indefinite length element type", (t) => {
+test("invalid indefinite length element type", (t) => {
   t.throws(
     () => CBOR.decode(hex2arrayBuffer("5f00")),
     "Invalid indefinite length element"
   )
 })
 
-test("Invalid indefinite length element length", (t) => {
+test("invalid indefinite length element length", (t) => {
   t.throws(
     () => CBOR.decode(hex2arrayBuffer("5f5f")),
     "Invalid indefinite length element"
   )
 })
 
-test("Tagging", (t) => {
+test("tagging", (t) => {
   function TaggedValue(value, tag) {
     this.value = value
     this.tag = tag
@@ -206,4 +206,17 @@ test("Tagging", (t) => {
   t.eq(decoded[1].tag, 0x45_67, "second item tag")
   t.true(decoded[2] instanceof SimpleValue, "third item is a SimpleValue")
   t.eq(decoded[2].value, 0xf0, "third item tag")
+})
+
+test("large object", async (t) => {
+  t.timeout(1000)
+
+  const [buffer, json] = await Promise.all([
+    t.utils.load.buffer("/tests/fixtures/formats/cbor/large-object.cbor"),
+    t.utils.load.json("/tests/fixtures/formats/cbor/large-object.json"),
+  ])
+
+  const obj = CBOR.decode(buffer)
+  t.eq(obj, json)
+  t.eq(CBOR.encode(obj), buffer)
 })

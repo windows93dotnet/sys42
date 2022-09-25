@@ -18,11 +18,6 @@ const getFiles = async () => {
   const url = new URL("/files.cbor", import.meta.url)
   const res = await fetch(url)
   return res.status === 200 ? CBOR.decode(await res.arrayBuffer()) : {}
-
-  // // TODO: fix files.cbor
-  // const url = "/files.json"
-  // const res = await fetch(url)
-  // return res.status === 200 ? JSON.parse(await res.text()) : {}
 }
 
 let instance

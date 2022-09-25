@@ -4,3 +4,4 @@ dist
 .vscode
 .trash
 .tmp
+src/files.cbor

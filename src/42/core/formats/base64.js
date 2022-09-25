@@ -148,7 +148,7 @@ export async function base64Encode(val) {
   return fromArrayBuffer(buffer)
 }
 
-export async function base64Decode(val, options) {
+export function base64Decode(val, options) {
   const buffer = toArrayBuffer(val)
 
   if (typeof options === "string") options = { encoding: options }

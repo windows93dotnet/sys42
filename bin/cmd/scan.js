@@ -1,5 +1,5 @@
 import globby from "globby"
-import cbor from "cbor"
+import * as cbor from "cborg"
 import fs from "node:fs/promises"
 
 import getExtname from "../../src/42/core/path/core/getExtname.js"
