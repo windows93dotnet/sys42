@@ -13,6 +13,8 @@
 
 import base64 from "../../core/formats/base64.js"
 import ieee754 from "../../core/formats/ieee754.js"
+import isInstance from "../isInstance.js"
+
 const customInspectSymbol =
   typeof Symbol === "function" && typeof Symbol["for"] === "function" // eslint-disable-line dot-notation
     ? Symbol["for"]("nodejs.util.inspect.custom") // eslint-disable-line dot-notation
@@ -2290,19 +2292,6 @@ function blitBuffer(src, dst, offset, length) {
   }
 
   return i
-}
-
-// ArrayBuffer or Uint8Array objects from other contexts (i.e. iframes) do not pass
-// the `instanceof` check but they should be treated as of that type.
-// See: https://github.com/feross/buffer/issues/166
-function isInstance(obj, type) {
-  return (
-    obj instanceof type ||
-    (obj != null &&
-      obj.constructor != null &&
-      obj.constructor.name != null &&
-      obj.constructor.name === type.name)
-  )
 }
 
 // Create lookup table for `toString('hex')`

@@ -1,5 +1,6 @@
 import explorer from "../components/explorer.js"
 import stemname from "../../fabric/type/path/extract/stemname.js"
+import isHashmapLike from "../../fabric/type/any/is/isHashmapLike.js"
 
 export default async function filePickerSave(path, options) {
   const res = await explorer(path, {
@@ -40,10 +41,28 @@ export default async function filePickerSave(path, options) {
     ...options,
   })
 
-  if (!res.ok) return
+  if (!res.ok || !res.name) return
+
+  let write
+
+  if (!res.path.endsWith("/")) res.path += "/"
+  const filename = res.path + res.name
+
+  if (options !== undefined && !isHashmapLike(options)) {
+    options = { data: options }
+  }
+
+  if (options && "data" in options) {
+    const fs = await import("../../core/fs.js").then((m) => m.default)
+    write = await fs.write(filename, options.data, {
+      encoding: options.encoding,
+    })
+  }
 
   return {
     path: res.path,
     basename: res.name,
+    filename,
+    write,
   }
 }
