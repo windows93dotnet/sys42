@@ -19,6 +19,7 @@ export default function compileTemplate(parsed, options = {}) {
 
   return options.async
     ? async (...locals) => {
+        if (options.locals) locals = [...locals, options.locals]
         let out = strings[0] ? [strings[0]] : []
 
         for (let i = 0, l = substitutions.length; i < l; i++) {
@@ -31,6 +32,7 @@ export default function compileTemplate(parsed, options = {}) {
         return out.length === 1 ? out[0] : out.join("")
       }
     : (...locals) => {
+        if (options.locals) locals = [...locals, options.locals]
         let out = strings[0]
 
         for (let i = 0, l = substitutions.length; i < l; i++) {

@@ -52,6 +52,13 @@ export default function renderControl(el, ctx, def) {
 
     const fn = () => ctx.reactive.set(el.name, getControlData(el))
 
+    if (def.value) {
+      // Save the value in the state on first render if a value and a scope are set
+      ctx.postrender.push(() => {
+        ctx.reactive.set(el.name, getControlData(el))
+      })
+    }
+
     def.on ??= []
     def.on.push({
       [def.lazy

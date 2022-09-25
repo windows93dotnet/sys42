@@ -1,4 +1,5 @@
 import Component from "../class/Component.js"
+import configure from "../../core/configure.js"
 import dirname from "../../fabric/type/path/extract/dirname.js"
 import dialog from "./dialog.js"
 import open from "../../os/cmd/open.cmd.js"
@@ -99,10 +100,10 @@ export class Explorer extends Component {
           {
             tag: "input",
             scope: "path",
-            enterKeyHint: "go",
             debounce: true,
             compact: true,
             prose: false,
+            enterKeyHint: "go",
             on: {
               Enter: "{{go(target.value)}}",
               focus({ target }) {
@@ -200,24 +201,27 @@ export default async function explorer(path = "/", options) {
 
   path = parsed.dir === "/" ? parsed.dir : parsed.dir + "/"
 
-  return dialog({
-    label: options.label ?? "{{path}}",
-    icon: "{{path}}",
-    class: "dialog-explorer",
-    style: { width: "400px", height: "350px" },
+  return dialog(
+    configure(
+      {
+        label: options.label ?? "{{path}}",
+        icon: "{{path}}",
+        class: "dialog-explorer",
+        style: { width: "400px", height: "350px" },
 
-    content: {
-      tag: "ui-explorer",
-      path: "{{path}}",
-      selection: "{{selection}}",
-      glob: "{{glob}}",
-      isPicker: options.isPicker,
-      parent: "dialog",
-      as: "explorer",
-    },
+        content: {
+          tag: "ui-explorer",
+          path: "{{path}}",
+          selection: "{{selection}}",
+          glob: "{{glob}}",
+          isPicker: options.isPicker,
+          parent: "dialog",
+          as: "explorer",
+        },
 
-    state: { path, selection, glob },
-
-    ...options?.dialog,
-  })
+        state: { path, selection, glob },
+      },
+      options?.dialog
+    )
+  )
 }

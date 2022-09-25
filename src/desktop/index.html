@@ -11,8 +11,10 @@
 
 <script type="module">
   import "../42/os.js"
-  import filePickerOpen from "../42/ui/invocables/filePickerOpen.js"
-  console.log(111, await filePickerOpen("/42/test.js"))
+  // import filePickerOpen from "../42/ui/invocables/filePickerOpen.js"
+  // console.log(111, await filePickerOpen("/42/test.js"))
+  import filePickerSave from "../42/ui/invocables/filePickerSave.js"
+  console.log("filePickerSave", await filePickerSave("/42/test.js"))
 </script>
 
 <script type="_module">
