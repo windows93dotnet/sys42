@@ -1,5 +1,5 @@
 import explorer from "../components/explorer.js"
-import stemname from "../../fabric/type/path/extract/stemname.js"
+import getStemname from "../../fabric/type/path/core/getStemname.js"
 import isHashmapLike from "../../fabric/type/any/is/isHashmapLike.js"
 
 export default async function filePickerSave(path, options) {
@@ -24,7 +24,7 @@ export default async function filePickerSave(path, options) {
             async focus({ target }) {
               this.state.selection.length = 0
               const { value } = target
-              const stem = stemname(value)
+              const stem = getStemname(value)
               const start = value.indexOf(stem)
               target.setSelectionRange(0, 0)
               start > -1

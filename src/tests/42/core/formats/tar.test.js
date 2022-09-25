@@ -1,6 +1,6 @@
 import test from "../../../../42/test.js"
 import tar from "../../../../42/core/formats/tar.js"
-import basename from "../../../../42/fabric/type/path/extract/basename.js"
+import getBasename from "../../../../42/fabric/type/path/core/getBasename.js"
 
 const { stream, http } = test.utils
 const { task } = test
@@ -253,7 +253,7 @@ test.tasks(
   ],
 
   (test, { url, gzip, files, headers, length }) => {
-    test("extract", basename(url), async (t) => {
+    test("extract", getBasename(url), async (t) => {
       t.timeout(1000)
       let rs = http.stream(url)
       if (gzip) rs = rs.pipeThrough(stream.ts.decompress())

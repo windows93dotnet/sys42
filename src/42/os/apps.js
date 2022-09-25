@@ -3,7 +3,7 @@ import parseFilename from "../fabric/type/path/parseFilename.js"
 import arrify from "../fabric/type/any/arrify.js"
 import pick from "../fabric/type/object/pick.js"
 import disk from "../core/disk.js"
-import dirname from "../fabric/type/path/extract/dirname.js"
+import getDirname from "../fabric/type/path/core/getDirname.js"
 
 import "../ui/popup.js" // TODO: check if it can be injected
 
@@ -105,7 +105,7 @@ class AppManager extends ConfigFile {
 
     const app = this.value.windows[appName]
 
-    const dir = new URL(dirname(app.manifest + "/"), location).href
+    const dir = new URL(getDirname(app.manifest + "/"), location).href
 
     files = files.map((path) => ({ path }))
 

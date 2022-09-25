@@ -290,7 +290,7 @@ test.tasks(
     task({
       component: {
         tag: "ui-t-ready",
-        content: "ext: {{/foo |> extname}}",
+        content: "ext: {{/foo |> getExtname}}",
       },
       def: {
         content: { tag: "ui-t-ready" },

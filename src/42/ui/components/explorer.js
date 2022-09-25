@@ -1,6 +1,6 @@
 import Component from "../class/Component.js"
 import configure from "../../core/configure.js"
-import dirname from "../../fabric/type/path/extract/dirname.js"
+import getDirname from "../../fabric/type/path/core/getDirname.js"
 import dialog from "./dialog.js"
 import open from "../../os/cmd/open.cmd.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
@@ -154,7 +154,7 @@ export class Explorer extends Component {
   }
 
   folderUp(options) {
-    let path = dirname(this.path)
+    let path = getDirname(this.path)
     if (!path.endsWith("/")) path += "/"
     this.path = path
     if (!options?.keepFocus) this.autofocus()

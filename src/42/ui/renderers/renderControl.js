@@ -5,7 +5,7 @@ import setAttributes from "../../fabric/dom/setAttributes.js"
 import create from "../create.js"
 import findScope from "../findScope.js"
 import resolveScope from "../resolveScope.js"
-import basename from "../../fabric/type/path/extract/basename.js"
+import getBasename from "../../fabric/type/path/core/getBasename.js"
 import debounce from "../../fabric/type/function/debounce.js"
 import { toTitleCase } from "../../fabric/type/string/letters.js"
 import hash from "../../fabric/type/any/hash.js"
@@ -85,7 +85,7 @@ export default function renderControl(el, ctx, def) {
     def.label ??
     (el.type === "radio"
       ? toTitleCase(el.value)
-      : toTitleCase(basename(el.name)))
+      : toTitleCase(getBasename(el.name)))
 
   if (labelText) {
     el.removeAttribute("label")

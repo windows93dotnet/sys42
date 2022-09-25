@@ -2,8 +2,8 @@
 import inIframe from "../../core/env/realm/inIframe.js"
 import preinstall from "../utils/preinstall.js"
 import UI from "../../ui/class/UI.js"
-import basename from "../../fabric/type/path/extract/basename.js"
-import dirname from "../../fabric/type/path/extract/dirname.js"
+import getBasename from "../../fabric/type/path/core/getBasename.js"
+import getDirname from "../../fabric/type/path/core/getDirname.js"
 
 let toggleFullscreen
 let fileImport
@@ -94,7 +94,7 @@ const menubar = [
 export default class App extends UI {
   constructor(manifest) {
     let { name, categories, state, content, encode, decode, dir } = manifest
-    dir ??= dirname(document.URL) + "/"
+    dir ??= getDirname(document.URL) + "/"
 
     const install = preinstall({ name, categories, dir })
 
@@ -163,7 +163,10 @@ export default class App extends UI {
           fileExport ??= await import(
             "../../fabric/type/file/fileExport.js"
           ).then((m) => m.default)
-          await fileExport(new File([this.text], basename(this.path)), encode)
+          await fileExport(
+            new File([this.text], getBasename(this.path)),
+            encode
+          )
         },
 
         install() {
