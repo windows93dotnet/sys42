@@ -57,7 +57,7 @@ ui-dialog:focus {
 
 .ui-dialog__footer {
   justify-content: end;
-  display: flex;
+  flex-wrap: wrap;
   gap: var(--unit-sm);
 }
 

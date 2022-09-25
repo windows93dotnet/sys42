@@ -1,7 +1,7 @@
 import "./icon.js"
 import Component from "../class/Component.js"
 import disk from "../../core/disk.js"
-import prompt from "../invocables/prompt.js"
+import engage from "../../os/engage.js"
 import dt from "../../core/dt.js"
 
 const { indexOf } = Array.prototype
@@ -88,6 +88,11 @@ export class Folder extends Component {
     ],
 
     contextmenu: [
+      {
+        label: "Create Folder…",
+        click: "{{engage.createFolder(path)}}",
+      },
+      "---",
       { label: "Select all", click: "{{selectable.selectAll()}}" }, //
     ],
 
@@ -107,19 +112,19 @@ export class Folder extends Component {
           tabIndex: "{{@first ? 0 : -1}}",
           path: "{{.}}",
           contextmenu: [
-            { label: "Copy" }, //
+            // {
+            //   label: "Create Folder…",
+            //   click: "{{engage.createFolder(path)}}",
+            // },
             "---",
-            { label: "Rename", click: "{{rename(.)}}" },
+            { label: "Rename", click: "{{engage.rename(.)}}" },
           ],
         },
       },
     },
   }
 
-  async rename(icon) {
-    const name = await prompt("Rename", { value: icon.path })
-    console.log("rename", name)
-  }
+  engage = engage
 
   autoSelect(target) {
     if (this.selection.length === 0) {

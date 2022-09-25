@@ -9,12 +9,12 @@
   trap()
 </script>
 
-<script type="module">
+<script type="_module">
   import "../42/os.js"
   // import filePickerOpen from "../42/ui/invocables/filePickerOpen.js"
   // console.log(111, await filePickerOpen("/42/test.js"))
   import filePickerSave from "../42/ui/invocables/filePickerSave.js"
-  console.log("filePickerSave", await filePickerSave("/42/test.js"))
+  console.log("filePickerSave", await filePickerSave("/42/hello.txt", "world"))
 </script>
 
 <script type="_module">
@@ -31,11 +31,12 @@
   // await puppet('ui-icon[path$="index.html"]').dblclick()
 </script>
 
-<script type="_module">
+<script type="module">
   import "../42/os.js"
   import ui from "../42/ui.js"
   import explorer from "../42/ui/components/explorer.js"
   import open from "../42/os/cmd/open.cmd.js"
+  import engage from "../42/os/engage.js"
 
   await ui({
     tag: "body.box-fit.box-h._debug",
@@ -85,7 +86,9 @@
     },
   })
 
-  explorer("/42/fabric/")
+  // explorer("/users/")
+
+  engage.createFolder("/users/")
 
   // import puppet from "../42/core/dev/puppet.js"
   // await puppet.when("uidialogopen")

@@ -141,15 +141,33 @@ test("circular", "array", async (t) => {
   t.is(result.b.x, result.b.y)
 })
 
+test("Object.create(null)", async (t) => {
+  const obj = { a: 1, b: Object.create(null) }
+  obj.b.c = 2
+  const result = configure(obj)
+  t.eq(result, { a: 1, b: { c: 2 } })
+})
+
 test("patch", async (t) => {
   const obj = { a: 1, b: 2 }
   const result = configure(obj, { $patch: { op: "add", path: "/c", value: 3 } })
   t.eq(result, { a: 1, b: 2, c: 3 })
 })
 
-test("Object.create(null)", async (t) => {
-  const obj = { a: 1, b: Object.create(null) }
-  obj.b.c = 2
-  const result = configure(obj)
-  t.eq(result, { a: 1, b: { c: 2 } })
+test("patch", 2, async (t) => {
+  const obj = { a: [{ x: 1 }, { y: 2 }], b: 2 }
+  const result = configure(obj, {
+    $patch: { op: "add", path: "/a/0", value: { z: 3 } },
+  })
+  t.eq(result, { a: [{ z: 3 }, { x: 1 }, { y: 2 }], b: 2 })
+})
+
+test("patch", 3, async (t) => {
+  const obj = { a: [{ x: 1 }, { y: 2 }], b: 2 }
+  const result = configure(obj, {
+    a: {
+      $patch: { op: "add", path: "/0", value: { z: 3 } },
+    },
+  })
+  t.eq(result, { a: [{ z: 3 }, { x: 1 }, { y: 2 }], b: 2 })
 })

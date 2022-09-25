@@ -204,7 +204,7 @@ export default async function explorer(path = "/", options) {
   return dialog(
     configure(
       {
-        label: options.label ?? "{{path}}",
+        label: options?.label ?? "{{path}}",
         icon: "{{path}}",
         class: "dialog-explorer",
         style: { width: "400px", height: "350px" },
@@ -214,7 +214,7 @@ export default async function explorer(path = "/", options) {
           path: "{{path}}",
           selection: "{{selection}}",
           glob: "{{glob}}",
-          isPicker: options.isPicker,
+          isPicker: options?.isPicker,
           parent: "dialog",
           as: "explorer",
         },

@@ -84,6 +84,41 @@
   padding: var(--breath);
 }
 
+.dim {
+  color: var(--dim-fg);
+}
+
+.message:empty {
+  display: none;
+}
+
+.message {
+  padding: var(--unit-sm) var(--unit-md);
+  background: #f8f8f9;
+  border-style: solid;
+  border-width: 1px;
+}
+
+.message.info {
+  background-color: #f8ffff;
+  color: #276f86;
+}
+
+.message.warning {
+  background-color: #fffaf3;
+  color: #573a08;
+}
+
+.message.error {
+  background-color: #fff6f6;
+  color: #9f3a38;
+}
+
+.message.success {
+  background-color: #fcfff5;
+  color: #2c662d;
+}
+
 .highlight,
 ::selection {
   --bg: var(--highlight-bg);

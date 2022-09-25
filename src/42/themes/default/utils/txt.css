@@ -39,6 +39,7 @@
 .txt-justify { text-align: justify; }
 .txt-wrap { overflow-wrap: break-word; }
 .txt-break { white-space: break-spaces; }
+.txt-pre { white-space: pre; }
 
 .txt-b { font-weight: bold; }
 .txt-i { font-style: italic; }
