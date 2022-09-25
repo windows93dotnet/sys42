@@ -1,6 +1,6 @@
 import resolvePath from "../fabric/type/path/core/resolvePath.js"
 import parseDotNotation from "../fabric/locator/parseDotNotation.js"
-import basename from "../fabric/type/path/extract/basename.js"
+import getBasename from "../fabric/type/path/core/getBasename.js"
 import locate from "../fabric/locator/locate.js"
 
 const sep = "/"
@@ -10,7 +10,7 @@ export default function resolveScope(scope, loc, ctx) {
   loc = String(loc)
 
   if (loc.startsWith("@") || loc.startsWith("#")) {
-    loc = `../${loc}:${basename(scope)}`
+    loc = `../${loc}:${getBasename(scope)}`
   }
 
   const out = parseDotNotation(resolvePath(scope, loc)).join("/")

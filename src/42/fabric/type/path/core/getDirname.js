@@ -3,7 +3,7 @@
 
 import assertPath from "../assertPath.js"
 
-export default function dirname(path) {
+export default function getDirname(path) {
   assertPath(path)
 
   if (path.length === 0) return "."

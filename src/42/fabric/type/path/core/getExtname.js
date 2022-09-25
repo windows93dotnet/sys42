@@ -3,7 +3,7 @@
 
 import assertPath from "../assertPath.js"
 
-export default function extname(path) {
+export default function getExtname(path) {
   assertPath(path)
 
   let startDot = -1

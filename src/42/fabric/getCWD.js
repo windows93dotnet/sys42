@@ -1,9 +1,9 @@
 import getParentModule from "./getParentModule.js"
-import dirname from "./type/path/extract/dirname.js"
+import getDirname from "./type/path/core/getDirname.js"
 
 export default function getCWD(reg) {
   let { url } = getParentModule(reg)
   if (url === "about:srcdoc") return "/"
   if (url.endsWith("/")) url += "index.html"
-  return dirname(new URL(url).pathname)
+  return getDirname(new URL(url).pathname)
 }

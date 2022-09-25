@@ -5,7 +5,7 @@
 
 import assertPath from "../assertPath.js"
 
-export default function basename(path, ext) {
+export default function getBasename(path, ext) {
   if (ext !== undefined && typeof ext !== "string") {
     throw new TypeError('"ext" argument must be a string')
   }

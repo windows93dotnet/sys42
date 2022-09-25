@@ -1,6 +1,6 @@
-import extname from "../extract/extname.js"
-import basename from "../extract/basename.js"
-import dirname from "../extract/dirname.js"
+import extname from "./getExtname.js"
+import getBasename from "./getBasename.js"
+import dirname from "./getDirname.js"
 import joinPath from "./joinPath.js"
 
 export default function basePostfix(path, postfix) {
@@ -12,6 +12,6 @@ export default function basePostfix(path, postfix) {
   }
 
   const ext = extname(path)
-  const base = basename(path, ext)
+  const base = getBasename(path, ext)
   return joinPath(dirname(path), base + postfix + ext)
 }

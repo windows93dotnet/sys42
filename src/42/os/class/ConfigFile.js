@@ -2,16 +2,16 @@ import system from "../../system.js"
 import fs from "../../core/fs.js"
 import disk from "../../core/disk.js"
 import defer from "../../fabric/type/promise/defer.js"
-import extname from "../../fabric/type/path/extract/extname.js"
-import basename from "../../fabric/type/path/extract/basename.js"
+import getExtname from "../../fabric/type/path/core/getExtname.js"
+import getBasename from "../../fabric/type/path/core/getBasename.js"
 import configure from "../../core/configure.js"
 
 const VALID_TYPES = new Set([".json", ".json5", ".cbor"])
 
 export class ConfigFile {
   constructor(filename, defaults) {
-    this.filename = `${system.HOME}/${basename(filename)}`
-    const ext = extname(this.filename)
+    this.filename = `${system.HOME}/${getBasename(filename)}`
+    const ext = getExtname(this.filename)
     if (!VALID_TYPES.has(ext)) {
       throw new Error(
         `Config file must have a .json, .json5 or .cbor extension: ${ext}`

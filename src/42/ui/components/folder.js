@@ -2,7 +2,7 @@ import "./icon.js"
 import Component from "../class/Component.js"
 import disk from "../../core/disk.js"
 import engage from "../../os/engage.js"
-import normalizeDirname from "../../fabric/type/path/normalizeDirname.js"
+import normalizeDirname from "../../fabric/type/path/utils/normalizeDirname.js"
 import dt from "../../core/dt.js"
 
 const { indexOf } = Array.prototype

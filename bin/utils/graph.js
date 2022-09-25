@@ -1,7 +1,7 @@
 import globby from "globby"
 
 import js from "./graph/js.js"
-import extname from "../../src/42/fabric/type/path/extract/extname.js"
+import getExtname from "../../src/42/fabric/type/path/core/getExtname.js"
 
 const GLOBBY_DEFAULTS = {
   gitignore: true,
@@ -20,7 +20,7 @@ export default async function graph(glob, { cwd, host }) {
       const pathname = `/${f}`
       const filename = `${cwd}${pathname}`
       const base = host + pathname
-      if (extname(f) !== ".js") return
+      if (getExtname(f) !== ".js") return
       const dependencies = await js(filename)
       for (const dependency of dependencies) {
         const url = new URL(dependency.url, base)

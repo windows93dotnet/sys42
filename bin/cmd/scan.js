@@ -2,7 +2,7 @@ import globby from "globby"
 import cbor from "cbor"
 import fs from "node:fs/promises"
 
-import extname from "../../src/42/fabric/type/path/extract/extname.js"
+import getExtname from "../../src/42/fabric/type/path/core/getExtname.js"
 import system from "../../src/42/system.js"
 import allocate from "../../src/42/fabric/locator/allocate.js"
 import sortPath from "../../src/42/fabric/type/path/core/sortPath.js"
@@ -33,7 +33,7 @@ export default async function scan() {
   scannedFiles.forEach((file) => allocate(files, file, 0, "/"))
 
   if (system.config.paths.files.scan) {
-    const ext = extname(system.config.paths.files.scan)
+    const ext = getExtname(system.config.paths.files.scan)
 
     let buffer
     if (ext === ".json") {

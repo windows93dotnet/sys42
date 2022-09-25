@@ -126,10 +126,10 @@ types.path = {
   resolvePath: "path/core/resolvePath",
   sortPath: "path/core/sortPath",
 
-  extname: "path/extract/extname",
-  dirname: "path/extract/dirname",
-  basename: "path/extract/basename",
-  stemname: "path/extract/stemname",
+  getExtname: "path/core/getExtname",
+  getDirname: "path/core/getDirname",
+  getBasename: "path/core/getBasename",
+  getStemname: "path/core/getStemname",
 }
 
 types.fs = {

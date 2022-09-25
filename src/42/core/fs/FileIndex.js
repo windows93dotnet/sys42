@@ -6,8 +6,8 @@ import joinPath from "../../fabric/type/path/core/joinPath.js"
 import sortPath from "../../fabric/type/path/core/sortPath.js"
 import emittable from "../../fabric/traits/emittable.js"
 import glob from "../../fabric/type/path/glob.js"
-import normalizeDirname from "../../fabric/type/path/normalizeDirname.js"
-import tokenizePath from "../../fabric/type/path/tokenizePath.js"
+import normalizeDirname from "../../fabric/type/path/utils/normalizeDirname.js"
+import tokenizePath from "../../fabric/type/path/utils/tokenizePath.js"
 
 const DEFAULTS = {
   name: "fileindex",
