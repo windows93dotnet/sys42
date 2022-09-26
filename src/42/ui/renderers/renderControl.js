@@ -1,3 +1,4 @@
+/* eslint-disable max-depth */
 import register from "../register.js"
 import setControlData from "../../fabric/dom/setControlData.js"
 import getControlData from "../../fabric/dom/getControlData.js"
@@ -53,28 +54,32 @@ export default function renderControl(el, ctx, def) {
     const fn = () => ctx.reactive.set(el.name, getControlData(el))
 
     if (def.value) {
-      // Save the value in the state on first render if a value and a scope are set
-      ctx.postrender.push(() => {
+      // Save the value in the state if a value and a scope are set
+      if (def.attrs.value.scopes) {
+        const renderer = debounce(async () => {
+          ctx.reactive.set(el.name, getControlData(el), { silent: true })
+        })
+
+        for (const scope of def.attrs.value.scopes) {
+          if (scope === el.name) continue
+          register.registerRenderer(ctx, scope, renderer)
+        }
+      } else {
         ctx.reactive.set(el.name, getControlData(el))
-      })
+      }
     }
 
     def.on ??= []
     def.on.push({
       [def.lazy
         ? def.enterKeyHint === "enter"
-          ? "change"
-          : "change || Enter"
+          ? "change || Enter"
+          : "change"
         : "input"]: def.debounce ? debounce(fn, def.debounce) : fn,
     })
   }
 
   setAttributes(el, setValidation(def))
-
-  // if (def.enterKeyHint && def.enterKeyHint !== "enter") {
-  //   def.on ??= []
-  //   def.on.push({ Enter: `{{${def.enterKeyHint}(target, e)}}` })
-  // }
 
   const field =
     el.type === "radio" || el.type === "checkbox"
