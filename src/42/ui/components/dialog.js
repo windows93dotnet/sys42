@@ -115,7 +115,10 @@ export class Dialog extends Component {
     this.style.zIndex = maxZIndex("ui-dialog") + 1
     this.emit("open", this)
     dispatch(this, "uidialogopen")
-    autofocus(this.querySelector(":scope > .ui-dialog__body"))
+
+    const items = this.querySelectorAll(":scope [data-autofocus]")
+    if (items.length > 0) items[items.length - 1].focus()
+    else autofocus(this.querySelector(":scope > .ui-dialog__body"))
   }
 }
 

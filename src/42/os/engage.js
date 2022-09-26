@@ -1,7 +1,8 @@
 import queueTask from "../fabric/type/function/queueTask.js"
-import normalizeDirname from "../core/path/utils/normalizeDirname.js"
 import resolvePath from "../core/path/core/resolvePath.js"
 import tokenizePath from "../core/path/utils/tokenizePath.js"
+import getBasename from "../core/path/core/getBasename.js"
+import getDirname from "../core/path/core/getDirname.js"
 
 // function sanitizeName(path) {
 //   assertPath(path)
@@ -20,34 +21,45 @@ export async function openFile(path) {
   return open(path)
 }
 
-export async function createFolder(path) {
+export async function createFolder(path, options) {
   const fs = await import("../core/fs.js") //
     .then((m) => m.default)
   const prompt = await import("../ui/invocables/prompt.js") //
     .then((m) => m.default)
 
+  path = resolvePath(path)
+
+  let value
+  if (path.endsWith("/")) {
+    value = options?.untitled ?? "untitled"
+  } else {
+    value = getBasename(path)
+    path = getDirname(path) + "/"
+  }
+
   let name = await prompt("Enter the name", {
-    value: "New Folder",
-    dialog: {
-      state: { message: "" },
-    },
+    value,
     afterfield: {
-      tag: ".message.info.txt-pre.my-sm",
+      tag: ".message.my-sm",
+      role: "status",
+      aria: { live: "polite" },
       content: "{{message}}",
     },
     field: {
       on: {
-        input({ target }) {
-          this.state.message = target.value.includes("/")
-            ? "Using slashes in folder names\nwill create sub-folders"
-            : ""
+        async input({ target }) {
+          if (target.value.includes("/")) {
+            this.state.message =
+              "Using slashes in folder names\nwill create sub-folders"
+            await this.reactive.pendingUpdate
+            target.nextElementSibling.setAttribute("aria-live", "off")
+          } else if (this.state.message) this.state.message = ""
         },
       },
     },
   })
 
   if (name) {
-    path = normalizeDirname(resolvePath(path))
     name = resolvePath(name)
     const filename = path + name
     const write = await fs.writeDir(filename)

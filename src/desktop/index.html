@@ -9,45 +9,6 @@
   trap()
 </script>
 
-<script type="_module">
-  import "../42/os.js"
-  // import filePickerOpen from "../42/ui/invocables/filePickerOpen.js"
-  // console.log(111, await filePickerOpen("/42/test.js"))
-  import filePickerSave from "../42/ui/invocables/filePickerSave.js"
-  console.log("filePickerSave", await filePickerSave("/42/hello.txt", "world"))
-</script>
-
-<script type="_module">
-  import "../42/os.js"
-  import open from "../42/os/cmd/open.cmd.js"
-  open("/tests/fixtures/website/style.css")
-</script>
-
-<script type="_module">
-  import "../42/os.js"
-  import explorer from "../42/ui/components/explorer.js"
-  explorer("/tests/fixtures/website/", { _glob: true })
-  // import puppet from "../42/core/dev/puppet.js"
-  // await puppet('ui-icon[path$="index.html"]').dblclick()
-</script>
-
-<script type="_module">
-  import "../42/os.js"
-  import fs from "../42/core/fs.js"
-  import disk from "../42/core/disk.js"
-
-  try {
-    await fs.deleteDir("/42/users/derp")
-  } catch {}
-
-  disk.watchDir("/42/users/", (path) => {
-    console.log(888, path)
-  })
-
-  await fs.writeText("/42/users/derp/test.txt", "hello")
-  fs.writeText("/42/users/derp/lol.txt", "hello")
-</script>
-
 <script type="module">
   import system from "../42/os.js"
   import ui from "../42/ui.js"
@@ -105,21 +66,4 @@
   })
 
   engage.openFolder("/users/")
-
-  // import engage from "../42/os/engage.js"
-  // setTimeout(() => {
-  //   engage.createFolder("users")
-  // }, 100)
-
-  // import puppet from "../42/core/dev/puppet.js"
-  // await puppet.when("uidialogopen")
-  // await puppet('ui-icon[path="/42/fabric/constants/"]').dblclick()
-
-  // await puppet('ui-icon[path="/42/"]').dblclick().when("uidialogopen")
-  // await puppet('ui-icon[path="/42/os.js"]').dblclick()
-
-  // await puppet('ui-icon[path="/files.json"]').dblclick()
-
-  // if (globalThis.top === globalThis) open("/desktop/index.html")
-  // else await puppet('ui-icon[path="/style.css"]').dblclick()
 </script>
