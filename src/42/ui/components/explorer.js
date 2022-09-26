@@ -48,16 +48,18 @@ export class Explorer extends Component {
       {
         "stop": true,
         "selector": 'ui-icon[aria-description="file"]',
-        "dblclick || Enter": "{{isPicker ? ok() : open(target.path)}}",
-      },
-      {
-        stop: true,
-        Enter: "{{isPicker && ok()}}",
+        "dblclick || Enter":
+          "{{isPicker ? pick(target.path) : open(target.path)}}",
       },
       {
         "Alt+Up": "{{folderUp()}}",
       },
     ],
+  }
+
+  pick(path) {
+    this.folder.autoSelect(path)
+    this.dialog.ok()
   }
 
   render() {
