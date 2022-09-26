@@ -131,7 +131,7 @@ export class Folder extends Component {
             //   click: "{{engage.createFolder(path)}}",
             // },
             "---",
-            { label: "Rename", click: "{{engage.rename(.)}}" },
+            { label: "Rename", click: "{{engage.renameFile(.)}}" },
           ],
         },
       },

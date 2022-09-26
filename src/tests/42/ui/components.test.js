@@ -439,6 +439,8 @@ test.tasks(
     { title, defer, connect, component, args, html, def, check, expected }
   ) => {
     test(title ?? expected ?? def, async (t) => {
+      t.timeout(1000)
+
       if (component) {
         if (defer) {
           defer = t

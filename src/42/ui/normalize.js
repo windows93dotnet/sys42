@@ -517,12 +517,6 @@ export function normalizeDef(def = {}, ctx, options) {
       })
     }
 
-    if (def.actions) {
-      normalizeData(def.actions, ctx, (res, scope) => {
-        ctx.actions.merge(scope, res)
-      })
-    }
-
     if (def.computed) normalizeComputeds(def.computed, ctx)
 
     const traits = normalizeTraits(def, ctx)
@@ -536,6 +530,12 @@ export function normalizeDef(def = {}, ctx, options) {
     }
 
     normalizeScope(def, ctx)
+
+    if (def.actions) {
+      normalizeData(def.actions, ctx, (res, scope) => {
+        ctx.actions.merge(scope, res)
+      })
+    }
 
     if (!inTop && ctx.initiator) {
       def.plugins ??= []
