@@ -1,9 +1,9 @@
-import extname from "./getExtname.js"
+import getExtname from "./getExtname.js"
 import getBasename from "./getBasename.js"
 import dirname from "./getDirname.js"
 import joinPath from "./joinPath.js"
 
-export default function basePrefix(path, prefix) {
+export default function prefixPath(path, prefix) {
   const type = typeof prefix
   if (type !== "string") {
     throw new TypeError(
@@ -11,7 +11,7 @@ export default function basePrefix(path, prefix) {
     )
   }
 
-  const ext = extname(path)
+  const ext = getExtname(path)
   const base = getBasename(path, ext)
   return joinPath(dirname(path), prefix + base + ext)
 }

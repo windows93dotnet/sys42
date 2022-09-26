@@ -35,7 +35,13 @@ export default async function dataTransfertImport(dataTransfer) {
     await Promise.all(Array.from(dataTransfer.items).map((x) => normalize(x)))
   ).filter(({ kind, type, entry, file, handle, string, data }) => {
     out.transfers.push(`${kind}:${type}`)
-    if (string.startsWith('{"42_DT_PATHS')) out.paths = data.paths
+    if (
+      string.startsWith('{"DT_PATHS_42') &&
+      data.DT_PATHS_42 === navigator.userAgent
+    ) {
+      out.paths = data.paths
+    }
+
     return !(!string && !file && !entry && !handle)
   })
 
