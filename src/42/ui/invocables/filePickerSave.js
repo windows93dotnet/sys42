@@ -17,7 +17,7 @@ export default async function filePickerSave(path, options) {
           tag: "input.w-full",
           scope: "name",
           value: `{{selection.length > 0
-            ? getBasename(selection.0)
+            ? getBasename(selection/0)
             : this.value || '${untitled}'}}`,
           autofocus: true,
           compact: true,

@@ -67,13 +67,8 @@ export class Folder extends Component {
     },
 
     on: [
-      {
-        repeatable: true,
-        ArrowUp: "{{moveFocusUp()}}",
-        ArrowDown: "{{moveFocusDown()}}",
-        ArrowLeft: "{{moveFocusLeft()}}",
-        ArrowRight: "{{moveFocusRight()}}",
-      },
+      // drag n drop
+      // ===========
       {
         "prevent": true,
         "dragover || dragenter"(e) {
@@ -94,26 +89,73 @@ export class Folder extends Component {
       {
         selector: "ui-icon",
         pointerdown(e, target) {
-          if (e.button === 2) this.el.autoSelect(target)
+          if (e.button === 2) this.el.autoSelect(target.path)
         },
         dragstart(e, target) {
-          this.el.autoSelect(target)
+          this.el.autoSelect(target.path)
           dt.export(e.dataTransfer, { paths: this.el.selection })
         },
         // drag(e) {
         //   console.log(e.x, e.y)
         // },
-        // dragend(e) {
-        //   console.log("dragend", e)
-        // },
+        async dragend(e) {
+          console.log("dragend", e.dataTransfer.dropEffect)
+        },
+      },
+
+      // keyboard navigation
+      // ===================
+      {
+        repeatable: true,
+        ArrowUp: "{{moveFocusUp()}}",
+        ArrowDown: "{{moveFocusDown()}}",
+        ArrowLeft: "{{moveFocusLeft()}}",
+        ArrowRight: "{{moveFocusRight()}}",
+      },
+
+      // icon actions
+      // ============
+      // {
+      //   "selector": 'ui-icon[aria-description="file"]',
+      //   "dblclick || Enter": "{{engage.openFile(target)}}",
+      // },
+      // {
+      //   "selector": 'ui-icon[aria-description="folder"]',
+      //   "dblclick || Enter": "{{engage.openFolder(target.path)}}",
+      // },
+      {
+        prevent: true,
+        [engage.createFolder.meta.shortcut]: "{{engage.createFolder(path)}}",
+        [engage.deleteFile.meta.shortcut]: "{{engage.deleteFile(selection)}}",
+        [engage.renameFile.meta.shortcut]: "{{engage.renameFile(selection)}}",
+      },
+      {
+        selector: "ui-icon",
+        disrupt: true,
+        contextmenu: {
+          popup: {
+            tag: "ui-menu",
+            closeEvents: "pointerdown",
+            content: [
+              "---",
+              {
+                ...engage.deleteFile.meta,
+                click: "{{engage.deleteFile(selection)}}",
+              },
+              "---",
+              {
+                ...engage.renameFile.meta,
+                click: "{{engage.renameFile(selection)}}",
+              },
+            ],
+          },
+        },
       },
     ],
 
     contextmenu: [
-      {
-        label: "Create Folder…",
-        click: "{{engage.createFolder(path)}}",
-      },
+      { ...engage.createFolder.meta, click: "{{engage.createFolder(path)}}" },
+      { ...engage.createFile.meta, click: "{{engage.createFile(path)}}" },
       "---",
       { label: "Select all", click: "{{selectable.selectAll()}}" }, //
     ],
@@ -133,14 +175,6 @@ export class Folder extends Component {
           autofocus: "{{@first}}",
           tabIndex: "{{@first ? 0 : -1}}",
           path: "{{.}}",
-          contextmenu: [
-            // {
-            //   label: "Create Folder…",
-            //   click: "{{engage.createFolder(path)}}",
-            // },
-            "---",
-            { label: "Rename", click: "{{engage.renameFile(.)}}" },
-          ],
         },
       },
     },
@@ -148,12 +182,12 @@ export class Folder extends Component {
 
   engage = engage
 
-  autoSelect(target) {
+  autoSelect(path) {
     if (this.selection.length === 0) {
-      this.selection.push(target.path)
-    } else if (!this.selection.includes(target.path)) {
+      this.selection.push(path)
+    } else if (!this.selection.includes(path)) {
       this.selection.length = 0
-      this.selection.push(target.path)
+      this.selection.push(path)
     }
   }
 

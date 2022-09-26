@@ -7,10 +7,10 @@ import prompt from "../../ui/invocables/prompt.js"
 import postfixPath from "../../core/path/core/postfixPath.js"
 import disk from "../../core/disk.js"
 
-export default async function createFolder(path, options) {
+export default async function createPath(path = "/", options) {
   let value
   if (path.endsWith("/")) {
-    value = options?.untitled ?? "untitled"
+    value = options?.untitled ?? options?.folder ? "untitled" : "untitled.txt"
   } else {
     value = getBasename(path)
     path = getDirname(path)
@@ -37,7 +37,7 @@ export default async function createFolder(path, options) {
         async input({ target }) {
           if (target.value.includes("/")) {
             this.state.message =
-              "Using slashes in folder names\nwill create sub-folders"
+              "Using slashes in name\nwill create sub-folders"
             await this.reactive.pendingUpdate
             target.nextElementSibling.setAttribute("aria-live", "off")
           } else if (this.state.message) this.state.message = ""
@@ -53,7 +53,9 @@ export default async function createFolder(path, options) {
     name = resolvePath(name)
     const filename = path + name
 
-    const write = await fs.writeDir(filename)
+    const write = options?.folder
+      ? await fs.writeDir(filename)
+      : await fs.writeText(filename, "")
 
     queueTask(() => {
       const sel = `ui-icon[path^="${path + tokenizePath(name).at(0)}"]`
