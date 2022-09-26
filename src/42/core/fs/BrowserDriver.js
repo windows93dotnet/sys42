@@ -1,5 +1,6 @@
 /* eslint-disable no-throw-literal */
 import "../env/polyfills/ReadableStream.prototype.values.js"
+import system from "../../system.js"
 import Disk, { RESERVED_BYTES } from "./Disk.js"
 import Driver from "./Driver.js"
 
@@ -37,8 +38,11 @@ export default class BrowserDriver extends Driver {
   }
 
   async init() {
-    disk = new Disk()
-    await disk.init()
+    if (system.disk) disk = system.disk
+    else {
+      disk = new Disk()
+      await disk.init()
+    }
     return this
   }
 

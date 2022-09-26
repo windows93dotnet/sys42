@@ -7,8 +7,7 @@ import argv from "./cli/argv.js"
 import traverse from "../fabric/type/object/traverse.js"
 import resolvePath from "../core/path/core/resolvePath.js"
 import disk from "../core/disk.js"
-
-const { HOME } = disk
+import system from "../system.js"
 
 export default rpc(
   async (cmd, locals) => {
@@ -17,7 +16,7 @@ export default rpc(
     let program
 
     const programs = disk.glob(
-      [`${HOME}/**/${name}{.cmd,.app}.js`, `**/${name}{.cmd,.app}.js`],
+      [`${system.HOME}/**/${name}{.cmd,.app}.js`, `**/${name}{.cmd,.app}.js`],
       { sort: false }
     )
 
