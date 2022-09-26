@@ -7,7 +7,7 @@ import addStack from "../fabric/type/error/addStack.js"
 import getDriverLazy from "./fs/getDriverLazy.js"
 import ipc from "./ipc.js"
 
-export { default as FileError } from "./fs/FileSystemError.js"
+export { default as FileSystemError } from "./fs/FileSystemError.js"
 
 const UTF8 = "utf-8"
 
@@ -39,7 +39,7 @@ function mountPlace(place, driverName, options = {}) {
   }
 }
 
-export function fsMount(place, driverName, options) {
+export function mount(place, driverName, options) {
   const type = typeof place
   if (type === "object") {
     options = driverName
@@ -74,19 +74,19 @@ async function findDriver(path, stack) {
 /* check
 ======== */
 
-export async function fsAccess(path) {
+export async function access(path) {
   const { stack } = new Error()
   const { driver, filename } = await findDriver(path, stack)
   return driver.access(filename)
 }
 
-export async function fsIsFile(path) {
+export async function isFile(path) {
   const { stack } = new Error()
   const { driver, filename } = await findDriver(path, stack)
   return driver.isFile(filename)
 }
 
-export async function fsIsDir(path) {
+export async function isDir(path) {
   const { stack } = new Error()
   const { driver, filename } = await findDriver(path, stack)
   return driver.isDir(filename)
@@ -95,7 +95,7 @@ export async function fsIsDir(path) {
 /* file
 ======= */
 
-export async function fsOpen(path, options = {}) {
+export async function open(path, options = {}) {
   const { stack } = new Error()
   const { driver, filename } = await findDriver(path, stack)
   if (typeof options === "string") options = { encoding: options }
@@ -105,7 +105,7 @@ export async function fsOpen(path, options = {}) {
   })
 }
 
-export async function fsRead(path, options = {}) {
+export async function read(path, options = {}) {
   const { stack } = new Error()
   const { driver, filename } = await findDriver(path, stack)
   if (typeof options === "string") options = { encoding: options }
@@ -115,7 +115,7 @@ export async function fsRead(path, options = {}) {
   })
 }
 
-export async function fsWrite(path, value, options = {}) {
+export async function write(path, value, options = {}) {
   const { stack } = new Error()
   const { driver, filename } = await findDriver(path, stack)
   if (typeof options === "string") options = { encoding: options }
@@ -125,7 +125,7 @@ export async function fsWrite(path, value, options = {}) {
   })
 }
 
-export async function fsDelete(path, options = {}) {
+export async function deleteFile(path, options = {}) {
   const { stack } = new Error()
   const { driver, filename } = await findDriver(path, stack)
   return driver.delete(filename, options).catch((err) => {
@@ -134,7 +134,7 @@ export async function fsDelete(path, options = {}) {
   })
 }
 
-export async function fsAppend(path, value, options = {}) {
+export async function append(path, value, options = {}) {
   const { stack } = new Error()
   const { driver, filename } = await findDriver(path, stack)
   if (typeof options === "string") options = { encoding: options }
@@ -147,7 +147,7 @@ export async function fsAppend(path, value, options = {}) {
 /* dir
 ====== */
 
-export async function fsWriteDir(path) {
+export async function writeDir(path) {
   const { stack } = new Error()
   const { driver, filename } = await findDriver(path, stack)
   return driver.writeDir(filename).catch((err) => {
@@ -156,7 +156,7 @@ export async function fsWriteDir(path) {
   })
 }
 
-export async function fsReadDir(path, options = {}) {
+export async function readDir(path, options = {}) {
   const { stack } = new Error()
   const { driver, filename } = await findDriver(path, stack)
   return driver.readDir(filename, options).catch((err) => {
@@ -165,7 +165,7 @@ export async function fsReadDir(path, options = {}) {
   })
 }
 
-export async function fsDeleteDir(path) {
+export async function deleteDir(path) {
   const { stack } = new Error()
   const { driver, filename } = await findDriver(path, stack)
   return driver.deleteDir(filename).catch((err) => {
@@ -177,7 +177,7 @@ export async function fsDeleteDir(path) {
 /* stream
 ========= */
 
-export function fsSink(path, options = {}) {
+export function sink(path, options = {}) {
   const { stack } = new Error()
 
   let underlyingSink
@@ -209,7 +209,7 @@ export function fsSink(path, options = {}) {
   )
 }
 
-export function fsSource(path, options = {}) {
+export function source(path, options = {}) {
   const { stack } = new Error()
 
   let iterator
@@ -241,132 +241,131 @@ export function fsSource(path, options = {}) {
   )
 }
 
-export async function fsCopy(from, to, options) {
+export async function copy(from, to, options) {
   from = resolvePath(from)
   to = resolvePath(to)
 
-  if (await fsIsDir(from)) {
+  if (await isDir(from)) {
     const undones = []
-    const files = await fsReadDir(from, { recursive: true })
+    const files = await readDir(from, { recursive: true })
     for (const path of files) {
-      undones.push(fsMove(`${from}/${path}`, `${to}/${path}`))
+      undones.push(move(`${from}/${path}`, `${to}/${path}`))
     }
 
     await Promise.all(undones)
-    if (options?.delete) await fsDeleteDir(from)
+    if (options?.delete) await deleteDir(from)
     return
   }
 
-  let source = fsSource(from, options)
+  let source = source(from, options)
   if (options?.progress) source = source.pipeThrough(options?.progress())
-  await source.pipeTo(fsSink(to, options))
+  await source.pipeTo(sink(to, options))
 
-  if (options?.delete) await fsDelete(from)
+  if (options?.delete) await deleteFile(from)
 }
 
-export async function fsMove(from, to, options) {
-  return fsCopy(from, to, { ...options, delete: true })
+export async function move(from, to, options) {
+  return copy(from, to, { ...options, delete: true })
 }
 
 /* sugar
 ======== */
 
-export async function fsWriteText(path, value) {
-  await fsWrite(path, value, UTF8)
+export async function writeText(path, value) {
+  await write(path, value, UTF8)
 }
 
-export async function fsReadText(path) {
-  return fsRead(path, UTF8)
+export async function readText(path) {
+  return read(path, UTF8)
 }
 
-export async function fsWriteJSON(path, value, replacer, space = 2) {
+export async function writeJSON(path, value, replacer, space = 2) {
   let previous
 
   if (value === undefined) {
-    await fsWrite(path, "", UTF8)
-    return
+    return void (await write(path, "", UTF8))
   }
 
   try {
-    previous = await fsRead(path, UTF8)
+    previous = await read(path, UTF8)
   } catch {}
 
   if (previous) {
     const JSON5 = await import("./formats/json5.js").then((m) => m.default)
     try {
-      await fsWrite(path, JSON5.format(previous, value), UTF8)
-      return
+      return void (await write(path, JSON5.format(previous, value), UTF8))
     } catch {}
   }
 
-  await fsWrite(path, JSON.stringify(value, replacer, space), UTF8)
+  await write(path, JSON.stringify(value, replacer, space), UTF8)
 }
 
-export async function fsReadJSON(path) {
+export async function readJSON(path) {
   const JSON5 = await import("./formats/json5.js").then((m) => m.default)
-  return fsRead(path, UTF8).then((value) => JSON5.parse(value))
+  return read(path, UTF8).then((value) => JSON5.parse(value))
 }
 
-export async function fsWriteCBOR(path, value) {
+export async function writeCBOR(path, value) {
   // @read https://github.com/cbor-wg/cbor-magic-number
   const CBOR = await import("./formats/cbor.js").then((m) => m.default)
-  await fsWrite(path, CBOR.encode(value))
+  await write(path, CBOR.encode(value))
 }
 
-export async function fsReadCBOR(path) {
+export async function readCBOR(path) {
   const CBOR = await import("./formats/cbor.js").then((m) => m.default)
-  return fsRead(path).then((value) => CBOR.decode(value))
+  return read(path).then((value) => CBOR.decode(value))
 }
 
 const fs = {
   FileSystemError,
   config: configure(DEFAULTS),
-  mount: fsMount,
+  mount,
 
-  access: fsAccess,
-  isDir: fsIsDir,
-  isFile: fsIsFile,
+  access,
+  isDir,
+  isFile,
 
-  open: fsOpen,
-  read: fsRead,
-  write: fsWrite,
-  delete: fsDelete,
-  append: fsAppend,
+  open,
+  read,
+  write,
+  delete: deleteFile,
+  deleteFile,
+  append,
 
-  writeDir: fsWriteDir,
-  readDir: fsReadDir,
-  deleteDir: fsDeleteDir,
+  writeDir,
+  readDir,
+  deleteDir,
 
-  sink: fsSink,
-  source: fsSource,
-  copy: fsCopy,
-  move: fsMove,
+  sink,
+  source,
+  copy,
+  move,
 
-  writeText: fsWriteText,
-  readText: fsReadText,
-  writeJSON: fsWriteJSON,
-  readJSON: fsReadJSON,
-  writeCBOR: fsWriteCBOR,
-  readCBOR: fsReadCBOR,
+  writeText,
+  readText,
+  writeJSON,
+  readJSON,
+  writeCBOR,
+  readCBOR,
 }
 
 // aliases
 
-fs.write.text = fsWriteText
-fs.read.text = fsReadText
+fs.write.text = writeText
+fs.read.text = readText
 
-fs.write.json = fsWriteJSON
-fs.read.json = fsReadJSON
-fs.write.json5 = fsWriteJSON
-fs.read.json5 = fsReadJSON
+fs.write.json = writeJSON
+fs.read.json = readJSON
+fs.write.json5 = writeJSON
+fs.read.json5 = readJSON
 
-fs.write.cbor = fsWriteCBOR
-fs.read.cbor = fsReadCBOR
+fs.write.cbor = writeCBOR
+fs.read.cbor = readCBOR
 
-fs.write.dir = fsWriteDir
-fs.read.dir = fsReadDir
-fs.delete.dir = fsDeleteDir
+fs.write.dir = writeDir
+fs.read.dir = readDir
+fs.delete.dir = deleteDir
 
-fsMount()
+mount()
 
 export default fs
