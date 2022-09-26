@@ -249,7 +249,7 @@ export async function copy(from, to, options) {
     const undones = []
     const files = await readDir(from, { recursive: true })
     for (const path of files) {
-      undones.push(move(`${from}/${path}`, `${to}/${path}`))
+      undones.push(move(`${from}/${path}`, `${to}/${path}`, options))
     }
 
     await Promise.all(undones)
@@ -257,9 +257,9 @@ export async function copy(from, to, options) {
     return
   }
 
-  let source = source(from, options)
-  if (options?.progress) source = source.pipeThrough(options?.progress())
-  await source.pipeTo(sink(to, options))
+  let rs = source(from, options)
+  if (options?.progress) rs = rs.pipeThrough(options?.progress())
+  await rs.pipeTo(sink(to, options))
 
   if (options?.delete) await deleteFile(from)
 }
