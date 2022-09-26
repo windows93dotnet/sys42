@@ -242,12 +242,30 @@ export function fsSource(path, options = {}) {
 }
 
 export async function fsCopy(from, to, options) {
-  await fsSource(from, options).pipeTo(fsSink(to, options))
+  from = resolvePath(from)
+  to = resolvePath(to)
+
+  if (await fsIsDir(from)) {
+    const undones = []
+    const files = await fsReadDir(from, { recursive: true })
+    for (const path of files) {
+      undones.push(fsMove(`${from}/${path}`, `${to}/${path}`))
+    }
+
+    await Promise.all(undones)
+    if (options?.delete) await fsDeleteDir(from)
+    return
+  }
+
+  let source = fsSource(from, options)
+  if (options?.progress) source = source.pipeThrough(options?.progress())
+  await source.pipeTo(fsSink(to, options))
+
+  if (options?.delete) await fsDelete(from)
 }
 
 export async function fsMove(from, to, options) {
-  await fsSource(from, options).pipeTo(fsSink(to, options))
-  await fsDelete(from)
+  return fsCopy(from, to, { ...options, delete: true })
 }
 
 /* sugar

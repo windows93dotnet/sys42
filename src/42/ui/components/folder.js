@@ -82,7 +82,7 @@ export class Folder extends Component {
         },
         async "drop"(e) {
           const { items, paths } = await dt.import(e.dataTransfer)
-          if (paths) console.log(paths)
+          if (paths) engage.movePath(paths, this.el.path)
           else console.table(items)
         },
       },
@@ -98,9 +98,9 @@ export class Folder extends Component {
         // drag(e) {
         //   console.log(e.x, e.y)
         // },
-        async dragend(e) {
-          console.log("dragend", e.dataTransfer.dropEffect)
-        },
+        // async dragend(e) {
+        //   console.log("dragend", e.dataTransfer.dropEffect)
+        // },
       },
 
       // keyboard navigation

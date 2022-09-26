@@ -43,6 +43,7 @@ export default class BrowserDriver extends Driver {
       disk = new Disk()
       await disk.init()
     }
+
     return this
   }
 

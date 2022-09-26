@@ -556,6 +556,7 @@ export function normalizeDef(def = {}, ctx, options) {
 ====== */
 
 export function normalizeCtx(ctx = {}) {
+  // TODO: write protect ctx.trusted
   ctx = { ...ctx }
   ctx.scope ??= "/"
   ctx.steps ??= "?"

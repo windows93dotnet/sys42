@@ -28,6 +28,9 @@ const renameFile = async (...args) =>
 const renameFolder = async (...args) =>
   import("./engage/renamePath.js").then((m) => m.default(...args))
 
+const movePath = async (...args) =>
+  import("./engage/movePath.js").then((m) => m.default(...args))
+
 createFile.meta = {
   label: "Create File…",
 }
@@ -75,4 +78,5 @@ export default {
   openFolder,
   renameFile,
   renameFolder,
+  movePath,
 }

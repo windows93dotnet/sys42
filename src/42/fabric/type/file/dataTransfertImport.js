@@ -36,7 +36,7 @@ export default async function dataTransfertImport(dataTransfer) {
   ).filter(({ kind, type, entry, file, handle, string, data }) => {
     out.transfers.push(`${kind}:${type}`)
     if (
-      string.startsWith('{"DT_PATHS_42') &&
+      string?.startsWith('{"DT_PATHS_42') &&
       data.DT_PATHS_42 === navigator.userAgent
     ) {
       out.paths = data.paths
