@@ -49,15 +49,15 @@
 </script>
 
 <script type="module">
-  import "../42/os.js"
+  import system from "../42/os.js"
   import ui from "../42/ui.js"
-  import explorer from "../42/ui/components/explorer.js"
-  import open from "../42/os/cmd/open.cmd.js"
+  import engage from "../42/os/engage.js"
 
-  await ui({
+  system.desktop = await ui({
     tag: "body.box-fit.box-h._debug",
     content: [
       {
+        scope: "desktop",
         tag: "main#desktop.desktop",
         on: [
           {
@@ -69,40 +69,42 @@
             "dblclick || Enter || Space": "{{openFile(target.path)}}",
           },
         ],
-        content: [
-          {
-            tag: "ui-folder.box-fit.scroll-auto",
-          },
-        ],
+        content: [{ tag: "ui-folder.box-fit.scroll-auto" }],
+        actions: {
+          openFolder: engage.openFolder,
+          openFile: engage.openFile,
+        },
       },
       {
         scope: "taskbar",
-        tag: "footer#taskbar.outset.pa-xs",
-        content: {
-          tag: "button",
-          content: "Start",
-          picto: "puzzle",
-          menu: [{ label: "start" }],
+        tag: "footer#taskbar.d-flex.outset.pa-xs",
+        content: [
+          {
+            tag: "button",
+            content: "Start",
+            picto: "puzzle",
+            menu: [{ label: "start", click: "{{start(e, target)}}" }],
+          },
+          {
+            if: "{{/errors.length > 0}}",
+            tag: ".solid.error.ml-auto",
+            content: "{{/errors.length}} error(s)",
+          },
+        ],
+        actions: {
+          start(e, target) {
+            console.log("start", e, target)
+          },
         },
       },
     ],
 
-    actions: {
-      openFolder(path) {
-        explorer(path)
-      },
-      openFile(path) {
-        open(path)
-      },
-      taskbar: {
-        start(e, target) {
-          console.log("start", e, target)
-        },
-      },
+    state: {
+      errors: [],
     },
   })
 
-  explorer("/users/")
+  engage.openFolder("/users/")
 
   // import engage from "../42/os/engage.js"
   // setTimeout(() => {

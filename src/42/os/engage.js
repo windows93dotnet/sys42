@@ -1,5 +1,3 @@
-import fs from "../core/fs.js"
-import prompt from "../ui/invocables/prompt.js"
 import queueTask from "../fabric/type/function/queueTask.js"
 import normalizeDirname from "../core/path/utils/normalizeDirname.js"
 import resolvePath from "../core/path/core/resolvePath.js"
@@ -10,7 +8,24 @@ import tokenizePath from "../core/path/utils/tokenizePath.js"
 //   return path.replaceAll("/", "_")
 // }
 
+export async function openFolder(path) {
+  const explorer = await import("../ui/components/explorer.js") //
+    .then((m) => m.default)
+  return explorer(path)
+}
+
+export async function openFile(path) {
+  const open = await import("./cmd/open.cmd.js") //
+    .then((m) => m.default)
+  return open(path)
+}
+
 export async function createFolder(path) {
+  const fs = await import("../core/fs.js") //
+    .then((m) => m.default)
+  const prompt = await import("../ui/invocables/prompt.js") //
+    .then((m) => m.default)
+
   let name = await prompt("Enter the name", {
     value: "New Folder",
     dialog: {
@@ -48,12 +63,19 @@ export async function createFolder(path) {
   }
 }
 
-export async function rename(icon) {
+export async function renameFile(icon) {
+  // const fs = await import("../core/fs.js") //
+  //   .then((m) => m.default)
+  const prompt = await import("../ui/invocables/prompt.js") //
+    .then((m) => m.default)
+
   const name = await prompt("Rename", { value: icon.path })
   console.log("rename", name)
 }
 
 export default {
+  openFolder,
+  openFile,
   createFolder,
-  rename,
+  renameFile,
 }
