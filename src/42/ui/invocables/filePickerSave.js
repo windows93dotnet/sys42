@@ -3,6 +3,8 @@ import getStemname from "../../core/path/core/getStemname.js"
 import isHashmapLike from "../../fabric/type/any/is/isHashmapLike.js"
 
 export default async function filePickerSave(path, options) {
+  const untitled = options?.untitled ?? "untitled.txt"
+
   const res = await explorer(path, {
     label: "Save File - {{path}}",
 
@@ -14,8 +16,9 @@ export default async function filePickerSave(path, options) {
         {
           tag: "input.w-full",
           scope: "name",
-          value:
-            "{{selection.length > 0 ? basename(selection.0) : this.value}}",
+          value: `{{selection.length > 0
+            ? getBasename(selection.0)
+            : this.value || '${untitled}'}}`,
           autofocus: true,
           compact: true,
           enterKeyHint: "done",

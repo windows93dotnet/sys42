@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>fields</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/style.css" id="theme" />
+
+<script type="module">
+  import trap from "../../42/fabric/type/error/trap.js"
+  trap()
+</script>
+
+<script type="module">
+  import ui from "../../42/ui.js"
+  import filePicker from "../../42/ui/invocables/filePicker.js"
+  import puppet from "../../42/core/dev/puppet.js"
+
+  await ui({
+    tag: "body.pa-xl",
+    content: [
+      {
+        tag: "button",
+        label: "File Picker Open",
+        async click() {
+          console.log(await filePicker.open())
+        },
+      },
+      "\n\n",
+      "\n\n",
+      {
+        tag: "button",
+        label: "File Picker Open (website/index.html)",
+        async click() {
+          console.log(
+            await filePicker.open("/tests/fixtures/website/index.html")
+          )
+        },
+      },
+      "\n\n",
+      "\n\n",
+      {
+        tag: "button",
+        label: "File Picker Save",
+        async click() {
+          console.log(await filePicker.save())
+        },
+      },
+    ],
+  })
+
+  await puppet("button:nth-of-type(3)").click()
+</script>
