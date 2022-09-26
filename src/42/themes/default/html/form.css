@@ -280,6 +280,7 @@ States
 .field,
 .button,
 .label,
+.solid,
 label,
 legend,
 input,
@@ -513,7 +514,8 @@ textarea
 
 button,
 .button,
-.field {
+.field,
+.solid {
   display: inline-flex;
   flex-direction: row;
   justify-content: center;
@@ -523,12 +525,12 @@ button,
   gap: var(--gap);
 }
 
-:where(button,.button) > * {
+:where(button,.button,.solid) > * {
   flex: 1 1 0%;
   min-width: 0;
 }
 
-:where(button,.button,.field) > .picto {
+:where(button,.button,.field,.solid) > .picto {
   margin-left: calc(-0.5 * var(--gap));
   margin-right: calc(-0.5 * var(--gap));
 }
@@ -639,6 +641,7 @@ a.button {
 
 :where(
 .button,
+.solid,
 button,
 input[type="button"],
 input[type="reset"],
@@ -663,8 +666,8 @@ a.button {
   /* cursor: var(--cursor-default); */
 }
 
-:where(button,.button):empty::before,
-:where(button,.button) > :only-child:empty::before {
+:where(button,.button,.solid):empty::before,
+:where(button,.button,.solid) > :only-child:empty::before {
   content: var(--zero-width-space);
 }
 
@@ -815,6 +818,7 @@ input:is([type="checkbox"],[type="radio"]):checked:disabled + label.button {
   border: 0;
 }
 
+:where(.solid),
 .btn-clear,
 .btn-clear:where(:active,:focus) {
   color: inherit;
@@ -822,6 +826,19 @@ input:is([type="checkbox"],[type="radio"]):checked:disabled + label.button {
   border-color: transparent;
   border-image: none;
   box-shadow: none;
+}
+
+.solid {
+  color: var(--fg, inherit);
+  background: var(--bg, transparent);
+}
+
+.solid.info,
+.solid.warning,
+.solid.error,
+.solid.success {
+  outline-offset: -1px;
+  outline: 1px solid currentColor;
 }
 
 .btn-primary {

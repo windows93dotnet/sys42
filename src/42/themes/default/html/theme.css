@@ -77,6 +77,18 @@
   --paper-fg: var(--document-fg, var(--fld-fg));
   --paper-tsh: var(--document-tsh, var(--fld-tsh));
 
+  --bg-info: #f8ffff;
+  --fg-info: #276f86;
+
+  --bg-warning: #fffaf3;
+  --fg-warning: #573a08;
+
+  --bg-error: #fff6f6;
+  --fg-error: #9f3a38;
+
+  --bg-success: #fcfff5;
+  --fg-success: #2c662d;
+
   font: var(--font);
 }
 
@@ -92,31 +104,36 @@
   display: none;
 }
 
-.message {
-  padding: var(--unit-sm) var(--unit-md);
+:where(.message) {
   background: #f8f8f9;
+  padding: var(--unit-sm) var(--unit-md);
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
+.message {
   border-style: solid;
   border-width: 1px;
 }
 
-.message.info {
-  background-color: #f8ffff;
-  color: #276f86;
+.info {
+  --bg: var(--bg-info);
+  --fg: var(--fg-info);
 }
 
-.message.warning {
-  background-color: #fffaf3;
-  color: #573a08;
+.warning {
+  --bg: var(--bg-warning);
+  --fg: var(--fg-warning);
 }
 
-.message.error {
-  background-color: #fff6f6;
-  color: #9f3a38;
+.error {
+  --bg: var(--bg-error);
+  --fg: var(--fg-error);
 }
 
-.message.success {
-  background-color: #fcfff5;
-  color: #2c662d;
+.success {
+  --bg: var(--bg-success);
+  --fg: var(--fg-success);
 }
 
 .highlight,
