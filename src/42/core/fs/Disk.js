@@ -1,6 +1,5 @@
 /* eslint-disable unicorn/no-this-assignment */
 /* eslint-disable no-constructor-return */
-import system from "../../system.js"
 import FileIndex from "./FileIndex.js"
 import CBOR from "../formats/cbor.js"
 
@@ -33,10 +32,6 @@ export default class Disk extends FileIndex {
     this.MASKS = MASKS
     this.RESERVED_BYTES = RESERVED_BYTES
     instance = this
-  }
-
-  get HOME() {
-    return system.HOME
   }
 
   getIdAndMask(filename) {

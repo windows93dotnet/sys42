@@ -1,7 +1,12 @@
+import system from "../system.js"
 import Disk from "./fs/Disk.js"
 
-const disk = new Disk()
-await disk.init()
-// await disk.upgrade() // TODO: make DEV env
+let disk
+if (system.disk) disk = system.disk
+else {
+  disk = new Disk()
+  await disk.init()
+  system.disk = disk
+}
 
 export default disk
