@@ -75,9 +75,17 @@ export class Folder extends Component {
         ArrowRight: "{{moveFocusRight()}}",
       },
       {
-        prevent: true,
-        dragover: false,
-        async drop(e) {
+        "prevent": true,
+        "dragover || dragenter"(e) {
+          if (e.ctrlKey) {
+            e.dataTransfer.dropEffect = "copy"
+          } else if (e.shiftKey) {
+            e.dataTransfer.dropEffect = "link"
+          } else {
+            e.dataTransfer.dropEffect = "move"
+          }
+        },
+        async "drop"(e) {
           const { items, paths } = await dt.import(e.dataTransfer)
           if (paths) console.log(paths)
           else console.table(items)
