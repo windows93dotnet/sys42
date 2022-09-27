@@ -61,17 +61,20 @@ textarea.box-fit {
 /* center
 ========= */
 
-.box-main, .box-center {
+.box-main, .box-center, .box-center-x {
   display: flex;
   flex-direction: column;
   align-items: center;
   /* justify-content: safe center; */
 }
 
-:where(:is(.box-main, .box-center) > *) {
-  /* margin-top: auto;
-  margin-bottom: auto; */
-  margin: auto;
+.box-center-y {
+  display: flex;
+  flex-direction: column;
+}
+
+:where(:is(.box-main, .box-center, .box-center-y) > *) {
+  margin-block: auto;
 }
 
 /* stack
@@ -192,6 +195,10 @@ textarea.box-fit {
 ) {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
+}
+
+.box-v > img {
+  height: fit-content; /* don't stretch images */
 }
 
 :where(.box-liquid > *) { flex: 0 0 auto; }

@@ -231,6 +231,7 @@ export default class Component extends HTMLElement {
 
     /* handle def attrs
     ------------------- */
+    // TODO: remove this
     let attrs = normalizeAttrs(def, this.ctx, definition.defaults)
     for (const attr of Object.keys(attrs)) delete def[attr]
     if (attrs) renderAttributes(this, this.ctx, attrs)

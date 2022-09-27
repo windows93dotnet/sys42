@@ -1,12 +1,14 @@
+/* eslint-disable max-params */
+
 import parseDotNotation from "./parseDotNotation.js"
 
-export default function allocate(obj, loc, val, sep = ".") {
-  return allocate.evaluate(obj, parseDotNotation(loc, sep), val)
+export default function allocate(obj, loc, val, sep = ".", options) {
+  return allocate.evaluate(obj, parseDotNotation(loc, sep), val, options)
 }
 
 allocate.parse = parseDotNotation
 
-allocate.evaluate = (obj, tokens, val) => {
+allocate.evaluate = (obj, tokens, val, options) => {
   let current = obj
 
   if (tokens.length === 0) {
@@ -19,7 +21,7 @@ allocate.evaluate = (obj, tokens, val) => {
     if (tokens.length - 1 === i) {
       current[key] = val
     } else {
-      current[key] ??= {}
+      current[key] ??= options?.hashmap ? Object.create(null) : {}
       current = current[key]
     }
   }

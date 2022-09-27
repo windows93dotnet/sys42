@@ -16,7 +16,7 @@ export class Dialog extends Component {
 
     id: true,
     role: "dialog",
-    tabIndex: -1,
+    // tabIndex: -1,
 
     traits: {
       emittable: true,

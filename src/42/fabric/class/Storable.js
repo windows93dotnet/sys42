@@ -16,9 +16,12 @@ const DEFAULTS = {
 }
 
 export default class Storable {
+  #allocateConfig
+
   constructor(root = {}, options) {
-    this.root = {}
     this.config = configure(DEFAULTS, options)
+    this.#allocateConfig = this.config.hashmap ? { hashmap: true } : undefined
+    this.root = this.config.hashmap ? Object.create(null) : {}
     this.sep = this.config.sep
     if (inOpaqueOrigin) {
       // TODO: use ipc with "database" permissions
@@ -51,7 +54,7 @@ export default class Storable {
   async init() {
     await this.store
     for await (const [key, val] of this.store.entries()) {
-      allocate(this.root, key, val, this.sep)
+      allocate(this.root, key, val, this.sep, this.#allocateConfig)
     }
   }
 
@@ -60,7 +63,7 @@ export default class Storable {
   }
 
   async set(path, value) {
-    allocate(this.root, path, value, this.sep)
+    allocate(this.root, path, value, this.sep, this.#allocateConfig)
     await this.store.set(trim(path, this.sep), value)
   }
 
