@@ -18,7 +18,7 @@ export default async function prompt(message = "", options) {
 
   if (typeof options === "string") options = { value: options }
 
-  if (options?.tag === undefined && options?.value?.includes("\n")) {
+  if (options?.tag === undefined && options?.value?.includes?.("\n")) {
     options ??= {}
     options.tag = "textarea"
   }

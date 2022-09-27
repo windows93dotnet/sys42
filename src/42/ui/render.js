@@ -38,7 +38,7 @@ function renderTag(ctx, def) {
 
   if (el.localName === "button") {
     def.content ??= def.label
-  } else if (el.form !== undefined) {
+  } else if (el.form !== undefined && el.localName !== "label") {
     el = renderControl(el, ctx, def)
   }
 

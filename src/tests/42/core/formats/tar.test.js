@@ -255,7 +255,7 @@ test.tasks(
   (test, { url, gzip, files, headers, length }) => {
     test("extract", getBasename(url), async (t) => {
       t.timeout(1000)
-      let rs = http.stream(url)
+      let rs = http.source(url)
       if (gzip) rs = rs.pipeThrough(stream.ts.decompress())
 
       const items = await stream.ws.collect(

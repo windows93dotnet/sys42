@@ -22,8 +22,9 @@
   to { transform: translateX(-50%); }
 }
 
-progress {
+:where(progress) {
   height: var(--progress-h, var(--ctrl-h));
+  min-height: var(--progress-h, var(--ctrl-h));
   width: var(--progress-w, var(--ctrl-w));
   background: var(--progress-bg);
   border-width: var(--progress-bdw);
@@ -35,7 +36,6 @@ progress {
   padding: var(--progress-pa);
   overflow: hidden;
   position: relative;
-  flex: 1;
 }
 
 progress[value]::-webkit-progress-bar {
