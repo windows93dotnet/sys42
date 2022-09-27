@@ -56,9 +56,12 @@ export default function renderControl(el, ctx, def) {
     if (def.value) {
       // Save the value in the state if a value and a scope are set
       if (def.attrs.value.scopes) {
-        const renderer = debounce(async () => {
-          ctx.reactive.set(el.name, getControlData(el), { silent: true })
-        })
+        const renderer = debounce(
+          async () => {
+            ctx.reactive.set(el.name, getControlData(el), { silent: true })
+          },
+          { ms: 100, immediate: true }
+        )
 
         for (const scope of def.attrs.value.scopes) {
           if (scope === el.name) continue

@@ -1,6 +1,7 @@
 import explorer from "../components/explorer.js"
 import getStemname from "../../core/path/core/getStemname.js"
 import isHashmapLike from "../../fabric/type/any/is/isHashmapLike.js"
+import nextCycle from "../../fabric/type/promise/nextCycle.js"
 
 export default async function filePickerSave(path, options) {
   const untitled = options?.untitled ?? "untitled.txt"
@@ -46,6 +47,8 @@ export default async function filePickerSave(path, options) {
 
   if (!res.ok || !res.name) return
 
+  await nextCycle()
+
   let write
 
   if (!res.path.endsWith("/")) res.path += "/"
@@ -57,9 +60,8 @@ export default async function filePickerSave(path, options) {
 
   if (options && "data" in options) {
     const fs = await import("../../core/fs.js").then((m) => m.default)
-    write = await fs.write(filename, options.data, {
-      encoding: options.encoding,
-    })
+    const { encoding } = options
+    write = await fs.write(filename, options.data, { encoding })
   }
 
   return {

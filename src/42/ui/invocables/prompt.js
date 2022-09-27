@@ -52,5 +52,5 @@ export default async function prompt(message = "", options) {
 
   const res = await modal(config)
 
-  return res.ok ? res.value : undefined
+  return res.ok ? String(res.value) : undefined
 }

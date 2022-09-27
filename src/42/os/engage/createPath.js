@@ -4,8 +4,7 @@ import tokenizePath from "../../core/path/utils/tokenizePath.js"
 import getBasename from "../../core/path/core/getBasename.js"
 import getDirname from "../../core/path/core/getDirname.js"
 import prompt from "../../ui/invocables/prompt.js"
-import postfixPath from "../../core/path/core/postfixPath.js"
-import disk from "../../core/disk.js"
+import incrementFilename from "../../core/fs/incrementFilename.js"
 
 export default async function createPath(path = "/", options) {
   let value
@@ -16,13 +15,10 @@ export default async function createPath(path = "/", options) {
     path = getDirname(path)
   }
 
-  path = resolvePath(path) + "/"
+  path = resolvePath(path)
+  if (path !== "/") path += "/"
 
-  let cnt = 1
-  const unpostfixed = value
-  while (disk.has(path + value)) {
-    value = postfixPath(unpostfixed, `-${++cnt}`)
-  }
+  value = incrementFilename(value, path)
 
   let name = await prompt("Enter the name", {
     value,
@@ -58,10 +54,14 @@ export default async function createPath(path = "/", options) {
       : await fs.writeText(filename, "")
 
     queueTask(() => {
-      const sel = `ui-icon[path^="${path + tokenizePath(name).at(0)}"]`
-      const el = document.querySelector(sel)
-      el?.focus()
-      // el?.click()
+      if (document.activeElement.localName === "ui-folder") {
+        const folder = document.activeElement
+        folder.selection.length = 0
+        const sel = `ui-icon[path^="${path + tokenizePath(name).at(0)}"]`
+        const el = document.querySelector(sel)
+        el?.focus()
+        // el?.click()
+      }
     })
 
     return { write, path, name }
