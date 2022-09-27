@@ -1,9 +1,9 @@
-import dialog from "../components/dialog.js"
+import modal from "./modal.js"
 import configure from "../../core/configure.js"
 
 const DEFAULT = {
   label: "Prompt",
-  class: "dialog-prompt",
+  class: "dialog-modal dialog-prompt",
   tag: "text",
   value: "",
   prose: true,
@@ -24,40 +24,26 @@ export default async function prompt(message = "", options) {
     ? { enterKeyHint: "enter" }
     : { enterKeyHint: config.enterKeyHint ?? "done", on: { Enter: "{{ok()}}" } }
 
-  const res = await dialog(
-    configure(
-      {
-        label: config.label,
-        class: config.class,
-        content: {
-          tag: ".box-h",
-          content: [
-            config.beforefield,
-            configure(
-              {
-                tag: config.tag,
-                scope: "text",
-                // lazy: true,
-                label: message,
-                prose: config.prose,
-                ...onEnter,
-              },
-              config.field
-            ),
-            config.afterfield,
-          ],
+  config.content = {
+    tag: ".box-h",
+    content: [
+      config.beforefield,
+      configure(
+        {
+          tag: config.tag,
+          scope: "text",
+          lazy: true,
+          label: message,
+          prose: config.prose,
+          ...onEnter,
         },
-        footer: config.footer ?? [
-          { tag: "button", label: "Cancel", click: "{{close()}}" },
-          { tag: "button.btn-default", label: "Ok", click: "{{ok()}}" },
-        ],
-        state: {
-          text: config.value,
-        },
-      },
-      config.dialog
-    )
-  )
+        config.field
+      ),
+      config.afterfield,
+    ],
+  }
+
+  const res = await modal(config)
 
   return res.ok ? res.text : undefined
 }

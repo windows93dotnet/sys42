@@ -12,10 +12,11 @@ import tokenizePath from "../../core/path/utils/tokenizePath.js"
 const DEFAULTS = {
   name: "fileindex",
   sep: "/",
+  hashmap: true,
 }
 
 export default class FileIndex extends Storable {
-  constructor(root = {}, options) {
+  constructor(root = Object.create(null), options) {
     super(root, configure(DEFAULTS, options))
     emittable(this)
   }

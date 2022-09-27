@@ -434,6 +434,35 @@ ui-dialog[active] .ui-dialog__title {
 .ui-dialog__header button:last-of-type {
   margin-left: 2px;
 }
+
+/* modals
+========= */
+
+.dialog-modal {
+  /* min-width: 380px; */
+  width: 256px;
+}
+
+.dialog-modal label {
+  white-space: pre-wrap;
+}
+
+.dialog-modal__content {
+  padding: 8px;
+  padding-bottom: 4px;
+}
+
+.dialog-modal__image + .dialog-modal__content {
+  padding-left: 0;
+}
+
+.dialog-modal .ui-dialog__footer {
+  justify-content: center;
+  /* padding: 12px; */
+  padding: var(--unit);
+  padding-top: 4px;
+}
+
 /*  */
 
 /* ui-menu hr {

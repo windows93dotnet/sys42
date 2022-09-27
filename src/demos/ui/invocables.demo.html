@@ -12,11 +12,69 @@
 <script type="module">
   import ui from "../../42/ui.js"
   import filePicker from "../../42/ui/invocables/filePicker.js"
-  import puppet from "../../42/core/dev/puppet.js"
+  import prompt from "../../42/ui/invocables/prompt.js"
+  import alert from "../../42/ui/invocables/alert.js"
+  import confirm from "../../42/ui/invocables/confirm.js"
+  // import puppet from "../../42/core/dev/puppet.js"
 
   await ui({
     tag: "body.pa-xl",
     content: [
+      {
+        tag: "button",
+        label: "Alert",
+        async click() {
+          console.log(await alert("Hello, alert"))
+        },
+      },
+      {
+        tag: "button",
+        label: "Alert with icon",
+        async click() {
+          console.log(await alert("Hello, alert", { icon: "warning" }))
+        },
+      },
+      "\n\n",
+      "\n\n",
+      {
+        tag: "button",
+        label: "Confirm",
+        async click() {
+          console.log(await confirm("Do you confirm ?"))
+        },
+      },
+      {
+        tag: "button",
+        label: "Confirm with icon and cutom button",
+        async click() {
+          console.log(
+            await confirm("Do you confirm ?", { icon: "question", ok: "Yep" })
+          )
+        },
+      },
+      "\n\n",
+      "\n\n",
+      {
+        tag: "button",
+        label: "Prompt",
+        async click() {
+          console.log(await prompt())
+        },
+      },
+      {
+        tag: "button",
+        label: "Prompt with icon",
+        async click() {
+          console.log(
+            await prompt(
+              "What is the meaning of life,\nthe universe and everything?",
+              { icon: "question", value: 42 }
+            )
+          )
+        },
+      },
+      "\n\n",
+      "\n\n",
       {
         tag: "button",
         label: "File Picker Open",
@@ -24,8 +82,6 @@
           console.log(await filePicker.open())
         },
       },
-      "\n\n",
-      "\n\n",
       {
         tag: "button",
         label: "File Picker Open (website/index.html)",
@@ -36,7 +92,6 @@
         },
       },
       "\n\n",
-      "\n\n",
       {
         tag: "button",
         label: "File Picker Save",
@@ -44,8 +99,15 @@
           console.log(await filePicker.save())
         },
       },
+      {
+        tag: "button",
+        label: 'File Picker Save with content "hello world"',
+        async click() {
+          console.log(await filePicker.save("/hello.txt", "hello world"))
+        },
+      },
     ],
   })
 
-  await puppet("button:nth-of-type(3)").click()
+  // await puppet("button:nth-of-type(4)").click()
 </script>
