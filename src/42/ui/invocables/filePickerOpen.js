@@ -13,11 +13,12 @@ export default async function filePickerOpen(path, options) {
         {
           tag: "input.w-full.inset-shallow._panel",
           value: "{{selection}}",
+          tabIndex: -1,
           readonly: true,
           compact: true,
         },
-        { tag: "button", label: "Cancel", click: "{{close()}}" },
         { tag: "button.btn-default", label: "Open", click: "{{ok()}}" },
+        { tag: "button", label: "Cancel", click: "{{close()}}" },
       ],
     },
 

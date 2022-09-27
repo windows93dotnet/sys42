@@ -18,6 +18,11 @@ export default async function prompt(message = "", options) {
 
   if (typeof options === "string") options = { value: options }
 
+  if (options?.tag === undefined && options?.value?.includes("\n")) {
+    options ??= {}
+    options.tag = "textarea"
+  }
+
   const config = { ...DEFAULT, ...options }
 
   const onEnter = config.tag.startsWith("textarea")
@@ -31,10 +36,12 @@ export default async function prompt(message = "", options) {
       configure(
         {
           tag: config.tag,
-          scope: "text",
+          scope: "value",
+          rows: 4,
           lazy: true,
-          label: message,
+          label: message ?? "",
           prose: config.prose,
+          ...config.field,
           ...onEnter,
         },
         config.field
@@ -45,5 +52,5 @@ export default async function prompt(message = "", options) {
 
   const res = await modal(config)
 
-  return res.ok ? res.text : undefined
+  return res.ok ? res.value : undefined
 }

@@ -3,8 +3,6 @@ import modal from "./modal.js"
 const DEFAULT = {
   label: "Confirm",
   class: "dialog-modal dialog-confirm",
-  // icon: "question",
-  cancel: false,
 }
 
 export default async function confirm(message = "", options) {

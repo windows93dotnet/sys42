@@ -68,7 +68,7 @@ export default async function preload(
       el.onload = null
       el.remove()
       el.removeAttribute("href")
-      el = null
+      el = undefined
     }
 
     const onabort = () => {
