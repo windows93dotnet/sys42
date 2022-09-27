@@ -34,7 +34,7 @@ export default function bytesize(bytes, options) {
   const { SI, decimals, asString, trailingZeros } = { ...DEFAULTS, ...options }
 
   if (bytes === 0) {
-    const string = `${trailingZeros ? trailZeros(size, decimals) : 0}`
+    const string = `${trailingZeros ? trailZeros(0, decimals) : 0} B`
     return asString ? string : { size: 0, unit: "B", string, toString }
   }
 
