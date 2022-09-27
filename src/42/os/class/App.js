@@ -110,7 +110,7 @@ export default class App extends UI {
         new() {
           // console.log(this.run)
           // console.log($files)
-          $files[0].text = "hello empty"
+          $files[0].text = ""
           // this.currentTab = this.files.length
           // this.files.push({ dirty: false, path: undefined })
         },
