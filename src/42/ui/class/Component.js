@@ -213,6 +213,7 @@ export default class Component extends HTMLElement {
 
     const props = {}
     const propsKeys = Object.keys(configProps)
+
     if (propsKeys.length > 0) {
       const configKeys = Object.keys(definition.defaults ?? {})
       const entries = Object.entries(def)

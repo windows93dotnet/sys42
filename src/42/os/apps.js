@@ -112,7 +112,7 @@ class AppManager extends ConfigFile {
     const dialog = await import("../ui/components/dialog.js") //
       .then((m) => m.default)
 
-    const dialogConfig = { state: { $app: app } }
+    const dialogConfig = { state: { $app: app, $files: files } }
 
     const sandboxConfig = app.path
       ? { path: app.path }
