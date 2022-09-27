@@ -8,6 +8,8 @@
 // @read https://github.com/surma/observables-with-streams
 
 import combine from "../fabric/type/typedarray/combine.js"
+import nextCycle from "../fabric/type/promise/nextCycle.js"
+import sleep from "../fabric/type/promise/sleep.js"
 
 import pump from "./stream/pump.js"
 export { default as pump } from "./stream/pump.js"
@@ -347,6 +349,23 @@ export function tsPercent(total, cb) {
   )
 }
 
+export function tsPressure(fn = nextCycle) {
+  if (typeof fn === "number") {
+    const ms = fn
+    fn = async () => sleep(ms)
+  }
+
+  return new TransformStream(
+    {
+      async transform(chunk, controller) {
+        controller.enqueue(chunk)
+        await fn()
+      },
+    },
+    ...DEFAULT_WATERMARK
+  )
+}
+
 export function tsCombine(a, ...transforms) {
   if (Array.isArray(a)) [a, ...transforms] = a
   let readable = a.readable || a
@@ -389,6 +408,7 @@ const stream = {
     join: tsJoin,
     cut: tsCut,
     percent: tsPercent,
+    pressure: tsPressure,
     combine: tsCombine,
   },
 }

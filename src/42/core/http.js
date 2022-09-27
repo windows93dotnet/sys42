@@ -1,3 +1,5 @@
+/* eslint-disable no-sequences */
+/* eslint-disable no-return-assign */
 // @related https://gist.github.com/dgraham/92e4c45da3707a3fe789
 // @related https://github.com/sindresorhus/ky
 // @read https://developer.mozilla.org/en-US/docs/Web/API/AbortController
@@ -168,14 +170,15 @@ export const makeStream = (requestMethod, withBody = true) =>
         requestMethod(url, readable, ...rest).then(cb)
         return writable
       }
-    : (url, { queuingStrategy, onheaders = noop, signal } = {}, ...rest) => {
+    : (url, { queuingStrategy, onheaders, onsize, signal } = {}, ...rest) => {
         let reader
         const rs = new ReadableStream(
           {
             async pull(controller) {
               if (!reader) {
                 const res = await requestMethod(url, { signal }, ...rest)
-                onheaders(res.headers, rs)
+                onheaders?.(res.headers, rs)
+                onsize?.(Number(res.headers.get("content-length")), rs)
                 reader = res.body.getReader()
               }
 
@@ -187,33 +190,15 @@ export const makeStream = (requestMethod, withBody = true) =>
           queuingStrategy
         )
 
-        rs.headers = function (fn) {
-          onheaders = fn
-          return rs
-        }
-
+        rs.headers = (fn) => ((onheaders = fn), rs)
+        rs.size = (fn) => ((onsize = fn), rs)
         return rs
       }
 
-export const httpStream = makeStream(httpGet, false)
 export const httpStreamGet = makeStream(httpGet, false)
-export const httpStreamHead = makeStream(httpHead, false)
 export const httpStreamPost = makeStream(httpPost)
-export const httpStreamPut = makeStream(httpPut)
-export const httpStreamDelete = makeStream(httpDelete)
-export const httpStreamOptions = makeStream(httpOptions)
-export const httpStreamPatch = makeStream(httpPatch)
 
-Object.assign(httpStream, {
-  get: httpStreamGet,
-  post: httpStreamPost,
-  head: httpStreamHead,
-  put: httpStreamPut,
-  delete: httpStreamDelete,
-  options: httpStreamOptions,
-  patch: httpStreamPatch,
-})
-
-http.stream = httpStream
+http.stream = { get: httpStreamGet, post: httpStreamPost }
+http.source = httpStreamGet
 
 export default http

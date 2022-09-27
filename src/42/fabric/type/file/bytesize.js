@@ -2,6 +2,7 @@
 // @read https://stackoverflow.com/a/25651291
 
 import { round } from "../number/precision.js"
+import trailZeros from "../number/trailZeros.js"
 
 const K_SI = 1000 // 10 ** 3
 const K_IEC = 1024 // 2 ** 10
@@ -14,11 +15,14 @@ const UNITS = {
 const DEFAULTS = {
   SI: false,
   decimals: 2,
-  string: true,
+  asString: true,
+  trailingZeros: true,
 }
 
+const { floor, log } = Math
+
 function toString() {
-  return `${this.size} ${this.unit}`
+  return `${this.string}`
 }
 
 export default function bytesize(bytes, options) {
@@ -27,17 +31,20 @@ export default function bytesize(bytes, options) {
     else if ("byteLength" in bytes) bytes = bytes.byteLength
   }
 
-  const { SI, decimals, string } = { ...DEFAULTS, ...options }
+  const { SI, decimals, asString, trailingZeros } = { ...DEFAULTS, ...options }
 
   if (bytes === 0) {
-    return string ? "0 B" : { size: 0, unit: "B", toString }
+    const string = `${trailingZeros ? trailZeros(size, decimals) : 0}`
+    return asString ? string : { size: 0, unit: "B", string, toString }
   }
 
   const k = SI ? K_SI : K_IEC
   const units = SI ? UNITS.SI : UNITS.IEC
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  const size = round(bytes / k ** i, decimals)
+  const i = floor(log(bytes) / log(k))
   const unit = units[i]
 
-  return string ? `${size} ${unit}` : { size, unit, toString }
+  const size = round(bytes / k ** i, decimals)
+
+  const string = `${trailingZeros ? trailZeros(size, decimals) : size} ${unit}`
+  return asString ? string : { size, unit, string, toString }
 }

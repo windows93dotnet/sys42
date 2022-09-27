@@ -5,6 +5,7 @@
 
 import locate from "../fabric/locator/locate.js"
 import bytesize from "../fabric/type/file/bytesize.js"
+import trailZeros from "../fabric/type/number/trailZeros.js"
 import dispatch from "../fabric/event/dispatch.js"
 import { round, floor, ceil } from "../fabric/type/number/precision.js"
 
@@ -60,11 +61,25 @@ export function padding(num, decimals, pad) {
     .padEnd(decimals, "0")}`
 }
 
-// prettier-ignore
 types.number = {
-  ceil: (num, decimals = 0, pad = true) => padding(ceil(num, decimals), decimals, pad),
-  floor: (num, decimals = 0, pad = true) => padding(floor(num, decimals), decimals, pad),
-  round: (num, decimals = 0, pad = true) => padding(round(num, decimals), decimals, pad),
+  ceil: (num, decimals = 0, trailingZeros = true) =>
+    decimals === 0
+      ? Math.ceil(num)
+      : trailingZeros
+      ? trailZeros(ceil(num, decimals), decimals)
+      : ceil(num, decimals),
+  floor: (num, decimals = 0, trailingZeros = true) =>
+    decimals === 0
+      ? Math.floor(num)
+      : trailingZeros
+      ? trailZeros(floor(num, decimals), decimals)
+      : floor(num, decimals),
+  round: (num, decimals = 0, trailingZeros = true) =>
+    decimals === 0
+      ? Math.round(num)
+      : trailingZeros
+      ? trailZeros(round(num, decimals), decimals)
+      : round(num, decimals),
   add: (a, b) => a + b,
   minus: (a, b) => a - b,
   multiply: (a, b) => a * b,
