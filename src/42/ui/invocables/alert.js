@@ -3,8 +3,7 @@ import modal from "./modal.js"
 const DEFAULT = {
   label: "Alert",
   class: "dialog-modal dialog-alert",
-  // icon: "warning",
-  cancel: false,
+  decline: false,
 }
 
 export default async function alert(message = "", options) {

@@ -15,7 +15,6 @@
   import prompt from "../../42/ui/invocables/prompt.js"
   import alert from "../../42/ui/invocables/alert.js"
   import confirm from "../../42/ui/invocables/confirm.js"
-  // import puppet from "../../42/core/dev/puppet.js"
 
   await ui({
     tag: "body.pa-xl",
@@ -31,7 +30,9 @@
         tag: "button",
         label: "Alert with icon",
         async click() {
-          console.log(await alert("Hello, alert", { icon: "warning" }))
+          console.log(
+            await alert("Hello, alert", { icon: "warning", agree: "Fine !" })
+          )
         },
       },
       "\n\n",
@@ -45,10 +46,14 @@
       },
       {
         tag: "button",
-        label: "Confirm with icon and cutom button",
+        label: "Confirm with icon and cutom buttons",
         async click() {
           console.log(
-            await confirm("Do you confirm ?", { icon: "question", ok: "Yep" })
+            await confirm("Do you confirm ?", {
+              icon: "question",
+              agree: { picto: "check", content: "Yep" },
+              decline: { picto: "cross", content: "Nope" },
+            })
           )
         },
       },
@@ -71,6 +76,13 @@
               { icon: "question", value: 42 }
             )
           )
+        },
+      },
+      {
+        tag: "button",
+        label: "Prompt auto textarea",
+        async click() {
+          console.log(await prompt({ value: "A text\nwith newlines\n..." }))
         },
       },
       "\n\n",
@@ -109,5 +121,6 @@
     ],
   })
 
-  // await puppet("button:nth-of-type(4)").click()
+  import puppet from "../../42/core/dev/puppet.js"
+  await puppet("button:nth-of-type(7)").click()
 </script>

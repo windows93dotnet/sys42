@@ -1,11 +1,13 @@
 import dialog from "../components/dialog.js"
+import preload from "../../core/load/preload.js"
 import configure from "../../core/configure.js"
+import { objectifyDef } from "../normalize.js"
 
 const DEFAULT = {
   class: "dialog-modal",
   role: "alertdialog",
-  ok: "Ok",
-  cancel: "Cancel",
+  agree: "Ok",
+  decline: "Cancel",
 }
 
 export default async function modal(options) {
@@ -33,6 +35,7 @@ export default async function modal(options) {
         content,
       ],
     }
+    await preload(src, { as: "image" })
   }
 
   return dialog(
@@ -44,19 +47,23 @@ export default async function modal(options) {
         aria: { modal: true },
         content,
         footer: config.footer ?? [
-          config.ok === false
+          config.agree === false
             ? undefined
             : {
                 tag: "button.btn-default",
-                label: config.ok,
                 click: "{{ok()}}",
+                ...objectifyDef(config.agree),
               },
-          config.cancel === false
+          config.decline === false
             ? undefined
-            : { tag: "button", label: config.cancel, click: "{{close()}}" },
+            : {
+                tag: "button",
+                click: "{{close()}}",
+                ...objectifyDef(config.decline),
+              },
         ],
         state: {
-          text: config.value,
+          value: config.value,
         },
       },
       config.dialog

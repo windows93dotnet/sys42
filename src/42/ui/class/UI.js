@@ -22,9 +22,10 @@ export default class UI {
     this.def = def
     this.ctx = ctx
 
-    this.ctx.postrender.push(() =>
-      [...this.el.querySelectorAll(":scope [data-autofocus]")].at(-1)?.focus()
-    )
+    this.ctx.postrender.push(() => {
+      const items = this.el.querySelectorAll(":scope [data-autofocus]")
+      if (items.length > 0) items[items.length - 1].focus()
+    })
 
     asyncable(this, async () => {
       if (!this.ctx) return

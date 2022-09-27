@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-expressions */
+
 import Component from "../class/Component.js"
 import rpc from "../../core/ipc/rpc.js"
 import omit from "../../fabric/type/object/omit.js"
@@ -117,8 +119,11 @@ export class Dialog extends Component {
     dispatch(this, "uidialogopen")
 
     const items = this.querySelectorAll(":scope [data-autofocus]")
-    if (items.length > 0) items[items.length - 1].focus()
-    else autofocus(this.querySelector(":scope > .ui-dialog__body"))
+
+    items.length > 0
+      ? items[items.length - 1].focus()
+      : autofocus(this.querySelector(":scope > .ui-dialog__body")) ||
+        autofocus(this.querySelector(":scope > .ui-dialog__footer"))
   }
 }
 

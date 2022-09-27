@@ -36,8 +36,8 @@ export default async function filePickerSave(path, options) {
             },
           },
         },
-        { tag: "button", label: "Cancel", click: "{{close()}}" },
         { tag: "button.btn-default", label: "Save", click: "{{ok()}}" },
+        { tag: "button", label: "Cancel", click: "{{close()}}" },
       ],
     },
 
