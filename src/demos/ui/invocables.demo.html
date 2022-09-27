@@ -19,6 +19,7 @@
   import alert from "../../42/ui/invocables/alert.js"
   import confirm from "../../42/ui/invocables/confirm.js"
   import progress from "../../42/ui/invocables/progress.js"
+  import explorer from "../../42/ui/components/explorer.js"
 
   await ui({
     tag: "body.pa-xl",
@@ -122,6 +123,15 @@
       "\n\n",
       {
         tag: "button",
+        label: "Explorer",
+        async click() {
+          console.log(await explorer())
+        },
+      },
+      "\n\n",
+      "\n\n",
+      {
+        tag: "button",
         label: "File Picker Open",
         async click() {
           console.log(await filePicker.open())
@@ -155,5 +165,9 @@
   })
 
   import puppet from "../../42/core/dev/puppet.js"
-  await puppet("button:nth-of-type(9)").click()
+  // import sleep from "../../42/fabric/type/promise/sleep.js"
+  await puppet("button:nth-of-type(14)").click()
+  // await sleep(500)
+  // console.log(document.querySelector('button[label="Save"]'))
+  // await puppet('button[label="Save"]').click()
 </script>

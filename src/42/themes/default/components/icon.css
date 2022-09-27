@@ -65,7 +65,8 @@ ui-icon:focus .ui-icon__label {
 }
 
 ui-icon:focus .ui-icon__focusring {
-  position: absolute; /* force retrigger rect size */
+  /* force redraw focusring */
+  position: absolute;
 }
 
 ui-icon:focus .ui-icon__text {

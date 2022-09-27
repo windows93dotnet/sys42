@@ -3,6 +3,7 @@ import Component from "../class/Component.js"
 import disk from "../../core/disk.js"
 import engage from "../../os/engage.js"
 import normalizeDirname from "../../core/path/utils/normalizeDirname.js"
+import removeItem from "../../fabric/type/array/removeItem.js"
 import dt from "../../core/dt.js"
 
 const { indexOf } = Array.prototype
@@ -43,9 +44,30 @@ export class Folder extends Component {
           const path = normalizeDirname(this.path)
 
           this[_forgetWatch]?.()
-          this[_forgetWatch] = disk.watchDir(path, () => {
+          this[_forgetWatch] = disk.watchDir(path, (changed, type) => {
+            if (!this.ctx) return
+
+            if (type === "delete") {
+              if (this.selection.includes(changed)) {
+                removeItem(this.selection, changed)
+              }
+
+              changed += "/"
+
+              if (this.selection.includes(changed)) {
+                removeItem(this.selection, changed)
+              }
+            }
+
             this.ctx.reactive.now(() => {
               this.ctx.reactive.refresh(this.ctx.scope + "/path")
+              const el = document.activeElement
+              if (el.localName === "ui-icon") {
+                // force redraw focusring
+                const focusring = el.querySelector(".ui-icon__focusring")
+                focusring.style.position = "static"
+                delete focusring.style.position
+              }
             })
           })
           this[_forgetWatch].path = this.path
