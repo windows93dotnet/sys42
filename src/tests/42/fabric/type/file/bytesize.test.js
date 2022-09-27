@@ -5,32 +5,32 @@ import bytesize from "../../../../../42/fabric/type/file/bytesize.js"
 
 test("IEC / SI", (t) => {
   // IEC
-  t.is(bytesize(0), "0 B")
-  t.is(bytesize(1), "1 B")
-  t.is(bytesize(574), "574 B")
-  t.is(bytesize(1_073_741_824), "1 GiB")
+  t.is(bytesize(0), "0.00 B")
+  t.is(bytesize(1), "1.00 B")
+  t.is(bytesize(574), "574.00 B")
+  t.is(bytesize(1_073_741_824), "1.00 GiB")
 
-  let obj = bytesize(1_073_741_824, { string: false })
+  let obj = bytesize(1_073_741_824, { asString: false })
 
-  t.eq(Object.keys(obj), ["size", "unit", "toString"])
-  t.is(obj.toString(), "1 GiB")
-  t.is(String(obj), "1 GiB")
+  t.eq(Object.keys(obj), ["size", "unit", "string", "toString"])
+  t.is(obj.toString(), "1.00 GiB")
+  t.is(String(obj), "1.00 GiB")
   t.eq(obj.size, 1)
   t.eq(obj.unit, "GiB")
 
   // Si
-  t.is(bytesize(0, { SI: true }), "0 B")
-  t.is(bytesize(574, { SI: true }), "574 B")
+  t.is(bytesize(0, { SI: true }), "0.00 B")
+  t.is(bytesize(574, { SI: true }), "574.00 B")
   t.is(bytesize(1_073_741_824, { SI: true, decimals: 0 }), "1 GB")
   t.is(bytesize(1_073_741_824, { SI: true }), "1.07 GB")
 
-  obj = bytesize(1_073_741_824, { SI: true, string: false })
+  obj = bytesize(1_073_741_824, { SI: true, asString: false })
   t.is(String(obj), "1.07 GB")
   t.eq(obj.size, 1.07)
   t.eq(obj.unit, "GB")
 
-  obj = bytesize(0, { SI: true, string: false })
-  t.is(String(obj), "0 B")
+  obj = bytesize(0, { SI: true, asString: false })
+  t.is(String(obj), "0.00 B")
   t.eq(obj.size, 0)
   t.eq(obj.unit, "B")
 })
@@ -44,11 +44,11 @@ test("round decimals", (t) => {
 })
 
 test("accept file, blob and arrayBuffer", (t) => {
-  t.is(bytesize(new Blob(["hello"]), { SI: true }), "5 B")
-  t.is(bytesize(new File(["hello"], "hello.txt"), { SI: true }), "5 B")
-  t.is(bytesize(new ArrayBuffer(5), { SI: true }), "5 B")
+  t.is(bytesize(new Blob(["hello"]), { SI: true }), "5.00 B")
+  t.is(bytesize(new File(["hello"], "hello.txt"), { SI: true }), "5.00 B")
+  t.is(bytesize(new ArrayBuffer(5), { SI: true }), "5.00 B")
 
-  t.is(bytesize(new Blob([""]), { SI: true }), "0 B")
-  t.is(bytesize(new File([""], "hello.txt"), { SI: true }), "0 B")
-  t.is(bytesize(new ArrayBuffer(0), { SI: true }), "0 B")
+  t.is(bytesize(new Blob([""]), { SI: true }), "0.00 B")
+  t.is(bytesize(new File([""], "hello.txt"), { SI: true }), "0.00 B")
+  t.is(bytesize(new ArrayBuffer(0), { SI: true }), "0.00 B")
 })
