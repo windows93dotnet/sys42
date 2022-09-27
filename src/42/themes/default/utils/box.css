@@ -73,7 +73,11 @@ textarea.box-fit {
   flex-direction: column;
 }
 
-:where(:is(.box-main, .box-center, .box-center-y) > *) {
+:where(:is(.box-main, .box-center) > *) {
+  margin: auto;
+}
+
+:where(.box-center-y > *) {
   margin-block: auto;
 }
 

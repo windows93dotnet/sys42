@@ -150,7 +150,7 @@ export class Explorer extends Component {
     ]
   }
 
-  autofocus() {
+  resetFocus() {
     document.activeElement.blur()
     queueTask(() => focusInside(this.folder) || this.folder.focus())
   }
@@ -159,7 +159,7 @@ export class Explorer extends Component {
     let path = getDirname(this.path)
     if (!path.endsWith("/")) path += "/"
     this.path = path
-    if (!options?.keepFocus) this.autofocus()
+    if (!options?.keepFocus) this.resetFocus()
   }
 
   go(path, options) {
@@ -172,7 +172,7 @@ export class Explorer extends Component {
       this.message.textContent = this.folder.err
     } else {
       this.message.textContent = ""
-      if (!options?.keepFocus) this.autofocus()
+      if (!options?.keepFocus) this.resetFocus()
     }
   }
 

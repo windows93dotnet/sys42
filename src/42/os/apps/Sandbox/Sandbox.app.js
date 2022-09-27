@@ -10,6 +10,7 @@ export default {
       { description: "Audio", accept: { "audio/*": [] } },
       { description: "Video", accept: { "video/*": [] } },
       { description: "Image", accept: { "image/*": [] } },
+      { description: "Any", accept: { "application/*": [] } },
     ],
   },
 

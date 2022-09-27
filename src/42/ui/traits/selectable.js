@@ -7,6 +7,7 @@ import on from "../../fabric/event/on.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 import setTemp from "../../fabric/dom/setTemp.js"
+import noop from "../../fabric/type/function/noop.js"
 
 const DEFAULTS = {
   items: ":scope > *",
@@ -26,17 +27,29 @@ const ns = "http://www.w3.org/2000/svg"
 class Selectable extends Trait {
   #toggle(item) {
     const val = this.key(item)
-    if (this.selection.includes(val)) removeItem(this.selection, val)
-    else this.selection.push(val)
+    if (this.selection.includes(val)) {
+      removeItem(this.selection, val)
+      this.remove(item)
+    } else {
+      this.selection.push(val)
+      this.add(item)
+    }
   }
 
   #add(item) {
     const val = this.key(item)
-    if (!this.selection.includes(val)) this.selection.push(val)
+    if (!this.selection.includes(val)) {
+      this.selection.push(val)
+      this.add(item)
+    }
   }
 
   #remove(item) {
-    removeItem(this.selection, this.key(item))
+    const val = this.key(item)
+    if (this.selection.includes(val)) {
+      removeItem(this.selection, val)
+      this.remove(item)
+    }
   }
 
   toggleSelect(e, target) {
@@ -65,6 +78,8 @@ class Selectable extends Trait {
 
     this.init = this.config.init ?? (() => [])
     this.key = this.config.key ?? ((el) => el)
+    this.add = this.config.add ?? noop
+    this.remove = this.config.remove ?? noop
     this.selection = this.config.selection ?? this.init.call(el)
 
     const tmp = {}
