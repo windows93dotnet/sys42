@@ -72,19 +72,11 @@ export function focusInsideLast(el) {
   return false
 }
 
-export function focusInside(el, target) {
-  if (target) {
-    const type = typeof target
-    if (type === "string") {
-      target = el.querySelector(`:scope ${target}`)
-      if (focusInsideFirst(target)) return true
-    }
-
-    if (attemptFocus(target)) return true
-  }
-
-  target = el.querySelector(":scope [autofocus], :scope [data-autofocus]")
-  if (target && attemptFocus(target)) return true
+export function focusInside(el) {
+  const items = el.querySelectorAll(
+    ":scope [autofocus], :scope [data-autofocus]"
+  )
+  if (items.length > 0 && attemptFocus(items[items.length - 1])) return true
   return focusInsideFirst(el)
 }
 
@@ -169,8 +161,9 @@ export function focusLast(el, base) {
   return res
 }
 
-export function autofocus(el, target) {
-  return attemptFocus(el) || focusInside(el, target)
+export function autofocus(el) {
+  if (!el) return false
+  return attemptFocus(el) || focusInside(el)
 }
 
 export default {

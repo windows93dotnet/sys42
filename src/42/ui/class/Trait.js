@@ -41,7 +41,7 @@ export default class Trait {
     this.name = name
     this.cancel = new Canceller()
 
-    options?.signal.addEventListener("abort", () => this.destroy())
+    options?.signal?.addEventListener("abort", () => this.destroy())
   }
 
   destroy() {
