@@ -16,6 +16,7 @@ const options = {
 }
 
 // Chrome don't allow drag from top to iframe
+// or dropping folder into sandboxed iframe
 // https://bugs.chromium.org/p/chromium/issues/detail?id=251718
 let restore
 listen(
@@ -25,12 +26,6 @@ listen(
         class: { "pointer-iframes-0": true },
       })
     },
-
-    // dragstart() {
-    //   restore = setTemp(document.body, {
-    //     class: { "pointer-iframes-0": true },
-    //   })
-    // },
     "dragend"() {
       restore?.()
     },
@@ -38,19 +33,10 @@ listen(
   {
     "prevent": true,
     "selector": "ui-sandbox",
-    // "dragover || dragenter": false,
-    "dragover || dragenter"(e) {
-      if (e.ctrlKey) {
-        e.dataTransfer.dropEffect = "copy"
-      } else if (e.shiftKey) {
-        e.dataTransfer.dropEffect = "link"
-      } else {
-        e.dataTransfer.dropEffect = "move"
-      }
-    },
+    "dragover || dragenter": false,
     async "drop"(e, target) {
       const data = await dataTransfertImport(e)
-      ipc.to(target.resource.el).emit("42_DROP_EVENT", data)
+      ipc.to(target.resource.el).emit("42_SANDBOX_DROP", data)
     },
   }
 )

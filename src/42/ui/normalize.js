@@ -463,7 +463,8 @@ export function objectifyDef(def) {
 }
 
 export function forkDef(def, ctx) {
-  def = objectifyDef(def)
+  if (def?.content === undefined || def?.scope) def = { content: def }
+
   def = { ...def }
 
   if (ctx) {

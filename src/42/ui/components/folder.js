@@ -104,20 +104,21 @@ export class Folder extends Component {
           }
         },
         async "drop"(e) {
-          const { files, paths } = await dt.import(e)
-          console.log("FOLDER DROP", files)
+          const { files, folders, paths } = await dt.import(e)
           if (paths) engage.movePath(paths, this.el.path)
-          else {
-            console.log(files)
-            // const fs = await import("../../core/fs.js").then((m) => m.default)
-            // const undones = []
-            // for (const { kind, file } of items) {
-            //   if (kind === "file") {
-            //     undones.push(fs.write(this.el.path + file.name, file))
-            //   }
-            // }
+          else if (files || folders) {
+            const fs = await import("../../core/fs.js").then((m) => m.default)
+            const undones = []
 
-            // await Promise.all(undones)
+            for (const path of folders) {
+              undones.push(fs.writeDir(this.el.path + path))
+            }
+
+            for (const [path, file] of Object.entries(files)) {
+              undones.push(fs.write(this.el.path + path, file))
+            }
+
+            await Promise.all(undones)
           }
         },
       },
