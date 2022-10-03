@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import realm from "./env/realm.js"
 import uid from "./uid.js"
 import defer from "../fabric/type/promise/defer.js"
@@ -25,7 +26,14 @@ async function messageHandler(e) {
   let { origin, data, source, ports, target } = e
   const isWindow = source && source.self === source
 
-  if (isWindow && origin !== "null" && origin !== location.origin) return
+  if (
+    isWindow &&
+    origin !== "null" &&
+    location.origin !== "null" &&
+    origin !== location.origin
+  ) {
+    return
+  }
 
   if (data?.type === PING) {
     const port = ports[0]
@@ -43,13 +51,15 @@ async function messageHandler(e) {
       ? ["SharedWorker", target]
       : []
 
-    const trusted =
+    const trusted = Boolean(
       worker ||
-      origin === location.origin ||
-      (iframe &&
-        (iframe.src
-          ? new URL(iframe.src).origin === location.origin
-          : Boolean(iframe.srcdoc)))
+        origin === location.origin ||
+        window.parent === source ||
+        (iframe &&
+          (iframe.src
+            ? new URL(iframe.src).origin === location.origin
+            : iframe.srcdoc))
+    )
 
     if (!trusted) {
       throw new DOMException(
@@ -206,9 +216,9 @@ export class Sender extends Emitter {
   }
 
   emit(event, data, transfer) {
+    const msg = { type: "emit", event, data }
     // emit() must be async to allow emiting in "pagehide" or "beforeunload" events
     // but if ready is not resolved yet we wait for it
-    const msg = { type: "emit", event, data }
     if (this.ready.isPending) {
       this.ready.then(() => this.port.postMessage(msg, transfer))
     } else this.port.postMessage(msg, transfer)
