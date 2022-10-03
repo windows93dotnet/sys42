@@ -4,10 +4,17 @@ import preinstall from "../utils/preinstall.js"
 import UI from "../../ui/class/UI.js"
 import getBasename from "../../core/path/core/getBasename.js"
 import getDirname from "../../core/path/core/getDirname.js"
+import io from "../io.js"
 
 let toggleFullscreen
 let fileImport
 let fileExport
+
+console.log("App loaded")
+
+io.on("files", (files) => {
+  console.log(files)
+})
 
 const menubar = [
   {

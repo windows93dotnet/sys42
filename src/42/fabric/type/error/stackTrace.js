@@ -75,6 +75,7 @@ export default function stackTrace(err = new Error(), options = {}) {
 
     if (item.function === err.name) continue
 
+    item.filename = item.filename || ""
     item.filename = item.filename.replace(/\?.*$/, "") || "__anonymous__"
 
     if (
