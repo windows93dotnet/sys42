@@ -1,3 +1,5 @@
+import readDirectoryEntry from "./readDirectoryEntry.js"
+
 const TYPE_STANDARD = {
   "application/x-javascript": "text/javascript",
 }
@@ -33,45 +35,12 @@ async function normalizeDataTransferItem(item, options) {
   return out
 }
 
-async function readDirectoryEntry(item, out = {}) {
-  const reader = item.createReader()
-
-  const undones = []
-
-  await new Promise((resolve, reject) => {
-    reader.readEntries((entries) => {
-      if (entries.length === 0) {
-        out[item.fullPath + "/"] = true
-      } else {
-        for (const entry of entries) {
-          if (entry.isDirectory) {
-            undones.push(readDirectoryEntry(entry, out))
-          } else {
-            undones.push(
-              new Promise((resolve, reject) => {
-                entry.file(resolve, reject)
-              }).then((file) => {
-                out[entry.fullPath] = file
-              })
-            )
-          }
-        }
-      }
-
-      resolve()
-    }, reject)
-  })
-
-  await Promise.all(undones)
-
-  return out
-}
-
 export default async function dataTransfertImport(dataTransfer, options) {
   if (dataTransfer?.dataTransfer) dataTransfer = dataTransfer.dataTransfer
 
   const out = {
     files: {},
+    folders: [],
     strings: [],
     objects: [],
     // items: [],
@@ -96,9 +65,9 @@ export default async function dataTransfertImport(dataTransfer, options) {
             out.strings.push(item.string)
           }
         } else if (item.kind === "file") {
-          out.files["/" + item.file.name] = item.file
+          out.files[item.file.name] = item.file
         } else if (item.kind === "directory") {
-          Object.assign(out.files, await readDirectoryEntry(item.entry))
+          await readDirectoryEntry(item.entry, out)
         }
       })
     )
