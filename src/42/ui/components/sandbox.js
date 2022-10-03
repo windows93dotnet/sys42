@@ -3,6 +3,10 @@ import Resource from "../../fabric/class/Resource.js"
 import create from "../create.js"
 import traverse from "../../fabric/type/object/traverse.js"
 import { forkDef } from "../normalize.js"
+import setTemp from "../../fabric/dom/setTemp.js"
+import listen from "../../fabric/event/listen.js"
+import ipc from "../../core/ipc.js"
+import dataTransfertImport from "../../fabric/type/file/dataTransfertImport.js"
 
 const _setResource = Symbol("setResource")
 
@@ -10,6 +14,46 @@ const options = {
   style: '<link rel="stylesheet" href="/style.css" id="theme" />',
   body: ' class="in-iframe"',
 }
+
+// Chrome don't allow drag from top to iframe
+// https://bugs.chromium.org/p/chromium/issues/detail?id=251718
+let restore
+listen(
+  {
+    "dragstart || dragover"() {
+      restore ??= setTemp(document.body, {
+        class: { "pointer-iframes-0": true },
+      })
+    },
+
+    // dragstart() {
+    //   restore = setTemp(document.body, {
+    //     class: { "pointer-iframes-0": true },
+    //   })
+    // },
+    "dragend"() {
+      restore?.()
+    },
+  },
+  {
+    "prevent": true,
+    "selector": "ui-sandbox",
+    // "dragover || dragenter": false,
+    "dragover || dragenter"(e) {
+      if (e.ctrlKey) {
+        e.dataTransfer.dropEffect = "copy"
+      } else if (e.shiftKey) {
+        e.dataTransfer.dropEffect = "link"
+      } else {
+        e.dataTransfer.dropEffect = "move"
+      }
+    },
+    async "drop"(e, target) {
+      const data = await dataTransfertImport(e)
+      ipc.to(target.resource.el).emit("42_DROP_EVENT", data)
+    },
+  }
+)
 
 export class Sandbox extends Component {
   static definition = {
@@ -42,9 +86,6 @@ export class Sandbox extends Component {
         type: "string",
         fromView: true,
         update: true,
-        toView(key, val, el) {
-          return !el.content
-        },
       },
       zoom: {
         type: "number",

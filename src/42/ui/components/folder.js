@@ -94,6 +94,7 @@ export class Folder extends Component {
       {
         "prevent": true,
         "dragover || dragenter"(e) {
+          // // console.log(e.dataTransfer.effectAllowed)
           if (e.ctrlKey) {
             e.dataTransfer.dropEffect = "copy"
           } else if (e.shiftKey) {
@@ -103,18 +104,20 @@ export class Folder extends Component {
           }
         },
         async "drop"(e) {
-          const { items, paths } = await dt.import(e.dataTransfer)
+          const { files, paths } = await dt.import(e)
+          console.log("FOLDER DROP", files)
           if (paths) engage.movePath(paths, this.el.path)
           else {
-            const fs = await import("../../core/fs.js").then((m) => m.default)
-            const undones = []
-            for (const { kind, file } of items) {
-              if (kind === "file") {
-                undones.push(fs.write(this.el.path + file.name, file))
-              }
-            }
+            console.log(files)
+            // const fs = await import("../../core/fs.js").then((m) => m.default)
+            // const undones = []
+            // for (const { kind, file } of items) {
+            //   if (kind === "file") {
+            //     undones.push(fs.write(this.el.path + file.name, file))
+            //   }
+            // }
 
-            await Promise.all(undones)
+            // await Promise.all(undones)
           }
         },
       },

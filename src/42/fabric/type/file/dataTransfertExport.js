@@ -15,6 +15,8 @@ const hidden = [
 // [2] Make the image far away from the cursor because Firefox/Linux don't always support transparency
 
 export default async function dataTransfertExport(dataTransfer, options) {
+  if (dataTransfer?.dataTransfer) dataTransfer = dataTransfer.dataTransfer
+
   dataTransfer.setDragImage(
     ...(options?.dragImage ? arrify(options?.dragImage) : hidden)
   )
