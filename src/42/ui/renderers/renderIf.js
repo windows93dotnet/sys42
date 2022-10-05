@@ -1,6 +1,6 @@
 import render from "../render.js"
 import omit from "../../fabric/type/object/omit.js"
-import createRange from "../../fabric/range/createRange.js"
+import NodesRange from "../../fabric/range/NodesRange.js"
 import removeRange from "./removeRange.js"
 import register from "../register.js"
 import Canceller from "../../fabric/class/Canceller.js"
@@ -54,9 +54,7 @@ export default function renderIf(def, ctx) {
     if (lastChild) {
       cancel?.("renderIf removed")
       cancel = undefined
-      const range = createRange()
-      range.setStartAfter(placeholder)
-      range.setEndAfter(lastChild)
+      const range = new NodesRange(placeholder, lastChild)
       removeRange(
         ctx,
         range,

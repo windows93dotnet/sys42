@@ -1,6 +1,6 @@
 import render from "../render.js"
 import omit from "../../fabric/type/object/omit.js"
-import createRange from "../../fabric/range/createRange.js"
+import NodesRange from "../../fabric/range/NodesRange.js"
 import removeRange from "./removeRange.js"
 import register from "../register.js"
 import Canceller from "../../fabric/class/Canceller.js"
@@ -34,14 +34,14 @@ export default function renderEach(def, ctx) {
   }
 
   register(ctx, ctx.scope, (array) => {
+    const container = lastItem?.parentElement
+
     if (!array || !Array.isArray(array) || array.length === 0) {
       if (lastItem) {
         for (const cancel of cancels) cancel()
         cancels.length = 0
 
-        const range = createRange()
-        range.setStartAfter(placeholder)
-        range.setEndAfter(lastItem)
+        const range = new NodesRange(placeholder, lastItem, container)
         removeRange(ctx, range, eachDef)
         lastItem = undefined
       }
@@ -59,7 +59,7 @@ export default function renderEach(def, ctx) {
       let node
 
       const walker = document.createTreeWalker(
-        lastItem.parentElement,
+        container,
         NodeFilter.SHOW_COMMENT
       )
 
@@ -75,9 +75,7 @@ export default function renderEach(def, ctx) {
           // remove extra items only
           if (i > l) {
             cancelExtraItems(i, cancels)
-            const range = createRange()
-            range.setStartAfter(endItem)
-            range.setEndAfter(lastItem)
+            const range = new NodesRange(endItem, lastItem, container)
             removeRange(ctx, range, eachDef)
             lastItem = endItem
             break
