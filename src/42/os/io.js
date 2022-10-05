@@ -4,6 +4,10 @@ import Emitter from "../fabric/class/Emitter.js"
 import listen from "../fabric/event/listen.js"
 import dt from "../core/dt.js"
 
+export class IO extends Emitter {}
+
+const io = new IO()
+
 if (inIframe) {
   import("../core/ipc.js").then(({ default: ipc }) => {
     ipc.on("42_SANDBOX_DROP", ({ files }) => {
@@ -33,9 +37,5 @@ if (
     io.emit("files", await Promise.all(undones))
   })
 }
-
-export class IO extends Emitter {}
-
-const io = new IO()
 
 export default io

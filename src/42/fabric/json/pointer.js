@@ -1,4 +1,4 @@
-import { isPositiveInteger } from "../type/any/is.js"
+import isLength from "../type/any/is/isLength.js"
 import assertPath from "../../core/path/assertPath.js"
 
 export const decodeJSONPointer = (key) =>
@@ -13,8 +13,7 @@ export const decodeJSONPointerURI = (key) =>
 export const encodeJSONPointerURI = (key) =>
   encodeJSONPointer(encodeURIComponent(key).replaceAll("%24", "$"))
 
-export const isNextLevelAnArray = (key) =>
-  key === "-" || isPositiveInteger(Number(key))
+export const isNextLevelAnArray = (key) => key === "-" || isLength(Number(key))
 
 export const splitJSONPointer = (path) => {
   if (Array.isArray(path)) return path

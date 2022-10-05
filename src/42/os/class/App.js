@@ -10,12 +10,6 @@ let toggleFullscreen
 let fileImport
 let fileExport
 
-console.log("App loaded")
-
-io.on("files", (files) => {
-  console.log(files)
-})
-
 const menubar = [
   {
     label: "File",
@@ -101,11 +95,20 @@ const menubar = [
 export default class App extends UI {
   constructor(manifest) {
     let { name, categories, state, content, encode, decode, dir } = manifest
-    dir ??= getDirname(document.URL) + "/"
+    if (dir === undefined) {
+      const url = document.URL
+      dir = url.endsWith("/") ? url : getDirname(url) + "/"
+    }
 
     const install = preinstall({ name, categories, dir })
 
     state.$files ??= [{ dirty: false, path: undefined }]
+
+    io.on("files", async (files) => {
+      setTimeout(async () => {
+        $files[0].text = await files[0].text()
+      }, 400)
+    })
 
     super({
       tag: ".box-fit.box-h",
