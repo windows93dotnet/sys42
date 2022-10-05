@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 
 import defer from "../../fabric/type/promise/defer.js"
-// import inOpaqueOrigin from "../../core/env/realm/inOpaqueOrigin.js"
+import inOpaqueOrigin from "../../core/env/realm/inOpaqueOrigin.js"
 
 export default function preinstall(app) {
   function resolve(url) {
@@ -70,11 +70,11 @@ export default function preinstall(app) {
 
   const deferred = defer()
 
-  // if (!inOpaqueOrigin) {
-  //   navigator.serviceWorker
-  //     ?.register("/42.sw.js", { type: "module" })
-  //     .catch(deferred.reject)
-  // }
+  if (!inOpaqueOrigin) {
+    navigator.serviceWorker
+      ?.register("/42.sw.js", { type: "module" })
+      .catch(deferred.reject)
+  }
 
   // https://web.dev/customize-install/
 
