@@ -1,5 +1,4 @@
 /* eslint-disable no-sequences */
-/* eslint-disable no-return-assign */
 // @related https://gist.github.com/dgraham/92e4c45da3707a3fe789
 // @related https://github.com/sindresorhus/ky
 // @read https://developer.mozilla.org/en-US/docs/Web/API/AbortController

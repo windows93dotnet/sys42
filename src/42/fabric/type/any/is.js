@@ -9,6 +9,7 @@ import isLength from "./is/isLength.js"
 
 // TODO: move more usefull is* functions in 'any' folder
 export { default as isObject } from "./is/isObject.js"
+export { default as isObjectOrArray } from "./is/isObjectOrArray.js"
 export { default as isHashmap } from "./is/isHashmap.js"
 export { default as isPlainObject } from "./is/isPlainObject.js"
 export { default as isHashmapLike } from "./is/isHashmapLike.js"
@@ -19,6 +20,7 @@ export { default as isArrayLike } from "./is/isArrayLike.js"
 export { default as isIterable } from "./is/isIterable.js"
 export { default as isPromiseLike } from "./is/isPromiseLike.js"
 export { default as isTemplateObject } from "./is/isTemplateObject.js"
+export { default as isErrorLike } from "./is/isErrorLike.js"
 export { default as isMultipleOf } from "../number/isMultipleOf.js"
 
 export const isPositiveInteger = (x) => x >>> 0 === x
@@ -49,11 +51,6 @@ export const isPromise = (x) => x instanceof Promise
 
 export const isMapOrSet = (x) => isMap(x) || isSet(x)
 
-export const isErrorLike = (x) =>
-  x &&
-  typeof x === "object" &&
-  (x instanceof Error || (x.constructor && x.constructor.name === "ErrorEvent"))
-
 // @thanks https://github.com/tc39/ecmascript-asyncawait/issues/78#issuecomment-167162901
 // const GeneratorFunction = Reflect.getPrototypeOf(function* () {})
 // const AsyncFunction = Reflect.getPrototypeOf(async () => {})
@@ -66,8 +63,6 @@ export const isIterator = (x) =>
   typeof x.next === "function" &&
   typeof x[Symbol.iterator] === "function" &&
   x[Symbol.iterator]() === x
-
-export const isObjectLike = (x) => x !== null && typeof x === "object"
 
 export const isEmptyArray = (x) => x?.length === 0
 

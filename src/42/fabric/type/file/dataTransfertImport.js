@@ -36,21 +36,26 @@ async function normalizeDataTransferItem(item, options) {
 }
 
 export default async function dataTransfertImport(dataTransfer, options) {
-  if (dataTransfer?.dataTransfer) dataTransfer = dataTransfer.dataTransfer
+  if (dataTransfer?.clipboardData) dataTransfer = dataTransfer.clipboardData
+  else if (dataTransfer?.dataTransfer) dataTransfer = dataTransfer.dataTransfer
+
+  if (!(dataTransfer instanceof DataTransfer)) {
+    throw new TypeError(`dataTransfer argument must be a DataTransfer instance`)
+  }
 
   const out = {
     files: {},
     folders: [],
     strings: [],
     objects: [],
-    // items: [],
+    items: [],
     paths: undefined,
   }
 
   const undones = []
 
   for (const item of dataTransfer.items) {
-    // out.items.push(`${item.kind}:${item.type}`)
+    out.items.push(`${item.kind}:${item.type}`)
     undones.push(
       normalizeDataTransferItem(item, options).then(async (item) => {
         if (item.kind === "string") {

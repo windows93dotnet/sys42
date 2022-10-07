@@ -40,6 +40,20 @@
           )
         },
       },
+      {
+        tag: "button",
+        label: "Error",
+        async click() {
+          console.log(await alert(new TypeError("boom")))
+        },
+      },
+      {
+        tag: "button",
+        label: "Error with custom message",
+        async click() {
+          console.log(await alert(new TypeError("boom"), { message: "Oops" }))
+        },
+      },
       "\n\n",
       "\n\n",
       {
@@ -166,7 +180,7 @@
 
   import puppet from "../../42/core/dev/puppet.js"
   // import sleep from "../../42/fabric/type/promise/sleep.js"
-  await puppet("button:nth-of-type(14)").click()
+  await puppet("button:nth-of-type(3)").click()
   // await sleep(500)
   // console.log(document.querySelector('button[label="Save"]'))
   // await puppet('button[label="Save"]').click()

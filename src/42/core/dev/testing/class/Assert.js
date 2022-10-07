@@ -414,7 +414,7 @@ export default class Assert {
     if (nested.length === 0) this.#addCall()
 
     try {
-      if (is.isObjectLike(actual) === false) {
+      if (is.isObjectOrArray(actual) === false) {
         this.fail(`hasSubset() must be called with an object`)
       }
 
