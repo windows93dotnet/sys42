@@ -1,5 +1,4 @@
 /* eslint-disable max-params */
-/* eslint-disable no-return-assign */
 /* eslint-disable max-statements-per-line */
 
 // JavaScript Object Notation (JSON) Patch

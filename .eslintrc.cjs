@@ -74,6 +74,7 @@ module.exports = {
     // usefull with Arrow functions
     // @read https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/void#non-leaking_arrow_functions
     "no-void": 0,
+    "no-return-assign": [2, "except-parens"],
 
     "getter-return": [2, { allowImplicit: true }],
 

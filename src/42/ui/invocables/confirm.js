@@ -6,7 +6,7 @@ const DEFAULT = {
 }
 
 export default async function confirm(message = "", options) {
-  if (message && typeof message === "object") {
+  if (options === undefined && message && typeof message === "object") {
     options = message
     message = options.message
   }

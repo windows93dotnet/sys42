@@ -1,5 +1,5 @@
 import configure from "../../core/configure.js"
-import { isObjectLike } from "../type/any/is.js"
+import isObjectOrArray from "../type/any/is/isObjectOrArray.js"
 import { encodeJSONPointerURI, encodeJSONPointer } from "./pointer.js"
 import JSONLocator from "./JSONLocator.js"
 import loadJSON from "../../core/load/loadJSON.js"
@@ -121,7 +121,7 @@ class Walker {
     }
 
     Object.values(obj).forEach((val) => {
-      if (isObjectLike(val)) this.findReferences(base, val)
+      if (isObjectOrArray(val)) this.findReferences(base, val)
     })
 
     return out
@@ -149,7 +149,7 @@ class Walker {
 
     this.tree.root = this.tree
 
-    if (isObjectLike(source)) {
+    if (isObjectOrArray(source)) {
       this.addJson(this.config.baseURL, source)
     }
 
@@ -221,7 +221,7 @@ class Walker {
       }
     }
 
-    if (isObjectLike(ctx.value) && parents.hasNext(ctx.value) === false) {
+    if (isObjectOrArray(ctx.value) && parents.hasNext(ctx.value) === false) {
       parents = new LinkedListNode(ctx.value, parents)
       const isArray = this.initContextChilds(ctx, parents)
       Object.entries(ctx.value).map(([keyword, value]) =>
@@ -244,7 +244,7 @@ class Walker {
       }
     }
 
-    if (isObjectLike(ctx.value) && this.visiteds.has(ctx.value) === false) {
+    if (isObjectOrArray(ctx.value) && this.visiteds.has(ctx.value) === false) {
       const isArray = this.initContextChilds(ctx)
       await Promise.all(
         Object.entries(ctx.value).map(([keyword, value]) =>
