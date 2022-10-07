@@ -53,7 +53,7 @@ export default async function scan() {
       ` scan {white.dim →} ${task.log.format.file(
         system.config.paths.files.scan,
         { colors: { name: "bright.magenta" }, bytes: buffer.byteLength }
-      )} (${scannedFiles.length} files indexed)}`
+      )} (${scannedFiles.length} files indexed)`
     )
   }
 
