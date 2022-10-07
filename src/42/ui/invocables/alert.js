@@ -10,14 +10,20 @@ const DEFAULT = {
 
 export default async function alert(message = "", options) {
   if (isErrorLike(message)) {
-    const error = await import(
-      "../../fabric/type/error/normalizeError.js"
-    ).then((m) => m.default(message))
+    const error = await import("../../fabric/type/error/normalizeError.js") //
+      .then((m) => m.default(message))
     options ??= {}
     options.icon ??= "error"
     options.label ??= error.name
     message = options.message ?? error.message
     if (error.stack && error.stack !== error.message) {
+      const [logHTML, formated] = await Promise.all([
+        import("../../core/console/logHTML.js") //
+          .then((m) => m.default),
+        import("../../core/console/formats/formatError.js") //
+          .then((m) => m.default(error, options.formatError)),
+      ])
+      const content = logHTML(formated)
       const id = uid()
       options.dialog ??= {}
       options.dialog.footer = {
@@ -25,7 +31,7 @@ export default async function alert(message = "", options) {
           {
             op: "add",
             path: "/0",
-            value: { tag: "pre.pa.mt-0.inset.code", id, content: error.stack },
+            value: { tag: "pre.pa.mt-0.inset.code", id, content },
           },
           {
             op: "add",

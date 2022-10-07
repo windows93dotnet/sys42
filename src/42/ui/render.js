@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import create from "./create.js"
 import register from "./register.js"
 import normalize from "./normalize.js"
@@ -112,14 +113,17 @@ export default function render(def, ctx, options) {
       : document.createDocumentFragment()
 
   if (def.content) {
-    out.append(
-      render(def.content, ctx, {
-        step:
-          out.nodeType === ELEMENT_NODE
-            ? out.localName + (out.id ? `#${out.id}` : "")
-            : undefined,
-      })
-    )
+    if (def.content instanceof Node) out.append(def.content)
+    else {
+      out.append(
+        render(def.content, ctx, {
+          step:
+            out.nodeType === ELEMENT_NODE
+              ? out.localName + (out.id ? `#${out.id}` : "")
+              : undefined,
+        })
+      )
+    }
   }
 
   def.traits?.(ctx.el)

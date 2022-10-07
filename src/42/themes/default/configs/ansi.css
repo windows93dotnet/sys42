@@ -27,3 +27,22 @@
   --ansi-bg: var(--ansi-black);
   --ansi-cursor: var(--ansi-greenBright);
 }
+
+.ansi-black { color: var(--ansi-black); }
+.ansi-blackBright, .ansi-grey { color: var(--ansi-blackBright); }
+.ansi-red { color: var(--ansi-red); }
+.ansi-redBright { color: var(--ansi-redBright); }
+.ansi-green { color: var(--ansi-green); }
+.ansi-greenBright { color: var(--ansi-greenBright); }
+.ansi-yellow { color: var(--ansi-yellow); }
+.ansi-yellowBright { color: var(--ansi-yellowBright); }
+.ansi-blue { color: var(--ansi-blue); }
+.ansi-blueBright { color: var(--ansi-blueBright); }
+.ansi-magenta { color: var(--ansi-magenta); }
+.ansi-magentaBright { color: var(--ansi-magentaBright); }
+.ansi-cyan { color: var(--ansi-cyan); }
+.ansi-cyanBright { color: var(--ansi-cyanBright); }
+.ansi-white { color: var(--ansi-white); }
+.ansi-whiteBright { color: var(--ansi-whiteBright); }
+.ansi-dim { opacity: var(--ansi-dim); }
+.ansi-reset { color: var(--ansi-fg); }
