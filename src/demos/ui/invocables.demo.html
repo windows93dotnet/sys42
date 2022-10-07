@@ -21,6 +21,8 @@
   import progress from "../../42/ui/invocables/progress.js"
   import explorer from "../../42/ui/components/explorer.js"
 
+  const err = new TypeError("boom")
+
   await ui({
     tag: "body.pa-xl",
     content: [
@@ -44,7 +46,7 @@
         tag: "button",
         label: "Error",
         async click() {
-          console.log(await alert(new TypeError("boom")))
+          console.log(await alert(err))
         },
       },
       {
@@ -180,7 +182,7 @@
 
   import puppet from "../../42/core/dev/puppet.js"
   // import sleep from "../../42/fabric/type/promise/sleep.js"
-  await puppet("button:nth-of-type(3)").click()
+  await puppet("button:nth-of-type(4)").click()
   // await sleep(500)
   // console.log(document.querySelector('button[label="Save"]'))
   // await puppet('button[label="Save"]').click()
