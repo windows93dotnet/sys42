@@ -7,10 +7,6 @@ import getDirname from "../../core/path/core/getDirname.js"
 import openInNewTab from "../../fabric/browser/openInNewTab.js"
 import io from "../io.js"
 
-let toggleFullscreen
-let fileImport
-let fileExport
-
 const menubar = [
   {
     label: "File",
@@ -108,8 +104,6 @@ export default class App extends UI {
 
     const { state, content, encode, decode, dir } = manifest
 
-    // openInNewTab(dir)
-
     state.$files ??= [{ dirty: false, path: undefined }]
 
     io.on("files", async (files) => {
@@ -167,7 +161,7 @@ export default class App extends UI {
         },
 
         async import() {
-          fileImport ??= await import(
+          const fileImport = await import(
             "../../fabric/type/file/fileImport.js"
           ).then((m) => m.default)
           const [file] = await fileImport(decode)
@@ -178,7 +172,7 @@ export default class App extends UI {
         },
 
         async export() {
-          fileExport ??= await import(
+          const fileExport = await import(
             "../../fabric/type/file/fileExport.js"
           ).then((m) => m.default)
           await fileExport(
@@ -188,21 +182,19 @@ export default class App extends UI {
         },
 
         openInNewTab() {
-          // window.open(dir, "_blank", "noopener=true")
           openInNewTab(dir)
         },
 
         install() {
           if (inIframe) {
             openInNewTab(dir + "?install")
-            // window.open(dir + "?install", "_blank", "noopener=true")
           } else {
             install()
           }
         },
 
         async fullscreen() {
-          toggleFullscreen ??= await import(
+          const toggleFullscreen = await import(
             "../../fabric/browser/toggleFullscreen.js"
           ).then((m) => m.default)
           toggleFullscreen()

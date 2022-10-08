@@ -1,5 +1,6 @@
 /* eslint-disable max-depth */
 import register from "../register.js"
+import render from "../render.js"
 import setControlData from "../../fabric/dom/setControlData.js"
 import getControlData from "../../fabric/dom/getControlData.js"
 import setAttributes from "../../fabric/dom/setAttributes.js"
@@ -98,7 +99,7 @@ export default function renderControl(el, ctx, def) {
   if (labelText) {
     el.removeAttribute("label")
 
-    const label = create(ctx, "label", { for: el.id }, labelText)
+    const label = render({ tag: "label", for: el.id, content: labelText }, ctx)
 
     if (def.compact === true) label.classList.add("sr-only")
 

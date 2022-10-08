@@ -48,6 +48,9 @@ ui-menu ui-menu {
 
 ui-menu > li {
   width: 100%;
+}
+
+:is(ui-menu, ui-menubar) > li {
   display: flex;
 }
 
@@ -71,11 +74,13 @@ ui-menu hr {
   margin: 0;
 }
 
+ui-menubar:empty::before,
 :is(ui-menu, ui-menubar) > li > :is(button, label) {
   all: unset;
   box-sizing: border-box;
   text-align: left;
   display: flex;
+  align-items: center;
   flex: 1;
   max-width: 100%;
   padding: var(--unit-xs);
@@ -83,13 +88,14 @@ ui-menu hr {
   gap: var(--gap);
 }
 
+ui-menubar:empty::before,
 ui-menubar > li > :is(button, label) {
   --gap: var(--unit-xs);
   padding-inline: var(--unit-md);
 }
 
-:is(ui-menu, ui-menubar) > li > :is(button, label) > :is(span, kbd) {
-  padding-top: 2px; /* ? */
+ui-menubar:empty::before {
+  content: "\200B"; /* prevent menubar changing height when loaded */
 }
 
 :is(ui-menu, ui-menubar) > li > label > input[type="checkbox" i],
@@ -100,11 +106,15 @@ ui-menubar > li > :is(button, label) {
   flex: 0 1 var(--menu-picto-size);
 
   vertical-align: middle;
-  /* transform: translateY(-2px);  */
 
   width: var(--menu-picto-size);
   min-width: var(--menu-picto-size);
   height: var(--menu-picto-size);
+}
+
+:is(ui-menu, ui-menubar) > li > button > span {
+  min-height: var(--menu-picto-size);
+  line-height: var(--menu-picto-size);
 }
 
 .ui-menu__menuitem--submenu > ui-picto:last-child {

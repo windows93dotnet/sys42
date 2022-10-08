@@ -155,6 +155,8 @@ textarea.box-fit {
   progress,
   nav,
   span,
+  ui-menubar,
+  ui-toolbar,
   [role="menubar"],
   [role="toolbar"]
 )) {
