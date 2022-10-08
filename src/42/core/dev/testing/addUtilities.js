@@ -173,7 +173,7 @@ export default function addUtilities(item, isExecutionContext) {
         decay(el)
       }
 
-      el.style.opacity = 0.01
+      el.style.opacity = 0.001
       el.style.pointerEvents = "none"
     }
 

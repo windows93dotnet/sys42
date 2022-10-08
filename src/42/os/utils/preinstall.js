@@ -1,21 +1,31 @@
+// @read https://medium.com/@kevinkurniawan97/introduction-to-pwa-twa-dcc2368268a3
+
 /* eslint-disable camelcase */
 
 import defer from "../../fabric/type/promise/defer.js"
+import pick from "../../fabric/type/object/pick.js"
 import inOpaqueOrigin from "../../core/env/realm/inOpaqueOrigin.js"
+import inStandalone from "../../core/env/runtime/inStandalone.js"
 
-export default function preinstall(app) {
+const SHARED_MANIFEST_KEYS = ["description", "categories"]
+
+const supportInstall =
+  "relList" in HTMLLinkElement.prototype &&
+  document.createElement("link").relList.supports("manifest") &&
+  "onbeforeinstallprompt" in window
+
+export default async function preinstall(app) {
   function resolve(url) {
     return new URL(url, app.dir).href
   }
 
   const manifest = {
     name: app.name,
-    categories: app.categories ?? [],
     display: "standalone",
     id: `42-${app.name}`,
+    scope: resolve("."),
     start_url: resolve("."),
-    // background_color: "#c0c0c0",
-    // theme_color: "#c0c0c0",
+    ...pick(app, SHARED_MANIFEST_KEYS),
     icons: [
       {
         src: resolve("./icons/icon-16.png"),
@@ -42,6 +52,12 @@ export default function preinstall(app) {
           "text/css": [".css"],
           "text/javascript": [".js", ".mjs"],
         },
+      },
+    ],
+    related_applications: [
+      {
+        platform: "webapp",
+        url: resolve("./app.webmanifest"),
       },
     ],
   }
@@ -76,6 +92,8 @@ export default function preinstall(app) {
       .catch(deferred.reject)
   }
 
+  if (!supportInstall || inStandalone) return false
+
   // https://web.dev/customize-install/
 
   window.addEventListener(
@@ -83,14 +101,72 @@ export default function preinstall(app) {
     (e) => {
       e.preventDefault()
       deferred.resolve(e)
+      document.querySelector("#install")?.removeAttribute("disabled")
     },
     { once: true }
   )
 
-  return async function () {
+  // // https://web.dev/get-installed-related-apps/
+  // navigator.getInstalledRelatedApps().then((res) => {
+  //   console.log("getInstalledRelatedApps", res)
+  // })
+
+  let card
+
+  async function install() {
     const install = await deferred
     install.prompt()
-    const { outcome } = await install.userChoice
-    console.log(`User response to the install prompt: ${outcome}`)
+    await install.userChoice
+    card?.destroy()
+    document.querySelector("#install-card")?.remove()
   }
+
+  const params = new URLSearchParams(location.search)
+  if (params.has("install")) {
+    card = await import("../../ui.js").then(({ default: ui }) => {
+      ui({
+        tag: ".box-fit.ground.box-center",
+        id: "install-card",
+        content: {
+          tag: ".outset.pa-xl",
+          content: [
+            {
+              tag: ".box-v.mb-xl",
+              content: [
+                { tag: "img.inset", src: "{{icons/2/src}}" },
+                {
+                  tag: ".pa",
+                  content: [
+                    { tag: "h1.mt-0", content: "{{name}}" },
+                    { tag: "p.mt-0", content: "{{description}}" },
+                    {
+                      tag: ".d-flex.gap-sm",
+                      content: {
+                        scope: "categories",
+                        each: {
+                          tag: "span.pill",
+                          content: "{{titleCase(.)}}",
+                        },
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              tag: "button.w-full",
+              id: "install",
+              content: "Install",
+              disabled: true,
+              click: install,
+            },
+          ],
+        },
+        state: manifest,
+      })
+    })
+    return true
+  }
+
+  return install
 }

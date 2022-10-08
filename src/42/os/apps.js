@@ -5,7 +5,9 @@ import pick from "../fabric/type/object/pick.js"
 import disk from "../core/disk.js"
 import getDirname from "../core/path/core/getDirname.js"
 
-import "../ui/popup.js" // TODO: check if it can be injected
+// TODO: check if rpc functions can be injecteds
+import "../ui/popup.js"
+import "../fabric/browser/openInNewTab.js"
 
 const DEFAULTS = {
   defaultApps: {
@@ -105,7 +107,7 @@ class AppManager extends ConfigFile {
 
     const app = this.value.windows[appName]
 
-    const dir = new URL(getDirname(app.manifest + "/"), location).href
+    const dir = new URL(getDirname(app.manifest + "/"), location).href + "/"
 
     files = files.map((path) => ({ path }))
 

@@ -4,6 +4,7 @@ import preinstall from "../utils/preinstall.js"
 import UI from "../../ui/class/UI.js"
 import getBasename from "../../core/path/core/getBasename.js"
 import getDirname from "../../core/path/core/getDirname.js"
+import openInNewTab from "../../fabric/browser/openInNewTab.js"
 import io from "../io.js"
 
 let toggleFullscreen
@@ -65,6 +66,10 @@ const menubar = [
         click: "{{fullscreen()}}",
         disabled: !document.fullscreenEnabled,
       },
+      {
+        label: "Open in new tab",
+        click: "{{openInNewTab()}}",
+      },
       "---",
       {
         label: "Monospace",
@@ -85,7 +90,7 @@ const menubar = [
     label: "About",
     content: [
       {
-        label: "Install Web App",
+        label: "Install as Web App",
         click: "{{install()}}",
       },
     ],
@@ -94,13 +99,16 @@ const menubar = [
 
 export default class App extends UI {
   constructor(manifest) {
-    let { name, categories, state, content, encode, decode, dir } = manifest
-    if (dir === undefined) {
+    if (manifest.dir === undefined) {
       const url = document.URL
-      dir = url.endsWith("/") ? url : getDirname(url) + "/"
+      manifest.dir = url.endsWith("/") ? url : getDirname(url) + "/"
     }
 
-    const install = preinstall({ name, categories, dir })
+    const install = preinstall(manifest)
+
+    const { state, content, encode, decode, dir } = manifest
+
+    // openInNewTab(dir)
 
     state.$files ??= [{ dirty: false, path: undefined }]
 
@@ -179,9 +187,15 @@ export default class App extends UI {
           )
         },
 
+        openInNewTab() {
+          // window.open(dir, "_blank", "noopener=true")
+          openInNewTab(dir)
+        },
+
         install() {
           if (inIframe) {
-            window.open(location, "_blank")
+            openInNewTab(dir + "?install")
+            // window.open(dir + "?install", "_blank", "noopener=true")
           } else {
             install()
           }
@@ -189,7 +203,7 @@ export default class App extends UI {
 
         async fullscreen() {
           toggleFullscreen ??= await import(
-            "../../fabric/dom/toggleFullscreen.js"
+            "../../fabric/browser/toggleFullscreen.js"
           ).then((m) => m.default)
           toggleFullscreen()
         },

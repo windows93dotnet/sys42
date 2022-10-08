@@ -3,6 +3,7 @@ export default {
   command: "textedit",
 
   categories: ["utilities", "productivity", "development"],
+  description: "A simple text editor using textarea",
 
   decode: {
     types: [
@@ -28,7 +29,6 @@ export default {
       scope: "text",
       tag: "textarea",
       label: "{{path}}",
-      // value: "{{text ? text : read(path)}}",
       value: "{{text ? text : source(path)}}",
       class: "w-full {{/monospace ? 'font-mono' : ''}}",
       spellcheck: "{{/spellcheck}}",
@@ -38,28 +38,6 @@ export default {
       autofocus: true,
     },
   },
-
-  // content: [
-  //   {
-  //     tag: "ui-tabs",
-  //     items: "{{$files}}",
-  //     each: {
-  //       label: "{{path ?? 'Untitled' |> basename}}{{dirty ? '*' : ''}}",
-  //       content: {
-  //         tag: "textarea.w-full",
-  //         name: "text",
-  //         label: "{{path}}",
-  //         value: "{{text ? text : read(path)}}",
-  //         class: "{{monospace ? 'font-mono' : ''}}",
-  //         spellcheck: "{{spellcheck}}",
-  //         wrap: "{{wrap ? 'soft' : 'off'}}",
-  //         prose: false,
-  //         compact: true,
-  //         autofocus: true,
-  //       },
-  //     },
-  //   },
-  // ],
 
   state: {
     monospace: true,

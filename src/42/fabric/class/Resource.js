@@ -93,7 +93,6 @@ ALLOW_PRESETS.app = [
   "presentation",
   "orientation-lock",
   "pointer-lock",
-  "popups", // Needed for App install
   ...APP_FEATURES,
 ]
 ALLOW_PRESETS.trusted = [
