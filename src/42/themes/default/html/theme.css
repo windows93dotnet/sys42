@@ -3,6 +3,10 @@
   --fg: CanvasText;
   /* color-scheme: dark; */
 
+  --bdw: 1px;
+  --bds: solid;
+  /* --bdc: var(--fg); */
+
   --prose-w: 80ch;
 
   --breath: var(--unit-xl);
@@ -291,6 +295,12 @@ output
   background: var(--code-sel-bg, var(--code-fg));
   color: var(--code-sel-fg, var(--code-bg));
   text-shadow: var(--code-sel-tsh, none);
+}
+
+.pill {
+  padding: var(--unit-xs) var(--unit-md);
+  border: var(--bdw) var(--bds) var(--bdc, var(--fg, currentColor));
+  border-radius: 3px;
 }
 
 /* typography

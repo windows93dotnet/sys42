@@ -32,7 +32,8 @@ export default class UI {
 
       if (this.ctx.reactive.firstUpdateDone !== true) {
         if (this.ctx.preload.length > 0) await this.ctx.preload.done()
-        this.el.append(render(this.def, this.ctx, { skipNormalize: true }))
+        this.content = render(this.def, this.ctx, { skipNormalize: true })
+        this.el.append(this.content)
       }
 
       await this.ctx.reactive.done()
@@ -58,6 +59,7 @@ export default class UI {
     this.ctx?.components.clear()
     this.ctx?.undones.clear()
     this.ctx?.postrender.clear()
+    this.content?.remove?.()
     delete this.ctx
     delete this.def
     delete this.el

@@ -132,7 +132,11 @@ textarea.box-fit {
   menu,
   ol,
   ul,
-  span
+  span,
+  img,
+  picture,
+  video,
+  audio
 )) {
   flex: 0 0 auto;
   max-width: 50%;

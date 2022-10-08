@@ -24,7 +24,7 @@ export default async function htmlTest(url, options) {
     inset: 0;
     width: 800px;
     height: 600px;
-    opacity: 0.01;`
+    opacity: 0.001;`
 
   if (options?.serializer?.keepIframes) el.style.opacity = 1
 

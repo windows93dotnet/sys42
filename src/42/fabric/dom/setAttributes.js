@@ -63,10 +63,6 @@ export function setAttribute(el, key, val) {
         }
       }
     } else {
-      // if (key === "tabIndex") {
-      //   console.log(key, val)
-      // }
-
       el.setAttribute(key, val)
     }
   }

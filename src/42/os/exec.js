@@ -46,7 +46,7 @@ export default rpc(
   },
 
   {
-    inputs(cmd, locals = {}) {
+    marshalling(cmd, locals = {}) {
       locals.cwd ??= getCWD()
       return [cmd, locals]
     },

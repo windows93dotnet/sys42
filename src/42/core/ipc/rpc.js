@@ -73,13 +73,14 @@ if (inTop) {
  * @see https://en.wikipedia.org/wiki/Remote_procedure_call
  */
 export default function rpc(fn, options) {
-  const { marshalling, unmarshalling } = options
+  const marshalling = options?.marshalling
+  const unmarshalling = options?.unmarshalling
   const id = hash([fn, options])
 
   if (!inTop) {
     const info = {
       name: fn.name ? `"${fn.name}"` : "corresponding",
-      module: options.module,
+      module: options?.module,
     }
     const caller =
       unmarshalling && marshalling

@@ -1,4 +1,4 @@
-import ensureElement from "./ensureElement.js"
+import ensureElement from "../dom/ensureElement.js"
 
 export default function toggleFullscreen(el = document.documentElement) {
   el = ensureElement(el)
