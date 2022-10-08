@@ -8,9 +8,11 @@ export default function precision(num, decimals = 2, op = Math.round) {
     (index === -1
       ? op(`${n}e${decimals}`)
       : op(`${n.slice(0, index)}e${Number(n.slice(index + 1)) + decimals}`)) /
-    10 ** decimals
+    Number(`1e${decimals}`) // [1]
   )
 }
+
+// [1] can't use (10 ** decimals) because chrome and firefox returns different results
 
 export const round = (num, decimals = 2) => precision(num, decimals, Math.round)
 export const floor = (num, decimals = 2) => precision(num, decimals, Math.floor)
