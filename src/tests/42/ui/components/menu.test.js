@@ -248,7 +248,7 @@ if (inTop) {
   })
 
   test.ui("submenu", async (t) => {
-    t.timeout(1000)
+    t.timeout(3000)
     const { decay, dest } = t.utils
 
     decay(
