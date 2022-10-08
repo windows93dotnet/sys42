@@ -53,7 +53,12 @@
         tag: "button",
         label: "Error with custom message",
         async click() {
-          console.log(await alert(new TypeError("boom"), { message: "Oops" }))
+          console.log(
+            await alert(new TypeError("boom"), {
+              message: "Oops",
+              collapsed: false,
+            })
+          )
         },
       },
       "\n\n",

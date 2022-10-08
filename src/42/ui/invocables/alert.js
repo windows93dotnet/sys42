@@ -31,12 +31,22 @@ export default async function alert(message = "", options) {
           {
             op: "add",
             path: "/0",
-            value: { tag: "pre.pa.mt-0.inset.code", id, content },
+            value: {
+              tag: "pre.pa.mt-0.inset.code",
+              class: { hide: options.collapsed !== false },
+              id,
+              content,
+            },
           },
           {
             op: "add",
             path: "/-",
-            value: { tag: "button", content: "Details", toggle: id },
+            value: {
+              tag: "button",
+              content: "Details",
+              toggle: id,
+              aria: { pressed: options.collapsed === false },
+            },
           },
         ],
       }

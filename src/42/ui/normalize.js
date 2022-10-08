@@ -412,6 +412,22 @@ function normalizeOn(def) {
     def.on.push({ click: def.click })
   }
 
+  if (def.toggle) {
+    def.aria ??= {}
+    def.aria.pressed ??= false
+    def.aria.controls ??= def.toggle
+    def.on ??= []
+    def.on.push({
+      click(e, target) {
+        const el = document.querySelector("#" + def.toggle)
+        if (el) {
+          el.classList.toggle("hide")
+          target.setAttribute("aria-pressed", !el.classList.contains("hide"))
+        }
+      },
+    })
+  }
+
   if (def.dialog) {
     def.on ??= []
     def.on.push({ click: { dialog: def.dialog } })
