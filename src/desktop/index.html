@@ -14,94 +14,56 @@
   import ui from "../42/ui.js"
   import engage from "../42/os/engage.js"
 
-  import ipc from "../42/core/ipc.js"
-
-  import fs from "../42/core/fs.js"
-
-  if (!(await fs.access("/test.html"))) {
-    await fs.write(
-      "/test.html",
-      `
-<link rel="stylesheet" href="/test.css">coucou
-<script>
-console.log(111, location)
-fetch('/test.css').then(res => {
-  console.log(456, res)
-})
-// console.log(112, window.top.document.body.append("evil"))
-</${"script"}>
-`
-    )
-    await fs.write("/test.css", "body{background:tan}")
-  }
-
-  // await navigator.serviceWorker?.register("/42.sw.js", { type: "module" })
-  // await navigator.serviceWorker.ready
-
-  ipc
-    .from("http://localhost:8000")
-    .on("42_PROXY_REQUEST_URL", async (url) => fs.read(url))
-
-  system.desktop = await ui(
-    {
-      tag: "body.box-fit.box-h._debug",
-      content: [
-        {
-          scope: "desktop",
-          tag: "main#desktop.desktop",
-          on: [
-            {
-              "selector": 'ui-icon[aria-description="folder"]',
-              "dblclick || Enter || Space": "{{openFolder(target.path)}}",
-            },
-            {
-              "selector": 'ui-icon[aria-description="file"]',
-              "dblclick || Enter || Space": "{{openFile(target.path)}}",
-            },
-          ],
-          content: [{ tag: "ui-folder.box-fit.scroll-auto" }],
-          actions: {
-            openFolder: engage.openFolder,
-            openFile: engage.openFile,
+  system.desktop = await ui({
+    tag: "body.box-fit.box-h._debug",
+    content: [
+      {
+        scope: "desktop",
+        tag: "main#desktop.desktop",
+        on: [
+          {
+            "selector": 'ui-icon[aria-description="folder"]',
+            "dblclick || Enter || Space": "{{openFolder(target.path)}}",
           },
-        },
-
-        {
-          tag: "iframe",
-          sandbox: "allow-scripts allow-same-origin",
-          src: "http://localhost:8000/vhost.html?path=/test.html",
-        },
-
-        {
-          scope: "taskbar",
-          tag: "footer#taskbar.d-flex.outset.pa-xs",
-          content: [
-            {
-              tag: "button",
-              content: "Start",
-              picto: "puzzle",
-              menu: [{ label: "start", click: "{{start(e, target)}}" }],
-            },
-            {
-              if: "{{/errors.length > 0}}",
-              tag: ".solid.error.ml-auto",
-              content: "{{/errors.length}} error(s)",
-            },
-          ],
-          actions: {
-            start(e, target) {
-              console.log("start", e, target)
-            },
+          {
+            "selector": 'ui-icon[aria-description="file"]',
+            "dblclick || Enter || Space": "{{openFile(target.path)}}",
           },
+        ],
+        content: [{ tag: "ui-folder.box-fit.scroll-auto" }],
+        actions: {
+          openFolder: engage.openFolder,
+          openFile: engage.openFile,
         },
-      ],
-
-      state: {
-        errors: [],
       },
+      {
+        scope: "taskbar",
+        tag: "footer#taskbar.d-flex.outset.pa-xs",
+        content: [
+          {
+            tag: "button",
+            content: "Start",
+            picto: "puzzle",
+            menu: [{ label: "start", click: "{{start(e, target)}}" }],
+          },
+          {
+            if: "{{/errors.length > 0}}",
+            tag: ".solid.error.ml-auto",
+            content: "{{/errors.length}} error(s)",
+          },
+        ],
+        actions: {
+          start(e, target) {
+            console.log("start", e, target)
+          },
+        },
+      },
+    ],
+
+    state: {
+      errors: [],
     },
-    { trusted: true }
-  )
+  })
 
   // engage.openFolder("/users/")
 
