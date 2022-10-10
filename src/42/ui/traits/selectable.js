@@ -162,7 +162,7 @@ class Selectable extends Trait {
     this.svg.setAttribute("fill", "rgba(80,80,80,0.5)")
     this.polygon = document.createElementNS(ns, "polygon")
     this.polygon.setAttribute("points", points)
-    this.svg.style.cssText = `
+    this.svg.style = `
       pointer-events: none;
       position: fixed;
       inset: 0;

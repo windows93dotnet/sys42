@@ -156,11 +156,11 @@ export default function addUtilities(item, isExecutionContext) {
     const suiteTitle = item.suite.title
     idRegistry[suiteTitle] ??= 0
     el.id = suiteTitle + "/" + idRegistry[suiteTitle]++
-    el.style.cssText = `
-        position: absolute;
-        overflow: auto;
-        margin: 0;
-        inset: 0;`
+    el.style = `
+      position: absolute;
+      overflow: auto;
+      margin: 0;
+      inset: 0;`
 
     if (options?.keep !== true) {
       if (isExecutionContext) {

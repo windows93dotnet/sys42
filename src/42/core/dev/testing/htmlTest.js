@@ -19,7 +19,7 @@ export async function whenTestFileReady(url, retry = 100) {
 export default async function htmlTest(url, options) {
   const el = document.createElement("iframe")
   el.src = url
-  el.style.cssText = `
+  el.style = `
     position: absolute;
     inset: 0;
     width: 800px;

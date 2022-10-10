@@ -27,6 +27,9 @@
   const params = new URLSearchParams(location.search)
 
   const iframe = document.createElement("iframe")
+  iframe.style = `
+    border: 0;
+  `
   iframe.src = params.get("path")
   document.body.append(iframe)
 

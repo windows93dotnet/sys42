@@ -13,8 +13,8 @@ class Aim {
     this.polygon.setAttribute("class", "aim-polygon")
     this.polygon.setAttribute("fill", "transparent")
     this.polygon.setAttribute("points", "0,0 0,0 0,0")
-    this.polygon.style.cssText = "pointer-events: auto;"
-    svg.style.cssText = `
+    this.polygon.style = "pointer-events: auto;"
+    svg.style = `
       pointer-events: none;
       position: fixed;
       inset: 0;
