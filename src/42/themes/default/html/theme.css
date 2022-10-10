@@ -37,8 +37,6 @@
   --highlight-fg: var(--bg);
   --highlight-tsh: none;
 
-  --inset-bg: var(--panel-bg);
-  --inset-fg: var(--panel-fg);
   --inset-bdw: var(--fld-bdw);
   --inset-bds: var(--fld-bds);
   --inset-bdc: var(--fld-bdc);
@@ -47,8 +45,6 @@
   --inset-tsh: var(--fld-tsh);
   --inset-bsh: var(--fld-bsh);
 
-  --inset-shallow-bg: var(--inset-bg);
-  --inset-shallow-fg: var(--inset-fg);
   --inset-shallow-bdw: var(--inset-bdw);
   --inset-shallow-bds: var(--inset-bds);
   --inset-shallow-bdc: var(--inset-bdc);
@@ -57,8 +53,6 @@
   --inset-shallow-tsh: var(--inset-tsh);
   --inset-shallow-bsh: var(--inset-bsh);
 
-  --outset-bg: var(--panel-bg);
-  --outset-fg: var(--panel-fg);
   --outset-bdw: var(--btn-bdw);
   --outset-bds: var(--btn-bds);
   --outset-bdc: var(--btn-bdc);
@@ -67,8 +61,6 @@
   --outset-tsh: var(--btn-tsh);
   --outset-bsh: var(--btn-bsh);
 
-  --outset-shallow-bg: var(--outset-bg);
-  --outset-shallow-fg: var(--outset-fg);
   --outset-shallow-bdw: var(--outset-bdw);
   --outset-shallow-bds: var(--outset-bds);
   --outset-shallow-bdc: var(--outset-bdc);
@@ -146,7 +138,7 @@
 .info {
   --bg: var(--info-bg);
   --fg: var(--info-fg);
-  text-shadow: varinfohighlight-tsh, none);
+  text-shadow: var(--info-tsh, none);
 }
 
 .highlight,
@@ -164,19 +156,15 @@
   text-shadow: var(--highlight-sel-tsh, none);
 }
 
-.inset,
-.outset,
-.inset-shallow,
-.outset-shallow,
-.document,
-.ground,
 .desktop,
+.ground,
+.paper,
+.document,
+.panel,
 .code,
 code,
 samp,
 output,
-.panel,
-menu,
 :where(body) {
   background: var(--bg);
   color: var(--fg);
@@ -188,8 +176,6 @@ menu,
 }
 
 .inset {
-  --bg: var(--inset-bg);
-  --fg: var(--inset-fg);
   border-width: var(--inset-bdw);
   border-style: var(--inset-bds);
   border-color: var(--inset-bdc);
@@ -200,8 +186,6 @@ menu,
 }
 
 .inset-shallow {
-  --bg: var(--inset-shallow-bg);
-  --fg: var(--inset-shallow-fg);
   border-width: var(--inset-shallow-bdw);
   border-style: var(--inset-shallow-bds);
   border-color: var(--inset-shallow-bdc);
@@ -212,8 +196,6 @@ menu,
 }
 
 .outset {
-  --bg: var(--outset-bg);
-  --fg: var(--outset-fg);
   border-width: var(--outset-bdw);
   border-style: var(--outset-bds);
   border-color: var(--outset-bdc);
@@ -224,8 +206,6 @@ menu,
 }
 
 .outset-shallow {
-  --bg: var(--outset-shallow-bg);
-  --fg: var(--outset-shallow-fg);
   border-width: var(--outset-shallow-bdw);
   border-style: var(--outset-shallow-bds);
   border-color: var(--outset-shallow-bdc);
@@ -264,7 +244,6 @@ menu,
 }
 
 .panel,
-menu,
 body {
   --bg: var(--panel-bg);
   --fg: var(--panel-fg);
@@ -371,11 +350,14 @@ ui-swatch,
     ) top left / calc(var(--checkboard-size) * 2px) calc(var(--checkboard-size) * 2px);
 }
 
+.checkboard {
+  background: var(--checkboard-bg);
+}
+
 /* separators
 ============= */
 
 hr {
-  /* height: 0; */
   width: 100%;
   margin-block: var(--unit);
   margin-inline: 0;
