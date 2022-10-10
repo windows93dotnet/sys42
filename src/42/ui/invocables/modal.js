@@ -30,7 +30,7 @@ export default async function modal(options) {
       content: [
         {
           tag: ".dialog-modal__image.box-center.item-shrink.pa",
-          content: { tag: "img", src },
+          content: { tag: "img", aria: { hidden: true }, src },
         },
         content,
       ],
