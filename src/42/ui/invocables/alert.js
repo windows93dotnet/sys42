@@ -24,7 +24,8 @@ export default async function alert(message = "", options) {
           .then((m) => m.default(error, options.formatError)),
       ])
       const content = logHTML(formated)
-      const id = uid()
+      const sampId = uid()
+      const btnId = uid()
       options.dialog ??= {}
       options.dialog.footer = {
         $patch: [
@@ -32,10 +33,15 @@ export default async function alert(message = "", options) {
             op: "add",
             path: "/0",
             value: {
-              tag: "pre.pa.mt-0.inset.code",
+              tag: "samp.pa.mt-0.inset.code",
+              role: "status",
+              aria: { labelledby: btnId },
               class: { hide: options.collapsed !== false },
-              id,
-              content,
+              id: sampId,
+              content: [
+                { tag: ".sr-only", content: error.stack },
+                { aria: { hidden: true }, content },
+              ],
             },
           },
           {
@@ -44,7 +50,8 @@ export default async function alert(message = "", options) {
             value: {
               tag: "button",
               content: "Details",
-              toggle: id,
+              id: btnId,
+              toggle: sampId,
               aria: { pressed: options.collapsed === false },
             },
           },
