@@ -13,7 +13,7 @@ export default function setStyles(el, styles) {
   if (styles) {
     const type = typeof styles
     if (type === "string") {
-      el.style.cssText = styles
+      el.style = styles
     } else if (type === "object") {
       for (const key of Object.keys(styles)) setStyle(el, key, styles[key])
     }

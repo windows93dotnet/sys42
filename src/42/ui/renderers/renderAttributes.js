@@ -23,10 +23,10 @@ function renderClasses(el, ctx, classes) {
 function renderStyles(el, ctx, styles) {
   const type = typeof styles
   if (type === "string") {
-    el.style.cssText = styles
+    el.style = styles
   } else if (type === "function") {
     register(ctx, styles, (val) => {
-      el.style.cssText = val
+      el.style = val
     })
   } else {
     for (const [key, val] of Object.entries(styles)) {
