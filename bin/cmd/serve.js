@@ -82,8 +82,9 @@ export default async function serve() {
     try {
       await asset.open()
 
-      if (req.headers.host === host) {
-        // TODO: check this
+      if (req.headers.origin === "http://localhost:8000") {
+        asset.headers["access-control-allow-origin"] = req.headers.origin
+      } else if (req.headers.host === host) {
         asset.headers["access-control-allow-origin"] = "null"
       }
 

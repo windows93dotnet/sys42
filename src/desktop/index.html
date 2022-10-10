@@ -14,6 +14,8 @@
   import ui from "../42/ui.js"
   import engage from "../42/os/engage.js"
 
+  import ipc from "../42/core/ipc.js"
+
   import fs from "../42/core/fs.js"
 
   if (!(await fs.access("/test.html"))) {
@@ -23,15 +25,22 @@
 <link rel="stylesheet" href="/test.css">coucou
 <script>
 console.log(111, location)
-console.log(112, window.top.document.body.append("evil"))
+fetch('/test.css').then(res => {
+  console.log(456, res)
+})
+// console.log(112, window.top.document.body.append("evil"))
 </${"script"}>
 `
     )
     await fs.write("/test.css", "body{background:tan}")
   }
 
-  await navigator.serviceWorker?.register("/42.sw.js", { type: "module" })
-  await navigator.serviceWorker.ready
+  // await navigator.serviceWorker?.register("/42.sw.js", { type: "module" })
+  // await navigator.serviceWorker.ready
+
+  ipc
+    .from("http://localhost:8000")
+    .on("42_PROXY_REQUEST_URL", async (url) => fs.read(url))
 
   system.desktop = await ui(
     {
@@ -57,39 +66,11 @@ console.log(112, window.top.document.body.append("evil"))
           },
         },
 
-        // {
-        //   tag: "iframe",
-        //   sandbox: "allow-scripts allow-same-origin",
-        //   src: "/test.html",
-        // },
-
         {
           tag: "iframe",
           sandbox: "allow-scripts allow-same-origin",
-          src: "/vhost.html",
+          src: "http://localhost:8000/vhost.html?path=/test.html",
         },
-
-        // {
-        //   tag: "iframe",
-        //   // sandbox: "allow-scripts _allow-same-origin",
-        //   sandbox: "allow-scripts",
-        //   src: "/test.html",
-        //   _srcdoc: `
-        //   <link rel="stylesheet" href="/test.css">
-        //   <script type="module">
-
-        //   console.log(888)
-
-        //   // await navigator.serviceWorker?.register("/42.sw.js", { type: "module" })
-
-        //   // fetch('/test.html').then(res => {
-        //   //   console.log(res)
-        //   // })
-
-        //   </${"script"}>
-        //   yo
-        //   `,
-        // },
 
         {
           scope: "taskbar",
@@ -121,10 +102,6 @@ console.log(112, window.top.document.body.append("evil"))
     },
     { trusted: true }
   )
-
-  // const iframe = document.querySelector("iframe")
-
-  // console.log(iframe)
 
   // engage.openFolder("/users/")
 

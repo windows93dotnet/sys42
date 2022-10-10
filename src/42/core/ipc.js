@@ -6,6 +6,7 @@ import Emitter from "../fabric/class/Emitter.js"
 import Canceller from "../fabric/class/Canceller.js"
 
 const sources = new WeakMap()
+const origins = new Map()
 
 const PING = "42_IPC_PING"
 const PONG = "42_IPC_PONG"
@@ -30,7 +31,8 @@ async function messageHandler(e) {
     isWindow &&
     origin !== "null" &&
     location.origin !== "null" &&
-    origin !== location.origin
+    origin !== location.origin &&
+    !origins.has(origin)
   ) {
     return
   }
@@ -55,6 +57,7 @@ async function messageHandler(e) {
       worker ||
         origin === location.origin ||
         window.parent === source ||
+        origins.has(origin) ||
         (iframe &&
           (iframe.src
             ? new URL(iframe.src).origin === location.origin
@@ -100,12 +103,20 @@ async function messageHandler(e) {
     port.onmessage = ({ data: { id, type, event, data } }) => {
       if (type === "emit") {
         if (sources.has(source)) sources.get(source).emit(event, data, meta)
+        if (origins.has(origin)) origins.get(origin).emit(event, data, meta)
         ipc.self.emit(event, data, meta)
       } else if (type === "send") {
         const undones = []
 
         if (sources.has(source)) {
           const dest = sources.get(source)
+          if (event in dest[Emitter.EVENTS]) {
+            undones.push(dest.send(event, data, meta))
+          }
+        }
+
+        if (origins.has(origin)) {
+          const dest = origins.get(origin)
           if (event in dest[Emitter.EVENTS]) {
             undones.push(dest.send(event, data, meta))
           }
@@ -235,7 +246,6 @@ export class Sender extends Emitter {
   }
 
   destroy() {
-    this.emit("destroy", this)
     this.off("*")
     this.port.close()
     this.remote.close()
@@ -298,7 +308,7 @@ export class ServiceWorkerSender extends Emitter {
     for (const [client, sender] of this.map.entries()) {
       if (!clients.includes(client)) {
         sender.destroy()
-        this.map.remove(client)
+        this.map.delete(client)
       }
     }
 
@@ -332,24 +342,29 @@ export class Receiver extends Emitter {
     options?.signal?.addEventListener("abort", () => this.destroy())
     this.#cancel = new Canceller(options?.signal)
 
-    if ("port" in source) source = source.port
+    if (typeof source === "string") {
+      this.origin = source
+      origins.set(source, this)
+    } else {
+      if ("port" in source) source = source.port
 
-    if (globalThis.HTMLIFrameElement && source instanceof HTMLIFrameElement) {
-      source = source.contentWindow
-    } else if ("onmessage" in source) {
-      const options = { signal: this.#cancel.signal }
-      source.addEventListener("message", messageHandler, options)
-      source.start?.()
+      if (globalThis.HTMLIFrameElement && source instanceof HTMLIFrameElement) {
+        source = source.contentWindow
+      } else if ("onmessage" in source) {
+        const options = { signal: this.#cancel.signal }
+        source.addEventListener("message", messageHandler, options)
+        source.start?.()
+      }
+
+      this.source = source
+      sources.set(source, this)
     }
-
-    this.source = source
-    sources.set(source, this)
   }
 
   destroy(options) {
-    this.emit("destroy", this)
     this.off("*")
-    sources.delete(this.source)
+    if (this.source) sources.delete(this.source)
+    if (this.origin) origins.delete(this.origin)
     if (options?.close) this.source?.close?.()
     this.#cancel?.()
   }
