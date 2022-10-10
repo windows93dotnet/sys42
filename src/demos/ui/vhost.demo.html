@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>vhost</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/style.css" id="theme" />
+
+<script type="module">
+  import trap from "../../42/fabric/type/error/trap.js"
+  trap()
+</script>
+
+<script type="module">
+  import ui from "../../42/ui.js"
+  import ipc from "../../42/core/ipc.js"
+  import fs from "../../42/core/fs.js"
+
+  if (!(await fs.access("/test.html"))) {
+    const html = `\
+  <link rel="stylesheet" href="/test.css">
+  I'm a sandboxed iframe.<br>
+  The HTML and CSS are served from browser storage.
+  <script>
+  try {
+    window.top.document.body.append("XSS")
+    console.error('Sandboxing failed')
+  } catch {}
+  </${"script"}>`
+    const css = "body{background:tan}"
+
+    await fs.write("/test.html", html)
+    await fs.write("/test.css", css)
+  }
+
+  ipc
+    .from("http://localhost:8000")
+    .on("42_PROXY_REQUEST_URL", async (url) => fs.read(url))
+
+  await ui(
+    {
+      tag: "body.box-center",
+      content: {
+        tag: "iframe.inset",
+        style: { width: "256px", height: "256px" },
+        sandbox: "allow-scripts allow-same-origin",
+        src: "http://localhost:8000/vhost.html?path=/test.html",
+      },
+    },
+    { trusted: true }
+  )
+</script>
