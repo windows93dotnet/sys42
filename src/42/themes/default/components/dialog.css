@@ -1,6 +1,6 @@
 :root {
-  --dialog-bg: var(--outset-bg);
-  --dialog-fg: var(--outset-fg);
+  --dialog-bg: var(--panel-bg);
+  --dialog-fg: var(--panel-fg);
   --dialog-bdw: var(--outset-bdw);
   --dialog-bds: var(--outset-bds);
   --dialog-bdc: var(--outset-bdc);
