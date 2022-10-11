@@ -6,6 +6,12 @@ import defer from "../../fabric/type/promise/defer.js"
 import pick from "../../fabric/type/object/pick.js"
 import inOpaqueOrigin from "../../core/env/realm/inOpaqueOrigin.js"
 import inStandalone from "../../core/env/runtime/inStandalone.js"
+import fileTypesManager from "../fileTypesManager.js"
+// import ft from "../../fabric/constants/FILE_TYPES.js"
+
+// console.log(ft)
+
+// console.log(fileTypesManager.resolveMimetype("text/*"))
 
 const SHARED_MANIFEST_KEYS = ["description", "categories"]
 
@@ -21,10 +27,14 @@ export default async function preinstall(app) {
 
   const manifest = {
     name: app.name,
-    display: "standalone",
     id: `42-${app.name}`,
     scope: resolve("."),
     start_url: resolve("."),
+    display_override: ["window-controls-overlay", "standalone"],
+    display: "standalone",
+    theme_color: window
+      .getComputedStyle(document.documentElement)
+      .getPropertyValue("--panel-bg"),
     ...pick(app, SHARED_MANIFEST_KEYS),
     icons: [
       {
@@ -43,24 +53,24 @@ export default async function preinstall(app) {
         type: "image/png",
       },
     ],
-    file_handlers: [
-      {
-        action: resolve("."),
-        accept: {
-          "text/plain": [".txt"],
-          "text/html": [".html", ".htm", ".xhtm"],
-          "text/css": [".css"],
-          "text/javascript": [".js", ".mjs"],
-        },
-      },
-    ],
-    related_applications: [
-      {
-        platform: "webapp",
-        url: resolve("./app.webmanifest"),
-      },
-    ],
+    ...(app.decode?.types
+      ? {
+          file_handlers: app.decode.types.map((type) => {
+            type.action ??= resolve(".")
+            type.accept = fileTypesManager.resolve(type.accept)
+            return type
+          }),
+        }
+      : {}),
+    // related_applications: [
+    //   {
+    //     platform: "webapp",
+    //     url: resolve("./app.webmanifest"),
+    //   },
+    // ],
   }
+
+  console.log(manifest.file_handlers)
 
   const manifestJSON = encodeURIComponent(JSON.stringify(manifest))
   const manifestURL = `data:application/manifest+json;name=app.webmanifest,${manifestJSON}`
@@ -91,6 +101,9 @@ export default async function preinstall(app) {
       ?.register("/42.sw.js", { type: "module" })
       .catch(deferred.reject)
   }
+
+  // if (inStandalone) window.resizeTo(400, 350)
+  // console.log(globalThis.navigator.windowControlsOverlay.getTitlebarAreaRect())
 
   if (!supportInstall || inStandalone) return false
 
@@ -128,12 +141,12 @@ export default async function preinstall(app) {
         tag: ".box-fit.ground.box-center",
         id: "install-card",
         content: {
-          tag: ".outset.pa-xl",
+          tag: ".panel.outset.pa-xl",
           content: [
             {
               tag: ".box-v.mb-xl",
               content: [
-                { tag: "img.inset", src: "{{icons/2/src}}" },
+                { tag: "img.checkboard.inset", src: "{{icons/2/src}}" },
                 {
                   tag: ".pa",
                   content: [

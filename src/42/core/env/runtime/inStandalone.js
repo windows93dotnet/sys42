@@ -4,5 +4,6 @@ export default Boolean(
   ("matchMedia" in globalThis &&
     globalThis.matchMedia("(display-mode: standalone)").matches) ||
     globalThis.navigator?.standalone ||
+    globalThis.navigator?.windowControlsOverlay ||
     globalThis.document?.referrer.includes("android-app://")
 )

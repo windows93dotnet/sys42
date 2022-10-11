@@ -1,6 +1,5 @@
-// import open from "../cmd/open.cmd.js"
-import apps from "../apps.js"
+import appsManager from "../appsManager.js"
 
 export default async function openFile(selection) {
-  return apps.open(selection)
+  return appsManager.open(selection)
 }

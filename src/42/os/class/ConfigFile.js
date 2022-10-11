@@ -8,7 +8,7 @@ import configure from "../../core/configure.js"
 
 const VALID_TYPES = new Set([".json", ".json5", ".cbor"])
 
-export class ConfigFile {
+export default class ConfigFile {
   constructor(filename, defaults) {
     this.filename = `${system.HOME}/${getBasename(filename)}`
     const ext = getExtname(this.filename)
@@ -67,8 +67,4 @@ export class ConfigFile {
     await this.populate()
     await this.save()
   }
-}
-
-export default async function configFile(...args) {
-  return new ConfigFile(...args).init()
 }
