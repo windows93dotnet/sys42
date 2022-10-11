@@ -2,14 +2,7 @@
 
 // TODO: write real parser
 export default function parseMimetype(source) {
-  const [type, subtype] = source.trim().split("/")
-  const out = { type, subtype }
-
-  const [x, suffix] = subtype.split("+")
-  if (suffix) {
-    out.suffix = suffix
-    out.subtype = x
-  }
-
-  return out
+  const [type, subtypefull] = source.trim().split("/")
+  const [subtype, suffix = ""] = subtypefull.split("+")
+  return { type, subtype, suffix, subtypefull }
 }

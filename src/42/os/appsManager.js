@@ -1,4 +1,4 @@
-import { ConfigFile } from "./class/ConfigFile.js"
+import ConfigFile from "./class/ConfigFile.js"
 import parseFilename from "../core/path/parseFilename.js"
 import arrify from "../fabric/type/any/arrify.js"
 import pick from "../fabric/type/object/pick.js"
@@ -40,7 +40,7 @@ function addMIMETypes({ defaultApps }, name, types) {
   }
 }
 
-class AppManager extends ConfigFile {
+class AppsManager extends ConfigFile {
   async populate() {
     // console.log(disk.glob("**/*.cmd.js"))
 
@@ -142,7 +142,7 @@ globalThis.app = await new App(manifest)
   }
 }
 
-const apps = new AppManager("apps.cbor", DEFAULTS)
-apps.init()
+const appsManager = new AppsManager("apps.json", DEFAULTS)
+appsManager.init()
 
-export default apps
+export default appsManager

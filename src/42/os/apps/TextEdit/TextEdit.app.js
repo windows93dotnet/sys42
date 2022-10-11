@@ -11,7 +11,7 @@ export default {
         description: "Text",
         accept: {
           "text/*": [],
-          "application/json": [],
+          "application/json": [".yo"],
           "application/rss+xml": [],
           "application/xml": [],
         },

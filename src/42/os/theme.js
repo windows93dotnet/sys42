@@ -1,4 +1,4 @@
-import { ConfigFile } from "./class/ConfigFile.js"
+import ConfigFile from "./class/ConfigFile.js"
 import findIconPath from "./theme/findIconPath.js"
 
 // import loadCSS from "../core/load/loadCSS.js"
@@ -24,7 +24,7 @@ class Theme extends ConfigFile {
   }
 }
 
-const theme = new Theme("theme.cbor", DEFAULTS)
+const theme = new Theme("theme.json", DEFAULTS)
 await theme.init()
 
 export default theme
