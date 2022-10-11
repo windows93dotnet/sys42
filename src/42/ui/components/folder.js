@@ -4,6 +4,7 @@ import disk from "../../core/disk.js"
 import engage from "../../os/engage.js"
 import normalizeDirname from "../../core/path/utils/normalizeDirname.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
+import debounce from "../../fabric/type/function/debounce.js"
 import dt from "../../core/dt.js"
 
 const { indexOf } = Array.prototype
@@ -39,7 +40,11 @@ export class Folder extends Component {
         default: "/",
         update(init) {
           if (this[_forgetWatch]?.path === this.path) return
-          if (!init) this.selection.length = 0
+
+          if (!init) {
+            this.selection.length = 0
+            requestAnimationFrame(() => this.#refreshIconPerLine())
+          }
 
           const path = normalizeDirname(this.path)
 
@@ -264,27 +269,29 @@ export class Folder extends Component {
     this.#icons[index === -1 ? 0 : index + 1]?.focus()
   }
 
+  #refreshIconPerLine() {
+    if (this.#icons.length === 0) {
+      this.iconsPerLine = 0
+      return
+    }
+
+    const previousY = this.#icons[0].getBoundingClientRect().y
+
+    for (let i = 1, l = this.#icons.length; i < l; i++) {
+      const { y } = this.#icons[i].getBoundingClientRect()
+      if (y !== previousY) {
+        this.iconsPerLine = i
+        break
+      }
+    }
+  }
+
   #icons
 
   setup() {
     this.#icons = this.children[0].children
     this.iconsPerLine = 0
-    const ro = new ResizeObserver(() => {
-      if (this.#icons.length === 0) {
-        this.iconsPerLine = 0
-        return
-      }
-
-      const previousY = this.#icons[0].getBoundingClientRect().y
-
-      for (let i = 1, l = this.#icons.length; i < l; i++) {
-        const { y } = this.#icons[i].getBoundingClientRect()
-        if (y !== previousY) {
-          this.iconsPerLine = i
-          break
-        }
-      }
-    })
+    const ro = new ResizeObserver(debounce(() => this.#refreshIconPerLine()))
     ro.observe(this)
     this.ctx.signal.addEventListener("abort", () => ro.disconnect())
   }

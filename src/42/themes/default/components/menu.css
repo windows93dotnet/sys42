@@ -1,6 +1,6 @@
 :root {
-  --menu-bg: var(--outset-bg);
-  --menu-fg: var(--outset-fg);
+  --menu-bg: var(--panel-bg);
+  --menu-fg: var(--panel-fg);
   --menu-bdw: var(--outset-bdw);
   --menu-bds: var(--outset-bds);
   --menu-bdc: var(--outset-bdc);
@@ -95,7 +95,7 @@ ui-menubar > li > :is(button, label) {
 }
 
 ui-menubar:empty::before {
-  content: "\200B"; /* prevent menubar changing height when loaded */
+  content: var(--zero-width-space);
 }
 
 :is(ui-menu, ui-menubar) > li > label > input[type="checkbox" i],
