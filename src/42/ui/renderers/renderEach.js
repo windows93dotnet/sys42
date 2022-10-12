@@ -3,7 +3,7 @@ import omit from "../../fabric/type/object/omit.js"
 import NodesRange from "../../fabric/range/NodesRange.js"
 import removeRange from "./removeRange.js"
 import register from "../register.js"
-import Canceller from "../../fabric/class/Canceller.js"
+import Canceller from "../../fabric/classes/Canceller.js"
 import { normalizeDefNoCtx } from "../normalize.js"
 
 const PLACEHOLDER = "[each]"

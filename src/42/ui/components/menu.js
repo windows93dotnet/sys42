@@ -1,5 +1,5 @@
 import inTop from "../../core/env/realm/inTop.js"
-import Component from "../class/Component.js"
+import Component from "../classes/Component.js"
 import uid from "../../core/uid.js"
 
 function seq(el, dir) {

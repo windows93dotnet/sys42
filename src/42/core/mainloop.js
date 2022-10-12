@@ -1,4 +1,4 @@
-import Loop from "../fabric/class/Loop.js"
+import Loop from "../fabric/classes/Loop.js"
 
 if ("requestIdleCallback" in globalThis === false) {
   await import("./env/polyfills/globalThis.requestIdleCallback.js")

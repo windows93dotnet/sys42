@@ -2,8 +2,8 @@
 
 import system from "./core/dev/testing/mainSystem.js"
 import chainable from "./fabric/traits/chainable.js"
-import Suite from "./core/dev/testing/class/Suite.js"
-import Test from "./core/dev/testing/class/Test.js"
+import Suite from "./core/dev/testing/classes/Suite.js"
+import Test from "./core/dev/testing/classes/Test.js"
 import ensureCurrentSuite from "./core/dev/testing/ensureCurrentSuite.js"
 import addUtilities from "./core/dev/testing/addUtilities.js"
 import uiTest from "./core/dev/testing/uiTest.js"

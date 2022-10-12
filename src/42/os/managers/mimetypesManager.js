@@ -1,4 +1,4 @@
-import ConfigFile from "../class/ConfigFile.js"
+import ConfigFile from "../classes/ConfigFile.js"
 import parseMimetype from "../../fabric/type/file/parseMimetype.js"
 
 class FileTypesManager extends ConfigFile {

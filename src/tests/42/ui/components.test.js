@@ -1,6 +1,6 @@
 import test from "../../../42/test.js"
 import ui from "../../../42/ui.js"
-import Component from "../../../42/ui/class/Component.js"
+import Component from "../../../42/ui/classes/Component.js"
 
 Component.define({
   tag: "ui-t-props",
@@ -12,7 +12,7 @@ Component.define({
 
 async function checkDefine(component, t, args, expected) {
   const fn = await (typeof component === "object" ||
-  /^\s*class/.test(component.toString())
+  /^\s*classes/.test(component.toString())
     ? Component.define(component)
     : Component.define(component(t)))
 

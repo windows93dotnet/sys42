@@ -4,7 +4,7 @@ import inOpaqueOrigin from "../../env/realm/inOpaqueOrigin.js"
 import settings from "../../settings.js"
 // import toggleable from "../../../fabric/traits/toggleable.js"
 import chainable from "../../../fabric/traits/chainable.js"
-import Color from "../../../fabric/class/Color.js"
+import Color from "../../../fabric/classes/Color.js"
 
 const capitalize = (word) => word[0].toUpperCase() + word.slice(1)
 

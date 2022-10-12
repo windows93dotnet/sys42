@@ -1,7 +1,7 @@
 // @thanks https://github.com/jamiebuilds/ninos
 
 import noop from "../../../../fabric/type/function/noop.js"
-import Callable from "../../../../fabric/class/Callable.js"
+import Callable from "../../../../fabric/classes/Callable.js"
 
 export default class Stub extends Callable {
   constructor(fn = noop, thisArg) {

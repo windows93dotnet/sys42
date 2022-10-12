@@ -1,4 +1,4 @@
-import Callable from "../class/Callable.js"
+import Callable from "../classes/Callable.js"
 import hashmap from "../type/object/hashmap.js"
 import noop from "../type/function/noop.js"
 

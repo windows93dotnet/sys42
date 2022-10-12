@@ -1,5 +1,5 @@
 import inIframe from "../core/env/realm/inIframe.js"
-import Emitter from "../fabric/class/Emitter.js"
+import Emitter from "../fabric/classes/Emitter.js"
 import listen from "../fabric/event/listen.js"
 import engage from "./engage.js"
 import dt from "../core/dt.js"

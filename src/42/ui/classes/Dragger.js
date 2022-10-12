@@ -1,7 +1,7 @@
 import listen from "../../fabric/event/listen.js"
 import configure from "../../core/configure.js"
 import setTemp from "../../fabric/dom/setTemp.js"
-import Canceller from "../../fabric/class/Canceller.js"
+import Canceller from "../../fabric/classes/Canceller.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 import noop from "../../fabric/type/function/noop.js"
 

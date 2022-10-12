@@ -1,4 +1,4 @@
-import Emitter from "./fabric/class/Emitter.js"
+import Emitter from "./fabric/classes/Emitter.js"
 
 export class System extends Emitter {}
 

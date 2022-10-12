@@ -5,7 +5,7 @@ import mark from "../../fabric/type/any/mark.js"
 import sleep from "../../fabric/type/promise/sleep.js"
 import when from "../../fabric/type/promise/when.js"
 import arrify from "../../fabric/type/any/arrify.js"
-import DOMQuery from "../../fabric/class/DOMQuery.js"
+import DOMQuery from "../../fabric/classes/DOMQuery.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
 import nextCycle from "../../fabric/type/promise/nextCycle.js"
 

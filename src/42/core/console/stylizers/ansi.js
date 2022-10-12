@@ -3,7 +3,7 @@
 import chainable from "../../../fabric/traits/chainable.js"
 // import toggleable from "../../../fabric/traits/toggleable.js"
 import SGR from "../../../fabric/constants/SGR.js"
-import Color from "../../../fabric/class/Color.js"
+import Color from "../../../fabric/classes/Color.js"
 
 const capitalize = (word) => word[0].toUpperCase() + word.slice(1)
 

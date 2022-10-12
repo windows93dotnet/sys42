@@ -2,8 +2,8 @@
 import realm from "./env/realm.js"
 import uid from "./uid.js"
 import defer from "../fabric/type/promise/defer.js"
-import Emitter from "../fabric/class/Emitter.js"
-import Canceller from "../fabric/class/Canceller.js"
+import Emitter from "../fabric/classes/Emitter.js"
+import Canceller from "../fabric/classes/Canceller.js"
 
 const sources = new WeakMap()
 const origins = new Map()

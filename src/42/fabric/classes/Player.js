@@ -1,4 +1,4 @@
-import Emitter from "../class/Emitter.js"
+import Emitter from "../classes/Emitter.js"
 
 export default class Player extends Emitter {
   constructor(target, playing = false) {

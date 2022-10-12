@@ -2,7 +2,7 @@ import system from "./mainSystem.js"
 import inIframe from "../../env/realm/inIframe.js"
 import getParentModule from "../../../fabric/getParentModule.js"
 import shortenFilename from "../../../core/path/shortenFilename.js"
-import Suite from "./class/Suite.js"
+import Suite from "./classes/Suite.js"
 
 const TITLE_REGEX =
   /^\.?\/?(_{0,2}tests?_{0,2})\/?|(\.(test|spec))?\.(c|m)?js$/gi

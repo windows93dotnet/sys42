@@ -1,4 +1,4 @@
-import Component from "../class/Component.js"
+import Component from "../classes/Component.js"
 import configure from "../../core/configure.js"
 import getDirname from "../../core/path/core/getDirname.js"
 import dialog from "./dialog.js"

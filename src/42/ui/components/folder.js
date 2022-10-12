@@ -1,5 +1,5 @@
 import "./icon.js"
-import Component from "../class/Component.js"
+import Component from "../classes/Component.js"
 import disk from "../../core/disk.js"
 import engage from "../../os/engage.js"
 import normalizeDirname from "../../core/path/utils/normalizeDirname.js"

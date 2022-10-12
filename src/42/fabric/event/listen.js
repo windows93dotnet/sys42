@@ -1,7 +1,7 @@
 import stopEvent from "./stopEvent.js"
 import distribute from "../type/object/distribute.js"
 import ensureElement from "../dom/ensureElement.js"
-import Canceller from "../class/Canceller.js"
+import Canceller from "../classes/Canceller.js"
 
 export const SPLIT_REGEX = /\s*\|\|\s*/
 

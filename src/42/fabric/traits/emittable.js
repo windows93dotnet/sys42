@@ -1,4 +1,4 @@
-import Emitter from "../class/Emitter.js"
+import Emitter from "../classes/Emitter.js"
 
 export default function emittable(item, options) {
   if (!item) return new Emitter(options)

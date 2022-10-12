@@ -1,7 +1,7 @@
 // @implement jqueryui position (https://jqueryui.com/position/)
 // @read https://www.x.org/archive/X11R6.7.0/doc/X.7.html#sect6
 
-import Trait from "../class/Trait.js"
+import Trait from "../classes/Trait.js"
 import settings from "../../core/settings.js"
 import documentReady from "../../fabric/dom/documentReady.js"
 import emittable from "../../fabric/traits/emittable.js"

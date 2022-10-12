@@ -1,4 +1,4 @@
-import Callable from "../../fabric/class/Callable.js"
+import Callable from "../../fabric/classes/Callable.js"
 import chainable from "../../fabric/traits/chainable.js"
 // import toggleable from "../../fabric/traits/toggleable.js"
 import configure from "../configure.js"

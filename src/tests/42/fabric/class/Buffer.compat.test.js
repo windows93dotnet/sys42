@@ -1,6 +1,6 @@
 /* eslint-disable no-useless-concat */
 
-import Buffer from "../../../../42/fabric/class/Buffer.compat.js"
+import Buffer from "../../../../42/fabric/classes/Buffer.compat.js"
 import test from "../../../../42/test.js"
 
 test("instanceof Buffer", (t) => {
