@@ -20,7 +20,9 @@ export default async function modal(options) {
   let src = config.img
 
   if (config.icon) {
-    const theme = await import("../../os/theme.js").then((m) => m.default)
+    const theme = await import("../../os/managers/themeManager.js").then(
+      (m) => m.default
+    )
     src = theme.getIconImage(config.icon)
   }
 

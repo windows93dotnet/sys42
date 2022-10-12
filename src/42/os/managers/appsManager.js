@@ -1,13 +1,13 @@
-import ConfigFile from "./class/ConfigFile.js"
-import parseFilename from "../core/path/parseFilename.js"
-import arrify from "../fabric/type/any/arrify.js"
-import pick from "../fabric/type/object/pick.js"
-import disk from "../core/disk.js"
-import getDirname from "../core/path/core/getDirname.js"
+import ConfigFile from "../class/ConfigFile.js"
+import parseFilename from "../../core/path/parseFilename.js"
+import arrify from "../../fabric/type/any/arrify.js"
+import pick from "../../fabric/type/object/pick.js"
+import disk from "../../core/disk.js"
+import getDirname from "../../core/path/core/getDirname.js"
 
 // TODO: check if rpc functions can be injecteds
-import "../ui/popup.js"
-import "../fabric/browser/openInNewTab.js"
+import "../../ui/popup.js"
+import "../../fabric/browser/openInNewTab.js"
 
 const DEFAULTS = {
   defaultApps: {
@@ -25,7 +25,7 @@ const REGISTRY_KEYS = [
   "geometry",
 ]
 
-const APP_CLASS_URL = new URL("./class/App.js", import.meta.url).pathname
+const APP_CLASS_URL = new URL("../class/App.js", import.meta.url).pathname
 
 function addMIMETypes({ defaultApps }, name, types) {
   for (const { accept } of types) {
@@ -111,7 +111,7 @@ class AppsManager extends ConfigFile {
 
     files = files.map((path) => ({ path }))
 
-    const dialog = await import("../ui/components/dialog.js") //
+    const dialog = await import("../../ui/components/dialog.js") //
       .then((m) => m.default)
 
     const dialogConfig = { state: { $app: app, $files: files } }
