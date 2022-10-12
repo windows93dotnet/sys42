@@ -3,7 +3,7 @@ import parseMimetype from "../fabric/type/file/parseMimetype.js"
 
 class FileTypesManager extends ConfigFile {
   async populate() {
-    this.value = await import("../fabric/constants/FILE_TYPES_2.js") //
+    this.value = await import("../fabric/constants/FILE_TYPES.js") //
       .then((m) => m.default)
   }
 

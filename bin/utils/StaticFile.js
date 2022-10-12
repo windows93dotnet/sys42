@@ -5,7 +5,7 @@ class StaticFile {
   constructor(filename, index = "index.html") {
     const obj = parseFilename(filename, { index, headers: true })
     this.filename = obj.filename
-    this.query = obj.query
+    this.search = obj.search
     this.dir = obj.dir
     this.base = obj.base
     this.ext = obj.ext
