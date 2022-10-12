@@ -1,5 +1,5 @@
-import ConfigFile from "./class/ConfigFile.js"
-import findIconPath from "./theme/findIconPath.js"
+import ConfigFile from "../class/ConfigFile.js"
+import findIconPath from "../theme/findIconPath.js"
 
 // import loadCSS from "../core/load/loadCSS.js"
 
@@ -8,7 +8,7 @@ const DEFAULTS = {
   icons: [new URL("../themes/default/icons", import.meta.url).pathname],
 }
 
-class Theme extends ConfigFile {
+class ThemeManager extends ConfigFile {
   async init() {
     await super.init()
     // const el = await loadCSS(this.value.style)
@@ -24,7 +24,7 @@ class Theme extends ConfigFile {
   }
 }
 
-const theme = new Theme("theme.json", DEFAULTS)
-await theme.init()
+const themeManager = new ThemeManager("theme.json", DEFAULTS)
+await themeManager.init()
 
-export default theme
+export default themeManager

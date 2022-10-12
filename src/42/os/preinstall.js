@@ -2,12 +2,12 @@
 
 /* eslint-disable camelcase */
 
-import defer from "../../fabric/type/promise/defer.js"
-import pick from "../../fabric/type/object/pick.js"
-import inOpaqueOrigin from "../../core/env/realm/inOpaqueOrigin.js"
-import inPWA from "../../core/env/runtime/inPWA.js"
-import fileTypesManager from "../fileTypesManager.js"
-import appCard from "../ui/appCard.js"
+import defer from "../fabric/type/promise/defer.js"
+import pick from "../fabric/type/object/pick.js"
+import inOpaqueOrigin from "../core/env/realm/inOpaqueOrigin.js"
+import inPWA from "../core/env/runtime/inPWA.js"
+import fileTypesManager from "./managers/mimetypesManager.js"
+import appCard from "./blocks/appCard.js"
 
 const SHARED_MANIFEST_KEYS = ["description", "categories"]
 
@@ -126,7 +126,7 @@ export default async function preinstall(app) {
 
   const params = new URLSearchParams(location.search)
   if (params.has("install")) {
-    card = await import("../../ui.js").then(({ default: ui }) => {
+    card = await import("../ui.js").then(({ default: ui }) => {
       ui({
         tag: ".box-fit.ground.box-center",
         id: "install-card",
