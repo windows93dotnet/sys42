@@ -3,7 +3,7 @@ import assertPath from "./assertPath.js"
 import pick from "../../fabric/type/object/pick.js"
 import parseMimetype from "../../fabric/type/file/parseMimetype.js"
 import parsePath from "./core/parsePath.js"
-import { EXTENSIONS, NAMES } from "../../fabric/constants/FILE_TYPES.js"
+import FILE_TYPES from "../../fabric/constants/FILE_TYPES.js"
 
 const urlKeys = [
   "origin",
@@ -14,7 +14,7 @@ const urlKeys = [
   "hostname",
   "port",
   "pathname",
-  // "search",
+  "search",
   "hash",
   // "href",
 ]
@@ -25,7 +25,6 @@ const parseFilename = memoize((filename, options) => {
 
   const url = new URL(filename, "file:")
   const out = pick(url, urlKeys)
-  out.query = url.search
 
   out.isURI = out.protocol !== "file:"
   out.isDir = !out.isURI && out.pathname.endsWith("/")
@@ -47,23 +46,31 @@ const parseFilename = memoize((filename, options) => {
   out.dir = parsed.dir
   out.base = parsed.base
   out.ext = out.isDir ? "" : parsed.ext
-  out.name = out.isDir ? parsed.base : parsed.name
+  out.stem = out.isDir ? parsed.base : parsed.name
 
-  if (options?.getURIMimetype === false ? out.isFile : out.ext) {
-    out.charset = EXTENSIONS.charset[out.ext] ?? NAMES.charset[out.name]
-    out.mimetype =
-      EXTENSIONS.mimetype[out.ext] ||
-      NAMES.mimetype[out.name] ||
-      "application/octet-stream"
-  } else if (out.isDir) {
+  out.charset = undefined
+
+  if (out.isDir) {
     out.mimetype = "inode/directory"
   } else {
-    out.mimetype = "text/x-uri"
+    const extInfos =
+      FILE_TYPES.extentions[out.ext] ??
+      FILE_TYPES.filenames[out.stem.toLowerCase()]
+    if (extInfos) {
+      out.charset = extInfos.charset
+      out.mimetype = extInfos.mimetype
+    } else {
+      out.mimetype = "application/octet-stream"
+    }
+
+    if (options?.getURIMimetype === false && out.isURI) {
+      out.mimetype = "text/x-uri"
+    }
   }
 
   if (options?.headers) {
     out.headers = {}
-    out.headers["content-type"] =
+    out.headers["Content-Type"] =
       out.mimetype + (out.charset ? `; charset=${out.charset}` : "")
   }
 

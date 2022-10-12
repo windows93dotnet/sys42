@@ -64,7 +64,7 @@ class Icon extends Component {
             {
               tag: ".ui-icon__text",
               content: [
-                { tag: "span", content: "{{stem}}" },
+                { tag: "span", content: "{{name}}" },
                 {
                   tag: "span",
                   if: "{{isFile && ext}}",
@@ -96,15 +96,15 @@ class Icon extends Component {
   getInfos(path) {
     if (path === undefined) return
     const infos = parseFilename(path, { getURIMimetype: false })
-    infos.image = theme.getIconImage(infos)
-    infos.description = infos.isDir ? "folder" : infos.isURI ? "uri" : "file"
-    infos.stem = (
+    infos.image ??= theme.getIconImage(infos)
+    infos.description ??= infos.isDir ? "folder" : infos.isURI ? "uri" : "file"
+    infos.name ??= (
       infos.isURI
         ? infos.host.replace(/^www\./, "") +
-          (infos.pathname !== "/" || infos.query
-            ? infos.pathname + infos.query
+          (infos.pathname !== "/" || infos.search
+            ? infos.pathname + infos.search
             : "")
-        : infos.name
+        : infos.stem
     ).replaceAll(".", "\u200B.")
     return infos
   }

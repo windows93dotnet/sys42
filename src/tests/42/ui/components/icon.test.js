@@ -25,7 +25,7 @@ test("html", async (t) => {
     "/ui/icon/root/label",
     "/ui/icon/root/infos/description",
     "/ui/icon/root/infos/image",
-    "/ui/icon/root/infos/stem",
+    "/ui/icon/root/infos/name",
     "/ui/icon/root/infos/isFile",
     "/ui/icon/root/infos/ext",
   ])
@@ -138,16 +138,15 @@ test("infos", async (t) => {
   const { infos } = icons
 
   t.eq(
-    infos.map(({ name, ext, stem }) => ({ name, ext, stem })),
+    infos.map(({ ext, name }) => ({ ext, name })),
     [
-      { name: "foo", ext: ".js", stem: "foo" },
-      { name: "foo", ext: "", stem: "foo" },
-      { name: "foo.bar", ext: "", stem: "foo\u200b.bar" },
-      { name: "", ext: "", stem: "windows93\u200b.net" },
+      { ext: ".js", name: "foo" },
+      { ext: "", name: "foo" },
+      { ext: "", name: "foo\u200b.bar" },
+      { ext: "", name: "windows93\u200b.net" },
       {
-        name: "script",
         ext: ".js",
-        stem: "windows93\u200b.net/script\u200b.js",
+        name: "windows93\u200b.net/script\u200b.js",
       },
     ]
   )
