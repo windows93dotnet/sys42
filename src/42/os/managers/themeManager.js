@@ -1,11 +1,11 @@
 import ConfigFile from "../classes/ConfigFile.js"
-import findIconPath from "../theme/findIconPath.js"
+import findIconPath from "./themeManager/findIconPath.js"
 
 // import loadCSS from "../core/load/loadCSS.js"
 
 const DEFAULTS = {
-  style: new URL("../themes/windows9x/index.css", import.meta.url).pathname,
-  icons: [new URL("../themes/default/icons", import.meta.url).pathname],
+  style: new URL("../../themes/windows9x/index.css", import.meta.url).pathname,
+  icons: [new URL("../../themes/default/icons", import.meta.url).pathname],
 }
 
 class ThemeManager extends ConfigFile {
@@ -16,9 +16,9 @@ class ThemeManager extends ConfigFile {
     // el.id = "theme"
   }
 
-  getIconImage(desc) {
+  getIconImage(infos) {
     for (const theme of this.value.icons) {
-      const path = findIconPath(theme, desc)
+      const path = findIconPath(theme, infos)
       if (path) return path
     }
   }

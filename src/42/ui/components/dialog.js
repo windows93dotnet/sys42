@@ -142,21 +142,9 @@ const dialog = rpc(
     const { opener } = el
     await el.ready
 
-    document.body.before(el)
+    document.body.append(el)
 
-    if (def.aria?.modal) {
-      document.body.toggleAttribute("inert", true)
-      document.documentElement.classList.add("inert-body")
-    }
-
-    return el.once("close").then((res) => {
-      if (def.aria?.modal) {
-        document.body.toggleAttribute("inert", false)
-        document.documentElement.classList.remove("inert-body")
-      }
-
-      return { res, opener }
-    })
+    return el.once("close").then((res) => ({ res, opener }))
   },
   {
     module: import.meta.url,

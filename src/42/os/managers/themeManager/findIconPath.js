@@ -2,9 +2,9 @@
 /* eslint-disable max-depth */
 /* eslint-disable complexity */
 
-import disk from "../../core/disk.js"
-import locate from "../../fabric/locator/locate.js"
-import getDirBasePair from "../../core/path/core/getDirBasePair.js"
+import disk from "../../../core/disk.js"
+import locate from "../../../fabric/locator/locate.js"
+import getDirBasePair from "../../../core/path/core/getDirBasePair.js"
 
 export default function findIconPath(theme, val) {
   const obj = disk.get(theme)

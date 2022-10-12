@@ -12,7 +12,7 @@ Component.define({
 
 async function checkDefine(component, t, args, expected) {
   const fn = await (typeof component === "object" ||
-  /^\s*classes/.test(component.toString())
+  /^\s*class/.test(component.toString())
     ? Component.define(component)
     : Component.define(component(t)))
 
