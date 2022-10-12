@@ -442,3 +442,14 @@ nav:not(.unstyled) ul {
   background: var(--highlight-bg);
   color: var(--highlight-fg);
 }
+
+/* states
+========= */
+
+body[inert]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-color: rgb(0 0 0 / 0.5);
+  backdrop-filter: blur(2px);
+}
