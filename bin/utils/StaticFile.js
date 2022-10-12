@@ -1,18 +1,18 @@
 import fs from "node:fs/promises"
-import parseFilename from "../../src/42/core/path/parseFilename.js"
+import getPathInfos from "../../src/42/core/path/getPathInfos.js"
 
 class StaticFile {
   constructor(filename, index = "index.html") {
-    const obj = parseFilename(filename, { index, headers: true })
-    this.filename = obj.filename
-    this.search = obj.search
-    this.dir = obj.dir
-    this.base = obj.base
-    this.ext = obj.ext
-    this.name = obj.name
-    this.charset = obj.charset
-    this.mimetype = obj.mimetype
-    this.headers = obj.headers
+    const infos = getPathInfos(filename, { index, headers: true })
+    this.filename = infos.filename
+    this.search = infos.search
+    this.dir = infos.dir
+    this.base = infos.base
+    this.ext = infos.ext
+    this.name = infos.name
+    this.charset = infos.charset
+    this.mimetype = infos.mimetype
+    this.headers = infos.headers
   }
 
   stream(encoding = this.charset) {

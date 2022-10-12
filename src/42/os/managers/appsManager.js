@@ -1,5 +1,5 @@
 import ConfigFile from "../classes/ConfigFile.js"
-import parseFilename from "../../core/path/parseFilename.js"
+import getPathInfos from "../../core/path/getPathInfos.js"
 import arrify from "../../fabric/type/any/arrify.js"
 import pick from "../../fabric/type/object/pick.js"
 import disk from "../../core/disk.js"
@@ -66,7 +66,7 @@ class AppsManager extends ConfigFile {
 
     const { extensions, mimetypes } = this.value.defaultApps
     const out = []
-    const { ext, mimetype, mime } = parseFilename(filename)
+    const { ext, mimetype, mime } = getPathInfos(filename)
 
     if (ext in extensions) out.push(...extensions[ext])
     if (mimetype in mimetypes) out.push(...mimetypes[mimetype])

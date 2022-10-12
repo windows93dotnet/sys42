@@ -1,5 +1,5 @@
 import ipc from "./42/core/ipc.js"
-import parseFilename from "./42/core/path/parseFilename.js"
+import getPathInfos from "./42/core/path/getPathInfos.js"
 
 const LIST = new Set(["/test.html", "/test.css"])
 
@@ -22,7 +22,7 @@ self.addEventListener("fetch", (e) => {
     // (e.request.destination === "iframe" &&
     //   !e.request.url.endsWith("/vhost.html"))
   ) {
-    const obj = parseFilename(pathname, { headers: true })
+    const infos = getPathInfos(pathname, { headers: true })
 
     e.respondWith(
       self.clients
@@ -35,7 +35,7 @@ self.addEventListener("fetch", (e) => {
           }
         })
         .then((client) => ipc.to(client).send("42_REQUEST_URL", pathname))
-        .then((args) => new Response(args, { headers: obj.headers }))
+        .then((args) => new Response(args, { headers: infos.headers }))
     )
   }
 })

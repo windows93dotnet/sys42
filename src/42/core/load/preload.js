@@ -25,11 +25,10 @@ function fromElement(el) {
   }
 }
 
-let parseFilename
 async function fromURL(url) {
-  parseFilename ??= await import("../../core/path/parseFilename.js") //
+  const getPathInfos = await import("../path/getPathInfos.js") //
     .then((m) => m.default)
-  const { mimetype } = parseFilename(url)
+  const { mimetype } = getPathInfos(url)
   if (mimetype in MIMETYPES) return [MIMETYPES[mimetype], mimetype]
   if (mimetype.startsWith("image/")) return ["image", mimetype]
   if (mimetype.startsWith("audio/")) return ["audio", mimetype]

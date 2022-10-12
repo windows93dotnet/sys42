@@ -19,7 +19,7 @@ const urlKeys = [
   // "href",
 ]
 
-const parseFilename = memoize((filename, options) => {
+const getPathInfos = memoize((filename, options) => {
   assertPath(filename)
   const index = options?.index
 
@@ -81,4 +81,4 @@ const parseFilename = memoize((filename, options) => {
   return out
 })
 
-export default parseFilename
+export default getPathInfos
