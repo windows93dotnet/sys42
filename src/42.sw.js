@@ -2,7 +2,7 @@
 // @read https://stackoverflow.com/q/62041644
 
 import getDriver from "./42/core/fs/getDriver.js"
-import parseFilename from "./42/core/path/parseFilename.js"
+import getPathInfos from "./42/core/path/getPathInfos.js"
 import Disk from "./42/core/fs/Disk.js"
 
 const disk = new Disk()
@@ -26,7 +26,7 @@ self.addEventListener("fetch", (e) => {
     : disk.getIdAndMask(pathname)
 
   if (mask !== 0 && typeof id === "number") {
-    const obj = parseFilename(pathname, { headers: true })
+    const infos = getPathInfos(pathname, { headers: true })
 
     // console.group(`🛰 ${pathname}: id:${id} mask:${mask}`)
     // console.log(e.request)
@@ -40,7 +40,7 @@ self.addEventListener("fetch", (e) => {
           (blob) =>
             new Response(blob, {
               headers: {
-                ...obj.headers,
+                ...infos.headers,
                 // "Content-Security-Policy": "sandbox allow-scripts; default-src 'self' data:; script-src 'self' 'unsafe-inline';",
                 // "Cross-Origin-Resource-Policy": "same-origin",
                 // "Cross-Origin-Embedder-Policy:": "require-corp",

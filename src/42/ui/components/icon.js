@@ -1,5 +1,5 @@
 import Component from "../classes/Component.js"
-import parseFilename from "../../core/path/parseFilename.js"
+import getPathInfos from "../../core/path/getPathInfos.js"
 import themeManager from "../../os/managers/themeManager.js"
 
 // [1] @read https://www.stefanjudis.com/blog/aria-selected-and-when-to-use-it/
@@ -95,7 +95,7 @@ class Icon extends Component {
 
   getInfos(path) {
     if (path === undefined) return
-    const infos = parseFilename(path, { getURIMimetype: false })
+    const infos = getPathInfos(path, { getURIMimetype: false })
     infos.image ??= themeManager.getIconImage(infos)
     infos.description ??= infos.isDir ? "folder" : infos.isURI ? "uri" : "file"
     infos.name ??= (

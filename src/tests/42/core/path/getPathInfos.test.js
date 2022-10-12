@@ -1,5 +1,5 @@
 import test from "../../../../42/test.js"
-import parseFilename from "../../../../42/core/path/parseFilename.js"
+import getPathInfos from "../../../../42/core/path/getPathInfos.js"
 
 const { task } = test
 
@@ -293,7 +293,7 @@ test.tasks(
 
   (test, { path, options, expected }) => {
     test(path, options, (t) => {
-      t.eq(parseFilename(path, options), expected)
+      t.eq(getPathInfos(path, options), expected)
     })
   }
 )
