@@ -1,4 +1,4 @@
-import Emitter from "../../fabric/class/Emitter.js"
+import Emitter from "../../fabric/classes/Emitter.js"
 import observe from "../../fabric/locator/observe.js"
 import exists from "../../fabric/locator/exists.js"
 import locate from "../../fabric/locator/locate.js"

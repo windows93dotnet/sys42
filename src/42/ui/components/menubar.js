@@ -1,4 +1,4 @@
-import Component from "../class/Component.js"
+import Component from "../classes/Component.js"
 import { Menu } from "./menu.js"
 
 export class Menubar extends Menu {

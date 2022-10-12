@@ -1,4 +1,4 @@
-import ConfigFile from "../class/ConfigFile.js"
+import ConfigFile from "../classes/ConfigFile.js"
 import parseFilename from "../../core/path/parseFilename.js"
 import arrify from "../../fabric/type/any/arrify.js"
 import pick from "../../fabric/type/object/pick.js"
@@ -25,7 +25,7 @@ const REGISTRY_KEYS = [
   "geometry",
 ]
 
-const APP_CLASS_URL = new URL("../class/App.js", import.meta.url).pathname
+const APP_CLASS_URL = new URL("../classes/App.js", import.meta.url).pathname
 
 function addMIMETypes({ defaultApps }, name, types) {
   for (const { accept } of types) {

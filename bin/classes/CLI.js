@@ -2,7 +2,7 @@ import settings from "../../src/42/core/settings.js"
 import argv from "../../src/42/os/cli/argv.js"
 import parseCommand from "../../src/42/os/cli/parseCommand.js"
 // import validator from "../type/json/validator.js"
-import Callable from "../../src/42/fabric/class/Callable.js"
+import Callable from "../../src/42/fabric/classes/Callable.js"
 
 const DEFAULTS = {
   validator: {},

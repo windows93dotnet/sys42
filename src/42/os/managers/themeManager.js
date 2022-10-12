@@ -1,4 +1,4 @@
-import ConfigFile from "../class/ConfigFile.js"
+import ConfigFile from "../classes/ConfigFile.js"
 import findIconPath from "../theme/findIconPath.js"
 
 // import loadCSS from "../core/load/loadCSS.js"

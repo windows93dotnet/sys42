@@ -1,7 +1,7 @@
 /* eslint-disable max-params */
-import Trait from "../class/Trait.js"
+import Trait from "../classes/Trait.js"
 import settings from "../../core/settings.js"
-import Dragger from "../class/Dragger.js"
+import Dragger from "../classes/Dragger.js"
 import setTemp from "../../fabric/dom/setTemp.js"
 import maxZIndex from "../../fabric/dom/maxZIndex.js"
 

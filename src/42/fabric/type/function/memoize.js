@@ -2,8 +2,8 @@
 // @thanks https://github.com/caiogondim/fast-memoize.js
 // @related https://github.com/medikoo/memoizee
 
-import LRU from "../../class/LRU.js"
-import Callable from "../../class/Callable.js"
+import LRU from "../../classes/LRU.js"
+import Callable from "../../classes/Callable.js"
 import mark from "../any/mark.js"
 import sdbm from "../string/sdbm.js"
 

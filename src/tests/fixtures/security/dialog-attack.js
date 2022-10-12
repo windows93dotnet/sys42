@@ -1,4 +1,4 @@
-import Component from "../../../42/ui/class/Component.js"
+import Component from "../../../42/ui/classes/Component.js"
 import rpc from "../../../42/core/ipc/rpc.js"
 import omit from "../../../42/fabric/type/object/omit.js"
 import dispatch from "../../../42/fabric/event/dispatch.js"

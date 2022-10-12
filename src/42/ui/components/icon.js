@@ -1,4 +1,4 @@
-import Component from "../class/Component.js"
+import Component from "../classes/Component.js"
 import parseFilename from "../../core/path/parseFilename.js"
 import themeManager from "../../os/managers/themeManager.js"
 

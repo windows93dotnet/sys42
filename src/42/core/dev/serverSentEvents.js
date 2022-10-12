@@ -1,6 +1,6 @@
 import configure from "../configure.js"
-import Emitter from "../../fabric/class/Emitter.js"
-import Canceller from "../../fabric/class/Canceller.js"
+import Emitter from "../../fabric/classes/Emitter.js"
+import Canceller from "../../fabric/classes/Canceller.js"
 
 const DEFAULTS = {
   withCredentials: false,

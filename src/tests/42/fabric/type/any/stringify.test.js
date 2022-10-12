@@ -1,7 +1,7 @@
 import test from "../../../../../42/test.js"
 import stringify from "../../../../../42/fabric/type/any/stringify.js"
 
-import Callable from "../../../../../42/fabric/class/Callable.js"
+import Callable from "../../../../../42/fabric/classes/Callable.js"
 // import resolve from "../../../42/type/json/resolve.js"
 
 function stringToArrayBuffer(string) {

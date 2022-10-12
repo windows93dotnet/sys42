@@ -1,5 +1,5 @@
 /* eslint-disable unicorn/no-this-assignment */
-import UI from "../../ui/class/UI.js"
+import UI from "../../ui/classes/UI.js"
 import preinstall from "../preinstall.js"
 import inIframe from "../../core/env/realm/inIframe.js"
 import getBasename from "../../core/path/core/getBasename.js"

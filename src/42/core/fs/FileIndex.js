@@ -1,4 +1,4 @@
-import Storable from "../../fabric/class/Storable.js"
+import Storable from "../../fabric/classes/Storable.js"
 import FileSystemError from "./FileSystemError.js"
 import configure from "../configure.js"
 import assertPath from "../../core/path/assertPath.js"

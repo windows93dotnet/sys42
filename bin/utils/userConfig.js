@@ -1,7 +1,7 @@
 import { lilconfig } from "lilconfig"
 
 import fs from "node:fs/promises"
-import CLI from "../class/CLI.js"
+import CLI from "../classes/CLI.js"
 import log, { Log } from "../../src/42/core/log.js"
 import normalizeConfig from "./userConfig/normalizeConfig.js"
 import normalizePaths from "./userConfig/normalizePaths.js"

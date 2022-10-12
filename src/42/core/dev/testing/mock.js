@@ -2,7 +2,7 @@
 
 import system from "../../../system.js"
 import ensureCurrentSuite from "./ensureCurrentSuite.js"
-import Mock from "./class/Mock.js"
+import Mock from "./classes/Mock.js"
 
 export default function mock(obj, decl) {
   ensureCurrentSuite()

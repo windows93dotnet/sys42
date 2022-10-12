@@ -1,4 +1,4 @@
-import Canceller from "../../fabric/class/Canceller.js"
+import Canceller from "../../fabric/classes/Canceller.js"
 import ensureElement from "../../fabric/dom/ensureElement.js"
 
 const { ELEMENT_NODE } = Node

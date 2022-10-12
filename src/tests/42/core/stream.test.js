@@ -1,6 +1,6 @@
 import test from "../../../42/test.js"
 import stream from "../../../42/core/stream.js"
-import { httpStream } from "../../../42/core/http.js"
+import http from "../../../42/core/http.js"
 
 test.serial("verify polyfills", async (t) => {
   t.timeout(1000)
@@ -76,7 +76,9 @@ test("readable", "tee()", async (t) => {
 test.serial("readable", "get()", async (t) => {
   t.timeout(1000)
   const actual = await stream.ws.collect(
-    httpStream("/tests/fixtures/stream/data.json").pipeThrough(stream.ts.text())
+    http
+      .source("/tests/fixtures/stream/data.json")
+      .pipeThrough(stream.ts.text())
   )
 
   const expected = `\
@@ -298,7 +300,8 @@ test.serial("ndjson", async (t) => {
     { foo: 17, bar: false, quux: true },
     { may: { include: "nested", objects: ["and", "arrays"] } },
   ]
-  await httpStream("/tests/fixtures/stream/data.ndjson")
+  await http
+    .source("/tests/fixtures/stream/data.ndjson")
     .pipeThrough(stream.ts.text())
     .pipeThrough(stream.ts.split(/(?:\r?\n)+/))
     .pipeThrough(stream.ts.json())

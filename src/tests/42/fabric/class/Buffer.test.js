@@ -1,4 +1,4 @@
-import Buffer from "../../../../42/fabric/class/Buffer.js"
+import Buffer from "../../../../42/fabric/classes/Buffer.js"
 import test from "../../../../42/test.js"
 
 function stringToBuffer(str) {

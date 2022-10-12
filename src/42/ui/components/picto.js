@@ -1,4 +1,4 @@
-import Component from "../class/Component.js"
+import Component from "../classes/Component.js"
 
 export class Picto extends Component {
   static definition = {

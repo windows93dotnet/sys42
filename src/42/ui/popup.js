@@ -4,7 +4,7 @@ import dispatch from "../fabric/event/dispatch.js"
 import maxZIndex from "../fabric/dom/maxZIndex.js"
 import on from "../fabric/event/on.js"
 import defer from "../fabric/type/promise/defer.js"
-import Canceller from "../fabric/class/Canceller.js"
+import Canceller from "../fabric/classes/Canceller.js"
 import focus from "../fabric/dom/focus.js"
 import queueTask from "../fabric/type/function/queueTask.js"
 

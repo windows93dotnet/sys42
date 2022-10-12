@@ -1,9 +1,9 @@
-import Assert from "./class/Assert.js"
+import Assert from "./classes/Assert.js"
 // import inFrontend from "../../env/runtime/inFrontend.js"
 // import generator from "../../type/generator.js"
 // import shrink from "../../type/shrink.js"
 // import parallel from "../../../fabric/type/promise/parallel.js"
-// import RandomCheck from "./class/RandomCheck.js"
+// import RandomCheck from "./classes/RandomCheck.js"
 import addUtilities from "./addUtilities.js"
 
 export default class ExecutionContext extends Assert {

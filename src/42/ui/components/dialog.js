@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import Component from "../class/Component.js"
+import Component from "../classes/Component.js"
 import rpc from "../../core/ipc/rpc.js"
 import omit from "../../fabric/type/object/omit.js"
 import dispatch from "../../fabric/event/dispatch.js"

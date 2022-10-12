@@ -1,5 +1,5 @@
-import Component from "../class/Component.js"
-import Resource from "../../fabric/class/Resource.js"
+import Component from "../classes/Component.js"
+import Resource from "../../fabric/classes/Resource.js"
 import create from "../create.js"
 import traverse from "../../fabric/type/object/traverse.js"
 import { forkDef } from "../normalize.js"

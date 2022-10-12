@@ -3,7 +3,7 @@
 import test from "../../../../42/test.js"
 
 import emittable from "../../../../42/fabric/traits/emittable.js"
-import Emitter from "../../../../42/fabric/class/Emitter.js"
+import Emitter from "../../../../42/fabric/classes/Emitter.js"
 
 test("emittable() return instance of Emitter", (t) => {
   const el = emittable()
