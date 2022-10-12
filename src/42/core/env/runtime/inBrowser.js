@@ -1,5 +1,5 @@
 import inWindow from "../realm/inWindow.js"
-import inStandalone from "./inStandalone.js"
+import inPWA from "./inPWA.js"
 import inAutomated from "./inAutomated.js"
 
-export default inWindow && !inStandalone && !inAutomated
+export default inWindow && !inPWA && !inAutomated

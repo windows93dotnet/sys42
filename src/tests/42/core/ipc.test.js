@@ -208,7 +208,7 @@ test.serial("realms", async (t, { decay, dest }) => {
     inElectron: false,
     inFrontend: true,
     inNode: false,
-    inStandalone: false,
+    inPWA: false,
   }
 
   const worker = {
@@ -219,7 +219,7 @@ test.serial("realms", async (t, { decay, dest }) => {
     inElectron: false,
     inFrontend: true,
     inNode: false,
-    inStandalone: false,
+    inPWA: false,
   }
 
   t.alike(env.runtime, view)
