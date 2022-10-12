@@ -5,13 +5,9 @@
 import defer from "../../fabric/type/promise/defer.js"
 import pick from "../../fabric/type/object/pick.js"
 import inOpaqueOrigin from "../../core/env/realm/inOpaqueOrigin.js"
-import inStandalone from "../../core/env/runtime/inStandalone.js"
+import inPWA from "../../core/env/runtime/inPWA.js"
 import fileTypesManager from "../fileTypesManager.js"
-// import ft from "../../fabric/constants/FILE_TYPES.js"
-
-// console.log(ft)
-
-// console.log(fileTypesManager.resolveMimetype("text/*"))
+import appCard from "../ui/appCard.js"
 
 const SHARED_MANIFEST_KEYS = ["description", "categories"]
 
@@ -30,7 +26,7 @@ export default async function preinstall(app) {
     id: `42-${app.name}`,
     scope: resolve("."),
     start_url: resolve("."),
-    display_override: ["window-controls-overlay", "standalone"],
+    display_override: ["window-controls-overlay", "minimal-ui"],
     display: "standalone",
     theme_color: window
       .getComputedStyle(document.documentElement)
@@ -70,8 +66,6 @@ export default async function preinstall(app) {
     // ],
   }
 
-  console.log(manifest.file_handlers)
-
   const manifestJSON = encodeURIComponent(JSON.stringify(manifest))
   const manifestURL = `data:application/manifest+json;name=app.webmanifest,${manifestJSON}`
 
@@ -102,22 +96,18 @@ export default async function preinstall(app) {
       .catch(deferred.reject)
   }
 
-  // if (inStandalone) window.resizeTo(400, 350)
+  // if (inPWA) window.resizeTo(400, 350)
   // console.log(globalThis.navigator.windowControlsOverlay.getTitlebarAreaRect())
 
-  if (!supportInstall || inStandalone) return false
+  if (!supportInstall || inPWA) return false
 
   // https://web.dev/customize-install/
 
-  window.addEventListener(
-    "beforeinstallprompt",
-    (e) => {
-      e.preventDefault()
-      deferred.resolve(e)
-      document.querySelector("#install")?.removeAttribute("disabled")
-    },
-    { once: true }
-  )
+  window.addEventListener("beforeinstallprompt", (e) => {
+    // e.preventDefault()
+    deferred.resolve(e)
+    document.querySelector("#install")?.removeAttribute("disabled")
+  })
 
   // // https://web.dev/get-installed-related-apps/
   // navigator.getInstalledRelatedApps().then((res) => {
@@ -143,29 +133,7 @@ export default async function preinstall(app) {
         content: {
           tag: ".panel.outset.pa-xl",
           content: [
-            {
-              tag: ".box-v.mb-xl",
-              content: [
-                { tag: "img.checkboard.inset", src: "{{icons/2/src}}" },
-                {
-                  tag: ".pa",
-                  content: [
-                    { tag: "h1.mt-0", content: "{{name}}" },
-                    { tag: "p.mt-0", content: "{{description}}" },
-                    {
-                      tag: ".d-flex.gap-sm",
-                      content: {
-                        scope: "categories",
-                        each: {
-                          tag: "span.pill",
-                          content: "{{titleCase(.)}}",
-                        },
-                      },
-                    },
-                  ],
-                },
-              ],
-            },
+            appCard(manifest),
             {
               tag: "button.w-full",
               id: "install",
@@ -175,7 +143,6 @@ export default async function preinstall(app) {
             },
           ],
         },
-        state: manifest,
       })
     })
     return true

@@ -8,12 +8,12 @@ class FileTypesManager extends ConfigFile {
   }
 
   resolveMimetype(mimetype, exts) {
-    const { type, subtypefull } = parseMimetype(mimetype)
+    const { type, subtype } = parseMimetype(mimetype)
 
     const out = {}
 
     if (type in this.value.mimetypes) {
-      if (subtypefull === "*") {
+      if (subtype === "*") {
         for (const key in this.value.mimetypes[type]) {
           if (Object.hasOwn(this.value.mimetypes[type], key)) {
             out[`${type}/${key}`] = [
@@ -22,10 +22,10 @@ class FileTypesManager extends ConfigFile {
             ]
           }
         }
-      } else if (subtypefull in this.value.mimetypes[type]) {
-        out[`${type}/${subtypefull}`] = [
+      } else if (subtype in this.value.mimetypes[type]) {
+        out[`${type}/${subtype}`] = [
           ...(exts ?? []),
-          ...this.value.mimetypes[type][subtypefull],
+          ...this.value.mimetypes[type][subtype],
         ]
       }
     }
