@@ -1,20 +1,13 @@
 import ConfigFile from "../classes/ConfigFile.js"
-import getPathInfos from "../../core/path/getPathInfos.js"
 import arrify from "../../fabric/type/any/arrify.js"
 import pick from "../../fabric/type/object/pick.js"
 import disk from "../../core/disk.js"
 import getDirname from "../../core/path/core/getDirname.js"
+import mimetypesManager from "./mimetypesManager.js"
 
 // TODO: check if rpc functions can be injecteds
 import "../../ui/popup.js"
 import "../../fabric/browser/openInNewTab.js"
-
-const DEFAULTS = {
-  defaultApps: {
-    mimetypes: {},
-    extensions: {},
-  },
-}
 
 const REGISTRY_KEYS = [
   "name",
@@ -27,94 +20,73 @@ const REGISTRY_KEYS = [
 
 const APP_CLASS_URL = new URL("../classes/App.js", import.meta.url).pathname
 
-function addMIMETypes({ defaultApps }, name, types) {
-  for (const { accept } of types) {
-    for (const [mime, exts] of Object.entries(accept)) {
-      defaultApps.mimetypes[mime] ??= []
-      defaultApps.mimetypes[mime].push(name)
-      for (const ext of exts) {
-        defaultApps.extensions[ext] ??= []
-        defaultApps.extensions[ext].push(name)
-      }
-    }
-  }
-}
-
 class AppsManager extends ConfigFile {
   async populate() {
-    // console.log(disk.glob("**/*.cmd.js"))
-
-    this.value.windows ??= {}
+    this.value ??= {}
 
     await Promise.all(
-      disk.glob("**/*.app.js").map((manifest) =>
-        import(/* @vite-ignore */ manifest).then((m) => {
-          const def = m.default
-          if (def?.decode?.types) {
-            addMIMETypes(this.value, def.name, def.decode.types)
-          }
-
-          this.value.windows[def.name] = pick(def, REGISTRY_KEYS)
-          this.value.windows[def.name].manifest = manifest
-        })
-      )
+      disk
+        .glob("**/*.app.js")
+        .map((manifestPath) => this.add(manifestPath, { save: false }))
     )
   }
 
-  async lookup(filename) {
-    await this.ready
+  async add(manifestPath, options) {
+    const manifest = await import(manifestPath) //
+      .then((m) => m.default)
 
-    const { extensions, mimetypes } = this.value.defaultApps
-    const out = []
-    const { ext, mimetype, mime } = getPathInfos(filename)
+    if (manifest?.decode?.types) {
+      for (const { accept } of manifest.decode.types) {
+        mimetypesManager.add(accept, manifest.name)
+      }
+    }
 
-    if (ext in extensions) out.push(...extensions[ext])
-    if (mimetype in mimetypes) out.push(...mimetypes[mimetype])
+    const out = pick(manifest, REGISTRY_KEYS)
+    out.manifest = manifestPath
 
-    const mimeGlob = mime.type + "/*"
-    if (mimeGlob in mimetypes) out.push(...mimetypes[mimeGlob])
+    this.value[manifest.name] = out
 
-    return out
+    if (options?.save !== false) return this.save()
   }
 
-  async open(filenames) {
+  async open(paths) {
     await this.ready
 
     const openers = {}
 
-    for (const filename of arrify(filenames)) {
-      const [appName] = await this.lookup(filename)
+    for (const path of arrify(paths)) {
+      const apps = mimetypesManager.getApps(path)
 
-      if (appName === undefined) {
-        // appName = "TextEdit"
-        console.log("No app available to open this type of file")
-        // dialog.alert("No app available to open this type of file")
-        // return
-        continue
+      if (apps?.length) {
+        openers[apps[0]] ??= []
+        openers[apps[0]].push(path)
+      } else {
+        import("../../ui/invocables/alert.js").then(({ default: alert }) =>
+          alert("No app available to open this type of file")
+        )
       }
-
-      openers[appName] ??= []
-      openers[appName].push(filename)
     }
 
-    for (const [appName, filenames] of Object.entries(openers)) {
-      this.exec(appName, filenames)
+    const entries = Object.entries(openers)
+
+    for (const [appName, paths] of entries) {
+      this.exec(appName, paths)
     }
   }
 
-  async exec(appName, files) {
+  async exec(appName, paths) {
     await this.ready
 
-    const app = this.value.windows[appName]
+    const app = this.value[appName]
 
     const dir = new URL(getDirname(app.manifest + "/"), location).href + "/"
 
-    files = files.map((path) => ({ path }))
+    paths = paths.map((path) => ({ path }))
 
     const dialog = await import("../../ui/components/dialog.js") //
       .then((m) => m.default)
 
-    const dialogConfig = { state: { $app: app, $files: files } }
+    const dialogConfig = { state: { $app: app, $files: paths } }
 
     const sandboxConfig = app.path
       ? { path: app.path }
@@ -124,7 +96,7 @@ import App from "${APP_CLASS_URL}"
 import manifest from "${app.manifest}"
 manifest.dir = "${dir}"
 manifest.state ??= {}
-manifest.state.$files = ${JSON.stringify(files)}
+manifest.state.$files = ${JSON.stringify(paths)}
 globalThis.app = await new App(manifest)
 `,
         }
@@ -142,7 +114,7 @@ globalThis.app = await new App(manifest)
   }
 }
 
-const appsManager = new AppsManager("apps.json", DEFAULTS)
+const appsManager = new AppsManager("apps.json")
 appsManager.init()
 
 export default appsManager

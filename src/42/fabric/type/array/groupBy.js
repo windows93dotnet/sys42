@@ -1,4 +1,4 @@
-export default (arr, fn, obj = Object.create(null)) => {
+export default function groupBy(arr, fn, obj = Object.create(null)) {
   if (typeof fn === "string") {
     const key = fn
     fn = (item) => item[key]

@@ -1,3 +1,4 @@
+/* eslint-disable max-depth */
 // @desc Serve resources with the proper media types (f.k.a. MIME types).
 // @thanks https://github.com/h5bp/server-configs-apache/blob/master/dist/.htaccess
 // @read https://www.iana.org/assignments/media-types/media-types.xhtml
@@ -15,26 +16,6 @@ https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguages
 
 [4] https://cbor.io/spec.html
 */
-
-const UTF8 = new Set([
-  "atom",
-  "bbaw",
-  "css",
-  "geojson",
-  "js",
-  "json",
-  "jsonld",
-  "manifest",
-  "rdf",
-  "rss",
-  "svg",
-  "topojson",
-  "vtt",
-  "webapp",
-  "webmanifest",
-  "xloc",
-  "xml",
-])
 
 const data = {
   mimetypes: {
@@ -114,38 +95,86 @@ const data = {
       "x-nfo": "nfo",
     },
   },
-
-  filenames: Object.fromEntries(
-    [
-      "about",
-      "authors",
-      "contributor",
-      "copying",
-      "license",
-      "readme",
-      "todo",
-    ].map((name) => [name, { mimetype: "text/plain", charset: "utf-8" }])
-  ),
-
-  extentions: {},
 }
+
+const UTF8 = {
+  application: [
+    "atom+xml",
+    "json",
+    "ld+json",
+    "manifest+json",
+    "rss+xml",
+    "vnd.geo+json",
+    "vnd.rim.location.xloc",
+    "x-bb-appworld",
+    "x-web-app-manifest+json",
+    "xml",
+  ],
+  image: [
+    "svg+xml", //
+  ],
+  text: [
+    "cache-manifest",
+    "calendar",
+    "css",
+    "html",
+    "javascript",
+    "markdown",
+    "plain",
+    "vcard",
+    "vnd.wap.wml",
+    "vtt",
+    "x-component",
+    "xml",
+  ],
+}
+
+export const extnames = {}
+export const basenames = {}
 
 for (const type in data.mimetypes) {
   if (Object.hasOwn(data.mimetypes, type)) {
     for (const subtype in data.mimetypes[type]) {
       if (Object.hasOwn(data.mimetypes[type], subtype)) {
-        data.mimetypes[type][subtype] = data.mimetypes[type][subtype]
-          .split(" ")
-          .map((ext) => {
-            const obj = { mimetype: `${type}/${subtype}` }
-            if (type === "text" || UTF8.has(ext)) obj.charset = "utf-8"
-            const x = `.${ext}`
-            data.extentions[x] = obj
-            return x
-          })
+        const infos = {
+          mimetype: `${type}/${subtype}`,
+          extnames: data.mimetypes[type][subtype]
+            .split(" ")
+            .map((x) => `.${x}`),
+        }
+
+        if (UTF8[type]?.includes(subtype)) infos.charset = "utf-8"
+        data.mimetypes[type][subtype] = infos
+        for (const ext of infos.extnames) extnames[ext] = infos
       }
     }
   }
+}
+
+const a = [
+  "manifest.json", //
+]
+
+data.mimetypes.application["manifest+json"].basenames = a
+
+for (const filename of a) {
+  basenames[filename] = data.mimetypes.application["manifest+json"]
+}
+
+const b = [
+  "about",
+  "authors",
+  "contributor",
+  "copying",
+  "license",
+  "readme",
+  "todo",
+]
+
+data.mimetypes.text.plain.basenames = b
+
+for (const filename of b) {
+  basenames[filename] = data.mimetypes.text.plain
 }
 
 export default data

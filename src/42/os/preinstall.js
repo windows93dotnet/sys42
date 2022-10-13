@@ -6,7 +6,7 @@ import defer from "../fabric/type/promise/defer.js"
 import pick from "../fabric/type/object/pick.js"
 import inOpaqueOrigin from "../core/env/realm/inOpaqueOrigin.js"
 import inPWA from "../core/env/runtime/inPWA.js"
-import fileTypesManager from "./managers/mimetypesManager.js"
+import mimetypesManager from "./managers/mimetypesManager.js"
 import appCard from "./blocks/appCard.js"
 
 const SHARED_MANIFEST_KEYS = ["description", "categories"]
@@ -52,9 +52,12 @@ export default async function preinstall(app) {
     ...(app.decode?.types
       ? {
           file_handlers: app.decode.types.map((type) => {
-            type.action ??= resolve(".")
-            type.accept = fileTypesManager.resolve(type.accept)
-            return type
+            const out = {}
+            out.action = type.action ?? resolve(".")
+            out.accept = mimetypesManager.resolve(type.accept)
+            if (type.icons) out.icons = type.icons
+            if (type.launch_type) out.launch_type = type.launch_type
+            return out
           }),
         }
       : {}),

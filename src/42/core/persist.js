@@ -1,44 +1,63 @@
 import fs from "./fs.js"
+import dispatch from "../fabric/event/dispatch.js"
 import systemPath from "./fs/systemPath.js"
 import disk from "./disk.js"
+import getExtname from "./path/core/getExtname.js"
 
 if ("requestIdleCallback" in globalThis === false) {
   await import("./env/polyfills/globalThis.requestIdleCallback.js")
 }
 
+const VALID_TYPES = new Set([".json", ".json5", ".cbor"])
+
 const pending = new Map()
 
 const persist = {}
 
+persist.ensureType = (path) => {
+  const ext = getExtname(path)
+  if (!VALID_TYPES.has(ext)) {
+    throw new Error(
+      `Data file must have a .json, .json5 or .cbor extension: ${ext}`
+    )
+  }
+
+  return ext.slice(1)
+}
+
 persist.has = (path) => disk.has(systemPath(path))
 
-persist.get = async (path) => fs.readJSON(systemPath(path))
+persist.watch = (path, fn) => disk.watch(path, fn)
 
-persist.set = (path, data) =>
-  new Promise((resolve, reject) => {
-    if (pending.has(path)) {
-      const fn = pending.get(path)
-      cancelIdleCallback(fn.id)
-      pending.delete(path)
-    }
+persist.get = async (path) =>
+  fs.read[persist.ensureType(path)](systemPath(path))
 
+persist.set = (path, data) => {
+  if (pending.has(path)) {
+    const fn = pending.get(path)
+    cancelIdleCallback(fn.id)
+    pending.delete(path)
+  }
+
+  return new Promise((resolve) => {
     const fn = async () => {
       try {
-        console.log(path, "writeJSON")
-        await fs.writeJSON(systemPath(path), data)
+        await fs.write[persist.ensureType(path)](systemPath(path), data)
       } catch (err) {
-        reject(err)
+        dispatch(globalThis, err)
+        resolve(false)
       }
 
       pending.delete(path)
       if (isListening && pending.size === 0) forget()
-      resolve()
+      resolve(true)
     }
 
     if (!isListening) listen()
     fn.id = requestIdleCallback(fn)
     pending.set(path, fn)
   })
+}
 
 export default persist
 
