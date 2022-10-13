@@ -3,7 +3,7 @@ import assertPath from "./assertPath.js"
 import pick from "../../fabric/type/object/pick.js"
 import parseMimetype from "../../fabric/type/file/parseMimetype.js"
 import parsePath from "./core/parsePath.js"
-import FILE_TYPES from "../../fabric/constants/FILE_TYPES.js"
+import { extnames, basenames } from "../../fabric/constants/FILE_TYPES.js"
 
 const urlKeys = [
   "origin",
@@ -53,12 +53,11 @@ const getPathInfos = memoize((filename, options) => {
   if (out.isDir) {
     out.mimetype = "inode/directory"
   } else {
-    const extInfos =
-      FILE_TYPES.extentions[out.ext] ??
-      FILE_TYPES.filenames[out.stem.toLowerCase()]
-    if (extInfos) {
-      out.charset = extInfos.charset
-      out.mimetype = extInfos.mimetype
+    const infos =
+      extnames[out.ext.toLowerCase()] ?? basenames[out.base.toLowerCase()]
+    if (infos) {
+      out.charset = infos.charset
+      out.mimetype = infos.mimetype
     } else {
       out.mimetype = "application/octet-stream"
     }

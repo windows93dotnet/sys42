@@ -1,41 +1,31 @@
 import system from "../../system.js"
-import fs from "../../core/fs.js"
-import disk from "../../core/disk.js"
 import defer from "../../fabric/type/promise/defer.js"
-import getExtname from "../../core/path/core/getExtname.js"
 import getBasename from "../../core/path/core/getBasename.js"
 import configure from "../../core/configure.js"
-
-const VALID_TYPES = new Set([".json", ".json5", ".cbor"])
+import persist from "../../core/persist.js"
+import dispatch from "../../fabric/event/dispatch.js"
 
 export default class ConfigFile {
   constructor(filename, defaults) {
-    this.filename = `${system.HOME}/${getBasename(filename)}`
-    const ext = getExtname(this.filename)
-    if (!VALID_TYPES.has(ext)) {
-      throw new Error(
-        `Config file must have a .json, .json5 or .cbor extension: ${ext}`
-      )
-    }
-
-    this.type = ext.slice(1)
+    this.filename = `$HOME/${getBasename(filename)}`
+    persist.ensureType(filename)
     this.defaults = configure({ version: -1 * Date.now() }, defaults)
   }
 
   async #init() {
-    await (system.DEV !== true && disk.has(this.filename)
+    await (system.DEV !== true && persist.has(this.filename)
       ? this.load()
       : this.reset())
 
-    // fs.on(this.name, async () => {
-    //   this.ready = defer()
-    //   await this.open()
-    //   this.ready.resolve()
-    // })
+    persist.watch(this.filename, async () => {
+      this.ready = defer()
+      await this.load()
+      this.ready.resolve()
+    })
   }
 
   async init(...args) {
-    this.ready ??= defer()
+    this.ready = defer()
     try {
       await this.#init(...args)
       this.ready.resolve()
@@ -46,12 +36,19 @@ export default class ConfigFile {
   }
 
   async load() {
-    this.value = await fs.read[this.type](this.filename)
+    try {
+      this.value = await persist.get(this.filename)
+    } catch (err) {
+      // never let corrupt file index failing a ConfigFile
+      dispatch(globalThis, err)
+      await this.reset()
+    }
+
     if (this.defaults.version > this.value.version) await this.reset()
   }
 
   async save() {
-    await fs.write[this.type](this.filename, this.value)
+    await persist.set(this.filename, this.value)
   }
 
   async update(value) {

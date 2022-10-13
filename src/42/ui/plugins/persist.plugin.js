@@ -40,8 +40,7 @@ export default async function persistPlugin(ctx) {
     "update",
     debounce(async () => {
       config.saved = false
-      await persist.set(persistPath, ctx.reactive.data)
-      config.saved = true
+      config.saved = await persist.set(persistPath, ctx.reactive.data)
     })
   )
 }

@@ -10,11 +10,14 @@
 </script>
 
 <script type="module">
-  import system from "../42/os.js"
+  import os from "../42/os.js"
   import ui from "../42/ui.js"
   import engage from "../42/os/engage.js"
 
-  system.desktop = await ui({
+  // import disk from "../42/core/disk.js"
+  // await disk.reinstall()
+
+  os.desktop = await ui({
     tag: "body.box-fit.box-h._debug",
     content: [
       {
@@ -65,8 +68,8 @@
     },
   })
 
-  // engage.openFolder("/users/")
+  engage.openFolder("/users/anonymous/")
 
-  import puppet from "../42/core/dev/puppet.js"
-  await puppet('ui-icon[path="/style.css"]').dblclick()
+  // import puppet from "../42/core/dev/puppet.js"
+  // await puppet('ui-icon[path="/style.css"]').dblclick()
 </script>

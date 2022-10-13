@@ -1,7 +1,6 @@
 export default {
   name: "TextEdit",
   command: "textedit",
-
   categories: ["utilities", "productivity", "development"],
   description: "A simple text editor using textarea",
 
@@ -9,12 +8,12 @@ export default {
     types: [
       {
         description: "Text",
-        accept: {
-          "text/*": [],
-          "application/json": [".yo"],
-          "application/rss+xml": [],
-          "application/xml": [],
-        },
+        accept: [
+          "text/*",
+          "application/json",
+          "application/rss+xml",
+          "application/xml",
+        ],
       },
     ],
     // excludeAcceptAllOption: true,

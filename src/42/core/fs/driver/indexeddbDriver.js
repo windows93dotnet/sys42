@@ -1,10 +1,10 @@
 import BrowserDriver from "../BrowserDriver.js"
 import Database from "../../db/Database.js"
 
-const db = new Database("filestore", { stores: { files: {} } })
+const db = new Database("fs")
 
 class IndexedDBDriver extends BrowserDriver {
-  static store = db.files
+  static store = db.store
   static mask = 0x13
 }
 
