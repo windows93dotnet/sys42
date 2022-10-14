@@ -6,9 +6,13 @@ import getBasename from "../../core/path/core/getBasename.js"
 import groupBy from "../../fabric/type/array/groupBy.js"
 
 class MimeypesManager extends ConfigFile {
-  async init() {
-    await super.init()
-    this.mimetypes = this.value.mimetypes
+  async populate() {
+    this.value = await import("../../fabric/constants/FILE_TYPES.js") //
+      .then(({ mimetypes }) => mimetypes)
+  }
+
+  async postload() {
+    this.mimetypes = this.value
     this.extnames = Object.create(null)
     this.basenames = Object.create(null)
     for (const type in this.mimetypes) {
@@ -22,11 +26,6 @@ class MimeypesManager extends ConfigFile {
         }
       }
     }
-  }
-
-  async populate() {
-    this.value = await import("../../fabric/constants/FILE_TYPES.js") //
-      .then((m) => m.default)
   }
 
   #resolveMimetype(mimetype, exts, options) {

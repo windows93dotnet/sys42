@@ -7,17 +7,17 @@ import dispatch from "../../fabric/event/dispatch.js"
 
 export default class ConfigFile {
   constructor(filename, defaults) {
-    this.filename = `$HOME/${getBasename(filename)}`
+    this.path = `$HOME/${getBasename(filename)}`
     persist.ensureType(filename)
     this.defaults = configure({ version: -1 * Date.now() }, defaults)
   }
 
   async #init() {
-    await (system.DEV !== true && persist.has(this.filename)
+    await (system.DEV !== true && persist.has(this.path)
       ? this.load()
       : this.reset())
 
-    persist.watch(this.filename, async () => {
+    persist.watch(this.path, async () => {
       this.ready = defer()
       await this.load()
       this.ready.resolve()
@@ -37,18 +37,23 @@ export default class ConfigFile {
 
   async load() {
     try {
-      this.value = await persist.get(this.filename)
+      this.value = await persist.get(this.path)
     } catch (err) {
       // never let corrupt file index failing a ConfigFile
       dispatch(globalThis, err)
       await this.reset()
     }
 
-    if (this.defaults.version > this.value.version) await this.reset()
+    if (this.defaults.version > this.value.version) {
+      if (this.upgrade) this.value = await this.upgrade(this.value)
+      else await this.reset()
+    }
+
+    await this.postload()
   }
 
   async save() {
-    await persist.set(this.filename, this.value)
+    await persist.set(this.path, this.value)
   }
 
   async update(value) {
@@ -58,10 +63,12 @@ export default class ConfigFile {
   }
 
   async populate() {}
+  async postload() {}
 
   async reset() {
     this.value = this.defaults
     await this.populate()
+    await this.postload()
     await this.save()
   }
 }
