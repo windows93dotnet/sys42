@@ -119,7 +119,7 @@
         async click() {
           const p = progress(100, { _icon: "error" })
           const state = await p.state
-          state.value = 0.01
+          state.value = 30
           state.description = "0/1"
         },
       },
@@ -128,7 +128,9 @@
         label: "Progress as TransformStream",
         async click() {
           http
-            .source("../../tests/fixtures/stream/html_standard.html.gz")
+            .source("../../tests/fixtures/stream/html_standard.html.gz", {
+              cors: "no-cors",
+            })
             .size((total, rs) => {
               rs.pipeThrough(stream.ts.cut(10_000))
                 .pipeThrough(stream.ts.pressure(100))
@@ -186,9 +188,7 @@
   })
 
   import puppet from "../../42/core/dev/puppet.js"
-  // import sleep from "../../42/fabric/type/promise/sleep.js"
-  await puppet("button:nth-of-type(4)").click()
-  // await sleep(500)
-  // console.log(document.querySelector('button[label="Save"]'))
-  // await puppet('button[label="Save"]').click()
+  await puppet("button:nth-of-type(10)").click()
+  // await puppet("button:nth-of-type(11)").click()
+  // await puppet("button:nth-of-type(4)").click()
 </script>

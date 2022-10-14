@@ -203,9 +203,9 @@ export default class Logger extends Callable {
     const tokens = parseLogTemplate(res)
     const state = { 0: this.getStyleChain(this.getMainStyles(entries)) }
 
-    for (const { type, buffer, nested } of tokens) {
-      if (type === "text") add(state[nested].chain(buffer))
-      else state[nested] = this.getStyleChain(state[nested - 1].styles, buffer)
+    for (const { type, content, nested } of tokens) {
+      if (type === "text") add(state[nested].chain(content))
+      else state[nested] = this.getStyleChain(state[nested - 1].styles, content)
     }
   }
 }

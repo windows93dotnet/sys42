@@ -169,13 +169,14 @@ export const makeStream = (requestMethod, withBody = true) =>
         requestMethod(url, readable, ...rest).then(cb)
         return writable
       }
-    : (url, { queuingStrategy, onheaders, onsize, signal } = {}, ...rest) => {
+    : (url, options, ...rest) => {
+        let { queuingStrategy, onheaders, onsize } = options ?? {}
         let reader
         const rs = new ReadableStream(
           {
             async pull(controller) {
               if (!reader) {
-                const res = await requestMethod(url, { signal }, ...rest)
+                const res = await requestMethod(url, options, ...rest)
                 onheaders?.(res.headers, rs)
                 onsize?.(Number(res.headers.get("content-length")), rs)
                 reader = res.body.getReader()

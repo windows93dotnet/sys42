@@ -10,12 +10,12 @@ export function formatStyle(color, text) {
 export function formatLog(tokens) {
   const out = document.createDocumentFragment()
   let span = document.createElement("span")
-  for (const { type, buffer } of tokens) {
+  for (const { type, content } of tokens) {
     if (type === "style") {
       out.append(span)
-      span = formatStyle(buffer)
+      span = formatStyle(content)
     } else {
-      span.append(buffer)
+      span.append(content)
     }
   }
 
