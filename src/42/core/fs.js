@@ -15,8 +15,8 @@ const UTF8 = "utf-8"
 
 const DEFAULTS = {
   // places: { "/": "indexeddb" },
-  // places: { "/": "localstorage" },
-  places: { "/": "memory" },
+  places: { "/": "localstorage" },
+  // places: { "/": "memory" },
 }
 
 // "/var/": "localstorage",
