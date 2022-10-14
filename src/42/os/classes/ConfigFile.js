@@ -1,3 +1,4 @@
+import inTop from "../../core/env/realm/inTop.js"
 import system from "../../system.js"
 import defer from "../../fabric/type/promise/defer.js"
 import getBasename from "../../core/path/core/getBasename.js"
@@ -13,9 +14,13 @@ export default class ConfigFile {
   }
 
   async #init() {
-    await (system.DEV !== true && persist.has(this.path)
-      ? this.load()
-      : this.reset())
+    if (inTop) {
+      await (system.DEV !== true && persist.has(this.path)
+        ? this.load()
+        : this.reset())
+    } else {
+      await this.load()
+    }
 
     persist.watch(this.path, async () => {
       this.ready = defer()
@@ -39,7 +44,7 @@ export default class ConfigFile {
     try {
       this.value = await persist.get(this.path)
     } catch (err) {
-      // never let corrupt file index failing a ConfigFile
+      // never let a corrupt file fail a ConfigFile
       dispatch(globalThis, err)
       await this.reset()
     }
@@ -53,22 +58,21 @@ export default class ConfigFile {
   }
 
   async save() {
-    await persist.set(this.path, this.value)
+    return persist.set(this.path, this.value)
   }
 
   async update(value) {
     if (typeof value === "function") this.value = await value(this.value)
     else Object.assign(this.value, value)
-    await this.save()
+    return this.save()
   }
 
   async populate() {}
   async postload() {}
 
   async reset() {
-    this.value = this.defaults
-    await this.populate()
+    this.value = configure(this.defaults, await this.populate())
     await this.postload()
-    await this.save()
+    return this.save()
   }
 }

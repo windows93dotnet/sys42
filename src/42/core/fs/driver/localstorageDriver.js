@@ -15,6 +15,7 @@ class LocalStorageDriver extends BrowserDriver {
     },
     get(id) {
       const data = localStorage.getItem(id)
+      if (data === null) return
       return data.startsWith("42_BASE64:")
         ? BrowserDriver.toFile([base64.toArrayBuffer(data.slice(10))])
         : BrowserDriver.toFile([data])
