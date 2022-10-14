@@ -7,7 +7,7 @@ import groupBy from "../../fabric/type/array/groupBy.js"
 
 class MimeypesManager extends ConfigFile {
   async populate() {
-    this.value = await import("../../fabric/constants/FILE_TYPES.js") //
+    return import("../../fabric/constants/FILE_TYPES.js") //
       .then(({ mimetypes }) => mimetypes)
   }
 
@@ -39,6 +39,7 @@ class MimeypesManager extends ConfigFile {
           out[`${type}/*`] = [...(exts ?? [])]
         } else {
           for (const key in this.mimetypes[type]) {
+            if (key === "*") continue
             if (Object.hasOwn(this.mimetypes[type], key)) {
               out[`${type}/${key}`] = [
                 ...(exts ?? []),
@@ -58,7 +59,7 @@ class MimeypesManager extends ConfigFile {
     return out
   }
 
-  add(mimetypes, appName) {
+  async add(mimetypes, appName) {
     mimetypes = this.resolve(mimetypes, { keepGlob: true })
 
     for (const mimetype in mimetypes) {
@@ -75,7 +76,7 @@ class MimeypesManager extends ConfigFile {
 
         if (appName) {
           target.apps ??= []
-          target.apps.unshift(appName) // add latest app as default
+          if (!target.apps.includes(appName)) target.apps.unshift(appName) // add latest app as default
         }
 
         if (extnames) {

@@ -22,13 +22,15 @@ const APP_CLASS_URL = new URL("../classes/App.js", import.meta.url).pathname
 
 class AppsManager extends ConfigFile {
   async populate() {
-    this.value ??= {}
+    this.value = {}
 
     await Promise.all(
       disk
         .glob("**/*.app.js")
         .map((manifestPath) => this.add(manifestPath, { save: false }))
     )
+
+    return this.value
   }
 
   async add(manifestPath, options) {
@@ -36,9 +38,12 @@ class AppsManager extends ConfigFile {
       .then((m) => m.default)
 
     if (manifest?.decode?.types) {
+      const undones = []
       for (const { accept } of manifest.decode.types) {
-        mimetypesManager.add(accept, manifest.name)
+        undones.push(mimetypesManager.add(accept, manifest.name))
       }
+
+      await Promise.all(undones)
     }
 
     const out = pick(manifest, REGISTRY_KEYS)

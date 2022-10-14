@@ -35,16 +35,14 @@ persist.get = async (path) =>
 
 persist.set = (path, data) => {
   if (pending.has(path)) {
-    const fn = pending.get(path)
-    cancelIdleCallback(fn.id)
+    const { id, resolve } = pending.get(path)
+    cancelIdleCallback(id)
+    resolve(false)
     pending.delete(path)
   }
 
   return new Promise((resolve) => {
     const fn = async () => {
-      pending.delete(path)
-      if (isListening && pending.size === 0) forget()
-
       try {
         await fs.write[persist.ensureType(path)](systemPath(path), data)
       } catch (err) {
@@ -53,14 +51,14 @@ persist.set = (path, data) => {
         return
       }
 
-      // pending.delete(path)
-      // if (isListening && pending.size === 0) forget()
+      pending.delete(path)
+      if (isListening && pending.size === 0) forget()
       resolve(true)
     }
 
     if (!isListening) listen()
-    fn.id = requestIdleCallback(fn)
-    pending.set(path, fn)
+    const id = requestIdleCallback(fn)
+    pending.set(path, { id, resolve })
   })
 }
 
