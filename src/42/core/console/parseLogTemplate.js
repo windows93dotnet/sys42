@@ -1,6 +1,6 @@
 export default function parseLogTemplate(source) {
   const tokens = []
-  let buffer = ""
+  let content = ""
   let current = 0
 
   let type = "text"
@@ -8,9 +8,9 @@ export default function parseLogTemplate(source) {
   let lastCharEscaped = false
 
   const flush = () => {
-    if (buffer) {
-      tokens.push({ type, buffer, nested })
-      buffer = ""
+    if (content) {
+      tokens.push({ type, content, nested })
+      content = ""
     }
   }
 
@@ -25,14 +25,14 @@ export default function parseLogTemplate(source) {
     if (char === "\\") {
       lastCharEscaped = true
       const nextChar = source[current + 1]
-      if (nextChar !== "{" && nextChar !== "}") buffer += char
+      if (nextChar !== "{" && nextChar !== "}") content += char
       current++
       continue
     }
 
     if (lastCharEscaped) {
       lastCharEscaped = false
-      buffer += char
+      content += char
       current++
       continue
     }
@@ -60,7 +60,7 @@ export default function parseLogTemplate(source) {
       continue
     }
 
-    buffer += char
+    content += char
     current++
   }
 

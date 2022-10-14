@@ -17,13 +17,13 @@ export default async function alert(message = "", options) {
     options.label ??= error.name
     message = options.message ?? error.message
     if (error.stack && error.stack !== error.message) {
-      const [logHTML, formated] = await Promise.all([
-        import("../../core/console/logHTML.js") //
+      const [logAsContent, formated] = await Promise.all([
+        import("../../core/console/logAsContent.js") //
           .then((m) => m.default),
         import("../../core/console/formats/formatError.js") //
           .then((m) => m.default(error, options.formatError)),
       ])
-      const content = logHTML(formated)
+      const content = logAsContent(formated)
       const sampId = uid()
       const btnId = uid()
       options.dialog ??= {}

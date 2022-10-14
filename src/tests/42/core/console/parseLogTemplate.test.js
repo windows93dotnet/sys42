@@ -8,78 +8,78 @@ test.tasks(
     task({
       input: "{bold Hello, {cyan World!} This is a} test. {green Woo!}",
       expected: [
-        { type: "style", buffer: "bold", nested: 1 },
-        { type: "text", buffer: "Hello, ", nested: 1 },
-        { type: "style", buffer: "cyan", nested: 2 },
-        { type: "text", buffer: "World!", nested: 2 },
-        { type: "text", buffer: " This is a", nested: 1 },
-        { type: "text", buffer: " test. ", nested: 0 },
-        { type: "style", buffer: "green", nested: 1 },
-        { type: "text", buffer: "Woo!", nested: 1 },
+        { type: "style", content: "bold", nested: 1 },
+        { type: "text", content: "Hello, ", nested: 1 },
+        { type: "style", content: "cyan", nested: 2 },
+        { type: "text", content: "World!", nested: 2 },
+        { type: "text", content: " This is a", nested: 1 },
+        { type: "text", content: " test. ", nested: 0 },
+        { type: "style", content: "green", nested: 1 },
+        { type: "text", content: "Woo!", nested: 1 },
       ],
     }),
 
     task({
       input: "a {b}",
       expected: [
-        { type: "text", buffer: "a {b}", nested: 0 }, //
+        { type: "text", content: "a {b}", nested: 0 }, //
       ],
     }),
 
     task({
       input: "{a}",
       expected: [
-        { type: "text", buffer: "{a}", nested: 0 }, //
+        { type: "text", content: "{a}", nested: 0 }, //
       ],
     }),
 
     task({
       input: "{ a }",
       expected: [
-        { type: "text", buffer: "{ a }", nested: 0 }, //
+        { type: "text", content: "{ a }", nested: 0 }, //
       ],
     }),
 
     task({
       input: "{abc }",
       expected: [
-        { type: "style", buffer: "abc", nested: 1 }, //
+        { type: "style", content: "abc", nested: 1 }, //
       ],
     }),
 
     task({
       input: "{abc  }",
       expected: [
-        { type: "style", buffer: "abc", nested: 1 }, //
-        { type: "text", buffer: " ", nested: 1 }, //
+        { type: "style", content: "abc", nested: 1 }, //
+        { type: "text", content: " ", nested: 1 }, //
       ],
     }),
 
     task({
       input: "{ a:abc }",
       expected: [
-        { type: "text", buffer: "{ a:abc }", nested: 0 }, //
+        { type: "text", content: "{ a:abc }", nested: 0 }, //
       ],
     }),
 
     task({
       input: "a \\{f00 c\\}",
       expected: [
-        { type: "text", buffer: "a {f00 c}", nested: 0 }, //
+        { type: "text", content: "a {f00 c}", nested: 0 }, //
       ],
     }),
 
     task({
       input: "a \\\\{f00 c\\\\}",
       expected: [
-        { type: "text", buffer: "a \\{f00 c\\}", nested: 0 }, //
+        { type: "text", content: "a \\{f00 c\\}", nested: 0 }, //
       ],
     }),
 
     task({
       input: "function() {console.log(' ')}",
       expected: [
-        { type: "text", buffer: "function() {console.log(' ')}", nested: 0 },
+        { type: "text", content: "function() {console.log(' ')}", nested: 0 },
       ],
     }),
   ],
