@@ -17,83 +17,83 @@ https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguages
 [4] https://cbor.io/spec.html
 */
 
-const data = {
-  mimetypes: {
-    // Data interchange
-    application: {
-      "atom+xml": "atom",
-      "cbor": "cbor", // [4]
-      "json": "json map topojson",
-      "json5": "json5",
-      "ld+json": "jsonld",
-      "manifest+json": "webmanifest",
-      "msgpack": "msp msgpack",
-      "rss+xml": "rss",
-      "vnd.geo+json": "geojson",
-      "vnd.ms-fontobject": "eot", // [1]
-      "webbundle": "wbn",
-      "x-ndjson": "ndjson",
-      "x-web-app-manifest+json": "webapp",
-      "xml": "rdf xml",
-      "xslt+xml": "xslt",
+export const extnames = {}
+export const basenames = {}
+export const mimetypes = {
+  // Data interchange
+  application: {
+    "atom+xml": "atom",
+    "cbor": "cbor", // [4]
+    "json": "json map topojson",
+    "json5": "json5",
+    "ld+json": "jsonld",
+    "manifest+json": "webmanifest",
+    "msgpack": "msp msgpack",
+    "rss+xml": "rss",
+    "vnd.geo+json": "geojson",
+    "vnd.ms-fontobject": "eot", // [1]
+    "webbundle": "wbn",
+    "x-ndjson": "ndjson",
+    "x-web-app-manifest+json": "webapp",
+    "xml": "rdf xml",
+    "xslt+xml": "xslt",
 
-      // Manifest files
-      "octet-stream": "safariextz",
-      "x-bb-appworld": "bbaw",
-      "x-chrome-extension": "crx",
-      "x-opera-extension": "oex",
-      "x-xpinstall": "xpi",
-    },
+    // Manifest files
+    "octet-stream": "safariextz",
+    "x-bb-appworld": "bbaw",
+    "x-chrome-extension": "crx",
+    "x-opera-extension": "oex",
+    "x-xpinstall": "xpi",
+  },
 
-    // Web fonts
-    font: {
-      collection: "ttc",
-      otf: "otf",
-      ttf: "ttf",
-      woff: "woff",
-      woff2: "woff2",
-    },
+  // Web fonts
+  font: {
+    collection: "ttc",
+    otf: "otf",
+    ttf: "ttf",
+    woff: "woff",
+    woff2: "woff2",
+  },
 
-    // Media files
-    audio: {
-      flac: "flac",
-      mp4: "f4a f4b m4a",
-      mpeg: "mp3",
-      ogg: "oga ogg opus",
-    },
-    video: {
-      "mp4": "f4v f4p m4v mp4 mp4v mpg4",
-      "ogg": "ogv",
-      "webm": "webm",
-      "x-flv": "flv",
-    },
-    image: {
-      "bmp": "bmp",
-      "gif": "gif",
-      "jpeg": "jpeg jpg jpe",
-      "png": "png",
-      "svg+xml": "svg svgz",
-      "webp": "webp",
-      "x-icon": "cur ico", // [2]
-    },
-    text: {
-      "cache-manifest": "manifest mf appcache",
-      "calendar": "ics ifb",
-      "css": "css",
-      "csv": "csv",
-      "html": "html htm xhtml",
-      "javascript": "js mjs", // [3]
-      "php": "php",
-      "plain": "txt text conf log me faq",
-      "tab-separated-values": "tsv",
-      "vcard": "vcard vcf",
-      "vnd.rim.location.xloc": "xloc",
-      "vtt": "vtt",
-      "x-ansi": "ans",
-      "x-component": "htc",
-      "x-markdown": "md markdown mkd mdown",
-      "x-nfo": "nfo",
-    },
+  // Media files
+  audio: {
+    flac: "flac",
+    mp4: "f4a f4b m4a",
+    mpeg: "mp3",
+    ogg: "oga ogg opus",
+  },
+  video: {
+    "mp4": "f4v f4p m4v mp4 mp4v mpg4",
+    "ogg": "ogv",
+    "webm": "webm",
+    "x-flv": "flv",
+  },
+  image: {
+    "bmp": "bmp",
+    "gif": "gif",
+    "jpeg": "jpeg jpg jpe",
+    "png": "png",
+    "svg+xml": "svg svgz",
+    "webp": "webp",
+    "x-icon": "cur ico", // [2]
+  },
+  text: {
+    "cache-manifest": "manifest mf appcache",
+    "calendar": "ics ifb",
+    "css": "css",
+    "csv": "csv",
+    "html": "html htm xhtml",
+    "javascript": "js mjs", // [3]
+    "php": "php",
+    "plain": "txt text conf log me faq",
+    "tab-separated-values": "tsv",
+    "vcard": "vcard vcf",
+    "vnd.rim.location.xloc": "xloc",
+    "vtt": "vtt",
+    "x-ansi": "ans",
+    "x-component": "htc",
+    "x-markdown": "md markdown mkd mdown",
+    "x-nfo": "nfo",
   },
 }
 
@@ -129,22 +129,17 @@ const UTF8 = {
   ],
 }
 
-export const extnames = {}
-export const basenames = {}
-
-for (const type in data.mimetypes) {
-  if (Object.hasOwn(data.mimetypes, type)) {
-    for (const subtype in data.mimetypes[type]) {
-      if (Object.hasOwn(data.mimetypes[type], subtype)) {
+for (const type in mimetypes) {
+  if (Object.hasOwn(mimetypes, type)) {
+    for (const subtype in mimetypes[type]) {
+      if (Object.hasOwn(mimetypes[type], subtype)) {
         const infos = {
           mimetype: `${type}/${subtype}`,
-          extnames: data.mimetypes[type][subtype]
-            .split(" ")
-            .map((x) => `.${x}`),
+          extnames: mimetypes[type][subtype].split(" ").map((x) => `.${x}`),
         }
 
         if (UTF8[type]?.includes(subtype)) infos.charset = "utf-8"
-        data.mimetypes[type][subtype] = infos
+        mimetypes[type][subtype] = infos
         for (const ext of infos.extnames) extnames[ext] = infos
       }
     }
@@ -155,10 +150,10 @@ const a = [
   "manifest.json", //
 ]
 
-data.mimetypes.application["manifest+json"].basenames = a
+mimetypes.application["manifest+json"].basenames = a
 
 for (const filename of a) {
-  basenames[filename] = data.mimetypes.application["manifest+json"]
+  basenames[filename] = mimetypes.application["manifest+json"]
 }
 
 const b = [
@@ -171,10 +166,10 @@ const b = [
   "todo",
 ]
 
-data.mimetypes.text.plain.basenames = b
+mimetypes.text.plain.basenames = b
 
 for (const filename of b) {
-  basenames[filename] = data.mimetypes.text.plain
+  basenames[filename] = mimetypes.text.plain
 }
 
-export default data
+export default { mimetypes, extnames, basenames }

@@ -13,6 +13,7 @@ const VALID_TYPES = new Set([".json", ".json5", ".cbor"])
 const pending = new Map()
 
 const persist = {}
+export default persist
 
 persist.ensureType = (path) => {
   const ext = getExtname(path)
@@ -41,15 +42,19 @@ persist.set = (path, data) => {
 
   return new Promise((resolve) => {
     const fn = async () => {
+      pending.delete(path)
+      if (isListening && pending.size === 0) forget()
+
       try {
         await fs.write[persist.ensureType(path)](systemPath(path), data)
       } catch (err) {
         dispatch(globalThis, err)
         resolve(false)
+        return
       }
 
-      pending.delete(path)
-      if (isListening && pending.size === 0) forget()
+      // pending.delete(path)
+      // if (isListening && pending.size === 0) forget()
       resolve(true)
     }
 
@@ -58,8 +63,6 @@ persist.set = (path, data) => {
     pending.set(path, fn)
   })
 }
-
-export default persist
 
 const handler = (e) => {
   if (pending.size > 0) {
