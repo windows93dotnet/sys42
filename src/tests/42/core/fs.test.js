@@ -7,7 +7,10 @@ import system from "../../../42/system.js"
 
 const { clone, parallel, shell, stream } = test.utils
 
-const drivers = ["memory", "indexeddb"]
+const drivers = [
+  "memory", //
+  "indexeddb",
+]
 
 async function checkError(
   t,
@@ -102,6 +105,18 @@ const makeSuite = (driver) => {
     t.is(await fs.read(path, "utf-8"), content + "🛰")
     await fs.delete(path)
     await checkError(t, path, () => fs.read(path))
+  })
+
+  test("maintain write order", async (t) => {
+    const path = cleanFile(`42-${d}-foo-double-write-json`)
+    // use writeJSON and make sure first write take longer than the second
+    const length = 1e2
+    const data1 = Array.from({ length }).fill("hello")
+    const data2 = Array.from({ length: 5 }).fill("bonjour")
+    fs.writeJSON(path, data1)
+    await fs.writeJSON(path, data2)
+    const file = await fs.readJSON(path)
+    t.eq(file, data2)
   })
 
   test("write() without encoding", async (t) => {
@@ -202,6 +217,7 @@ const makeSuite = (driver) => {
     const object = { a: 1 }
     await fs.writeJSON(path, object)
     t.eq(await fs.readJSON(path), object)
+    t.eq(await fs.readJSON(path, { strict: true }), object)
     t.eq(
       await fs.readText(path),
       `\
@@ -211,7 +227,7 @@ const makeSuite = (driver) => {
     )
   })
 
-  test("json()", "preserve comments using JSON5", async (t) => {
+  test("preserve comments using JSON5", async (t) => {
     const path = cleanFile(`42-${d}-json5`)
     const content = `\
 {
@@ -229,13 +245,18 @@ const makeSuite = (driver) => {
     }
 
     await fs.writeText(path, content)
-    t.eq(await fs.readJSON(path), expected)
+    t.eq(await fs.readJSON(path), expected) // readJSON use JSON5
+    t.eq(await fs.readJSON5(path), expected)
+
+    t.throws(() => fs.readJSON(path, { strict: true }), SyntaxError)
 
     expected.number = 42
 
-    await fs.writeJSON(path, expected)
+    await fs.writeJSON5(path, expected)
 
     t.eq(await fs.readText(path), content.replace("1", "42"))
+    t.eq(await fs.readJSON(path), expected)
+    t.eq(await fs.readJSON5(path), expected)
   })
 
   /* dir

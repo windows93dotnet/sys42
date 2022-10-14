@@ -5,7 +5,9 @@ import resolvePath from "../core/path/core/resolvePath.js"
 import FileSystemError from "./fs/FileSystemError.js"
 import addStack from "../fabric/type/error/addStack.js"
 import getDriverLazy from "./fs/getDriverLazy.js"
+import defer from "../fabric/type/promise/defer.js"
 import ipc from "./ipc.js"
+import removeItem from "../fabric/type/array/removeItem.js"
 
 export { default as FileSystemError } from "./fs/FileSystemError.js"
 
@@ -25,6 +27,30 @@ const DEFAULTS = {
 let places
 
 if (inTop) ipc.on("IPCDriver", async ({ type, args }) => fs[type](...args))
+
+const queue = new Map()
+
+async function enqueue(filename) {
+  const deferred = defer()
+
+  deferred.promise.finally(() => {
+    const stack = queue.get(filename)
+    removeItem(stack, deferred)
+    if (stack.length === 0) queue.delete(filename)
+  })
+
+  if (queue.has(filename)) {
+    const stack = queue.get(filename)
+    const previous = stack.pop()
+    stack.push(deferred)
+    queue.set(filename, stack)
+    await previous
+  } else {
+    queue.set(filename, [deferred])
+  }
+
+  return deferred.resolve
+}
 
 function mountPlace(place, driverName, options = {}) {
   driverName = driverName.toLowerCase()
@@ -272,7 +298,7 @@ export async function move(from, to, options) {
 ======== */
 
 export async function writeText(path, value) {
-  await write(path, value, UTF8)
+  return write(path, value, UTF8)
 }
 
 export async function readText(path) {
@@ -280,10 +306,25 @@ export async function readText(path) {
 }
 
 export async function writeJSON(path, value, replacer, space = 2) {
+  const resolve = await enqueue(path)
+  return write(path, JSON.stringify(value, replacer, space) ?? "", UTF8) //
+    .finally(resolve)
+}
+
+export async function readJSON(path, options) {
+  if (options?.strict) {
+    return read(path, UTF8).then((value) => JSON.parse(value))
+  }
+
+  const JSON5 = await import("./formats/json5.js").then((m) => m.default)
+  return read(path, UTF8).then((value) => JSON5.parse(value))
+}
+
+export async function writeJSON5(path, value, replacer, space = 2) {
   let previous
 
   if (value === undefined) {
-    return void (await write(path, "", UTF8))
+    return write(path, "", UTF8)
   }
 
   try {
@@ -293,22 +334,17 @@ export async function writeJSON(path, value, replacer, space = 2) {
   if (previous) {
     const JSON5 = await import("./formats/json5.js").then((m) => m.default)
     try {
-      return void (await write(path, JSON5.format(previous, value), UTF8))
+      return write(path, JSON5.format(previous, value), UTF8)
     } catch {}
   }
 
-  await write(path, JSON.stringify(value, replacer, space), UTF8)
-}
-
-export async function readJSON(path) {
-  const JSON5 = await import("./formats/json5.js").then((m) => m.default)
-  return read(path, UTF8).then((value) => JSON5.parse(value))
+  return write(path, JSON.stringify(value, replacer, space), UTF8)
 }
 
 export async function writeCBOR(path, value) {
   // @read https://github.com/cbor-wg/cbor-magic-number
   const CBOR = await import("./formats/cbor.js").then((m) => m.default)
-  await write(path, CBOR.encode(value))
+  return write(path, CBOR.encode(value))
 }
 
 export async function readCBOR(path) {
@@ -344,7 +380,9 @@ const fs = {
   writeText,
   readText,
   writeJSON,
+  writeJSON5,
   readJSON,
+  readJSON5: readJSON,
   writeCBOR,
   readCBOR,
 }
@@ -356,7 +394,7 @@ fs.read.text = readText
 
 fs.write.json = writeJSON
 fs.read.json = readJSON
-fs.write.json5 = writeJSON
+fs.write.json5 = writeJSON5
 fs.read.json5 = readJSON
 
 fs.write.cbor = writeCBOR
