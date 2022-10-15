@@ -6,10 +6,19 @@ export default function parseTemplate(source, jsonParser) {
   let buffer = ""
   let current = 0
 
+  let escaped = false
+
   while (current < source.length) {
     const char = source[current]
 
     if (char === "{" && source[current + 1] === "{") {
+      if (escaped) {
+        buffer = buffer.slice(0, -1)
+        buffer += char
+        current++
+        continue
+      }
+
       let i = current + 2
 
       let n = source.charCodeAt(i)
@@ -46,6 +55,10 @@ export default function parseTemplate(source, jsonParser) {
         continue
       }
     }
+
+    if (escaped) escaped = false
+
+    if (char === "\\") escaped = true
 
     buffer += char
     current++

@@ -54,6 +54,13 @@ test.tasks(
     }),
 
     task({
+      title: "escaped",
+      source: "a \\{{x}}",
+      parsed: { strings: ["a {{x}}"], substitutions: [] },
+      expected: "a {{x}}",
+    }),
+
+    task({
       title: "missing data",
       source: "a {{x}}",
       parsed: {

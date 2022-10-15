@@ -4,6 +4,9 @@
   categories: ["utilities", "productivity", "development"],
   description: "A simple text editor using textarea",
 
+  width: "800px",
+  height: "200px",
+
   decode: {
     types: [
       {
