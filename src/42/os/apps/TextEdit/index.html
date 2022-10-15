@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <meta charset="utf-8" />
 <link rel="stylesheet" href="/style.css" id="theme" />
+
+<script type="module">
+  import trap from "../../../fabric/type/error/trap.js"
+  trap()
+</script>
+
 <script type="module">
   import App from "../../classes/App.js"
-  import manifest from "./TextEdit.app.js"
-  globalThis.app = await new App(manifest)
+  await App.mount("./TextEdit.app.json5")
 </script>

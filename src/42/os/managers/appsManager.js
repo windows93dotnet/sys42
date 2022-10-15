@@ -16,6 +16,8 @@ const REGISTRY_KEYS = [
   "categories",
   "inset",
   "geometry",
+  "width",
+  "height",
 ]
 
 const APP_CLASS_URL = new URL("../classes/App.js", import.meta.url).pathname
@@ -26,7 +28,7 @@ class AppsManager extends ConfigFile {
 
     await Promise.all(
       disk
-        .glob("**/*.app.js")
+        .glob("**/*.app.json5")
         .map((manifestPath) => this.add(manifestPath, { save: false }))
     )
 
@@ -34,8 +36,10 @@ class AppsManager extends ConfigFile {
   }
 
   async add(manifestPath, options) {
-    const manifest = await import(manifestPath) //
+    const fs = await import("../../core/fs.js") //
       .then((m) => m.default)
+
+    const manifest = await fs.read.json5(manifestPath)
 
     if (manifest?.decode?.types) {
       const undones = []
@@ -75,11 +79,11 @@ class AppsManager extends ConfigFile {
     const entries = Object.entries(openers)
 
     for (const [appName, paths] of entries) {
-      this.exec(appName, paths)
+      this.exec(appName, { paths })
     }
   }
 
-  async exec(appName, paths) {
+  async exec(appName, { paths }) {
     await this.ready
 
     const app = this.value[appName]
@@ -102,8 +106,8 @@ import manifest from "${app.manifest}"
 manifest.dir = "${dir}"
 manifest.state ??= {}
 manifest.state.$files = ${JSON.stringify(paths)}
-globalThis.app = await new App(manifest)
-`,
+globalThis.app = await App.mount(manifest)
+  `,
         }
 
     return dialog({
