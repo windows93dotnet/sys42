@@ -169,15 +169,14 @@ types.fs = {
     }
   },
   async source(path) {
+    if (path === undefined) return
     const [fs, sinkField] = await Promise.all([
       import("./fs.js").then((m) => m.default),
       import("./stream/sinkField.js").then((m) => m.default),
     ])
     fs.source(path, "utf8")
       .pipeTo(sinkField(this.el))
-      .catch((err) => {
-        dispatch(this.el, err)
-      })
+      .catch((err) => dispatch(this.el, err))
   },
 }
 
