@@ -2,12 +2,8 @@ import ConfigFile from "../classes/ConfigFile.js"
 import arrify from "../../fabric/type/any/arrify.js"
 import pick from "../../fabric/type/object/pick.js"
 import disk from "../../core/disk.js"
-import getDirname from "../../core/path/core/getDirname.js"
 import mimetypesManager from "./mimetypesManager.js"
-
-// TODO: check if rpc functions can be injecteds
-import "../../ui/popup.js"
-import "../../fabric/browser/openInNewTab.js"
+import App from "../classes/App.js"
 
 const REGISTRY_KEYS = [
   "name",
@@ -19,8 +15,6 @@ const REGISTRY_KEYS = [
   "width",
   "height",
 ]
-
-const APP_CLASS_URL = new URL("../classes/App.js", import.meta.url).pathname
 
 class AppsManager extends ConfigFile {
   async populate() {
@@ -83,43 +77,10 @@ class AppsManager extends ConfigFile {
     }
   }
 
-  async exec(appName, { paths }) {
+  async exec(appName, state) {
     await this.ready
-
     const app = this.value[appName]
-
-    const dir = new URL(getDirname(app.manifest + "/"), location).href + "/"
-
-    paths = paths.map((path) => ({ path }))
-
-    const dialog = await import("../../ui/components/dialog.js") //
-      .then((m) => m.default)
-
-    const dialogConfig = { state: { $app: app, $files: paths } }
-
-    const sandboxConfig = app.path
-      ? { path: app.path }
-      : {
-          script: `\
-import App from "${APP_CLASS_URL}"
-import manifest from "${app.manifest}"
-manifest.dir = "${dir}"
-manifest.state ??= {}
-manifest.state.$files = ${JSON.stringify(paths)}
-globalThis.app = await App.mount(manifest)
-  `,
-        }
-
-    return dialog({
-      label: "{{$app.name}}",
-      content: {
-        style: { width: "400px", height: "350px" },
-        tag: "ui-sandbox" + (app.inset ? ".inset" : ""),
-        permissions: "app",
-        ...sandboxConfig,
-      },
-      ...dialogConfig,
-    })
+    App.launch(app.manifest, { state })
   }
 }
 

@@ -6,6 +6,7 @@ import locate from "../../fabric/locator/locate.js"
 import parseTemplate from "./template/parseTemplate.js"
 import compileTemplate from "./template/compileTemplate.js"
 import makeTemplate from "./template/makeTemplate.js"
+import escapeTemplate from "./template/escapeTemplate.js"
 import JSON5 from "./json5.js"
 
 const jsonParse = JSON5.parse
@@ -18,6 +19,7 @@ export default function template(source, { actions, locals } = {}) {
 }
 
 template.make = makeTemplate
+template.escape = escapeTemplate
 
 template.parse = (source) => parseTemplate(source, jsonParse)
 
