@@ -5,7 +5,7 @@ import setControlData from "../../fabric/dom/setControlData.js"
 import getControlData from "../../fabric/dom/getControlData.js"
 import setAttributes from "../../fabric/dom/setAttributes.js"
 import create from "../create.js"
-import findScope from "../findScope.js"
+// import findScope from "../findScope.js"
 import resolveScope from "../resolveScope.js"
 import getBasename from "../../core/path/core/getBasename.js"
 import debounce from "../../fabric/type/function/debounce.js"
@@ -46,7 +46,9 @@ export default function renderControl(el, ctx, def) {
   el.id ||= hash(ctx.steps)
 
   if (def.watch) {
-    const scope = resolveScope(...findScope(ctx, def.watch), ctx)
+    const scope = resolveScope(ctx.scope, def.watch, ctx)
+    // const scope1 = resolveScope(...findScope(ctx, def.watch), ctx)
+    // console.log(scope, scope1)
     el.name ||= scope
 
     register(ctx, scope, (val) => setControlData(el, val))
@@ -67,8 +69,12 @@ export default function renderControl(el, ctx, def) {
           if (scope === el.name) continue
           register.registerRenderer(ctx, scope, renderer)
         }
+
+        ctx.postrender.push(() => {
+          ctx.reactive.set(el.name, getControlData(el), { silent: true })
+        })
       } else {
-        ctx.reactive.set(el.name, getControlData(el))
+        ctx.reactive.set(el.name, getControlData(el), { silent: true })
       }
     }
 

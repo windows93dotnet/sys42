@@ -31,6 +31,19 @@
       click: "{{$files/0/path = undefined}}",
     },
     {
+      label: "Open",
+      picto: "folder-open",
+      shortcut: "Ctrl+O",
+      id: "menuItem-openFile",
+      // click: "{{editor.openFile()}}",
+      // click: "{{$files/0/path = filePicker.open($files/0/path)}}",
+      // click: "{{filePicker.open($files/0/path) |> log}}",
+      click: '{{\
+        filePicker.open($files/0/path, {files:false}) \
+          |> locate(^^, "selection.0") \
+          |> log(^^)}}',
+    },
+    {
       label: "Save",
       picto: "save",
       shortcut: "Ctrl+S",
@@ -52,8 +65,8 @@
       compact: true,
       autofocus: true,
 
-      value: "{{source(path)}}",
-      on: { input: "{{data = target.value}}" },
+      watch: "data",
+      value: "{{fs.source(path)}}",
     },
   },
 

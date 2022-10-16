@@ -114,12 +114,16 @@ export async function launch(manifest, options) {
     actions: {
       editor: {
         newFile() {
+          console.log("newFile")
           this.state.$files[0].data = undefined
           this.state.$files[0].dirty = undefined
           this.state.$files[0].path = undefined
         },
         saveFile() {
-          console.log(888, this.state.$files[0].data)
+          console.log("saveFile", this.state.$files[0].data)
+        },
+        openFile() {
+          console.log("openFile")
         },
       },
     },

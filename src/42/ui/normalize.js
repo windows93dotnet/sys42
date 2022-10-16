@@ -162,16 +162,18 @@ export function normalizeTokens(tokens, ctx, options) {
       let action
       let thisArg
 
-      if (token.value === "selectStem") {
-        console.log(token, ctx)
-      }
-
       if (ctx.component) {
         const res = findComponentAction(ctx, ctx.component, token.value)
         if (res) {
           thisArg = res[0]
           action = res[1]
         }
+      }
+
+      const scope = ctx.scope === "/" ? "" : ctx.scope
+      if (!action && ctx.actions.has(scope + loc)) {
+        thisArg = ctx
+        action = ctx.actions.get(scope + loc)
       }
 
       if (!action && ctx.actions.has(loc)) {
