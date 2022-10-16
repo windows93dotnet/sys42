@@ -70,7 +70,14 @@ async function updateElement(el, url, key) {
 }
 
 export default function liveReload(path) {
-  if (path === liveReload.entry || path === "reload" || path.endsWith("js")) {
+  if (
+    path === liveReload.entry ||
+    path === "reload" ||
+    path.endsWith(".js") ||
+    path.endsWith(".json") ||
+    path.endsWith(".json5") ||
+    path.endsWith(".cbor")
+  ) {
     task.log(`⚡ hard reload ${log.format.file(path)}`)
     location.reload(true)
   } else {
