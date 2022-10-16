@@ -52,14 +52,14 @@ export default async function modal(options) {
           config.agree === false
             ? undefined
             : {
-                tag: "button.btn-default",
+                tag: "button.dialog__agree.btn-default",
                 click: "{{ok()}}",
                 ...objectifyDef(config.agree),
               },
           config.decline === false
             ? undefined
             : {
-                tag: "button",
+                tag: "button.dialog__decline",
                 click: "{{close()}}",
                 ...objectifyDef(config.decline),
               },

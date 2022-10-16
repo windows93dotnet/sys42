@@ -246,11 +246,11 @@
 /* size
 ======= */
 
-.h-0 { height: 0; }
-.h-1 { height: auto; }
-.h-px { height: 1px; }
-.h-full { height: 100%; }
-.h-screen { height: 100vh; }
+.h-0, .size-0 { height: 0; }
+.h-1, .size-1 { height: auto; }
+.h-px, .size-px { height: 1px; }
+.h-full, .size-full { height: 100%; }
+.h-screen, .size-screen { height: 100vh; }
 .max-h-zero { max-height: 0; }
 .max-h-px { max-height: 1px; }
 .max-h-full { max-height: 100%; }
@@ -259,11 +259,11 @@
 .min-h-full { min-height: 100%; }
 .min-h-screen { min-height: 100vh; }
 
-.w-0 { width: 0; }
-.w-1 { width: auto; }
-.w-px { width: 1px; }
-.w-full { width: 100%; }
-.w-screen { width: 100vw; }
+.w-0, .size-0 { width: 0; }
+.w-1, .size-1 { width: auto; }
+.w-px, .size-px { width: 1px; }
+.w-full, .size-full { width: 100%; }
+.w-screen, .size-screen { width: 100vw; }
 .w-min { width: min-content; }
 .w-max { width: max-content; }
 .w-ctrl { width: var(--ctrl-w); }

@@ -104,6 +104,14 @@ export async function launch(manifest, options) {
   const dialog = await import("../../ui/components/dialog.js") //
     .then((m) => m.default)
 
+  const $files = options?.state?.paths.map((path) => ({
+    path,
+    data: undefined,
+    dirty: false,
+  }))
+
+  // console.log($files)
+
   return dialog({
     label: "{{$app.name}}{{$dialog.title ? ' - ' + $dialog.title : ''}}",
     style: { width: "{{$dialog.width}}", height: "{{$dialog.height}}" },
@@ -130,7 +138,7 @@ export async function launch(manifest, options) {
     state: {
       $dialog: { title: undefined, width, height },
       $app: manifest,
-      $files: options?.state?.paths.map((path) => ({ path })),
+      $files,
       ...manifest.state,
       ...options?.state,
     },
@@ -141,40 +149,44 @@ export default class App extends UI {
   static mount = mount
   static launch = launch
 
-  constructor(manifest) {
-    if (manifest.state?.paths) {
-      manifest.state.$files = manifest.state.paths.map((path) => ({ path }))
-    }
+  // constructor(manifest) {
+  //   if (manifest.state?.paths) {
+  //     manifest.state.$files = manifest.state.paths.map((path) => ({
+  //       path,
+  //       data: undefined,
+  //       dirty: false,
+  //     }))
+  //   }
 
-    super(
-      {
-        tag: ".box-fit.box-h",
-        content: manifest.menubar
-          ? [{ tag: "ui-menubar", content: manifest.menubar }, manifest.content]
-          : manifest.content,
-        state: manifest.state,
-        actions: {
-          io: {
-            newFile() {
-              this.state.$files[0].data = undefined
-              this.state.$files[0].dirty = undefined
-              this.state.$files[0].path = undefined
-            },
-            saveFile() {
-              console.log(888, this.state.$files[0].data)
-            },
-          },
-        },
-      },
-      { trusted: true }
-    )
+  //   super(
+  //     {
+  //       tag: ".box-fit.box-h",
+  //       content: manifest.menubar
+  //         ? [{ tag: "ui-menubar", content: manifest.menubar }, manifest.content]
+  //         : manifest.content,
+  //       state: manifest.state,
+  //       actions: {
+  //         io: {
+  //           newFile() {
+  //             this.state.$files[0].data = undefined
+  //             this.state.$files[0].dirty = false
+  //             this.state.$files[0].path = undefined
+  //           },
+  //           saveFile() {
+  //             console.log(888, this.state.$files[0].data)
+  //           },
+  //         },
+  //       },
+  //     },
+  //     { trusted: true }
+  //   )
 
-    this.manifest = manifest
+  //   this.manifest = manifest
 
-    this.then(() => {
-      setTimeout(() => {
-        this.el.querySelector("#menuItem-newFile").click()
-      }, 200)
-    })
-  }
+  //   this.then(() => {
+  //     setTimeout(() => {
+  //       this.el.querySelector("#menuItem-newFile").click()
+  //     }, 200)
+  //   })
+  // }
 }

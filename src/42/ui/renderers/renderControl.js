@@ -5,10 +5,13 @@ import setControlData from "../../fabric/dom/setControlData.js"
 import getControlData from "../../fabric/dom/getControlData.js"
 import setAttributes from "../../fabric/dom/setAttributes.js"
 import create from "../create.js"
-// import findScope from "../findScope.js"
+import findScope from "../findScope.js"
 import resolveScope from "../resolveScope.js"
 import getBasename from "../../core/path/core/getBasename.js"
+
 import debounce from "../../fabric/type/function/debounce.js"
+import idleDebounce from "../../fabric/type/function/idleDebounce.js"
+
 import { toTitleCase } from "../../fabric/type/string/letters.js"
 import hash from "../../fabric/type/any/hash.js"
 
@@ -46,9 +49,8 @@ export default function renderControl(el, ctx, def) {
   el.id ||= hash(ctx.steps)
 
   if (def.watch) {
-    const scope = resolveScope(ctx.scope, def.watch, ctx)
-    // const scope1 = resolveScope(...findScope(ctx, def.watch), ctx)
-    // console.log(scope, scope1)
+    const scope = resolveScope(...findScope(ctx, def.watch), ctx)
+    // console.log(scope, resolveScope(ctx.scope, def.watch, ctx))
     el.name ||= scope
 
     register(ctx, scope, (val) => setControlData(el, val))
@@ -58,12 +60,10 @@ export default function renderControl(el, ctx, def) {
     if (def.value) {
       // Save the value in the state if a value and a scope are set
       if (def.attrs.value.scopes) {
-        const renderer = debounce(
-          async () => {
-            ctx.reactive.set(el.name, getControlData(el), { silent: true })
-          },
-          { ms: 100, immediate: true }
-        )
+        // TODO: find way to wait for template function end
+        const renderer = idleDebounce(async () => {
+          ctx.reactive.set(el.name, getControlData(el), { silent: true })
+        })
 
         for (const scope of def.attrs.value.scopes) {
           if (scope === el.name) continue
