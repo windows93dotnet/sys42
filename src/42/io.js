@@ -1,35 +1,44 @@
 // @read https://www.electronjs.org/docs/latest/api/menu#examples
 
+import Emitter from "./fabric/classes/Emitter.js"
+
+export class IO extends Emitter {}
+const io = new IO()
+
+const listenImport = async () =>
+  import("./os/io/listenImport.js") //
+    .then((m) => m.default(io))
+
 const createFile = async (path, options) =>
-  import("./engage/createPath.js") //
+  import("./os/io/createPath.js") //
     .then((m) => m.default(path, options))
 
 const createFolder = async (path, options) =>
-  import("./engage/createPath.js") //
+  import("./os/io/createPath.js") //
     .then((m) => m.default(path, { ...options, folder: true }))
 
 const deleteFile = async (path) =>
-  import("./engage/deletePath.js") //
+  import("./os/io/deletePath.js") //
     .then((m) => m.default(path))
 
 const deleteFolder = async (path) =>
-  import("./engage/deletePath.js") //
+  import("./os/io/deletePath.js") //
     .then((m) => m.default(path))
 
-const openFile = async (...args) =>
-  import("./engage/openFile.js").then((m) => m.default(...args))
+const launchFile = async (...args) =>
+  import("./os/io/launchFile.js").then((m) => m.default(...args))
 
-const openFolder = async (...args) =>
-  import("./engage/openFolder.js").then((m) => m.default(...args))
+const launchFolder = async (...args) =>
+  import("./os/io/launchFolder.js").then((m) => m.default(...args))
 
 const renameFile = async (...args) =>
-  import("./engage/renamePath.js").then((m) => m.default(...args))
+  import("./os/io/renamePath.js").then((m) => m.default(...args))
 
 const renameFolder = async (...args) =>
-  import("./engage/renamePath.js").then((m) => m.default(...args))
+  import("./os/io/renamePath.js").then((m) => m.default(...args))
 
 const movePath = async (...args) =>
-  import("./engage/movePath.js").then((m) => m.default(...args))
+  import("./os/io/movePath.js").then((m) => m.default(...args))
 
 createFile.meta = {
   label: "Create File…",
@@ -50,13 +59,13 @@ deleteFolder.meta = {
   shortcut: "Del",
 }
 
-openFile.meta = {
+launchFile.meta = {
   label: "Open File…",
   shortcut: "Ctrl+O",
   picto: "file",
 }
 
-openFolder.meta = {
+launchFolder.meta = {
   label: "Open Folder…",
   shortcut: "Ctrl+K Ctrl+O",
   picto: "folder-open",
@@ -69,14 +78,15 @@ renameFile.meta = {
 
 renameFolder.meta = { ...renameFile.meta }
 
-export default {
+export default Object.assign(io, {
+  listenImport,
   createFile,
   createFolder,
   deleteFile,
   deleteFolder,
-  openFile,
-  openFolder,
+  launchFile,
+  launchFolder,
   renameFile,
   renameFolder,
   movePath,
-}
+})

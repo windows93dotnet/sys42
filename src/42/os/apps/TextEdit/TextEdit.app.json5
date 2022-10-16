@@ -4,8 +4,8 @@
   categories: ["utilities", "productivity", "development"],
   description: "A simple text editor using textarea",
 
-  width: "800px",
-  height: "200px",
+  width: "300px",
+  height: "300px",
 
   decode: {
     types: [
@@ -30,21 +30,21 @@
           label: "New",
           picto: "file",
           shortcut: "Ctrl+N",
-          click: "{{io.new()}}",
+          click: "{{test.new()}}",
         },
         {
           label: "Open…",
           picto: "folder-open",
           shortcut: "Ctrl+O",
           id: "open",
-          click: "{{io.open()}}",
+          click: "{{test.open()}}",
         },
         {
           label: "Save",
           picto: "save",
           shortcut: "Ctrl+S",
           id: "save",
-          click: "{{io.save()}}",
+          click: "{{test.save()}}",
         },
       ],
     },
