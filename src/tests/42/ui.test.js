@@ -1954,7 +1954,7 @@ test("each", "input element", async (t) => {
     ui(t.utils.dest(), {
       content: {
         scope: "arr",
-        each: [{ tag: "textarea", scope: "a" }],
+        each: [{ tag: "textarea", watch: "a" }],
       },
       state: {
         arr: [{ a: "x" }, { a: "y" }],
@@ -2122,7 +2122,7 @@ test("input", async (t) => {
     ui(t.utils.dest(), {
       content: {
         tag: "input",
-        scope: "str",
+        watch: "str",
       },
 
       state: {
@@ -2157,7 +2157,7 @@ test("input", "prose:true", async (t) => {
     ui(t.utils.dest(), {
       content: {
         tag: "input",
-        scope: "str",
+        watch: "str",
         prose: true,
       },
 

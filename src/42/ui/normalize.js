@@ -52,6 +52,7 @@ const DEF_KEYWORDS = new Set([
   "state",
   "tag",
   "traits",
+  "watch",
   // TODO: implement once https://vuejs.org/api/built-in-directives.html#v-once
   // TODO: implement memo https://vuejs.org/api/built-in-directives.html#v-memo
 ])
@@ -160,6 +161,10 @@ export function normalizeTokens(tokens, ctx, options) {
 
       let action
       let thisArg
+
+      if (token.value === "selectStem") {
+        console.log(token, ctx)
+      }
 
       if (ctx.component) {
         const res = findComponentAction(ctx, ctx.component, token.value)
@@ -323,7 +328,6 @@ export function normalizeComputed(scope, val, ctx, cb = noop) {
 
 export function normalizeScope(def, ctx) {
   if (def?.scope) {
-    ctx.scopeBackup = ctx.scope
     ctx.scope = resolveScope(ctx.scope, def.scope, ctx)
   }
 }

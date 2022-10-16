@@ -312,6 +312,10 @@ export default class Component extends HTMLElement {
 
     await this.ctx.preload.done()
 
+    // if (this.localName === "ui-dialog") {
+    //   console.log(123, def.actions, this.ctx)
+    // }
+
     this.replaceChildren(
       render(def, this.ctx, { skipNormalize: true, step: this.localName })
     )
