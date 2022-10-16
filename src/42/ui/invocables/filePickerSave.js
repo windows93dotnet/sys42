@@ -1,9 +1,17 @@
 import explorer from "../components/explorer.js"
 import isHashmapLike from "../../fabric/type/any/is/isHashmapLike.js"
 import nextCycle from "../../fabric/type/promise/nextCycle.js"
+import { objectifyDef } from "../normalize.js"
+
+const DEFAULT = {
+  agree: "Save",
+  decline: "Cancel",
+  untitled: "untitled.txt",
+}
 
 export default async function filePickerSave(path, options) {
-  const untitled = options?.untitled ?? "untitled.txt"
+  const config = { ...DEFAULT, ...options }
+  const { untitled } = config
 
   const res = await explorer(path, {
     label: "Save File - {{path}}",
@@ -27,8 +35,16 @@ export default async function filePickerSave(path, options) {
             focus: "{{path.getStemname(target.value) |> field.select}}",
           },
         },
-        { tag: "button.btn-default", label: "Save", click: "{{ok()}}" },
-        { tag: "button", label: "Cancel", click: "{{close()}}" },
+        {
+          tag: "button.dialog__agree.btn-default",
+          click: "{{ok()}}",
+          ...objectifyDef(config.agree),
+        },
+        {
+          tag: "button.dialog__decline",
+          click: "{{close()}}",
+          ...objectifyDef(config.decline),
+        },
       ],
     },
 
@@ -55,9 +71,9 @@ export default async function filePickerSave(path, options) {
   }
 
   return {
+    saved,
+    path,
     dir: res.path,
     base: res.name,
-    path,
-    saved,
   }
 }

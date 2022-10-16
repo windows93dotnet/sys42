@@ -79,6 +79,8 @@
   // await disk.reinstall()
   await fs.deleteDir(system.HOME + "/.ui").catch(() => {})
 
+  // console.log(disk.glob("**/*.test.js"))
+
   testRunner(
     // disk.glob("**/*.test.js"),
     [
@@ -90,14 +92,19 @@
       // "/tests/42/core/expr.test.js",
       // "/tests/42/core/formats/base64.test.js",
       // "/tests/42/core/formats/cbor.test.js",
-      // // "/tests/42/core/formats/tar.test.js",
       // // "/tests/42/core/formats/ieee754.test.js",
+      // // "/tests/42/core/formats/tar.test.js",
       // "/tests/42/core/formats/template.test.js",
       // "/tests/42/core/formats/template/parseExpression.test.js",
       // "/tests/42/core/fs.test.js",
       // "/tests/42/core/i18n.test.js",
       // // "/tests/42/core/ipc.test.js",
       // "/tests/42/core/log.test.js",
+      // "/tests/42/core/path/core/sortPath.test.js",
+      // "/tests/42/core/path/getPathInfos.test.js",
+      // "/tests/42/core/path/glob.test.js",
+      // "/tests/42/core/path/rename.test.js",
+      // "/tests/42/core/path/shortenFilename.test.js",
       // // "/tests/42/core/stream.test.js",
       // // "/tests/42/fabric/classes/Buffer.compat.test.js",
       // "/tests/42/fabric/classes/Buffer.test.js",
@@ -115,11 +122,6 @@
       // "/tests/42/fabric/type/json/patch.test.js",
       // "/tests/42/fabric/type/number/isMultipleOf.test.js",
       // "/tests/42/fabric/type/number/precision.test.js",
-      // "/tests/42/core/path/core/sortPath.test.js",
-      // "/tests/42/core/path/glob.test.js",
-      // "/tests/42/core/path/rename.test.js",
-      // "/tests/42/core/path/shortenFilename.test.js",
-      // "/tests/42/core/path/getPathInfos.test.js",
       // "/tests/42/fabric/type/string/count.test.js",
       // "/tests/42/fabric/type/string/occurrences.test.js",
       // "/tests/42/fabric/type/string/sdbm.test.js",
@@ -127,19 +129,21 @@
       // "/tests/42/os/cli/argv.test.js",
 
       "/tests/42/ui.test.js",
-      "/tests/42/ui/components.test.js",
-      "/tests/42/ui/components.actions.test.js",
-      "/tests/42/ui/components/folder.test.js",
-      "/tests/42/ui/components/icon.test.js",
+      // "/tests/42/ui/components.test.js",
+      // "/tests/42/ui/components.actions.test.js",
+      // "/tests/42/ui/components/folder.test.js",
+      // "/tests/42/ui/components/icon.test.js",
       "/tests/42/ui/components/menu.test.js",
-      "/tests/42/ui/components/picto.test.js",
-      "/tests/42/ui/components/sandbox.test.js",
-      "/tests/42/ui/create.test.js",
-      "/tests/42/ui/popup.test.js",
-      "/tests/42/ui/filters.test.js",
-
-      // // "/tests/42/ui/plugins/ipc.plugin.test.js",
-      // // "/tests/42/ui/xss.test.js",
+      // // "/tests/42/ui/components/picto.test.js",
+      // // "/tests/42/ui/components/sandbox.test.js",
+      // "/tests/42/ui/create.test.js",
+      // "/tests/42/ui/filters.test.js",
+      "/tests/42/ui/invocables/filePicker.test.js",
+      // "/tests/42/ui/invocables/modals.test.js",
+      // "/tests/42/ui/invocables/progress.test.js",
+      // "/tests/42/ui/plugins/ipc.plugin.test.js",
+      // "/tests/42/ui/popup.test.js",
+      // "/tests/42/ui/xss.test.js",
     ],
     { verbose: 2, cnt: !true }
   )
