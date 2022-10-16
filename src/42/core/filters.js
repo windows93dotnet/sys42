@@ -6,6 +6,7 @@ import bytesize from "../fabric/type/file/bytesize.js"
 import trailZeros from "../fabric/type/number/trailZeros.js"
 import dispatch from "../fabric/event/dispatch.js"
 import { round, floor, ceil } from "../fabric/type/number/precision.js"
+import io from "../io.js"
 
 const types = {}
 
@@ -119,7 +120,7 @@ types.any = {
   clone: "any/clone",
   equal: "any/equal",
   stringify: "any/stringify",
-  log: (...args) => import("./log.js").then((m) => m.default(...args)),
+  log: (...args) => import("./log.js").then((m) => void m.default(...args)),
 }
 
 types.function = {
@@ -166,8 +167,8 @@ types.fs = {
       return fallback
     }
   },
-  async source(path) {
-    if (path === undefined) return
+  async source(path, fallback = "") {
+    if (path === undefined) return fallback
     const [fs, sinkField] = await Promise.all([
       import("./fs.js").then((m) => m.default),
       import("./stream/sinkField.js").then((m) => m.default),
@@ -192,34 +193,64 @@ types.ui = {
       this.el.replaceChildren(render(item, this))
     })
   },
+  alert: "alert",
+  confirm: "confirm",
   prompt: "prompt",
 }
 
+types.io = io
+types.filePicker = {
+  async open(path) {
+    const filePickerOpen = await import(
+      "../ui/invocables/filePickerOpen.js"
+    ).then((m) => m.default)
+    return filePickerOpen(path)
+  },
+  async save(path) {
+    const filePickerOpen = await import(
+      "../ui/invocables/filePickerSave.js"
+    ).then((m) => m.default)
+    return filePickerOpen(path)
+  },
+}
+
 const entries = Object.entries(types)
+
+async function getFilter(item, group, name) {
+  let fn = item.url ?? item
+  if (typeof fn === "string") {
+    fn = await import(
+      group === "ui"
+        ? `../ui/invocables/${fn}.js` //
+        : group === "path"
+        ? `../core/path/${fn}.js`
+        : `../fabric/type/${fn}.js`
+    ).then((m) =>
+      item.key
+        ? locate(m.default, name)
+        : item.import
+        ? locate(m, item.import)
+        : m.default
+    )
+  }
+
+  return fn
+}
 
 export default async function filters(name) {
   for (const [group, val] of entries) {
     if (name in val) {
       const item = val[name]
-      let fn = item.url ?? item
-      if (typeof fn === "string") {
-        fn = await import(
-          group === "ui"
-            ? `../ui/invocables/${fn}.js` //
-            : group === "path"
-            ? `../core/path/${fn}.js`
-            : `../fabric/type/${fn}.js`
-        ).then((m) =>
-          item.key
-            ? locate(m.default, name)
-            : item.import
-            ? locate(m, item.import)
-            : m.default
-        )
-      }
-
-      return fn
+      return getFilter(item, group, name)
     }
+  }
+
+  let tokens = locate.parse(name)
+  if (tokens.length === 1) tokens = locate.parse(name, "/")
+
+  if (tokens.length > 1) {
+    const item = locate.evaluate(types, tokens)
+    if (item) return getFilter(item, tokens[0], tokens[1])
   }
 }
 

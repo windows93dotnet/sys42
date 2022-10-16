@@ -25,21 +25,24 @@ export default async function filePickerSave(path, options) {
           enterKeyHint: "done",
           on: {
             Enter: "{{ok()}}",
-            async focus({ target }) {
-              this.state.selection.length = 0
-              const { value } = target
-              const stem = getStemname(value)
-              const start = value.indexOf(stem)
-              target.setSelectionRange(0, 0)
-              start > -1
-                ? target.setSelectionRange(start, start + stem.length)
-                : target.setSelectionRange(0, value.length)
-            },
+            focus: "{{selectStem(target)}}",
           },
         },
         { tag: "button.btn-default", label: "Save", click: "{{ok()}}" },
         { tag: "button", label: "Cancel", click: "{{close()}}" },
       ],
+      actions: {
+        selectStem(target) {
+          this.state.selection.length = 0
+          const { value } = target
+          const stem = getStemname(value)
+          const start = value.indexOf(stem)
+          target.setSelectionRange(0, 0)
+          start > -1
+            ? target.setSelectionRange(start, start + stem.length)
+            : target.setSelectionRange(0, value.length)
+        },
+      },
     },
 
     ...options,

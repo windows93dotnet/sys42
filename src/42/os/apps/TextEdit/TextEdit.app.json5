@@ -23,46 +23,37 @@
 
   menubar: [
     {
-      label: "File",
-      id: "file",
-      content: [
-        {
-          label: "New",
-          picto: "file",
-          shortcut: "Ctrl+N",
-          click: "{{test.new()}}",
-        },
-        {
-          label: "Open…",
-          picto: "folder-open",
-          shortcut: "Ctrl+O",
-          id: "open",
-          click: "{{test.open()}}",
-        },
-        {
-          label: "Save",
-          picto: "save",
-          shortcut: "Ctrl+S",
-          id: "save",
-          click: "{{test.save()}}",
-        },
-      ],
+      label: "New",
+      picto: "file",
+      id: "menuItem-newFile",
+      shortcut: "Ctrl+N",
+      // click: "{{editor.newFile(}}",
+      click: "{{$files/0/path = undefined}}",
+    },
+    {
+      label: "Save",
+      picto: "save",
+      shortcut: "Ctrl+S",
+      id: "menuItem-saveFile",
+      // click: "{{editor.saveFile()}}",
+      click: "{{filePicker.save($files/0/path, $files/0/data)}}",
     },
   ],
 
   content: {
-    scope: "$files/0",
+    scope: "/$files/0",
     content: {
-      scope: "text",
       tag: "textarea",
       label: "{{path}}",
-      value: "{{text ? text : source(path)}}",
-      class: "w-full {{/monospace ? 'font-mono' : ''}}",
-      spellcheck: "{{/spellcheck}}",
-      wrap: "{{/wrap ? 'soft' : 'off'}}",
+      class: "w-full {{monospace ? 'font-mono' : ''}}",
+      spellcheck: "{{spellcheck}}",
+      wrap: "{{wrap ? 'soft' : 'off'}}",
       prose: false,
       compact: true,
       autofocus: true,
+
+      value: "{{source(path)}}",
+      on: { input: "{{data = target.value}}" },
     },
   },
 

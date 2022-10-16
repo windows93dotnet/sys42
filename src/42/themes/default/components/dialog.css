@@ -32,6 +32,9 @@ ui-dialog {
   border-radius: var(--dialog-br);
   text-shadow: var(--dialog-tsh, none);
   box-shadow: var(--dialog-bsh);
+
+  overflow: hidden;
+  resize: both;
 }
 
 ui-dialog:focus {
@@ -43,6 +46,7 @@ ui-dialog:focus {
   display: flex;
   flex-direction: column;
   overflow: auto;
+  position: relative;
 }
 
 .ui-dialog__header,
@@ -70,6 +74,11 @@ ui-dialog:focus {
   font-weight: inherit;
   position: relative;
   user-select: none;
+  /* max-width: 100%; */
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .ui-dialog__title::before {
