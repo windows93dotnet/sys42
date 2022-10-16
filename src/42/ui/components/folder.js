@@ -1,7 +1,7 @@
 import "./icon.js"
 import Component from "../classes/Component.js"
 import disk from "../../core/disk.js"
-import engage from "../../os/engage.js"
+import io from "../../io.js"
 import normalizeDirname from "../../core/path/utils/normalizeDirname.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
 import debounce from "../../fabric/type/function/debounce.js"
@@ -110,7 +110,7 @@ export class Folder extends Component {
         },
         async "drop"(e) {
           const { files, folders, paths } = await dt.import(e)
-          if (paths) engage.movePath(paths, this.el.path)
+          if (paths) io.movePath(paths, this.el.path)
           else if (files || folders) {
             const fs = await import("../../core/fs.js").then((m) => m.default)
             const undones = []
@@ -166,9 +166,9 @@ export class Folder extends Component {
       // },
       {
         prevent: true,
-        [engage.createFolder.meta.shortcut]: "{{engage.createFolder(path)}}",
-        [engage.deleteFile.meta.shortcut]: "{{engage.deleteFile(selection)}}",
-        [engage.renameFile.meta.shortcut]: "{{engage.renameFile(selection)}}",
+        [io.createFolder.meta.shortcut]: "{{engage.createFolder(path)}}",
+        [io.deleteFile.meta.shortcut]: "{{engage.deleteFile(selection)}}",
+        [io.renameFile.meta.shortcut]: "{{engage.renameFile(selection)}}",
       },
       {
         selector: "ui-icon",
@@ -180,12 +180,12 @@ export class Folder extends Component {
             content: [
               "---",
               {
-                ...engage.deleteFile.meta,
+                ...io.deleteFile.meta,
                 click: "{{engage.deleteFile(selection)}}",
               },
               "---",
               {
-                ...engage.renameFile.meta,
+                ...io.renameFile.meta,
                 click: "{{engage.renameFile(selection)}}",
               },
             ],
@@ -195,8 +195,8 @@ export class Folder extends Component {
     ],
 
     contextmenu: [
-      { ...engage.createFolder.meta, click: "{{engage.createFolder(path)}}" },
-      { ...engage.createFile.meta, click: "{{engage.createFile(path)}}" },
+      { ...io.createFolder.meta, click: "{{engage.createFolder(path)}}" },
+      { ...io.createFile.meta, click: "{{engage.createFile(path)}}" },
       "---",
       { label: "Select all", click: "{{selectable.selectAll()}}" }, //
     ],
@@ -221,7 +221,7 @@ export class Folder extends Component {
     },
   }
 
-  engage = engage
+  engage = io
 
   autoSelect(path) {
     if (this.selection.length === 0) {

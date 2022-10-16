@@ -66,17 +66,6 @@ export default class App extends UI {
       manifest.state.$files = manifest.state.paths.map((path) => ({ path }))
     }
 
-    // if (!manifest.content && manifest.path) {
-    //   manifest.content = {
-    //     tag: "iframe.box-fit",
-    //     src: manifest.path,
-    //     // tag: "ui-sandbox",
-    //     // path: manifest.path,
-    //     // permissions: "trusted",
-    //     // check: false,
-    //   }
-    // }
-
     super(
       {
         tag: ".box-fit.box-h",
@@ -85,7 +74,7 @@ export default class App extends UI {
           : manifest.content,
         state: manifest.state,
         actions: {
-          io: {
+          test: {
             new(...args) {
               console.log("new", args)
             },
@@ -137,7 +126,7 @@ export default class App extends UI {
       .then((m) => m.default)
 
     return dialog({
-      label: "{{render(1)}}",
+      label: "{{$app.name}}",
       content: {
         style: { width, height },
         tag: "ui-sandbox" + (manifest.inset ? ".inset" : ""),
