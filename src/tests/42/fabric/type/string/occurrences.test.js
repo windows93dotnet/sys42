@@ -2,14 +2,14 @@
 // @src https://gist.github.com/victornpb/7736865
 
 import test from "../../../../../42/test.js"
-import occurrences from "../../../../../42/fabric/type/string/occurences.js"
+import occurrences from "../../../../../42/fabric/type/string/occurrences.js"
 
 test("empty substring", (t) => {
   t.is(occurrences("", ""), 1)
   t.is(occurrences("abc", ""), 4)
 })
 
-test("single occurences", (t) => {
+test("single occurrences", (t) => {
   t.is(occurrences("foo", "foo"), 1)
   t.is(occurrences("blahfooblah", "foo"), 1)
   t.is(occurrences("foo", "f"), 1)

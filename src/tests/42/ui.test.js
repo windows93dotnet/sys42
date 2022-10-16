@@ -858,7 +858,7 @@ test("actions", "inline variable", "as function", async (t) => {
   t.is(app.el.innerHTML, "a B")
 })
 
-test("actions", "buildin actions", async (t) => {
+test("actions", "builtin actions", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
       tag: "pre",
@@ -972,7 +972,7 @@ test("actions", "thisArg", "nested", async (t) => {
   t.is(app.el.innerHTML, "X<em>X</em><strong>X</strong>")
 })
 
-test("actions", "buildin actions locate", async (t) => {
+test("actions", "builtin actions locate", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
       tag: "pre",

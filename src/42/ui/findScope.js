@@ -1,4 +1,4 @@
-import occurences from "../fabric/type/string/occurences.js"
+import occurrences from "../fabric/type/string/occurrences.js"
 import resolveScope from "./resolveScope.js"
 import getDirname from "../core/path/core/getDirname.js"
 
@@ -23,7 +23,7 @@ export default function findScope(ctx, loc) {
     }
 
     if (loc.startsWith("../")) {
-      const n = occurences(loc, "../")
+      const n = occurrences(loc, "../")
       const previous = ctx.scopeChain.at(-n)
       const newLoc = loc.slice(n * 3)
       if (

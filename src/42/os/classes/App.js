@@ -27,24 +27,37 @@ async function normalizeManifest(manifest, options) {
 
   if (inTop) {
     manifest.permissions ??= "app"
-
     if (manifest.permissions !== "app") {
       console.log("TODO: ask user for permissions")
     }
   }
+
+  manifest.state ??= {}
 
   if (options?.state) merge(manifest.state, options.state)
 
   return manifest
 }
 
-function makeScript(manifest) {
-  return escapeTemplate(`\
+function makeSandbox(manifest) {
+  if (manifest.path) {
+    return {
+      permissions: manifest.permissions,
+      path: manifest.path,
+    }
+  }
+
+  const script = escapeTemplate(`\
     import App from "${import.meta.url}"
     globalThis.app = await App.mount(
       ${JSON.stringify(manifest)},
       { skipNormalize: true }
     )`)
+
+  return {
+    permissions: manifest.permissions,
+    script,
+  }
 }
 
 export default class App extends UI {
@@ -53,39 +66,53 @@ export default class App extends UI {
       manifest.state.$files = manifest.state.paths.map((path) => ({ path }))
     }
 
-    super({
-      tag: ".box-fit.box-h",
-      content: manifest.menubar
-        ? [{ tag: "ui-menubar", content: manifest.menubar }, manifest.content]
-        : manifest.content,
-      state: manifest.state,
-      actions: {
-        io: {
-          new() {
-            console.log("new")
-          },
-          open() {
-            console.log("open")
-          },
-          save() {
-            console.log("save")
+    // if (!manifest.content && manifest.path) {
+    //   manifest.content = {
+    //     tag: "iframe.box-fit",
+    //     src: manifest.path,
+    //     // tag: "ui-sandbox",
+    //     // path: manifest.path,
+    //     // permissions: "trusted",
+    //     // check: false,
+    //   }
+    // }
+
+    super(
+      {
+        tag: ".box-fit.box-h",
+        content: manifest.menubar
+          ? [{ tag: "ui-menubar", content: manifest.menubar }, manifest.content]
+          : manifest.content,
+        state: manifest.state,
+        actions: {
+          io: {
+            new(...args) {
+              console.log("new", args)
+            },
+            open() {
+              console.log("open")
+            },
+            save() {
+              console.log("save")
+            },
           },
         },
       },
-    })
+      { trusted: true }
+    )
+
     this.manifest = manifest
   }
 
   // Execute App sandboxed in a top level page
   static async mount(manifest, options) {
     manifest = await normalizeManifest(manifest, options)
-    const script = makeScript(manifest)
+    const sandbox = makeSandbox(manifest)
 
     if (inTop) {
       return new UI({
         tag: "ui-sandbox.box-fit",
-        permissions: manifest.permissions,
-        script,
+        ...sandbox,
       })
     }
 
@@ -101,7 +128,7 @@ export default class App extends UI {
   // Execute App sandboxed inside a dialog
   static async launch(manifest, options) {
     manifest = await normalizeManifest(manifest, options)
-    const script = makeScript(manifest)
+    const sandbox = makeSandbox(manifest)
 
     const width = manifest.width ?? "400px"
     const height = manifest.height ?? "350px"
@@ -110,12 +137,15 @@ export default class App extends UI {
       .then((m) => m.default)
 
     return dialog({
-      label: manifest.name,
+      label: "{{render(1)}}",
       content: {
         style: { width, height },
         tag: "ui-sandbox" + (manifest.inset ? ".inset" : ""),
-        permissions: manifest.permissions,
-        script,
+        ...sandbox,
+      },
+      state: {
+        $app: manifest,
+        $files: options?.state?.paths.map((path) => ({ path })),
       },
     })
   }
