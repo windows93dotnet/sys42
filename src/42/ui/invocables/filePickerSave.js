@@ -16,7 +16,7 @@ export default async function filePickerSave(path, options) {
       footer: [
         {
           tag: "input.w-full",
-          scope: "name",
+          watch: "name",
           value: `{{selection.length > 0
             ? getBasename(selection/0)
             : this.value || '${untitled}'}}`,

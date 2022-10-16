@@ -45,12 +45,11 @@ function setValidation(def) {
 export default function renderControl(el, ctx, def) {
   el.id ||= hash(ctx.steps)
 
-  if (def.scope) {
-    ctx.scope = ctx.scopeBackup
-    ctx.scope = resolveScope(...findScope(ctx, def.scope), ctx)
-    el.name ||= ctx.scope
+  if (def.watch) {
+    const scope = resolveScope(...findScope(ctx, def.watch), ctx)
+    el.name ||= scope
 
-    register(ctx, ctx.scope, (val) => setControlData(el, val))
+    register(ctx, scope, (val) => setControlData(el, val))
 
     const fn = () => ctx.reactive.set(el.name, getControlData(el))
 

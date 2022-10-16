@@ -101,7 +101,7 @@ export class Explorer extends Component {
           },
           {
             tag: "input",
-            scope: "path",
+            watch: "path",
             debounce: true,
             compact: true,
             prose: false,

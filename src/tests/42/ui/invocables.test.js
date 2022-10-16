@@ -27,162 +27,162 @@ const manual = 0
 // )
 
 const makeDemo = () => [
-  {
-    tag: "button",
-    label: "Alert",
-    id: "alert",
-    async click() {
-      console.log(await alert("Hello, alert"))
-    },
-  },
-  {
-    tag: "button",
-    label: "Alert with icon",
-    id: "alertIcon",
-    async click() {
-      console.log(
-        await alert("Hello, alert", { icon: "warning", agree: "Fine !" })
-      )
-    },
-  },
-  {
-    tag: "button",
-    label: "Error",
-    id: "alertError",
-    async click() {
-      console.log(await alert(err))
-    },
-  },
-  {
-    tag: "button",
-    label: "Error with custom message",
-    id: "alertErrorCustom",
-    async click() {
-      console.log(
-        await alert(new TypeError("boom"), {
-          message: "Oops",
-          collapsed: false,
-        })
-      )
-    },
-  },
-  "\n\n",
-  "\n\n",
-  {
-    tag: "button",
-    label: "Confirm",
-    id: "confirm",
-    async click() {
-      console.log(await confirm("Do you confirm ?"))
-    },
-  },
-  {
-    tag: "button",
-    label: "Confirm with icon and custom buttons",
-    id: "confirmIcon",
-    async click() {
-      console.log(
-        await confirm("Do you confirm ?", {
-          icon: "question",
-          agree: { picto: "check", content: "Yep" },
-          decline: { picto: "cross", content: "Nope" },
-        })
-      )
-    },
-  },
-  "\n\n",
-  "\n\n",
-  {
-    tag: "button",
-    label: "Prompt",
-    id: "prompt",
-    async click() {
-      console.log(await prompt())
-    },
-  },
-  {
-    tag: "button",
-    label: "Prompt with icon",
-    id: "promptIcon",
-    async click() {
-      console.log(
-        await prompt(
-          "What is the meaning of life,\nthe universe and everything?",
-          { icon: "question", value: 42 }
-        )
-      )
-    },
-  },
-  {
-    tag: "button",
-    label: "Prompt auto textarea",
-    id: "promptAutoTextarea",
-    async click() {
-      console.log(await prompt({ value: "A text\nwith newlines\n..." }))
-    },
-  },
-  "\n\n",
-  "\n\n",
-  {
-    tag: "button",
-    label: "Progress",
-    id: "progress",
-    async click() {
-      const p = progress(100, { _icon: "error" })
-      const state = await p.state
-      state.value = 30
-      state.description = "0/1"
-    },
-  },
-  {
-    tag: "button",
-    label: "Progress as TransformStream",
-    id: "progressStream",
-    async click() {
-      http
-        .source("../../tests/fixtures/stream/html_standard.html.gz", {
-          cors: "no-cors",
-        })
-        .size((total, rs) => {
-          rs.pipeThrough(stream.ts.cut(10_000))
-            .pipeThrough(stream.ts.pressure(100))
-            .pipeThrough(progress(total, { keep: !true }))
-            .pipeTo(stream.ws.sink())
-            .catch(() => {
-              console.log("canceled pipeline")
-            })
-        })
-    },
-  },
-  "\n\n",
-  "\n\n",
-  {
-    tag: "button",
-    label: "Explorer",
-    id: "explorer",
-    async click() {
-      console.log(await explorer())
-    },
-  },
-  "\n\n",
-  "\n\n",
-  {
-    tag: "button",
-    label: "File Picker Open",
-    id: "filePickerOpen",
-    async click() {
-      console.log(await filePicker.open())
-    },
-  },
-  {
-    tag: "button",
-    label: "File Picker Open Path",
-    id: "filePickerOpenPath",
-    async click() {
-      console.log(await filePicker.open("/tests/fixtures/website/index.html"))
-    },
-  },
-  "\n\n",
+  // {
+  //   tag: "button",
+  //   label: "Alert",
+  //   id: "alert",
+  //   async click() {
+  //     console.log(await alert("Hello, alert"))
+  //   },
+  // },
+  // {
+  //   tag: "button",
+  //   label: "Alert with icon",
+  //   id: "alertIcon",
+  //   async click() {
+  //     console.log(
+  //       await alert("Hello, alert", { icon: "warning", agree: "Fine !" })
+  //     )
+  //   },
+  // },
+  // {
+  //   tag: "button",
+  //   label: "Error",
+  //   id: "alertError",
+  //   async click() {
+  //     console.log(await alert(err))
+  //   },
+  // },
+  // {
+  //   tag: "button",
+  //   label: "Error with custom message",
+  //   id: "alertErrorCustom",
+  //   async click() {
+  //     console.log(
+  //       await alert(new TypeError("boom"), {
+  //         message: "Oops",
+  //         collapsed: false,
+  //       })
+  //     )
+  //   },
+  // },
+  // "\n\n",
+  // "\n\n",
+  // {
+  //   tag: "button",
+  //   label: "Confirm",
+  //   id: "confirm",
+  //   async click() {
+  //     console.log(await confirm("Do you confirm ?"))
+  //   },
+  // },
+  // {
+  //   tag: "button",
+  //   label: "Confirm with icon and custom buttons",
+  //   id: "confirmIcon",
+  //   async click() {
+  //     console.log(
+  //       await confirm("Do you confirm ?", {
+  //         icon: "question",
+  //         agree: { picto: "check", content: "Yep" },
+  //         decline: { picto: "cross", content: "Nope" },
+  //       })
+  //     )
+  //   },
+  // },
+  // "\n\n",
+  // "\n\n",
+  // {
+  //   tag: "button",
+  //   label: "Prompt",
+  //   id: "prompt",
+  //   async click() {
+  //     console.log(await prompt())
+  //   },
+  // },
+  // {
+  //   tag: "button",
+  //   label: "Prompt with icon",
+  //   id: "promptIcon",
+  //   async click() {
+  //     console.log(
+  //       await prompt(
+  //         "What is the meaning of life,\nthe universe and everything?",
+  //         { icon: "question", value: 42 }
+  //       )
+  //     )
+  //   },
+  // },
+  // {
+  //   tag: "button",
+  //   label: "Prompt auto textarea",
+  //   id: "promptAutoTextarea",
+  //   async click() {
+  //     console.log(await prompt({ value: "A text\nwith newlines\n..." }))
+  //   },
+  // },
+  // "\n\n",
+  // "\n\n",
+  // {
+  //   tag: "button",
+  //   label: "Progress",
+  //   id: "progress",
+  //   async click() {
+  //     const p = progress(100, { _icon: "error" })
+  //     const state = await p.state
+  //     state.value = 30
+  //     state.description = "0/1"
+  //   },
+  // },
+  // {
+  //   tag: "button",
+  //   label: "Progress as TransformStream",
+  //   id: "progressStream",
+  //   async click() {
+  //     http
+  //       .source("../../tests/fixtures/stream/html_standard.html.gz", {
+  //         cors: "no-cors",
+  //       })
+  //       .size((total, rs) => {
+  //         rs.pipeThrough(stream.ts.cut(10_000))
+  //           .pipeThrough(stream.ts.pressure(100))
+  //           .pipeThrough(progress(total, { keep: !true }))
+  //           .pipeTo(stream.ws.sink())
+  //           .catch(() => {
+  //             console.log("canceled pipeline")
+  //           })
+  //       })
+  //   },
+  // },
+  // "\n\n",
+  // "\n\n",
+  // {
+  //   tag: "button",
+  //   label: "Explorer",
+  //   id: "explorer",
+  //   async click() {
+  //     console.log(await explorer())
+  //   },
+  // },
+  // "\n\n",
+  // "\n\n",
+  // {
+  //   tag: "button",
+  //   label: "File Picker Open",
+  //   id: "filePickerOpen",
+  //   async click() {
+  //     console.log(await filePicker.open())
+  //   },
+  // },
+  // {
+  //   tag: "button",
+  //   label: "File Picker Open Path",
+  //   id: "filePickerOpenPath",
+  //   async click() {
+  //     console.log(await filePicker.open("/tests/fixtures/website/index.html"))
+  //   },
+  // },
+  // "\n\n",
   {
     tag: "button",
     label: "File Picker Save",
@@ -191,14 +191,14 @@ const makeDemo = () => [
       console.log(await filePicker.save())
     },
   },
-  {
-    tag: "button",
-    label: 'File Picker Save with content "hello world"',
-    id: "filePickerSaveContent",
-    async click() {
-      console.log(await filePicker.save("/hello.txt", "hello world"))
-    },
-  },
+  // {
+  //   tag: "button",
+  //   label: 'File Picker Save with content "hello world"',
+  //   id: "filePickerSaveContent",
+  //   async click() {
+  //     console.log(await filePicker.save("/hello.txt", "hello world"))
+  //   },
+  // },
 ]
 
 if (inTop) {
