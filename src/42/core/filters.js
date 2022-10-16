@@ -5,6 +5,7 @@ import locate from "../fabric/locator/locate.js"
 import bytesize from "../fabric/type/file/bytesize.js"
 import trailZeros from "../fabric/type/number/trailZeros.js"
 import dispatch from "../fabric/event/dispatch.js"
+import queueTask from "../fabric/type/function/queueTask.js"
 import { round, floor, ceil } from "../fabric/type/number/precision.js"
 import io from "../io.js"
 
@@ -175,6 +176,10 @@ types.fs = {
     ])
     fs.source(path, "utf8")
       .pipeTo(sinkField(this.el))
+      .then(() => {
+        dispatch(this.el, "input")
+        dispatch(this.el, "change")
+      })
       .catch((err) => dispatch(this.el, err))
   },
 }
@@ -198,19 +203,33 @@ types.ui = {
   prompt: "prompt",
 }
 
+types.field = {
+  select(string, field = this.el) {
+    field.focus()
+    field.setSelectionRange(0, 0)
+    const { value } = field
+    const start = value.indexOf(string)
+    start > -1
+      ? field.setSelectionRange(start, start + string.length)
+      : field.setSelectionRange(0, value.length)
+    // needed when document wasn't focused
+    queueTask(() => {
+      start > -1
+        ? field.setSelectionRange(start, start + string.length)
+        : field.setSelectionRange(0, value.length)
+    })
+  },
+}
+
 types.io = io
 types.filePicker = {
-  async open(path) {
-    const filePickerOpen = await import(
-      "../ui/invocables/filePickerOpen.js"
-    ).then((m) => m.default)
-    return filePickerOpen(path)
+  async open(...args) {
+    return import("../ui/invocables/filePickerOpen.js") //
+      .then((m) => m.default(...args))
   },
-  async save(path) {
-    const filePickerOpen = await import(
-      "../ui/invocables/filePickerSave.js"
-    ).then((m) => m.default)
-    return filePickerOpen(path)
+  async save(...args) {
+    return import("../ui/invocables/filePickerSave.js") //
+      .then((m) => m.default(...args))
   },
 }
 
