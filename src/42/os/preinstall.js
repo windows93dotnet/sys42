@@ -107,7 +107,7 @@ export default async function preinstall(app) {
   // https://web.dev/customize-install/
 
   window.addEventListener("beforeinstallprompt", (e) => {
-    // e.preventDefault()
+    e.preventDefault()
     deferred.resolve(e)
     document.querySelector("#install")?.removeAttribute("disabled")
   })

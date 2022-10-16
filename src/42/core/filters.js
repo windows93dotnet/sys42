@@ -1,5 +1,3 @@
-/* eslint-disable no-useless-concat */
-
 // @read https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters
 // @read https://ansible-docs.readthedocs.io/zh/stable-2.0/rst/playbooks_filters.html
 
@@ -188,7 +186,6 @@ types.file = {
 
 types.ui = {
   async render(item) {
-    if (typeof item === "string" && item.contains("{" + "{")) return item
     const render = await import("../ui/render.js").then((m) => m.default)
     queueMicrotask(() => {
       if (!this.el) return
