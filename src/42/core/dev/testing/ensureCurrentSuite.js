@@ -45,7 +45,7 @@ export default function ensureCurrentSuite(titled) {
 
   if (exist === false) {
     system.testing.current = system.testing.root
-    const suite = new Suite(title, parentModule.url)
+    const suite = new Suite(title, parentModule.url, system.testing.root.stats)
     system.testing.current.suites.push(suite)
     system.testing.current = suite
     system.testing.suites.set(title, suite)

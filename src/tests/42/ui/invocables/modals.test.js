@@ -7,13 +7,13 @@ import prompt from "../../../../42/ui/invocables/prompt.js"
 import alert from "../../../../42/ui/invocables/alert.js"
 import confirm from "../../../../42/ui/invocables/confirm.js"
 
-const manual = 0
+const manual = 1
 
 let res
 const undef = Symbol("undef")
 function log(arg) {
-  if (manual) log(arg)
-  else res = arg ?? undef
+  if (manual) console.log(inTop, arg)
+  res = arg ?? undef
 }
 
 const { href } = new URL(
@@ -121,49 +121,105 @@ const makeDemo = () => ({
   ],
 })
 
-if (inTop) {
-  test.ui(1, async (t) => {
-    const { decay, dest } = t.utils
+test.ui(async (t) => {
+  // console.group("inTop", inTop)
+  // console.log(t.utils.decay)
+  // console.log(t.utils.dest)
+  // console.groupEnd()
 
-    await decay(
-      ui(
-        dest({ connect: true }),
-        {
-          id: "invocableDemo",
-          tag: ".box-fit.desktop",
-          content: {
-            tag: ".box-v.size-full",
-            content: [
-              makeDemo(),
-              {
-                tag: "ui-sandbox.panel",
-                permissions: "trusted",
-                path: href,
-              },
-            ],
-          },
-        },
-        { trusted: true }
-      )
+  await t.utils.decay(
+    ui(
+      // t.utils.dest({ connect: true }),
+      {
+        id: "invocableDemo",
+        tag: ".box-fit.desktop",
+        content: inTop
+          ? {
+              tag: ".box-v.size-full",
+              content: [
+                makeDemo(),
+                {
+                  tag: "ui-sandbox.panel",
+                  permissions: "trusted",
+                  path: href,
+                },
+              ],
+            }
+          : makeDemo(),
+      },
+      { trusted: true }
     )
+  )
 
-    await t.puppet("#alert").click().when("uidialogopen")
-    await t.puppet(".dialog__agree").click().when("uidialogclose")
-    t.is(res, true)
+  await t.puppet("#alert").click().when("uidialogopen")
+  await t.puppet(".dialog__agree").click().when("uidialogclose")
+  t.is(res, true)
 
-    await t.puppet("#alert").click().when("uidialogopen")
-    await t.puppet(".ui-dialog__close").click().when("uidialogclose")
-    t.is(res, undef)
-  })
-} else {
-  document.body.classList.add("debug")
+  // await t.puppet("#alert").click().when("uidialogopen")
+  // await t.puppet(".ui-dialog__close").click().when("uidialogclose")
+  // t.is(res, undef)
+})
 
-  await ui({
-    content: makeDemo(),
-    initiator: "invocableDemo",
-  })
+// if (inTop) {
+//   test.ui(1, async (t) => {
+//     const { decay, dest } = t.utils
 
-  test(1, (t) => {
-    t.is(1, 2)
-  })
-}
+//     await decay(
+//       ui(
+//         dest({ connect: true }),
+//         {
+//           id: "invocableDemo",
+//           tag: ".box-fit.desktop",
+//           content: {
+//             tag: ".box-v.size-full",
+//             content: [
+//               makeDemo(),
+//               {
+//                 tag: "ui-sandbox.panel",
+//                 permissions: "trusted",
+//                 path: href,
+//               },
+//             ],
+//           },
+//         },
+//         { trusted: true }
+//       )
+//     )
+
+//     const iframe = t.puppet.$.query("iframe")
+
+//     await test("alert agree", async (t) => {
+//       await t.puppet("#alert").click().when("uidialogopen")
+//       await t.puppet(".dialog__agree").click().when("uidialogclose")
+//       await t.sleep(0)
+//       t.is(res, true)
+//     })
+
+//     res = undefined
+
+//     await test("alert agree", "iframe", async (t) => {
+//       await t.puppet("#alert", iframe).click().when("uidialogopen")
+//       await t.puppet(".dialog__agree").click().when("uidialogclose")
+//       await t.sleep(0)
+//       t.is(res, true)
+//     })
+
+//     res = undefined
+
+//     await test("alert decline", async (t) => {
+//       await t.puppet("#alert").click().when("uidialogopen")
+//       await t.puppet(".ui-dialog__close").click().when("uidialogclose")
+//       await t.sleep(0)
+//       t.is(res, undef)
+//     })
+
+//     t.pass()
+//   })
+// } else {
+//   document.body.classList.add("debug")
+
+//   await ui({
+//     content: makeDemo(),
+//     initiator: "invocableDemo",
+//   })
+// }

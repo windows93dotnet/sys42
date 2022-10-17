@@ -63,7 +63,7 @@ export default async function runTests(options = {}) {
   forget()
 
   if (uncaughts.length > 0) {
-    system.testing.root.ok = false
+    system.testing.root.stats.ok = false
     system.testing.root.uncaughts.push(...uncaughts)
     uncaughts.length = 0
   }

@@ -105,6 +105,8 @@ export const test = chainable(
           const suffix = params.get("suffix") ?? params.get("title") ?? "iframe"
           title.push(suffix)
         }
+      } else if (sbs.current.currentTest) {
+        title.unshift(...sbs.current.currentTest.title)
       }
 
       if (data.cb) fn = makeCallbackTest(fn)
@@ -128,15 +130,24 @@ export const test = chainable(
       if (data.serial) test.serial = true
       if (data.flaky) test.flaky = 2
 
+      // nested tests
+      if (sbs.root.running) {
+        if (data.only) {
+          throw new Error('nested tests "only" option is not supported')
+        }
+
+        sbs.current.tests.push(test)
+        const promise = test.suite.runTest(test, { nested: true })
+        sbs.root.nesteds.push(promise)
+        return promise
+      }
+
       if (data.only) {
         sbs.current.onlies.add(test)
         sbs.root.onlies.add(sbs.current)
       } else {
         sbs.current.tests.push(test)
       }
-
-      // tests can run additional tests
-      if (sbs.started) test.suite.runTest(test)
     }
   }
 )

@@ -188,9 +188,21 @@ const makePuppet = () => {
             undones.push(...data.targets.map((target) => item(target)))
           } else if ("target" in item) {
             if (typeof item.target === "string") {
+              let { options } = item
+
+              if (typeof item.options === "string") {
+                options = { base: await waitFor(item.options) }
+              } else if (item.options?.nodeType === Node.ELEMENT_NODE) {
+                options = { base: item.options }
+              }
+
+              if (options?.base?.localName === "iframe") {
+                options.base = options.base.contentWindow.document.body
+              }
+
               try {
                 data.targets = await waitFor(item.target, {
-                  ...item.options,
+                  ...options,
                   all: true,
                 })
               } catch (err) {

@@ -394,7 +394,7 @@ export default class Assert {
     }
   }
 
-  trueInstanceOf(actual, expected, message) {
+  instanceOf(actual, expected, message) {
     this.#addCall()
 
     if (!expected?.name) {

@@ -1,3 +1,4 @@
+// import test from "../../../test.js"
 import inTop from "../../env/realm/inTop.js"
 import trap from "../../../fabric/type/error/trap.js"
 import debounce from "../../../fabric/type/function/debounce.js"
@@ -5,7 +6,7 @@ import unsee from "../../../fabric/dom/unsee.js"
 
 // Integration tests self-execute if not started from a test runner.
 // It allow to manually debug GUI tests inside a webpage
-// because the last executed test will not decay elements/componenents
+// because the last executed test will not decay elements/components
 
 let total = 0
 let index = 0
@@ -35,7 +36,7 @@ export default function uiTest(fn, sbs) {
   let manual = false
 
   requestIdleCallback(async () => {
-    if (!inTop || sbs.started) return
+    if (!inTop && sbs.started) return
     manual = true
     selfExecute(sbs)
   })
@@ -43,13 +44,14 @@ export default function uiTest(fn, sbs) {
   return async (t) => {
     index++
 
-    if (manual && index === total) {
+    if (!inTop || (manual && index === total)) {
       const { dest } = t.utils
       Object.assign(t.utils, {
         decay: (item) => item,
         dest(options = {}) {
           options.keep = true
           return dest(options)
+          // return test.utils.dest(options)
         },
       })
     } else {
