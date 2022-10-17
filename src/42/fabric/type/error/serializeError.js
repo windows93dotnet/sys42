@@ -3,6 +3,7 @@ import allKeys from "../object/allKeys.js"
 import addStack from "./addStack.js"
 import omit from "../object/omit.js"
 import normalizeError from "./normalizeError.js"
+import isInstanceOf from "../../isInstanceOf.js"
 
 const ERROR_EVENT_INFOS = ["lineno", "colno", "filename"]
 
@@ -11,10 +12,9 @@ export default function serializeError(error) {
 
   error = normalizeError(error)
 
-  const keys =
-    error instanceof DOMException
-      ? Object.keys(error) // prevent legacy constant codes
-      : allKeys(error)
+  const keys = isInstanceOf(error, DOMException)
+    ? Object.keys(error) // prevent legacy constant codes
+    : allKeys(error)
 
   for (const key of keys) details[key] = error[key]
 
