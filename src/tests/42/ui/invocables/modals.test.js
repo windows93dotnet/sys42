@@ -122,20 +122,19 @@ const makeDemo = () => ({
 })
 
 test.ui("modals", inTop, async (t) => {
-  t.timeout(5000)
   await t.utils.decay(
     ui(
       t.utils.dest({ connect: true }),
       {
         id: "invocableDemo",
-        tag: ".box-fit.desktop",
+        tag: inTop ? ".box-fit.desktop" : ".box-fit",
         content: inTop
           ? {
               tag: ".box-v.size-full",
               content: [
                 makeDemo(),
                 {
-                  tag: "ui-sandbox.panel",
+                  tag: "ui-sandbox.ground",
                   permissions: "trusted",
                   path: href,
                 },
@@ -151,22 +150,15 @@ test.ui("modals", inTop, async (t) => {
 
   const { body } = window.top.document
 
-  // await test("alert agree", async (t) => {
   await t.puppet("#alert").click().when(body, "uidialogopen")
   await t.puppet(".dialog__agree", body).click().when(body, "uidialogclose")
   await t.sleep(0)
   t.is(res, true)
-  // })
 
   res = undefined
 
-  // await test("alert decline", async (t) => {
   await t.puppet("#alert").click().when(body, "uidialogopen")
   await t.puppet(".ui-dialog__close", body).click().when(body, "uidialogclose")
   await t.sleep(0)
   t.is(res, undef)
-  // })
-
-  // t.pass()
-  // console.log("---", inTop)
 })

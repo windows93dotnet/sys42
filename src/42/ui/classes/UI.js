@@ -1,3 +1,4 @@
+import "../head.js"
 import ensureElement from "../../fabric/dom/ensureElement.js"
 import asyncable from "../../fabric/traits/asyncable.js"
 import render from "../render.js"

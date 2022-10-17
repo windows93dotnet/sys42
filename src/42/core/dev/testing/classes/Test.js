@@ -16,6 +16,7 @@ export default class Test {
     this.skip = false
     this.serial = false
     this.flaky = 0
+    this.nesteds = []
 
     this.done = defer()
     this.deferred = defer()

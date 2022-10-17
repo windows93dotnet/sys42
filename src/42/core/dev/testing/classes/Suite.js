@@ -45,7 +45,6 @@ export default class Suite {
     this.teardowns = []
     this.warnings = []
     this.uncaughts = []
-    this.nesteds = []
     this.timeout = 300
     this.only = false
     this.skip = false
@@ -97,6 +96,7 @@ export default class Suite {
     const t = new ExecutionContext()
 
     t.suite = { title: this.title }
+    t.test = { title: test.title }
 
     try {
       test.timeStamp = performance.now()
@@ -118,6 +118,9 @@ export default class Suite {
         test.ok = true
       }
     }
+
+    test.done.resolve()
+    if (test.nesteds.length > 0) await Promise.all(test.nesteds)
 
     t.cleanup()
 
@@ -153,8 +156,6 @@ export default class Suite {
     oneach(test)
 
     if (this.afterEach) await this.warnOnThrow(this.afterEach, "afterEach")
-
-    test.done.resolve()
   }
 
   async runSuite(suite, options) {
@@ -231,7 +232,6 @@ export default class Suite {
     this.root.stats.onlies += this.stats.onlies
 
     if (this.title === "#root") {
-      if (this.nesteds.length > 0) await Promise.all(this.nesteds)
       this.ms = performance.now() - timeStamp
     }
 

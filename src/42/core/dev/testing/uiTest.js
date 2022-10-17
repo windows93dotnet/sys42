@@ -1,4 +1,3 @@
-// import test from "../../../test.js"
 import inTop from "../../env/realm/inTop.js"
 import trap from "../../../fabric/type/error/trap.js"
 import debounce from "../../../fabric/type/function/debounce.js"
@@ -36,7 +35,8 @@ export default function uiTest(fn, sbs) {
   let manual = false
 
   requestIdleCallback(async () => {
-    if (!inTop && sbs.started) return
+    if (!inTop || sbs.started) return
+    sbs.manual = true
     manual = true
     selfExecute(sbs)
   })
@@ -51,7 +51,6 @@ export default function uiTest(fn, sbs) {
         dest(options = {}) {
           options.keep = true
           return dest(options)
-          // return test.utils.dest(options)
         },
       })
     } else {
