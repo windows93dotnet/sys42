@@ -2,7 +2,6 @@ import inTop from "../../env/realm/inTop.js"
 import trap from "../../../fabric/type/error/trap.js"
 import debounce from "../../../fabric/type/function/debounce.js"
 import unsee from "../../../fabric/dom/unsee.js"
-// import { whenTestFileReady } from "./htmlTest.js"
 
 // Integration tests self-execute if not started from a test runner.
 // It allow to manually debug GUI tests inside a webpage
@@ -12,6 +11,7 @@ let total = 0
 let index = 0
 
 const selfExecute = debounce(async (sbs) => {
+  sbs.started = true
   document.body.classList.add("debug")
 
   for (const suite of sbs.root.suites) {
@@ -62,22 +62,5 @@ export default function uiTest(fn, sbs) {
 
     await 0 // queueMicrotask
     await fn(t, t.utils)
-
-    // TODO: check tests loaded in an iframe
-    // -------------------------------------
-
-    // t.timeout("reset")
-
-    // const iframes = document.querySelectorAll('iframe[src$="test=true"]')
-    // if (iframes.length > 0) {
-    //   t.timeout(3000)
-    //   const undones = []
-
-    //   for (const iframe of iframes) {
-    //     undones.push(whenTestFileReady(iframe.src))
-    //   }
-
-    //   await Promise.all(undones)
-    // }
   }
 }

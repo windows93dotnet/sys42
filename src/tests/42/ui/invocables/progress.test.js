@@ -68,7 +68,7 @@ if (inTop) {
           id: "invocableDemo",
           tag: ".box-fit.desktop",
           content: {
-            tag: ".box-v.full",
+            tag: ".box-v.size-full",
             content: [
               makeDemo(),
               {

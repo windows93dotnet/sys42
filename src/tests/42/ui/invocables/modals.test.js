@@ -132,7 +132,7 @@ if (inTop) {
           id: "invocableDemo",
           tag: ".box-fit.desktop",
           content: {
-            tag: ".box-v.full",
+            tag: ".box-v.size-full",
             content: [
               makeDemo(),
               {
@@ -157,8 +157,13 @@ if (inTop) {
   })
 } else {
   document.body.classList.add("debug")
+
   await ui({
     content: makeDemo(),
     initiator: "invocableDemo",
+  })
+
+  test(1, (t) => {
+    t.is(1, 2)
   })
 }

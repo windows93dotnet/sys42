@@ -6,6 +6,12 @@
 
 import isEmptyObject from "./is/isEmptyObject.js"
 import isLength from "./is/isLength.js"
+import isInstanceOf from "../../isInstanceOf.js"
+
+export {
+  default as isInstanceOf,
+  isDirectInstanceOf,
+} from "../../isInstanceOf.js"
 
 // TODO: move more usefull is* functions in 'any' folder
 export { default as isObject } from "./is/isObject.js"
@@ -43,11 +49,11 @@ export const isBoolean = (x) => typeof x === "boolean"
 export const isString = (x) => typeof x === "string"
 export const isSymbol = (x) => typeof x === "symbol"
 export const isFunction = (x) => typeof x === "function"
-export const isSet = (x) => x instanceof Set
-export const isMap = (x) => x instanceof Map
-export const isDate = (x) => x instanceof Date
-export const isError = (x) => x instanceof Error
-export const isPromise = (x) => x instanceof Promise
+export const isSet = (x) => isInstanceOf(x, Set)
+export const isMap = (x) => isInstanceOf(x, Map)
+export const isDate = (x) => isInstanceOf(x, Date)
+export const isError = (x) => isInstanceOf(x, Error)
+export const isPromise = (x) => isInstanceOf(x, Promise)
 
 export const isMapOrSet = (x) => isMap(x) || isSet(x)
 
@@ -66,11 +72,11 @@ export const isIterator = (x) =>
 
 export const isEmptyArray = (x) => x?.length === 0
 
-export const isArrayBuffer = (x) => x instanceof ArrayBuffer
+export const isArrayBuffer = (x) => isInstanceOf(x, ArrayBuffer)
 
 const TypedArray = Reflect.getPrototypeOf(Int8Array)
-export const isTypedArray = (x) => x instanceof TypedArray
-export const isDataView = (x) => x instanceof DataView
+export const isTypedArray = (x) => isInstanceOf(x, TypedArray)
+export const isDataView = (x) => isInstanceOf(x, DataView)
 export const isArrayBufferView = (x) => ArrayBuffer.isView(x)
 
 export const isEmpty = (x) => {

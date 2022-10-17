@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 // @thanks https://github.com/avajs/ava
 
 import system from "./core/dev/testing/mainSystem.js"
@@ -7,6 +8,7 @@ import Test from "./core/dev/testing/classes/Test.js"
 import ensureCurrentSuite from "./core/dev/testing/ensureCurrentSuite.js"
 import addUtilities from "./core/dev/testing/addUtilities.js"
 import uiTest from "./core/dev/testing/uiTest.js"
+import inIframe from "./core/env/realm/inIframe.js"
 
 export { default as mock } from "./core/dev/testing/mock.js"
 
@@ -95,6 +97,16 @@ export const test = chainable(
     else {
       const title = args
 
+      if (inIframe) {
+        const params = new URLSearchParams(location.search)
+        if (params.has("prefix")) {
+          title.unshift(params.has("prefix"))
+        } else {
+          const suffix = params.get("suffix") ?? params.get("title") ?? "iframe"
+          title.push(suffix)
+        }
+      }
+
       if (data.cb) fn = makeCallbackTest(fn)
       if (data.ui) {
         fn = uiTest(fn, sbs)
@@ -122,6 +134,9 @@ export const test = chainable(
       } else {
         sbs.current.tests.push(test)
       }
+
+      // tests can run additional tests
+      if (sbs.started) test.suite.runTest(test)
     }
   }
 )

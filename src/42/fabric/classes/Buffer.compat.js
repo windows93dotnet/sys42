@@ -13,7 +13,7 @@
 
 import base64 from "../../core/formats/base64.js"
 import ieee754 from "../../core/formats/ieee754.js"
-import isInstance from "../isInstance.js"
+import isInstanceOf from "../isInstanceOf.js"
 
 const customInspectSymbol =
   typeof Symbol === "function" && typeof Symbol["for"] === "function" // eslint-disable-line dot-notation
@@ -99,16 +99,16 @@ function from(value, encodingOrOffset, length) {
   }
 
   if (
-    isInstance(value, ArrayBuffer) ||
-    (value && isInstance(value.buffer, ArrayBuffer))
+    isInstanceOf(value, ArrayBuffer) ||
+    (value && isInstanceOf(value.buffer, ArrayBuffer))
   ) {
     return fromArrayBuffer(value, encodingOrOffset, length)
   }
 
   if (
     typeof SharedArrayBuffer !== "undefined" &&
-    (isInstance(value, SharedArrayBuffer) ||
-      (value && isInstance(value.buffer, SharedArrayBuffer)))
+    (isInstanceOf(value, SharedArrayBuffer) ||
+      (value && isInstanceOf(value.buffer, SharedArrayBuffer)))
   ) {
     return fromArrayBuffer(value, encodingOrOffset, length)
   }
@@ -253,7 +253,7 @@ function fromArrayLike(array) {
 }
 
 function fromArrayView(arrayView) {
-  if (isInstance(arrayView, Uint8Array)) {
+  if (isInstanceOf(arrayView, Uint8Array)) {
     const copy = new Uint8Array(arrayView)
     return fromArrayBuffer(copy.buffer, copy.byteOffset, copy.byteLength)
   }
@@ -339,8 +339,8 @@ Buffer.isBuffer = function isBuffer(b) {
 }
 
 Buffer.compare = function compare(a, b) {
-  if (isInstance(a, Uint8Array)) a = Buffer.from(a, a.offset, a.byteLength)
-  if (isInstance(b, Uint8Array)) b = Buffer.from(b, b.offset, b.byteLength)
+  if (isInstanceOf(a, Uint8Array)) a = Buffer.from(a, a.offset, a.byteLength)
+  if (isInstanceOf(b, Uint8Array)) b = Buffer.from(b, b.offset, b.byteLength)
   if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
     throw new TypeError(
       'The "buf1", "buf2" arguments must be one of type Buffer or Uint8Array'
@@ -405,7 +405,7 @@ Buffer.concat = function concat(list, length) {
   let pos = 0
   for (i = 0; i < list.length; ++i) {
     let buf = list[i]
-    if (isInstance(buf, Uint8Array)) {
+    if (isInstanceOf(buf, Uint8Array)) {
       if (pos + buf.length > buffer.length) {
         if (!Buffer.isBuffer(buf)) {
           buf = Buffer.from(buf.buffer, buf.byteOffset, buf.byteLength)
@@ -432,7 +432,7 @@ function byteLength(string, encoding) {
     return string.length
   }
 
-  if (ArrayBuffer.isView(string) || isInstance(string, ArrayBuffer)) {
+  if (ArrayBuffer.isView(string) || isInstanceOf(string, ArrayBuffer)) {
     return string.byteLength
   }
 
@@ -642,7 +642,7 @@ Buffer.prototype.compare = function compare(
   thisStart,
   thisEnd
 ) {
-  if (isInstance(target, Uint8Array)) {
+  if (isInstanceOf(target, Uint8Array)) {
     target = Buffer.from(target, target.offset, target.byteLength)
   }
 

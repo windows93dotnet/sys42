@@ -7,10 +7,20 @@ import Suite from "./classes/Suite.js"
 const TITLE_REGEX =
   /^\.?\/?(_{0,2}tests?_{0,2})\/?|(\.(test|spec))?\.(c|m)?js$/gi
 
-let lastTitled
+let originalScript
+if (inIframe) {
+  for (const { src } of document.querySelectorAll("script")) {
+    if (src.endsWith(".test.js")) {
+      originalScript = src
+    }
+  }
+}
+
 export default function ensureCurrentSuite(titled) {
   const parentModule = inIframe
-    ? { url: location.href, stack: [{ filename: location.href }] }
+    ? originalScript
+      ? { url: originalScript, stack: [{ filename: originalScript }] }
+      : { url: location.href, stack: [{ filename: location.href }] }
     : getParentModule(/\.test\.(js|html)/)
 
   let exist
@@ -21,12 +31,12 @@ export default function ensureCurrentSuite(titled) {
     .replace(/\?.*$/, "")
     .replace(/\.(test|demo)\.html/, " (html)")
 
-  if (titled) lastTitled = titled
+  if (titled) system.testing.lastTitled = titled
   else if (
-    lastTitled &&
-    system.testing.suites.has(`${moduleTitle}/${lastTitled}`)
+    system.testing.lastTitled &&
+    system.testing.suites.has(`${moduleTitle}/${system.testing.lastTitled}`)
   ) {
-    titled = lastTitled
+    titled = system.testing.lastTitled
   }
 
   const title = titled ? `${moduleTitle}/${titled}` : moduleTitle

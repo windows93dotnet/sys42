@@ -1,10 +1,14 @@
+import isInstanceOf from "../../isInstanceOf.js"
 const ERROR_EVENT_INFOS = ["lineno", "colno", "filename", "type", "message"]
 
 export default function normalizeError(e, originStack = new Error().stack) {
-  let error = e instanceof Error ? e : e.error ?? e.reason
+  let error = isInstanceOf(e, Error) ? e : e.error ?? e.reason
 
   if (!error) {
-    error = new Error(e.message ?? "Unable to extract information from error")
+    error = new Error(
+      (e?.message ? e.message + " --- " : "") +
+        "Unable to extract information from error"
+    )
     error.stack = originStack
   } else if (typeof error !== "object") {
     error = new Error(String(error))
