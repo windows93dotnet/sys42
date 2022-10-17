@@ -238,7 +238,9 @@ const makePuppet = () => {
     }
   )
 
-  instance.$ = $
+  instance.$ = (...args) => $.query(...args)
+  instance.$$ = (...args) => $.queryAll(...args)
+  instance.$$$ = (...args) => $.each(...args)
   instance.makePuppet = makePuppet
 
   return instance

@@ -134,7 +134,7 @@ test("infos", async (t) => {
     },
   })
 
-  const icons = t.puppet.$("ui-icon", app.el)
+  const icons = t.puppet.$$$("ui-icon", app.el)
   const { infos } = icons
 
   t.eq(
@@ -255,7 +255,7 @@ test("each", async (t) => {
     "/ui/icon/root,[0]/infos/description",
   ])
 
-  const icons = t.puppet.$("ui-icon", { live: true, base: app.el })
+  const icons = t.puppet.$$$("ui-icon", { live: true, base: app.el })
   t.eq(icons.textContent, ["foo\u200b.js", "derp"])
 
   app.state.arr = [{ x: "bar.txt" }]
@@ -306,7 +306,7 @@ test("each", 2, async (t) => {
     "/ui/icon/root,[0]/infos/description",
   ])
 
-  const icons = t.puppet.$("ui-icon", { live: true, base: app.el })
+  const icons = t.puppet.$$$("ui-icon", { live: true, base: app.el })
   t.eq(icons.textContent, ["foo\u200b.js", "derp"])
   t.eq(
     icons.infos.map(({ image }) => image),
