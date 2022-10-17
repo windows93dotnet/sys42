@@ -146,7 +146,9 @@ export const test = chainable(
               test.suite.runTest(test, { nested: true })
             )
           : test.suite.runTest(test, { nested: true })
-        sbs.root.nesteds.push(promise)
+
+        sbs.root.currentTest.nesteds.push(promise)
+
         return promise
       }
 
