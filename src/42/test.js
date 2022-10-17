@@ -97,6 +97,12 @@ export const test = chainable(
     else {
       const title = args
 
+      // if (sbs.root.running) {
+      //   if (sbs.root.currentTest) {
+      //     title.unshift(...sbs.root.currentTest.title)
+      //   }
+      // }
+
       if (inIframe) {
         const params = new URLSearchParams(location.search)
         if (params.has("prefix")) {
@@ -105,8 +111,6 @@ export const test = chainable(
           const suffix = params.get("suffix") ?? params.get("title") ?? "iframe"
           title.push(suffix)
         }
-      } else if (sbs.current.currentTest) {
-        title.unshift(...sbs.current.currentTest.title)
       }
 
       if (data.cb) fn = makeCallbackTest(fn)
@@ -137,7 +141,11 @@ export const test = chainable(
         }
 
         sbs.current.tests.push(test)
-        const promise = test.suite.runTest(test, { nested: true })
+        const promise = inIframe
+          ? sbs.root.currentTest.done.then(() =>
+              test.suite.runTest(test, { nested: true })
+            )
+          : test.suite.runTest(test, { nested: true })
         sbs.root.nesteds.push(promise)
         return promise
       }

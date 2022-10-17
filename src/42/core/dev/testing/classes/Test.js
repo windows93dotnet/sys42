@@ -17,6 +17,7 @@ export default class Test {
     this.serial = false
     this.flaky = 0
 
+    this.done = defer()
     this.deferred = defer()
     this.deferred.promise.catch((err) => {
       if (this.ran === false) {

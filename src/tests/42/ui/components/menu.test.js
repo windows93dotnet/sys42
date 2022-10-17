@@ -20,14 +20,12 @@ const makeMenu = (name) => {
   const submenu = [
     {
       label: "Infinite Submenu",
-      // id: `submenuItemInfinite${name}${__}`,
       get content() {
         return submenu
       },
     },
     {
       label: "Submenu",
-      // id: `submenuItem3rd${name}${__}`,
       content: [
         {
           label: "Hello",
@@ -42,7 +40,6 @@ const makeMenu = (name) => {
     "---",
     {
       label: "{{cnt}}", //
-      // id: `submenuItemIncr${name}${__}`,
       picto: "plus-large",
       click: "{{cnt = incr(cnt)}}",
       // click: "{{cnt++}}",
@@ -221,9 +218,9 @@ if (inTop) {
     await app
 
     const els = {
-      btnIncrTop: t.puppet.$.query("#btnIncrTop"),
-      btnIncrDialogPopup: t.puppet.$.query("#btnIncrDialogPopupTop"),
-      inputIncrDialogPopup: t.puppet.$.query("#inputIncrDialogPopupTop"),
+      btnIncrTop: t.puppet.$("#btnIncrTop"),
+      btnIncrDialogPopup: t.puppet.$("#btnIncrDialogPopupTop"),
+      inputIncrDialogPopup: t.puppet.$("#inputIncrDialogPopupTop"),
     }
     t.eq(
       [
@@ -277,13 +274,13 @@ if (inTop) {
     if (manual) {
       t.pass()
     } else {
-      const iframe = t.puppet.$.query("ui-sandbox iframe")
+      const iframe = t.puppet.$("ui-sandbox iframe")
 
       t.lap(await when("uipopupopen"))
       t.lap(await t.puppet("#menuItemIncrPopupIframe").click())
       t.lap(await iframe.contentWindow.sys42.once("ipc.plugin:end-of-update"))
 
-      t.is(t.puppet.$.query("#cntIframe", iframe)?.value, "1")
+      t.is(t.puppet.$("#cntIframe", iframe)?.value, "1")
     }
   })
 } else {

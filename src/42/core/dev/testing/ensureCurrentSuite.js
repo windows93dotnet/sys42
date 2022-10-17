@@ -41,11 +41,11 @@ export default function ensureCurrentSuite(titled) {
 
   const title = titled ? `${moduleTitle}/${titled}` : moduleTitle
 
-  if (!system.testing.suites.has(title)) exist = false
+  if (inIframe || !system.testing.suites.has(title)) exist = false
 
   if (exist === false) {
     system.testing.current = system.testing.root
-    const suite = new Suite(title, parentModule.url, system.testing.root.stats)
+    const suite = new Suite(title, parentModule.url, system.testing.root)
     system.testing.current.suites.push(suite)
     system.testing.current = suite
     system.testing.suites.set(title, suite)

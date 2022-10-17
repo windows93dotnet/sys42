@@ -43,7 +43,7 @@ test("generate icon list", async (t) => {
   })
 
   const el = app.el.querySelector("ui-folder")
-  const icons = t.puppet.$("ui-icon", { live: true, base: app.el })
+  const icons = t.puppet.$$$("ui-icon", { live: true, base: app.el })
 
   t.eq(el.selection, ["/tests/fixtures/components/folder/script.js"])
 

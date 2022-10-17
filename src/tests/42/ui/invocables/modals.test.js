@@ -7,7 +7,7 @@ import prompt from "../../../../42/ui/invocables/prompt.js"
 import alert from "../../../../42/ui/invocables/alert.js"
 import confirm from "../../../../42/ui/invocables/confirm.js"
 
-const manual = 1
+const manual = 0
 
 let res
 const undef = Symbol("undef")
@@ -121,15 +121,11 @@ const makeDemo = () => ({
   ],
 })
 
-test.ui(async (t) => {
-  // console.group("inTop", inTop)
-  // console.log(t.utils.decay)
-  // console.log(t.utils.dest)
-  // console.groupEnd()
-
+test.ui("modals", inTop, async (t) => {
+  t.timeout(5000)
   await t.utils.decay(
     ui(
-      // t.utils.dest({ connect: true }),
+      t.utils.dest({ connect: true }),
       {
         id: "invocableDemo",
         tag: ".box-fit.desktop",
@@ -151,75 +147,26 @@ test.ui(async (t) => {
     )
   )
 
-  await t.puppet("#alert").click().when("uidialogopen")
-  await t.puppet(".dialog__agree").click().when("uidialogclose")
+  if (manual) return t.pass()
+
+  const { body } = window.top.document
+
+  // await test("alert agree", async (t) => {
+  await t.puppet("#alert").click().when(body, "uidialogopen")
+  await t.puppet(".dialog__agree", body).click().when(body, "uidialogclose")
+  await t.sleep(0)
   t.is(res, true)
+  // })
 
-  // await t.puppet("#alert").click().when("uidialogopen")
-  // await t.puppet(".ui-dialog__close").click().when("uidialogclose")
-  // t.is(res, undef)
+  res = undefined
+
+  // await test("alert decline", async (t) => {
+  await t.puppet("#alert").click().when(body, "uidialogopen")
+  await t.puppet(".ui-dialog__close", body).click().when(body, "uidialogclose")
+  await t.sleep(0)
+  t.is(res, undef)
+  // })
+
+  // t.pass()
+  // console.log("---", inTop)
 })
-
-// if (inTop) {
-//   test.ui(1, async (t) => {
-//     const { decay, dest } = t.utils
-
-//     await decay(
-//       ui(
-//         dest({ connect: true }),
-//         {
-//           id: "invocableDemo",
-//           tag: ".box-fit.desktop",
-//           content: {
-//             tag: ".box-v.size-full",
-//             content: [
-//               makeDemo(),
-//               {
-//                 tag: "ui-sandbox.panel",
-//                 permissions: "trusted",
-//                 path: href,
-//               },
-//             ],
-//           },
-//         },
-//         { trusted: true }
-//       )
-//     )
-
-//     const iframe = t.puppet.$.query("iframe")
-
-//     await test("alert agree", async (t) => {
-//       await t.puppet("#alert").click().when("uidialogopen")
-//       await t.puppet(".dialog__agree").click().when("uidialogclose")
-//       await t.sleep(0)
-//       t.is(res, true)
-//     })
-
-//     res = undefined
-
-//     await test("alert agree", "iframe", async (t) => {
-//       await t.puppet("#alert", iframe).click().when("uidialogopen")
-//       await t.puppet(".dialog__agree").click().when("uidialogclose")
-//       await t.sleep(0)
-//       t.is(res, true)
-//     })
-
-//     res = undefined
-
-//     await test("alert decline", async (t) => {
-//       await t.puppet("#alert").click().when("uidialogopen")
-//       await t.puppet(".ui-dialog__close").click().when("uidialogclose")
-//       await t.sleep(0)
-//       t.is(res, undef)
-//     })
-
-//     t.pass()
-//   })
-// } else {
-//   document.body.classList.add("debug")
-
-//   await ui({
-//     content: makeDemo(),
-//     initiator: "invocableDemo",
-//   })
-// }

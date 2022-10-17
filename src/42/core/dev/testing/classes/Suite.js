@@ -17,7 +17,7 @@ const dummyRootStats = {
 }
 
 export default class Suite {
-  constructor(title, filename, rootStats = dummyRootStats) {
+  constructor(title, filename, root) {
     this.title = title
     this.filename = filename
     this.stats = {
@@ -29,7 +29,14 @@ export default class Suite {
       skipped: 0,
       onlies: 0,
     }
-    this.rootStats = rootStats
+
+    this.root = root
+    if (!this.root) {
+      this.root = {
+        stats: dummyRootStats,
+      }
+    }
+
     this.testsOptions = Object.create(null)
     this.suites = []
     this.tests = []
@@ -72,11 +79,14 @@ export default class Suite {
   async runTest(test, options = {}) {
     const { oneach = noop } = options
 
-    if (options.nested !== true) this.currentTest = test
+    if (options.nested !== true) {
+      this.currentTest = test
+      this.root.currentTest = test
+    }
 
     if (test.skip) {
       this.stats.skipped++
-      this.rootStats.skipped++
+      this.root.stats.skipped++
       return
     }
 
@@ -121,21 +131,21 @@ export default class Suite {
     test.ran = true
 
     this.stats.ran++
-    this.rootStats.ran++
+    this.root.stats.ran++
 
     if (test.ok) {
       if (test.failing) this.failing = true
       this.stats.passed++
-      this.rootStats.passed++
+      this.root.stats.passed++
       if (this.stats.ok === undefined) {
         this.stats.ok = true
-        this.rootStats.ok = true
+        this.root.stats.ok = true
       }
     } else {
       this.stats.ok = false
-      this.rootStats.ok = false
+      this.root.stats.ok = false
       this.stats.failed++
-      this.rootStats.failed++
+      this.root.stats.failed++
     }
 
     if (t.logs.length > 0) test.logs.push(...t.logs)
@@ -143,6 +153,8 @@ export default class Suite {
     oneach(test)
 
     if (this.afterEach) await this.warnOnThrow(this.afterEach, "afterEach")
+
+    test.done.resolve()
   }
 
   async runSuite(suite, options) {
@@ -158,9 +170,6 @@ export default class Suite {
     if (this.skip) {
       this.stats.total = this.tests.length
       this.stats.skipped = this.tests.length
-
-      this.rootStats.total += this.onlies.size
-      this.rootStats.skipped += this.stats.skipped
       return this
     }
 
@@ -178,9 +187,6 @@ export default class Suite {
         this.tests = [...this.onlies]
       }
     }
-
-    // this.rootStats.total += this.onlies.size
-    // this.rootStats.skipped += this.stats.skipped
 
     const tests = groupBy(this.tests, (test) =>
       options?.serial || test.serial || this.afterEach || this.beforeEach
@@ -222,7 +228,7 @@ export default class Suite {
     }
 
     this.stats.onlies = this.onlies.size
-    this.rootStats.onlies += this.stats.onlies
+    this.root.stats.onlies += this.stats.onlies
 
     if (this.title === "#root") {
       if (this.nesteds.length > 0) await Promise.all(this.nesteds)
