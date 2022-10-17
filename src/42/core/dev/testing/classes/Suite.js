@@ -6,11 +6,30 @@ import noop from "../../../../fabric/type/function/noop.js"
 import ExecutionContext from "../ExecutionContext.js"
 import serializeError from "../../../../fabric/type/error/serializeError.js"
 
+const dummyRootStats = {
+  ok: undefined,
+  total: 0,
+  ran: 0,
+  passed: 0,
+  failed: 0,
+  skipped: 0,
+  onlies: 0,
+}
+
 export default class Suite {
-  constructor(title, filename) {
+  constructor(title, filename, rootStats = dummyRootStats) {
     this.title = title
     this.filename = filename
-    this.stats = Object.create(null)
+    this.stats = {
+      ok: undefined,
+      total: 0,
+      ran: 0,
+      passed: 0,
+      failed: 0,
+      skipped: 0,
+      onlies: 0,
+    }
+    this.rootStats = rootStats
     this.testsOptions = Object.create(null)
     this.suites = []
     this.tests = []
@@ -19,23 +38,23 @@ export default class Suite {
     this.teardowns = []
     this.warnings = []
     this.uncaughts = []
+    this.nesteds = []
     this.timeout = 300
     this.only = false
     this.skip = false
     this.serial = false
     this.cumulated = 0
+    this.running = false
     this.init()
   }
 
+  get ok() {
+    return this.stats.ok
+  }
+
   init() {
-    this.ok = undefined
+    this.running = false
     this.ms = 0
-    this.stats.total = 0
-    this.stats.ran = 0
-    this.stats.passed = 0
-    this.stats.failed = 0
-    this.stats.skipped = 0
-    this.stats.onlies = 0
     this.uncaughts.length = 0
     for (const test of this.tests) test.init()
     for (const suite of this.suites) suite.init()
@@ -53,8 +72,11 @@ export default class Suite {
   async runTest(test, options = {}) {
     const { oneach = noop } = options
 
+    if (options.nested !== true) this.currentTest = test
+
     if (test.skip) {
       this.stats.skipped++
+      this.rootStats.skipped++
       return
     }
 
@@ -99,14 +121,21 @@ export default class Suite {
     test.ran = true
 
     this.stats.ran++
+    this.rootStats.ran++
 
     if (test.ok) {
       if (test.failing) this.failing = true
       this.stats.passed++
-      if (this.ok === undefined) this.ok = true
+      this.rootStats.passed++
+      if (this.stats.ok === undefined) {
+        this.stats.ok = true
+        this.rootStats.ok = true
+      }
     } else {
-      this.ok = false
+      this.stats.ok = false
+      this.rootStats.ok = false
       this.stats.failed++
+      this.rootStats.failed++
     }
 
     if (t.logs.length > 0) test.logs.push(...t.logs)
@@ -117,31 +146,21 @@ export default class Suite {
   }
 
   async runSuite(suite, options) {
-    const results = await suite.runTests(options)
-
-    this.cumulated += results.cumulated
-    this.stats.total += results.stats.total
-    this.stats.ran += results.stats.ran
-    this.stats.passed += results.stats.passed
-    this.stats.failed += results.stats.failed
-    this.stats.skipped += results.stats.skipped
-
-    if (!results.skip) {
-      if (results.ok) {
-        if (this.ok === undefined) this.ok = true
-      } else this.ok = false
-    }
-
-    return results
+    return suite.runTests(options)
   }
 
   async runTests(options) {
+    this.running = true
+
     let timeStamp
     if (this.title === "#root") timeStamp = performance.now()
 
     if (this.skip) {
       this.stats.total = this.tests.length
       this.stats.skipped = this.tests.length
+
+      this.rootStats.total += this.onlies.size
+      this.rootStats.skipped += this.stats.skipped
       return this
     }
 
@@ -159,6 +178,9 @@ export default class Suite {
         this.tests = [...this.onlies]
       }
     }
+
+    // this.rootStats.total += this.onlies.size
+    // this.rootStats.skipped += this.stats.skipped
 
     const tests = groupBy(this.tests, (test) =>
       options?.serial || test.serial || this.afterEach || this.beforeEach
@@ -200,10 +222,14 @@ export default class Suite {
     }
 
     this.stats.onlies = this.onlies.size
+    this.rootStats.onlies += this.stats.onlies
 
-    if (this.title === "#root") this.ms = performance.now() - timeStamp
+    if (this.title === "#root") {
+      if (this.nesteds.length > 0) await Promise.all(this.nesteds)
+      this.ms = performance.now() - timeStamp
+    }
 
-    this.ok = Boolean(this.ok)
+    this.stats.ok = Boolean(this.stats.ok)
 
     return this
   }
@@ -213,7 +239,7 @@ export default class Suite {
       title: this.title,
       filename: this.filename,
       ms: this.ms,
-      ok: this.ok,
+      ok: this.stats.ok,
       skip: this.skip,
       stats: this.stats,
       suites: this.suites.map((suite) => suite.toJSON()),
