@@ -1,5 +1,5 @@
 import test from "../../../../42/test.js"
-import { make, launch, log } from "./helpers.js"
+import { make, launch, log, preload } from "./helpers.js"
 
 const manual = 0
 
@@ -7,6 +7,8 @@ const { href } = new URL(
   "../../../../demos/ui/invocables/filePicker.demo.html?test=true",
   import.meta.url
 )
+
+preload(href, { prefetch: true })
 
 import filePicker from "../../../../42/ui/invocables/filePicker.js"
 import explorer from "../../../../42/ui/components/explorer.js"

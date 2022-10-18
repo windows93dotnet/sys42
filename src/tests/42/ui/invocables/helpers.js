@@ -1,7 +1,7 @@
 import ui from "../../../../42/ui.js"
 import system from "../../../../42/core/dev/testing/mainSystem.js"
 import defer from "../../../../42/fabric/type/promise/defer.js"
-
+import preload from "../../../../42/core/load/preload.js"
 import inTop from "../../../../42/core/env/realm/inTop.js"
 
 let res = defer()
@@ -51,7 +51,9 @@ export async function make(t, { href, makeContent }) {
 }
 
 export default {
+  preload,
   launch,
   make,
   log,
 }
+export { default as preload } from "../../../../42/core/load/preload.js"
