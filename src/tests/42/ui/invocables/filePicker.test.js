@@ -12,6 +12,7 @@ preload(href, { prefetch: true })
 
 import filePicker from "../../../../42/ui/invocables/filePicker.js"
 import explorer from "../../../../42/ui/components/explorer.js"
+import fs from "../../../../42/core/fs.js"
 
 const makeContent = () => ({
   tag: ".w-full.pa-xl",
@@ -66,9 +67,21 @@ test.ui(async (t) => {
   await make(t, { href, makeContent })
   if (manual) return t.pass()
 
-  t.eq(await launch(t, "#filePickerOpen", ".dialog__agree"), {
-    path: "/",
-    selection: [],
-    files: [],
-  })
+  t.eq(await launch(t, "#filePickerOpen", ".dialog__decline"), undefined)
+  t.eq(await launch(t, "#filePickerOpen", ".ui-dialog__close"), undefined)
+
+  const styleFile = await fs.open("/style.css")
+
+  t.eq(
+    await launch(t, "#filePickerOpen", ".dialog__agree", async (dialog) => {
+      t.is(t.puppet.$(".dialog__agree", dialog).disabled, true)
+      await t.puppet('[path="/style.css"]', dialog).click()
+      t.is(t.puppet.$(".dialog__agree", dialog).disabled, false)
+    }),
+    {
+      path: "/",
+      selection: ["/style.css"],
+      files: [styleFile],
+    }
+  )
 })

@@ -17,6 +17,7 @@ export async function launch(t, open, close, fn) {
   await t.puppet(open).click()
   const { target } = await t.utils.when(top, "uidialogopen")
   await fn?.(target)
+  if (close === false) return
   await t.puppet(close, body).click()
   const tmp = await res
   res = defer()

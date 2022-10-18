@@ -846,8 +846,8 @@ input:is([type="checkbox"],[type="radio"]):checked:disabled + label.button {
   --fg: var(--btn--primary-fg);
 }
 
-button[type="submit"]:not(:active),
-.btn-default:not(:active) {
+button[type="submit"]:not(:active,:disabled),
+.btn-default:not(:active,:disabled) {
   border-image: var(--btn💾-bdi);
 }
 
