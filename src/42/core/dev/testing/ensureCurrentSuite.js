@@ -39,7 +39,17 @@ export default function ensureCurrentSuite(titled) {
     titled = system.testing.lastTitled
   }
 
-  const title = titled ? `${moduleTitle}/${titled}` : moduleTitle
+  let title = titled ? `${moduleTitle}/${titled}` : moduleTitle
+
+  if (inIframe) {
+    const params = new URLSearchParams(location.search)
+    if (params.has("prefix")) {
+      title = params.get("prefix") + title
+    } else {
+      const suffix = params.get("suffix") ?? params.get("title") ?? " (iframe)"
+      title += suffix
+    }
+  }
 
   if (inIframe || !system.testing.suites.has(title)) exist = false
 

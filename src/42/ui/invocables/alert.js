@@ -70,7 +70,7 @@ export default async function alert(message = "", options) {
     content: { tag: "div", content: message },
   }
 
-  const res = await modal(config)
+  await modal(config)
 
-  return res.ok
+  return true
 }
