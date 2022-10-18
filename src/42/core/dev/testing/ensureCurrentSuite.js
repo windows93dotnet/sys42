@@ -23,6 +23,18 @@ export default function ensureCurrentSuite(titled) {
       : { url: location.href, stack: [{ filename: location.href }] }
     : getParentModule(/\.test\.(js|html)/)
 
+  // nested tests in iframes share the current running test stackframe
+  if (originalScript && originalScript in system.testing.testfiles) {
+    const tests = system.testing.testfiles[originalScript]
+    for (const key in tests) {
+      if (Object.hasOwn(tests, key)) {
+        if (tests[key] === system.testing.root.currentTest) {
+          parentModule.stack = [tests[key].stackframe]
+        }
+      }
+    }
+  }
+
   let exist
 
   const moduleTitle = shortenFilename(parentModule.url)

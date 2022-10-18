@@ -27,6 +27,7 @@ export default async function filePickerOpen(path, options) {
         },
         {
           tag: "button.dialog__agree.btn-default",
+          disabled: "{{selection.length === 0}}",
           click: "{{ok()}}",
           ...objectifyDef(config.agree),
         },
