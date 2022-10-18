@@ -10,7 +10,7 @@ const manual = 0
 const __ = inTop ? "Top" : "Iframe"
 
 const { href } = new URL(
-  "../../../../demos/ui/components/menu.demo.html?test=true",
+  "../../../../demos/ui/components/menu.demo.html?dev=true",
   import.meta.url
 )
 
@@ -222,6 +222,7 @@ if (inTop) {
       btnIncrDialogPopup: t.puppet.$("#btnIncrDialogPopupTop"),
       inputIncrDialogPopup: t.puppet.$("#inputIncrDialogPopupTop"),
     }
+
     t.eq(
       [
         els.btnIncrTop.textContent,
