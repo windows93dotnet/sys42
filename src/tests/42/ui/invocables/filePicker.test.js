@@ -1,26 +1,17 @@
 import test from "../../../../42/test.js"
-import ui from "../../../../42/ui.js"
-
-import inTop from "../../../../42/core/env/realm/inTop.js"
-
-import filePicker from "../../../../42/ui/invocables/filePicker.js"
-import explorer from "../../../../42/ui/components/explorer.js"
+import { make, launch, log } from "./helpers.js"
 
 const manual = 0
-
-let res
-const undef = Symbol("undef")
-function log(arg) {
-  if (manual) log(arg)
-  else res = arg ?? undef
-}
 
 const { href } = new URL(
   "../../../../demos/ui/invocables/filePicker.demo.html?test=true",
   import.meta.url
 )
 
-const makeDemo = () => ({
+import filePicker from "../../../../42/ui/invocables/filePicker.js"
+import explorer from "../../../../42/ui/components/explorer.js"
+
+const makeContent = () => ({
   tag: ".w-full.pa-xl",
   content: [
     {
@@ -60,7 +51,7 @@ const makeDemo = () => ({
     },
     {
       tag: "button",
-      label: 'File Picker Save with content "hello world"',
+      label: "File Picker Save Content",
       id: "filePickerSaveContent",
       async click() {
         log(await filePicker.save("/hello.txt", "hello world"))
@@ -69,46 +60,13 @@ const makeDemo = () => ({
   ],
 })
 
-if (inTop) {
-  test.ui(1, async (t) => {
-    const { decay, dest } = t.utils
+test.ui(async (t) => {
+  await make(t, { href, makeContent })
+  if (manual) return t.pass()
 
-    await decay(
-      ui(
-        dest({ connect: true }),
-        {
-          id: "invocableDemo",
-          tag: ".box-fit.desktop",
-          content: {
-            tag: ".box-v.size-full",
-            content: [
-              makeDemo(),
-              {
-                tag: "ui-sandbox.panel",
-                permissions: "trusted",
-                path: href,
-              },
-            ],
-          },
-        },
-        { trusted: true }
-      )
-    )
-
-    await t.puppet("#filePickerSave").click().when("uidialogopen")
-    await t.puppet(".dialog__agree").click().when("uidialogclose")
-    await t.sleep(0)
-    t.eq(res, {
-      saved: undefined,
-      path: "/untitled.txt",
-      dir: "/",
-      base: "untitled.txt",
-    })
+  t.eq(await launch(t, "#filePickerOpen", ".dialog__agree"), {
+    path: "/",
+    selection: [],
+    files: [],
   })
-} else {
-  document.body.classList.add("debug")
-  await ui({
-    content: makeDemo(),
-    initiator: "invocableDemo",
-  })
-}
+})

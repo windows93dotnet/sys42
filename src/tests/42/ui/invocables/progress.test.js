@@ -1,26 +1,18 @@
 import test from "../../../../42/test.js"
-import ui from "../../../../42/ui.js"
+import { make, launch, log } from "./helpers.js"
 
-import inTop from "../../../../42/core/env/realm/inTop.js"
-
-import http from "../../../../42/core/http.js"
-import stream from "../../../../42/core/stream.js"
-import progress from "../../../../42/ui/invocables/progress.js"
-
-// const manual = 0
-
-// let res
-// function log(arg) {
-//   if (manual) console.log(arg)
-//   else res = arg
-// }
+const manual = 1
 
 const { href } = new URL(
   "../../../../demos/ui/invocables/progress.demo.html?test=true",
   import.meta.url
 )
 
-const makeDemo = () => ({
+import http from "../../../../42/core/http.js"
+import stream from "../../../../42/core/stream.js"
+import progress from "../../../../42/ui/invocables/progress.js"
+
+const makeContent = () => ({
   tag: ".w-full.pa-xl",
   content: [
     {
@@ -32,6 +24,7 @@ const makeDemo = () => ({
         const state = await p.state
         state.value = 30
         state.description = "0/1"
+        p.done.then(log)
       },
     },
     {
@@ -40,7 +33,7 @@ const makeDemo = () => ({
       id: "progressStream",
       async click() {
         http
-          .source("../../tests/fixtures/stream/html_standard.html.gz", {
+          .source("/tests/fixtures/stream/html_standard.html.gz", {
             cors: "no-cors",
           })
           .size((total, rs) => {
@@ -48,8 +41,11 @@ const makeDemo = () => ({
               .pipeThrough(stream.ts.pressure(100))
               .pipeThrough(progress(total, { keep: !true }))
               .pipeTo(stream.ws.sink())
+              .then(() => {
+                log("closed pipeline")
+              })
               .catch(() => {
-                console.log("canceled pipeline")
+                log("canceled pipeline")
               })
           })
       },
@@ -57,38 +53,14 @@ const makeDemo = () => ({
   ],
 })
 
-if (inTop) {
-  test.ui(1, async (t) => {
-    const { decay, dest } = t.utils
+test.ui(async (t) => {
+  await make(t, { href, makeContent })
 
-    await decay(
-      ui(
-        dest({ connect: true }),
-        {
-          id: "invocableDemo",
-          tag: ".box-fit.desktop",
-          content: {
-            tag: ".box-v.size-full",
-            content: [
-              makeDemo(),
-              {
-                tag: "ui-sandbox.panel",
-                permissions: "trusted",
-                path: href,
-              },
-            ],
-          },
-        },
-        { trusted: true }
-      )
-    )
+  if (manual) return t.pass()
 
-    t.pass()
+  t.eq(await launch(t, "#progress", ".dialog__decline"), {
+    value: 30,
+    label: "Progress",
+    description: "0/1",
   })
-} else {
-  document.body.classList.add("debug")
-  await ui({
-    content: makeDemo(),
-    initiator: "invocableDemo",
-  })
-}
+})

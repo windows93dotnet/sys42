@@ -1,29 +1,20 @@
 import test from "../../../../42/test.js"
-import ui from "../../../../42/ui.js"
-
-import inTop from "../../../../42/core/env/realm/inTop.js"
-
-import prompt from "../../../../42/ui/invocables/prompt.js"
-import alert from "../../../../42/ui/invocables/alert.js"
-import confirm from "../../../../42/ui/invocables/confirm.js"
+import { make, launch, log } from "./helpers.js"
 
 const manual = 0
-
-let res
-const undef = Symbol("undef")
-function log(arg) {
-  if (manual) console.log(inTop, arg)
-  res = arg ?? undef
-}
 
 const { href } = new URL(
   "../../../../demos/ui/invocables/modals.demo.html?test=true",
   import.meta.url
 )
 
+import prompt from "../../../../42/ui/invocables/prompt.js"
+import alert from "../../../../42/ui/invocables/alert.js"
+import confirm from "../../../../42/ui/invocables/confirm.js"
+
 const err = new TypeError("boom")
 
-const makeDemo = () => ({
+const makeContent = () => ({
   tag: ".w-full.pa-xl",
   content: [
     {
@@ -121,44 +112,8 @@ const makeDemo = () => ({
   ],
 })
 
-const { body } = window.top.document
-
-async function launch(t, open, close, fn) {
-  await t.puppet(open).click()
-  const { target } = await t.utils.when(body, "uidialogopen")
-  await fn?.(target)
-  await t.puppet(close, body).click().when(body, "uidialogclose")
-  await t.sleep(0)
-  const tmp = res
-  res = undefined
-  return tmp
-}
-
 test.ui(async (t) => {
-  await t.utils.decay(
-    ui(
-      t.utils.dest({ connect: true }),
-      {
-        id: "invocableDemo",
-        tag: inTop ? ".box-fit.desktop" : ".box-fit",
-        content: inTop
-          ? {
-              tag: ".box-v.size-full",
-              content: [
-                makeDemo(),
-                {
-                  tag: "ui-sandbox.ground",
-                  permissions: "trusted",
-                  path: href,
-                },
-              ],
-            }
-          : makeDemo(),
-      },
-      { trusted: true }
-    )
-  )
-
+  await make(t, { href, makeContent })
   if (manual) return t.pass()
 
   // alert always return true
@@ -166,7 +121,7 @@ test.ui(async (t) => {
   t.is(await launch(t, "#alert", ".dialog__agree"), true)
   t.is(await launch(t, "#alert", ".ui-dialog__close"), true)
 
-  // confirm return a bool
+  // confirm return a boolean
 
   t.is(await launch(t, "#confirm", ".dialog__agree"), true)
   t.is(await launch(t, "#confirm", ".dialog__decline"), false)
@@ -175,8 +130,8 @@ test.ui(async (t) => {
   // prompt return a string or undefined
 
   t.is(await launch(t, "#prompt", ".dialog__agree"), "")
-  t.is(await launch(t, "#prompt", ".dialog__decline"), undef)
-  t.is(await launch(t, "#prompt", ".ui-dialog__close"), undef)
+  t.is(await launch(t, "#prompt", ".dialog__decline"), undefined)
+  t.is(await launch(t, "#prompt", ".ui-dialog__close"), undefined)
 
   t.is(
     await launch(t, "#prompt", ".dialog__agree", async (dialog) => {
