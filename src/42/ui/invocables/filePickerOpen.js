@@ -1,7 +1,15 @@
 import explorer from "../components/explorer.js"
 import omit from "../../fabric/type/object/omit.js"
+import { objectifyDef } from "../normalize.js"
+
+const DEFAULT = {
+  agree: "Open",
+  decline: "Cancel",
+}
 
 export default async function filePickerOpen(path, options) {
+  const config = { ...DEFAULT, ...options }
+
   const res = await explorer(path, {
     label: "Open File - {{path}}",
 
@@ -17,8 +25,16 @@ export default async function filePickerOpen(path, options) {
           readonly: true,
           compact: true,
         },
-        { tag: "button.btn-default", label: "Open", click: "{{ok()}}" },
-        { tag: "button", label: "Cancel", click: "{{close()}}" },
+        {
+          tag: "button.dialog__agree.btn-default",
+          click: "{{ok()}}",
+          ...objectifyDef(config.agree),
+        },
+        {
+          tag: "button.dialog__decline",
+          click: "{{close()}}",
+          ...objectifyDef(config.decline),
+        },
       ],
     },
 
