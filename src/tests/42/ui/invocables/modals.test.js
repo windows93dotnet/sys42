@@ -36,8 +36,8 @@ const makeDemo = () => ({
     },
     {
       tag: "button",
-      label: "Alert with icon",
-      id: "alertIcon",
+      label: "Alert Custom",
+      id: "alertCustom",
       async click() {
         log(await alert("Hello, alert", { icon: "warning", agree: "Fine !" }))
       },
@@ -52,7 +52,7 @@ const makeDemo = () => ({
     },
     {
       tag: "button",
-      label: "Error with custom message",
+      label: "Error Custom",
       id: "alertErrorCustom",
       async click() {
         log(
@@ -75,8 +75,8 @@ const makeDemo = () => ({
     },
     {
       tag: "button",
-      label: "Confirm with icon and custom buttons",
-      id: "confirmIcon",
+      label: "Confirm Custom",
+      id: "confirmCustom",
       async click() {
         log(
           await confirm("Do you confirm ?", {
@@ -99,8 +99,8 @@ const makeDemo = () => ({
     },
     {
       tag: "button",
-      label: "Prompt with icon",
-      id: "promptIcon",
+      label: "Prompt Custom",
+      id: "promptCustom",
       async click() {
         log(
           await prompt(
@@ -121,7 +121,20 @@ const makeDemo = () => ({
   ],
 })
 
-test.ui("modals", inTop, async (t) => {
+const { body } = window.top.document
+
+async function launch(t, open, close, fn) {
+  await t.puppet(open).click()
+  const { target } = await t.utils.when(body, "uidialogopen")
+  await fn?.(target)
+  await t.puppet(close, body).click().when(body, "uidialogclose")
+  await t.sleep(0)
+  const tmp = res
+  res = undefined
+  return tmp
+}
+
+test.ui(async (t) => {
   await t.utils.decay(
     ui(
       t.utils.dest({ connect: true }),
@@ -148,17 +161,73 @@ test.ui("modals", inTop, async (t) => {
 
   if (manual) return t.pass()
 
-  const { body } = window.top.document
+  // alert always return true
 
-  await t.puppet("#alert").click().when(body, "uidialogopen")
-  await t.puppet(".dialog__agree", body).click().when(body, "uidialogclose")
-  await t.sleep(0)
-  t.is(res, true)
+  t.is(await launch(t, "#alert", ".dialog__agree"), true)
+  t.is(await launch(t, "#alert", ".ui-dialog__close"), true)
 
-  res = undefined
+  // confirm return a bool
 
-  await t.puppet("#alert").click().when(body, "uidialogopen")
-  await t.puppet(".ui-dialog__close", body).click().when(body, "uidialogclose")
-  await t.sleep(0)
-  t.is(res, undef)
+  t.is(await launch(t, "#confirm", ".dialog__agree"), true)
+  t.is(await launch(t, "#confirm", ".dialog__decline"), false)
+  t.is(await launch(t, "#confirm", ".ui-dialog__close"), false)
+
+  // prompt return a string or undefined
+
+  t.is(await launch(t, "#prompt", ".dialog__agree"), "")
+  t.is(await launch(t, "#prompt", ".dialog__decline"), undef)
+  t.is(await launch(t, "#prompt", ".ui-dialog__close"), undef)
+
+  t.is(
+    await launch(t, "#prompt", ".dialog__agree", async (dialog) => {
+      const input = dialog.querySelector('[name="/value"]')
+      await t.puppet(input).fill("derp")
+    }),
+    "derp"
+  )
+
+  // Customs
+  // -------
+  t.is(
+    await launch(t, "#alertCustom", ".dialog__agree", (dialog) => {
+      t.match(dialog.querySelector("img").src, /warning\./)
+      t.is(dialog.querySelector(".dialog__agree").textContent, "Fine !")
+    }),
+    true
+  )
+
+  t.is(
+    await launch(t, "#confirmCustom", ".dialog__agree", (dialog) => {
+      t.match(dialog.querySelector("img").src, /question\./)
+      t.is(dialog.querySelector(".dialog__agree").textContent, "Yep")
+      t.is(dialog.querySelector(".dialog__decline").textContent, "Nope")
+      t.is(dialog.querySelector(".dialog__agree ui-picto").value, "check")
+      t.is(dialog.querySelector(".dialog__decline ui-picto").value, "cross")
+    }),
+    true
+  )
+
+  t.is(
+    await launch(t, "#promptCustom", ".dialog__agree", (dialog) => {
+      t.match(dialog.querySelector("img").src, /question\./)
+      t.is(dialog.querySelector(".dialog__agree").textContent, "Ok")
+      t.is(dialog.querySelector(".dialog__decline").textContent, "Cancel")
+      const label = dialog.querySelector("label")
+      const input = dialog.querySelector('[name="/value"]')
+      t.match(label.textContent, /What is the/)
+      t.is(input.localName, "input")
+      t.is(input.value, "42")
+      t.is(label.htmlFor, input.id)
+    }),
+    "42"
+  )
+
+  t.is(
+    await launch(t, "#promptAutoTextarea", ".dialog__agree", async (dialog) => {
+      const input = dialog.querySelector('[name="/value"]')
+      t.is(input.localName, "textarea")
+      await t.puppet(input).fill("derp")
+    }),
+    "derp"
+  )
 })

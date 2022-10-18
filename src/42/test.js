@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 // @thanks https://github.com/avajs/ava
 
 import system from "./core/dev/testing/mainSystem.js"
@@ -96,22 +95,6 @@ export const test = chainable(
     else if (data.teardown) sbs.current.teardowns.push([new Error(), fn])
     else {
       const title = args
-
-      // if (sbs.root.running) {
-      //   if (sbs.root.currentTest) {
-      //     title.unshift(...sbs.root.currentTest.title)
-      //   }
-      // }
-
-      if (inIframe) {
-        const params = new URLSearchParams(location.search)
-        if (params.has("prefix")) {
-          title.unshift(params.has("prefix"))
-        } else {
-          const suffix = params.get("suffix") ?? params.get("title") ?? "iframe"
-          title.push(suffix)
-        }
-      }
 
       if (data.cb) fn = makeCallbackTest(fn)
       if (data.ui) {

@@ -119,8 +119,10 @@ export default class Suite {
       }
     }
 
-    test.done.resolve()
-    if (test.nesteds.length > 0) await Promise.all(test.nesteds)
+    if (test.ok) {
+      test.done.resolve()
+      if (test.nesteds.length > 0) await Promise.all(test.nesteds)
+    }
 
     t.cleanup()
 

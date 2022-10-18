@@ -104,11 +104,14 @@ const displayTest = (test, config, options) => {
   const showError = options?.showError
   test.icon ??= config.icon ?? ""
 
+  const testTitle = getTestTitle(test)
+
   let title = `${getSuiteTitle({
     title: test.suiteTitle,
     skip: test.skip,
-  })} {${test.skip ? "magenta.dim" : "grey"} ›} `
-  title += getTestTitle(test)
+  })} {${test.skip ? "magenta.dim" : "grey"} ${testTitle ? "›" : "·"}} `
+
+  title += testTitle
 
   if (globalThis?.process?.stdout?.columns) {
     title = truncate(title, globalThis.process.stdout.columns + 110)
