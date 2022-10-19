@@ -332,6 +332,20 @@ test.tasks(
         { type: "arg", value: 1 },
       ],
     }),
+    task({
+      source: ["a = one() |> two(^^, b)"],
+      parsed: [
+        { type: "key", value: "a" },
+        { type: "assignment", value: "=" },
+        { type: "function", value: "one" },
+        { type: "functionEnd" },
+        { type: "pipe" },
+        { type: "function", value: "two" },
+        { type: "placeholder" },
+        { type: "key", value: "b" },
+        { type: "functionEnd" },
+      ],
+    }),
   ],
 
   (test, { source, parsed }) => {

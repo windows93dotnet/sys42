@@ -35,13 +35,9 @@
       picto: "folder-open",
       shortcut: "Ctrl+O",
       id: "menuItem-openFile",
-      // click: "{{editor.openFile()}}",
-      // click: "{{$files/0/path = filePicker.open($files/0/path)}}",
-      // click: "{{filePicker.open($files/0/path) |> log}}",
-      click: '{{\
-        filePicker.open($files/0/path, {files:false}) \
-          |> locate(^^, "selection.0") \
-          |> log(^^)}}',
+      // click: "{{editor.openFile(}}",
+      click: '{{$files/0/path = filePicker.open($files/0/path, {files: false})\
+        |> locate(^^, "selection.0")}}',
     },
     {
       label: "Save",

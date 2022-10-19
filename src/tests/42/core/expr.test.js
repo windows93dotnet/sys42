@@ -78,35 +78,111 @@ test.tasks(
 test.tasks(
   // prettier-ignore
   [
-    task({ str: "{{a += b}}", res: 5, expec: { a: 5, b: 3 } }),
-    task({ str: "{{a -= b}}", res: -1, expec: { a: -1, b: 3 } }),
-    task({ str: "{{b /= a}}", res: 1.5, expec: { a: 2, b: 1.5 } }),
-    task({ str: "{{a *= b}}", res: 6, expec: { a: 6, b: 3 } }),
-    task({ str: "{{a += 1}}", res: 3, expec: { a: 3, b: 3 } }),
-    task({ str: "{{a++}}", res: 3, expec: { a: 3, b: 3 } }),
-    task({ str: "{{a -= 1}}", res: 1, expec: { a: 1, b: 3 } }),
-    task({ str: "{{a--}}", res: 1, expec: { a: 1, b: 3 } }),
-    task({ str: "{{a += b; b = 10}}", res: 10, expec: { a: 5, b: 10 } }),
-    task({ str: "{{b = 5; a += b}}", res: 7, expec: { a: 7, b: 5 } }),
-    task({ str: "{{x = 5; a += x; b += x}}", res: 8, expec: { a: 7, b: 8, x: 5 } }),
-    task({ str: '{{a = "x;y"; b = 5}}', res: 5, expec: { a: "x;y", b: 5 } }),
-    task({ str: "{{a = a + 10}}", res: 12, expec: { a: 12, b: 3 } }),
-    task({ str: "{{a = a > b ? b : 10}}", res: 10, expec: { a: 10, b: 3 } }),
-    task({ str: "{{a = a < b ? b + 2 : 10}}", res: 5, expec: { a: 5, b: 3 } }),
-    task({ str: "{{a = a < b - 1 ? 0 : b + 10}}", res: 13, expec: { a: 13, b: 3 } }),
-    task({ str: "{{a = a == b - 1 ? 0 : b + 10}}", res: 0, expec: { a: 0, b: 3 } }),
-    task({ str: "{{a ??= 42}}", res: 2, expec: { a: 2, b: 3 } }),
-    task({ str: "{{a ??= 42}}", targ: { b: 3 }, res: 42, expec: { b: 3, a: 42 } }),
+    task({ str: "{{a += b}}", res: 5, expect: { a: 5, b: 3 } }),
+    task({ str: "{{a -= b}}", res: -1, expect: { a: -1, b: 3 } }),
+    task({ str: "{{b /= a}}", res: 1.5, expect: { a: 2, b: 1.5 } }),
+    task({ str: "{{a *= b}}", res: 6, expect: { a: 6, b: 3 } }),
+    task({ str: "{{a += 1}}", res: 3, expect: { a: 3, b: 3 } }),
+    task({ str: "{{a++}}", res: 3, expect: { a: 3, b: 3 } }),
+    task({ str: "{{a -= 1}}", res: 1, expect: { a: 1, b: 3 } }),
+    task({ str: "{{a--}}", res: 1, expect: { a: 1, b: 3 } }),
+    task({ str: "{{a += b; b = 10}}", res: 10, expect: { a: 5, b: 10 } }),
+    task({ str: "{{b = 5; a += b}}", res: 7, expect: { a: 7, b: 5 } }),
+    task({ str: "{{x = 5; a += x; b += x}}", res: 8, expect: { a: 7, b: 8, x: 5 } }),
+    task({ str: '{{a = "x;y"; b = 5}}', res: 5, expect: { a: "x;y", b: 5 } }),
+    task({ str: "{{a = a + 10}}", res: 12, expect: { a: 12, b: 3 } }),
+    task({ str: "{{a = a > b ? b : 10}}", res: 10, expect: { a: 10, b: 3 } }),
+    task({ str: "{{a = a < b ? b + 2 : 10}}", res: 5, expect: { a: 5, b: 3 } }),
+    task({ str: "{{a = a < b - 1 ? 0 : b + 10}}", res: 13, expect: { a: 13, b: 3 } }),
+    task({ str: "{{a = a == b - 1 ? 0 : b + 10}}", res: 0, expect: { a: 0, b: 3 } }),
+    task({ str: "{{a ??= 42}}", res: 2, expect: { a: 2, b: 3 } }),
+    task({ str: "{{a ??= 42}}", targ: { b: 3 }, res: 42, expect: { b: 3, a: 42 } }),
   ],
 
-  (test, { targ, str, res, expec }) => {
+  (test, { targ, str, res, expect }) => {
     test("assignment", str, targ, (t) => {
       targ ??= { a: 2, b: 3 }
 
       t.throws(() => expr(targ, str), "Assignment not allowed")
 
       const out = expr(targ, str, { assignment: true })
-      t.eq(targ, expec)
+      t.eq(targ, expect)
+      if (res !== undefined) t.eq(out, res)
+    })
+  }
+)
+
+test.tasks(
+  [
+    task({
+      str: "{{a = x()}}",
+      targ: {
+        a: 2,
+        x: () => 5,
+      },
+      res: 5,
+      expect: { a: 5 },
+    }),
+    task({
+      str: "{{a = y()}}",
+      targ: {
+        a: 2,
+        x: () => 5,
+      },
+      throws: TypeError,
+    }),
+    task({
+      str: "{{a = y(a, 5)}}",
+      targ: {
+        a: 2,
+        y: (a, b) => a + b,
+      },
+      res: 7,
+      expect: { a: 7 },
+    }),
+    task({
+      str: "{{a = x() |> y(5, 6)}}",
+      targ: {
+        a: 2,
+        x: () => 5,
+        y: (a, b) => a + b,
+      },
+      res: 11,
+      expect: { a: 11 },
+    }),
+    task({
+      str: "{{a = x() |> y(^^, 6)}}",
+      targ: {
+        a: 2,
+        x: () => 5,
+        y: (a, b) => a + b,
+      },
+      res: 11,
+      expect: { a: 11 },
+    }),
+    task({
+      str: "{{a = x() |> y(6, ^^)}}",
+      targ: {
+        a: 2,
+        x: () => 5,
+        y: (a, b) => a + b,
+      },
+      res: 11,
+      expect: { a: 11 },
+    }),
+  ],
+
+  (test, { targ, str, res, expect, throws }) => {
+    test("actions", str, targ, (t) => {
+      if (throws) {
+        t.throws(() => expr(targ, str, { assignment: true }), throws)
+        return
+      }
+
+      targ ??= { a: 2, b: 3 }
+
+      const out = expr(targ, str, { assignment: true })
+      t.eq(targ.a, expect.a)
       if (res !== undefined) t.eq(out, res)
     })
   }

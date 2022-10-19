@@ -267,7 +267,7 @@ test.tasks(
             props: {
               bar: 2,
             },
-            content: "foo: {{/foo |> add5}}, bar: {{bar |> add10}}",
+            content: "foo: {{/foo |> add5(^^)}}, bar: {{bar |> add10(^^)}}",
           }
 
           add5(val) {
@@ -290,7 +290,7 @@ test.tasks(
     task({
       component: {
         tag: "ui-t-ready",
-        content: "ext: {{/foo |> getExtname}}",
+        content: "ext: {{/foo |> getExtname(^^)}}",
       },
       def: {
         content: { tag: "ui-t-ready" },
@@ -1138,7 +1138,7 @@ test("props", 4, async (t) => {
 test("props", 5, async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
-      content: { tag: "ui-a", bar: "{{foo |> upperCase}}" },
+      content: { tag: "ui-a", bar: "{{foo |> upperCase(^^)}}" },
       state: { foo: "a" },
     })
   )
@@ -1785,7 +1785,7 @@ test("computed", async (t) => {
         },
 
         computed: {
-          parsed: "{{formated |> split('/')}}",
+          parsed: "{{formated |> split(^^, '/')}}",
         },
 
         content: {
@@ -1863,7 +1863,7 @@ test("computed", "from prop with state:true", async (t) => {
         },
 
         computed: {
-          parsed: "{{formated |> split('/')}}",
+          parsed: "{{formated |> split(^^, '/')}}",
         },
 
         content: {
@@ -1936,7 +1936,7 @@ test("computed", "computed prop", async (t) => {
           },
           parsed: {
             type: "array",
-            computed: "{{formated|>split('/')}}",
+            computed: "{{formated|>split(^^, '/')}}",
           },
         },
 
