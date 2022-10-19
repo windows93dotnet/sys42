@@ -8,6 +8,7 @@ import arrify from "../../fabric/type/any/arrify.js"
 import DOMQuery from "../../fabric/classes/DOMQuery.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
 import nextCycle from "../../fabric/type/promise/nextCycle.js"
+import serial from "../../fabric/type/promise/serial.js"
 
 const clickOrder = [
   "pointerdown",
@@ -51,6 +52,11 @@ function autoCleanup({ pendingKeys }) {
   timeoutId = setTimeout(() => cleanup(), 3000)
 }
 
+function normalizeKeyInit(init) {
+  if (typeof init === "string") return { key: init }
+  return init
+}
+
 const makePuppet = () => {
   const instance = chainable(
     {
@@ -73,6 +79,7 @@ const makePuppet = () => {
       },
 
       keydown({ data }, init) {
+        init = normalizeKeyInit(init)
         data.order.push(async (target) => {
           autoCleanup(data)
           data.pendingKeys.set(mark(init), () =>
@@ -83,6 +90,7 @@ const makePuppet = () => {
       },
 
       keyup({ data }, init) {
+        init = normalizeKeyInit(init)
         data.order.push(
           init === undefined
             ? async () => {
@@ -97,6 +105,7 @@ const makePuppet = () => {
       },
 
       keystroke({ data }, init) {
+        init = normalizeKeyInit(init)
         data.order.push(async (target) => {
           autoCleanup(data)
           data.pendingKeys.set(mark(init), () =>
@@ -217,7 +226,7 @@ const makePuppet = () => {
 
         await (data.whens
           ? Promise.all(data.whens.map((x) => x()))
-          : Promise.all(undones))
+          : serial(undones))
 
         data.whens.length = 0
         data.order.length = 0

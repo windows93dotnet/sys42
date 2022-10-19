@@ -56,8 +56,12 @@ export default function simulate(el, event, init) {
     el = globalThis
   }
 
+  const win =
+    el.ownerDocument === document ? window : el.ownerDocument.defaultView
+  const doc = el.ownerDocument
+
   if (event === "focus" && typeof el.focus === "function") {
-    if (el !== window && !document.hasFocus()) window.focus()
+    if (el !== win && !doc.hasFocus()) win.focus()
     el.focus()
   } else if (event === "blur" && typeof el.blur === "function") {
     el.blur()
