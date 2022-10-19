@@ -1,31 +1,47 @@
 import ui from "../../../../42/ui.js"
 import system from "../../../../42/core/dev/testing/mainSystem.js"
-import defer from "../../../../42/fabric/type/promise/defer.js"
 import preload from "../../../../42/core/load/preload.js"
 import inTop from "../../../../42/core/env/realm/inTop.js"
+import listen from "../../../../42/fabric/event/listen.js"
 
-let res = defer()
-export function log(arg) {
+let current = 0
+const responses = new Map()
+export function log(promise) {
+  responses.set(current, promise)
   if (system.testing.manual) {
-    import("../../../../42/core/log.js") //
-      .then((m) => m.default.inspect.async(arg))
+    Promise.all([import("../../../../42/core/log.js"), promise]).then(
+      ([m, arg]) => m.default.inspect.async(arg)
+    )
   }
-
-  res.resolve(arg)
 }
 
 const { top } = globalThis
-const { body } = top.document
 
 export async function launch(t, open, close, fn) {
-  await t.puppet(open).click()
-  const { target } = await t.utils.when(top, "uidialogopen")
-  const advance = await fn?.(target)
-  if (advance === false || close === false) return
-  await t.puppet(close, body).click()
-  const tmp = await res
-  res = defer()
-  return tmp
+  const id = ++current
+  const el = document.querySelector(open)
+  const originalId = el.id
+  const newId = originalId + id + inTop
+
+  el.id = newId
+  el.focus()
+  el.click()
+  el.id = originalId
+
+  const res = responses.get(id)
+  return new Promise((resolve) => {
+    const forget = listen(top, {
+      async uidialogopen({ target }) {
+        if (target.opener === newId) {
+          forget()
+          const advance = await fn?.(target)
+          if (advance === false || close === false) return resolve()
+          t.puppet(close, target).click().run()
+          resolve(res)
+        }
+      },
+    })
+  })
 }
 
 export async function make(t, { href, makeContent }, iframe = true) {
@@ -40,9 +56,11 @@ export async function make(t, { href, makeContent }, iframe = true) {
               content: [
                 makeContent(),
                 iframe && {
-                  tag: "ui-sandbox.ground",
-                  permissions: "trusted",
-                  path: href,
+                  // tag: "ui-sandbox.ground",
+                  // permissions: "trusted",
+                  // path: href,
+                  tag: "iframe.ground",
+                  src: href,
                 },
               ],
             }

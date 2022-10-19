@@ -2,6 +2,7 @@ import test from "../../../../42/test.js"
 import { make, launch, log } from "./helpers.js"
 
 const manual = 0
+const iframe = 1
 
 const { href } = new URL(
   "../../../../demos/ui/invocables/modals.demo.html?test=true",
@@ -21,33 +22,33 @@ const makeContent = () => ({
       tag: "button",
       label: "Alert",
       id: "alert",
-      async click() {
-        log(await alert("Hello, alert"))
+      click() {
+        log(alert("Hello, alert"))
       },
     },
     {
       tag: "button",
       label: "Alert Custom",
       id: "alertCustom",
-      async click() {
-        log(await alert("Hello, alert", { icon: "warning", agree: "Fine !" }))
+      click() {
+        log(alert("Hello, alert", { icon: "warning", agree: "Fine !" }))
       },
     },
     {
       tag: "button",
       label: "Error",
       id: "alertError",
-      async click() {
-        log(await alert(err))
+      click() {
+        log(alert(err))
       },
     },
     {
       tag: "button",
       label: "Error Custom",
       id: "alertErrorCustom",
-      async click() {
+      click() {
         log(
-          await alert(new TypeError("boom"), {
+          alert(new TypeError("boom"), {
             message: "Oops",
             collapsed: false,
           })
@@ -60,17 +61,17 @@ const makeContent = () => ({
       tag: "button",
       label: "Confirm",
       id: "confirm",
-      async click() {
-        log(await confirm("Do you confirm ?"))
+      click() {
+        log(confirm("Do you confirm ?"))
       },
     },
     {
       tag: "button",
       label: "Confirm Custom",
       id: "confirmCustom",
-      async click() {
+      click() {
         log(
-          await confirm("Do you confirm ?", {
+          confirm("Do you confirm ?", {
             icon: "question",
             agree: { picto: "check", content: "Yep" },
             decline: { picto: "cross", content: "Nope" },
@@ -84,20 +85,20 @@ const makeContent = () => ({
       tag: "button",
       label: "Prompt",
       id: "prompt",
-      async click() {
-        log(await prompt())
+      click() {
+        log(prompt())
       },
     },
     {
       tag: "button",
       label: "Prompt Custom",
       id: "promptCustom",
-      async click() {
+      click() {
         log(
-          await prompt(
-            "What is the meaning of life,\nthe universe and everything?",
-            { icon: "question", value: 42 }
-          )
+          prompt("What is the meaning of life,\nthe universe and everything?", {
+            icon: "question",
+            value: 42,
+          })
         )
       },
     },
@@ -105,18 +106,25 @@ const makeContent = () => ({
       tag: "button",
       label: "Prompt auto textarea",
       id: "promptAutoTextarea",
-      async click() {
-        log(await prompt({ value: "A text\nwith newlines\n..." }))
+      click() {
+        log(prompt({ value: "A text\nwith newlines\n..." }))
       },
     },
   ],
 })
 
 test.ui(async (t) => {
-  await make(t, { href, makeContent })
+  await make(t, { href, makeContent }, iframe)
   if (manual) return t.pass()
 
-  // alert always return true
+  // await Promise.all([
+  //   // alert always return true
+  //   launch(t, "#alert", ".dialog__agree") //
+  //     .then((res) => t.eq(res, true)),
+
+  //   launch(t, "#alert", ".ui-dialog__close") //
+  //     .then((res) => t.eq(res, true)),
+  // ])
 
   t.is(await launch(t, "#alert", ".dialog__agree"), true)
   t.is(await launch(t, "#alert", ".ui-dialog__close"), true)
@@ -144,7 +152,7 @@ test.ui(async (t) => {
   // Customs
   // -------
   t.is(
-    await launch(t, "#alertCustom", ".dialog__agree", (dialog) => {
+    await launch(t, "#alertCustom", ".dialog__agree", async (dialog) => {
       t.match(dialog.querySelector("img").src, /warning\./)
       t.is(dialog.querySelector(".dialog__agree").textContent, "Fine !")
     }),

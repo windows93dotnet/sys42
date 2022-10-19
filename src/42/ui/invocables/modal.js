@@ -1,6 +1,7 @@
 import dialog from "../components/dialog.js"
 import preload from "../../core/load/preload.js"
 import configure from "../../core/configure.js"
+import forceOpener from "../forceOpener.js"
 import { objectifyDef } from "../normalize.js"
 
 const DEFAULT = {
@@ -12,6 +13,8 @@ const DEFAULT = {
 
 export default async function modal(options) {
   const config = { ...DEFAULT, ...options }
+  config.dialog ??= {}
+  forceOpener(config.dialog)
 
   let { content } = config
 
