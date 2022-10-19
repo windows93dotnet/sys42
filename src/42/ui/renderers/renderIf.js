@@ -4,7 +4,7 @@ import NodesRange from "../../fabric/range/NodesRange.js"
 import removeRange from "./removeRange.js"
 import register from "../register.js"
 import Canceller from "../../fabric/classes/Canceller.js"
-import getType from "../../fabric/getType.js"
+import getType from "../../fabric/type/any/getType.js"
 import { normalizeDef, normalizeTokens } from "../normalize.js"
 import expr from "../../core/expr.js"
 

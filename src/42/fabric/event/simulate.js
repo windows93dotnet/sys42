@@ -56,8 +56,7 @@ export default function simulate(el, event, init) {
     el = globalThis
   }
 
-  const win =
-    el.ownerDocument === document ? window : el.ownerDocument.defaultView
+  const win = el.ownerDocument?.defaultView ?? globalThis
   const doc = el.ownerDocument
 
   if (event === "focus" && typeof el.focus === "function") {

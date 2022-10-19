@@ -6,12 +6,12 @@
 
 import isEmptyObject from "./is/isEmptyObject.js"
 import isLength from "./is/isLength.js"
-import isInstanceOf from "../../isInstanceOf.js"
+import isInstanceOf from "./is/isInstanceOf.js"
 
 export {
   default as isInstanceOf,
   isDirectInstanceOf,
-} from "../../isInstanceOf.js"
+} from "./is/isInstanceOf.js"
 
 // TODO: move more usefull is* functions in 'any' folder
 export { default as isObject } from "./is/isObject.js"

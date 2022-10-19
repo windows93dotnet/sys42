@@ -1,4 +1,4 @@
-import stackTrace from "./type/error/stackTrace.js"
+import stackTrace from "../../fabric/type/error/stackTrace.js"
 
 export default function getParentModule(reg) {
   const stack = stackTrace(new Error(), { internals: true })
