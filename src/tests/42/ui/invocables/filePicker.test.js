@@ -76,18 +76,21 @@ test.ui(async (t) => {
   const files = await filesPromise
 
   await Promise.all([
-    launch(t, "#filePickerOpen", ".dialog__decline").then((res) =>
-      t.eq(res, undefined)
+    /* Open
+    ======= */
+
+    launch(t, "#filePickerOpen", ".ui-dialog__decline").then((res) =>
+      t.is(res, undefined)
     ),
 
     launch(t, "#filePickerOpen", ".ui-dialog__close").then((res) =>
-      t.eq(res, undefined)
+      t.is(res, undefined)
     ),
 
-    launch(t, "#filePickerOpen", ".dialog__agree", async (dialog) => {
-      t.is(t.puppet.$(".dialog__agree", dialog).disabled, true)
+    launch(t, "#filePickerOpen", ".ui-dialog__agree", async (dialog) => {
+      t.is(t.puppet.$(".ui-dialog__agree", dialog).disabled, true)
       await t.puppet('[path="/style.css"]', dialog).click()
-      t.is(t.puppet.$(".dialog__agree", dialog).disabled, false)
+      t.is(t.puppet.$(".ui-dialog__agree", dialog).disabled, false)
     }).then((res) => {
       t.eq(res, {
         path: "/",
@@ -96,7 +99,7 @@ test.ui(async (t) => {
       })
     }),
 
-    launch(t, "#filePickerOpen", ".dialog__agree", async (dialog) => {
+    launch(t, "#filePickerOpen", ".ui-dialog__agree", async (dialog) => {
       await t
         .puppet('[path="/style.css"]', dialog)
         .click()
@@ -108,6 +111,26 @@ test.ui(async (t) => {
         path: "/",
         selection: ["/style.css", "/index.html"],
         files,
+      })
+    }),
+
+    /* Save
+    ======= */
+
+    launch(t, "#filePickerSave", ".ui-dialog__close").then((res) => {
+      t.is(res, undefined)
+    }),
+
+    launch(t, "#filePickerSave", ".ui-dialog__decline").then((res) => {
+      t.is(res, undefined)
+    }),
+
+    launch(t, "#filePickerSave", ".ui-dialog__agree").then((res) => {
+      t.eq(res, {
+        saved: undefined,
+        path: "/untitled.txt",
+        dir: "/",
+        base: "untitled.txt",
       })
     }),
   ])

@@ -16,7 +16,8 @@ export default async function filePickerOpen(path, options) {
     isPicker: true,
 
     dialog: {
-      class: "dialog-explorer dialog-filepicker dialog-filepicker--open",
+      class:
+        "ui-dialog-explorer ui-dialog-filepicker ui-dialog-filepicker--open",
       footer: [
         {
           tag: "input.w-full.inset-shallow._panel",
@@ -26,13 +27,13 @@ export default async function filePickerOpen(path, options) {
           compact: true,
         },
         {
-          tag: "button.dialog__agree.btn-default",
+          tag: "button.ui-dialog__agree.btn-default",
           disabled: "{{selection.length === 0}}",
           click: "{{ok()}}",
           ...objectifyDef(config.agree),
         },
         {
-          tag: "button.dialog__decline",
+          tag: "button.ui-dialog__decline",
           click: "{{close()}}",
           ...objectifyDef(config.decline),
         },

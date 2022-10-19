@@ -2,7 +2,7 @@ import modal from "./modal.js"
 
 const DEFAULT = {
   label: "Confirm",
-  class: "dialog-modal dialog-confirm",
+  class: "ui-dialog-modal ui-dialog-confirm",
 }
 
 export default async function confirm(message = "", options) {

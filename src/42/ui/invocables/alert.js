@@ -5,7 +5,7 @@ import isErrorLike from "../../fabric/type/any/is/isErrorLike.js"
 
 const DEFAULT = {
   label: "Alert",
-  class: "dialog-modal dialog-alert",
+  class: "ui-dialog-modal ui-dialog-alert",
   decline: false,
 }
 

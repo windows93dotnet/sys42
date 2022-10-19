@@ -207,7 +207,7 @@ export default async function explorer(path = "/", options) {
       {
         label: options?.label ?? "{{path}}",
         icon: "{{path}}",
-        class: "dialog-explorer",
+        class: "ui-dialog-explorer",
         style: { width: "400px", height: "350px" },
 
         content: {

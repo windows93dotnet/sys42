@@ -7,7 +7,7 @@ import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 
 const DEFAULT = {
   label: "{{label}}",
-  class: "dialog-modal dialog-progress",
+  class: "ui-dialog-modal ui-dialog-progress",
   agree: false,
 }
 
