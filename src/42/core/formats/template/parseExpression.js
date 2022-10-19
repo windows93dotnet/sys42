@@ -220,6 +220,17 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
       }
     }
 
+    if (char === "^") {
+      const next = source[current + 1]
+      if (next === "^") {
+        flush()
+        tokens.push({ type: "placeholder" })
+        state = "arg"
+        current += 2
+        continue
+      }
+    }
+
     for (const value of assignmentsKeys) {
       if (value === "=") {
         const next = source[current + 1]

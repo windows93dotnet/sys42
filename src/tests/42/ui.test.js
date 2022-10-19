@@ -776,7 +776,7 @@ const uppercase = (str) => str.toUpperCase()
 test("actions", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
-      content: "a {{foo|>uppercase}}",
+      content: "a {{foo|>uppercase(^^)}}",
       state: { foo: "b" },
       actions: { uppercase },
     })
@@ -793,7 +793,7 @@ test("actions", async (t) => {
 test.serial("actions", "error", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest({ connect: true }), {
-      content: "a {{foo|>uppercase}}",
+      content: "a {{foo|>uppercase(^^)}}",
       state: { foo: "b" },
       actions: {
         uppercase() {
@@ -839,7 +839,7 @@ test("actions", "as function", async (t) => {
 test("actions", "inline variable", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
-      content: "a {{'b'|>uppercase}}",
+      content: "a {{'b'|>uppercase(^^)}}",
       actions: { uppercase },
     })
   )
@@ -862,7 +862,7 @@ test("actions", "builtin actions", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
       tag: "pre",
-      content: "{{foo|>stringify}}",
+      content: "{{foo|>stringify(^^)}}",
       state: { foo: { a: 1 } },
     })
   )
@@ -881,7 +881,7 @@ test("actions", "thisArg", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
       tag: "em",
-      content: "a {{foo|>uppercase}}",
+      content: "a {{foo|>uppercase(^^)}}",
       state: { foo: "b" },
       actions: {
         uppercase(str) {
@@ -901,7 +901,7 @@ test("actions", "nested action", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
       tag: "em",
-      content: "a {{foo|>foo.bar}}",
+      content: "a {{foo|>foo.bar(^^)}}",
       state: { foo: "b" },
       actions: {
         foo: {
@@ -949,9 +949,9 @@ test("actions", "thisArg", "nested", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: [
-        "{{foo|>uppercase}}",
-        { tag: "em", content: "{{foo|>uppercase}}" },
-        { tag: "strong", content: "{{foo|>uppercase}}" },
+        "{{foo|>uppercase(^^)}}",
+        { tag: "em", content: "{{foo|>uppercase(^^)}}" },
+        { tag: "strong", content: "{{foo|>uppercase(^^)}}" },
       ],
       state: { foo: "b" },
       actions: {
@@ -976,7 +976,7 @@ test("actions", "builtin actions locate", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
       tag: "pre",
-      content: "{{foo |> stringify('min')}}",
+      content: "{{foo |> stringify(^^, 'min')}}",
       // content: "{{foo|>stringify.min}}",
       state: { foo: { a: 1 } },
     })
@@ -988,7 +988,7 @@ test("actions", "builtin actions locate", async (t) => {
 test("actions", "pluralize", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
-      content: "{{'apple'|>pluralize}}, {{'orange'|>pluralize(5)}}",
+      content: "{{'apple'|>pluralize(^^)}}, {{'orange'|>pluralize(^^, 5)}}",
     })
   )
 
@@ -1997,7 +1997,7 @@ test("computed", async (t) => {
       },
 
       computed: {
-        parsed: "{{formated|>split('/')}}",
+        parsed: "{{formated|>split(^^, '/')}}",
       },
     })
   )

@@ -33,7 +33,7 @@ export default async function filePickerSave(path, options) {
           enterKeyHint: "done",
           on: {
             Enter: "{{ok()}}",
-            focus: "{{path.getStemname(target.value) |> field.select}}",
+            focus: "{{path.getStemname(target.value) |> field.select(^^)}}",
           },
         },
         {

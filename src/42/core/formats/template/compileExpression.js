@@ -4,6 +4,21 @@ import synchronize from "../../../fabric/type/function/synchronize.js"
 
 const PIPE = Symbol("pipe")
 
+function resolveAction(locals, locate, value, sep) {
+  for (const obj of locals) {
+    const res = locate(obj, value, sep)
+    if (res !== undefined) return res
+  }
+}
+
+function ensureAction(action, value) {
+  if (typeof action !== "function") {
+    throw new TypeError(
+      `Template action didn't resolve as a function: "${value}"`
+    )
+  }
+}
+
 function compileToken(i, list, tokens, options) {
   const { type, value, negated /* , loc */ } = tokens[i]
   const { locate, actions, sep } = options
@@ -27,38 +42,38 @@ function compileToken(i, list, tokens, options) {
       i = end
     }
 
-    const action = locate(actions, value, sep)
+    let action
 
-    if (action) {
+    if (actions) {
+      action = locate(actions, value, sep)
       if (!options.async && typeof action !== "function") {
         throw new TypeError(`Template action is not a function: "${value}"`)
       }
-
-      list.push(
-        options.async
-          ? async (locals, args = []) => {
-              args.unshift(action)
-              for (const arg of argTokens) args.push(arg(locals))
-              const [asyncFn, ...rest] = await Promise.all(args)
-              if (typeof asyncFn !== "function") {
-                throw new TypeError(
-                  `Template action didn't resolve as a function: "${value}"`
-                )
-              }
-
-              return asyncFn(...rest)
-            }
-          : (locals, args = []) => {
-              for (const arg of argTokens) args.push(arg(locals))
-              return action(...args)
-            }
-      )
     }
+
+    list.push(
+      options.async
+        ? async (locals, args = [], res) => {
+            action ??= resolveAction(locals, locate, value, sep, action)
+            args.unshift(action)
+            for (const arg of argTokens) args.push(arg(locals, res))
+            const [asyncFn, ...rest] = await Promise.all(args)
+            ensureAction(asyncFn, value)
+            return asyncFn(...rest)
+          }
+        : (locals, args = [], res) => {
+            action ??= resolveAction(locals, locate, value, sep, action)
+            ensureAction(action, value)
+            for (const arg of argTokens) args.push(arg(locals, res))
+            return action(...args)
+          }
+    )
 
     return i
   }
 
   if (type === "pipe") list.push(PIPE)
+  else if (type === "placeholder") list.push((_, res) => res)
   else if (type === "ternary") list.push(value)
   else if (type === "operator") list.push(value)
   else if (type === "assignment") list.push(value)
@@ -123,6 +138,15 @@ export default function compileExpression(tokens, options = {}) {
     }
   }
 
+  // reduce pipe tokens
+  for (let i = 0, l = list.length; i < l; i++) {
+    if (list[i] === PIPE) {
+      const fn = (locals) => action(locals, [], res(locals))
+      const [res, , action] = list.splice(i - 1, 3, fn)
+      i -= l - list.length
+    }
+  }
+
   // reduce assignment tokens
   for (let i = 0, l = list.length; i < l; i++) {
     if (typeof list[i] === "string" && list[i] in assignments) {
@@ -142,15 +166,6 @@ export default function compileExpression(tokens, options = {}) {
           }
 
       const [left, , right] = list.splice(i - 1, 3, fn)
-      i -= l - list.length
-    }
-  }
-
-  // reduce pipe tokens
-  for (let i = 0, l = list.length; i < l; i++) {
-    if (list[i] === PIPE) {
-      const fn = (locals) => action(locals, [res(locals)])
-      const [res, , action] = list.splice(i - 1, 3, fn)
       i -= l - list.length
     }
   }

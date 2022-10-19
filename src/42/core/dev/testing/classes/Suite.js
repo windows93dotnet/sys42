@@ -140,10 +140,8 @@ export default class Suite {
       if (test.failing) this.failing = true
       this.stats.passed++
       this.root.stats.passed++
-      if (this.stats.ok === undefined) {
-        this.stats.ok = true
-        this.root.stats.ok = true
-      }
+      this.stats.ok ??= true
+      this.root.stats.ok ??= true
     } else {
       this.stats.ok = false
       this.root.stats.ok = false
