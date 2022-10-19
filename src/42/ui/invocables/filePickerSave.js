@@ -26,7 +26,7 @@ export default async function filePickerSave(path, options) {
           tag: "input.w-full",
           watch: "/name",
           value: `{{selection.length > 0
-            ? path.getBasename(selection/0)
+            ? path.getBasename(selection/-1)
             : this.value || '${untitled}'}}`,
           autofocus: true,
           compact: true,
@@ -68,7 +68,12 @@ export default async function filePickerSave(path, options) {
   if (options && "data" in options) {
     const fs = await import("../../core/fs.js").then((m) => m.default)
     const { encoding } = options
-    saved = await fs.write(path, options.data, { encoding })
+    try {
+      await fs.write(path, options.data, { encoding })
+      saved = true
+    } catch {
+      saved = false
+    }
   }
 
   return {

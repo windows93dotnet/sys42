@@ -14,6 +14,7 @@ preload(href, { prefetch: true })
 import filePicker from "../../../../42/ui/invocables/filePicker.js"
 import explorer from "../../../../42/ui/components/explorer.js"
 import fs from "../../../../42/core/fs.js"
+import idle from "../../../../42/fabric/type/promise/idle.js"
 
 const makeContent = () => ({
   tag: ".w-full.pa-xl",
@@ -76,28 +77,26 @@ test.ui(async (t) => {
   const files = await filesPromise
 
   await Promise.all([
-    /* Open
-    ======= */
+    // /* Open
+    // ======= */
 
-    launch(t, "#filePickerOpen", ".ui-dialog__decline").then((res) =>
-      t.is(res, undefined)
-    ),
+    launch(t, "#filePickerOpen", ".ui-dialog__close") //
+      .then((res) => t.is(res, undefined)),
 
-    launch(t, "#filePickerOpen", ".ui-dialog__close").then((res) =>
-      t.is(res, undefined)
-    ),
+    launch(t, "#filePickerOpen", ".ui-dialog__decline") //
+      .then((res) => t.is(res, undefined)),
 
     launch(t, "#filePickerOpen", ".ui-dialog__agree", async (dialog) => {
       t.is(t.puppet.$(".ui-dialog__agree", dialog).disabled, true)
       await t.puppet('[path="/style.css"]', dialog).click()
       t.is(t.puppet.$(".ui-dialog__agree", dialog).disabled, false)
-    }).then((res) => {
+    }).then((res) =>
       t.eq(res, {
         path: "/",
         selection: ["/style.css"],
         files: [files[0]],
       })
-    }),
+    ),
 
     launch(t, "#filePickerOpen", ".ui-dialog__agree", async (dialog) => {
       await t
@@ -106,32 +105,65 @@ test.ui(async (t) => {
         .target('[path="/index.html"]', dialog)
         .keydown("Control")
         .click()
-    }).then((res) => {
+    }).then((res) =>
       t.eq(res, {
         path: "/",
         selection: ["/style.css", "/index.html"],
         files,
       })
-    }),
+    ),
 
-    /* Save
-    ======= */
+    // /* Save
+    // ======= */
 
-    launch(t, "#filePickerSave", ".ui-dialog__close").then((res) => {
-      t.is(res, undefined)
-    }),
+    launch(t, "#filePickerSave", ".ui-dialog__close") //
+      .then((res) => t.is(res, undefined)),
 
-    launch(t, "#filePickerSave", ".ui-dialog__decline").then((res) => {
-      t.is(res, undefined)
-    }),
+    launch(t, "#filePickerSave", ".ui-dialog__decline") //
+      .then((res) => t.is(res, undefined)),
 
-    launch(t, "#filePickerSave", ".ui-dialog__agree").then((res) => {
+    launch(t, "#filePickerSave", ".ui-dialog__agree") //
+      .then((res) =>
+        t.eq(res, {
+          saved: undefined,
+          path: "/untitled.txt",
+          dir: "/",
+          base: "untitled.txt",
+        })
+      ),
+
+    launch(t, "#filePickerSave", ".ui-dialog__agree", async (dialog) => {
+      await t.puppet('[path="/style.css"]', dialog).click()
+      await idle()
+    }).then((res) =>
       t.eq(res, {
         saved: undefined,
-        path: "/untitled.txt",
+        path: "/style.css",
         dir: "/",
-        base: "untitled.txt",
+        base: "style.css",
       })
-    }),
+    ),
+
+    launch(t, "#filePickerSaveContent", ".ui-dialog__close") //
+      .then((res) => t.is(res, undefined)),
+
+    launch(t, "#filePickerSaveContent", ".ui-dialog__decline") //
+      .then((res) => t.is(res, undefined)),
+
+    launch(t, "#filePickerSaveContent", ".ui-dialog__agree", async (dialog) => {
+      t.is(dialog.querySelector('[name="/name"]').value, "hello.txt")
+    })
+      .then(async (res) => {
+        t.is(await fs.readText("/hello.txt"), "hello world")
+        t.eq(res, {
+          saved: true,
+          path: "/hello.txt",
+          dir: "/",
+          base: "hello.txt",
+        })
+      })
+      .finally(() => {
+        fs.delete("/hello.txt")
+      }),
   ])
 })
