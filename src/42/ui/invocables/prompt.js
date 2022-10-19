@@ -3,7 +3,7 @@ import configure from "../../core/configure.js"
 
 const DEFAULT = {
   label: "Prompt",
-  class: "dialog-modal dialog-prompt",
+  class: "ui-dialog-modal ui-dialog-prompt",
   tag: "text",
   value: "",
   prose: true,

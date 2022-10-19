@@ -58,7 +58,7 @@ test.ui(async (t) => {
 
   if (manual) return t.pass()
 
-  t.eq(await launch(t, "#progress", ".dialog__decline"), {
+  t.eq(await launch(t, "#progress", ".ui-dialog__decline"), {
     value: 30,
     label: "Progress",
     description: "0/1",

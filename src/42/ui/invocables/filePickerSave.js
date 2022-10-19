@@ -19,7 +19,8 @@ export default async function filePickerSave(path, options) {
     isPicker: true,
 
     dialog: {
-      class: "dialog-explorer dialog-filepicker dialog-filepicker--save",
+      class:
+        "ui-dialog-explorer ui-dialog-filepicker ui-dialog-filepicker--save",
       footer: [
         {
           tag: "input.w-full",
@@ -36,12 +37,12 @@ export default async function filePickerSave(path, options) {
           },
         },
         {
-          tag: "button.dialog__agree.btn-default",
+          tag: "button.ui-dialog__agree.btn-default",
           click: "{{ok()}}",
           ...objectifyDef(config.agree),
         },
         {
-          tag: "button.dialog__decline",
+          tag: "button.ui-dialog__decline",
           click: "{{close()}}",
           ...objectifyDef(config.decline),
         },

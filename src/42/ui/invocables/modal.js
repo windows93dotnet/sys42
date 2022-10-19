@@ -5,7 +5,7 @@ import forceOpener from "../forceOpener.js"
 import { objectifyDef } from "../normalize.js"
 
 const DEFAULT = {
-  class: "dialog-modal",
+  class: "ui-dialog-modal",
   role: "alertdialog",
   agree: "Ok",
   decline: "Cancel",
@@ -18,7 +18,7 @@ export default async function modal(options) {
 
   let { content } = config
 
-  content = { tag: ".dialog-modal__content.box-h", content }
+  content = { tag: ".ui-dialog-modal__content.box-h", content }
 
   let src = config.img
 
@@ -34,7 +34,7 @@ export default async function modal(options) {
       tag: ".box-v",
       content: [
         {
-          tag: ".dialog-modal__image.box-center.item-shrink.pa",
+          tag: ".ui-dialog-modal__image.box-center.item-shrink.pa",
           content: { tag: "img", aria: { hidden: true }, src },
         },
         content,
@@ -55,14 +55,14 @@ export default async function modal(options) {
           config.agree === false
             ? undefined
             : {
-                tag: "button.dialog__agree.btn-default",
+                tag: "button.ui-dialog__agree.btn-default",
                 click: "{{ok()}}",
                 ...objectifyDef(config.agree),
               },
           config.decline === false
             ? undefined
             : {
-                tag: "button.dialog__decline",
+                tag: "button.ui-dialog__decline",
                 click: "{{close()}}",
                 ...objectifyDef(config.decline),
               },

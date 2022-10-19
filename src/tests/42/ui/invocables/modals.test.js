@@ -119,30 +119,30 @@ test.ui(async (t) => {
 
   // await Promise.all([
   //   // alert always return true
-  //   launch(t, "#alert", ".dialog__agree") //
+  //   launch(t, "#alert", ".ui-dialog__agree") //
   //     .then((res) => t.eq(res, true)),
 
   //   launch(t, "#alert", ".ui-dialog__close") //
   //     .then((res) => t.eq(res, true)),
   // ])
 
-  t.is(await launch(t, "#alert", ".dialog__agree"), true)
+  t.is(await launch(t, "#alert", ".ui-dialog__agree"), true)
   t.is(await launch(t, "#alert", ".ui-dialog__close"), true)
 
   // confirm return a boolean
 
-  t.is(await launch(t, "#confirm", ".dialog__agree"), true)
-  t.is(await launch(t, "#confirm", ".dialog__decline"), false)
+  t.is(await launch(t, "#confirm", ".ui-dialog__agree"), true)
+  t.is(await launch(t, "#confirm", ".ui-dialog__decline"), false)
   t.is(await launch(t, "#confirm", ".ui-dialog__close"), false)
 
   // prompt return a string or undefined
 
-  t.is(await launch(t, "#prompt", ".dialog__agree"), "")
-  t.is(await launch(t, "#prompt", ".dialog__decline"), undefined)
+  t.is(await launch(t, "#prompt", ".ui-dialog__agree"), "")
+  t.is(await launch(t, "#prompt", ".ui-dialog__decline"), undefined)
   t.is(await launch(t, "#prompt", ".ui-dialog__close"), undefined)
 
   t.is(
-    await launch(t, "#prompt", ".dialog__agree", async (dialog) => {
+    await launch(t, "#prompt", ".ui-dialog__agree", async (dialog) => {
       const input = dialog.querySelector('[name="/value"]')
       await t.puppet(input).fill("derp")
     }),
@@ -152,29 +152,29 @@ test.ui(async (t) => {
   // Customs
   // -------
   t.is(
-    await launch(t, "#alertCustom", ".dialog__agree", async (dialog) => {
+    await launch(t, "#alertCustom", ".ui-dialog__agree", async (dialog) => {
       t.match(dialog.querySelector("img").src, /warning\./)
-      t.is(dialog.querySelector(".dialog__agree").textContent, "Fine !")
+      t.is(dialog.querySelector(".ui-dialog__agree").textContent, "Fine !")
     }),
     true
   )
 
   t.is(
-    await launch(t, "#confirmCustom", ".dialog__agree", (dialog) => {
+    await launch(t, "#confirmCustom", ".ui-dialog__agree", (dialog) => {
       t.match(dialog.querySelector("img").src, /question\./)
-      t.is(dialog.querySelector(".dialog__agree").textContent, "Yep")
-      t.is(dialog.querySelector(".dialog__decline").textContent, "Nope")
-      t.is(dialog.querySelector(".dialog__agree ui-picto").value, "check")
-      t.is(dialog.querySelector(".dialog__decline ui-picto").value, "cross")
+      t.is(dialog.querySelector(".ui-dialog__agree").textContent, "Yep")
+      t.is(dialog.querySelector(".ui-dialog__decline").textContent, "Nope")
+      t.is(dialog.querySelector(".ui-dialog__agree ui-picto").value, "check")
+      t.is(dialog.querySelector(".ui-dialog__decline ui-picto").value, "cross")
     }),
     true
   )
 
   t.is(
-    await launch(t, "#promptCustom", ".dialog__agree", (dialog) => {
+    await launch(t, "#promptCustom", ".ui-dialog__agree", (dialog) => {
       t.match(dialog.querySelector("img").src, /question\./)
-      t.is(dialog.querySelector(".dialog__agree").textContent, "Ok")
-      t.is(dialog.querySelector(".dialog__decline").textContent, "Cancel")
+      t.is(dialog.querySelector(".ui-dialog__agree").textContent, "Ok")
+      t.is(dialog.querySelector(".ui-dialog__decline").textContent, "Cancel")
       const label = dialog.querySelector("label")
       const input = dialog.querySelector('[name="/value"]')
       t.match(label.textContent, /What is the/)
@@ -186,11 +186,16 @@ test.ui(async (t) => {
   )
 
   t.is(
-    await launch(t, "#promptAutoTextarea", ".dialog__agree", async (dialog) => {
-      const input = dialog.querySelector('[name="/value"]')
-      t.is(input.localName, "textarea")
-      await t.puppet(input).fill("derp")
-    }),
+    await launch(
+      t,
+      "#promptAutoTextarea",
+      ".ui-dialog__agree",
+      async (dialog) => {
+        const input = dialog.querySelector('[name="/value"]')
+        t.is(input.localName, "textarea")
+        await t.puppet(input).fill("derp")
+      }
+    ),
     "derp"
   )
 })
