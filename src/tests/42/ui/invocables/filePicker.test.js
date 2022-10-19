@@ -2,6 +2,7 @@ import test from "../../../../42/test.js"
 import { make, launch, log, preload } from "./helpers.js"
 
 const manual = 0
+const iframe = 1
 
 const { href } = new URL(
   "../../../../demos/ui/invocables/filePicker.demo.html?test=true",
@@ -21,8 +22,8 @@ const makeContent = () => ({
       tag: "button",
       label: "Explorer",
       id: "explorer",
-      async click() {
-        log(await explorer())
+      click() {
+        log(explorer())
       },
     },
     "\n\n",
@@ -31,16 +32,16 @@ const makeContent = () => ({
       tag: "button",
       label: "File Picker Open",
       id: "filePickerOpen",
-      async click() {
-        log(await filePicker.open())
+      click() {
+        log(filePicker.open())
       },
     },
     {
       tag: "button",
       label: "File Picker Open Path",
       id: "filePickerOpenPath",
-      async click() {
-        log(await filePicker.open("/tests/fixtures/website/index.html"))
+      click() {
+        log(filePicker.open("/tests/fixtures/website/index.html"))
       },
     },
     "\n\n",
@@ -48,40 +49,66 @@ const makeContent = () => ({
       tag: "button",
       label: "File Picker Save",
       id: "filePickerSave",
-      async click() {
-        log(await filePicker.save())
+      click() {
+        log(filePicker.save())
       },
     },
     {
       tag: "button",
       label: "File Picker Save Content",
       id: "filePickerSaveContent",
-      async click() {
-        log(await filePicker.save("/hello.txt", "hello world"))
+      click() {
+        log(filePicker.save("/hello.txt", "hello world"))
       },
     },
   ],
 })
 
+const filesPromise = Promise.all([
+  fs.open("/style.css"),
+  fs.open("/index.html"),
+])
+
 test.ui(async (t) => {
-  await make(t, { href, makeContent })
+  await make(t, { href, makeContent }, iframe)
   if (manual) return t.pass()
 
-  t.eq(await launch(t, "#filePickerOpen", ".dialog__decline"), undefined)
-  t.eq(await launch(t, "#filePickerOpen", ".ui-dialog__close"), undefined)
+  const files = await filesPromise
 
-  const styleFile = await fs.open("/style.css")
+  await Promise.all([
+    launch(t, "#filePickerOpen", ".dialog__decline").then((res) =>
+      t.eq(res, undefined)
+    ),
 
-  t.eq(
-    await launch(t, "#filePickerOpen", ".dialog__agree", async (dialog) => {
+    launch(t, "#filePickerOpen", ".ui-dialog__close").then((res) =>
+      t.eq(res, undefined)
+    ),
+
+    launch(t, "#filePickerOpen", ".dialog__agree", async (dialog) => {
       t.is(t.puppet.$(".dialog__agree", dialog).disabled, true)
       await t.puppet('[path="/style.css"]', dialog).click()
       t.is(t.puppet.$(".dialog__agree", dialog).disabled, false)
+    }).then((res) => {
+      t.eq(res, {
+        path: "/",
+        selection: ["/style.css"],
+        files: [files[0]],
+      })
     }),
-    {
-      path: "/",
-      selection: ["/style.css"],
-      files: [styleFile],
-    }
-  )
+
+    launch(t, "#filePickerOpen", ".dialog__agree", async (dialog) => {
+      await t
+        .puppet('[path="/style.css"]', dialog)
+        .click()
+        .target('[path="/index.html"]', dialog)
+        .keydown("Control")
+        .click()
+    }).then((res) => {
+      t.eq(res, {
+        path: "/",
+        selection: ["/style.css", "/index.html"],
+        files,
+      })
+    }),
+  ])
 })

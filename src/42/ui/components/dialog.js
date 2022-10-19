@@ -5,6 +5,7 @@ import omit from "../../fabric/type/object/omit.js"
 import dispatch from "../../fabric/event/dispatch.js"
 import maxZIndex from "../../fabric/dom/maxZIndex.js"
 import { objectifyDef, forkDef } from "../normalize.js"
+import forceOpener from "../forceOpener.js"
 import uid from "../../core/uid.js"
 import { autofocus } from "../../fabric/dom/focus.js"
 import nextCycle from "../../fabric/type/promise/nextCycle.js"
@@ -153,10 +154,7 @@ const dialog = rpc(
     marshalling(def = {}, ctx) {
       def = objectifyDef(def)
 
-      if (!def.opener) {
-        document.activeElement.id ||= uid()
-        def.opener ??= document.activeElement.id
-      }
+      forceOpener(def)
 
       if (rpc.inTop) {
         ctx = { ...ctx, detached: true }

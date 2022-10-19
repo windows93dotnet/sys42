@@ -1,5 +1,6 @@
 import modal from "./modal.js"
 import uid from "../../core/uid.js"
+import forceOpener from "../forceOpener.js"
 import isErrorLike from "../../fabric/type/any/is/isErrorLike.js"
 
 const DEFAULT = {
@@ -8,11 +9,14 @@ const DEFAULT = {
   decline: false,
 }
 
-export default async function alert(message = "", options) {
+export default async function alert(message = "", options = {}) {
+  const config = { ...DEFAULT, ...options }
+  config.dialog ??= {}
+  forceOpener(config.dialog)
+
   if (isErrorLike(message)) {
     const error = await import("../../fabric/type/error/normalizeError.js") //
       .then((m) => m.default(message))
-    options ??= {}
     options.icon ??= "error"
     options.label ??= error.name
     message = options.message ?? error.message
@@ -62,8 +66,6 @@ export default async function alert(message = "", options) {
     options = message
     message = options.message
   }
-
-  const config = { ...DEFAULT, ...options }
 
   config.content = {
     tag: ".box-center-y.pa-md",

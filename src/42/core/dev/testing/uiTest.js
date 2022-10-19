@@ -2,7 +2,6 @@ import inTop from "../../env/realm/inTop.js"
 import trap from "../../../fabric/type/error/trap.js"
 import debounce from "../../../fabric/type/function/debounce.js"
 import unsee from "../../../fabric/dom/unsee.js"
-// import nextCycle from "../../../fabric/type/promise/nextCycle.js"
 
 // Integration tests self-execute if not started from a test runner.
 // It allow to manually debug GUI tests inside a webpage
