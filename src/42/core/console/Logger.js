@@ -64,7 +64,7 @@ export default class Logger extends Callable {
 
     const make =
       (key) =>
-      ({ entries, data }, ...args) => {
+      async ({ entries, data }, ...args) => {
         if (
           this.enabled === false ||
           data.paused === true ||
@@ -91,7 +91,9 @@ export default class Logger extends Callable {
         }
 
         contextHandler(data, this)
+
         args = config.formater(args, data, this)
+        if (data.async) args = await args
 
         const res = data.prefix + args.join(data.joiner) + data.suffix
 
