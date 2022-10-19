@@ -6,7 +6,11 @@ import inTop from "../../../../42/core/env/realm/inTop.js"
 
 let res = defer()
 export function log(arg) {
-  if (system.testing.manual) console.log({ inTop }, arg)
+  if (system.testing.manual) {
+    import("../../../../42/core/log.js") //
+      .then((m) => m.default.inspect.async(arg))
+  }
+
   res.resolve(arg)
 }
 
@@ -16,15 +20,15 @@ const { body } = top.document
 export async function launch(t, open, close, fn) {
   await t.puppet(open).click()
   const { target } = await t.utils.when(top, "uidialogopen")
-  await fn?.(target)
-  if (close === false) return
+  const advance = await fn?.(target)
+  if (advance === false || close === false) return
   await t.puppet(close, body).click()
   const tmp = await res
   res = defer()
   return tmp
 }
 
-export async function make(t, { href, makeContent }) {
+export async function make(t, { href, makeContent }, iframe = true) {
   const app = await t.utils.decay(
     ui(
       t.utils.dest({ connect: true }),
@@ -35,7 +39,7 @@ export async function make(t, { href, makeContent }) {
               tag: ".box-v.size-full",
               content: [
                 makeContent(),
-                {
+                iframe && {
                   tag: "ui-sandbox.ground",
                   permissions: "trusted",
                   path: href,

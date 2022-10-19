@@ -86,6 +86,23 @@ export class Log extends Logger {
             }
           }
 
+          if (data.async) {
+            return Promise.all(
+              args.map(async (x) => {
+                if (x instanceof Error) {
+                  return formatError(x, data.config?.error)
+                }
+
+                return typeof x === "string"
+                  ? x
+                  : highlight(
+                      await stringify(x, data.config?.stringify ?? "clean"),
+                      data.config?.highlight
+                    )
+              })
+            )
+          }
+
           return args.map((x) => {
             if (x instanceof Error) return formatError(x, data.config?.error)
             return typeof x === "string"
