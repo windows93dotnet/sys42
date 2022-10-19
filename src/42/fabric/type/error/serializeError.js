@@ -3,7 +3,7 @@ import allKeys from "../object/allKeys.js"
 import addStack from "./addStack.js"
 import omit from "../object/omit.js"
 import normalizeError from "./normalizeError.js"
-import isInstanceOf from "../../isInstanceOf.js"
+import isInstanceOf from "../any/is/isInstanceOf.js"
 
 const ERROR_EVENT_INFOS = ["lineno", "colno", "filename"]
 

@@ -1,4 +1,4 @@
-import isInstanceOf from "../../../isInstanceOf.js"
+import isInstanceOf from "./isInstanceOf.js"
 
 export default function isErrorLike(val) {
   return (

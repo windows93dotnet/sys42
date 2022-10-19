@@ -3,7 +3,7 @@ import inAutomated from "./core/env/runtime/inAutomated.js"
 import system from "./system.js"
 import log from "./core/log.js"
 
-import getScriptData from "./fabric/getScriptData.js"
+import getScriptData from "./core/dev/getScriptData.js"
 const { config } = getScriptData(import.meta)
 
 // config.verbose = 2

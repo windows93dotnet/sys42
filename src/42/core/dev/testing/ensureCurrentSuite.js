@@ -1,6 +1,6 @@
 import system from "./mainSystem.js"
 import inIframe from "../../env/realm/inIframe.js"
-import getParentModule from "../../../fabric/getParentModule.js"
+import getParentModule from "../getParentModule.js"
 import shortenFilename from "../../../core/path/shortenFilename.js"
 import Suite from "./classes/Suite.js"
 

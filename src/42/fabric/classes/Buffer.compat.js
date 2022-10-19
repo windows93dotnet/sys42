@@ -13,7 +13,7 @@
 
 import base64 from "../../core/formats/base64.js"
 import ieee754 from "../../core/formats/ieee754.js"
-import isInstanceOf from "../isInstanceOf.js"
+import isInstanceOf from "../type/any/is/isInstanceOf.js"
 
 const customInspectSymbol =
   typeof Symbol === "function" && typeof Symbol["for"] === "function" // eslint-disable-line dot-notation

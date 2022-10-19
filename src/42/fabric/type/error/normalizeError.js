@@ -1,4 +1,4 @@
-import isInstanceOf from "../../isInstanceOf.js"
+import isInstanceOf from "../any/is/isInstanceOf.js"
 const ERROR_EVENT_INFOS = ["lineno", "colno", "filename", "type", "message"]
 
 export default function normalizeError(e, originStack = new Error().stack) {
