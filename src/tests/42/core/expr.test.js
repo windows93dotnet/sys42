@@ -193,3 +193,25 @@ test("multi locals", (t) => {
   t.eq(fn({ a: 1 }, { b: 1 }), true)
   t.eq(fn({ a: 1 }, { b: 2 }), false)
 })
+
+test("async statements", async (t) => {
+  const parsed = expr.parse("{{tmp = x(); a = tmp}}")
+
+  const fn = expr.compile(parsed, { assignment: true, async: true })
+  const obj = {
+    a: 1,
+    async x() {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(42)
+        }, 10)
+      })
+    },
+  }
+
+  const res = await fn(obj)
+
+  t.is(res, 42)
+  t.eq(obj.a, 42)
+  t.eq(obj.tmp, 42)
+})

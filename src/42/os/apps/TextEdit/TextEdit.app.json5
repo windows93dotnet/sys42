@@ -36,8 +36,10 @@
       shortcut: "Ctrl+O",
       id: "menuItem-openFile",
       // click: "{{editor.openFile(}}",
-      click: '{{$files/0/path = filePicker.open($files/0/path, {files: false})\
-        |> locate(^^, "selection.0")}}',
+      click: '{{\
+        tmp = filePicker.open($files/0/path, {files: false});\
+        $files/0/path = tmp ? locate(tmp, "selection.0") : $files/0/path;\
+      }}',
     },
     {
       label: "Save",
