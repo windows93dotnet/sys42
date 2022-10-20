@@ -27,8 +27,8 @@
       picto: "file",
       id: "menuItem-newFile",
       shortcut: "Ctrl+N",
-      // click: "{{editor.newFile(}}",
-      click: "{{$files/0/path = undefined}}",
+      click: "{{editor.newFile(}}",
+      // click: "{{$files/0/path = undefined}}",
     },
     {
       label: "Open",
@@ -46,26 +46,28 @@
       picto: "save",
       shortcut: "Ctrl+S",
       id: "menuItem-saveFile",
-      // click: "{{editor.saveFile()}}",
-      click: "{{filePicker.save($files/0/path, $files/0/data)}}",
+      click: "{{editor.saveFile()}}",
+      // click: "{{filePicker.save($files/0/path, $files/0/data)}}",
     },
   ],
 
   content: {
-    scope: "/$files/0",
-    content: {
-      tag: "textarea",
-      label: "{{path}}",
-      class: "w-full {{monospace ? 'font-mono' : ''}}",
-      spellcheck: "{{spellcheck}}",
-      wrap: "{{wrap ? 'soft' : 'off'}}",
-      prose: false,
-      compact: true,
-      autofocus: true,
-
-      watch: "data",
-      value: "{{fs.source(path)}}",
-    },
+    scope: "$files/0",
+    content: [
+      { tag: "text", watch: "/$dialog.title", compact: true },
+      {
+        tag: "textarea",
+        label: "{{path}}",
+        class: "{{/monospace ? 'font-mono' : ''}}",
+        spellcheck: "{{/spellcheck}}",
+        wrap: "{{/wrap ? 'soft' : 'off'}}",
+        prose: false,
+        compact: true,
+        autofocus: true,
+        watch: "data",
+        value: "{{fs.source(path)}}",
+      },
+    ],
   },
 
   state: {

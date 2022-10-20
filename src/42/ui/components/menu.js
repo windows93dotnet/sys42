@@ -37,9 +37,9 @@ export class Menu extends Component {
     },
   }
 
-  close() {
-    this.destroy()
-  }
+  // close() {
+  //   this.destroy()
+  // }
 
   focusPrev() {
     seq(this, -1)
