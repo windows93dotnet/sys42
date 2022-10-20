@@ -118,6 +118,7 @@ export default async function preinstall(app) {
   // })
 
   let card
+  let displayApp
 
   async function install() {
     const install = await deferred
@@ -125,13 +126,14 @@ export default async function preinstall(app) {
     await install.userChoice
     card?.destroy()
     document.querySelector("#install-card")?.remove()
+    displayApp?.resolve()
   }
 
   const params = new URLSearchParams(location.search)
   if (params.has("install")) {
     card = await import("../ui.js").then(({ default: ui }) => {
       ui({
-        tag: ".box-fit.ground.box-center",
+        tag: ".box-fit.desktop.box-center.z-top",
         id: "install-card",
         content: {
           tag: ".panel.outset.pa-xl",
@@ -140,7 +142,7 @@ export default async function preinstall(app) {
             {
               tag: "button.w-full",
               id: "install",
-              content: "Install",
+              content: "Install as Web App",
               disabled: true,
               click: install,
             },
@@ -148,7 +150,8 @@ export default async function preinstall(app) {
         },
       })
     })
-    return true
+    displayApp = defer()
+    return displayApp
   }
 
   return install

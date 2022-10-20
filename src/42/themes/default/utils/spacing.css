@@ -317,3 +317,11 @@
 .ratio-widescreen { --ratio: var(--ratio-widescreen); aspect-ratio: var(--ratio); }
 .ratio-ultrawide { --ratio: var(--ratio-ultrawide); aspect-ratio: var(--ratio); }
 .ratio-golden { --ratio: var(--ratio-golden); aspect-ratio: var(--ratio); }
+
+/* z-index
+========== */
+
+.z-under { z-index: -1; }
+.z-0, .z-bottom { z-index: 0; }
+.z-1 { z-index: 1; }
+.z-top { z-index: 9999; /* 🕶🎸 */ }
