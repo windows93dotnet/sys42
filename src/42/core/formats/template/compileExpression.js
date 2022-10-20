@@ -20,7 +20,7 @@ function ensureAction(action, value) {
 }
 
 function compileToken(i, list, tokens, options) {
-  const { type, value, negated /* , loc */ } = tokens[i]
+  const { type, value, negated } = tokens[i]
   const { locate, actions, sep } = options
 
   if (type === "function") {
@@ -38,7 +38,7 @@ function compileToken(i, list, tokens, options) {
 
     if (end > start) {
       const subset = tokens.slice(start, end)
-      argTokens = compileExpression(subset, options)
+      argTokens = compileStatement(subset, options)
       i = end
     }
 
@@ -106,7 +106,7 @@ function compileToken(i, list, tokens, options) {
   return i
 }
 
-export default function compileExpression(tokens, options = {}) {
+export function compileStatement(tokens, options = {}) {
   const list = []
 
   // reduce function, key and arg tokens
@@ -171,4 +171,66 @@ export default function compileExpression(tokens, options = {}) {
   }
 
   return list
+}
+
+export default function compileExpression(tokens, options) {
+  const statements = []
+  let statement = []
+  for (const token of tokens) {
+    if (token.type === "statementEnd") {
+      statements.push(compileStatement(statement, options))
+      statement = []
+      continue
+    }
+
+    statement.push(token)
+  }
+
+  if (statement.length > 0) {
+    statements.push(compileStatement(statement, options))
+  }
+
+  if (options.returnList) return statements
+
+  const fn = options?.async
+    ? options?.boolean
+      ? async (...locals) => {
+          let res
+          for (const statement of statements) {
+            const undones = []
+            for (const item of statement) undones.push(item(locals))
+            res = (await Promise.all(undones)).at(-1)
+          }
+
+          return Boolean(res)
+        }
+      : async (...locals) => {
+          let res
+          for (const statement of statements) {
+            const undones = []
+            for (const item of statement) undones.push(item(locals))
+            res = (await Promise.all(undones)).at(-1)
+          }
+
+          return res
+        }
+    : options?.boolean
+    ? (...locals) => {
+        let res
+        for (const statement of statements) {
+          for (const item of statement) res = item(locals)
+        }
+
+        return Boolean(res)
+      }
+    : (...locals) => {
+        let res
+        for (const statement of statements) {
+          for (const item of statement) res = item(locals)
+        }
+
+        return res
+      }
+
+  return fn
 }

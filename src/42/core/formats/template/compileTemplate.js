@@ -4,17 +4,19 @@ export default function compileTemplate(parsed, options = {}) {
   const { strings } = parsed
   const substitutions = []
 
-  for (const tokens of parsed.substitutions) {
-    const list = compileExpression(tokens, options)
+  const config = { ...options, returnList: true }
 
-    if (list.length > 1) {
+  for (const tokens of parsed.substitutions) {
+    const list = compileExpression(tokens, config)
+
+    if (list.length > 1 || list[0].length > 1) {
       throw Object.assign(
         new Error("template syntax error, didn't reduced to one function"),
         { parsed, list }
       )
     }
 
-    substitutions.push(list[0])
+    substitutions.push(list[0][0])
   }
 
   return options.async

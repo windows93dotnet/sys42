@@ -18,10 +18,7 @@ export default function register(ctx, loc, fn) {
   if (typeof loc === "function") {
     scopes = loc.scopes
     renderer = async (changed) => {
-      const val = loc(ctx.reactive.state)
-      if (val !== undefined) ctx.undones.push(val)
-      const res = fn(await val, changed)
-      if (res !== undefined) ctx.undones.push(res)
+      ctx.undones.push(loc(ctx.reactive.state).then((val) => fn(val, changed)))
     }
   } else {
     scopes = arrify(loc)

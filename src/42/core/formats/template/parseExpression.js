@@ -15,6 +15,21 @@ const pairs = {
   "{": "}",
 }
 
+// @src https://stackoverflow.com/a/58770287
+function stripComments(source) {
+  return (
+    source
+      // replace "/" in quotes with non-printable ASCII '\1' char
+      .replace(/("([^"\\]|\\")*")|('([^'\\]|\\')*')/g, (m) =>
+        m.replace(/\//g, "\x01")
+      )
+      // clear comments
+      .replace(/(\/\*[^*]+\*\/)|(\/\/[^\n]+)/g, "")
+      // restore "/" in quotes
+      .replace(/\1/g, "/")
+  )
+}
+
 const numbers = new Set("0123456789".split(""))
 const regexFlags = new Set("dgimsuy".split(""))
 const pairsKeys = new Set(Object.keys(pairs))
@@ -23,6 +38,8 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
   if (source.startsWith("{" + "{") && source.endsWith("}" + "}")) {
     source = source.slice(2, -2)
   }
+
+  source = stripComments(source)
 
   let buffer = ""
   let current = 0
@@ -164,8 +181,16 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
       continue
     }
 
-    if (char === "," || char === ";") {
+    if (char === ",") {
       flush()
+      state = "arg"
+      current++
+      continue
+    }
+
+    if (char === ";") {
+      flush()
+      tokens.push({ type: "statementEnd" })
       state = "arg"
       current++
       continue
