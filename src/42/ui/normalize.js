@@ -555,8 +555,8 @@ export function normalizeDef(def = {}, ctx, options) {
     normalizeScope(def, ctx)
 
     if (def.actions) {
-      normalizeData(def.actions, ctx, (res, scope) => {
-        ctx.actions.merge(scope, res)
+      normalizeData(def.actions, ctx, (res) => {
+        ctx.actions.merge("/", res)
       })
     }
 
