@@ -1,3 +1,4 @@
+import system from "../../system.js"
 import inTop from "../../core/env/realm/inTop.js"
 import uid from "../../core/uid.js"
 import UI from "../../ui/classes/UI.js"
@@ -19,11 +20,11 @@ async function normalizeManifest(manifest, options) {
 
       manifest = await fs.read.json5(new URL(manifest, location).pathname)
     }
+  }
 
-    if (manifest.dir === undefined) {
-      const url = document.URL
-      manifest.dir = url.endsWith("/") ? url : getDirname(url) + "/"
-    }
+  if (manifest.dir === undefined) {
+    const url = document.URL
+    manifest.dir = url.endsWith("/") ? url : getDirname(url) + "/"
   }
 
   if (inTop) {
@@ -73,16 +74,19 @@ export async function mount(manifest, options) {
 
   if (inTop) {
     const sandbox = makeSandbox(manifest)
+    document.title = manifest.name
+
+    // Allow PWA installation
+    if (manifest.installable !== false) {
+      const install = await preinstall(manifest)
+      if (install?.isPending) await install
+      else if (install) system.install = install
+    }
+
     return new UI({
       tag: "ui-sandbox.box-fit",
       ...sandbox,
     })
-  }
-
-  // Allow PWA installation
-  if (manifest.installable !== false) {
-    const install = await preinstall(manifest)
-    if (install === true) return
   }
 
   return new App(manifest)

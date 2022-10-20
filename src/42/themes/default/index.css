@@ -29,7 +29,6 @@
 /* Components
 ============= */
 @import "./ui/ui.css";
-@import "./ui/layers.css";
 @import "./components/accordion.css";
 @import "./components/dialog.css";
 @import "./components/sandbox.css";
