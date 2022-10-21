@@ -13,8 +13,8 @@ const keyframeEffectKeys = [
 ]
 
 function start(el, how, keyframe, options) {
-  const cL = document.body.classList
-  if (cL.contains("motionless") || cL.contains("animation-0")) return
+  // const cL = document.body.classList
+  // if (cL.contains("motionless") || cL.contains("animation-0")) return
 
   const temp = { class: { "action-0": true } }
   if ("x" in el && "y" in el) {

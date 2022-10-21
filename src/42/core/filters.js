@@ -176,10 +176,10 @@ types.fs = {
     ])
     fs.source(path, "utf8")
       .pipeTo(sinkField(this.el))
-      .then(() => {
-        dispatch(this.el, "input")
-        dispatch(this.el, "change")
-      })
+      // .then(() => {
+      //   dispatch(this.el, "input")
+      //   dispatch(this.el, "change")
+      // })
       .catch((err) => dispatch(this.el, err))
   },
 }
