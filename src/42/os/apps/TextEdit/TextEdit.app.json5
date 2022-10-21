@@ -54,7 +54,7 @@
   content: {
     scope: "$files/0",
     content: [
-      { tag: "text", bind: "/$dialog.title", compact: true },
+      // { tag: "text", bind: "/$dialog.title", compact: true },
       {
         tag: "textarea",
         label: "{{path}}",
@@ -68,9 +68,9 @@
         bind: "data",
         value: "{{fs.source(path)}}",
         on: {
-          input: "{{dirty = true}}",
+          "input": "{{dirty = true}}",
           // focus: "{{/$dialog.title = dirty ? path + '*' : path}}",
-          focus: "{{/$dialog.title = path}}",
+          "focus || render": "{{/$dialog.title = path}}",
         },
       },
     ],
