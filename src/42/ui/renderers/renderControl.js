@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 /* eslint-disable max-depth */
 import register from "../register.js"
 import render from "../render.js"
@@ -45,47 +46,74 @@ function setValidation(def) {
   return attr
 }
 
+function getBindScope(ctx, bind) {
+  // console.log(scope, resolveScope(ctx.scope, def.bind.from, ctx))
+  return resolveScope(...findScope(ctx, bind), ctx)
+}
+
 export default function renderControl(el, ctx, def) {
   el.id ||= hash(ctx.steps)
 
-  if (def.watch) {
-    const scope = resolveScope(...findScope(ctx, def.watch), ctx)
-    // console.log(scope, resolveScope(ctx.scope, def.watch, ctx))
-    el.name ||= scope
+  if (def.bind) {
+    let scopeFrom
+    if (def.bind.from) {
+      scopeFrom = getBindScope(ctx, def.bind.from)
+      el.name ||= scopeFrom
 
-    register(ctx, scope, (val) => setControlData(el, val))
-
-    const fn = () => ctx.reactive.set(el.name, getControlData(el))
+      register(ctx, scopeFrom, (val) => setControlData(el, val))
+    }
 
     if (def.value) {
-      // Save the value in the state if a value and a scope are set
+      // Save the value in the state if a value and a bind.from are set
       if (def.attrs.value.scopes) {
         // TODO: find way to wait for template function end
         const renderer = idleDebounce(async () => {
-          ctx.reactive.set(el.name, getControlData(el), { silent: true })
+          ctx.reactive.set(scopeFrom, getControlData(el), { silent: true })
         })
 
         for (const scope of def.attrs.value.scopes) {
-          if (scope === el.name) continue
+          if (scope === scopeFrom) continue
           register.registerRenderer(ctx, scope, renderer)
         }
 
         ctx.postrender.push(() => {
-          ctx.reactive.set(el.name, getControlData(el), { silent: true })
+          ctx.reactive.set(scopeFrom, getControlData(el), { silent: true })
         })
       } else {
-        ctx.reactive.set(el.name, getControlData(el), { silent: true })
+        ctx.reactive.set(scopeFrom, getControlData(el), { silent: true })
       }
     }
 
-    def.on ??= []
-    def.on.push({
-      [def.lazy
-        ? def.enterKeyHint === "enter"
-          ? "change || Enter"
-          : "change"
-        : "input"]: def.debounce ? debounce(fn, def.debounce) : fn,
-    })
+    if (def.bind.to) {
+      const scopeTo =
+        def.bind.to === def.bind.from
+          ? scopeFrom
+          : getBindScope(ctx, def.bind.to)
+
+      el.name ||= scopeTo
+
+      const fn = () => {
+        ctx.reactive.set(scopeTo, getControlData(el))
+      }
+
+      def.on ??= []
+      def.on.push(
+        def.lazy
+          ? {
+              [def.enterKeyHint === "enter"
+                ? "change || Control+s"
+                : "change || Control+s || Enter"]: fn,
+            }
+          : def.debounce
+          ? {
+              input: debounce(fn, def.debounce),
+              [def.enterKeyHint === "enter"
+                ? "change || Control+s"
+                : "change || Control+s || Enter"]: fn,
+            }
+          : { input: fn }
+      )
+    }
   }
 
   setAttributes(el, setValidation(def))

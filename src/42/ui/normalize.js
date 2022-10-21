@@ -31,6 +31,7 @@ const ATTRIBUTES_WITHDASH = new Set(["acceptCharset", "httpEquiv"])
 const DEF_KEYWORDS = new Set([
   "actions",
   "animate",
+  "bind",
   "click",
   "computed",
   "content",
@@ -52,7 +53,6 @@ const DEF_KEYWORDS = new Set([
   "state",
   "tag",
   "traits",
-  "watch",
   // TODO: implement once https://vuejs.org/api/built-in-directives.html#v-once
   // TODO: implement memo https://vuejs.org/api/built-in-directives.html#v-memo
 ])
@@ -298,15 +298,10 @@ export function normalizeAttrs(item, ctx, ignore) {
   return attrs
 }
 
-export function normalizeAnimate(animate) {
-  if (!("from" in animate || "to" in animate)) {
-    return {
-      from: animate,
-      to: animate,
-    }
-  }
-
-  return animate
+export function normalizeFromTo(obj) {
+  return typeof obj === "string" || !("from" in obj || "to" in obj)
+    ? { from: obj, to: obj }
+    : obj
 }
 
 export function normalizeComputeds(computeds, ctx) {
@@ -518,7 +513,8 @@ export function ensureDef(def = {}, ctx) {
 }
 
 export function normalizeDefNoCtx(def = {}) {
-  if (def.animate) def.animate = normalizeAnimate(def.animate)
+  if (def.animate) def.animate = normalizeFromTo(def.animate)
+  if (def.bind) def.bind = normalizeFromTo(def.bind)
   normalizeOn(def)
   return def
 }

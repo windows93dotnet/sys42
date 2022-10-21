@@ -35,11 +35,11 @@
       picto: "folder-open",
       shortcut: "Ctrl+O",
       id: "menuItem-openFile",
-      // click: "{{editor.openFile(}}",
-      click: '{{\
-        tmp = filePicker.open($files/0/path, {files: false});\
-        $files/0/path = tmp ? locate(tmp, "selection.0") : $files/0/path;\
-      }}',
+      click: "{{editor.openFile(}}",
+      // click: '{{\
+      //   tmp = filePicker.open($files/0/path, {files: false});\
+      //   $files/0/path = tmp ? locate(tmp, "selection.0") : $files/0/path;\
+      // }}',
     },
     {
       label: "Save",
@@ -54,7 +54,7 @@
   content: {
     scope: "$files/0",
     content: [
-      { tag: "text", watch: "/$dialog.title", compact: true },
+      { tag: "text", bind: "/$dialog.title", compact: true },
       {
         tag: "textarea",
         label: "{{path}}",
@@ -64,8 +64,14 @@
         prose: false,
         compact: true,
         autofocus: true,
-        watch: "data",
+        lazy: true,
+        bind: "data",
         value: "{{fs.source(path)}}",
+        on: {
+          input: "{{dirty = true}}",
+          // focus: "{{/$dialog.title = dirty ? path + '*' : path}}",
+          focus: "{{/$dialog.title = path}}",
+        },
       },
     ],
   },

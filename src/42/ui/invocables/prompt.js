@@ -36,7 +36,7 @@ export default async function prompt(message = "", options) {
       configure(
         {
           tag: config.tag,
-          watch: "value",
+          bind: "value",
           rows: 4,
           lazy: true,
           label: message ?? "",

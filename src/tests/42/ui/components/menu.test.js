@@ -84,7 +84,7 @@ const makeMenu = (name) => {
         content: [
           {
             tag: `number#inputIncrDialog${name}${__}`,
-            watch: "cnt",
+            bind: "cnt",
             compact: true,
           },
           {
@@ -114,25 +114,25 @@ const makeMenu = (name) => {
 
 const makeDemo = ({ content } = {}) => {
   content ??= [
-    { tag: "number", watch: "cnt", id: `cnt${__}`, compact: true },
+    { tag: "number", bind: "cnt", id: `cnt${__}`, compact: true },
     "\n\n",
     "\n\n",
     { tag: "ui-menubar", content: makeMenu("Inline") },
     "\n\n",
     { tag: "ui-menubar", content: makeMenu("Inline"), displayPicto: true },
     "\n\n",
-    { tag: "number", watch: "cnt", compact: true },
+    { tag: "number", bind: "cnt", compact: true },
     "\n\n",
     "\n\n",
     { tag: "ui-menu", content: makeMenu("Inline") },
     "\n\n",
-    { tag: "number", watch: "cnt", compact: true },
+    { tag: "number", bind: "cnt", compact: true },
     "\n\n",
     "\n\n",
     { tag: `button#btnMenu${__}`, content: "Menu", menu: makeMenu("Popup") },
     "\n\n",
     "\n\n",
-    { tag: "number", watch: "cnt", compact: true },
+    { tag: "number", bind: "cnt", compact: true },
     "\n\n",
     "\n\n",
     {
@@ -143,7 +143,7 @@ const makeDemo = ({ content } = {}) => {
         content: [
           `Hello popup`,
           "\n\n",
-          { tag: "number", watch: "cnt", compact: true },
+          { tag: "number", bind: "cnt", compact: true },
           "\n\n",
           { tag: "textarea", compact: true },
         ],
@@ -151,7 +151,7 @@ const makeDemo = ({ content } = {}) => {
     },
     "\n\n",
     "\n\n",
-    { tag: "number", watch: "cnt", compact: true },
+    { tag: "number", bind: "cnt", compact: true },
   ]
 
   return {
