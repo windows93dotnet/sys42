@@ -96,5 +96,7 @@ export default function renderOn(el, defs, ctx) {
     })
 
     eventsMap(list)
+
+    el.dispatchEvent(new CustomEvent("render"))
   })
 }
