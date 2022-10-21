@@ -126,7 +126,7 @@ export async function launch(manifest, options) {
       },
       state,
     },
-    { id }
+    { id, trusted: true }
   )
 }
 
@@ -172,6 +172,20 @@ export default class App extends UI {
     )
 
     this.manifest = manifest
+
+    import("../../io.js").then(({ default: io }) => {
+      io.listenImport()
+      io.on("import", async ([file]) => {
+        this.state.$files[0].data = file
+        this.state.$files[0].dirty = undefined
+        this.state.$files[0].path = undefined
+      })
+      io.on("paths", ([path]) => {
+        this.state.$files[0].data = undefined
+        this.state.$files[0].dirty = undefined
+        this.state.$files[0].path = path
+      })
+    })
 
     // this.then(() => {
     //   setTimeout(() => {

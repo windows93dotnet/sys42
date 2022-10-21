@@ -122,6 +122,7 @@ types.any = {
   equal: "any/equal",
   stringify: "any/stringify",
   log: (...args) => import("./log.js").then((m) => void m.default(...args)),
+  bytesize: (bytes, options) => bytesize(bytes ?? 0, options),
 }
 
 types.function = {
@@ -184,10 +185,9 @@ types.fs = {
   },
 }
 
-types.file = {
-  text: async (file) => file?.text?.(),
+types.cast = {
+  text: async (file) => (typeof file === "string" ? file : file?.text?.()),
   arrayBuffer: async (file) => file?.arrayBuffer?.(),
-  bytesize: (file, options) => bytesize(file?.size ?? 0, options),
 }
 
 types.ui = {

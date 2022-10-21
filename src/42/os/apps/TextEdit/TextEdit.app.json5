@@ -65,8 +65,9 @@
         compact: true,
         autofocus: true,
         lazy: true,
-        bind: "data",
-        value: "{{fs.source(path)}}",
+        // bind: "data",
+        bind: { to: "data" },
+        value: "{{data ? cast.text(data) : fs.source(path)}}",
         on: {
           "input": "{{dirty = true}}",
           // focus: "{{/$dialog.title = dirty ? path + '*' : path}}",
