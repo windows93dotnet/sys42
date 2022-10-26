@@ -11,22 +11,15 @@
 
   content: [
     {
-      tag: "header",
-      content: [
-        { tag: "select", content: ["cover", "contain"] }, //
-      ],
-    },
-    {
-      tag: "._box-fit.box-center.scroll-1.inset.checkboard",
+      tag: ".box-center.scroll-1.max-w-full.inset.checkboard",
       content: {
         tag: "img",
         style: {
-          "margin": "auto",
-          "object-fit": "contain",
-          "height": "{{fit ? '100%' : 'auto'}}",
-          "width": "{{fit ? '100%' : 'auto'}}",
-          "max-height": "100%",
-          "max-width": "100%",
+          "object-fit": "{{cover ? 'cover' : 'contain'}}",
+          "image-rendering": "{{pixelated ? 'pixelated' : 'auto'}}",
+          "height": "{{fit || cover ? '100%' : 'auto'}}",
+          "width": "{{fit || cover ? '100%' : 'auto'}}",
+          "max-width": "none",
         },
         src: "{{$files/0/path}}",
         on: {
@@ -34,14 +27,25 @@
         },
       },
     },
-    { tag: "footer.inset-shallow.pa-xs", content: "{{width}}x{{height}}" },
+    {
+      tag: "footer.d-flex.gap.mt-xs.pl-xs.inset-shallow",
+      content: [
+        { tag: "checkbox", bind: "fit" },
+        { tag: "checkbox", bind: "cover" },
+        { tag: "checkbox", bind: "pixelated" },
+        {
+          tag: ".solid.ml-auto",
+          content: "{{width}}x{{height}}",
+        },
+      ],
+    },
   ],
 
   state: {
     height: 0,
     width: 0,
-    fit: 0,
-    // fit: "contain",
-    // fit: "cover",
+    fit: false,
+    pixelated: true,
+    cover: true,
   },
 }
