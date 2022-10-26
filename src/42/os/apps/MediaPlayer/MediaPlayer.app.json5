@@ -1,0 +1,32 @@
+{
+  name: "MediaPLayer",
+  command: "player",
+  categories: ["music", "utilities", "entertainment"],
+
+  decode: {
+    types: [
+      { description: "Audio", accept: "audio/*" },
+      { description: "Video", accept: "video/*" },
+    ],
+  },
+
+  path: "./MediaPlayer.html",
+
+  // installable: false,
+  // inset: true,
+
+  // content: [
+  //   { tag: "div", content: "{{$files/0/path}}" },
+  //   {
+  //     tag: "video",
+  //     controls: true,
+  //     // autoplay: true,
+  //     content: {
+  //       tag: "source",
+  //       src: "{{$files/0/path}}",
+  //       // type: "{{$files/0/path}}",
+  //       type: "audio/mpeg",
+  //     },
+  //   },
+  // ],
+}

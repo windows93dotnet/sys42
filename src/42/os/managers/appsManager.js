@@ -8,7 +8,7 @@ import App from "../classes/App.js"
 const REGISTRY_KEYS = [
   "name",
   "path",
-  "manifest",
+  "manifestPath",
   "categories",
   "inset",
   "geometry",
@@ -45,7 +45,7 @@ class AppsManager extends ConfigFile {
     }
 
     const out = pick(manifest, REGISTRY_KEYS)
-    out.manifest = manifestPath
+    out.manifestPath = manifestPath
 
     this.value[manifest.name] = out
 
@@ -79,8 +79,12 @@ class AppsManager extends ConfigFile {
 
   async exec(appName, state) {
     await this.ready
+    if (appName in this.value === false) {
+      throw new Error(`Unknown app: ${appName}`)
+    }
+
     const app = this.value[appName]
-    App.launch(app.manifest, { state })
+    return App.launch(app.manifestPath, { state })
   }
 }
 

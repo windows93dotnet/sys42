@@ -4,8 +4,9 @@ import uid from "../../core/uid.js"
 import UI from "../../ui/classes/UI.js"
 import preinstall from "../preinstall.js"
 import getDirname from "../../core/path/core/getDirname.js"
+import resolvePath from "../../core/path/core/resolvePath.js"
 import escapeTemplate from "../../core/formats/template/escapeTemplate.js"
-import merge from "../../fabric/type/object/merge.js"
+import configure from "../../core/configure.js"
 
 // TODO: check if rpc functions can be injecteds
 import "../../fabric/browser/openInNewTab.js"
@@ -18,13 +19,22 @@ async function normalizeManifest(manifest, options) {
       const fs = await import("../../core/fs.js") //
         .then((m) => m.default)
 
+      const manifestPath = manifest
+
       manifest = await fs.read.json5(new URL(manifest, location).pathname)
+      manifest.manifestPath = manifestPath
     }
   }
 
+  manifest = configure(manifest, options)
+
   if (manifest.dir === undefined) {
-    const url = document.URL
-    manifest.dir = url.endsWith("/") ? url : getDirname(url) + "/"
+    if (manifest.manifestPath) {
+      manifest.dir = getDirname(manifest.manifestPath) + "/"
+    } else {
+      const url = document.URL
+      manifest.dir = url.endsWith("/") ? url : getDirname(url) + "/"
+    }
   }
 
   if (inTop) {
@@ -35,9 +45,7 @@ async function normalizeManifest(manifest, options) {
   }
 
   manifest.state ??= {}
-
   manifest.state.$files ??= []
-
   manifest.state.$files = manifest.state.$files.map((item) => {
     if (typeof item === "string") {
       return {
@@ -50,16 +58,25 @@ async function normalizeManifest(manifest, options) {
     return item
   })
 
-  if (options?.state) merge(manifest.state, options.state)
-
   return manifest
 }
 
 function makeSandbox(manifest) {
   if (manifest.path) {
+    let path = manifest.path.startsWith(".")
+      ? resolvePath(manifest.dir, manifest.path)
+      : manifest.path
+
+    if (path.endsWith(".html") || path.endsWith(".php")) {
+      path += "?state=" + encodeURIComponent(JSON.stringify(manifest.state))
+    }
+
     return {
       permissions: manifest.permissions,
-      path: manifest.path,
+      path,
+      // html: `
+      // <iframe style="position:absolute;inset:0;width: 100%;height: 100%;" src="${manifest.path}">
+      // `,
     }
   }
 
@@ -77,14 +94,8 @@ function makeSandbox(manifest) {
 }
 
 // Execute App sandboxed in a top level page
-export async function mount(manifest, options) {
-  // if (manifest?.$app) {
-  //   const state = manifest
-  //   manifest = state.$app
-  //   manifest.state = state
-  // }
-
-  manifest = await normalizeManifest(manifest, options)
+export async function mount(manifestPath, options) {
+  const manifest = await normalizeManifest(manifestPath, options)
 
   if (inTop) {
     const sandbox = makeSandbox(manifest)
@@ -111,8 +122,8 @@ export async function mount(manifest, options) {
 }
 
 // Execute App sandboxed inside a dialog
-export async function launch(manifest, options) {
-  manifest = await normalizeManifest(manifest, options)
+export async function launch(manifestPath, options) {
+  const manifest = await normalizeManifest(manifestPath, options)
 
   const width = `${manifest.width ?? "400"}px`
   const height = `${manifest.height ?? "350"}px`
@@ -125,6 +136,8 @@ export async function launch(manifest, options) {
 
   const sandbox = makeSandbox(manifest)
 
+  // console.log(manifest.state.$files)
+
   return dialog({
     id,
     class: manifest.name,
@@ -135,9 +148,8 @@ export async function launch(manifest, options) {
       ...sandbox,
     },
     state: {
-      $dialog: {
-        title: manifest.name,
-      },
+      $dialog: { title: manifest.name },
+      $files: manifest.state.$files,
     },
   })
 }
