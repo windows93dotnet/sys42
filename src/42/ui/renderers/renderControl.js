@@ -16,7 +16,7 @@ import idleDebounce from "../../fabric/type/function/idleDebounce.js"
 import { toTitleCase } from "../../fabric/type/string/letters.js"
 import hash from "../../fabric/type/any/hash.js"
 
-function setValidation(def) {
+function setValidation(def, { localName }) {
   const attr = {}
   if (def.required) attr.required = true
   if (def.schema) {
@@ -34,13 +34,14 @@ function setValidation(def) {
     else if ("maximum" in schema) attr.max = schema.maximum
   }
 
-  attr.autocomplete = def.autocomplete ?? "off" // opt-in autocomplete
-
-  if (def.prose !== true) {
-    attr.autocapitalize = "none"
-    attr.autocorrect = "off"
-    attr.spellcheck = "false"
-    attr.translate = "no"
+  if (localName === "input" || localName === "textarea") {
+    attr.autocomplete = def.autocomplete ?? "off" // opt-in autocomplete
+    if (def.prose !== true) {
+      attr.autocapitalize = "none"
+      attr.autocorrect = "off"
+      attr.spellcheck = "false"
+      attr.translate = "no"
+    }
   }
 
   return attr
@@ -51,41 +52,55 @@ function getBindScope(ctx, bind) {
   return resolveScope(...findScope(ctx, bind), ctx)
 }
 
-export default function renderControl(el, ctx, def) {
-  el.id ||= hash(ctx.steps)
-
-  if (def.bind) {
-    let scopeFrom
-    if (def.bind.from) {
-      scopeFrom = getBindScope(ctx, def.bind.from)
-      el.name ||= scopeFrom
-
-      register(ctx, scopeFrom, (val) => setControlData(el, val))
+function normalizeOptions(list) {
+  return list.map((item) => {
+    if (typeof item === "string") {
+      return { tag: "option", content: item, label: item }
     }
 
-    if (def.value) {
-      // Save the value in the state if a value and a bind.from are set
-      if (def.attrs.value.scopes) {
-        // TODO: find way to wait for template function end
-        const renderer = idleDebounce(async () => {
-          ctx.reactive.set(scopeFrom, getControlData(el), { silent: true })
-        })
-
-        for (const scope of def.attrs.value.scopes) {
-          if (scope === scopeFrom) continue
-          register.registerRenderer(ctx, scope, renderer)
-        }
-
-        ctx.postrender.push(() => {
-          ctx.reactive.set(scopeFrom, getControlData(el), { silent: true })
-        })
-      } else {
-        ctx.reactive.set(scopeFrom, getControlData(el), { silent: true })
+    if (Array.isArray(item)) {
+      return {
+        tag: "option",
+        content: item[1],
+        label: item[1],
+        value: item[0],
       }
     }
 
+    item.label ??= item.content
+
+    if (Array.isArray(item.content)) {
+      item.tag ??= "optgroup"
+      item.content = normalizeOptions(item.content)
+    }
+
+    return item
+  })
+}
+
+export default function renderControl(el, ctx, def) {
+  el.id ||= hash(ctx.steps)
+
+  if (el.localName === "select") {
+    if (Array.isArray(def.content)) {
+      def.content = normalizeOptions(def.content)
+    }
+
+    el.append(render(def.content, ctx))
+    delete def.content
+  }
+
+  if (def.bind) {
+    let scopeFrom
+    let scopeTo
+    if (def.bind.from) {
+      scopeFrom = getBindScope(ctx, def.bind.from)
+      el.name ||= scopeFrom
+      register(ctx, scopeFrom, (val) => setControlData(el, val))
+    }
+
     if (def.bind.to) {
-      const scopeTo =
+      scopeTo =
         def.bind.to === def.bind.from
           ? scopeFrom
           : getBindScope(ctx, def.bind.to)
@@ -93,6 +108,7 @@ export default function renderControl(el, ctx, def) {
       el.name ||= scopeTo
 
       const fn = () => {
+        // console.log(888, scopeTo, getControlData(el))
         ctx.reactive.set(scopeTo, getControlData(el))
       }
 
@@ -114,9 +130,31 @@ export default function renderControl(el, ctx, def) {
           : { input: fn }
       )
     }
+
+    if (def.value && el.type !== "radio") {
+      // Save the value in the state if a value and a bind.from are set
+      if (def.attrs.value.scopes) {
+        // TODO: find way to wait for template function end
+        const renderer = idleDebounce(async () => {
+          ctx.reactive.set(scopeTo, getControlData(el), { silent: true })
+        })
+
+        for (const scope of def.attrs.value.scopes) {
+          if (scope === scopeTo) continue
+          register.registerRenderer(ctx, scope, renderer)
+        }
+
+        ctx.postrender.push(() => {
+          ctx.reactive.set(scopeTo, getControlData(el), { silent: true })
+        })
+      } else {
+        setControlData(el, def.value)
+        ctx.reactive.set(scopeTo, getControlData(el), { silent: true })
+      }
+    }
   }
 
-  setAttributes(el, setValidation(def))
+  setAttributes(el, setValidation(def, el))
 
   const field =
     el.type === "radio" || el.type === "checkbox"

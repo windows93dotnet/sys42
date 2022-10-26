@@ -13,79 +13,132 @@
   import ui from "../../42/ui.js"
 
   const app = await ui({
-    tag: ".ma-auto.mt-xxl",
-    style: { "max-width": 400 },
+    tag: "body.box-fit.box-center > div",
+    style: "max-width: 400px",
     content: [
       {
         tag: "fieldset.form-aligned",
         content: [
+          // {
+          //   tag: "legend",
+          //   content: "Legend",
+          // },
           {
-            tag: "legend",
-            content: "Legend",
+            tag: "div > checkbox",
+            bind: "checkboxOne",
+            // value: true,
           },
           {
-            tag: "checkbox",
-            bind: "checkboxBool",
+            tag: "div > checkbox",
+            bind: "checkboxTwo",
+            value: true,
           },
           {
-            tag: "radio",
+            tag: "div > radio",
             bind: "radioChoice",
             value: "foo",
           },
           {
-            tag: "radio",
+            tag: "div > radio",
             bind: "radioChoice",
             value: "bar",
           },
           {
-            tag: "text",
+            tag: "div > text",
             bind: "freeText",
             // compact: true,
           },
-          // {
-          //   tag: ".box-h",
-          //   content: [
-          //     { tag: "h2", content: "Manual" },
-          //     {
-          //       tag: "input",
-          //       value: "{{foo}}",
-          //       on: { input: "{{foo = target.value}}" },
-          //     },
-          //     {
-          //       tag: "output",
-          //       content: "{{foo}}",
-          //     },
-          //   ],
-          // },
-          // {
-          //   tag: ".box-h",
-          //   content: [
-          //     { tag: "h2", content: "Auto" },
-          //     {
-          //       tag: "input",
-          //       bind: "foo",
-          //       // on: { input: "{{/foo = target.value}}" },
-          //     },
-          //     {
-          //       tag: "output",
-          //       content: "{{foo}}",
-          //     },
-          //   ],
-          // },
+          {
+            tag: "div > select",
+            bind: "selectOne",
+            content: [
+              { tag: "option", content: "a" },
+              { tag: "option", content: "b" },
+              { tag: "option", content: "c" },
+            ],
+          },
+          {
+            tag: "div > select",
+            bind: "selectTwo",
+            content: ["x", "y", "z"],
+            value: "z",
+          },
+          {
+            tag: "div > select",
+            bind: "selectTwo",
+            content: [
+              ["x", "Label X"],
+              ["y", "Label Y"],
+              ["z", "Label Z"],
+            ],
+          },
+          {
+            tag: "div > select",
+            bind: "selectDino",
+            content: [
+              {
+                tag: "optgroup",
+                label: "Theropods",
+                content: [
+                  { tag: "option", content: "Tyrannosaurus" },
+                  { tag: "option", content: "Velociraptor" },
+                  { tag: "option", content: "Deinonychus" },
+                ],
+              },
+              {
+                tag: "optgroup",
+                label: "Sauropods",
+                content: [
+                  { tag: "option", content: "Diplodocus" },
+                  { tag: "option", content: "Saltasaurus" },
+                  { tag: "option", content: "Apatosaurus" },
+                ],
+              },
+            ],
+            value: "Velociraptor",
+          },
+          {
+            tag: "div > select",
+            bind: "selectDino",
+            content: [
+              {
+                label: "Theropods",
+                content: ["Tyrannosaurus", "Velociraptor", "Deinonychus"],
+              },
+              {
+                label: "Sauropods",
+                content: ["Diplodocus", "Saltasaurus", "Apatosaurus"],
+              },
+            ],
+            value: "Velociraptor",
+          },
         ],
       },
       { tag: "pre.code", content: "{{stringify(/)}}" },
+      {
+        tag: "button",
+        content: "fill",
+        click() {
+          app.state.radioChoice = "bar"
+          app.state.checkboxOne = true
+          app.state.freeText = "hello"
+          app.state.selectOne = "c"
+        },
+      },
     ],
 
     state: {
-      // checkboxBool: undefined,
-      // radioChoice: "foo",
+      radioChoice: "foo",
+      checkboxOne: undefined,
+      selectOne: "b",
     },
   })
 
-  setTimeout(() => {
-    app.state.radioChoice = "bar"
-    app.state.checkboxBool = true
-    app.state.freeText = "hello"
-  }, 1000)
+  // setTimeout(() => {
+  //   app.state.radioChoice = "bar"
+  //   app.state.checkboxOne = true
+  //   app.state.freeText = "hello"
+  // }, 1000)
+
+  // document.head.querySelector("title").textContent = "Yooo"
 </script>
