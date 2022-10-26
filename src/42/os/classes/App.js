@@ -36,12 +36,26 @@ async function normalizeManifest(manifest, options) {
 
   manifest.state ??= {}
 
+  manifest.state.$files ??= []
+
+  manifest.state.$files = manifest.state.$files.map((item) => {
+    if (typeof item === "string") {
+      return {
+        path: item,
+        data: undefined,
+        dirty: false,
+      }
+    }
+
+    return item
+  })
+
   if (options?.state) merge(manifest.state, options.state)
 
   return manifest
 }
 
-function makeSandbox(manifest, state) {
+function makeSandbox(manifest) {
   if (manifest.path) {
     return {
       permissions: manifest.permissions,
@@ -52,7 +66,7 @@ function makeSandbox(manifest, state) {
   const script = escapeTemplate(`\
     import App from "${import.meta.url}"
     globalThis.app = await App.mount(
-      ${JSON.stringify(state ?? manifest)},
+      ${JSON.stringify(manifest)},
       { skipNormalize: true }
     )`)
 
@@ -64,11 +78,11 @@ function makeSandbox(manifest, state) {
 
 // Execute App sandboxed in a top level page
 export async function mount(manifest, options) {
-  if (manifest?.$app) {
-    const state = manifest
-    manifest = state.$app
-    manifest.state = state
-  }
+  // if (manifest?.$app) {
+  //   const state = manifest
+  //   manifest = state.$app
+  //   manifest.state = state
+  // }
 
   manifest = await normalizeManifest(manifest, options)
 
@@ -80,8 +94,12 @@ export async function mount(manifest, options) {
     if (manifest.installable !== false) {
       const install = await preinstall(manifest)
       if (install?.isPending) await install
-      else if (install) system.install = install
     }
+
+    import("../../core/ipc.js") //
+      .then(({ default: ipc }) => {
+        ipc.on("42_IO_READY", async () => system.pwa.files)
+      })
 
     return new UI({
       tag: "ui-sandbox.box-fit",
@@ -96,8 +114,8 @@ export async function mount(manifest, options) {
 export async function launch(manifest, options) {
   manifest = await normalizeManifest(manifest, options)
 
-  const width = manifest.width ?? "400px"
-  const height = manifest.height ?? "350px"
+  const width = `${manifest.width ?? "400"}px`
+  const height = `${manifest.height ?? "350"}px`
 
   const dialog = await import("../../ui/components/dialog.js") //
     .then((m) => m.default)
@@ -105,29 +123,23 @@ export async function launch(manifest, options) {
   const id = `${manifest.name}_${uid()}`
   manifest.initiator = id
 
-  const state = {
-    $dialog: { title: undefined, width, height },
-    $app: manifest,
-    ...manifest.state,
-    ...options?.state,
-  }
+  const sandbox = makeSandbox(manifest)
 
-  const sandbox = makeSandbox(manifest, state)
-
-  return dialog(
-    {
-      id,
-      class: manifest.name,
-      label: "{{$app.name}}{{$dialog.title ? ' - ' + $dialog.title : ''}}",
-      style: { width: "{{$dialog.width}}", height: "{{$dialog.height}}" },
-      content: {
-        tag: "ui-sandbox.box-fit" + (manifest.inset ? ".inset" : ""),
-        ...sandbox,
-      },
-      state,
+  return dialog({
+    id,
+    class: manifest.name,
+    style: { width, height },
+    label: "{{$dialog.title}}",
+    content: {
+      tag: "ui-sandbox.box-fit" + (manifest.inset ? ".inset" : ""),
+      ...sandbox,
     },
-    { id, trusted: true }
-  )
+    state: {
+      $dialog: {
+        title: manifest.name,
+      },
+    },
+  })
 }
 
 export default class App extends UI {
@@ -135,62 +147,51 @@ export default class App extends UI {
   static launch = launch
 
   constructor(manifest) {
-    if (manifest.state?.paths) {
-      manifest.state.$files = manifest.state.paths.map((path) => ({
-        path,
-        data: undefined,
-        dirty: false,
-      }))
-    }
-
-    super(
-      {
-        tag: ".box-fit.box-h",
-        content: manifest.menubar
-          ? [{ tag: "ui-menubar", content: manifest.menubar }, manifest.content]
-          : manifest.content,
-        state: manifest.state,
-        initiator: manifest.initiator,
-        actions: {
-          editor: {
-            newFile() {
-              console.log("newFile")
-              this.state.$files[0].data = undefined
-              this.state.$files[0].dirty = undefined
-              this.state.$files[0].path = undefined
-            },
-            saveFile() {
-              console.log("saveFile", this.state.$files[0].data)
-            },
-            openFile() {
-              console.log("openFile")
-            },
+    super({
+      tag: ".box-fit.box-h",
+      content: manifest.menubar
+        ? [{ tag: "ui-menubar", content: manifest.menubar }, manifest.content]
+        : manifest.content,
+      state: manifest.state,
+      initiator: manifest.initiator,
+      actions: {
+        editor: {
+          newFile() {
+            console.log("newFile")
+            this.state.$files[0] = {
+              path: undefined,
+              data: undefined,
+              dirty: false,
+            }
+          },
+          saveFile() {
+            console.log("saveFile", this.state.$files[0].data)
+          },
+          openFile() {
+            console.log("openFile")
           },
         },
       },
-      { trusted: true }
-    )
+    })
 
     this.manifest = manifest
 
     import("../../io.js").then(({ default: io }) => {
       io.listenImport()
-      io.on("import", async ([file]) => {
-        this.state.$files[0].data = file
-        this.state.$files[0].dirty = undefined
-        this.state.$files[0].path = undefined
+      io.on("import", ([file]) => {
+        this.state.$files[0] = {
+          path: undefined,
+          data: file,
+          dirty: false,
+        }
       })
       io.on("paths", ([path]) => {
-        this.state.$files[0].data = undefined
-        this.state.$files[0].dirty = undefined
-        this.state.$files[0].path = path
+        this.state.$files[0] = {
+          path,
+          data: undefined,
+          dirty: false,
+        }
       })
     })
-
-    // this.then(() => {
-    //   setTimeout(() => {
-    //     this.el.querySelector("#menuItem-newFile").click()
-    //   }, 200)
-    // })
   }
 }

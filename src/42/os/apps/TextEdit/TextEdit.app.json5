@@ -4,8 +4,8 @@
   categories: ["utilities", "productivity", "development"],
   description: "A simple text editor using textarea",
 
-  width: "300px",
-  height: "300px",
+  width: 300,
+  height: 300,
 
   decode: {
     types: [
@@ -54,7 +54,7 @@
   content: {
     scope: "$files/0",
     content: [
-      // { tag: "text", bind: "/$dialog.title", compact: true },
+      { tag: "text", bind: "/$dialog.title", compact: true },
       {
         tag: "textarea",
         label: "{{path}}",
@@ -65,13 +65,14 @@
         compact: true,
         autofocus: true,
         lazy: true,
-        // bind: "data",
         bind: { to: "data" },
         value: "{{data ? cast.text(data) : fs.source(path)}}",
         on: {
           "input": "{{dirty = true}}",
           // focus: "{{/$dialog.title = dirty ? path + '*' : path}}",
-          "focus || render": "{{/$dialog.title = path}}",
+          "focus || render": "{{ \
+            /$dialog.title = 'TextEdit - ' + path \
+          }}",
         },
       },
     ],

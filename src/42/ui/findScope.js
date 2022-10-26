@@ -37,6 +37,7 @@ export default function findScope(ctx, loc) {
     }
 
     let i = ctx.scopeChain.length
+
     if (ctx.scopeChain.at(-1).props !== undefined) {
       while (i--) {
         const item = ctx.scopeChain[i]

@@ -204,6 +204,8 @@ export default class Component extends HTMLElement {
     normalizeScope(def, this.ctx)
     def = objectifyDef(def)
 
+    this.ctx.id ??= def.id ?? hash(def)
+
     const options = {}
 
     /* handle props

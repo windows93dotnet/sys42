@@ -1,3 +1,4 @@
+/* eslint-disable max-depth */
 import Emitter from "../../fabric/classes/Emitter.js"
 import observe from "../../fabric/locator/observe.js"
 import exists from "../../fabric/locator/exists.js"
@@ -175,12 +176,18 @@ export default class Reactive extends Emitter {
     const changes = new Set()
     const deleteds = new Set()
 
+    const rendered = new WeakSet()
+
     for (const [path, deleted] of queue.objects) {
       changes.add(path)
       if (deleted) deleteds.add(path)
-      for (const key of Object.keys(this.ctx.renderers)) {
-        if (key.startsWith(path) && key in this.ctx.renderers) {
-          for (const render of this.ctx.renderers[key]) render(key)
+      for (const key in this.ctx.renderers) {
+        if (key.startsWith(path) /*  && key in this.ctx.renderers */) {
+          for (const render of this.ctx.renderers[key]) {
+            if (rendered.has(render)) continue
+            render(key)
+            rendered.add(render)
+          }
         }
       }
     }
@@ -189,13 +196,12 @@ export default class Reactive extends Emitter {
       changes.add(path)
       if (deleted) deleteds.add(path)
       if (path in this.ctx.renderers) {
-        for (const render of this.ctx.renderers[path]) render(path)
+        for (const render of this.ctx.renderers[path]) {
+          if (rendered.has(render)) continue
+          render(path)
+          rendered.add(render)
+        }
       }
-    }
-
-    // root renderers
-    if (sep in this.ctx.renderers) {
-      for (const render of this.ctx.renderers[sep]) render(sep)
     }
 
     // console.group("State Update")

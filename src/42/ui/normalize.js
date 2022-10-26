@@ -579,12 +579,12 @@ export function normalizeCtx(ctx = {}) {
   ctx = { ...ctx }
   ctx.scope ??= "/"
   ctx.steps ??= "?"
-  ctx.renderers ??= {}
-  ctx.plugins ??= {}
-  ctx.computeds ??= {}
+  ctx.renderers ??= Object.create(null)
+  ctx.plugins ??= Object.create(null)
+  ctx.computeds ??= Object.create(null)
   ctx.scopeChain ??= []
   ctx.pluginHandlers ??= []
-  ctx.actions ??= new Locator({}, { sep: "/" })
+  ctx.actions ??= new Locator(Object.create(null), { sep: "/" })
 
   ctx.preload ??= new Undones()
   ctx.components ??= new Undones()

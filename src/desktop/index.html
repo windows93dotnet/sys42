@@ -26,18 +26,19 @@
         on: [
           {
             "selector": 'ui-icon[aria-description="folder"]',
-            "dblclick || Enter || Space": "{{launchFolder(target.path)}}",
+            "dblclick || Enter || Space": "{{io.launchFolder(target.path)}}",
           },
           {
             "selector": 'ui-icon[aria-description="file"]',
-            "dblclick || Enter || Space": "{{launchFile(target.path)}}",
+            "dblclick || Enter || Space": "{{io.launchFile(target.path)}}",
           },
         ],
-        content: [{ tag: "ui-folder.box-fit.scroll-auto" }],
-        actions: {
-          launchFolder: io.launchFolder,
-          launchFile: io.launchFile,
-        },
+        content: [
+          {
+            tag: "ui-folder.box-fit.scroll-auto",
+            path: "/tests/fixtures/formats/",
+          },
+        ],
       },
       {
         scope: "taskbar",
@@ -68,10 +69,6 @@
     },
   })
 
-  // engage.launchFolder("/users/anonymous/")
-  // engage.launchFile("/demos/ui/invocables.demo.html")
-  io.launchFile("/style.css")
-
-  // import puppet from "../42/core/dev/puppet.js"
-  // await puppet('ui-icon[path="/style.css"]').dblclick()
+  io.launchFolder("/tests/fixtures/formats/audio/")
+  // io.launchFile("/style.css")
 </script>
