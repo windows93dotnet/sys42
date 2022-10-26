@@ -2,9 +2,9 @@
 
 /* eslint-disable camelcase */
 
+import system from "../system.js"
 import defer from "../fabric/type/promise/defer.js"
 import pick from "../fabric/type/object/pick.js"
-import inOpaqueOrigin from "../core/env/realm/inOpaqueOrigin.js"
 import inPWA from "../core/env/runtime/inPWA.js"
 import mimetypesManager from "./managers/mimetypesManager.js"
 import appCard from "./blocks/appCard.js"
@@ -91,28 +91,33 @@ export default async function preinstall(app) {
 
   document.head.append(...head)
 
-  const deferred = defer()
+  const installPrompt = defer()
 
-  if (!inOpaqueOrigin) {
-    navigator.serviceWorker
-      ?.register("/42.sw.js", { type: "module" })
-      .catch(deferred.reject)
-  }
+  system.pwa = {}
+
+  system.pwa.registration ??= navigator.serviceWorker
+    ?.register("/42.sw.js", { type: "module" })
+    .catch(installPrompt.reject)
 
   // if (inPWA) window.resizeTo(400, 350)
   // console.log(globalThis.navigator.windowControlsOverlay.getTitlebarAreaRect())
 
+  // @read https://web.dev/file-handling/
+  if (
+    "launchQueue" in globalThis &&
+    "files" in globalThis.LaunchParams.prototype
+  ) {
+    globalThis.launchQueue.setConsumer(({ files }) => {
+      if (files.length === 0) return
+      const undones = []
+      for (const handle of files) undones.push(handle.getFile())
+      system.pwa.files = Promise.all(undones)
+    })
+  }
+
   if (!supportInstall || inPWA) return false
 
-  // https://web.dev/customize-install/
-
-  window.addEventListener("beforeinstallprompt", (e) => {
-    e.preventDefault()
-    deferred.resolve(e)
-    document.querySelector("#install")?.removeAttribute("disabled")
-  })
-
-  // // https://web.dev/get-installed-related-apps/
+  // // @read https://web.dev/get-installed-related-apps/
   // navigator.getInstalledRelatedApps().then((res) => {
   //   console.log("getInstalledRelatedApps", res)
   // })
@@ -120,8 +125,15 @@ export default async function preinstall(app) {
   let card
   let displayApp
 
-  async function install() {
-    const install = await deferred
+  // @read https://web.dev/customize-install/
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault()
+    installPrompt.resolve(e)
+    document.querySelector("#install")?.removeAttribute("disabled")
+  })
+
+  system.pwa.install = async function install() {
+    const install = await installPrompt
     install.prompt()
     await install.userChoice
     card?.destroy()
@@ -144,7 +156,7 @@ export default async function preinstall(app) {
               id: "install",
               content: "Install as Web App",
               disabled: true,
-              click: install,
+              click: system.pwa.install,
             },
           ],
         },
@@ -154,5 +166,5 @@ export default async function preinstall(app) {
     return displayApp
   }
 
-  return install
+  return system.pwa.install
 }

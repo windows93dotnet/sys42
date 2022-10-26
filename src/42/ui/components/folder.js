@@ -158,17 +158,17 @@ export class Folder extends Component {
       // ============
       // {
       //   "selector": 'ui-icon[aria-description="file"]',
-      //   "dblclick || Enter": "{{engage.openFile(target)}}",
+      //   "dblclick || Enter": "{{io.openFile(target)}}",
       // },
       // {
       //   "selector": 'ui-icon[aria-description="folder"]',
-      //   "dblclick || Enter": "{{engage.openFolder(target.path)}}",
+      //   "dblclick || Enter": "{{io.openFolder(target.path)}}",
       // },
       {
         prevent: true,
-        [io.createFolder.meta.shortcut]: "{{engage.createFolder(path)}}",
-        [io.deleteFile.meta.shortcut]: "{{engage.deleteFile(selection)}}",
-        [io.renameFile.meta.shortcut]: "{{engage.renameFile(selection)}}",
+        [io.createFolder.meta.shortcut]: "{{io.createFolder(path)}}",
+        [io.deleteFile.meta.shortcut]: "{{io.deleteFile(selection)}}",
+        [io.renameFile.meta.shortcut]: "{{io.renameFile(selection)}}",
       },
       {
         selector: "ui-icon",
@@ -181,12 +181,12 @@ export class Folder extends Component {
               "---",
               {
                 ...io.deleteFile.meta,
-                click: "{{engage.deleteFile(selection)}}",
+                click: "{{io.deleteFile(selection)}}",
               },
               "---",
               {
                 ...io.renameFile.meta,
-                click: "{{engage.renameFile(selection)}}",
+                click: "{{io.renameFile(selection)}}",
               },
             ],
           },
@@ -195,8 +195,8 @@ export class Folder extends Component {
     ],
 
     contextmenu: [
-      { ...io.createFolder.meta, click: "{{engage.createFolder(path)}}" },
-      { ...io.createFile.meta, click: "{{engage.createFile(path)}}" },
+      { ...io.createFolder.meta, click: "{{io.createFolder(path)}}" },
+      { ...io.createFile.meta, click: "{{io.createFile(path)}}" },
       "---",
       { label: "Select all", click: "{{selectable.selectAll()}}" }, //
     ],
@@ -220,8 +220,6 @@ export class Folder extends Component {
       },
     },
   }
-
-  engage = io
 
   autoSelect(path) {
     if (this.selection.length === 0) {

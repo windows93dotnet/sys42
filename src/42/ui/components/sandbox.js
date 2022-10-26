@@ -40,7 +40,6 @@ listen(
       restore?.()
       restore = undefined
       const data = await dataTransfertImport(e)
-      console.log(456, data)
       ipc.to(target.resource.el).emit("42_SANDBOX_DROP", data)
     },
   }

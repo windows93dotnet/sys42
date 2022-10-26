@@ -186,8 +186,20 @@ types.fs = {
 }
 
 types.cast = {
-  text: async (file) => (typeof file === "string" ? file : file?.text?.()),
-  arrayBuffer: async (file) => file?.arrayBuffer?.(),
+  async text(val, fallback = "") {
+    if (val === undefined) return fallback
+    if (typeof val === "string") return val
+    const [stream, sinkField] = await Promise.all([
+      import("./stream.js").then((m) => m.default),
+      import("./stream/sinkField.js").then((m) => m.default),
+    ])
+    this.el.value = ""
+    val
+      .stream()
+      .pipeThrough(stream.ts.text())
+      .pipeTo(sinkField(this.el))
+      .catch((err) => dispatch(this.el, err))
+  },
 }
 
 types.ui = {

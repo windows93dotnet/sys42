@@ -1,4 +1,5 @@
 import inIframe from "../../core/env/realm/inIframe.js"
+import noop from "../../fabric/type/function/noop.js"
 // import listen from "../../fabric/event/listen.js"
 // import dt from "../../core/dt.js"
 
@@ -6,6 +7,12 @@ export default function listenImport(io) {
   const forgets = []
   if (inIframe) {
     import("../../core/ipc.js").then(({ default: ipc }) => {
+      ipc
+        .send("42_IO_READY")
+        .then((files) => {
+          io.emit("import", files)
+        })
+        .catch(noop)
       forgets.push(
         ipc.on("42_SANDBOX_DROP", { off: true }, ({ files, paths }) => {
           if (paths?.length > 0) io.emit("paths", paths)
@@ -15,31 +22,6 @@ export default function listenImport(io) {
           }
         })
       )
-    })
-  }
-
-  // forgets.push(
-  //   listen({
-  //     "prevent": true,
-  //     "dragover || dragenter": false,
-  //     async "drop"(e) {
-  //       const { files } = await dt.import(e.dataTransfer)
-  //       if (files.length > 0) io.emit("import", Object.values(files))
-  //     },
-  //   })
-  // )
-
-  // @read https://web.dev/file-handling/
-  if (
-    "launchQueue" in globalThis &&
-    "files" in globalThis.LaunchParams.prototype
-  ) {
-    globalThis.launchQueue.setConsumer(async ({ files }) => {
-      console.log("launchQueue.setConsumer", files)
-      if (files.length === 0) return
-      const undones = []
-      for (const handle of files) undones.push(handle.getFile())
-      io.emit("import", await Promise.all(undones))
     })
   }
 }

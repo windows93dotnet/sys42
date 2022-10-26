@@ -73,7 +73,7 @@ class AppsManager extends ConfigFile {
     const entries = Object.entries(openers)
 
     for (const [appName, paths] of entries) {
-      this.exec(appName, { paths })
+      this.exec(appName, { $files: paths })
     }
   }
 
