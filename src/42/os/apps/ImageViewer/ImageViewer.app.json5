@@ -15,10 +15,10 @@
       content: {
         tag: "img",
         style: {
-          "object-fit": "{{cover ? 'cover' : 'contain'}}",
+          "object-fit": "{{display}}",
           "image-rendering": "{{pixelated ? 'pixelated' : 'auto'}}",
-          "height": "{{fit || cover ? '100%' : 'auto'}}",
-          "width": "{{fit || cover ? '100%' : 'auto'}}",
+          "height": "{{display !== '100%' ? '100%' : 'auto'}}",
+          "width": "{{display !== '100%' ? '100%' : 'auto'}}",
           "max-width": "none",
         },
         src: "{{$files/0/path}}",
@@ -28,14 +28,18 @@
       },
     },
     {
-      tag: "footer.d-flex.gap.mt-xs.pl-xs.inset-shallow",
+      tag: "footer.d-flex.gap.mt-xs.pl-sm.inset-shallow",
       content: [
-        { tag: "checkbox", bind: "fit" },
-        { tag: "checkbox", bind: "cover" },
         { tag: "checkbox", bind: "pixelated" },
         {
           tag: ".solid.ml-auto",
           content: "{{width}}x{{height}}",
+        },
+        {
+          tag: "select",
+          bind: "display",
+          compact: true,
+          content: ["100%", "contain", "cover"],
         },
       ],
     },
@@ -44,8 +48,7 @@
   state: {
     height: 0,
     width: 0,
-    fit: false,
     pixelated: true,
-    cover: true,
+    display: "100%",
   },
 }
