@@ -173,6 +173,7 @@ output,
 
 :where(body.in-iframe) {
   background: transparent;
+  overflow: hidden;
 }
 
 .inset {
