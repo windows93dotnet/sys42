@@ -1,0 +1,47 @@
+{
+  name: "ImageViewer",
+  command: "viewer",
+  categories: ["utilities", "entertainment"],
+
+  decode: {
+    types: [
+      { description: "Image", accept: "image/*" }, //
+    ],
+  },
+
+  content: [
+    {
+      tag: "header",
+      content: [
+        { tag: "select", content: ["cover", "contain"] }, //
+      ],
+    },
+    {
+      tag: "._box-fit.box-center.scroll-1.inset.checkboard",
+      content: {
+        tag: "img",
+        style: {
+          "margin": "auto",
+          "object-fit": "contain",
+          "height": "{{fit ? '100%' : 'auto'}}",
+          "width": "{{fit ? '100%' : 'auto'}}",
+          "max-height": "100%",
+          "max-width": "100%",
+        },
+        src: "{{$files/0/path}}",
+        on: {
+          load: "{{width = target.width; height = target.height}}",
+        },
+      },
+    },
+    { tag: "footer.inset-shallow.pa-xs", content: "{{width}}x{{height}}" },
+  ],
+
+  state: {
+    height: 0,
+    width: 0,
+    fit: 0,
+    // fit: "contain",
+    // fit: "cover",
+  },
+}
