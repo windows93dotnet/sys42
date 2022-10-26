@@ -20,14 +20,19 @@ const SPECIAL_STRINGS = {
 }
 
 const PRELOAD = new Set(["link", "script"])
+const NOT_CONTROLS = new Set([
+  "label",
+  "fieldset",
+  "legend",
+  "output",
+  "option",
+])
 
-function renderTag(ctx, def) {
-  let el = create(ctx, def.tag, def.attrs)
+function renderTag(ctx, tag, def) {
+  let el = create(ctx, tag, def.attrs)
 
   const { localName } = el
-  if (localName) {
-    ctx.el = el
-  }
+  if (localName) ctx.el = el
 
   if (def.picto) {
     if (el.localName === "button") {
@@ -37,9 +42,9 @@ function renderTag(ctx, def) {
     el.append(renderComponent(create("ui-picto"), { value: def.picto }, ctx))
   }
 
-  if (el.localName === "button") {
+  if (localName === "button") {
     def.content ??= def.label
-  } else if (el.form !== undefined && el.localName !== "label") {
+  } else if (el.form !== undefined && !NOT_CONTROLS.has(localName)) {
     el = renderControl(el, ctx, def)
   }
 
@@ -107,19 +112,34 @@ export default function render(def, ctx, options) {
   if (def.if) return renderIf(def, ctx)
   if (def.each) return renderEach(def, ctx)
 
-  const out =
-    def.tag || def.attrs
-      ? renderTag(ctx, def)
-      : document.createDocumentFragment()
+  let el
+  let container
+
+  if (def.tag || def.attrs) {
+    if (def.tag) {
+      const nesteds = def.tag.split(/\s*>\s*/)
+      for (let i = 0, l = nesteds.length; i < l; i++) {
+        const tag = nesteds[i]
+        const cur = i === l - 1 ? renderTag(ctx, tag, def) : create(tag)
+        if (el) el.append(cur)
+        else container = cur
+        el = cur
+      }
+    } else {
+      el = renderTag(ctx, def.tag, def)
+    }
+  } else {
+    el = document.createDocumentFragment()
+  }
 
   if (def.content) {
-    if (def.content instanceof Node) out.append(def.content)
+    if (def.content instanceof Node) el.append(def.content)
     else {
-      out.append(
+      el.append(
         render(def.content, ctx, {
           step:
-            out.nodeType === ELEMENT_NODE
-              ? out.localName + (out.id ? `#${out.id}` : "")
+            el.nodeType === ELEMENT_NODE
+              ? el.localName + (el.id ? `#${el.id}` : "")
               : undefined,
         })
       )
@@ -132,5 +152,5 @@ export default function render(def, ctx, options) {
 
   if (def.animate?.from) renderAnimation(ctx, ctx.el, "from", def.animate.from)
 
-  return out
+  return container ?? el
 }
