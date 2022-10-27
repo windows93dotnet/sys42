@@ -24,23 +24,20 @@ States
   /* all controls
   =============== */
 
-  --ctrl-bdc: var(--fg);
   --ctrl-px: var(--unit-sm);
   --ctrl-py: var(--unit-xs);
   /* --ctrl-lh: 1.2; */
   /* --ctrl-lh: normal; */
   --ctrl-lh: var(--lh);
   --ctrl-fs: var(--fs);
-  --ctrl-bdtw: 1px;
-  --ctrl-bdrw: 1px;
-  --ctrl-bdbw: 1px;
-  --ctrl-bdlw: 1px;
+
+  --ctrl-bdc: var(--fg);
+  --ctrl-bdw: 1px;
   --ctrl-h:
     calc(
       calc(var(--ctrl-lh) * var(--ctrl-fs)) +
       calc(2 * var(--ctrl-py)) +
-      var(--ctrl-bdtw) +
-      var(--ctrl-bdbw)
+      calc(2 * var(--ctrl-bdw))
     );
   --ctrl-w: 25ch;
   --ctrl-group-gap: calc(-1 * var(--ctrl-bdlw));
@@ -1058,13 +1055,10 @@ input[type="radio"]:not([role="menuitemradio"]) { border-radius: 100%; }
 input[type="radio"]::after {
   background: currentColor;
   position: absolute;
-  top: var(--check__bullet-ma);
-  bottom: var(--check__bullet-ma);
-  left: var(--check__bullet-ma);
-  right: var(--check__bullet-ma);
+  inset: var(--check__bullet-ma);
   border-radius: 100%;
   transform: scale(0);
-  transition: var(--check__bullet-speed) transform ease-in-out;
+  transition: transform var(--check__bullet-speed) ease-in-out;
 }
 
 input[type="radio"]:checked::after {
@@ -1116,9 +1110,9 @@ input[type="color" i]::-webkit-color-swatch { border: none; }
 }
 
 .ctrl-group {
-  ---: calc(-1 * var(--ctrl-group-gap));
-  margin-left: var(---);
-  margin-top: var(---);
+  --_negative-gap: calc(-1 * var(--ctrl-group-gap));
+  margin-left: var(--_negative-gap);
+  margin-top: var(--_negative-gap);
 }
 
 .ctrl-group > * {

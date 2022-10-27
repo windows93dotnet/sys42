@@ -11,8 +11,10 @@ export class Menubar extends Menu {
     },
     defaults: {
       displayPicto: false,
-      openEvents: "pointerdown || Enter || Space || ArrowDown",
-      closeEvents: "pointerdown || ArrowLeft",
+      shortcuts: {
+        openSubmenu: "pointerdown || Enter || Space || ArrowDown",
+        closeSubmenu: "pointerdown || ArrowLeft",
+      },
     },
   }
 }

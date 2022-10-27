@@ -32,14 +32,12 @@ export class Menu extends Component {
       ArrowDown: "{{focusNext()}}",
     },
     defaults: {
-      openEvents: "pointerdown || Enter || Space || ArrowRight",
-      closeEvents: "pointerdown || ArrowLeft",
+      shortcuts: {
+        openSubmenu: "pointerdown || Enter || Space || ArrowRight",
+        closeSubmenu: "pointerdown || ArrowLeft",
+      },
     },
   }
-
-  // close() {
-  //   this.destroy()
-  // }
 
   focusPrev() {
     seq(this, -1)
@@ -49,7 +47,7 @@ export class Menu extends Component {
     seq(this, 1)
   }
 
-  render({ content, displayPicto, openEvents, closeEvents }) {
+  render({ content, displayPicto, shortcuts }) {
     const inMenubar = this.constructor.name === "Menubar"
     const items = []
 
@@ -91,13 +89,13 @@ export class Menu extends Component {
         item.tag = "button.ui-menu__menuitem--submenu"
         item.role = "menuitem"
         item.on = {
-          [openEvents]: {
+          [shortcuts.openSubmenu]: {
             popup: {
               tag: "ui-menu",
               aria: inTop ? { labelledby: item.id } : { label },
               inMenuitem: true,
               inMenubar,
-              closeEvents,
+              closeEvents: shortcuts.closeSubmenu,
               content,
             },
           },
@@ -105,6 +103,15 @@ export class Menu extends Component {
 
         if (!inMenubar) item.label.push({ tag: "ui-picto", value: "right" })
         item.content = item.label
+      } else if (item.tag === "checkbox") {
+        item.role = "menuitemcheckbox"
+      } else if (item.tag === "radio") {
+        item.role = "menuitemradio"
+        item.on ??= []
+        item.on.push({
+          "ArrowUp || ArrowDown || ArrowLeft || ArrowRight": (e) =>
+            e.preventDefault(),
+        })
       } else {
         item.tag = "button"
         item.role = "menuitem"

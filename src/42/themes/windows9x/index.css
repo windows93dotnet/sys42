@@ -168,10 +168,7 @@
   --ctrl-px: 4px;
   --ctrl-py: 2px;
 
-  --ctrl-bdtw: 2px;
-  --ctrl-bdrw: 2px;
-  --ctrl-bdbw: 2px;
-  --ctrl-bdlw: 2px;
+  --ctrl-bdw: 2px;
 
   --ctrl-o: 1px dotted;
   --ctrl-oo: -4px;
