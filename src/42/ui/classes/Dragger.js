@@ -3,6 +3,7 @@ import configure from "../../core/configure.js"
 import setTemp from "../../fabric/dom/setTemp.js"
 import Canceller from "../../fabric/classes/Canceller.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
+import queueTask from "../../fabric/type/function/queueTask.js"
 import noop from "../../fabric/type/function/noop.js"
 
 const DEFAULTS = {
@@ -17,6 +18,7 @@ const DEFAULTS = {
 }
 
 export default class Dragger {
+  #isStarted = false
   constructor(el, options) {
     this.el = el
     this.config = configure(DEFAULTS, options)
@@ -96,6 +98,7 @@ export default class Dragger {
         offsetY = round(e.y - rect.top)
       }
 
+      this.#isStarted = true
       this.isDragging = true
       restore = setTemp(document.body, {
         signal,
@@ -117,17 +120,17 @@ export default class Dragger {
       offsetY = 0
       forget?.()
       restore?.()
-      if (this.isDragging) {
+
+      if (this.#isStarted) {
         window.getSelection().empty()
-        requestAnimationFrame(() => {
-          this.isDragging = false
-          this.stop(getX(e.x), getY(e.y), e, target)
-        })
+        this.#isStarted = false
+        this.stop(getX(e.x), getY(e.y), e, target)
+        queueTask(() => (this.isDragging = false))
       }
     }
 
     let drag = (e, target) => {
-      if (this.isDragging) {
+      if (this.#isStarted) {
         this.drag(getX(e.x), getY(e.y), fromX, fromY, e, target)
       } else if (checkDistance(e) && start(e, target) === false) stop(e, target)
     }
@@ -138,6 +141,7 @@ export default class Dragger {
       signal,
       selector: this.config.selector,
       pointerdown: (e, target) => {
+        this.isDragging = false
         target = this.config.selector ? target : this.el
         if (this.config.ignore && e.target.closest(this.config.ignore)) return
 

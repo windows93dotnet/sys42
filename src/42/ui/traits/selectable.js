@@ -112,7 +112,7 @@ class Selectable extends Trait {
     let items
     const check = rect[this.config.check]
 
-    const handleBoxSelction = paintThrottle((B, ctrlKey) => {
+    const handleBoxSelection = paintThrottle((B, ctrlKey) => {
       for (const item of items) {
         const A = item.getBoundingClientRect()
         if (check(A, B)) this.#add(item)
@@ -148,7 +148,7 @@ class Selectable extends Trait {
           B.bottom = y
         }
 
-        handleBoxSelction(B, ctrlKey)
+        handleBoxSelection(B, ctrlKey)
       },
       stop: () => {
         this.polygon.setAttribute("points", points)
