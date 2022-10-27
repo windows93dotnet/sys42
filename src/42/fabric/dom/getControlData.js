@@ -14,6 +14,7 @@ export default function getControlData(el) {
       return el.indeterminate ? undefined : el.checked
 
     case "radio":
+      if (el.checked) return el.value
       return (
         el.form?.elements[el.name] ||
         document.querySelector(`input[type="radio"][name="${el.name}"]:checked`)

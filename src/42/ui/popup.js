@@ -25,12 +25,12 @@ function listenGlobalEvents() {
       "blur || Escape": closeAll,
     },
     {
-      "selector": '[role="menuitem"]',
+      "selector": '[role^="menuitem"]',
       "Tab": (e) => focusOut("next", e), // TODO: focusOut for non-menu popup
       "Shift+Tab": (e) => focusOut("prev", e),
     },
     {
-      selector: '[role="menuitem"]:not([aria-haspopup])',
+      selector: `[role^="menuitem"]:not([aria-haspopup])`,
       click: closeAll,
     }
   )

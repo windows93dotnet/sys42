@@ -19,10 +19,10 @@
       {
         tag: "fieldset.form-aligned",
         content: [
-          // {
-          //   tag: "legend",
-          //   content: "Legend",
-          // },
+          {
+            tag: "legend",
+            content: "Legend",
+          },
           {
             tag: "div > checkbox",
             bind: "checkboxOne",
@@ -33,21 +33,54 @@
             bind: "checkboxTwo",
             value: true,
           },
+          "---",
           {
-            tag: "div > radio",
-            bind: "radioChoice",
-            value: "foo",
+            tag: "div > .d-flex.gap",
+            content: [
+              {
+                tag: "div > radio",
+                bind: "radioChoice",
+                value: "foo",
+              },
+              {
+                tag: "div > radio",
+                bind: "radioChoice",
+                value: "bar",
+              },
+            ],
           },
           {
-            tag: "div > radio",
-            bind: "radioChoice",
-            value: "bar",
+            tag: "div > .d-flex.gap",
+            content: [
+              {
+                tag: "div > radio",
+                bind: "radioChoice",
+                value: "foo",
+              },
+              {
+                tag: "div > radio",
+                bind: "radioChoice",
+                value: "bar",
+              },
+            ],
           },
+          "---",
           {
-            tag: "div > text",
-            bind: "freeText",
-            // compact: true,
+            tag: "div > .d-flex.gap",
+            content: [
+              {
+                tag: "div > radio",
+                bind: "selectOne",
+                value: "a",
+              },
+              {
+                tag: "div > radio",
+                bind: "selectOne",
+                value: "b",
+              },
+            ],
           },
+          "---",
           {
             tag: "div > select",
             bind: "selectOne",
@@ -111,6 +144,11 @@
               },
             ],
             value: "Velociraptor",
+          },
+          {
+            tag: "div > text",
+            bind: "freeText",
+            // compact: true,
           },
         ],
       },

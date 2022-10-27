@@ -16,7 +16,9 @@ import idleDebounce from "../../fabric/type/function/idleDebounce.js"
 import { toTitleCase } from "../../fabric/type/string/letters.js"
 import hash from "../../fabric/type/any/hash.js"
 
-function setValidation(def, { localName }) {
+const TEXTBOX_TYPES = new Set(["text", "email", "search"])
+
+function setValidation(def, { localName, type }) {
   const attr = {}
   if (def.required) attr.required = true
   if (def.schema) {
@@ -34,7 +36,10 @@ function setValidation(def, { localName }) {
     else if ("maximum" in schema) attr.max = schema.maximum
   }
 
-  if (localName === "input" || localName === "textarea") {
+  if (
+    localName === "textarea" ||
+    (localName === "input" && TEXTBOX_TYPES.has(type))
+  ) {
     attr.autocomplete = def.autocomplete ?? "off" // opt-in autocomplete
     if (def.prose !== true) {
       attr.autocapitalize = "none"
@@ -95,7 +100,6 @@ export default function renderControl(el, ctx, def) {
     let scopeTo
     if (def.bind.from) {
       scopeFrom = getBindScope(ctx, def.bind.from)
-      el.name ||= scopeFrom
       register(ctx, scopeFrom, (val) => setControlData(el, val))
     }
 
@@ -105,12 +109,7 @@ export default function renderControl(el, ctx, def) {
           ? scopeFrom
           : getBindScope(ctx, def.bind.to)
 
-      el.name ||= scopeTo
-
-      const fn = () => {
-        // console.log(888, scopeTo, getControlData(el))
-        ctx.reactive.set(scopeTo, getControlData(el))
-      }
+      const fn = () => ctx.reactive.set(scopeTo, getControlData(el))
 
       def.on ??= []
       def.on.push(
@@ -131,41 +130,55 @@ export default function renderControl(el, ctx, def) {
       )
     }
 
-    if (def.value && el.type !== "radio") {
-      // Save the value in the state if a value and a bind.from are set
-      if (def.attrs.value.scopes) {
-        // TODO: find way to wait for template function end
-        const renderer = idleDebounce(async () => {
-          ctx.reactive.set(scopeTo, getControlData(el), { silent: true })
-        })
+    if (el.type !== "radio") {
+      const name = scopeTo ?? scopeFrom
+      if (name) el.name ||= name
 
-        for (const scope of def.attrs.value.scopes) {
-          if (scope === scopeTo) continue
-          register.registerRenderer(ctx, scope, renderer)
+      if (def.value) {
+        // Save the value in the state if a value and a bind.from are set
+        if (def.attrs.value.scopes) {
+          // TODO: find way to wait for template function end
+          const renderer = idleDebounce(async () => {
+            ctx.reactive.set(scopeTo, getControlData(el), { silent: true })
+          })
+
+          for (const scope of def.attrs.value.scopes) {
+            if (scope === scopeTo) continue
+            register.registerRenderer(ctx, scope, renderer)
+          }
+
+          ctx.postrender.push(() => {
+            ctx.reactive.set(scopeTo, getControlData(el), { silent: true })
+          })
+        } else {
+          setControlData(el, def.value)
+          ctx.reactive.set(scopeTo, getControlData(el), { silent: true })
         }
-
-        ctx.postrender.push(() => {
-          ctx.reactive.set(scopeTo, getControlData(el), { silent: true })
-        })
-      } else {
-        setControlData(el, def.value)
-        ctx.reactive.set(scopeTo, getControlData(el), { silent: true })
       }
     }
   }
 
   setAttributes(el, setValidation(def, el))
 
-  const field =
-    el.type === "radio" || el.type === "checkbox"
-      ? create(".check-cont")
-      : document.createDocumentFragment()
-
   const labelText =
     def.label ??
     (el.type === "radio"
       ? toTitleCase(el.value)
       : toTitleCase(getBasename(el.name)))
+
+  if (el.role === "menuitemcheckbox" || el.role === "menuitemradio") {
+    const label = render(
+      { tag: "label", for: el.id, role: "none", content: labelText },
+      ctx
+    )
+    label.prepend(el)
+    return label
+  }
+
+  const field =
+    el.type === "radio" || el.type === "checkbox"
+      ? create(".check-cont")
+      : document.createDocumentFragment()
 
   if (labelText) {
     el.removeAttribute("label")

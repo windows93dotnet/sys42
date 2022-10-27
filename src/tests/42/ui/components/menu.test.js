@@ -54,7 +54,7 @@ const makeMenu = (name) => {
       disabled: true,
     },
     {
-      label: "Infinite Submenu",
+      label: "Infinite",
       id: `menuItemSubmenu${name}${__}`,
       picto: "cog",
       content: submenu,
@@ -75,7 +75,7 @@ const makeMenu = (name) => {
     },
     "---",
     {
-      label: `Dialog ${name}`,
+      label: `Dialog`,
       id: `menuItemDialog${name}${__}`,
       picto: "folder-open",
       shortcut: "Ctrl+O",
@@ -103,6 +103,23 @@ const makeMenu = (name) => {
       disabled: true,
     },
     {
+      label: "Checkbox",
+      tag: "checkbox",
+      bind: "bool",
+    },
+    "---",
+    {
+      tag: "radio",
+      bind: "choice",
+      value: "foo",
+    },
+    {
+      tag: "radio",
+      bind: "choice",
+      value: "bar",
+    },
+    "---",
+    {
       label: "{{cnt}}", //
       id: `menuItemIncr${name}${__}`,
       picto: "plus-large",
@@ -115,6 +132,23 @@ const makeMenu = (name) => {
 const makeDemo = ({ content } = {}) => {
   content ??= [
     { tag: "number", bind: "cnt", id: `cnt${__}`, compact: true },
+    "\n\n",
+    { tag: "checkbox", bind: "bool", id: `bool${__}` },
+    {
+      tag: "radio",
+      bind: "choice",
+      value: "foo",
+    },
+    {
+      tag: "radio",
+      bind: "choice",
+      value: "bar",
+    },
+    {
+      tag: "radio",
+      bind: "choice",
+      value: "baz",
+    },
     "\n\n",
     "\n\n",
     { tag: "ui-menubar", content: makeMenu("Inline") },
