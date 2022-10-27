@@ -1,3 +1,13 @@
+export function getPercent(target) {
+  if (target.hasAttribute("max") === false) return target.value
+  const max = target.getAttribute("max")
+  return (target.value / max) * 100
+}
+
+export function addPercentProp(target) {
+  target.style.setProperty("--percent", getPercent(target))
+}
+
 export default function setControlData(el, val) {
   switch (el.type) {
     case "checkbox":
@@ -16,6 +26,12 @@ export default function setControlData(el, val) {
     case "select-multiple":
       val ??= []
       for (const opt of el.options) opt.selected = val.includes(opt.value)
+      break
+
+    case "range":
+    case "number":
+      el.value = val ?? ""
+      addPercentProp(el)
       break
 
     default:
