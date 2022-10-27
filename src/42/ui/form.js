@@ -1,40 +1,30 @@
 import listen from "../fabric/event/listen.js"
-
-function addRangeProp(target) {
-  target.style.setProperty("--value", target.value)
-}
+import { addPercentProp } from "../fabric/dom/setControlData.js"
 
 let wheelForget
+
+const numericSelector = 'input:is([type="range"],[type="number"])'
 
 listen(
   // Add range css prop
   {
     once: true,
     load() {
-      for (const target of document.querySelectorAll('input[type="range"]')) {
-        addRangeProp(target)
+      for (const target of document.querySelectorAll(numericSelector)) {
+        addPercentProp(target)
       }
     },
   },
   {
-    selector: 'input[type="range"]',
+    selector: numericSelector,
     input(e, target) {
-      addRangeProp(target)
-    },
-  },
-
-  // Prevent label selection on double click
-  // @src https://stackoverflow.com/a/43321596
-  {
-    selector: "label",
-    mousedown(e) {
-      if (e.detail > 1) e.preventDefault()
+      addPercentProp(target)
     },
   },
 
   // Add increment/decrement on mousewheel
   {
-    selector: 'input[type="number"]',
+    selector: numericSelector,
     capture: true,
     blur() {
       wheelForget?.()
@@ -52,6 +42,15 @@ listen(
           }
         },
       })
+    },
+  },
+
+  // Prevent label selection on double click
+  // @src https://stackoverflow.com/a/43321596
+  {
+    selector: "label",
+    mousedown(e) {
+      if (e.detail > 1) e.preventDefault()
     },
   }
 )

@@ -43,13 +43,13 @@
 input[type="range" i] {
   height: var(--range-h, var(--ctrl-h));
   width: var(--range-w, var(--ctrl-w));
-  --value: 100;
+  --percent: 100;
   --_range__track-bg:
     var(
       --range__track-bg,
       linear-gradient(
         to right,
-        var(--range__track-active-c) calc(1% * var(--value)),
+        var(--range__track-active-c) calc(1% * var(--percent)),
         var(--range__track-inactive-c) 0%
       )
     );

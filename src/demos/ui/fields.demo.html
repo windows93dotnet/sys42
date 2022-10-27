@@ -24,9 +24,24 @@
             content: "Legend",
           },
           {
+            tag: "div > range",
+            bind: "rangeOne",
+            value: 20,
+          },
+          {
+            tag: "div > range",
+            bind: "rangeTwo",
+            max: 42,
+          },
+          {
+            tag: "div > number",
+            bind: "rangeTwo",
+            max: 42,
+          },
+          "---",
+          {
             tag: "div > checkbox",
             bind: "checkboxOne",
-            // value: true,
           },
           {
             tag: "div > checkbox",
@@ -94,7 +109,7 @@
             tag: "div > select",
             bind: "selectTwo",
             content: ["x", "y", "z"],
-            value: "z",
+            value: "y",
           },
           {
             tag: "div > select",
