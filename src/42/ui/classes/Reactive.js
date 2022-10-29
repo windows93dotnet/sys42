@@ -10,6 +10,7 @@ import dispatch from "../../fabric/event/dispatch.js"
 import equal from "../../fabric/type/any/equal.js"
 import merge from "../../fabric/type/object/merge.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
+import register from "../register.js"
 
 const sep = "/"
 
@@ -285,6 +286,10 @@ export default class Reactive extends Emitter {
     const prev = this.get(path, options)
     if (prev && typeof prev === "object") merge(prev, val)
     else this.set(path, val, options)
+  }
+
+  watch(loc, fn) {
+    register(this.ctx, loc, fn)
   }
 
   destroy() {

@@ -30,7 +30,8 @@ async function normalizeManifest(manifest, options) {
 
   if (manifest.dir === undefined) {
     if (manifest.manifestPath) {
-      manifest.dir = getDirname(manifest.manifestPath) + "/"
+      manifest.dir =
+        getDirname(new URL(manifest.manifestPath, location).href) + "/"
     } else {
       const url = document.URL
       manifest.dir = url.endsWith("/") ? url : getDirname(url) + "/"
@@ -62,6 +63,12 @@ async function normalizeManifest(manifest, options) {
 }
 
 function makeSandbox(manifest) {
+  const id = `${manifest.name}_${uid()}`
+  manifest.initiator = id
+  const { permissions } = manifest
+
+  const out = { id, sandbox: { permissions } }
+
   if (manifest.path) {
     let path = manifest.path.startsWith(".")
       ? resolvePath(manifest.dir, manifest.path)
@@ -71,13 +78,8 @@ function makeSandbox(manifest) {
       path += "?state=" + encodeURIComponent(JSON.stringify(manifest.state))
     }
 
-    return {
-      permissions: manifest.permissions,
-      path,
-      // html: `
-      // <iframe style="position:absolute;inset:0;width: 100%;height: 100%;" src="${manifest.path}">
-      // `,
-    }
+    out.sandbox.path = path
+    return out
   }
 
   const script = escapeTemplate(`\
@@ -87,10 +89,8 @@ function makeSandbox(manifest) {
       { skipNormalize: true }
     )`)
 
-  return {
-    permissions: manifest.permissions,
-    script,
-  }
+  out.sandbox.script = script
+  return out
 }
 
 // Execute App sandboxed in a top level page
@@ -98,7 +98,7 @@ export async function mount(manifestPath, options) {
   const manifest = await normalizeManifest(manifestPath, options)
 
   if (inTop) {
-    const sandbox = makeSandbox(manifest)
+    const { id, sandbox } = makeSandbox(manifest)
     document.title = manifest.name
 
     // Allow PWA installation
@@ -112,10 +112,17 @@ export async function mount(manifestPath, options) {
         ipc.on("42_IO_READY", async () => system.pwa.files)
       })
 
-    return new UI({
+    const appShell = new UI({
+      id,
       tag: "ui-sandbox.box-fit",
       ...sandbox,
     })
+
+    appShell.ctx.reactive.watch("/$dialog/title", (val) => {
+      if (val) document.title = val
+    })
+
+    return appShell
   }
 
   return new App(manifest)
@@ -131,12 +138,7 @@ export async function launch(manifestPath, options) {
   const dialog = await import("../../ui/components/dialog.js") //
     .then((m) => m.default)
 
-  const id = `${manifest.name}_${uid()}`
-  manifest.initiator = id
-
-  const sandbox = makeSandbox(manifest)
-
-  // console.log(manifest.state.$files)
+  const { id, sandbox } = makeSandbox(manifest)
 
   return dialog({
     id,
@@ -190,9 +192,10 @@ export default class App extends UI {
 
     import("../../io.js").then(({ default: io }) => {
       io.listenImport()
-      io.on("import", ([file]) => {
+      io.on("import", ([{ id, file }]) => {
         this.state.$files[0] = {
-          path: undefined,
+          id,
+          path: file.name,
           data: file,
           dirty: false,
         }
