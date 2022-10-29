@@ -208,6 +208,7 @@ export function normalizeTokens(tokens, ctx, options) {
   const locals = options?.locals ?? {}
 
   queueMicrotask(() => {
+    if (locals.this) return
     // TODO: check possible xss vector attack
     locals.this = ctx.el
   })
