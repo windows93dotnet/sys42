@@ -1,0 +1,23 @@
+ui-player {
+  display: flex;
+  flex-direction: column;
+}
+
+.ui-player__controls {
+  display: flex;
+  margin-top: var(--unit-sm);
+  gap: var(--unit-sm);
+}
+
+.ui-player__stage,
+.ui-player__track {
+  flex: 1;
+}
+
+.ui-player__volume {
+  width: calc(var(--ctrl-w) / 2);
+}
+
+.ui-player__stage {
+  display: flex;
+}

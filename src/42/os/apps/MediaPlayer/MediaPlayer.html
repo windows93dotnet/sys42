@@ -7,10 +7,16 @@
 <!-- @src https://css-tricks.com/lets-create-a-custom-audio-player/ -->
 
 <div id="audio-player-container">
-  <audio
+  <!-- <audio
     src="https://assets.codepen.io/4358584/Anitek_-_Komorebi.mp3"
+    id="media"
+    preload="metadata"></audio> -->
+  <video
+    _src="https://assets.codepen.io/4358584/Anitek_-_Komorebi.mp3"
+    _crossorigin="anonymous"
+    id="media"
     preload="metadata"
-    loop></audio>
+    controls></video>
   <button id="play-icon"></button>
   <span id="current-time" class="time">0:00</span>
   <span id="duration" class="time">0:00</span>
@@ -21,7 +27,7 @@
   <button id="mute-icon"></button>
 </div>
 
-<script>
+<script type="module">
   const params = new URLSearchParams(location.search)
   let state = params.get("state")
   try {
@@ -30,15 +36,17 @@
     state = {}
   }
 
-  console.log(state)
-</script>
-
-<script type="module">
+  const media = document.querySelector("#media")
   const playIconContainer = document.querySelector("#play-icon")
   const audioPlayerContainer = document.querySelector("#audio-player-container")
   const seekSlider = document.querySelector("#seek-slider")
   const volumeSlider = document.querySelector("#volume-slider")
   const muteIconContainer = document.querySelector("#mute-icon")
+
+  // console.log(media)
+  media.src = state.$files[0].path
+  // media.src = "https://content.jwplatform.com/videos/q1fx20VZ-27m5HpIu.webm"
+
   let playState = "play"
   let muteState = "unmute"
 
@@ -87,7 +95,7 @@
 
   /* Implementation of the functionality of the audio player */
 
-  const audio = document.querySelector("audio")
+  const audio = document.querySelector("video")
   const durationContainer = document.querySelector("#duration")
   const currentTimeContainer = document.querySelector("#current-time")
   const outputContainer = document.querySelector("#volume-output")

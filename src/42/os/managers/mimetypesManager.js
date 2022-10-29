@@ -5,7 +5,7 @@ import getExtname from "../../core/path/core/getExtname.js"
 import getBasename from "../../core/path/core/getBasename.js"
 import groupBy from "../../fabric/type/array/groupBy.js"
 
-class MimeypesManager extends ConfigFile {
+class MimetypesManager extends ConfigFile {
   async populate() {
     return import("../../fabric/constants/FILE_TYPES.js") //
       .then(({ mimetypes }) => mimetypes)
@@ -132,7 +132,7 @@ class MimeypesManager extends ConfigFile {
   getApps(path) {
     const out = this.lookup(path)
 
-    if (out.apps === undefined) {
+    if (out.apps === undefined && out.mimetype) {
       const { type } = parseMimetype(out.mimetype)
       return this.mimetypes[type]?.["*"]?.apps
     }
@@ -141,7 +141,7 @@ class MimeypesManager extends ConfigFile {
   }
 }
 
-const mimetypesManager = new MimeypesManager("mimetypes.json")
+const mimetypesManager = new MimetypesManager("mimetypes.json")
 await mimetypesManager.init()
 
 export default mimetypesManager

@@ -88,6 +88,8 @@ export default async function serve() {
         asset.headers["access-control-allow-origin"] = "null"
       }
 
+      asset.headers["accept-ranges"] = "bytes"
+
       if (
         needDevScript &&
         (req.headers["sec-fetch-dest"] === "document" ||

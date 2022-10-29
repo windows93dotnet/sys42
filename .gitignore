@@ -5,3 +5,4 @@ dist
 .trash
 .tmp
 src/files.cbor
+src/tests/fixtures/formats/tmp/
