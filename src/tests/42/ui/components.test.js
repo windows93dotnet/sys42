@@ -2059,3 +2059,66 @@ test("actions", "above root path", async (t) => {
 
   await Promise.all([app, p])
 })
+
+/* session
+========== */
+
+Component.define(
+  class extends Component {
+    static definition = {
+      tag: "ui-t-def-state",
+      content: "{{a}} - {{b}}",
+      state: {
+        a: 1,
+        b: 2,
+      },
+    }
+  }
+)
+
+test("def state", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest({ connect: true }), {
+      content: {
+        tag: "ui-t-def-state",
+      },
+    })
+  )
+
+  t.is(app.el.textContent, "1 - 2")
+  t.eq(app.state, {
+    $ui: { "t-def-state": { root: { a: 1, b: 2 } } },
+  })
+  t.eq(Object.keys(app.ctx.renderers), [
+    "/$ui/t-def-state/root/a",
+    "/$ui/t-def-state/root/b",
+  ])
+})
+
+Component.define(
+  class extends Component {
+    static definition = {
+      tag: "ui-t-session",
+      content: "{{a}} - {{b}}",
+      // content: "{{a}}",
+      session: {
+        a: 1,
+        b: 2,
+      },
+    }
+  }
+)
+
+test("session", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest({ connect: true }), {
+      content: {
+        tag: "ui-t-session",
+      },
+    })
+  )
+
+  t.is(app.el.textContent, "1 - 2")
+  t.eq(app.state, {})
+  t.eq(Object.keys(app.ctx.renderers), ["/a", "/b"])
+})

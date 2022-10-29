@@ -247,6 +247,9 @@ export default class Component extends HTMLElement {
     def = configure(definition, def)
     const { computed, state } = def
 
+    if (def.session) this.session = def.session
+
+    delete def.session
     delete def.computed
     delete def.state
     delete def.scope
@@ -272,6 +275,17 @@ export default class Component extends HTMLElement {
       } else {
         this.#setNewScope([...filteredPropsKeys, ...computedKeys])
       }
+    }
+
+    if (state) {
+      const stateKeys = Object.keys(state)
+      if (this.#hasNewScope) {
+        this.ctx.scopeChain.at(-1).props.push(...stateKeys)
+      } else {
+        this.#setNewScope(stateKeys)
+      }
+
+      this.ctx.reactive.merge(this.ctx.scope, state)
     }
 
     const config = configure(definition.defaults, options)
@@ -300,12 +314,6 @@ export default class Component extends HTMLElement {
 
     /* apply
     -------- */
-    if (state) {
-      this.ctx.reactive.merge(
-        this.#hasNewScope ? this.ctx.scopeChain.at(0).scope : this.ctx.scope,
-        state
-      )
-    }
 
     if (computed) normalizeComputeds(computed, this.ctx)
 
