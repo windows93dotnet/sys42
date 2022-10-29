@@ -69,9 +69,9 @@
         value: "{{data ? cast.text(data) : fs.source(path)}}",
         on: {
           "input": "{{dirty = true}}",
-          // focus: "{{/$dialog.title = dirty ? path + '*' : path}}",
-          "focus || render": "{{ \
-            /$dialog.title = 'TextEdit - ' + path \
+          ":path || :dirty || focus": "{{ \
+            /$dialog.title = 'TextEdit - ' + path.getBasename(path ?? ''); \
+            /$dialog.title += dirty ? '*' : ''; \
           }}",
         },
       },

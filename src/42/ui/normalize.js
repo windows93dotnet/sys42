@@ -1,3 +1,4 @@
+/* eslint-disable max-depth */
 import Reactive from "./classes/Reactive.js"
 import resolveScope from "./resolveScope.js"
 import findScope from "./findScope.js"
@@ -6,6 +7,7 @@ import Locator from "../fabric/classes/Locator.js"
 import locate from "../fabric/locator/locate.js"
 import allocate from "../fabric/locator/allocate.js"
 import template from "../core/formats/template.js"
+import expr from "../core/expr.js"
 import Canceller from "../fabric/classes/Canceller.js"
 import Undones from "../fabric/classes/Undones.js"
 import filters from "../core/filters.js"
@@ -203,7 +205,26 @@ export function normalizeTokens(tokens, ctx, options) {
     }
   }
 
-  return { hasFilter, scopes, actions }
+  const locals = options?.locals ?? {}
+
+  queueMicrotask(() => {
+    // TODO: check possible xss vector attack
+    locals.this = ctx.el
+  })
+
+  // locals.this = {
+  //   get value() {
+  //     return ctx.el.value
+  //   },
+  //   get textContent() {
+  //     return ctx.el.textContent
+  //   },
+  //   get rect() {
+  //     return ctx.el.getBoundingCLientRect()
+  //   },
+  // }
+
+  return { hasFilter, scopes, actions, locals }
 }
 
 export function normalizeString(item, ctx) {
@@ -213,29 +234,11 @@ export function normalizeString(item, ctx) {
     const actions = { ...ctx.actions.value }
     const scopes = []
     let hasFilter = false
+    const locals = {}
     for (const tokens of parsed.substitutions) {
-      const res = normalizeTokens(tokens, ctx, { actions })
+      const res = normalizeTokens(tokens, ctx, { actions, locals })
       hasFilter ||= res.hasFilter
       scopes.push(...res.scopes)
-    }
-
-    const locals = {}
-
-    // queueMicrotask(() => {
-    //   // TODO: check possible xss vector attack
-    //   locals.this = ctx.el
-    // })
-
-    locals.this = {
-      get value() {
-        return ctx.el.value
-      },
-      get textContent() {
-        return ctx.el.textContent
-      },
-      get rect() {
-        return ctx.el.getBoundingCLientRect()
-      },
     }
 
     item = template.compile(parsed, {
@@ -323,6 +326,34 @@ export function normalizeComputed(scope, val, ctx, cb = noop) {
   }
 }
 
+const SPLIT_REGEX = /\s*\|\|\s*/
+export function normalizeWatchs(watch, ctx) {
+  for (const [key, val] of Object.entries(watch)) {
+    for (const item of key.split(SPLIT_REGEX)) {
+      normalizeWatch(resolveScope(...findScope(ctx, item), ctx), val, ctx)
+    }
+  }
+}
+
+export function normalizeWatch(scope, fn, ctx) {
+  const locals = {}
+  if (typeof fn === "string") {
+    const tokens = expr.parse(fn)
+    const { actions } = normalizeTokens(tokens, ctx, { locals })
+    fn = expr.compile(tokens, {
+      assignment: true,
+      async: true,
+      sep: "/",
+      actions,
+    })
+  }
+
+  register(ctx, scope, async () => {
+    await 0
+    await fn(ctx.reactive.state, locals)
+  })
+}
+
 export function normalizeScope(def, ctx) {
   if (def?.scope) {
     ctx.scope = resolveScope(ctx.scope, def.scope, ctx)
@@ -405,6 +436,26 @@ export function normalizeTraits(def, ctx) {
   }
 }
 
+function extractWatchFromOn(def) {
+  for (const item of def.on) {
+    for (const key in item) {
+      if (Object.hasOwn(item, key) && key.includes(":")) {
+        const val = item[key]
+        const events = []
+        for (const event of key.split(SPLIT_REGEX)) {
+          if (event.startsWith(":")) {
+            def.watch ??= {}
+            def.watch[event.slice(1)] = val
+          } else events.push(event)
+        }
+
+        delete item[key]
+        item[events.join("||")] = val
+      }
+    }
+  }
+}
+
 function normalizeOn(def) {
   if (def.on) def.on = arrify(def.on)
 
@@ -465,6 +516,8 @@ function normalizeOn(def) {
       },
     })
   }
+
+  if (def.on) extractWatchFromOn(def)
 }
 
 /* def
@@ -536,19 +589,20 @@ export function normalizeDef(def = {}, ctx, options) {
       })
     }
 
-    if (def.computed) normalizeComputeds(def.computed, ctx)
+    normalizeScope(def, ctx)
 
     const traits = normalizeTraits(def, ctx)
     if (traits) def.traits = traits
 
     if (options?.skipNoCtx !== true) normalizeDefNoCtx(def)
 
+    if (def.computed) normalizeComputeds(def.computed, ctx)
+    if (def.watch) normalizeWatchs(def.watch, ctx)
+
     if (options?.skipAttrs !== true) {
       const attrs = normalizeAttrs(def, ctx)
       if (!isEmptyObject(attrs)) def.attrs = attrs
     }
-
-    normalizeScope(def, ctx)
 
     if (def.actions) {
       normalizeData(def.actions, ctx, (res) => {

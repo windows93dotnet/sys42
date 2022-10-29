@@ -17,19 +17,16 @@ const makeEventLocals = (loc, e, target) => {
 function compileRun(val, ctx) {
   const tokens = expr.parse(val)
 
-  const { actions } = normalizeTokens(tokens, ctx, {
+  const { actions, locals } = normalizeTokens(tokens, ctx, {
     specials: ["e", "event", "target", "rect"],
   })
-
-  // console.group(ctx.scope)
-  // console.table(tokens)
-  // console.groupEnd(ctx.scope)
 
   const fn = expr.compile(tokens, {
     assignment: true,
     async: true,
     sep: "/",
     actions,
+    locals,
   })
 
   return (e, target) => {

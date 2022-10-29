@@ -2187,3 +2187,62 @@ test("input", "prose:true", async (t) => {
 
   t.eq(input.value, "baz")
 })
+
+/* watch
+======== */
+
+test("watch", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest(true), {
+      content: {
+        scope: "foo",
+        tag: "em",
+        content: "{{a}} - {{b}}",
+        watch: {
+          a: "{{b = a + 10}}",
+        },
+      },
+
+      state: {
+        foo: {
+          a: 1,
+        },
+      },
+    })
+  )
+
+  t.is(app.el.textContent, "1 - 11")
+
+  app.state.foo.a = 2
+  await app
+
+  t.is(app.el.textContent, "2 - 12")
+})
+
+test("watch in on keyword", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest(true), {
+      content: {
+        scope: "foo",
+        tag: "em",
+        content: "{{a}} - {{b}}",
+        on: {
+          ":a || click || keydown": "{{b = a + 10}}",
+        },
+      },
+
+      state: {
+        foo: {
+          a: 1,
+        },
+      },
+    })
+  )
+
+  t.is(app.el.textContent, "1 - 11")
+
+  app.state.foo.a = 2
+  await app
+
+  t.is(app.el.textContent, "2 - 12")
+})

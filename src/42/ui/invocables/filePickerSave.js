@@ -24,10 +24,15 @@ export default async function filePickerSave(path, options) {
       footer: [
         {
           tag: "input.w-full",
-          bind: "/name",
-          value: `{{selection.length > 0
-            ? path.getBasename(selection/-1)
-            : this.value || '${untitled}'}}`,
+          bind: "name",
+          value: `${untitled}`,
+          watch: {
+            selection: `{{
+              name = selection.length > 0
+                ? path.getBasename(selection/-1)
+                : this.value
+            }}`,
+          },
           autofocus: true,
           compact: true,
           enterKeyHint: "done",
