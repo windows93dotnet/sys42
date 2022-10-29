@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-/* eslint-disable max-depth */
+
 import register from "../register.js"
 import render from "../render.js"
 import setControlData from "../../fabric/dom/setControlData.js"
@@ -9,10 +9,7 @@ import create from "../create.js"
 import findScope from "../findScope.js"
 import resolveScope from "../resolveScope.js"
 import getBasename from "../../core/path/core/getBasename.js"
-
 import debounce from "../../fabric/type/function/debounce.js"
-import idleDebounce from "../../fabric/type/function/idleDebounce.js"
-
 import { toTitleCase } from "../../fabric/type/string/letters.js"
 import hash from "../../fabric/type/any/hash.js"
 
@@ -136,24 +133,8 @@ export default function renderControl(el, ctx, def) {
 
       if (def.value) {
         // Save the value in the state if a value and a bind.from are set
-        if (def.attrs.value.scopes) {
-          // TODO: find way to wait for template function end
-          const renderer = idleDebounce(async () => {
-            ctx.reactive.set(scopeTo, getControlData(el), { silent: true })
-          })
-
-          for (const scope of def.attrs.value.scopes) {
-            if (scope === scopeTo) continue
-            register.registerRenderer(ctx, scope, renderer)
-          }
-
-          ctx.postrender.push(() => {
-            ctx.reactive.set(scopeTo, getControlData(el), { silent: true })
-          })
-        } else {
-          setControlData(el, def.value)
-          ctx.reactive.set(scopeTo, getControlData(el), { silent: true })
-        }
+        setControlData(el, def.value)
+        ctx.reactive.set(scopeTo, getControlData(el), { silent: true })
       }
     }
   }
