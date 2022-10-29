@@ -158,8 +158,11 @@ export default class Component extends HTMLElement {
     this.ctx.scopeChain = structuredClone(this.ctx.scopeChain)
     this.ctx.scopeChain.push({ scope: this.ctx.scope, props })
     const i = this.localName.indexOf("-")
+    let prefix = this.localName.slice(0, i)
+    const suffix = this.localName.slice(i + 1)
+    if (prefix === "ui") prefix = "$" + prefix
     this.ctx.scope = resolveScope(
-      this.localName.slice(0, i) + "/" + this.localName.slice(i + 1),
+      `${prefix}/${suffix}`,
       getStep(this.ctx.steps)
     )
   }
@@ -349,8 +352,9 @@ export default class Component extends HTMLElement {
     if (this.#hasNewScope && this.ctx.reactive.data) {
       this.ctx.reactive.delete(this.ctx.scope, { silent: true })
       const i = this.localName.indexOf("-")
-      const prefix = this.localName.slice(0, i)
+      let prefix = this.localName.slice(0, i)
       const suffix = this.localName.slice(i + 1)
+      if (prefix === "ui") prefix = "$" + prefix
       if (isEmptyObject(this.ctx.reactive.data[prefix]?.[suffix])) {
         delete this.ctx.reactive.data[prefix][suffix]
       }

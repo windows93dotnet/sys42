@@ -59,7 +59,7 @@ export class Dialog extends Component {
   async close(ok = false) {
     const event = dispatch(this, "uidialogbeforeclose", { cancelable: true })
     if (event.defaultPrevented) return
-    const data = omit(this.ctx.reactive.data, ["ui", "$computed"])
+    const data = omit(this.ctx.reactive.data, ["$ui", "$computed"])
     if (ok) data.ok = true
     this.emit("close", data)
     await this.destroy()

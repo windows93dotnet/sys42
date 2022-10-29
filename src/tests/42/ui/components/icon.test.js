@@ -14,20 +14,20 @@ test("html", async (t) => {
   )
 
   t.eq(t.utils.omit(app.reactive.data, ["$computed"]), {
-    ui: {
+    $ui: {
       icon: { root: { path: "/script.js", small: undefined, label: true } },
     },
   })
 
   t.eq(Object.keys(app.ctx.renderers), [
-    "/ui/icon/root/path",
-    "/ui/icon/root/small",
-    "/ui/icon/root/label",
-    "/ui/icon/root/infos/description",
-    "/ui/icon/root/infos/image",
-    "/ui/icon/root/infos/name",
-    "/ui/icon/root/infos/isFile",
-    "/ui/icon/root/infos/ext",
+    "/$ui/icon/root/path",
+    "/$ui/icon/root/small",
+    "/$ui/icon/root/label",
+    "/$ui/icon/root/infos/description",
+    "/$ui/icon/root/infos/image",
+    "/$ui/icon/root/infos/name",
+    "/$ui/icon/root/infos/isFile",
+    "/$ui/icon/root/infos/ext",
   ])
 
   const maskImage = "mask-image"
@@ -115,7 +115,7 @@ test("infos", async (t) => {
   )
 
   t.eq(t.utils.omit(app.reactive.data, ["$computed"]), {
-    ui: {
+    $ui: {
       icon: {
         "root,0": { path: "/derp/foo.js", small: undefined, label: true },
         "root,1": { path: "/derp/foo/", small: undefined, label: true },
@@ -226,7 +226,7 @@ test("each", async (t) => {
 
   t.eq(t.utils.omit(app.reactive.data, ["$computed"]), {
     arr: [{ x: "/derp/foo.js" }, { x: "/derp/" }],
-    ui: {
+    $ui: {
       icon: {
         "root,[0]": {
           small: undefined,
@@ -245,14 +245,14 @@ test("each", async (t) => {
   t.eq(Object.keys(app.ctx.renderers).slice(0, 10), [
     "/arr",
     "/arr/0/x",
-    "/ui/icon/root,[0]/path",
-    "/ui/icon/root,[0]/small",
-    "/ui/icon/root,[0]/label",
+    "/$ui/icon/root,[0]/path",
+    "/$ui/icon/root,[0]/small",
+    "/$ui/icon/root,[0]/label",
     "/arr/1/x",
-    "/ui/icon/root,[1]/path",
-    "/ui/icon/root,[1]/small",
-    "/ui/icon/root,[1]/label",
-    "/ui/icon/root,[0]/infos/description",
+    "/$ui/icon/root,[1]/path",
+    "/$ui/icon/root,[1]/small",
+    "/$ui/icon/root,[1]/label",
+    "/$ui/icon/root,[0]/infos/description",
   ])
 
   const icons = t.puppet.$$$("ui-icon", { live: true, base: app.el })
@@ -285,7 +285,7 @@ test("each", 2, async (t) => {
 
   t.eq(t.utils.omit(app.reactive.data, ["$computed"]), {
     arr: ["/derp/foo.js", "/derp/"],
-    ui: {
+    $ui: {
       icon: {
         "root,[0]": { small: undefined, label: true, path: { $ref: "/arr/0" } },
         "root,[1]": { small: undefined, label: true, path: { $ref: "/arr/1" } },
@@ -296,14 +296,14 @@ test("each", 2, async (t) => {
   t.eq(Object.keys(app.ctx.renderers).slice(0, 10), [
     "/arr",
     "/arr/0",
-    "/ui/icon/root,[0]/path",
-    "/ui/icon/root,[0]/small",
-    "/ui/icon/root,[0]/label",
+    "/$ui/icon/root,[0]/path",
+    "/$ui/icon/root,[0]/small",
+    "/$ui/icon/root,[0]/label",
     "/arr/1",
-    "/ui/icon/root,[1]/path",
-    "/ui/icon/root,[1]/small",
-    "/ui/icon/root,[1]/label",
-    "/ui/icon/root,[0]/infos/description",
+    "/$ui/icon/root,[1]/path",
+    "/$ui/icon/root,[1]/small",
+    "/$ui/icon/root,[1]/label",
+    "/$ui/icon/root,[0]/infos/description",
   ])
 
   const icons = t.puppet.$$$("ui-icon", { live: true, base: app.el })

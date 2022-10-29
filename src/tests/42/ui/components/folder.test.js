@@ -13,7 +13,7 @@ test("generate icon list", async (t) => {
   )
 
   t.eq(t.utils.omit(app.reactive.data, ["$computed"]), {
-    ui: {
+    $ui: {
       folder: {
         root: {
           path: "/tests/fixtures/components/folder/",
@@ -26,17 +26,17 @@ test("generate icon list", async (t) => {
         "root,ui-folder,div,[0]": {
           small: undefined,
           label: true,
-          path: { $ref: "/ui/folder/root/items/0" },
+          path: { $ref: "/$ui/folder/root/items/0" },
         },
         "root,ui-folder,div,[1]": {
           small: undefined,
           label: true,
-          path: { $ref: "/ui/folder/root/items/1" },
+          path: { $ref: "/$ui/folder/root/items/1" },
         },
         "root,ui-folder,div,[2]": {
           small: undefined,
           label: true,
-          path: { $ref: "/ui/folder/root/items/2" },
+          path: { $ref: "/$ui/folder/root/items/2" },
         },
       },
     },
