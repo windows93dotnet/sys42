@@ -31,11 +31,12 @@
 @import "./ui/ui.css";
 @import "./components/accordion.css";
 @import "./components/dialog.css";
-@import "./components/sandbox.css";
 @import "./components/folder.css";
 @import "./components/icon.css";
 @import "./components/menu.css";
+@import "./components/player.css";
 @import "./components/repeater.css";
+@import "./components/sandbox.css";
 @import "./components/tabs.css";
 @import "./components/tooltip.css";
 @import "./components/workspaces.css";

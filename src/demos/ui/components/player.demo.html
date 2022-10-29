@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>ui-player</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/style.css" id="theme" />
+
+<script type="module">
+  import trap from "../../../42/fabric/type/error/trap.js"
+  trap()
+</script>
+
+<script type="module">
+  import ui from "../../../42/ui.js"
+
+  const app = await ui({
+    tag: "body.box-center.desktop",
+    content: [
+      {
+        tag: "ui-player.pa-sm.outset.panel", //
+        // style: { width: "400px", height: "300px" },
+        // path: "/tests/fixtures/formats/video/example.mp4",
+        // path: "/tests/fixtures/formats/video/example.mov",
+        path: "/tests/fixtures/formats/tmp/sintel.webm",
+      },
+      {
+        tag: "ui-player.pa-sm.outset.panel", //
+        style: { width: "400px", height: "300px" },
+        // path: "/tests/fixtures/formats/video/example.mp4",
+        // path: "/tests/fixtures/formats/video/example.mov",
+        // path: "/tests/fixtures/formats/tmp/sintel.webm",
+        path: "/tests/fixtures/formats/tmp/error.webm",
+      },
+    ],
+  })
+
+  console.log(app.ctx.renderers)
+</script>

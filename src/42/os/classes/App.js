@@ -70,9 +70,7 @@ function makeSandbox(manifest) {
   const out = { id, sandbox: { permissions } }
 
   if (manifest.path) {
-    let path = manifest.path.startsWith(".")
-      ? resolvePath(manifest.dir, manifest.path)
-      : manifest.path
+    let path = new URL(manifest.path, manifest.dir).href
 
     if (path.endsWith(".html") || path.endsWith(".php")) {
       path += "?state=" + encodeURIComponent(JSON.stringify(manifest.state))

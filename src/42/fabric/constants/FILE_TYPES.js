@@ -57,16 +57,22 @@ export const mimetypes = {
 
   // Media files
   audio: {
+    aac: "aac",
     flac: "flac",
     mp4: "f4a f4b m4a",
     mpeg: "mp3",
     ogg: "oga ogg opus",
   },
   video: {
+    "3gpp": "3gp",
     "mp4": "f4v f4p m4v mp4 mp4v mpg4",
     "ogg": "ogv",
+    "quicktime": "mov",
     "webm": "webm",
     "x-flv": "flv",
+    "x-matroska": "mkv",
+    "x-ms-wmv": "wmv",
+    "x-msvideo": "avi",
   },
   image: {
     "bmp": "bmp",

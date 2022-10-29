@@ -40,7 +40,7 @@
   --range🎯__thumb-bsh: var(--range__thumb-bsh);
 }
 
-input[type="range" i] {
+:where(input[type="range" i]) {
   height: var(--range-h, var(--ctrl-h));
   width: var(--range-w, var(--ctrl-w));
   --percent: 100;
@@ -61,14 +61,14 @@ input[type="range" i] {
   overflow: visible;
 }
 
-input[type="range" i]::-ms-tooltip {
+:where(input[type="range" i])::-ms-tooltip {
   display: none;
 }
 
 /* track
 ======== */
 
-input[type="range" i]::-webkit-slider-runnable-track {
+:where(input[type="range" i])::-webkit-slider-runnable-track {
   box-sizing: border-box;
   height: var(--range__track-h);
   background: var(--_range__track-bg);
@@ -79,7 +79,7 @@ input[type="range" i]::-webkit-slider-runnable-track {
   box-shadow: var(--range__track-bsh);
 }
 
-input[type="range" i]::-moz-range-track {
+:where(input[type="range" i])::-moz-range-track {
   box-sizing: border-box;
   height: var(--range__track-h);
   background: var(--_range__track-bg);
@@ -90,7 +90,7 @@ input[type="range" i]::-moz-range-track {
   box-shadow: var(--range__track-bsh);
 }
 
-input[type="range" i]::-ms-track {
+:where(input[type="range" i])::-ms-track {
   box-sizing: border-box;
   height: var(--range__track-h);
   background: var(--_range__track-bg);
@@ -104,13 +104,13 @@ input[type="range" i]::-ms-track {
 /* focus on track
 ----------------- */
 
-input[type="range" i].focus,
-input[type="range" i]:focus {
+:where(input[type="range" i]).focus,
+:where(input[type="range" i]):focus {
   outline: none;
 }
 
-input[type="range" i].focus::-webkit-slider-runnable-track,
-input[type="range" i]:focus::-webkit-slider-runnable-track {
+:where(input[type="range" i]).focus::-webkit-slider-runnable-track,
+:where(input[type="range" i]):focus::-webkit-slider-runnable-track {
   --range__track-h: var(--range🎯__track-h);
   --range__track-bdw: var(--range🎯__track-bdw);
   --range__track-bds: var(--range🎯__track-bds);
@@ -122,8 +122,8 @@ input[type="range" i]:focus::-webkit-slider-runnable-track {
   outline-offset: var(--range__track-oo);
 }
 
-input[type="range" i].focus::-moz-range-track,
-input[type="range" i]:focus::-moz-range-track {
+:where(input[type="range" i]).focus::-moz-range-track,
+:where(input[type="range" i]):focus::-moz-range-track {
   --range__track-h: var(--range🎯__track-h);
   --range__track-bdw: var(--range🎯__track-bdw);
   --range__track-bds: var(--range🎯__track-bds);
@@ -135,8 +135,8 @@ input[type="range" i]:focus::-moz-range-track {
   outline-offset: var(--range__track-oo);
 }
 
-input[type="range" i].focus::-ms-track,
-input[type="range" i]:focus::-ms-track {
+:where(input[type="range" i]).focus::-ms-track,
+:where(input[type="range" i]):focus::-ms-track {
   --range__track-h: var(--range🎯__track-h);
   --range__track-bdw: var(--range🎯__track-bdw);
   --range__track-bds: var(--range🎯__track-bds);
@@ -151,7 +151,7 @@ input[type="range" i]:focus::-ms-track {
 /* thumb
 ======== */
 
-input[type="range" i]::-webkit-slider-thumb {
+:where(input[type="range" i])::-webkit-slider-thumb {
   box-sizing: border-box;
   margin-top: 0;
   position: relative;
@@ -169,7 +169,7 @@ input[type="range" i]::-webkit-slider-thumb {
   box-shadow: var(--range__thumb-bsh);
 }
 
-input[type="range" i]::-moz-range-thumb {
+:where(input[type="range" i])::-moz-range-thumb {
   box-sizing: border-box;
   margin-top: 0;
   position: relative;
@@ -184,7 +184,7 @@ input[type="range" i]::-moz-range-thumb {
   box-shadow: var(--range__thumb-bsh);
 }
 
-input[type="range" i]::-ms-thumb {
+:where(input[type="range" i])::-ms-thumb {
   box-sizing: border-box;
   margin-top: 0;
   position: relative;
@@ -202,8 +202,8 @@ input[type="range" i]::-ms-thumb {
 /* focus on thumb
 ----------------- */
 
-input[type="range" i]:focus::-webkit-slider-thumb,
-input[type="range" i].focus::-webkit-slider-thumb {
+:where(input[type="range" i]):focus::-webkit-slider-thumb,
+:where(input[type="range" i]).focus::-webkit-slider-thumb {
   --range__thumb-w: var(--range🎯__thumb-w);
   --range__thumb-h: var(--range🎯__thumb-h);
   --range__thumb-bg: var(--range🎯__thumb-bg);
@@ -218,8 +218,8 @@ input[type="range" i].focus::-webkit-slider-thumb {
   outline-offset: var(--range__thumb-oo);
 }
 
-input[type="range" i]:focus::-moz-range-thumb,
-input[type="range" i].focus::-moz-range-thumb {
+:where(input[type="range" i]):focus::-moz-range-thumb,
+:where(input[type="range" i]).focus::-moz-range-thumb {
   --range__thumb-w: var(--range🎯__thumb-w);
   --range__thumb-h: var(--range🎯__thumb-h);
   --range__thumb-bg: var(--range🎯__thumb-bg);
@@ -234,8 +234,8 @@ input[type="range" i].focus::-moz-range-thumb {
   outline-offset: var(--range__thumb-oo);
 }
 
-input[type="range" i]:focus::-ms-thumb,
-input[type="range" i].focus::-ms-thumb {
+:where(input[type="range" i]):focus::-ms-thumb,
+:where(input[type="range" i]).focus::-ms-thumb {
   --range__thumb-w: var(--range🎯__thumb-w);
   --range__thumb-h: var(--range🎯__thumb-h);
   --range__thumb-bg: var(--range🎯__thumb-bg);
