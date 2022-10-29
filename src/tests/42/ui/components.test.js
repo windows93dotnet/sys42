@@ -5,7 +5,7 @@ import Component from "../../../42/ui/classes/Component.js"
 Component.define({
   tag: "ui-t-props",
   props: {
-    bar: 2,
+    bar: { default: 2, reflect: true },
   },
   content: "foo: {{foo}}, bar: {{bar}}",
 })
@@ -265,7 +265,7 @@ test.tasks(
           static definition = {
             tag: "ui-t-filter",
             props: {
-              bar: 2,
+              bar: { type: "number", default: 2, reflect: true },
             },
             content: "foo: {{/foo |> add5(^^)}}, bar: {{bar |> add10(^^)}}",
           }
@@ -693,8 +693,8 @@ Component.define(
     static definition = {
       tag: "ui-one",
       props: {
-        bar: 1,
-        one: 1,
+        bar: { default: 1, reflect: true },
+        one: { default: 1, reflect: true },
       },
     }
 
@@ -709,8 +709,8 @@ Component.define(
     static definition = {
       tag: "ui-two",
       props: {
-        bar: 2,
-        two: 2,
+        bar: { default: 2, reflect: true },
+        two: { default: 2, reflect: true },
       },
     }
   }
@@ -987,7 +987,7 @@ test("state", "dynamic", "textContent", async (t) => {
 Component.define({
   tag: "ui-a",
   props: {
-    bar: "-",
+    bar: { default: "-", reflect: true },
   },
   content: "foo: {{foo}}, bar: {{bar}}",
 })

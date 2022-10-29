@@ -98,9 +98,8 @@ export default async function renderProps(el, props, def) {
   for (let [key, item] of Object.entries(props)) {
     const type = typeof item
 
-    if (type !== "object") {
-      item = { type, default: item, reflect: true }
-    }
+    if (type !== "object") item = { type, default: item }
+    item.type ??= "default" in item ? typeof item.default : "string"
 
     const scope =
       item.storeInRootState === true //
@@ -108,7 +107,7 @@ export default async function renderProps(el, props, def) {
         : resolveScope(ctx.scope, key, ctx)
 
     const attribute = item.attribute ?? toKebabCase(key)
-    const converter = item.converter ?? CONVERTERS[item.type ?? "string"]
+    const converter = item.converter ?? CONVERTERS[item.type]
     let { fromView, toView, reflect } = item
 
     if (reflect) {
