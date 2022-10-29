@@ -3,6 +3,7 @@ import { normalizeListen, eventsMap } from "../../fabric/event/on.js"
 import { normalizeTokens } from "../normalize.js"
 import hash from "../../fabric/type/any/hash.js"
 import expr from "../../core/expr.js"
+import uid from "../../core/uid.js"
 import allocate from "../../fabric/locator/allocate.js"
 
 const makeEventLocals = (loc, e, target) => {
@@ -46,8 +47,10 @@ const POPUP_TYPES = new Set(["menu", "listbox", "tree", "grid", "dialog"])
 
 function setOpener(el, ctx, key, def, type) {
   ctx = forkCtx(ctx, key)
+
   el.id ||= hash(String(ctx.steps))
   def.opener = el.id
+
   type ??= def.tag?.startsWith("ui-") ? def.tag.slice(3) : def.role ?? def.tag
   el.setAttribute("aria-haspopup", POPUP_TYPES.has(type) ? type : "true")
   if (type !== "dialog") el.setAttribute("aria-expanded", "false")
@@ -64,9 +67,16 @@ function setDialogOpener(el, ctx, key, def) {
 
 function setPopupOpener(el, ctx, key, def) {
   ctx = setOpener(el, ctx, key, def)
+  const { focusBack } = def
   return async (e) => {
     if (e.type === "contextmenu" && e.x > 0 && e.y > 0) {
       def.rect = { x: e.x, y: e.y }
+    }
+
+    if (focusBack === true) {
+      const { activeElement } = document
+      activeElement.id ||= uid()
+      def.focusBack = activeElement.id
     }
 
     await import("../popup.js") //

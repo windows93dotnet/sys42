@@ -10,6 +10,7 @@ export class Menubar extends Menu {
       ArrowRight: "{{focusNext()}}",
     },
     defaults: {
+      focusBack: undefined,
       displayPicto: false,
       shortcuts: {
         openSubmenu: "pointerdown || Enter || Space || ArrowDown",

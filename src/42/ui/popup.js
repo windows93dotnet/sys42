@@ -125,7 +125,7 @@ const popup = rpc(
 
     const deferred = defer()
 
-    const { opener } = def
+    const { opener, focusBack } = def
 
     const close = (options) => {
       const event = dispatch(el, "uipopupclose", { cancelable: true })
@@ -137,7 +137,7 @@ const popup = rpc(
         ctx.cancel()
         el.remove()
       })
-      queueTask(() => deferred.resolve({ opener, ...options }))
+      queueTask(() => deferred.resolve({ opener, focusBack, ...options }))
     }
 
     if (map.length === 0) listenGlobalEvents()
@@ -186,13 +186,19 @@ const popup = rpc(
 
     unmarshalling(options) {
       if (!options) return
-      const { opener, fromOpener, fromBlur, focusOut } = options
+      const { opener, fromOpener, fromBlur, focusOut, focusBack } = options
+
       const el = document.querySelector(`#${opener}`)
 
       if (fromBlur && document.activeElement === el) return
 
       if (el) {
         if (!fromOpener) el.setAttribute("aria-expanded", "false")
+
+        if (focusBack) {
+          document.querySelector(`#${focusBack}`)?.focus()
+          return
+        }
 
         if (focusOut) {
           const menu = el.closest("ui-menu,ui-menubar")
