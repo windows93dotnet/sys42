@@ -8,6 +8,7 @@ import pick from "../fabric/type/object/pick.js"
 import inPWA from "../core/env/runtime/inPWA.js"
 import mimetypesManager from "./managers/mimetypesManager.js"
 import appCard from "./blocks/appCard.js"
+import uid from "../core/uid.js"
 
 const SHARED_MANIFEST_KEYS = ["description", "categories"]
 
@@ -109,8 +110,18 @@ export default async function preinstall(app) {
   ) {
     globalThis.launchQueue.setConsumer(({ files }) => {
       if (files.length === 0) return
+      system.pwa.handles ??= new Map()
       const undones = []
-      for (const handle of files) undones.push(handle.getFile())
+      for (const handle of files) {
+        undones.push(
+          handle.getFile().then((file) => {
+            const id = uid()
+            system.pwa.handles.set(id, handle)
+            return { id, file }
+          })
+        )
+      }
+
       system.pwa.files = Promise.all(undones)
     })
   }
