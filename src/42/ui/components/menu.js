@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import inTop from "../../core/env/realm/inTop.js"
 import Component from "../classes/Component.js"
 import uid from "../../core/uid.js"
@@ -32,6 +33,7 @@ export class Menu extends Component {
       ArrowDown: "{{focusNext()}}",
     },
     defaults: {
+      focusBack: undefined,
       shortcuts: {
         openSubmenu: "pointerdown || Enter || Space || ArrowRight",
         closeSubmenu: "pointerdown || ArrowLeft",
@@ -47,7 +49,7 @@ export class Menu extends Component {
     seq(this, 1)
   }
 
-  render({ content, displayPicto, shortcuts }) {
+  render({ content, displayPicto, shortcuts, focusBack }) {
     const inMenubar = this.constructor.name === "Menubar"
     const items = []
 
@@ -95,6 +97,7 @@ export class Menu extends Component {
               aria: inTop ? { labelledby: item.id } : { label },
               inMenuitem: true,
               inMenubar,
+              focusBack: item.focusBack ?? focusBack ?? inMenubar,
               closeEvents: shortcuts.closeSubmenu,
               content,
             },
