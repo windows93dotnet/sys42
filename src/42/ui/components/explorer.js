@@ -123,11 +123,11 @@ export class Explorer extends Component {
         glob: "{{glob}}",
         selection: "{{selection}}",
         multiselectable: "{{multiselectable}}",
-        as: "folder",
+        entry: "folder",
       },
       {
         tag: ".message",
-        // as: "message",
+        entry: "message",
       },
       {
         if: "{{!isPicker}}",
@@ -216,8 +216,8 @@ export default async function explorer(path = "/", options) {
           selection: "{{selection}}",
           glob: "{{glob}}",
           isPicker: options?.isPicker,
-          parent: "dialog",
-          as: "explorer",
+          parentEntry: "dialog",
+          entry: "explorer",
         },
 
         state: { path, selection, glob },

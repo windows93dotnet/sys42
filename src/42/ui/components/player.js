@@ -12,8 +12,7 @@ export class Player extends Component {
       session: {
         type: "object",
         default: {
-          ready: true,
-          derp: 5,
+          ready: false,
         },
       },
     },
@@ -23,23 +22,16 @@ export class Player extends Component {
         tag: ".ui-player__stage.inset-shallow",
         content: {
           tag: "video",
+          entry: "media",
           // controls: true,
           src: "{{path}}",
           on: {
-            error(e) {
-              console.log("error", e)
-              // this.ready = false
+            error() {
+              // console.log("error", e, this)
+              console.log("error", this.component.media)
+              this.component.session.ready = false
             },
-            load(e) {
-              console.log("load", e)
-              // this.ready = false
-            },
-            loadedmetadata(e) {
-              console.log("loadedmetadata", e)
-              // this.ready = true
-              // console.log(this.ctx.el)
-              // this.session.ready = true
-            },
+            loadedmetadata: `{{log(e.type); session.ready = true}}`,
           },
         },
       },
@@ -48,28 +40,31 @@ export class Player extends Component {
         content: [
           {
             tag: "button.ui-player__play",
-            // disabled: "{{session.ready ? false : true}}",
-            disabled: "{{log(session)}}",
+            disabled: "{{!session.ready}}",
             picto: "play",
           },
           {
             tag: "range.ui-player__track",
-            disabled: "{{session.ready ? false : true}}",
+            disabled: "{{!session.ready}}",
             value: 0,
           },
           {
             tag: "button.ui-player__mute",
-            disabled: "{{session.ready ? false : true}}",
+            disabled: "{{!session.ready}}",
             picto: "lock-open",
           },
           {
             tag: "range.ui-player__volume",
-            disabled: "{{session.ready ? false : true}}",
+            disabled: "{{!session.ready}}",
             value: 50,
           },
         ],
       },
     ],
+  }
+
+  setup() {
+    console.log(888, this.media)
   }
 }
 

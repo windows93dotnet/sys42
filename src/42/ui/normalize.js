@@ -4,6 +4,7 @@ import resolveScope from "./resolveScope.js"
 import findScope from "./findScope.js"
 import register from "./register.js"
 import Locator from "../fabric/classes/Locator.js"
+import exists from "../fabric/locator/exists.js"
 import locate from "../fabric/locator/locate.js"
 import allocate from "../fabric/locator/allocate.js"
 import template from "../core/formats/template.js"
@@ -117,7 +118,7 @@ function findComponentAction(ctx, cpn, value) {
       if (levels.length > 0) break
     }
 
-    cpn = cpn.parentComponent
+    cpn = cpn.parent
   }
 
   if (levels.length > 0) {
@@ -134,6 +135,15 @@ function findComponentAction(ctx, cpn, value) {
         } level(s): ${value}`
       )
     )
+  }
+}
+
+export function addEntry(obj, entry, el) {
+  if (obj) {
+    const tokens = allocate.parse(entry)
+    if (exists.evaluate(obj, tokens) === false) {
+      allocate.evaluate(obj, tokens, el)
+    }
   }
 }
 

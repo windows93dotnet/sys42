@@ -2032,7 +2032,7 @@ Component.define(
 test("actions", "above root path", async (t) => {
   t.plan(1)
 
-  const app = t.utils.decay(
+  t.utils.decay(
     ui(t.utils.dest({ connect: true }), {
       content: {
         tag: "ui-t-actions-above-root",
@@ -2047,17 +2047,22 @@ test("actions", "above root path", async (t) => {
     })
   )
 
-  const p = t.utils.when(app.el, "error").then((e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    e.stopImmediatePropagation()
-    t.is(
-      e.message,
-      "Action path is going above root by 3 level(s): ../../../../x"
-    )
+  await new Promise((resolve) => {
+    t.utils.on({
+      error(e) {
+        if (e.message.startsWith("Action")) {
+          e.preventDefault()
+          e.stopPropagation()
+          e.stopImmediatePropagation()
+          t.is(
+            e.message,
+            "Action path is going above root by 3 level(s): ../../../../x"
+          )
+          resolve()
+        }
+      },
+    })
   })
-
-  await Promise.all([app, p])
 })
 
 /* Object prop
