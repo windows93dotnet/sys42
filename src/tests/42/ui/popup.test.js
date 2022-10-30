@@ -1,7 +1,9 @@
 import test from "../../../42/test.js"
-import "../../../42/ui/components/dialog.js"
 import ui from "../../../42/ui.js"
 import system from "../../../42/system.js"
+
+import "../../../42/ui/components/dialog.js"
+import "../../../42/ui/popup.js"
 
 const button = (label) => ({
   tag: `button#btnIncr${label}`,
@@ -116,10 +118,11 @@ test.ui("popup behavior", async (t, { decay, dest, pickValues }) => {
     let incr = document.querySelector(sel)
     t.isElement(incr)
 
+    let closePromise
+
     if (options?.close) {
-      // await puppet(options.close).focus().dispatch("pointerdown")
+      closePromise = t.utils.when("uipopupclose")
       await puppet(options.close).click()
-      await t.sleep(30)
     }
 
     if (options?.incr) {
@@ -134,7 +137,6 @@ test.ui("popup behavior", async (t, { decay, dest, pickValues }) => {
       incr.click()
       cnt++
       await system.once("ipc.plugin:end-of-update")
-      await t.sleep(30)
 
       t.is(incr.textContent, String(cnt))
       t.eq(pickValues(incrBtns), {
@@ -143,6 +145,8 @@ test.ui("popup behavior", async (t, { decay, dest, pickValues }) => {
         iframe: String(cnt),
         dialogIframe: String(cnt),
       })
+
+      closePromise = t.utils.when("uipopupclose")
 
       // popup is still open
       incr = document.querySelector(sel)
@@ -153,10 +157,9 @@ test.ui("popup behavior", async (t, { decay, dest, pickValues }) => {
         "popup button should be open"
       )
 
-      // await puppet(options.incr).focus().dispatch("pointerdown").click()
       await puppet(options.incr).click()
+      await system.once("ipc.plugin:end-of-update")
       cnt++
-      await t.sleep(30)
 
       t.eq(pickValues(incrBtns), {
         top: String(cnt),
@@ -165,6 +168,8 @@ test.ui("popup behavior", async (t, { decay, dest, pickValues }) => {
         dialogIframe: String(cnt),
       })
     }
+
+    await closePromise
 
     // popup is closed
     incr = document.querySelector(sel)

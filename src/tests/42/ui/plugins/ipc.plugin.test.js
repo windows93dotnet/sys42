@@ -160,7 +160,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
     dialogIncr3: "0",
   })
 
-  btnIncr.incr1.click()
+  await t.puppet(btnIncr.incr1).click()
   await system.once("ipc.plugin:end-of-update")
 
   t.eq(pickValues(btnIncr), {
@@ -172,7 +172,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
     dialogIncr3: "1",
   })
 
-  btnIncr.incr2.click()
+  await t.puppet(btnIncr.incr2).click()
   await system.once("ipc.plugin:end-of-update")
 
   t.eq(pickValues(btnIncr), {
@@ -184,7 +184,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
     dialogIncr3: "2",
   })
 
-  btnIncr.incr3.click()
+  await t.puppet(btnIncr.incr3).click()
   await system.once("ipc.plugin:end-of-update")
 
   t.eq(pickValues(btnIncr), {
@@ -196,7 +196,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
     dialogIncr3: "3",
   })
 
-  btnIncr.dialogIncr1.click()
+  await t.puppet(btnIncr.dialogIncr1).click()
   await system.once("ipc.plugin:end-of-update")
 
   t.eq(pickValues(btnIncr), {
@@ -208,7 +208,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
     dialogIncr3: "4",
   })
 
-  btnIncr.dialogIncr2.click()
+  await t.puppet(btnIncr.dialogIncr2).click()
   await system.once("ipc.plugin:end-of-update")
 
   t.eq(pickValues(btnIncr), {
@@ -220,7 +220,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
     dialogIncr3: "5",
   })
 
-  btnIncr.dialogIncr3.click()
+  await t.puppet(btnIncr.dialogIncr3).click()
   await system.once("ipc.plugin:end-of-update")
 
   t.eq(pickValues(btnIncr), {
@@ -232,15 +232,15 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
     dialogIncr3: "6",
   })
 
-  btnDialogs.dialog1.close()
+  await btnDialogs.dialog1.close()
   await t.sleep(1)
   t.is(document.activeElement.id, btnDialogs.btnDialog1.id)
 
-  btnDialogs.dialog2.close()
+  await btnDialogs.dialog2.close()
   await t.sleep(1)
   t.is(sandbox1.activeElement.id, btnDialogs.btnDialog2.id)
 
-  btnDialogs.dialog3.close()
+  await btnDialogs.dialog3.close()
   await t.sleep(1)
   t.is(sandbox2.activeElement.id, btnDialogs.btnDialog3.id)
 })

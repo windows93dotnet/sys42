@@ -33,11 +33,6 @@ const tapOrder = [
 
 const $ = new DOMQuery()
 
-function changeFocus(target) {
-  const doc = target.ownerDocument ?? target.document ?? globalThis.document
-  if (!doc.hasFocus()) doc.defaultView.focus()
-}
-
 const allPendingKeys = new Set()
 let timeoutId
 
@@ -66,14 +61,12 @@ const makePuppet = () => {
       pendingKeys: new Map(),
 
       click({ data }) {
-        data.order.push(changeFocus)
         for (const event of clickOrder) {
           data.order.push(async (target) => simulate(target, event))
         }
       },
 
       tap({ data }) {
-        data.order.push(changeFocus)
         for (const event of tapOrder) {
           data.order.push(async (target) => simulate(target, event))
         }

@@ -32,7 +32,7 @@ const selfExecute = debounce(async (sbs) => {
   trap()
 }, 1)
 
-export async function whenIframesReady(len, sbs, retry = 100) {
+export async function whenIframesReady(len, sbs, retry = 300) {
   return new Promise((resolve, reject) => {
     const interval = setInterval(() => {
       if (retry-- < 0) {
@@ -44,7 +44,7 @@ export async function whenIframesReady(len, sbs, retry = 100) {
         clearInterval(interval)
         resolve()
       }
-    }, 10)
+    }, 15)
   })
 }
 
@@ -84,7 +84,7 @@ export default function uiTest(fn, sbs) {
 
     const iframes = document.querySelectorAll('iframe[src$="test=true"]')
     if (iframes.length > 0) {
-      t.timeout(3000)
+      t.timeout(4500)
       await whenIframesReady(iframes.length, sbs)
     }
 

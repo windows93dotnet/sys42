@@ -60,7 +60,15 @@ export default function simulate(el, event, init) {
   const doc = el.ownerDocument
 
   if (event === "focus" && typeof el.focus === "function") {
-    if (el !== win && !doc.hasFocus()) win.focus()
+    if (el !== win && !doc.hasFocus()) {
+      if (win !== globalThis) {
+        // Firefox don't fire blur event on automated document focus change
+        globalThis.dispatchEvent(new FocusEvent("blur", DEFAULT))
+      }
+
+      win.focus()
+    }
+
     el.focus()
   } else if (event === "blur" && typeof el.blur === "function") {
     el.blur()
