@@ -207,7 +207,7 @@ const makeDemo = ({ content } = {}) => {
         console.log(str, inTop, this)
       },
       incr(n) {
-        console.log("incr", inTop, this)
+        // console.log("incr", inTop, this)
         return n + 1
       },
     },

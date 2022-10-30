@@ -7,35 +7,42 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
     ui(
       dest({ connect: true }),
       {
-        tag: "body.box-fit.desktop",
+        tag: ".box-fit.box-h._desktop",
         content: [
           {
-            tag: "button#incr1",
-            content: "{{cnt}}",
-            click: "{{cnt++}}",
-          },
-
-          {
-            tag: "button#btnDialog1",
-            content: "dialog 1",
-            dialog: {
-              id: "dialog1",
-              x: 100,
-              y: 100,
-              label: "1 ({{x}},{{y}})",
-              content: {
-                tag: "button#dialogIncr1",
+            tag: ".bb",
+            content: [
+              { tag: "h2", content: "Top" },
+              {
+                tag: "button#incr1",
                 content: "{{cnt}}",
                 click: "{{cnt++}}",
               },
-            },
+
+              {
+                tag: "button#btnDialog1",
+                content: "dialog 1",
+                dialog: {
+                  id: "dialog1",
+                  x: 100,
+                  y: 100,
+                  label: "1 ({{x}},{{y}})",
+                  content: {
+                    tag: "button#dialogIncr1",
+                    content: "{{cnt}}",
+                    click: "{{cnt++}}",
+                  },
+                },
+              },
+            ],
           },
 
           {
             content: {
-              tag: "ui-sandbox#sandbox1",
+              tag: "ui-sandbox#sandbox1.bb",
               permissions: "trusted",
               content: [
+                { tag: "h2", content: "Sandbox 1" },
                 {
                   tag: "button#incr2",
                   content: "{{cnt}}",
@@ -63,9 +70,10 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
 
           {
             content: {
-              tag: "ui-sandbox#sandbox2",
+              tag: "ui-sandbox#sandbox2.bb",
               permissions: "trusted",
               content: [
+                { tag: "h2", content: "Sandbox 2" },
                 {
                   tag: "button#incr3",
                   content: "{{cnt}}",
