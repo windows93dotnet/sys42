@@ -73,7 +73,10 @@ export class Explorer extends Component {
               {
                 label: "File",
                 content: [
-                  { label: "Exit", click: "{{dialog.close()}}" }, //
+                  {
+                    label: "Exit", //
+                    click: "{{dialog.close()}}",
+                  },
                 ],
               },
               {

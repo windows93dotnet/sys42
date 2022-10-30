@@ -32,8 +32,8 @@ function renderTag(ctx, tag, def) {
   let el = create(ctx, tag, def.attrs)
 
   if (def.entry) {
-    delete def.entry
     addEntry(ctx.component, def.entry, el)
+    delete def.entry
   }
 
   const { localName } = el

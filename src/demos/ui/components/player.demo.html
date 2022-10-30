@@ -13,29 +13,30 @@
   import ui from "../../../42/ui.js"
 
   const app = await ui({
-    tag: "body.box-center.desktop",
+    tag: "body._box-v.box-center.gap.pa.desktop",
     content: [
       {
-        tag: "ui-player.pa-sm.outset.panel", //
-        // style: { width: "400px", height: "300px" },
-        // path: "/tests/fixtures/formats/video/example.mp4",
-        // path: "/tests/fixtures/formats/video/example.mov",
-        path: "/tests/fixtures/formats/tmp/sintel.webm",
+        tag: "ui-player.resize.pa-sm.outset.panel", //
+        style: { width: "500px", height: "300px" },
+        path: "/tests/fixtures/formats/video/example.mp4",
+        // path: "/tests/fixtures/formats/tmp/aliens.mkv",
       },
       {
-        tag: "ui-player.pa-sm.outset.panel", //
-        style: { width: "400px", height: "300px" },
-        // path: "/tests/fixtures/formats/video/example.mp4",
-        // path: "/tests/fixtures/formats/video/example.mov",
-        // path: "/tests/fixtures/formats/tmp/sintel.webm",
-        // path: "/tests/fixtures/formats/tmp/error.webm",
-        path: "/tests/fixtures/formats/example.json",
+        tag: "ui-player.resize.pa-sm.outset.panel",
+        path: "/tests/fixtures/formats/tmp/horse_smoke.mp3",
       },
+      // {
+      //   tag: "ui-player.resize.pa-sm.outset.panel",
+      //   path: "/tests/fixtures/formats/tmp/horse_smoke.mp3",
+      //   waveform: true,
+      // },
+      // {
+      //   tag: "ui-player.resize.pa-sm.outset.panel", //
+      //   style: { width: "300px", height: "200px" },
+      //   path: "/tests/fixtures/formats/example.json",
+      // },
     ],
   })
 
-  // console.log(app.ctx.renderers)
-
-  // console.log(app.el.querySelector("ui-player").session)
-  console.dir(app.el.querySelector("ui-player video"))
+  globalThis.app = app
 </script>
