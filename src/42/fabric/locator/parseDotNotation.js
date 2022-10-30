@@ -1,8 +1,11 @@
+import arrify from "../type/any/arrify.js"
+
 export default function parseDotNotation(source, sep = ".") {
+  sep = arrify(sep)
   const tokens = []
   source = String(source)
 
-  if (!source || source === sep) return tokens
+  if (!source || sep.includes(source)) return tokens
 
   let buffer = ""
   let current = 0
@@ -25,7 +28,7 @@ export default function parseDotNotation(source, sep = ".") {
       continue
     }
 
-    if (char === sep) {
+    if (sep.includes(char)) {
       if (current !== 0 && current !== source.length - 1) {
         tokens.push(buffer)
         buffer = ""

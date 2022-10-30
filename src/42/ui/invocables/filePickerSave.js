@@ -19,13 +19,18 @@ export default async function filePickerSave(path, options) {
     isPicker: true,
 
     dialog: {
-      class:
-        "ui-dialog-explorer ui-dialog-filepicker ui-dialog-filepicker--save",
+      class: [
+        "ui-dialog-explorer",
+        "ui-dialog-filepicker",
+        "ui-dialog-filepicker--save",
+      ],
+      state: {
+        name: `${untitled}`,
+      },
       footer: [
         {
           tag: "input.w-full",
           bind: "name",
-          value: `${untitled}`,
           watch: {
             selection: `{{
               name = selection.length > 0

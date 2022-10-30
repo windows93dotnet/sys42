@@ -207,6 +207,7 @@ const makeDemo = ({ content } = {}) => {
         console.log(str, inTop, this)
       },
       incr(n) {
+        console.log("incr", inTop, this)
         return n + 1
       },
     },
@@ -306,17 +307,15 @@ if (inTop) {
       )
     )
 
-    if (manual) {
-      t.pass()
-    } else {
-      const iframe = t.puppet.$("ui-sandbox iframe")
+    if (manual) return t.pass()
 
-      t.lap(await when("uipopupopen"))
-      t.lap(await t.puppet("#menuItemIncrPopupIframe").click())
-      t.lap(await iframe.contentWindow.sys42.once("ipc.plugin:end-of-update"))
+    const iframe = t.puppet.$("ui-sandbox iframe")
 
-      t.is(t.puppet.$("#cntIframe", iframe)?.value, "1")
-    }
+    t.lap(await when("uipopupopen"))
+    t.lap(await t.puppet("#menuItemIncrPopupIframe").click())
+    t.lap(await iframe.contentWindow.sys42.once("ipc.plugin:end-of-update"))
+
+    t.is(t.puppet.$("#cntIframe", iframe)?.value, "1")
   })
 } else {
   document.body.classList.add("debug")
