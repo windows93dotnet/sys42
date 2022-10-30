@@ -168,6 +168,7 @@ test.ui("popup behavior", async (t, { decay, dest, pickValues }) => {
 
     // popup is closed
     incr = document.querySelector(sel)
+
     t.isNull(incr)
     t.is(
       btn.getAttribute("aria-expanded"),
