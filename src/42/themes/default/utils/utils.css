@@ -124,6 +124,11 @@
   transform-origin: var(--top) var(--left);
 }
 
+:where(.resize) {
+  overflow: hidden;
+  resize: both;
+}
+
 /* States
 ========= */
 
