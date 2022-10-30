@@ -27,7 +27,6 @@ listen(
       })
     },
     "dragend"() {
-      console.log(8889)
       restore?.()
       restore = undefined
     },

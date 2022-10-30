@@ -1,6 +1,7 @@
 import occurrences from "../fabric/type/string/occurrences.js"
 import resolveScope from "./resolveScope.js"
 import getDirname from "../core/path/core/getDirname.js"
+import parseDotNotation from "../fabric/locator/parseDotNotation.js"
 
 export default function findScope(ctx, loc) {
   if (loc == null) throw new Error("Undefined path")
@@ -37,11 +38,12 @@ export default function findScope(ctx, loc) {
     }
 
     let i = ctx.scopeChain.length
+    const prop = parseDotNotation(loc, [".", "/"])[0]
 
     if (ctx.scopeChain.at(-1).props !== undefined) {
       while (i--) {
         const item = ctx.scopeChain[i]
-        if (item.props?.includes(loc)) return [scope, loc]
+        if (item.props?.includes(prop)) return [scope, loc]
         scope = item.scope
       }
     }

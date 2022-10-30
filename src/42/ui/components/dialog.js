@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Component from "../classes/Component.js"
 import rpc from "../../core/ipc/rpc.js"
-import omit from "../../fabric/type/object/omit.js"
 import dispatch from "../../fabric/event/dispatch.js"
 import maxZIndex from "../../fabric/dom/maxZIndex.js"
 import { objectifyDef, forkDef } from "../normalize.js"
@@ -59,7 +58,7 @@ export class Dialog extends Component {
   async close(ok = false) {
     const event = dispatch(this, "uidialogbeforeclose", { cancelable: true })
     if (event.defaultPrevented) return
-    const data = omit(this.ctx.reactive.data, ["$ui", "$computed"])
+    const data = { ...this.ctx.reactive.get(this.ctx.scope, { silent: true }) }
     if (ok) data.ok = true
     this.emit("close", data)
     await this.destroy()

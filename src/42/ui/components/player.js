@@ -9,7 +9,13 @@ export class Player extends Component {
         type: "string",
         reflect: true,
       },
-      ready: false,
+      session: {
+        type: "object",
+        default: {
+          ready: true,
+          derp: 5,
+        },
+      },
     },
 
     content: [
@@ -24,9 +30,15 @@ export class Player extends Component {
               console.log("error", e)
               // this.ready = false
             },
+            load(e) {
+              console.log("load", e)
+              // this.ready = false
+            },
             loadedmetadata(e) {
               console.log("loadedmetadata", e)
               // this.ready = true
+              // console.log(this.ctx.el)
+              // this.session.ready = true
             },
           },
         },
@@ -36,22 +48,23 @@ export class Player extends Component {
         content: [
           {
             tag: "button.ui-player__play",
-            disabled: "{{!ready}}",
+            // disabled: "{{session.ready ? false : true}}",
+            disabled: "{{log(session)}}",
             picto: "play",
           },
           {
             tag: "range.ui-player__track",
-            disabled: "{{!ready}}",
+            disabled: "{{session.ready ? false : true}}",
             value: 0,
           },
           {
             tag: "button.ui-player__mute",
-            disabled: "{{!ready}}",
+            disabled: "{{session.ready ? false : true}}",
             picto: "lock-open",
           },
           {
             tag: "range.ui-player__volume",
-            disabled: "{{!ready}}",
+            disabled: "{{session.ready ? false : true}}",
             value: 50,
           },
         ],

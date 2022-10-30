@@ -2100,7 +2100,6 @@ Component.define(
     static definition = {
       tag: "ui-t-session",
       content: "{{a}} - {{b}}",
-      // content: "{{a}}",
       session: {
         a: 1,
         b: 2,
@@ -2121,4 +2120,41 @@ test("session", async (t) => {
   t.is(app.el.textContent, "1 - 2")
   t.eq(app.state, {})
   t.eq(Object.keys(app.ctx.renderers), ["/a", "/b"])
+})
+
+/* Object prop
+============== */
+
+Component.define(
+  class extends Component {
+    static definition = {
+      tag: "ui-t-obj-prop",
+      props: {
+        obj: {
+          default: {
+            a: 1,
+            b: 2,
+          },
+        },
+      },
+      content: "{{obj.a}} - {{obj/b}}",
+    }
+  }
+)
+
+test("obj", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest({ connect: true }), {
+      content: {
+        tag: "ui-t-obj-prop",
+      },
+    })
+  )
+
+  t.is(app.el.textContent, "1 - 2")
+  t.eq(Object.keys(app.ctx.renderers), [
+    "/$ui/t-obj-prop/root/obj",
+    "/$ui/t-obj-prop/root/obj/a",
+    "/$ui/t-obj-prop/root/obj/b",
+  ])
 })

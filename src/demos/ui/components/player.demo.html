@@ -22,16 +22,19 @@
         // path: "/tests/fixtures/formats/video/example.mov",
         path: "/tests/fixtures/formats/tmp/sintel.webm",
       },
-      {
-        tag: "ui-player.pa-sm.outset.panel", //
-        style: { width: "400px", height: "300px" },
-        // path: "/tests/fixtures/formats/video/example.mp4",
-        // path: "/tests/fixtures/formats/video/example.mov",
-        // path: "/tests/fixtures/formats/tmp/sintel.webm",
-        path: "/tests/fixtures/formats/tmp/error.webm",
-      },
+      // {
+      //   tag: "ui-player.pa-sm.outset.panel", //
+      //   style: { width: "400px", height: "300px" },
+      //   // path: "/tests/fixtures/formats/video/example.mp4",
+      //   // path: "/tests/fixtures/formats/video/example.mov",
+      //   // path: "/tests/fixtures/formats/tmp/sintel.webm",
+      //   path: "/tests/fixtures/formats/tmp/error.webm",
+      // },
     ],
   })
 
-  console.log(app.ctx.renderers)
+  // console.log(app.ctx.renderers)
+
+  // console.log(app.el.querySelector("ui-player").session)
+  console.dir(app.el.querySelector("ui-player video"))
 </script>

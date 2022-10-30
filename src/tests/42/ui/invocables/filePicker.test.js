@@ -151,7 +151,7 @@ test.ui(async (t) => {
       .then((res) => t.is(res, undefined)),
 
     launch(t, "#filePickerSaveContent", ".ui-dialog__agree", async (dialog) => {
-      t.is(dialog.querySelector('[name="/name"]').value, "hello.txt")
+      t.is(dialog.querySelector('[name$="/name"]').value, "hello.txt")
     })
       .then(async (res) => {
         t.is(await fs.readText("/hello.txt"), "hello world")
