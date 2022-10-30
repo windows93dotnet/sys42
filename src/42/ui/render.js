@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 import create from "./create.js"
 import register from "./register.js"
-import normalize from "./normalize.js"
+import normalize, { addEntry } from "./normalize.js"
 import ALLOWED_HTML_TAGS from "../fabric/constants/ALLOWED_HTML_TAGS.js"
 import ALLOWED_SVG_TAGS from "../fabric/constants/ALLOWED_SVG_TAGS.js"
 import preload from "../core/load/preload.js"
@@ -30,6 +30,11 @@ const NOT_CONTROLS = new Set([
 
 function renderTag(ctx, tag, def) {
   let el = create(ctx, tag, def.attrs)
+
+  if (def.entry) {
+    delete def.entry
+    addEntry(ctx.component, def.entry, el)
+  }
 
   const { localName } = el
   if (localName) ctx.el = el

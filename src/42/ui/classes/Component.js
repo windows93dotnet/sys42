@@ -12,9 +12,9 @@ import configure from "../../core/configure.js"
 import render from "../render.js"
 import isEmptyObject from "../../fabric/type/any/is/isEmptyObject.js"
 import dispatch from "../../fabric/event/dispatch.js"
-import allocate from "../../fabric/locator/allocate.js"
 import hash from "../../fabric/type/any/hash.js"
 import {
+  addEntry,
   ensureDef,
   objectifyDef,
   normalizeCtx,
@@ -175,18 +175,18 @@ export default class Component extends HTMLElement {
 
     const { definition } = this.constructor
 
-    if (ctx?.component) this.parentComponent = ctx.component
+    if (ctx?.component) this.parent = ctx.component
 
-    const as = def?.as ?? definition?.as
-    if (as && ctx.component) {
-      delete def.as
-      if (ctx.component) allocate(ctx.component, as, this)
+    const entry = def?.entry ?? definition?.entry
+    if (entry) {
+      delete def.entry
+      addEntry(ctx.component, entry, this)
     }
 
-    const parent = def?.parent ?? definition?.parent
-    if (parent) {
-      delete def.parent
-      if (this.parentComponent) allocate(this, parent, this.parentComponent)
+    const parentEntry = def?.parentEntry ?? definition?.parentEntry
+    if (parentEntry) {
+      delete def.parentEntry
+      if (this.parent) addEntry(this, parentEntry, this.parent)
     }
 
     /* handle ctx

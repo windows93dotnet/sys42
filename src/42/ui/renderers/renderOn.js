@@ -82,28 +82,28 @@ function setPopupOpener(el, ctx, key, def) {
 }
 
 export default function renderOn(el, defs, ctx) {
-  ctx.postrender.push(() => {
-    const { list } = normalizeListen([{ signal: ctx.signal }, el, ...defs], {
-      returnForget: false,
-      getEvents(events) {
-        for (const [key, val] of Object.entries(events)) {
-          if (typeof val === "string") {
-            events[key] = compileRun(val, forkCtx(ctx, key))
-          } else if ("dialog" in val) {
-            events[key] = setDialogOpener(el, ctx, key, val.dialog)
-          } else if ("popup" in val) {
-            events[key] = setPopupOpener(el, ctx, key, val.popup)
-          } else {
-            events[key] = val.bind(ctx)
-          }
+  const { list } = normalizeListen([{ signal: ctx.signal }, el, ...defs], {
+    returnForget: false,
+    getEvents(events) {
+      for (const [key, val] of Object.entries(events)) {
+        if (typeof val === "string") {
+          events[key] = compileRun(val, forkCtx(ctx, key))
+        } else if ("dialog" in val) {
+          events[key] = setDialogOpener(el, ctx, key, val.dialog)
+        } else if ("popup" in val) {
+          events[key] = setPopupOpener(el, ctx, key, val.popup)
+        } else {
+          events[key] = val.bind(ctx)
         }
+      }
 
-        return events
-      },
-    })
-
-    eventsMap(list)
-
-    el.dispatchEvent(new CustomEvent("render"))
+      return events
+    },
   })
+
+  eventsMap(list)
+
+  // ctx.postrender.push(() => {
+  //   el.dispatchEvent(new CustomEvent("render"))
+  // })
 }
