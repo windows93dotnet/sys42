@@ -100,8 +100,9 @@ export const test = chainable(
       if (data.ui) {
         fn = uiTest(fn, sbs)
         data.serial = true
+        data.flaky = 2
         sbs.current.serial = true
-        sbs.current.timeout = 3000
+        sbs.current.timeout = 4500
       }
 
       const test = new Test(sbs.current, title, fn)

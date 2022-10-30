@@ -114,7 +114,6 @@ const popup = rpc(
     el.style.zIndex = maxZIndex("ui-dialog, ui-menu") + 1
 
     document.body.append(el)
-    dispatch(el, "uipopupopen")
     if (el.ready) await el.ready
     else {
       await ctx.reactive.done()
@@ -122,19 +121,21 @@ const popup = rpc(
     }
 
     focus.autofocus(el)
+    dispatch(el, "uipopupopen")
 
     const deferred = defer()
 
     const { opener, focusBack } = def
 
     const close = (options) => {
-      const event = dispatch(el, "uipopupclose", { cancelable: true })
+      const event = dispatch(el, "uipopupbeforeclose", { cancelable: true })
       if (event.defaultPrevented) return
       unsee(el)
       if (el.contains(document.activeElement)) document.activeElement.blur()
       requestIdleCallback(async () => {
         await ctx.reactive.pendingUpdate
         ctx.cancel()
+        dispatch(el, "uipopupclose")
         el.remove()
       })
       queueTask(() => deferred.resolve({ opener, focusBack, ...options }))
