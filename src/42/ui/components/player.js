@@ -40,6 +40,11 @@ export class Player extends Component {
         type: "string",
         reflect: true,
       },
+      autoplay: {
+        type: "boolean",
+        default: false,
+        reflect: true,
+      },
       audio: {
         type: "boolean",
         toView: true,
@@ -97,6 +102,7 @@ export class Player extends Component {
             preload: "metadata",
             crossorigin: true,
             src: "{{path}}",
+            autoplay: "{{autoplay}}",
             on: {
               "contextmenu": false,
               "click": "{{playPause()}}",

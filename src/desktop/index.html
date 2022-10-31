@@ -36,8 +36,8 @@
         content: [
           {
             tag: "ui-folder.box-fit.scroll-auto",
-            path: "/tests/fixtures/formats/**/*",
-            glob: true,
+            // path: "/tests/fixtures/formats/**/*",
+            // glob: true,
           },
         ],
       },
@@ -73,11 +73,24 @@
   // io.launchFolder("/tests/fixtures/formats/audio/")
   // io.launchFile("/tests/fixtures/formats/example.html")
   // io.launchFile("/tests/fixtures/formats/audio/example.mp3")
-  io.launchFile("/tests/fixtures/formats/video/example.mp4")
+  // io.launchFile("/tests/fixtures/formats/video/example.mp4")
   // io.launchFile("/tests/fixtures/formats/video/example.mov")
   // io.launchFile("/tests/fixtures/formats/tmp/sintel.webm")
   // io.launchFile("/tests/fixtures/formats/image/example.gif")
   // io.launchFile("/tests/fixtures/formats/image/example.jpg")
   // io.launchFile("/tests/fixtures/formats/example.json")
   // io.launchFile("/tests/fixtures/formats/image/example.svg")
+
+  import fs from "../42/core/fs.js"
+  import http from "../42/core/http.js"
+
+  try {
+    await fs.delete("/example.mp4")
+  } catch {}
+
+  http
+    .source("/tests/fixtures/formats/video/example.mp4")
+    .pipeTo(fs.sink("/example.mp4"))
+
+  io.launchFile("/example.mp4")
 </script>

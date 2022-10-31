@@ -30,7 +30,6 @@ self.addEventListener("fetch", (e) => {
 
     // console.group(`🛰 ${pathname}: id:${id} mask:${mask}`)
     // console.log(e.request)
-    // console.log(obj)
     // console.groupEnd()
 
     e.respondWith(

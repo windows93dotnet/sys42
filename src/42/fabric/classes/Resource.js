@@ -104,7 +104,7 @@ ALLOW_PRESETS.web = [
   "forms",
   "modals",
   "popups",
-  "popups-to-escape-sandbox",
+  // "popups-to-escape-sandbox",
 ]
 ALLOW_PRESETS.all = [...ALLOW_PRESETS.web, ...DISALLOWED_FEATURES]
 ALLOW_PRESETS["*"] = ALLOW_PRESETS.all
@@ -114,7 +114,7 @@ const FEATURES = [...APP_FEATURES, ...DISALLOWED_FEATURES]
 export default class Resource {
   constructor(options) {
     if ("sandbox" in HTMLIFrameElement.prototype === false) {
-      throw new DOMException("sandbox not supported", "SecurityError")
+      throw new DOMException("Sandbox not supported", "SecurityError")
     }
 
     this.config = configure(DEFAULTS, options)
@@ -140,7 +140,7 @@ export default class Resource {
         if (this.el.sandbox.supports(token)) this.el.sandbox.add(token)
         else {
           throw new DOMException(
-            `usupported sandbox token: ${token}`,
+            `Sandbox token not supported: ${token}`,
             "SecurityError"
           )
         }
@@ -177,7 +177,7 @@ export default class Resource {
 <meta charset="utf-8" />
 <meta
   http-equiv="Content-Security-Policy"
-  content="default-src ${origin} 'unsafe-inline' data:;">
+  content="default-src ${origin} 'unsafe-inline' data: blob:;">
 ${style}
 <script type="module">${errorCatcher}</script>
 <body${bodyAttributes}>

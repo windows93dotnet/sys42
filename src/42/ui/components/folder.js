@@ -148,6 +148,7 @@ export class Folder extends Component {
       // ===================
       {
         repeatable: true,
+        prevent: true,
         ArrowUp: "{{moveFocusUp()}}",
         ArrowDown: "{{moveFocusDown()}}",
         ArrowLeft: "{{moveFocusLeft()}}",
