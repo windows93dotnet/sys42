@@ -4,7 +4,6 @@ import uid from "../../core/uid.js"
 import UI from "../../ui/classes/UI.js"
 import preinstall from "../preinstall.js"
 import getDirname from "../../core/path/core/getDirname.js"
-import resolvePath from "../../core/path/core/resolvePath.js"
 import escapeTemplate from "../../core/formats/template/escapeTemplate.js"
 import configure from "../../core/configure.js"
 
@@ -39,10 +38,12 @@ async function normalizeManifest(manifest, options) {
   }
 
   if (inTop) {
-    manifest.permissions ??= "app"
-    if (manifest.permissions !== "app") {
-      throw new Error("TODO: ask user for permissions")
-    }
+    // manifest.permissions ??= "app"
+    // if (manifest.permissions !== "app") {
+    //   throw new Error("TODO: ask user for permissions")
+    // }
+
+    manifest.permissions = "trusted"
   }
 
   manifest.state ??= {}
@@ -138,20 +139,23 @@ export async function launch(manifestPath, options) {
 
   const { id, sandbox } = makeSandbox(manifest)
 
-  return dialog({
-    id,
-    class: manifest.name,
-    style: { width, height },
-    label: "{{$dialog.title}}",
-    content: {
-      tag: "ui-sandbox.box-fit" + (manifest.inset ? ".inset" : ""),
-      ...sandbox,
+  return dialog(
+    {
+      id,
+      class: manifest.name,
+      style: { width, height },
+      label: "{{$dialog.title}}",
+      content: {
+        tag: "ui-sandbox.box-fit" + (manifest.inset ? ".inset" : ""),
+        ...sandbox,
+      },
+      state: {
+        $dialog: { title: manifest.name },
+        $files: manifest.state.$files,
+      },
     },
-    state: {
-      $dialog: { title: manifest.name },
-      $files: manifest.state.$files,
-    },
-  })
+    { trusted: true }
+  )
 }
 
 export default class App extends UI {
@@ -187,6 +191,17 @@ export default class App extends UI {
     })
 
     this.manifest = manifest
+
+    import("../../core/fs.js").then(({ default: fs }) => {
+      for (const item of this.state.$files) {
+        if (!item.data) {
+          fs.open(item.path).then((data) => {
+            item.data = data
+            item.url = URL.createObjectURL(data)
+          })
+        }
+      }
+    })
 
     import("../../io.js").then(({ default: io }) => {
       io.listenImport()

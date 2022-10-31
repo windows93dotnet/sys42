@@ -10,23 +10,9 @@
     ],
   },
 
-  path: "./MediaPlayer.html",
-
-  // installable: false,
-  // inset: true,
-
-  // content: [
-  //   { tag: "div", content: "{{$files/0/path}}" },
-  //   {
-  //     tag: "video",
-  //     controls: true,
-  //     // autoplay: true,
-  //     content: {
-  //       tag: "source",
-  //       src: "{{$files/0/path}}",
-  //       // type: "{{$files/0/path}}",
-  //       type: "audio/mpeg",
-  //     },
-  //   },
-  // ],
+  content: {
+    tag: "ui-player",
+    path: "{{$files/0/url}}",
+    autoplay: true,
+  },
 }
