@@ -21,7 +21,7 @@ export default class FileSystemError extends Error {
   }
 }
 
-FileSystemError.errnos = {
+export const errnos = {
   EPERM: 1,
   ENOENT: 2,
   EIO: 5,
@@ -39,10 +39,10 @@ FileSystemError.errnos = {
   ENOTSUP: 95,
 }
 
-Object.assign(FileSystemError, FileSystemError.errnos)
+Object.assign(FileSystemError, errnos)
 
 FileSystemError.codes = Object.fromEntries(
-  Object.entries(FileSystemError.errnos).map(([key, val]) => [val, key])
+  Object.entries(errnos).map(([key, val]) => [val, key])
 )
 
 FileSystemError.descriptions = {

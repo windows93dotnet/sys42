@@ -22,7 +22,7 @@ export default class FileIndex extends Storable {
   }
 
   async set(path, val) {
-    this.emit("change", path, "set")
+    this.emit("change", path, "set", val)
     return super.set(path, val)
   }
   async delete(path) {

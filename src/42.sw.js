@@ -1,3 +1,5 @@
+/* 1 */
+
 // @read https://bugs.chromium.org/p/chromium/issues/detail?id=468227#c15
 // @read https://stackoverflow.com/q/62041644
 
@@ -16,20 +18,21 @@ self.addEventListener("activate", () => {
   self.clients.claim()
 })
 
-self.addEventListener("fetch", (e) => {
+self.addEventListener("fetch", async (e) => {
   const { pathname } = new URL(e.request.url)
 
   // console.log(`🛰 ${pathname}`)
 
-  const { id, mask } = pathname.endsWith("/")
-    ? disk.getIdAndMask(pathname + "index.html")
-    : disk.getIdAndMask(pathname)
+  const { id, mask } = await disk.getIdAndMask(
+    pathname.endsWith("/") ? pathname + "index.html" : pathname
+  )
 
   if (mask !== 0 && typeof id === "number") {
     const infos = getPathInfos(pathname, { headers: true })
 
     // console.group(`🛰 ${pathname}: id:${id} mask:${mask}`)
     // console.log(e.request)
+    // console.log(infos)
     // console.groupEnd()
 
     e.respondWith(

@@ -2,6 +2,9 @@
 /* eslint-disable no-constructor-return */
 import FileIndex from "./FileIndex.js"
 import CBOR from "../formats/cbor.js"
+import inTop from "../env/realm/inTop.js"
+
+const bc = new BroadcastChannel("42_DISK")
 
 export const MASKS = {
   0x00: "fetch",
@@ -32,9 +35,19 @@ export default class Disk extends FileIndex {
     this.MASKS = MASKS
     this.RESERVED_BYTES = RESERVED_BYTES
     instance = this
+
+    bc.onmessage = ({ data: [path, type, val] }) => {
+      this[type](path, val)
+    }
+
+    if (inTop) {
+      this.on("change", (...args) => {
+        bc.postMessage(args)
+      })
+    }
   }
 
-  getIdAndMask(filename) {
+  async getIdAndMask(filename) {
     const id = this.get(filename)
     const mask = id % RESERVED_BYTES
     return { id, mask }
