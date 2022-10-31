@@ -17,6 +17,27 @@
   // import disk from "../42/core/disk.js"
   // await disk.reinstall()
 
+  /* --- video blob test --- */
+  const videoBlobTest = 0
+  if (videoBlobTest) {
+    try {
+      await navigator.serviceWorker?.register("/42.sw.js", { type: "module" })
+      await navigator.serviceWorker.ready
+    } catch {}
+
+    const fs = await import("../42/core/fs.js").then((m) => m.default)
+    const http = await import("../42/core/http.js").then((m) => m.default)
+
+    try {
+      await fs.delete("/example.mp4")
+    } catch {}
+
+    await http
+      .source("/tests/fixtures/formats/video/example.mp4")
+      .pipeTo(fs.sink("/example.mp4"))
+  }
+  /* ----- */
+
   os.desktop = await ui({
     tag: "body.box-fit.box-h._debug",
     content: [
@@ -40,6 +61,11 @@
             // glob: true,
           },
         ],
+      },
+      videoBlobTest && {
+        tag: "video",
+        src: "/example.mp4",
+        controle: true,
       },
       {
         scope: "taskbar",
@@ -80,17 +106,6 @@
   // io.launchFile("/tests/fixtures/formats/image/example.jpg")
   // io.launchFile("/tests/fixtures/formats/example.json")
   // io.launchFile("/tests/fixtures/formats/image/example.svg")
-
-  import fs from "../42/core/fs.js"
-  import http from "../42/core/http.js"
-
-  try {
-    await fs.delete("/example.mp4")
-  } catch {}
-
-  http
-    .source("/tests/fixtures/formats/video/example.mp4")
-    .pipeTo(fs.sink("/example.mp4"))
 
   io.launchFile("/example.mp4")
 </script>

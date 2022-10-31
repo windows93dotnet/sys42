@@ -16,7 +16,5 @@ system.apps = appsManager
 system.mimetypes = mimetypesManager
 system.devices = devices
 
-// system.sw ??= navigator.serviceWorker?.register("/42.sw.js", { type: "module" })
-
 // eslint-disable-next-line unicorn/prefer-export-from
 export default system

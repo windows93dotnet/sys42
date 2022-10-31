@@ -68,7 +68,7 @@ export default class BrowserDriver extends Driver {
     if (!disk.has(filename)) throw { errno: 2 }
     else if (disk.isDir(filename)) throw { errno: 21 }
 
-    const { id, mask } = disk.getIdAndMask(filename)
+    const { id, mask } = await disk.getIdAndMask(filename)
 
     if (this.mask !== mask) {
       const driver = await this.getDriver(mask)
@@ -94,7 +94,7 @@ export default class BrowserDriver extends Driver {
     if (disk.isDir(filename)) throw { errno: 21 }
     if (ArrayBuffer.isView(data)) data = data.buffer
 
-    let { id, mask } = disk.getIdAndMask(filename)
+    let { id, mask } = await disk.getIdAndMask(filename)
 
     if (id === undefined) {
       id = this.makeID()
@@ -113,7 +113,7 @@ export default class BrowserDriver extends Driver {
     if (!disk.has(filename)) throw { errno: 2 }
     else if (disk.isDir(filename)) throw { errno: 21 }
 
-    const { id, mask } = disk.getIdAndMask(filename)
+    const { id, mask } = await disk.getIdAndMask(filename)
 
     disk.delete(filename)
 

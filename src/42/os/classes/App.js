@@ -38,12 +38,10 @@ async function normalizeManifest(manifest, options) {
   }
 
   if (inTop) {
-    // manifest.permissions ??= "app"
-    // if (manifest.permissions !== "app") {
-    //   throw new Error("TODO: ask user for permissions")
-    // }
-
-    manifest.permissions = "trusted"
+    manifest.permissions ??= "app"
+    if (manifest.permissions !== "app") {
+      throw new Error("TODO: ask user for permissions")
+    }
   }
 
   manifest.state ??= {}
@@ -139,23 +137,20 @@ export async function launch(manifestPath, options) {
 
   const { id, sandbox } = makeSandbox(manifest)
 
-  return dialog(
-    {
-      id,
-      class: manifest.name,
-      style: { width, height },
-      label: "{{$dialog.title}}",
-      content: {
-        tag: "ui-sandbox.box-fit" + (manifest.inset ? ".inset" : ""),
-        ...sandbox,
-      },
-      state: {
-        $dialog: { title: manifest.name },
-        $files: manifest.state.$files,
-      },
+  return dialog({
+    id,
+    class: manifest.name,
+    style: { width, height },
+    label: "{{$dialog.title}}",
+    content: {
+      tag: "ui-sandbox.box-fit" + (manifest.inset ? ".inset" : ""),
+      ...sandbox,
     },
-    { trusted: true }
-  )
+    state: {
+      $dialog: { title: manifest.name },
+      $files: manifest.state.$files,
+    },
+  })
 }
 
 export default class App extends UI {
