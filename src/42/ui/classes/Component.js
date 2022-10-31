@@ -312,14 +312,21 @@ export default class Component extends HTMLElement {
 
     /* handle all attrs
     ------------------- */
-    attrs = normalizeAttrs(def, this.ctx, definition.defaults)
-    for (const attr of Object.keys(attrs)) delete def[attr]
-    if (attrs) renderAttributes(this, this.ctx, attrs)
+    if (def.tag) {
+      def.attrs = normalizeAttrs(def, this.ctx)
+    } else {
+      attrs = normalizeAttrs(def, this.ctx, definition.defaults)
+      for (const attr of Object.keys(attrs)) delete def[attr]
+      if (attrs) renderAttributes(this, this.ctx, attrs)
+    }
 
     await this.ctx.preload.done()
 
     this.replaceChildren(
-      render(def, this.ctx, { skipNormalize: true, step: this.localName })
+      render(def, this.ctx, {
+        skipNormalize: true,
+        step: this.localName,
+      })
     )
 
     await this.ctx.components.done()

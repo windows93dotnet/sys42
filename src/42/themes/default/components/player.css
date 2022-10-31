@@ -40,7 +40,7 @@ ui-player[audio]:not([waveform]) .ui-player__stage {
 }
 
 .ui-player__stage,
-.ui-player__track {
+.ui-player__seek {
   flex: 1;
 }
 
