@@ -152,15 +152,17 @@ export default async function renderProps(el, props, def) {
       }
     }
 
-    const write = (val, options) => {
-      if (ctx.cancel.signal.aborted === true || item.storeInState === false) {
+    const write = (value, options) => {
+      if (ctx.cancel.signal.aborted === true) return
+      if (item.storeInState === false) {
+        val = value
         return
       }
 
       ctx.reactive.now(() => {
         const silent = options?.silent ?? false
         fromWrite = true
-        ctx.reactive.set(scope, ref ?? val, { silent })
+        ctx.reactive.set(scope, ref ?? value, { silent })
         if (silent) fromWrite = false
       })
     }
@@ -225,6 +227,26 @@ export default async function renderProps(el, props, def) {
       continue
     }
 
+    if (typeof val === "function") {
+      const fn = val
+      ref = fn.ref ? { $ref: fn.ref } : undefined
+      register(ctx, fn, (val, changed) => {
+        if (changed !== scope) write(val)
+        render(val)
+      })
+    } else {
+      write(val, { silent: true })
+      register(ctx, scope, (val, changed) => {
+        if (changed !== undefined && changed !== scope) write(val)
+        else if (fromWrite) {
+          fromWrite = false
+          return
+        }
+
+        render(val)
+      })
+    }
+
     Object.defineProperty(el, key, {
       configurable: true,
       set:
@@ -245,26 +267,6 @@ export default async function renderProps(el, props, def) {
           ? () => val
           : () => ctx.reactive.get(ref ? ref.$ref : scope),
     })
-
-    if (typeof val === "function") {
-      const fn = val
-      ref = fn.ref ? { $ref: fn.ref } : undefined
-      register(ctx, fn, (val, changed) => {
-        if (changed !== scope) write(val)
-        render(val)
-      })
-    } else {
-      write(val, { silent: true })
-      register(ctx, scope, (val, changed) => {
-        if (changed !== undefined && changed !== scope) write(val)
-        else if (fromWrite) {
-          fromWrite = false
-          return
-        }
-
-        render(val)
-      })
-    }
   }
 
   await ctx.undones.done()
