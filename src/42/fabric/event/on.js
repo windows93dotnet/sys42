@@ -157,6 +157,10 @@ export const eventsMap = (list) => {
   }
 }
 
+function forceTabIndex(el) {
+  if (el.tabIndex === -1) el.tabIndex = -1
+}
+
 function handleSeq(seq, fn, el, { repeatable, options }, registry) {
   if (seq.length > 1) {
     const run = fn
@@ -180,6 +184,7 @@ function handleSeq(seq, fn, el, { repeatable, options }, registry) {
       if (event in events === false) {
         if ((key || code) && !keyboard.isListening) keyboard.listen()
         if (chords.length > 1) {
+          forceTabIndex(el)
           eventOptions.capture = true
           events[event] = (e) => {
             if (chordCalls.length === 0) {
@@ -232,6 +237,7 @@ function handleSeq(seq, fn, el, { repeatable, options }, registry) {
             fn(e)
           }
         } else if (key || code) {
+          forceTabIndex(el)
           events[event] = (e) => {
             chordCalls.length = 0
             if (registry.seqIndex !== i) return

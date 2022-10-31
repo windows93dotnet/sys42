@@ -18,7 +18,7 @@ const INPUT_TYPES = new Set([
   "search",
   "tel",
   "text",
-  "time",
+  // "time",
   "url",
   "week",
 ])
@@ -59,6 +59,9 @@ export default function create(ctx, tag, ...args) {
     tag = "button"
   } else if (INPUT_TYPES.has(tag)) {
     attrs.type = tag
+    tag = "input"
+  } else if (tag === "time-input") {
+    attrs.type = "time"
     tag = "input"
   }
 

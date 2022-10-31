@@ -265,12 +265,16 @@ States
   opacity: 1;
 }
 
-/* :focus:not(:focus-visible):not([aria-pressed]) { outline: none; } */
-
 :focus,
 .focus {
   outline: var(--ctrl-o);
   outline-offset: -1px;
+}
+
+/* :focus:not(:focus-visible, [aria-pressed]), */
+[tabindex="-1"]:focus,
+[tabindex="-1"].focus {
+  outline: none;
 }
 
 :where(
