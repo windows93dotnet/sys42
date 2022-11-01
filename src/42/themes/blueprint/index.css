@@ -7,12 +7,14 @@
 @import "../default/index.css";
 
 :root {
-  --bg: #00aced;
+  --setting-color: #00aced;
+  --bg: var(--setting-color);
+  /* --bg: tomato; */
   --fg: #fff;
   background-color: var(--bg);
   color: var(--fg);
 
-  --highlight-bg: rgba(255 255 255 / 0.3);
+  --highlight-bg: rgba(255 255 255 / 0.2);
   --highlight-fg: var(--fg);
   --invalid-bg: rgba(255 0 0 / 0.3);
 
@@ -28,11 +30,12 @@
   --check-size: 18px;
   --check__bullet-ma: 5px;
 
-  --addon-w: 24px;
-  --addon-top: 3px;
-  --addon-right: 3px;
-  --addon-bottom: 3px;
-  --addon-bdr: 100%;
+  --addon-w: 23px;
+  --addon-top: 4px;
+  --addon-right: 4px;
+  --addon-bottom: 4px;
+  --addon-bdw: 1px;
+  --addon-bdr: 0px;
   --addon-bg: rgb(0 0 0 / 0.2);
 
   /* --fld-bg: var(--bg); */
@@ -84,7 +87,6 @@ input[type="button"],
 input[type="reset"],
 input[type="color"],
 input[type="submit"],
-::file-selector-button,
 select {
   font-weight: bold;
 }

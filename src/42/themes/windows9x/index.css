@@ -260,7 +260,6 @@
   --addon-w: 16px;
   --addon-bg: var(--ButtonFace);
   --addon-bdw: 2px;
-  --addon-bds: solid;
   --addon-bdi: var(--outset-bdi);
 
   --fieldset__legend-pa: 2px;
