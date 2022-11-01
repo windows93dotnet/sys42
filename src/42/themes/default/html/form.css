@@ -1,3 +1,4 @@
+/* stylelint-disable no-duplicate-selectors */
 /* stylelint-disable max-line-length */
 
 /*
@@ -209,9 +210,9 @@ States
   --addon-bg: var(--fld-bg);
   --addon-w: calc(1.5 * var(--unit));
   --addon-h: auto;
-  --addon-top: 0;
-  --addon-right: 0;
-  --addon-bottom: 0;
+  --addon-top: 0px;
+  --addon-right: 0px;
+  --addon-bottom: 0px;
 
   --label__required-fg: rgb(var(--red-400));
 
@@ -294,6 +295,7 @@ legend,
 input,
 textarea,
 select,
+selectmenu,
 option,
 button
 ) {
@@ -317,12 +319,6 @@ legend:not(.label) {
   align-items: center;
   gap: var(--unit-sm);
   min-width: 0;
-
-  /* position: absolute;
-  transform: translateY(-100%); */
-  /* position: relative;
-  z-index: 1;
-  margin-bottom: -1ex; */
 
   /* increase fieldset top margin if legend is present */
   position: relative;
@@ -406,6 +402,7 @@ input:not(
   [type="submit"]
 ),
 select,
+selectmenu,
 textarea
 ) {
   --fg: var(--fld-fg);
@@ -442,6 +439,7 @@ input:not(
   select:not([multiple],[size]),
   textarea
 ):where(:focus,.focus),
+:where(selectmenu:focus-within),
 :where(.field:focus-within,.field.focus) {
   --fg: var(--fld🎯-fg);
   --bg: var(--fld🎯-bg);
@@ -468,6 +466,7 @@ input:not(
   [type="submit"]
 ),
 select,
+selectmenu,
 textarea
 ):is(:invalid,.invalid) {
   --fg: var(--fld⚠️-fg);
@@ -499,7 +498,8 @@ input:not(
 ),
 textarea
 ):is(:disabled,:not([type="file"]):read-only,[aria-disabled="true"]),
-:where(select:is(:disabled,[aria-disabled="true"])) {
+:where(select:is(:disabled,[aria-disabled="true"])),
+:where(selectmenu:is(:disabled,[aria-disabled="true"])) {
   --fg: var(--fld🚫-fg);
   --bg: var(--fld🚫-bg);
   --fld-bdw: var(--fld🚫-bdw);
@@ -583,7 +583,8 @@ input:not(
   [type="reset"],
   [type="submit"]
 ),
-/* select, */
+select,
+selectmenu,
 textarea
 ) {
   margin: 0;
@@ -604,6 +605,7 @@ input:not(
   [type="reset"],
   [type="submit"]),
   select,
+  selectmenu,
   textarea
 ) {
   flex: 1 1 0%;
@@ -619,6 +621,7 @@ input:not(
   [type="submit"]
 ),
 select,
+selectmenu,
 textarea
 ):is(:focus,.focus) {
   outline: none;
@@ -895,9 +898,9 @@ button[type="submit"]:not(:active,:disabled),
 select {
   appearance: none;
   background-image: var(--picto--down-url);
-  background-position: calc(100% - calc(0.5 * calc(var(--addon-w) - var(--picto-size)))) center;
+  background-position-x: calc(100% - var(--addon-right) - calc(0.5 * calc(var(--addon-w) - var(--picto-size))));
+  background-position-y: center;
   background-repeat: no-repeat;
-  padding-right: var(--addon-w);
   cursor: var(--cursor-default, default);
 }
 
@@ -950,6 +953,47 @@ select:is([multiple],[size]) optgroup::before {
 
 @-moz-document url-prefix("") {
   select { text-indent: -0.28ch !important; }
+}
+
+/* selectmenu
+============= */
+
+selectmenu {
+  position: relative;
+  cursor: var(--cursor-default);
+}
+
+/* selectmenu:open {
+  background-color: red;
+} */
+
+selectmenu::part(button) {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: var(--ctrl-py) var(--ctrl-px);
+  padding-right: 0;
+}
+
+selectmenu::part(button):focus {
+  outline: none;
+}
+
+/* hide arrow icon
+------------------
+future solution
+https://github.com/openui/open-ui/issues/548#issuecomment-1262650219
+*/
+selectmenu::part(marker) {
+  display: none;
+}
+
+selectmenu::part(selected-value) {
+  width: 1000%;
+  text-align: left;
 }
 
 /* check input
@@ -1187,20 +1231,6 @@ p,div:not([class]),fieldset:is([role="none"],.unstyled)) {
 p,div:not([class]),fieldset:is([role="none"],.unstyled)) > :only-child {
   grid-column: 2;
 }
-
-/* codemirror
-============= */
-
-/* .field--code::before {
-  display: none;
-}
-
-.field--code,
-.field--code .cm-editor { padding: 0; }
-.field--code .cm-editor.cm-focused { outline: none; }
-
-.field--code .cm-scroller,
-.field--code .cm-content { font: var(--font-mono); } */
 
 /* truncate
 =========== */

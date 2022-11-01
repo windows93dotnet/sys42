@@ -3,6 +3,7 @@
   --addon-bdw: 0;
 }
 
+select,
 input[list],
 input[type="file" i],
 input[type="number" i],
@@ -22,7 +23,16 @@ input[type="date" i] {
   padding: 0;
 }
 
-::file-selector-button,
+selectmenu::before {
+  content: "";
+}
+
+input[type="file" i]::after {
+  content: "";
+}
+
+selectmenu::before,
+input[type="file" i]::after,
 input[type="number" i]::-webkit-inner-spin-button,
 input::-webkit-calendar-picker-indicator {
   margin: 0;
@@ -50,8 +60,9 @@ input::-webkit-calendar-picker-indicator {
   background-color: var(--addon-bg, var(--empty));
 }
 
+::file-selector-button,
+selectmenu::after,
 input[list]::after,
-input[type="file" i]::after,
 input[type="month" i]::after,
 input[type="datetime-local" i]::after,
 input[type="time" i]::after,
@@ -59,6 +70,7 @@ input[type="week" i]::after,
 input[type="date" i]::after {
   content: "";
   z-index: 1;
+  color: inherit;
   position: absolute;
   top: var(--addon-top);
   bottom: var(--addon-bottom);
@@ -72,8 +84,13 @@ input[type="date" i]::after {
   -webkit-mask-repeat: no-repeat;
 }
 
-input[type="file" i]::after {
+::file-selector-button {
+  margin: 0;
   -webkit-mask-image: var(--picto--upload-url);
+}
+
+selectmenu::after {
+  -webkit-mask-image: var(--picto--down-url);
 }
 
 input[list]::-webkit-calendar-picker-indicator {
@@ -117,4 +134,26 @@ input::-webkit-datetime-edit-year-field:focus {
   background: var(--highlight-bg);
   color: var(--highlight-fg);
   text-shadow: var(--highlight-tsh, none);
+}
+
+@-moz-document url-prefix("") {
+  input:not(
+  [type="checkbox"],
+  [type="radio"],
+  [type="range"],
+  [type="button"],
+  [type="reset"],
+  [type="submit"]) {
+    height: var(--ctrl-h);
+  }
+
+  input[type="number" i],
+  input[type="month" i],
+  input[type="datetime-local" i],
+  input[type="time" i],
+  input[type="week" i],
+  input[type="date" i] {
+    /* appearance: textfield; */
+    padding-right: var(--addon-right);
+  }
 }

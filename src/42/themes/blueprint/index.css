@@ -87,11 +87,13 @@ input[type="button"],
 input[type="reset"],
 input[type="color"],
 input[type="submit"],
-select {
+select,
+selectmenu {
   font-weight: bold;
 }
 
-select {
+select,
+selectmenu {
   border-radius: var(--outset-br);
 }
 
