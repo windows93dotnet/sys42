@@ -3,11 +3,12 @@
 <title>fields</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" href="/style.css" id="theme" />
+<script type="module" src="../../42/ui/head.js"></script>
 
-<article class="panel pa-xxl resize" style="width: 300px">
+<article class="panel pa-xxl resize" style="width: 400px">
   <div class="form-aligned">
     <div class="resize">
-      <fieldset class="resize">
+      <fieldset _disabled class="resize">
         <legend>Inputs with addons</legend>
 
         <p>
@@ -38,10 +39,10 @@
           <label for="idd">Date input</label>
           <input type="date" id="idd" value="1970-01-01" />
         </p>
-        <p>
+        <!-- <p>
           <label for="idm">Month input</label>
           <input type="month" id="idm" value="1970-01" />
-        </p>
+        </p> -->
         <p>
           <label for="idw">Week input</label>
           <input type="week" id="idw" value="1970-W01" />
@@ -50,10 +51,10 @@
           <label for="idt">Datetime input</label>
           <input type="datetime" id="idt" value="1970-01-01T00:00:00Z" />
         </p> -->
-        <p>
+        <!-- <p>
           <label for="idtl">Datetime-local input</label>
           <input type="datetime-local" id="idtl" value="1970-01-01T00:00" />
-        </p>
+        </p> -->
         <p>
           <label for="idl">Datalist</label>
           <input type="text" id="idl" list="example-list" />
