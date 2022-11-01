@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>fields</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/style.css" id="theme" />
+
+<article class="panel pa-xxl resize" style="width: 300px">
+  <div class="form-aligned">
+    <div class="resize">
+      <fieldset class="resize">
+        <legend>Inputs with addons</legend>
+
+        <p>
+          <label for="select">Select</label>
+          <select id="select">
+            <optgroup label="Option Group">
+              <option>Option One</option>
+              <option selected>Option Two</option>
+              <option>Option Three</option>
+            </optgroup>
+          </select>
+        </p>
+        <p>
+          <label for="in">Number input</label>
+          <input
+            type="number"
+            id="in"
+            min="0"
+            max="10"
+            value="5"
+            placeholder="Enter a Number" />
+        </p>
+        <p>
+          <label for="input__file">File Input</label>
+          <input id="input__file" type="file" />
+        </p>
+        <p>
+          <label for="idd">Date input</label>
+          <input type="date" id="idd" value="1970-01-01" />
+        </p>
+        <p>
+          <label for="idm">Month input</label>
+          <input type="month" id="idm" value="1970-01" />
+        </p>
+        <p>
+          <label for="idw">Week input</label>
+          <input type="week" id="idw" value="1970-W01" />
+        </p>
+        <!-- <p>
+          <label for="idt">Datetime input</label>
+          <input type="datetime" id="idt" value="1970-01-01T00:00:00Z" />
+        </p> -->
+        <p>
+          <label for="idtl">Datetime-local input</label>
+          <input type="datetime-local" id="idtl" value="1970-01-01T00:00" />
+        </p>
+        <p>
+          <label for="idl">Datalist</label>
+          <input type="text" id="idl" list="example-list" />
+          <datalist id="example-list">
+            <option value="Example #1"></option>
+            <option value="Example #2"></option>
+            <option value="Example #3"></option>
+          </datalist>
+        </p>
+      </fieldset>
+    </div>
+
+    <fieldset>
+      <legend>Scrollable controls</legend>
+
+      <p>
+        <label for="select_multiple">Select (multiple)</label>
+        <select id="select_multiple" multiple="multiple">
+          <optgroup label="Option Group">
+            <option>Option One</option>
+            <option selected>Option Two</option>
+            <option>Option Three</option>
+          </optgroup>
+          <optgroup label="Option Group">
+            <option>Option One</option>
+            <option>Option Two</option>
+            <option>Option Three</option>
+          </optgroup>
+        </select>
+      </p>
+      <fieldset role="none" disabled>
+        <label for="select_multiple">Select (size)</label>
+        <select id="select_multiple" size="4">
+          <optgroup label="Option Group">
+            <option>Option One</option>
+            <option>Option Two</option>
+            <option selected>Option Three</option>
+          </optgroup>
+        </select>
+      </fieldset>
+      <p>
+        <label for="textarea">Textarea</label>
+        <textarea id="textarea" placeholder="Enter your message here" rows="4">
+Lorem ipsum dolor sit amet, consectetur adipisicing elit. Optio ducimus quidem ex doloribus alias cum vero! Ad nulla facilis unde, earum dolore repellendus quam eius deserunt, provident quod saepe ipsum!</textarea
+        >
+      </p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Action buttons</legend>
+      <fieldset role="none">
+        <span class="label">Single button</span>
+        <button type="button"><span>Button</span></button>
+      </fieldset>
+      <fieldset role="none">
+        <span class="label">Single button</span>
+        <div>
+          <button class="item-shrink" type="button">
+            <span>.item-shrink</span>
+          </button>
+          <button class="item-shrink btn-default" type="button">
+            <span>.item-shrink</span>
+          </button>
+        </div>
+      </fieldset>
+      <fieldset role="none">
+        <span class="label">Using button</span>
+        <div class="_box-v box-solid">
+          <button type="submit"><span>Submit</span></button>
+          <button type="button"><span>Button</span></button>
+          <button type="reset"><span>Reset</span></button>
+          <button type="button" disabled><span>Disabled</span></button>
+        </div>
+      </fieldset>
+      <fieldset role="none">
+        <span class="label">Using input</span>
+        <div class="_box-v box-solid">
+          <input type="submit" value="Submit" />
+          <input type="button" value="Button" />
+          <input type="reset" value="Reset" />
+          <input type="submit" value="Disabled" disabled />
+        </div>
+      </fieldset>
+      <fieldset role="none">
+        <span class="label">Using a</span>
+        <div class="_box-v box-solid">
+          <a class="button" href="javascript:;">Submit</a>
+          <a class="button" href="javascript:;">Button</a>
+          <a class="button" href="javascript:;">Reset</a>
+          <a class="button" href="javascript:;" disabled>Disabled</a>
+        </div>
+      </fieldset>
+      <fieldset role="none">
+        <span class="label">Icons</span>
+        <div class="_box-v box-solid">
+          <button><span class="picto picto--puzzle"></span></button>
+          <button>
+            <span>Text</span><span class="picto picto--puzzle"></span>
+          </button>
+          <button>
+            <span class="picto picto--puzzle"></span><span>Text</span>
+          </button>
+          <button>
+            <span class="picto picto--puzzle"></span><span>Text</span
+            ><span class="picto picto--puzzle"></span>
+          </button>
+          <button><span>Text</span></button>
+        </div>
+      </fieldset>
+      <fieldset role="none" disabled>
+        <span class="label">Icons</span>
+        <div class="_box-v box-solid">
+          <button><span class="picto picto--puzzle"></span></button>
+          <button>
+            <span>Text</span><span class="picto picto--puzzle"></span>
+          </button>
+          <button>
+            <span class="picto picto--puzzle"></span><span>Text</span>
+          </button>
+          <button>
+            <span class="picto picto--puzzle"></span><span>Text</span
+            ><span class="picto picto--puzzle"></span>
+          </button>
+          <button><span>Text</span></button>
+        </div>
+      </fieldset>
+    </fieldset>
+
+    <fieldset>
+      <legend>Checkboxes</legend>
+      <div>
+        <!-- <span class="label">States</span> -->
+        <div class="box-v box-whitespace">
+          <fieldset role="none">
+            <input id="cb-normal" name="cb-normal" type="checkbox" /><label
+              for="cb-normal"
+              >Normal</label
+            >
+          </fieldset>
+          <fieldset role="none">
+            <input
+              checked
+              id="cb-checked"
+              name="cb-checked"
+              type="checkbox" /><label for="cb-checked">Checked</label>
+          </fieldset>
+          <fieldset role="none">
+            <input id="cb-idtm" name="cb-idtm" type="checkbox" /><label
+              for="cb-idtm"
+              >Indeterminate</label
+            >
+            <script>
+              document.querySelector("#cb-idtm").indeterminate = true
+            </script>
+          </fieldset>
+        </div>
+      </div>
+      <div>
+        <!-- <span class="label">Disabled</span> -->
+        <div class="box-v box-whitespace">
+          <fieldset role="none">
+            <input disabled id="cb-dis" name="cb-dis" type="checkbox" /><label
+              for="cb-dis"
+              >Normal</label
+            >
+          </fieldset>
+          <fieldset role="none">
+            <input
+              disabled
+              checked
+              id="cb-dis-checked"
+              name="cb-dis-checked"
+              type="checkbox" /><label for="cb-dis-checked">Checked</label>
+          </fieldset>
+          <fieldset role="none">
+            <input
+              disabled
+              id="cb-dis-idtm"
+              name="cb-dis-idtm"
+              type="checkbox" /><label for="cb-dis-idtm">Indeterminate</label>
+            <script>
+              document.querySelector("#cb-dis-idtm").indeterminate = true
+            </script>
+          </fieldset>
+        </div>
+      </div>
+      <div>
+        <span class="label">Custom</span>
+        <div class="box-v box-whitespace">
+          <fieldset role="none">
+            <input
+              class="picto--cross-alt"
+              id="cb-cust-normal"
+              name="cb-cust-normal"
+              type="checkbox" /><label for="cb-cust-normal">Normal</label>
+          </fieldset>
+          <fieldset role="none">
+            <input
+              class="picto--cross-alt"
+              checked
+              id="cb-cust-checked"
+              name="cb-cust-checked"
+              type="checkbox" /><label for="cb-cust-checked">Checked</label>
+          </fieldset>
+          <fieldset role="none">
+            <input
+              class="picto--cross-alt"
+              id="cb-cust-idtm"
+              name="cb-cust-idtm"
+              type="checkbox" /><label for="cb-cust-idtm">Indeterminate</label>
+            <script>
+              document.querySelector("#cb-cust-idtm").indeterminate = true
+            </script>
+          </fieldset>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Radio</legend>
+      <div>
+        <!-- <span class="label">States</span> -->
+        <div class="box-v box-whitespace">
+          <fieldset role="none">
+            <input id="ra-normal" name="ra-1" type="radio" /><label
+              for="ra-normal"
+              >Normal</label
+            >
+          </fieldset>
+          <fieldset role="none">
+            <input checked id="ra-checked" name="ra-1" type="radio" /><label
+              for="ra-checked"
+              >Checked</label
+            >
+          </fieldset>
+          <fieldset disabled role="none">
+            <input id="ra-normal" name="ra-2" type="radio" /><label
+              for="ra-normal"
+              >Normal</label
+            >
+          </fieldset>
+          <fieldset disabled role="none">
+            <input checked id="ra-checked" name="ra-2" type="radio" /><label
+              for="ra-checked"
+              >Checked</label
+            >
+          </fieldset>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Toggle Button</legend>
+      <div class="box-v ctrl-group check-buttons">
+        <fieldset role="none">
+          <input id="cbb-normal" name="cbb-normal" type="checkbox" />
+          <label class="button" for="cbb-normal">Normal</label>
+        </fieldset>
+        <fieldset role="none">
+          <input checked id="cbb-checked" name="cbb-checked" type="checkbox" />
+          <label class="button" for="cbb-checked">Checked</label>
+        </fieldset>
+        <fieldset role="none">
+          <input id="cbb-idtm" name="cbb-idtm" type="checkbox" />
+          <label class="button" for="cbb-idtm">Indeterminate</label>
+          <script>
+            document.querySelector("#cbb-idtm").indeterminate = true
+          </script>
+        </fieldset>
+        <fieldset role="none">
+          <input
+            disabled
+            id="cbb-disabled"
+            name="cbb-disabled"
+            type="checkbox" />
+          <label disabled class="button" for="cbb-disabled">Disabled</label>
+        </fieldset>
+      </div>
+
+      <div class="box-v box-liquid gap check-buttons">
+        <fieldset role="none">
+          <input id="cbb2-normal" name="cbb2-normal" type="checkbox" />
+          <label class="button" for="cbb2-normal">Normal</label>
+        </fieldset>
+        <fieldset role="none">
+          <input
+            checked
+            id="cbb2-checked"
+            name="cbb2-checked"
+            type="checkbox" />
+          <label class="button" for="cbb2-checked">Checked</label>
+        </fieldset>
+        <fieldset role="none">
+          <input id="cbb2-idtm" name="cbb2-idtm" type="checkbox" />
+          <label class="button" for="cbb2-idtm">Indeterminate</label>
+          <script>
+            document.querySelector("#cbb2-idtm").indeterminate = true
+          </script>
+        </fieldset>
+        <fieldset role="none">
+          <input
+            disabled
+            id="cbb2-disabled"
+            name="cbb2-disabled"
+            type="checkbox" />
+          <label disabled class="button" for="cbb2-disabled">Disabled</label>
+        </fieldset>
+        <fieldset role="none">
+          <input
+            disabled
+            checked
+            id="cbb2-disabled"
+            name="cbb2-disabled"
+            type="checkbox" />
+          <label disabled class="button" for="cbb2-disabled">Disabled</label>
+        </fieldset>
+      </div>
+
+      <div class="box-v box-liquid ctrl-group check-buttons">
+        <fieldset role="none">
+          <input id="cbb3-normal" name="cbb3-normal" type="checkbox" />
+          <label class="button" for="cbb3-normal">Normal</label>
+        </fieldset>
+        <fieldset role="none">
+          <input
+            checked
+            id="cbb3-checked"
+            name="cbb3-checked"
+            type="checkbox" />
+          <label class="button" for="cbb3-checked">Checked</label>
+        </fieldset>
+        <fieldset role="none">
+          <input id="cbb3-idtm" name="cbb3-idtm" type="checkbox" />
+          <label class="button" for="cbb3-idtm">Indeterminate</label>
+          <script>
+            document.querySelector("#cbb3-idtm").indeterminate = true
+          </script>
+        </fieldset>
+        <fieldset role="none">
+          <input
+            disabled
+            id="cbb3-disabled"
+            name="cbb3-disabled"
+            type="checkbox" />
+          <label disabled class="button" for="cbb3-disabled">Disabled</label>
+        </fieldset>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Toggle button (using aria-pressed)</legend>
+      <div class="box-v ctrl-group">
+        <button aria-pressed="false">Normal</button>
+        <button aria-pressed="true">Checked</button>
+        <button aria-pressed>Indeterminate</button>
+        <button disabled aria-pressed="false">Disabled</button>
+        <button disabled aria-pressed="true">Checked + Disabled</button>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Radio Button</legend>
+      <div class="box-v ctrl-group check-buttons">
+        <fieldset role="none">
+          <input id="rab-normal" name="rab1" type="radio" />
+          <label class="button" for="rab-normal">Normal</label>
+        </fieldset>
+        <fieldset role="none">
+          <input checked id="rab-checked" name="rab1" type="radio" />
+          <label class="button" for="rab-checked">Checked</label>
+        </fieldset>
+        <fieldset role="none" disabled>
+          <input id="rab-disabled" name="rab1" type="radio" />
+          <label class="button" for="rab-disabled">Disabled</label>
+        </fieldset>
+      </div>
+
+      <div class="box-v box-liquid gap check-buttons">
+        <fieldset role="none">
+          <input id="rab2-normal" name="rab2" type="radio" />
+          <label class="button" for="rab2-normal">Normal</label>
+        </fieldset>
+        <fieldset role="none">
+          <input checked id="rab2-checked" name="rab2" type="radio" />
+          <label class="button" for="rab2-checked">Checked</label>
+        </fieldset>
+        <fieldset role="none" disabled>
+          <input id="rab2-disabled" name="rab2" type="radio" />
+          <label class="button" for="rab2-disabled">Disabled</label>
+        </fieldset>
+      </div>
+
+      <div class="box-v box-liquid ctrl-group check-buttons">
+        <fieldset role="none">
+          <input id="rab3-normal" name="rab3" type="radio" />
+          <label class="button" for="rab3-normal">Normal</label>
+        </fieldset>
+        <fieldset role="none">
+          <input checked id="rab3-checked" name="rab3" type="radio" />
+          <label class="button" for="rab3-checked">Checked</label>
+        </fieldset>
+        <fieldset role="none" disabled>
+          <input id="rab3-disabled" name="rab3" type="radio" />
+          <label class="button" for="rab3-disabled">Disabled</label>
+        </fieldset>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Input fields</legend>
+      <p>
+        <label for="input__text">Text Input</label>
+        <input id="input__text" type="text" placeholder="Text Input" />
+      </p>
+      <p>
+        <label for="input__text-required"
+          >Text Input (required)<abbr title="Required" aria-hidden="true"
+            >*</abbr
+          ></label
+        >
+        <input
+          id="input__text-required"
+          type="text"
+          required
+          _title="test"
+          placeholder="Required" />
+      </p>
+      <fieldset role="none" disabled>
+        <label for="input__text-disabled">Text Input (disabled)</label>
+        <input
+          id="input__text-disabled"
+          type="text"
+          placeholder="Disabled"
+          value="Disabled" />
+      </fieldset>
+      <hr />
+      <!-- <fieldset role="none">
+          <span class="label">Multi input</span>
+          <fieldset role="none" class="field">
+            <div class="box-v">
+              <input type="number" placeholder="00" />
+              <span>/</span>
+              <input type="number" placeholder="00" />
+              <span>/</span>
+              <input type="number" placeholder="00" />
+            </div>
+            <span class="picto picto--calendar"></span>
+          </fieldset>
+        </fieldset> -->
+      <fieldset role="none">
+        <span class="label">Prepend</span>
+        <fieldset role="none" class="field">
+          <span class="picto picto--puzzle"></span>
+          <input type="text" value="Input" />
+        </fieldset>
+      </fieldset>
+      <fieldset role="none">
+        <fieldset role="none" class="field">
+          <button>Button</button>
+          <input type="text" value="Input" />
+        </fieldset>
+      </fieldset>
+      <fieldset role="none">
+        <span class="label">Append</span>
+        <fieldset role="none" class="field">
+          <input type="text" value="Input" />
+          <span class="picto picto--puzzle"></span>
+        </fieldset>
+      </fieldset>
+      <fieldset role="none">
+        <fieldset role="none" class="field">
+          <input type="text" value="Input" />
+          <button>Button</button>
+        </fieldset>
+      </fieldset>
+      <fieldset role="none">
+        <fieldset role="none" class="field">
+          <button>Button</button>
+          <input type="text" value="Input" />
+          <button>Button</button>
+        </fieldset>
+      </fieldset>
+      <fieldset role="none">
+        <fieldset role="none" class="field">
+          <span class="picto picto--puzzle"></span>
+          <input type="text" value="Input" />
+          <span class="picto picto--puzzle"></span>
+        </fieldset>
+      </fieldset>
+    </fieldset>
+
+    <fieldset>
+      <legend>Group</legend>
+      <div>
+        <div class="box-v ctrl-group">
+          <input type="text" value="Input" />
+          <button>Button</button>
+        </div>
+      </div>
+      <div>
+        <div class="box-v ctrl-group">
+          <button aria-pressed="false">Toggle</button>
+          <select>
+            <option>Select</option>
+          </select>
+          <button>Button</button>
+        </div>
+      </div>
+      <div>
+        <div class="box-v ctrl-group">
+          <input type="text" value="Input" />
+          <select>
+            <option>Select</option>
+          </select>
+          <button>Button</button>
+        </div>
+      </div>
+      <div>
+        <div class="box-v ctrl-group">
+          <button>Button</button>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Native Widgets</legend>
+
+      <p>
+        <label for="ic">Color input</label>
+        <input type="color" id="ic" value="#bada55" />
+      </p>
+      <p>
+        <label for="ir">Range input</label>
+        <input type="range" id="ir" value="10" />
+      </p>
+      <p>
+        <span class="label">Meter</span>
+        <meter></meter>
+      </p>
+      <p>
+        <meter value="2" min="0" max="10" low="3" high="6" optimum="8"></meter>
+      </p>
+      <p>
+        <meter value="5" min="0" max="10" low="3" high="6" optimum="8"></meter>
+      </p>
+      <p>
+        <meter value="9" min="0" max="10" low="3" high="6" optimum="8"></meter>
+      </p>
+      <p>
+        <span class="label">Progress</span>
+        <progress>progress</progress>
+      </p>
+      <p>
+        <span class="label">30%</span>
+        <progress value="0.3">progress</progress>
+      </p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Other inputs</legend>
+
+      <p>
+        <label for="input__password">Password</label>
+        <input
+          id="input__password"
+          type="password"
+          placeholder="Type your Password" />
+      </p>
+      <p>
+        <label for="input__webaddress">Web Address</label>
+        <input
+          id="input__webaddress"
+          type="url"
+          placeholder="https://yoursite.com" />
+      </p>
+      <p>
+        <label for="input__emailaddress">Email Address</label>
+        <input
+          id="input__emailaddress"
+          type="email"
+          placeholder="name@email.com" />
+      </p>
+      <p>
+        <label for="input__phone">Phone Number</label>
+        <input id="input__phone" type="tel" placeholder="(999) 999-9999" />
+      </p>
+      <p>
+        <label for="input__search">Search</label>
+        <input
+          id="input__search"
+          type="search"
+          placeholder="Enter Search Term" />
+      </p>
+    </fieldset>
+  </div>
+
+  <!-- <script type="module">
+      import {
+        EditorView,
+        EditorState,
+        basicSetup,
+      } from "https://cdn.skypack.dev/@codemirror/basic-setup"
+      globalThis.cm = new EditorView({
+        state: EditorState.create({ extensions: [basicSetup] }),
+        parent: document.querySelector(".field--code"),
+      })
+    </script> -->
+</article>

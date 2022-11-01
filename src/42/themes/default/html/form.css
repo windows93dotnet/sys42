@@ -208,6 +208,10 @@ States
   --addon-fg: var(--fld-fg);
   --addon-bg: var(--fld-bg);
   --addon-w: calc(1.5 * var(--unit));
+  --addon-h: auto;
+  --addon-top: 0;
+  --addon-right: 0;
+  --addon-bottom: 0;
 
   --label__required-fg: rgb(var(--red-400));
 
@@ -228,6 +232,8 @@ States
 
   /* pictos
   ========= */
+
+  --picto-size: 16px;
 
   --picto--up-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(80 80 80)" d="M7 6h1v1h1v1h1v1h1v1h-7v-1h1v-1h1v-1h1z"/></svg>');
   --picto--down-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(80 80 80)" d="M4 6h7v1h-1v1h-1v1h-1v1h-1v-1h-1v-1h-1v-1h-1z"/></svg>');
@@ -271,7 +277,7 @@ States
   outline-offset: -1px;
 }
 
-:focus:not(:focus-visible, [aria-pressed]),
+/* :focus:not(:focus-visible, [aria-pressed]), */
 [tabindex="-1"]:focus,
 [tabindex="-1"].focus {
   outline: none;
@@ -483,6 +489,7 @@ select:where([multiple],[size]):is(:focus,.focus) {
 :where(
 .field,
 input:not(
+  [type="file"],
   [type="checkbox"],
   [type="radio"],
   [type="range"],
@@ -576,7 +583,7 @@ input:not(
   [type="reset"],
   [type="submit"]
 ),
-select,
+/* select, */
 textarea
 ) {
   margin: 0;
@@ -886,12 +893,9 @@ button[type="submit"]:not(:active,:disabled),
 ========= */
 
 select {
-  /* line-height: 1; */
   appearance: none;
   background-image: var(--picto--down-url);
-  background-position: calc(100% - calc(0.5 * calc(var(--addon-w) - 16px))) center;
-  /* background-position: right center; */
-  /* background-size: var(--addon-w); */
+  background-position: calc(100% - calc(0.5 * calc(var(--addon-w) - var(--picto-size)))) center;
   background-repeat: no-repeat;
   padding-right: var(--addon-w);
   cursor: var(--cursor-default, default);

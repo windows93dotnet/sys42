@@ -1,3 +1,4 @@
+input[list],
 input[type="file" i],
 input[type="number" i],
 input[type="month" i],
@@ -5,9 +6,12 @@ input[type="datetime-local" i],
 input[type="time" i],
 input[type="week" i],
 input[type="date" i] {
-  padding-right: var(--unit-sm);
+  /* padding-right: var(--unit-sm); */
+  padding-right: calc(var(--addon-w) + var(--addon-right));
   position: relative;
 }
+
+/* input[type="number"] { -moz-appearance: textfield; } */
 
 ::-webkit-datetime-edit-fields-wrapper {
   padding: 0;
@@ -20,63 +24,69 @@ input::-webkit-calendar-picker-indicator {
   padding: 0;
   display: block !important;
   block-size: auto !important;
+  background-image: none;
+  color: inherit;
+  font-size: 0;
   opacity: 1;
   appearance: none;
   box-sizing: border-box;
   position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  height: auto;
-  color: transparent;
+  top: var(--addon-top);
+  bottom: var(--addon-bottom);
+  right: var(--addon-right);
+  height: var(--addon-h);
   width: var(--addon-w);
   border-width: var(--addon-bdw);
   border-style: var(--addon-bds);
-  border-color: var(--addon-bdc);
+  border-color: var(--addon-bdc, currentColor);
   border-image: var(--addon-bdi);
+  border-radius: var(--addon-bdr);
   box-shadow: var(--addon-bsh);
   background-color: var(--addon-bg, var(--empty));
-  /* background-image: var(--picto--down-url); */
-  background-image: none;
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: contain;
-  background-size: auto;
 }
 
-::file-selector-button {
-  background-image: var(--picto--upload-url);
-}
-
-input[type="month" i]::-webkit-calendar-picker-indicator,
-input[type="datetime-local" i]::-webkit-calendar-picker-indicator,
-input[type="time" i]::-webkit-calendar-picker-indicator,
-input[type="week" i]::-webkit-calendar-picker-indicator,
-input[type="date" i]::-webkit-calendar-picker-indicator {
-  /* background-image: var(--picto--calendar-url); */
-  /* background-image: var(--picto--calendar-url); */
-  /* background: red;
-  -webkit-mask-image: url("../pictos/puzzle.svg"); */
-}
-
+input[list]::after,
+input[type="file" i]::before,
+input[type="month" i]::after,
+input[type="datetime-local" i]::after,
+input[type="time" i]::after,
+input[type="week" i]::after,
 input[type="date" i]::after {
   content: "";
   z-index: 1;
   position: absolute;
-  right: 0;
-  width: 16px;
-  height: 16px;
-  display: block;
+  right: var(--addon-right);
+  /* right: 0; */
+  /* width: var(--picto-size); */
+  width: var(--addon-w);
+  height: var(--addon-w);
+  /* display: block; */
   background: var(--addon-fg, currentColor);
   -webkit-mask-image: var(--picto--calendar-url);
-  mask-image: var(--picto--calendar-url);
+  -webkit-mask-position: center center;
+  -webkit-mask-repeat: no-repeat;
+}
+
+input[type="file" i]::before {
+  -webkit-mask-image: var(--picto--upload-url);
+  /* -webkit-mask-position: center center;
+  -webkit-mask-repeat: no-repeat; */
+}
+
+input[list]::-webkit-calendar-picker-indicator {
+  color: inherit;
+  background: var(--addon-fg, currentColor);
+  -webkit-mask-image: var(--picto--down-url);
+  -webkit-mask-position: 100% center;
+  -webkit-mask-repeat: no-repeat;
 }
 
 input[type="number" i]::-webkit-inner-spin-button {
   background-image: var(--picto--up-url), var(--picto--down-url);
   background-position-x: center;
-  ---: calc(2px + 0.5 * var(--ctrl-py));
-  background-position-y: calc(50% - var(---)), calc(50% + var(---));
+  background-repeat: no-repeat;
+  --_y: calc(2px + 0.5 * var(--ctrl-py));
+  background-position-y: calc(50% - var(--_y)), calc(50% + var(--_y));
 }
 
 input::-webkit-datetime-edit-ampm-field,
