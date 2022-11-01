@@ -28,7 +28,12 @@
   --check-size: 18px;
   --check__bullet-ma: 5px;
 
-  --addon-w: var(--unit-xl);
+  --addon-w: 24px;
+  --addon-top: 3px;
+  --addon-right: 3px;
+  --addon-bottom: 3px;
+  --addon-bdr: 100%;
+  --addon-bg: rgb(0 0 0 / 0.2);
 
   /* --fld-bg: var(--bg); */
   /* --btn-bg: var(--bg); */
@@ -63,15 +68,6 @@
   --tooltip-fg: var(--bg);
   --tooltip-bdc: var(--bg);
   --tooltip-bdw: 2px;
-
-  /* pictos
-  ========= */
-
-  /* --picto--up-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(255 255 255)" d="M7 6h1v1h1v1h1v1h1v1h-7v-1h1v-1h1v-1h1z"/></svg>');
-  --picto--down-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(255 255 255)" d="M4 6h7v1h-1v1h-1v1h-1v1h-1v-1h-1v-1h-1v-1h-1z"/></svg>');
-  --picto--upload-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(255 255 255)" d="M7 4h2v1h1v1h1v1h-2v3h-2v-3h-2v-1h1v-1h1z M3 9h1v2h8v-2h1v3h-10z"/></svg>');
-  --picto--calendar-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(255 255 255)" d="M4 3h1v1h5v-1h1v1h1v8h-9v-8h1z M4 6v5h7v-5z M5 7h2v2h-2z"/></svg>'); */
-  /* --picto--calendar-url: url("../default/pictos/calendar.svg"); */
 }
 
 .outset {

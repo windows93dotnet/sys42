@@ -1,7 +1,15 @@
 :root {
   --bg: Canvas;
   --fg: CanvasText;
+  /* --fg: tomato; */
+  /* --fg: steelblue; */
   /* color-scheme: dark; */
+
+  /* --addon-bg: mistyrose; */
+  /* --addon-bg: blue; */
+  /*
+  --addon-bdw: 0 0 0 1px;
+  --addon-bds: solid; */
 
   --bdw: 1px;
   --bds: solid;
