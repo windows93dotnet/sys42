@@ -36,7 +36,8 @@ input::-webkit-calendar-picker-indicator {
   border-image: var(--addon-bdi);
   box-shadow: var(--addon-bsh);
   background-color: var(--addon-bg, var(--empty));
-  background-image: var(--picto--down-url);
+  /* background-image: var(--picto--down-url); */
+  background-image: none;
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
@@ -52,7 +53,23 @@ input[type="datetime-local" i]::-webkit-calendar-picker-indicator,
 input[type="time" i]::-webkit-calendar-picker-indicator,
 input[type="week" i]::-webkit-calendar-picker-indicator,
 input[type="date" i]::-webkit-calendar-picker-indicator {
-  background-image: var(--picto--calendar-url);
+  /* background-image: var(--picto--calendar-url); */
+  /* background-image: var(--picto--calendar-url); */
+  /* background: red;
+  -webkit-mask-image: url("../pictos/puzzle.svg"); */
+}
+
+input[type="date" i]::after {
+  content: "";
+  z-index: 1;
+  position: absolute;
+  right: 0;
+  width: 16px;
+  height: 16px;
+  display: block;
+  background: var(--addon-fg, currentColor);
+  -webkit-mask-image: var(--picto--calendar-url);
+  mask-image: var(--picto--calendar-url);
 }
 
 input[type="number" i]::-webkit-inner-spin-button {
