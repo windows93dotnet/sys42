@@ -31,5 +31,13 @@ module.exports = {
     "number-max-precision": null,
     "length-zero-no-unit": [true, { ignore: ["custom-properties"] }],
     "property-no-unknown": [true, { ignoreProperties: [/^font-smooth/] }],
+    "selector-pseudo-class-no-unknown": [
+      true,
+      { ignorePseudoClasses: ["open"] },
+    ],
+    "selector-type-no-unknown": [
+      true,
+      { ignore: ["custom-elements"], ignoreTypes: ["selectmenu"] },
+    ],
   },
 }
