@@ -104,11 +104,11 @@ export default class JSONLocator {
     return this
   }
 
-  add(path, newValue) {
-    const oldValue = this.get(path)
-    this.set(path, oldValue ? oldValue + newValue : newValue)
-    return this
-  }
+  // add(path, newValue) {
+  //   const oldValue = this.get(path)
+  //   this.set(path, oldValue ? oldValue + newValue : newValue)
+  //   return this
+  // }
 
   assign(path, newValue) {
     const oldValue = this.get(path)
