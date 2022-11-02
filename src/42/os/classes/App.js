@@ -6,7 +6,6 @@ import preinstall from "../preinstall.js"
 import getDirname from "../../core/path/core/getDirname.js"
 import escapeTemplate from "../../core/formats/template/escapeTemplate.js"
 import configure from "../../core/configure.js"
-// import resolve from "../../fabric/json/resolve.js"
 
 // TODO: check if rpc functions can be injecteds
 import "../../fabric/browser/openInNewTab.js"
@@ -125,10 +124,13 @@ export async function mount(manifestPath, options) {
 
   // Execution is in a sandbox.
   // It's safe to resolve $ref keywords with potential javascript functions
+
+  console.log(1, manifest.initiator)
   manifest = await import("../../fabric/json/resolve.js") //
     .then(({ resolve }) =>
       resolve(manifest, { strict: false, baseURL: manifest.dir })
     )
+  console.log(2, manifest.initiator)
 
   return new App(manifest)
 }
