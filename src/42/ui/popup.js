@@ -30,7 +30,7 @@ function listenGlobalEvents() {
       "Shift+Tab": (e) => focusOut("prev", e),
     },
     {
-      selector: `[role^="menuitem"]:not([aria-haspopup])`,
+      selector: `[role^="menuitem"]:not([aria-haspopup="menu"])`,
       click: closeAll,
     }
   )

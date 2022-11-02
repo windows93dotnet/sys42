@@ -18,7 +18,6 @@ export class Dialog extends Component {
 
     id: true,
     role: "dialog",
-    // tabIndex: -1,
 
     traits: {
       emittable: true,
@@ -115,7 +114,7 @@ export class Dialog extends Component {
     this.y ??= Math.round(rect.y)
     this.style.top = 0
     this.style.left = 0
-    this.style.zIndex = maxZIndex("ui-dialog") + 1
+    this.style.zIndex = maxZIndex("ui-dialog, ui-menu") + 1
     this.emit("open", this)
     dispatch(this, "uidialogopen")
 

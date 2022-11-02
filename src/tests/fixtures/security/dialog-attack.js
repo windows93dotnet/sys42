@@ -1,9 +1,11 @@
+/* eslint-disable no-unused-expressions */
 import Component from "../../../42/ui/classes/Component.js"
 import rpc from "../../../42/core/ipc/rpc.js"
 import omit from "../../../42/fabric/type/object/omit.js"
 import dispatch from "../../../42/fabric/event/dispatch.js"
 import maxZIndex from "../../../42/fabric/dom/maxZIndex.js"
 import { objectifyDef, forkDef } from "../../../42/ui/normalize.js"
+import forceOpener from "../../../42/ui/forceOpener.js"
 import uid from "../../../42/core/uid.js"
 import { autofocus } from "../../../42/fabric/dom/focus.js"
 import nextCycle from "../../../42/fabric/type/promise/nextCycle.js"
@@ -16,7 +18,6 @@ export class Dialog extends Component {
 
     id: true,
     role: "dialog",
-    tabIndex: -1,
 
     traits: {
       emittable: true,
@@ -55,17 +56,17 @@ export class Dialog extends Component {
   }
 
   async close(ok = false) {
-    const event = dispatch(this, "uidialogclose", { cancelable: true })
+    const event = dispatch(this, "uidialogbeforeclose", { cancelable: true })
     if (event.defaultPrevented) return
-    if (ok) this.ctx.reactive.data.ok = true
-    const data = omit(this.ctx.reactive.data, ["ui", "$computed"])
+    const data = omit(this.ctx.reactive.data, ["$ui", "$computed"])
+    if (ok) data.ok = true
     this.emit("close", data)
     await this.destroy()
+    dispatch(globalThis, "uidialogclose")
     return data
   }
 
-  async done(val, e) {
-    console.log(1, val, e)
+  async ok() {
     await nextCycle()
     return this.close(true)
   }
@@ -113,10 +114,16 @@ export class Dialog extends Component {
     this.y ??= Math.round(rect.y)
     this.style.top = 0
     this.style.left = 0
-    this.style.zIndex = maxZIndex("ui-dialog") + 1
+    this.style.zIndex = maxZIndex("ui-dialog, ui-menu") + 1
     this.emit("open", this)
     dispatch(this, "uidialogopen")
-    autofocus(this.querySelector(":scope > .ui-dialog__body"))
+
+    const items = this.querySelectorAll(":scope [data-autofocus]")
+
+    items.length > 0
+      ? items[items.length - 1].focus()
+      : autofocus(this.querySelector(":scope > .ui-dialog__body")) ||
+        autofocus(this.querySelector(":scope > .ui-dialog__footer"))
   }
 }
 
@@ -146,10 +153,7 @@ const dialog = rpc(
     marshalling(def = {}, ctx) {
       def = objectifyDef(def)
 
-      if (!def.opener) {
-        document.activeElement.id ||= uid()
-        def.opener ??= document.activeElement.id
-      }
+      forceOpener(def)
 
       if (rpc.inTop) {
         ctx = { ...ctx, detached: true }
