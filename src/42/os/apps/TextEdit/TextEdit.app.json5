@@ -28,5 +28,4 @@
   },
 
   $ref: "./TextEdit.js",
-  // content: { $ref: "./TextEdit.content.js" },
 }
