@@ -370,7 +370,7 @@ export class Receiver extends Emitter {
   }
 }
 
-const ipc = realm.inSharedWorker
+export const ipc = realm.inSharedWorker
   ? new SharedWorkerSender()
   : realm.inServiceWorker
   ? new ServiceWorkerSender()

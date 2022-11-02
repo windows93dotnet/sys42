@@ -381,7 +381,7 @@ export function normalizeData(def, ctx, cb) {
       })()
     )
   } else {
-    cb(def, ctx.scope)
+    cb(def, ctx.scope, { silent: true })
   }
 }
 
@@ -595,8 +595,8 @@ export function normalizeDef(def = {}, ctx, options) {
     def = ensureDef(def, ctx)
 
     if (def.state) {
-      normalizeData(def.state, ctx, (res, scope) => {
-        ctx.reactive.merge(scope, res)
+      normalizeData(def.state, ctx, (res, scope, options) => {
+        ctx.reactive.merge(scope, res, options)
       })
     }
 

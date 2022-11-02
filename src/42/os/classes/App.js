@@ -6,6 +6,7 @@ import preinstall from "../preinstall.js"
 import getDirname from "../../core/path/core/getDirname.js"
 import escapeTemplate from "../../core/formats/template/escapeTemplate.js"
 import configure from "../../core/configure.js"
+// import resolve from "../../fabric/json/resolve.js"
 
 // TODO: check if rpc functions can be injecteds
 import "../../fabric/browser/openInNewTab.js"
@@ -92,7 +93,7 @@ function makeSandbox(manifest) {
 
 // Execute App sandboxed in a top level page
 export async function mount(manifestPath, options) {
-  const manifest = await normalizeManifest(manifestPath, options)
+  let manifest = await normalizeManifest(manifestPath, options)
 
   if (inTop) {
     const { id, sandbox } = makeSandbox(manifest)
@@ -105,7 +106,7 @@ export async function mount(manifestPath, options) {
     }
 
     import("../../core/ipc.js") //
-      .then(({ default: ipc }) => {
+      .then(({ ipc }) => {
         ipc.on("42_IO_READY", async () => system.pwa.files)
       })
 
@@ -121,6 +122,14 @@ export async function mount(manifestPath, options) {
 
     return appShell
   }
+
+  // Execution is in a sandbox.
+  // It's safe to resolve $ref keywords with potential javascript functions
+
+  manifest = await import("../../fabric/json/resolve.js") //
+    .then(({ resolve }) =>
+      resolve(manifest, { strict: false, baseURL: manifest.dir })
+    )
 
   return new App(manifest)
 }
@@ -165,24 +174,24 @@ export default class App extends UI {
         : manifest.content,
       state: manifest.state,
       initiator: manifest.initiator,
-      actions: {
-        editor: {
-          newFile() {
-            console.log("newFile")
-            this.state.$files[0] = {
-              path: undefined,
-              data: undefined,
-              dirty: false,
-            }
-          },
-          saveFile() {
-            console.log("saveFile", this.state.$files[0].data)
-          },
-          openFile() {
-            console.log("openFile")
-          },
-        },
-      },
+      // actions: {
+      //   editor: {
+      //     newFile() {
+      //       console.log("newFile")
+      //       this.state.$files[0] = {
+      //         path: undefined,
+      //         data: undefined,
+      //         dirty: false,
+      //       }
+      //     },
+      //     saveFile() {
+      //       console.log("saveFile", this.state.$files[0].data)
+      //     },
+      //     openFile() {
+      //       console.log("openFile")
+      //     },
+      //   },
+      // },
     })
 
     this.manifest = manifest

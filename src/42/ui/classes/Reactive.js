@@ -214,7 +214,7 @@ export default class Reactive extends Emitter {
       }
     }
 
-    // console.group("State Update")
+    // console.group("State Update", { inTop: window.top === window.self })
     // console.log([...changes].join("\n"))
     // console.log("%c" + Object.keys(this.ctx.renderers).join("\n"), "color:#999")
     // console.groupEnd()

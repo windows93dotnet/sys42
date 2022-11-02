@@ -169,20 +169,6 @@ types.fs = {
       return fallback
     }
   },
-  async source(path, fallback = "") {
-    if (path === undefined) return fallback
-    const [fs, sinkField] = await Promise.all([
-      import("./fs.js").then((m) => m.default),
-      import("./stream/sinkField.js").then((m) => m.default),
-    ])
-    fs.source(path, "utf8")
-      .pipeTo(sinkField(this.el))
-      // .then(() => {
-      //   dispatch(this.el, "input")
-      //   dispatch(this.el, "change")
-      // })
-      .catch((err) => dispatch(this.el, err))
-  },
 }
 
 types.cast = {
@@ -230,6 +216,21 @@ types.field = {
         ? field.setSelectionRange(start, start + string.length)
         : field.setSelectionRange(0, value.length)
     })
+  },
+
+  async stream(path, field = this.el, fallback = "") {
+    if (path === undefined) return fallback
+    const [fs, sinkField] = await Promise.all([
+      import("./fs.js").then((m) => m.default),
+      import("./stream/sinkField.js").then((m) => m.default),
+    ])
+    fs.source(path, "utf8")
+      .pipeTo(sinkField(field))
+      // .then(() => {
+      //   dispatch(this.el, "input")
+      //   dispatch(this.el, "change")
+      // })
+      .catch((err) => dispatch(this.el, err))
   },
 }
 

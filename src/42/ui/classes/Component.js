@@ -22,6 +22,7 @@ import {
   normalizeString,
   normalizeComputeds,
   normalizeScope,
+  normalizeData,
   normalizeAttrs,
 } from "../normalize.js"
 
@@ -167,7 +168,7 @@ export default class Component extends HTMLElement {
     )
   }
 
-  async #init(def, ctx) {
+  async #init(def, ctx, options) {
     if (ctx?.cancel?.signal.aborted) return
 
     this.removeAttribute("data-no-init")
@@ -179,14 +180,14 @@ export default class Component extends HTMLElement {
 
     const entry = def?.entry ?? definition?.entry
     if (entry) {
-      delete def.entry
       addEntry(ctx.component, entry, this)
+      delete def.entry
     }
 
     const parentEntry = def?.parentEntry ?? definition?.parentEntry
     if (parentEntry) {
-      delete def.parentEntry
       if (this.parent) addEntry(this, parentEntry, this.parent)
+      delete def.parentEntry
     }
 
     /* handle ctx
@@ -209,7 +210,7 @@ export default class Component extends HTMLElement {
 
     this.ctx.id ??= def.id ?? hash(def)
 
-    const options = {}
+    const params = {}
 
     /* handle props
     --------------- */
@@ -230,7 +231,7 @@ export default class Component extends HTMLElement {
               ? normalizeString(val, this.ctx)
               : val
         } else if (configKeys.includes(key)) {
-          options[key] = val
+          params[key] = val
         } else def[key] = val
       }
     }
@@ -252,8 +253,6 @@ export default class Component extends HTMLElement {
     delete def.scope
     delete def.props
     delete def.tag
-    delete def.as
-    delete def.parent
 
     /* apply props
     -------------- */
@@ -274,7 +273,7 @@ export default class Component extends HTMLElement {
       }
     }
 
-    const config = configure(definition.defaults, options)
+    const config = configure(definition.defaults, params)
 
     if (this.render) {
       const renderConfig = { ...config }
@@ -301,11 +300,14 @@ export default class Component extends HTMLElement {
     /* apply
     -------- */
 
-    if (state) {
-      this.ctx.reactive.merge(
-        this.#hasNewScope ? this.ctx.scopeChain.at(0).scope : this.ctx.scope,
-        state
-      )
+    if (state && options?.skipNormalize !== true) {
+      normalizeData(state, this.ctx, (res, scope, options) => {
+        this.ctx.reactive.merge(
+          this.#hasNewScope ? this.ctx.scopeChain.at(0).scope : this.ctx.scope,
+          res,
+          options
+        )
+      })
     }
 
     if (computed) normalizeComputeds(computed, this.ctx)
