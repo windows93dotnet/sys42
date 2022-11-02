@@ -1,3 +1,19 @@
+function makeTabsizeDialog() {
+  return {
+    label: "Custom",
+    dialog: {
+      label: "Tab Size",
+      content: {
+        tag: "number",
+        bind: "tabSize",
+        min: 0,
+        max: 16,
+        compact: true,
+      },
+    },
+  }
+}
+
 export default {
   menubar: [
     // {
@@ -30,6 +46,7 @@ export default {
     {
       label: "View",
       content: [
+        makeTabsizeDialog(),
         { tag: "checkbox", bind: "monospace" },
         { tag: "checkbox", bind: "wrap" },
         { tag: "checkbox", bind: "spellcheck" },
@@ -41,17 +58,12 @@ export default {
             { tag: "radio", bind: "tabSize", value: "6" },
             { tag: "radio", bind: "tabSize", value: "8" },
             "---",
-            {
-              label: "Custom",
-              dialog: {
-                label: "Tab Size",
-                content: { tag: "number", bind: "tabSize" },
-              },
-            },
+            makeTabsizeDialog(),
           ],
         },
       ],
     },
+    makeTabsizeDialog(),
   ],
 
   state: {
