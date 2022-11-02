@@ -5,10 +5,9 @@ import JSONLocator from "./JSONLocator.js"
 import loadJSON from "../../core/load/loadJSON.js"
 import isBackend from "../../core/env/runtime/inBackend.js"
 import noop from "../type/function/noop.js"
-import freeze from "../type/object/freeze.js"
 import LinkedListNode from "../structure/LinkedListNode.js"
 
-const DEFAULTS = freeze({
+const DEFAULTS = {
   tokens: {
     $id: "$id",
     $anchor: "$anchor",
@@ -18,7 +17,7 @@ const DEFAULTS = freeze({
   baseURL: isBackend
     ? "http://localhost/"
     : location.origin + location.pathname,
-})
+}
 
 function getJsonFromCache(cache, url) {
   const out = {
@@ -188,8 +187,15 @@ class Walker {
 
   async getJsonAsync(url) {
     let { value, root, path, found } = getJsonFromCache(this.cache, url)
+    const { strict } = this.config
+
     if (!found) {
-      value = await loadJSON(url)
+      if (url.href.endsWith(".js")) {
+        if (strict === false) {
+          value = await import(url).then((m) => m.default)
+        } else throw new Error("js module are not allowed in strict mode")
+      } else value = await loadJSON(url)
+
       root = new JSONLocator(value)
       this.cache.set(path, root)
     }
@@ -269,14 +275,16 @@ class Walker {
   }
 }
 
-export async function walkerAsync(source, options, callback) {
+export function walkerSync(source, options, callback) {
+  const instance = new Walker(options, callback)
+  instance.init(source)
+  return instance
+}
+
+export default async function walker(source, options, callback) {
   const instance = new Walker(options, callback)
   await instance.initAsync(source)
   return instance
 }
 
-export default function walker(source, options, callback) {
-  const instance = new Walker(options, callback)
-  instance.init(source)
-  return instance
-}
+walker.sync = walkerSync

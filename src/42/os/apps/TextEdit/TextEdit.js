@@ -1,52 +1,4 @@
-// {
-//   name: "TextEdit",
-//   command: "textedit",
-//   categories: ["utilities", "productivity", "development"],
-//   description: "A simple text editor using textarea",
-
-//   width: 300,
-//   height: 300,
-
-//   decode: {
-//     types: [
-//       {
-//         description: "Text",
-//         accept: [
-//           "text/*",
-//           "application/json",
-//           "application/rss+xml",
-//           "application/xml",
-//         ],
-//       },
-//     ],
-//   },
-
-//   $ref: "./TextEdit.js",
-// }
-
-{
-  name: "TextEdit",
-  command: "textedit",
-  categories: ["utilities", "productivity", "development"],
-  description: "A simple text editor using textarea",
-
-  width: 300,
-  height: 300,
-
-  decode: {
-    types: [
-      {
-        description: "Text",
-        accept: [
-          "text/*",
-          "application/json",
-          "application/rss+xml",
-          "application/xml",
-        ],
-      },
-    ],
-  },
-
+export default {
   menubar: [
     // {
     //   label: "New",
@@ -98,15 +50,14 @@
         autofocus: true,
         lazy: true,
         bind: { to: "data" },
-        // value: "{{data ? cast.text(data) : field.stream(path)}}",
-        value: "{{field.stream(path)}}",
-        // on: {
-        //   "input": "{{dirty = true}}",
-        //   ":path || :dirty || focus": "{{ \
-        //     /$dialog.title = 'TextEdit - ' + path.getBasename(path ?? ''); \
-        //     /$dialog.title += dirty ? '*' : ''; \
-        //   }}",
-        // },
+        value: "{{data ? cast.text(data) : fs.source(path)}}",
+        on: {
+          "input": "{{dirty = true}}",
+          ":path || :dirty || focus": `{{
+            /$dialog.title = 'TextEdit - ' + path.getBasename(path ?? '');
+            /$dialog.title += dirty ? '*' : '';
+          }}`,
+        },
       },
     ],
   },

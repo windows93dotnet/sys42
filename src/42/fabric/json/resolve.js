@@ -1,5 +1,5 @@
 import { isArray, isObject } from "../type/any/is.js"
-import walker, { walkerAsync } from "./walker.js"
+import walker from "./walker.js"
 import JSONLocator from "./JSONLocator.js"
 
 const isResolvable = (x) => isObject(x) || isArray(x)
@@ -32,22 +32,26 @@ function makeWalkerCallback(out) {
   }
 }
 
-export async function resolveAsync(source, options) {
+export function resolveSync(source, options) {
   if (isResolvable(source)) {
     const out = new JSONLocator(Array.isArray(source) ? [] : {})
-    await walkerAsync(source, options, makeWalkerCallback(out))
+    walker.sync(source, options, makeWalkerCallback(out))
     return out.value
   }
 
   return source
 }
 
-export default function resolve(source, options) {
+export async function resolve(source, options) {
   if (isResolvable(source)) {
     const out = new JSONLocator(Array.isArray(source) ? [] : {})
-    walker(source, options, makeWalkerCallback(out))
+    await walker(source, options, makeWalkerCallback(out))
     return out.value
   }
 
   return source
 }
+
+export default resolve
+
+resolve.sync = resolveSync

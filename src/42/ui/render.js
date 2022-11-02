@@ -79,7 +79,7 @@ export default function render(def, ctx, options) {
       ctx.steps += "," + options.step
     }
 
-    return renderComponent(create(def.tag), def, ctx)
+    return renderComponent(create(def.tag), def, ctx, options)
   }
 
   if (!options?.skipNormalize) {
