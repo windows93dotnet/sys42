@@ -193,6 +193,11 @@ class Walker {
       if (url.href.endsWith(".js")) {
         if (strict === false) {
           value = await import(url).then((m) => m.default)
+          if (typeof value === "function") {
+            value = await value(this.tree.root.value)
+          }
+
+          value ??= {}
         } else throw new Error("js module are not allowed in strict mode")
       } else value = await loadJSON(url)
 

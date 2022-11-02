@@ -1,4 +1,4 @@
-export default {
+{
   menubar: [
     // {
     //   label: "New",
@@ -53,10 +53,10 @@ export default {
         value: "{{data ? cast.text(data) : field.stream(path)}}",
         on: {
           "input": "{{dirty = true}}",
-          ":path || :dirty || focus": `{{
-            /$dialog.title = 'TextEdit - ' + path.getBasename(path ?? '');
-            /$dialog.title += dirty ? '*' : '';
-          }}`,
+          ":path || :dirty || focus": "{{ \
+            /$dialog.title = 'TextEdit - ' + path.getBasename(path ?? ''); \
+            /$dialog.title += dirty ? '*' : ''; \
+          }}",
         },
       },
     ],

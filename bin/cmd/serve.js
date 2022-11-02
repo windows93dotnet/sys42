@@ -75,60 +75,70 @@ export default async function serve() {
     sendEvent(reply, "ping")
   })
 
-  server.get("*", async (req, reply) => {
-    const { url } = req
-    const asset = new StaticFile(system.config.paths.dirs.src + url)
-
-    try {
-      await asset.open()
+  server.route({
+    url: "*",
+    method: ["OPTIONS", "HEAD", "GET"],
+    async handler(req, reply) {
+      const { url } = req
+      const asset = new StaticFile(system.config.paths.dirs.src + url)
 
       if (req.headers.origin === "http://localhost:8000") {
-        asset.headers["access-control-allow-origin"] = req.headers.origin
+        reply.header("access-control-allow-origin", req.headers.origin)
       } else if (req.headers.host === host) {
-        asset.headers["access-control-allow-origin"] = "null"
+        reply.header("access-control-allow-origin", "null")
       }
 
-      asset.headers["accept-ranges"] = "bytes"
+      reply.header("accept-ranges", "bytes")
 
-      if (
-        needDevScript &&
-        (req.headers["sec-fetch-dest"] === "document" ||
-          req.headers["sec-fetch-dest"] === "empty") &&
-        (asset.ext === ".html" || asset.ext === ".svg")
-      ) {
-        const devStream = makeDevScript(asset, reply.getHeader("user-agent"))
-        asset.headers["content-length"] += Buffer.byteLength(devStream, "utf-8")
+      try {
+        await asset.open()
+
+        if (
+          needDevScript &&
+          (req.headers["sec-fetch-dest"] === "document" ||
+            req.headers["sec-fetch-dest"] === "empty") &&
+          (asset.ext === ".html" || asset.ext === ".svg")
+        ) {
+          const devStream = makeDevScript(asset, reply.getHeader("user-agent"))
+          asset.headers["content-length"] += Buffer.byteLength(
+            devStream,
+            "utf-8"
+          )
+          reply.headers(asset.headers)
+          const content = await asset.read()
+          asset.close()
+
+          let i = content.indexOf("</title>")
+          if (i > -1) {
+            return reply.send(
+              content.slice(0, i + 8) + devStream + content.slice(i + 8)
+            )
+          }
+
+          i = content.indexOf("<!DOCTYPE html>")
+          if (i > -1) {
+            return reply.send(
+              content.slice(0, i + 15) + devStream + content.slice(i + 15)
+            )
+          }
+
+          return reply.send(devStream + content)
+        }
+
         reply.headers(asset.headers)
-        const content = await asset.read()
+
+        if (req.method === "GET") return reply.send(asset.stream())
         asset.close()
-
-        let i = content.indexOf("</title>")
-        if (i > -1) {
-          return reply.send(
-            content.slice(0, i + 8) + devStream + content.slice(i + 8)
-          )
-        }
-
-        i = content.indexOf("<!DOCTYPE html>")
-        if (i > -1) {
-          return reply.send(
-            content.slice(0, i + 15) + devStream + content.slice(i + 15)
-          )
-        }
-
-        return reply.send(devStream + content)
+      } catch (err) {
+        asset?.close?.()
+        const status = err.code === "ENOENT" ? 404 : 500
+        reply.code(status)
+        return asset.mimetype === "text/html" ||
+          asset.mimetype === "application/octet-stream"
+          ? reply.type("text/html").send(errorPage(asset, status, err.stack))
+          : reply.type(asset.mimetype).send()
       }
-
-      reply.headers(asset.headers)
-      return reply.send(asset.stream())
-    } catch (err) {
-      const status = err.code === "ENOENT" ? 404 : 500
-      reply.code(status)
-      return asset.mimetype === "text/html" ||
-        asset.mimetype === "application/octet-stream"
-        ? reply.type("text/html").send(errorPage(asset, status, err.stack))
-        : reply.type(asset.mimetype).send()
-    }
+    },
   })
 
   server.listen({ port: task.port }, async () => {
