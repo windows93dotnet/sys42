@@ -2,7 +2,7 @@ import test from "../../../../../42/test.js"
 import stringify from "../../../../../42/fabric/type/any/stringify.js"
 
 import Callable from "../../../../../42/fabric/classes/Callable.js"
-// import resolve from "../../../42/type/json/resolve.js"
+import resolve from "../../../../../42/fabric/json/resolve.js"
 
 function stringToArrayBuffer(string) {
   return new TextEncoder().encode(string).buffer
@@ -1846,225 +1846,225 @@ new Map([
 /* circular
 =========== */
 
-// test("circular object", "root", (t) => {
-//   const obj = { x: { $ref: "#/y" }, y: [1] }
-//   obj.circular = obj
-//   const actual = stringify(obj)
+test("circular object", "root", (t) => {
+  const obj = { x: { $ref: "#/y" }, y: [1] }
+  obj.circular = obj
+  const actual = stringify(obj)
 
-//   const resolved = resolve(eval(`(${actual})`))
-//   t.is(resolved, resolved.circular)
-//   t.is(resolved.x, resolved.y)
+  const resolved = resolve.sync(eval(`(${actual})`))
+  t.is(resolved, resolved.circular)
+  t.is(resolved.x, resolved.y)
 
-//   t.is(
-//     actual,
-//     `\
-// {
-//   x: {
-//     $ref: "#/y",
-//   },
-//   y: [
-//     1,
-//   ],
-//   circular: /* [↖] */ { $ref: "#" },
-// }`
-//   )
-// })
+  t.is(
+    actual,
+    `\
+{
+  x: {
+    $ref: "#/y",
+  },
+  y: [
+    1,
+  ],
+  circular: /* [↖] */ { $ref: "#" },
+}`
+  )
+})
 
-// test("circular object", "nested", (t) => {
-//   const obj = { x: {} }
-//   obj.circular = obj.x
-//   const actual = stringify(obj)
+test("circular object", "nested", (t) => {
+  const obj = { x: {} }
+  obj.circular = obj.x
+  const actual = stringify(obj)
 
-//   const resolved = resolve(eval(`(${actual})`))
-//   t.is(resolved.x, resolved.circular)
+  const resolved = resolve.sync(eval(`(${actual})`))
+  t.is(resolved.x, resolved.circular)
 
-//   t.is(
-//     actual,
-//     `\
-// {
-//   x: {},
-//   circular: /* [↖] */ { $ref: "#/x" },
-// }`
-//   )
-// })
+  t.is(
+    actual,
+    `\
+{
+  x: {},
+  circular: /* [↖] */ { $ref: "#/x" },
+}`
+  )
+})
 
-// test("circular array", (t) => {
-//   const arr = []
-//   arr[0] = arr
-//   arr[1] = 123
-//   const actual = stringify(arr)
+test("circular array", (t) => {
+  const arr = []
+  arr[0] = arr
+  arr[1] = 123
+  const actual = stringify(arr)
 
-//   const resolved = resolve(eval(`(${actual})`))
-//   t.is(resolved[0], resolved)
+  const resolved = resolve.sync(eval(`(${actual})`))
+  t.is(resolved[0], resolved)
 
-//   t.is(
-//     actual,
-//     `\
-// [
-//   /* [↖] */ { $ref: "#" },
-//   123,
-// ]`
-//   )
-// })
+  t.is(
+    actual,
+    `\
+[
+  /* [↖] */ { $ref: "#" },
+  123,
+]`
+  )
+})
 
-// test("circular array", "nested", (t) => {
-//   const arr = []
-//   arr[0] = [arr]
-//   arr[1] = [arr[0]]
-//   const actual = stringify(arr)
+test("circular array", "nested", (t) => {
+  const arr = []
+  arr[0] = [arr]
+  arr[1] = [arr[0]]
+  const actual = stringify(arr)
 
-//   const resolved = resolve(eval(`(${actual})`))
-//   t.is(resolved[0][0], resolved)
-//   t.is(resolved[1][0], resolved[0])
+  const resolved = resolve.sync(eval(`(${actual})`))
+  t.is(resolved[0][0], resolved)
+  t.is(resolved[1][0], resolved[0])
 
-//   t.is(
-//     actual,
-//     `\
-// [
-//   [
-//     /* [↖] */ { $ref: "#" },
-//   ],
-//   [
-//     /* [↖] */ { $ref: "#/0" },
-//   ],
-// ]`
-//   )
-// })
+  t.is(
+    actual,
+    `\
+[
+  [
+    /* [↖] */ { $ref: "#" },
+  ],
+  [
+    /* [↖] */ { $ref: "#/0" },
+  ],
+]`
+  )
+})
 
-// test("circular array", "nested", 2, (t) => {
-//   const arr = []
-//   const x = ["a"]
-//   arr[0] = x
-//   arr[1] = x
-//   arr[2] = x
+test("circular array", "nested", 2, (t) => {
+  const arr = []
+  const x = ["a"]
+  arr[0] = x
+  arr[1] = x
+  arr[2] = x
 
-//   const actual = stringify(arr)
+  const actual = stringify(arr)
 
-//   const resolved = resolve(eval(`(${actual})`))
-//   t.is(resolved[0], resolved[1])
-//   t.is(resolved[1], resolved[2])
+  const resolved = resolve.sync(eval(`(${actual})`))
+  t.is(resolved[0], resolved[1])
+  t.is(resolved[1], resolved[2])
 
-//   resolved[2][0] = "b"
-//   t.is(resolved[0][0], "b")
+  resolved[2][0] = "b"
+  t.is(resolved[0][0], "b")
 
-//   t.is(
-//     actual,
-//     `\
-// [
-//   [
-//     "a",
-//   ],
-//   /* [↖] */ { $ref: "#/0" },
-//   /* [↖] */ { $ref: "#/0" },
-// ]`
-//   )
-// })
+  t.is(
+    actual,
+    `\
+[
+  [
+    "a",
+  ],
+  /* [↖] */ { $ref: "#/0" },
+  /* [↖] */ { $ref: "#/0" },
+]`
+  )
+})
 
-// // test.only("$defs object has priority to make references", (t) => {
-// //   const schema = {
-// //     properties: {
-// //       allOf: { $ref: "#/$defs/schemaArray" },
-// //       anyOf: { $ref: "#/$defs/schemaArray" },
-// //     },
-// //     $defs: {
-// //       schemaArray: {
-// //         type: "array",
-// //       },
-// //     },
-// //   }
-
-// //   const obj = resolve(schema)
-// //   t.is(obj)
-// //   t.is(obj.properties.allOf, obj.properties.anyOf)
-// //   const actual = stringify(obj)
-// //   t.is(
-// //     actual,
-// //     `\
-// // {
-// //   properties: {
-// //     allOf: /* [↖] */ { $ref: "#/$defs/schemaArray" },
-// //     anyOf: /* [↖] */ { $ref: "#/$defs/schemaArray" },
-// //   },
-// //   $defs: {
-// //     schemaArray: {
-// //       type: "array",
-// //     },
-// //   },
-// // }`
-// //   )
-// // })
-
-// // test("$ref in $defs", (t) => {
-// //   const obj = resolve({
-// //     x: {
-// //       $ref: "#/$defs/c",
-// //     },
-// //     y: {
-// //       $ref: "#/$defs/b",
-// //     },
-// //     $defs: {
-// //       a: { type: "integer" },
-// //       b: { $ref: "#/$defs/a" },
-// //       c: { $ref: "#/$defs/b" },
-// //     },
-// //   })
-// //   const actual = stringify(obj)
-// //   t.eq(
-// //     actual,
-// //     `\
-// // {
-// //   x: /* [↖] */ { $ref: "#/$defs/c" },
-// //   y: /* [↖] */ { $ref: "#/$defs/c" },
-// //   $defs: {
-// //     a: /* [↖] */ { $ref: "#/$defs/c" },
-// //     b: /* [↖] */ { $ref: "#/$defs/c" },
-// //     c: {
-// //       type: "integer",
-// //     },
-// //   },
-// // }`
-// //   )
-// // })
-
-// test("make references relative to $id", (t) => {
+// test.only("$defs object has priority to make references", (t) => {
 //   const schema = {
-//     allOf: [
-//       {
-//         $id: "http://localhost/a",
-//         properties: {
-//           foo: { $ref: "#/$defs/string" },
-//         },
-//         $defs: {
-//           string: {
-//             type: "string",
-//           },
-//         },
-//       },
-//     ],
-//   }
-
-//   const obj = resolve(schema)
-//   const actual = stringify(obj)
-//   t.is(
-//     actual,
-//     `\
-// {
-//   allOf: [
-//     {
-//       $id: "http://localhost/a",
-//       properties: {
-//         foo: /* [↖] */ { $ref: "#/$defs/string" },
-//       },
-//       $defs: {
-//         string: {
-//           type: "string",
-//         },
+//     properties: {
+//       allOf: { $ref: "#/$defs/schemaArray" },
+//       anyOf: { $ref: "#/$defs/schemaArray" },
+//     },
+//     $defs: {
+//       schemaArray: {
+//         type: "array",
 //       },
 //     },
-//   ],
+//   }
+
+//   const obj = resolve.sync(schema)
+//   t.is(obj)
+//   t.is(obj.properties.allOf, obj.properties.anyOf)
+//   const actual = stringify(obj)
+//   t.is(
+//     actual,
+//     `\
+// {
+//   properties: {
+//     allOf: /* [↖] */ { $ref: "#/$defs/schemaArray" },
+//     anyOf: /* [↖] */ { $ref: "#/$defs/schemaArray" },
+//   },
+//   $defs: {
+//     schemaArray: {
+//       type: "array",
+//     },
+//   },
 // }`
 //   )
 // })
+
+// test("$ref in $defs", (t) => {
+//   const obj = resolve.sync({
+//     x: {
+//       $ref: "#/$defs/c",
+//     },
+//     y: {
+//       $ref: "#/$defs/b",
+//     },
+//     $defs: {
+//       a: { type: "integer" },
+//       b: { $ref: "#/$defs/a" },
+//       c: { $ref: "#/$defs/b" },
+//     },
+//   })
+//   const actual = stringify(obj)
+//   t.eq(
+//     actual,
+//     `\
+// {
+//   x: /* [↖] */ { $ref: "#/$defs/c" },
+//   y: /* [↖] */ { $ref: "#/$defs/c" },
+//   $defs: {
+//     a: /* [↖] */ { $ref: "#/$defs/c" },
+//     b: /* [↖] */ { $ref: "#/$defs/c" },
+//     c: {
+//       type: "integer",
+//     },
+//   },
+// }`
+//   )
+// })
+
+test("make references relative to $id", (t) => {
+  const schema = {
+    allOf: [
+      {
+        $id: "http://localhost/a",
+        properties: {
+          foo: { $ref: "#/$defs/string" },
+        },
+        $defs: {
+          string: {
+            type: "string",
+          },
+        },
+      },
+    ],
+  }
+
+  const obj = resolve.sync(schema)
+  const actual = stringify(obj)
+  t.is(
+    actual,
+    `\
+{
+  allOf: [
+    {
+      $id: "http://localhost/a",
+      properties: {
+        foo: /* [↖] */ { $ref: "#/$defs/string" },
+      },
+      $defs: {
+        string: {
+          type: "string",
+        },
+      },
+    },
+  ],
+}`
+  )
+})
 
 test("circular Set", (t) => {
   const set = new Set()
@@ -2104,7 +2104,9 @@ test("circular Map", (t) => {
   map.set("n", 123)
 
   const actual = stringify(map)
-  // const resolved = resolve(eval(`(${actual})`))
+
+  /* resolving maps is not supported anymore */
+  // const resolved = resolve.sync(eval(`(${actual})`))
   // t.is(resolved.get("circular"), resolved)
 
   t.is(
