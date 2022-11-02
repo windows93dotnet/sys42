@@ -6,10 +6,7 @@
 import settings from "./settings.js"
 import noop from "../fabric/type/function/noop.js"
 
-const configure = settings("http", {
-  headers: { "X-Requested-With": "XMLHttpRequest" },
-  referrerPolicy: "same-origin",
-})
+const configure = settings("http", { referrerPolicy: "same-origin" })
 
 export const POST_JSON_CONFIG = {
   method: "POST",

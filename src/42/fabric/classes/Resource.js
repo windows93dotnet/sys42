@@ -130,6 +130,7 @@ export default class Resource {
     this.el.name = `42-resource-${this.el.id}`
     this.el.referrerpolicy = this.config.referrerpolicy
     this.el.fetchpriority = "high"
+
     this.el.toggleAttribute("sandbox", true)
 
     const allowList = []

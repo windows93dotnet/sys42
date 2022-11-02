@@ -125,7 +125,6 @@ export async function mount(manifestPath, options) {
 
   // Execution is in a sandbox.
   // It's safe to resolve $ref keywords with potential javascript functions
-
   manifest = await import("../../fabric/json/resolve.js") //
     .then(({ resolve }) =>
       resolve(manifest, { strict: false, baseURL: manifest.dir })
@@ -157,7 +156,7 @@ export async function launch(manifestPath, options) {
     },
     state: {
       $dialog: { title: manifest.name },
-      $files: manifest.state.$files,
+      // $files: manifest.state.$files,
     },
   })
 }
@@ -167,6 +166,9 @@ export default class App extends UI {
   static launch = launch
 
   constructor(manifest) {
+    manifest.state ??= {}
+    manifest.state.$files ??= []
+
     super({
       tag: ".box-fit.box-h",
       content: manifest.menubar
