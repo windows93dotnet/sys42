@@ -16,6 +16,40 @@ const { href } = new URL(
 
 const { when } = test.utils
 
+const makeDialogMenuitem = (name) => ({
+  label: `Dialog`,
+  id: `menuItemDialog${name}${__}`,
+  picto: "folder-open",
+  shortcut: "Ctrl+O",
+  dialog: {
+    label: `Dialog ${name} ${__}`,
+    content: [
+      {
+        tag: `number#inputIncrDialog${name}${__}`,
+        bind: "cnt",
+        compact: true,
+      },
+      {
+        tag: `button#btnIncrDialog${name}${__}`,
+        content: "{{cnt}}",
+        click: "{{cnt++}}",
+      },
+    ],
+  },
+})
+
+const makeSubmenu = (name) => [
+  {
+    label: "Hello",
+    click: '{{log("hello")}}',
+  },
+  {
+    label: "World",
+    click: '{{log("world")}}',
+  },
+  makeDialogMenuitem(name),
+]
+
 const makeMenu = (name) => {
   const submenu = [
     {
@@ -26,16 +60,7 @@ const makeMenu = (name) => {
     },
     {
       label: "Submenu",
-      content: [
-        {
-          label: "Hello",
-          click: '{{log("hello")}}',
-        },
-        {
-          label: "World",
-          click: '{{log("world")}}',
-        },
-      ],
+      content: makeSubmenu(name),
     },
     "---",
     {
@@ -62,39 +87,10 @@ const makeMenu = (name) => {
     {
       label: "Submenu",
       id: `submenuItem3rd${name}${__}`,
-      content: [
-        {
-          label: "Hello",
-          click: '{{log("hello")}}',
-        },
-        {
-          label: "World",
-          click: '{{log("world")}}',
-        },
-      ],
+      content: makeSubmenu(name),
     },
     "---",
-    {
-      label: `Dialog`,
-      id: `menuItemDialog${name}${__}`,
-      picto: "folder-open",
-      shortcut: "Ctrl+O",
-      dialog: {
-        label: `Dialog ${name} ${__}`,
-        content: [
-          {
-            tag: `number#inputIncrDialog${name}${__}`,
-            bind: "cnt",
-            compact: true,
-          },
-          {
-            tag: `button#btnIncrDialog${name}${__}`,
-            content: "{{cnt}}",
-            click: "{{cnt++}}",
-          },
-        ],
-      },
-    },
+    makeDialogMenuitem(name),
     {
       label: "Save",
       picto: "save",
@@ -244,11 +240,20 @@ if (inTop) {
       })
     )
 
+    if (manual) return t.pass()
+
     await t.puppet("#btnMenuTop").click()
+
+    // menu is open
     await when("uipopupopen")
+    t.isElement(t.puppet.$("ui-menu"))
+
     await t.puppet("#menuItemDialogPopupTop").click()
     await when("uidialogopen")
-    await t.puppet().dispatch("blur") // close menu
+
+    // menu is closed
+    t.isNull(t.puppet.$("ui-menu"))
+
     await t.puppet("#inputIncrDialogPopupTop").input(42)
     await app
 
