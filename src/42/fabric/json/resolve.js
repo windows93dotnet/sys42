@@ -8,7 +8,7 @@ function unref(location) {
   return location.replaceAll(`/$ref`, "")
 }
 
-function makeWalkerCallback(out, options) {
+function makeWalkerCallback(out) {
   return (ctx) => {
     if (!ctx.childs) {
       if (ctx.keyword === "$ref") {
@@ -18,15 +18,22 @@ function makeWalkerCallback(out, options) {
         } else {
           out.set(unref(ctx.parent.location), ctx.value)
         }
-      } else if (
-        options?.strict === false ||
-        !(ctx.parent.childs.size > 1 && ctx.parent.childs.has("$ref"))
-      ) {
+      } else {
+        if (ctx.parent.childs.size > 1 && ctx.parent.childs.has("$ref")) {
+          const parent = out.get(ctx.parent.location)
+          out.set(ctx.parent.location, { ...parent })
+        }
+
         out.set(unref(ctx.location), ctx.value)
       }
     } else if (ctx.keyword === "$ref" && ctx.link) {
-      const linkedValue = out.get(unref(ctx.link.location))
-      if (linkedValue) out.set(unref(ctx.location), linkedValue)
+      if (
+        ctx.parent.childs.size === 1 ||
+        (ctx.parent.childs.size === 2 && ctx.parent.childs.has("$defs"))
+      ) {
+        const linkedValue = out.get(unref(ctx.link.location))
+        if (linkedValue) out.set(unref(ctx.location), linkedValue)
+      }
     } else if (ctx.childs.size === 0) {
       out.set(unref(ctx.location), ctx.value)
     }

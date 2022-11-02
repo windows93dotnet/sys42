@@ -51,11 +51,11 @@ test("circular object", (t) => {
   t.is(res.bar, res)
 })
 
-test.only("$ref with props", (t) => {
+test("$ref without props", (t) => {
   const res = resolve.sync(
     t.stays({
       foo: { a: 1 },
-      bar: { $ref: "#/foo", b: 2 },
+      bar: { $ref: "#/foo" },
     })
   )
   t.eq(res.foo, { a: 1 })
@@ -63,19 +63,31 @@ test.only("$ref with props", (t) => {
   t.is(res.bar, res.foo)
 })
 
-test.only("$ref with props", "strict:false", (t) => {
+test("$ref with props before $ref keyword", (t) => {
+  const res = resolve.sync(
+    t.stays({
+      foo: { a: 1 },
+      bar: { b: 2, $ref: "#/foo" },
+    })
+  )
+  t.eq(res.foo, { a: 1 })
+  t.eq(res.bar, { b: 2, a: 1 })
+  t.not(res.bar, res.foo)
+})
+
+test("$ref with props after $ref keyword", (t) => {
   const res = resolve.sync(
     t.stays({
       foo: { a: 1 },
       bar: { $ref: "#/foo", b: 2 },
-    }),
-    { strict: false }
+    })
   )
-  t.eq(res.foo, { a: 1, b: 2 })
-  t.eq(res.bar, res.foo)
+  t.eq(res.foo, { a: 1 })
+  t.eq(res.bar, { a: 1, b: 2 })
+  t.not(res.bar, res.foo)
 })
 
-test.only("data after $ref", (t) => {
+test("data after $ref", (t) => {
   const res = resolve.sync(
     {
       a: 1,
