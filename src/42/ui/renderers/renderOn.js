@@ -5,6 +5,7 @@ import hash from "../../fabric/type/any/hash.js"
 import expr from "../../core/expr.js"
 import uid from "../../core/uid.js"
 import allocate from "../../fabric/locator/allocate.js"
+import inIframe from "../../core/env/realm/inIframe.js"
 
 const makeEventLocals = (loc, e, target) => {
   const eventLocals = Object.defineProperties(
@@ -47,6 +48,8 @@ function setOpener(el, ctx, key, def, type) {
 
   el.id ||= hash(String(ctx.steps))
   def.opener = el.id
+  if (inIframe) window.name ||= uid()
+  def.openerFrame = window.name
 
   type ??= def.tag?.startsWith("ui-") ? def.tag.slice(3) : def.role ?? def.tag
   el.setAttribute("aria-haspopup", POPUP_TYPES.has(type) ? type : "true")

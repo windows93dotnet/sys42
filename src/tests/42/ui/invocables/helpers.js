@@ -62,7 +62,7 @@ export async function make(t, { href, makeContent }, iframe = true) {
                 makeContent(),
                 iframe && {
                   // tag: "ui-sandbox.ground",
-                  // permissions: "trusted",
+                  // permissions: "app",
                   // path: href,
                   tag: "iframe.ground",
                   src: href,
