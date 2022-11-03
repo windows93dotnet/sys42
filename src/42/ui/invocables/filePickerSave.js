@@ -35,7 +35,7 @@ export default async function filePickerSave(path, options) {
             selection: `{{
               name = selection.length > 0
                 ? path.getBasename(selection/-1)
-                : this.value
+                : name
             }}`,
           },
           autofocus: true,

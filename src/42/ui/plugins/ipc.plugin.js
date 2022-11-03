@@ -39,9 +39,6 @@ if (debug) {
 /* </DEV> */
 
 export default async function ipcPlugin(ctx) {
-  if (ctx.plugins.ipc) return
-  ctx.plugins.ipc = true
-
   if (inTop) {
     ctx.reactive.on("update", ctx, (changes, deleteds, source) => {
       const data = ctx.reactive.export(changes, deleteds)

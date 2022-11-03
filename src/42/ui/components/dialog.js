@@ -4,7 +4,7 @@ import rpc from "../../core/ipc/rpc.js"
 import omit from "../../fabric/type/object/omit.js"
 import dispatch from "../../fabric/event/dispatch.js"
 import maxZIndex from "../../fabric/dom/maxZIndex.js"
-import { objectifyDef, forkDef } from "../normalize.js"
+import { objectifyDef, forkDef, normalizePlugins } from "../normalize.js"
 import forceOpener from "../forceOpener.js"
 import uid from "../../core/uid.js"
 import { autofocus } from "../../fabric/dom/focus.js"
@@ -47,8 +47,6 @@ export class Dialog extends Component {
       label: undefined,
       footer: undefined,
     },
-
-    plugins: ["ipc"],
   };
 
   [_axis]() {
@@ -158,6 +156,10 @@ const dialog = rpc(
       if (rpc.inTop) {
         ctx = { ...ctx, detached: true }
         return [def, ctx]
+      }
+
+      if (ctx) {
+        normalizePlugins(ctx, ["ipc"])
       }
 
       return [forkDef(def, ctx), {}]

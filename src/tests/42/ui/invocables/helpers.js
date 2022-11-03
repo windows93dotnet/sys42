@@ -53,24 +53,27 @@ export async function make(t, { href, makeContent }, iframe = true) {
   const app = await t.utils.decay(
     ui(
       t.utils.dest({ connect: true }),
-      {
-        tag: inTop ? ".box-fit.desktop" : ".box-fit",
-        content: inTop
-          ? {
+      inTop
+        ? {
+            tag: ".box-fit.desktop",
+            content: {
               tag: ".box-v.size-full",
               content: [
                 makeContent(),
                 iframe && {
-                  // tag: "ui-sandbox.ground",
-                  // permissions: "trusted",
-                  // path: href,
-                  tag: "iframe.ground",
-                  src: href,
+                  tag: "ui-sandbox.ground",
+                  permissions: "trusted",
+                  path: href,
+                  // tag: "iframe.ground",
+                  // src: href,
                 },
               ],
-            }
-          : makeContent(),
-      },
+            },
+          }
+        : {
+            tag: ".box-fit",
+            content: makeContent(),
+          },
       { trusted: true }
     )
   )

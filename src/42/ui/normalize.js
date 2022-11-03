@@ -217,11 +217,11 @@ export function normalizeTokens(tokens, ctx, options) {
 
   const locals = options?.locals ?? {}
 
-  queueMicrotask(() => {
-    if (locals.this) return
-    // TODO: check possible xss vector attack
-    locals.this = ctx.el
-  })
+  // queueMicrotask(() => {
+  //   if (locals.this) return
+  //   // TODO: check possible xss vector attack
+  //   locals.this = ctx.el
+  // })
 
   // locals.this = {
   //   get value() {
@@ -417,25 +417,41 @@ export function normalizeData(def, ctx, cb) {
 
 export function normalizePlugins(ctx, plugins) {
   for (const plugin of plugins) {
-    let promise
-    if (typeof plugin === "string") {
-      promise = import(`./plugins/${plugin}.plugin.js`) //
-        .then((m) => m.default(ctx))
-    } else if (Array.isArray(plugin)) {
-      if (typeof plugin[0] === "string") {
-        promise = import(`./plugins/${plugin[0]}.plugin.js`) //
-          .then((m) => m.default(ctx, plugin[1]))
-      } else {
-        promise = plugin[0](ctx, plugin[1])
-      }
+    let key
+    let config
+    let fn
+
+    if (Array.isArray(plugin)) {
+      key = plugin[0]
+      config = plugin[1]
     } else {
-      promise = plugin(ctx)
+      const type = typeof plugin
+      if (type === "string") key = plugin
+      else if (type === "function") {
+        fn = plugin
+        key = plugin.name
+      } else {
+        throw new Error(
+          `Plugin definition must be a string, a function or an array: ${type}`
+        )
+      }
     }
 
+    if (key) {
+      if (ctx.plugins[key]) continue
+      ctx.plugins[key] = true
+    }
+
+    const promise = fn
+      ? fn(ctx, config)
+      : import(`./plugins/${plugin}.plugin.js`) //
+          .then((m) => m.default(ctx, config))
+
     ctx.preload.push(
-      promise.then((res) => {
+      (async () => {
+        const res = await promise
         if (typeof res === "function") ctx.pluginHandlers.push(res)
-      })
+      })()
     )
   }
 }
