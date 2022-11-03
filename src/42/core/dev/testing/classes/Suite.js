@@ -98,15 +98,15 @@ export default class Suite {
     t.suite = { title: this.title }
     t.test = { title: test.title }
 
+    test.timeStamp = performance.now()
+
     try {
-      test.timeStamp = performance.now()
       await Promise.race([
         t.timeout(this.timeout, this.cumulated + 100),
         test.fn(t, t.utils),
         test.deferred.promise,
       ])
-      test.ms = performance.now() - test.timeStamp
-      this.cumulated += test.ms
+
       t.verifyContext(test.failing, test.stackframe)
       test.ok = true
     } catch (err) {
@@ -130,6 +130,9 @@ export default class Suite {
       await this.runTest(test, options)
       return
     }
+
+    test.ms = performance.now() - test.timeStamp
+    this.cumulated += test.ms
 
     test.ran = true
 

@@ -100,7 +100,7 @@ export const test = chainable(
       if (data.ui) {
         fn = uiTest(fn, sbs)
         data.serial = true
-        data.flaky = 2
+        // data.flaky = 2 // TODO: remove flaky for self-executed ui tests
         sbs.current.serial = true
         sbs.current.timeout = 4500
       }

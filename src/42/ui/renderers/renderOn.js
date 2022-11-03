@@ -47,7 +47,6 @@ function setOpener(el, ctx, key, def, type) {
   ctx = forkCtx(ctx, key)
 
   el.id ||= hash(String(ctx.steps))
-  def.opener = el.id
   if (inIframe) window.name ||= uid()
   def.openerFrame = window.name
 
@@ -60,6 +59,7 @@ function setOpener(el, ctx, key, def, type) {
 function setDialogOpener(el, ctx, key, def) {
   ctx = setOpener(el, ctx, key, def, "dialog")
   return async () => {
+    def.opener = el.id
     await import("../components/dialog.js") //
       .then((m) => m.default(def, ctx))
   }
@@ -69,6 +69,7 @@ function setPopupOpener(el, ctx, key, def) {
   ctx = setOpener(el, ctx, key, def)
   const { focusBack } = def
   return async (e) => {
+    def.opener = el.id
     if (e.type === "contextmenu" && e.x > 0 && e.y > 0) {
       def.rect = { x: e.x, y: e.y }
     }
