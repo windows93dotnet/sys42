@@ -1,4 +1,3 @@
-/* eslint-disable max-params */
 import ui from "../../../../42/ui.js"
 import system from "../../../../42/core/dev/testing/mainSystem.js"
 import preload from "../../../../42/core/load/preload.js"
@@ -18,7 +17,19 @@ export function log(promise) {
 
 const { top } = globalThis
 
-export async function launch(t, open, close, expected, fn) {
+export async function launch(t, open, close, ...rest) {
+  let fn
+  let expected
+  let hasExpected = false
+
+  if (rest.length === 1 && typeof rest[0] === "function") {
+    fn = rest[0]
+  } else {
+    hasExpected = true
+    expected = rest[0]
+    fn = rest[1]
+  }
+
   const id = ++current
   const el = document.querySelector(open)
   const originalId = el.id
@@ -30,13 +41,20 @@ export async function launch(t, open, close, expected, fn) {
   el.id = originalId
 
   const res = responses.get(id)
-  await new Promise((resolve) => {
+
+  await new Promise((resolve, reject) => {
     const forget = listen(top, {
       async uidialogopen({ target }) {
         if (target.opener === newId) {
           forget()
-          const advance = await fn?.(target)
-          if (advance === false || close === false) return resolve()
+
+          try {
+            const advance = await fn?.(target)
+            if (advance === false || close === false) return resolve()
+          } catch (err) {
+            reject(err)
+          }
+
           t.puppet(close, target).click().run()
           resolve()
         }
@@ -44,7 +62,7 @@ export async function launch(t, open, close, expected, fn) {
     })
   })
 
-  t.eq(await res, expected)
+  if (hasExpected) t.eq(await res, expected)
 
   return res
 }
