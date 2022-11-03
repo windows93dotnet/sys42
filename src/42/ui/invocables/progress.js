@@ -57,6 +57,7 @@ export default function progress(total, options) {
   const forget = listen({
     uidialogopen(e, target) {
       if (target.id === config.dialog.id) {
+        // state = target.ctx.reactive.get(target.ctx.scope)
         state = target.ctx.state
         signal = target.ctx.signal
         running = true

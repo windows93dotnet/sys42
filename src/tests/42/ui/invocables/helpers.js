@@ -1,3 +1,4 @@
+/* eslint-disable max-params */
 import ui from "../../../../42/ui.js"
 import system from "../../../../42/core/dev/testing/mainSystem.js"
 import preload from "../../../../42/core/load/preload.js"
@@ -17,7 +18,7 @@ export function log(promise) {
 
 const { top } = globalThis
 
-export async function launch(t, open, close, fn) {
+export async function launch(t, open, close, expected, fn) {
   const id = ++current
   const el = document.querySelector(open)
   const originalId = el.id
@@ -29,7 +30,7 @@ export async function launch(t, open, close, fn) {
   el.id = originalId
 
   const res = responses.get(id)
-  return new Promise((resolve) => {
+  await new Promise((resolve) => {
     const forget = listen(top, {
       async uidialogopen({ target }) {
         if (target.opener === newId) {
@@ -37,11 +38,15 @@ export async function launch(t, open, close, fn) {
           const advance = await fn?.(target)
           if (advance === false || close === false) return resolve()
           t.puppet(close, target).click().run()
-          resolve(res)
+          resolve()
         }
       },
     })
   })
+
+  t.eq(await res, expected)
+
+  return res
 }
 
 export async function make(t, { href, makeContent }, iframe = true) {
@@ -79,4 +84,6 @@ export default {
   make,
   log,
 }
+
 export { default as preload } from "../../../../42/core/load/preload.js"
+export { default as inTop } from "../../../../42/core/env/realm/inTop.js"
