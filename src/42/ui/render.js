@@ -14,9 +14,13 @@ import renderAnimation from "./renderers/renderAnimation.js"
 
 const { ELEMENT_NODE } = Node
 
+const makeBr = () => document.createElement("br")
+const makeHr = () => document.createElement("hr")
 const SPECIAL_STRINGS = {
-  "\n\n": () => document.createElement("br"),
-  "---": () => document.createElement("hr"),
+  "\n\n": makeBr,
+  "<br>": makeBr,
+  "---": makeHr,
+  "<hr>": makeHr,
 }
 
 const PRELOAD = new Set(["link", "script"])

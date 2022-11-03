@@ -211,7 +211,7 @@ const makeDemo = ({ content } = {}) => {
 }
 
 if (inTop) {
-  test.ui.only("dialog from closed popup is detached", async (t) => {
+  test.ui("dialog from closed popup is detached", async (t) => {
     const { decay, dest } = t.utils
 
     const app = await decay(
