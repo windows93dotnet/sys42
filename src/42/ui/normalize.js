@@ -284,8 +284,47 @@ function supportsAttribute(item, attribute) {
   return Boolean(attribute in document.createElement(tag))
 }
 
+const OBJECT_ATTRIBUTES = new Set(["dataset", "aria", "style"])
+
 export function normalizeAttrs(item, ctx, ignore) {
   const attrs = {}
+
+  for (const [key, val] of Object.entries(item)) {
+    // TODO: use extractAttrs
+    if (
+      !DEF_KEYWORDS.has(key) &&
+      !TRAIT_KEYWORDS.has(key) &&
+      !(ignore && key in ignore) &&
+      (ATTRIBUTES.has(key.toLowerCase()) ||
+        ATTRIBUTES_WITHDASH.has(key) ||
+        (ctx?.trusted && supportsAttribute(item, key)))
+    ) {
+      const type = typeof val
+
+      if (val && type === "object") {
+        if (key === "class") {
+          attrs[key] = Array.isArray(val)
+            ? normalizeString(val.join(" "), ctx)
+            : normalizeObject(val, ctx)
+        } else if (
+          !OBJECT_ATTRIBUTES.has(key) &&
+          Object.getPrototypeOf(val).toString !== Object.prototype.toString
+        ) {
+          attrs[key] = val.toString()
+        } else {
+          attrs[key] = normalizeObject(val, ctx)
+        }
+      } else {
+        attrs[key] = type === "string" ? normalizeString(val, ctx) : val
+      }
+    }
+  }
+
+  return attrs
+}
+
+export function extractAttrs(item, ctx, ignore) {
+  const attrs = Object.create(null)
 
   for (const [key, val] of Object.entries(item)) {
     if (
@@ -296,16 +335,7 @@ export function normalizeAttrs(item, ctx, ignore) {
         ATTRIBUTES_WITHDASH.has(key) ||
         (ctx?.trusted && supportsAttribute(item, key)))
     ) {
-      const type = typeof val
-      if (val && type === "object") {
-        if (key === "class" && Array.isArray(val)) {
-          attrs[key] = normalizeString(val.join(" "), ctx)
-        } else {
-          attrs[key] = normalizeObject(val, ctx)
-        }
-      } else {
-        attrs[key] = type === "string" ? normalizeString(val, ctx) : val
-      }
+      attrs[key] = val
     }
   }
 
@@ -611,7 +641,7 @@ export function normalizeDef(def = {}, ctx, options) {
     if (def.watch) normalizeWatchs(def.watch, ctx)
 
     if (options?.skipAttrs !== true) {
-      const attrs = normalizeAttrs(def, ctx)
+      const attrs = extractAttrs(def, ctx)
       if (!isEmptyObject(attrs)) def.attrs = attrs
     }
 
