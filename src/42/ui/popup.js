@@ -41,12 +41,14 @@ function closeOthers(e, target = e.target) {
 
   let i = map.length
   while (i--) {
-    const { close, opener, el } = map[i]
+    const { close, opener, openerFrame, el } = map[i]
 
     if (el.contains(target)) {
       if (e.key === "ArrowLeft") {
         map.length = i
-        close({ fromOpener: target?.id === opener })
+        close({
+          fromOpener: target?.id === opener && openerFrame === window.name,
+        })
       } else {
         map.length = i + 1
       }
@@ -54,7 +56,11 @@ function closeOthers(e, target = e.target) {
       return
     }
 
-    close(i === 0 ? { fromOpener: target?.id === opener } : undefined)
+    close(
+      i === 0
+        ? { fromOpener: target?.id === opener && openerFrame === window.name }
+        : undefined
+    )
   }
 
   forgetGlobalEvents()
@@ -64,10 +70,11 @@ function closeOthers(e, target = e.target) {
 function closeAll(e, target = e.target) {
   let i = map.length
   while (i--) {
-    map[i].close(
+    const { close, opener, openerFrame } = map[i]
+    close(
       i === 0
         ? {
-            fromOpener: target?.id === opener,
+            fromOpener: target?.id === opener && openerFrame === window.name,
             fromBlur: e?.type === "blur",
             focusOut: e?.focusOut,
           }
@@ -125,7 +132,7 @@ const popup = rpc(
 
     const deferred = defer()
 
-    const { opener, focusBack } = def
+    const { opener, openerFrame, focusBack } = def
 
     const close = (options) => {
       const event = dispatch(el, "uipopupbeforeclose", { cancelable: true })
@@ -153,7 +160,7 @@ const popup = rpc(
       el.closeAll = closeAll
     }
 
-    map.push({ el, close, opener, closeEvents })
+    map.push({ el, close, opener, openerFrame, closeEvents })
 
     return deferred
   },
