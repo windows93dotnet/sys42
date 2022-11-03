@@ -3,8 +3,6 @@ import debounce from "../../fabric/type/function/debounce.js"
 import omit from "../../fabric/type/object/omit.js"
 
 export default async function persistPlugin(ctx) {
-  if (ctx.plugins.persist) return
-
   const config = {
     initial: true,
     loaded: false,

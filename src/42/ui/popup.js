@@ -8,9 +8,13 @@ import Canceller from "../fabric/classes/Canceller.js"
 import focus from "../fabric/dom/focus.js"
 import queueTask from "../fabric/type/function/queueTask.js"
 
-import rpc from "../core/ipc/rpc.js"
-import normalize, { objectifyDef, forkDef } from "./normalize.js"
 import uid from "../core/uid.js"
+import rpc from "../core/ipc/rpc.js"
+import normalize, {
+  objectifyDef,
+  forkDef,
+  normalizePlugins,
+} from "./normalize.js"
 
 const map = []
 const _close = Symbol.for("42_POPUP_CLOSE")
@@ -187,6 +191,10 @@ const popup = rpc(
       if (rpc.inTop) {
         ctx = { ...ctx }
         return [def, ctx, rect]
+      }
+
+      if (ctx) {
+        normalizePlugins(ctx, ["ipc"])
       }
 
       return [forkDef(def, ctx), {}, rect]
