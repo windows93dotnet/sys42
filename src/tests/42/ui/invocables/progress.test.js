@@ -1,7 +1,7 @@
 import test from "../../../../42/test.js"
 import { make, launch, log } from "./helpers.js"
 
-const manual = 1
+const manual = 0
 
 const { href } = new URL(
   "../../../../demos/ui/invocables/progress.demo.html?test=true",
@@ -19,12 +19,13 @@ const makeContent = () => ({
       tag: "button",
       label: "Progress",
       id: "progress",
-      async click() {
+      click() {
         const p = progress(100, { _icon: "error" })
-        const state = await p.state
-        state.value = 30
-        state.description = "0/1"
-        p.done.then(log)
+        p.state.then((state) => {
+          state.value = 30
+          state.description = "0/1"
+        })
+        log(p.done)
       },
     },
     {
@@ -58,7 +59,7 @@ test.ui(async (t) => {
 
   if (manual) return t.pass()
 
-  t.eq(await launch(t, "#progress", ".ui-dialog__decline"), {
+  await launch(t, "#progress", ".ui-dialog__decline", {
     value: 30,
     label: "Progress",
     description: "0/1",

@@ -1,7 +1,7 @@
 import test from "../../../../42/test.js"
-import { make, launch, log } from "./helpers.js"
+import { make, launch, log, inTop } from "./helpers.js"
 
-const manual = 0
+const manual = 1
 const iframe = 1
 
 const { href } = new URL(
@@ -115,63 +115,48 @@ const makeContent = () => ({
 
 test.ui(async (t) => {
   await make(t, { href, makeContent }, iframe)
-  if (manual) return t.pass()
 
-  // await Promise.all([
-  //   // alert always return true
-  //   launch(t, "#alert", ".ui-dialog__agree") //
-  //     .then((res) => t.eq(res, true)),
+  if (manual) {
+    if (inTop) await t.puppet("#alert").click()
+    return t.pass()
+  }
 
-  //   launch(t, "#alert", ".ui-dialog__close") //
-  //     .then((res) => t.eq(res, true)),
-  // ])
+  await Promise.all([
+    // alert always return true
+    launch(t, "#alert", ".ui-dialog__agree", true),
+    launch(t, "#alert", ".ui-dialog__close", true),
 
-  t.is(await launch(t, "#alert", ".ui-dialog__agree"), true)
-  t.is(await launch(t, "#alert", ".ui-dialog__close"), true)
+    // confirm return a boolean
+    launch(t, "#confirm", ".ui-dialog__agree", true),
+    launch(t, "#confirm", ".ui-dialog__close", false),
+    launch(t, "#confirm", ".ui-dialog__decline", false),
 
-  // confirm return a boolean
+    // prompt return a string or undefined
+    launch(t, "#prompt", ".ui-dialog__agree", ""),
+    launch(t, "#prompt", ".ui-dialog__decline", undefined),
+    launch(t, "#prompt", ".ui-dialog__close", undefined),
 
-  t.is(await launch(t, "#confirm", ".ui-dialog__agree"), true)
-  t.is(await launch(t, "#confirm", ".ui-dialog__decline"), false)
-  t.is(await launch(t, "#confirm", ".ui-dialog__close"), false)
-
-  // prompt return a string or undefined
-
-  t.is(await launch(t, "#prompt", ".ui-dialog__agree"), "")
-  t.is(await launch(t, "#prompt", ".ui-dialog__decline"), undefined)
-  t.is(await launch(t, "#prompt", ".ui-dialog__close"), undefined)
-
-  t.is(
-    await launch(t, "#prompt", ".ui-dialog__agree", async (dialog) => {
+    launch(t, "#prompt", ".ui-dialog__agree", "derp", async (dialog) => {
       const input = dialog.querySelector('[name="/value"]')
       await t.puppet(input).fill("derp")
     }),
-    "derp"
-  )
 
-  // Customs
-  // -------
-  t.is(
-    await launch(t, "#alertCustom", ".ui-dialog__agree", async (dialog) => {
+    // Customs
+    // -------
+    launch(t, "#alertCustom", ".ui-dialog__agree", true, async (dialog) => {
       t.match(dialog.querySelector("img").src, /warning\./)
       t.is(dialog.querySelector(".ui-dialog__agree").textContent, "Fine !")
     }),
-    true
-  )
 
-  t.is(
-    await launch(t, "#confirmCustom", ".ui-dialog__agree", (dialog) => {
+    launch(t, "#confirmCustom", ".ui-dialog__agree", true, (dialog) => {
       t.match(dialog.querySelector("img").src, /question\./)
       t.is(dialog.querySelector(".ui-dialog__agree").textContent, "Yep")
       t.is(dialog.querySelector(".ui-dialog__decline").textContent, "Nope")
       t.is(dialog.querySelector(".ui-dialog__agree ui-picto").value, "check")
       t.is(dialog.querySelector(".ui-dialog__decline ui-picto").value, "cross")
     }),
-    true
-  )
 
-  t.is(
-    await launch(t, "#promptCustom", ".ui-dialog__agree", (dialog) => {
+    launch(t, "#promptCustom", ".ui-dialog__agree", "42", (dialog) => {
       t.match(dialog.querySelector("img").src, /question\./)
       t.is(dialog.querySelector(".ui-dialog__agree").textContent, "Ok")
       t.is(dialog.querySelector(".ui-dialog__decline").textContent, "Cancel")
@@ -182,20 +167,17 @@ test.ui(async (t) => {
       t.is(input.value, "42")
       t.is(label.htmlFor, input.id)
     }),
-    "42"
-  )
 
-  t.is(
-    await launch(
+    launch(
       t,
       "#promptAutoTextarea",
       ".ui-dialog__agree",
+      "derp",
       async (dialog) => {
         const input = dialog.querySelector('[name="/value"]')
         t.is(input.localName, "textarea")
         await t.puppet(input).fill("derp")
       }
     ),
-    "derp"
-  )
+  ])
 })
