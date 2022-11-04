@@ -131,11 +131,13 @@ export default function renderControl(el, ctx, def) {
       const name = scopeTo ?? scopeFrom
       if (name) el.name ||= name
 
-      if (def.value) {
-        // Save the value in the state if a value and a bind.from are set
-        setControlData(el, def.value)
-        ctx.reactive.set(scopeTo, getControlData(el), { silent: true })
-      }
+      // if (def.value) {
+      //   // Save the value in the state if a value and a bind.from are set
+      //   if (!def.attrs.value.scopes) {
+      //     setControlData(el, def.value)
+      //     ctx.reactive.set(scopeTo, getControlData(el), { silent: true })
+      //   }
+      // }
     }
   }
 

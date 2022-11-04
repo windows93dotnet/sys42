@@ -1,3 +1,4 @@
+import FileAgent from "./App/FileAgent.js"
 import system from "../../system.js"
 import inTop from "../../core/env/realm/inTop.js"
 import uid from "../../core/uid.js"
@@ -6,47 +7,12 @@ import preinstall from "../preinstall.js"
 import getDirname from "../../core/path/core/getDirname.js"
 import escapeTemplate from "../../core/formats/template/escapeTemplate.js"
 import configure from "../../core/configure.js"
+import editor from "./App/editor.js"
 
 // TODO: check if rpc functions can be injecteds
 import "../../fabric/browser/openInNewTab.js"
 import "../../ui/components/dialog.js"
 import "../../ui/popup.js"
-
-const menuitems = {
-  newFile: {
-    label: "New",
-    picto: "file",
-    shortcut: "Ctrl+N",
-    click: "{{editor.newFile(}}",
-  },
-  openFile: {
-    label: "Open",
-    picto: "folder-open",
-    shortcut: "Ctrl+O",
-    click: "{{editor.openFile(}}",
-  },
-  saveFile: {
-    label: "Save",
-    picto: "save",
-    shortcut: "Ctrl+S",
-    click: "{{editor.saveFile()}}",
-  },
-  exit: {
-    label: "Exit",
-    click: "{{editor.exit()}}",
-  },
-}
-
-menuitems.File = {
-  label: "File",
-  content: [
-    menuitems.newFile,
-    menuitems.openFile,
-    menuitems.saveFile,
-    "---",
-    menuitems.exit,
-  ],
-}
 
 async function normalizeManifest(manifest, options) {
   if (options?.skipNormalize !== true) {
@@ -158,7 +124,7 @@ export async function mount(manifestPath, options) {
     return appShell
   }
 
-  manifest.$defs = menuitems
+  manifest.$defs = editor.menuitems
 
   // Execution is in a sandbox.
   // It's safe to resolve $ref keywords with potential javascript functions
@@ -213,40 +179,15 @@ export default class App extends UI {
         : manifest.content,
       state: manifest.state,
       initiator: manifest.initiator,
-      actions: {
-        editor: {
-          newFile: () => {
-            this.state.$files[0] = {
-              path: undefined,
-              data: undefined,
-              dirty: false,
-            }
-          },
-          saveFile() {
-            console.log("saveFile", this.state.$files[0].data)
-          },
-          openFile() {
-            console.log("openFile")
-          },
-          exit() {
-            console.log("exit")
-          },
-        },
-      },
     })
+
+    this.ctx.actions.assign("/editor", editor.makeActions(this.state))
 
     this.manifest = manifest
 
-    import("../../core/fs.js").then(({ default: fs }) => {
-      for (const item of this.state.$files) {
-        if (!item.data) {
-          fs.open(item.path).then((data) => {
-            item.data = data
-            item.url = URL.createObjectURL(data)
-          })
-        }
-      }
-    })
+    for (let i = 0, l = this.state.$files.length; i < l; i++) {
+      this.state.$files[i] = new FileAgent(this.state.$files[i], manifest)
+    }
 
     import("../../io.js").then(({ default: io }) => {
       io.listenImport()
