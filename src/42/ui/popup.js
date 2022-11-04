@@ -171,7 +171,7 @@ const popup = rpc(
   {
     module: import.meta.url,
 
-    marshalling(el, def = {}, ctx) {
+    async marshalling(el, def = {}, ctx) {
       if (el.getAttribute("aria-expanded") === "true") {
         el.setAttribute("aria-expanded", "false")
         return false
@@ -193,9 +193,7 @@ const popup = rpc(
         return [def, ctx, rect]
       }
 
-      if (ctx) {
-        normalizePlugins(ctx, ["ipc"])
-      }
+      if (ctx) await normalizePlugins(ctx, ["ipc"], { now: true })
 
       return [forkDef(def, ctx), {}, rect]
     },

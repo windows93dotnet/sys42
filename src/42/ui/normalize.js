@@ -415,7 +415,9 @@ export function normalizeData(def, ctx, cb) {
   }
 }
 
-export function normalizePlugins(ctx, plugins) {
+export function normalizePlugins(ctx, plugins, options) {
+  const undones = []
+
   for (const plugin of plugins) {
     let key
     let config
@@ -447,13 +449,18 @@ export function normalizePlugins(ctx, plugins) {
       : import(`./plugins/${plugin}.plugin.js`) //
           .then((m) => m.default(ctx, config))
 
-    ctx.preload.push(
-      (async () => {
-        const res = await promise
-        if (typeof res === "function") ctx.pluginHandlers.push(res)
-      })()
-    )
+    if (options?.now) undones.push(promise)
+    else {
+      ctx.preload.push(
+        (async () => {
+          const res = await promise
+          if (typeof res === "function") ctx.pluginHandlers.push(res)
+        })()
+      )
+    }
   }
+
+  if (options?.now) return Promise.all(undones)
 }
 
 export function normalizeTraits(def, ctx) {

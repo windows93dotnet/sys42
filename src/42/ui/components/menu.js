@@ -26,12 +26,20 @@ export class Menu extends Component {
   static definition = {
     tag: "ui-menu",
     role: "menu",
+
+    props: {
+      opener: {
+        type: "string",
+      },
+    },
+
     on: {
       prevent: true,
       contextmenu: false,
       ArrowUp: "{{focusPrev()}}",
       ArrowDown: "{{focusNext()}}",
     },
+
     defaults: {
       focusBack: undefined,
       shortcuts: {
