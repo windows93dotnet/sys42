@@ -12,6 +12,42 @@ import "../../fabric/browser/openInNewTab.js"
 import "../../ui/components/dialog.js"
 import "../../ui/popup.js"
 
+const menuitems = {
+  newFile: {
+    label: "New",
+    picto: "file",
+    shortcut: "Ctrl+N",
+    click: "{{editor.newFile(}}",
+  },
+  openFile: {
+    label: "Open",
+    picto: "folder-open",
+    shortcut: "Ctrl+O",
+    click: "{{editor.openFile(}}",
+  },
+  saveFile: {
+    label: "Save",
+    picto: "save",
+    shortcut: "Ctrl+S",
+    click: "{{editor.saveFile()}}",
+  },
+  exit: {
+    label: "Exit",
+    click: "{{editor.exit()}}",
+  },
+}
+
+menuitems.File = {
+  label: "File",
+  content: [
+    menuitems.newFile,
+    menuitems.openFile,
+    menuitems.saveFile,
+    "---",
+    menuitems.exit,
+  ],
+}
+
 async function normalizeManifest(manifest, options) {
   if (options?.skipNormalize !== true) {
     if (typeof manifest === "string") {
@@ -122,6 +158,8 @@ export async function mount(manifestPath, options) {
     return appShell
   }
 
+  manifest.$defs = menuitems
+
   // Execution is in a sandbox.
   // It's safe to resolve $ref keywords with potential javascript functions
   manifest = await import("../../fabric/json/resolve.js") //
@@ -175,24 +213,26 @@ export default class App extends UI {
         : manifest.content,
       state: manifest.state,
       initiator: manifest.initiator,
-      // actions: {
-      //   editor: {
-      //     newFile() {
-      //       console.log("newFile")
-      //       this.state.$files[0] = {
-      //         path: undefined,
-      //         data: undefined,
-      //         dirty: false,
-      //       }
-      //     },
-      //     saveFile() {
-      //       console.log("saveFile", this.state.$files[0].data)
-      //     },
-      //     openFile() {
-      //       console.log("openFile")
-      //     },
-      //   },
-      // },
+      actions: {
+        editor: {
+          newFile: () => {
+            this.state.$files[0] = {
+              path: undefined,
+              data: undefined,
+              dirty: false,
+            }
+          },
+          saveFile() {
+            console.log("saveFile", this.state.$files[0].data)
+          },
+          openFile() {
+            console.log("openFile")
+          },
+          exit() {
+            console.log("exit")
+          },
+        },
+      },
     })
 
     this.manifest = manifest

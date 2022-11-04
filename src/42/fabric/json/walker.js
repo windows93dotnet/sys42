@@ -190,7 +190,7 @@ class Walker {
     const { strict } = this.config
 
     if (!found) {
-      if (url.href.endsWith(".js")) {
+      if (url.pathname.endsWith(".js")) {
         if (strict === false) {
           value = await import(url).then((m) => m.default)
           if (typeof value === "function") {
