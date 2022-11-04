@@ -31,22 +31,17 @@ export async function launch(t, open, close, ...rest) {
   }
 
   const id = ++current
-  const el = document.querySelector(open)
+  const el = typeof open === "string" ? document.querySelector(open) : open
   const originalId = el.id
   const newId = originalId + id + inTop
 
-  el.id = newId
-  el.focus()
-  el.click()
-  el.id = originalId
-
-  const res = responses.get(id)
-
-  await new Promise((resolve, reject) => {
+  const p = new Promise((resolve, reject) => {
     const forget = listen(top, {
-      async uidialogopen({ target }) {
+      async "uidialogopen || uipopupopen"({ target }) {
         if (target.opener === newId) {
           forget()
+
+          await 0
 
           try {
             const advance = await fn?.(target)
@@ -62,8 +57,17 @@ export async function launch(t, open, close, ...rest) {
     })
   })
 
+  el.id = newId
+  await t.puppet(el).click()
+  el.id = originalId
+
+  const res = responses.get(id)
+
+  await p
+
   if (hasExpected) t.eq(await res, expected)
 
+  await t.sleep(1)
   return res
 }
 
@@ -91,6 +95,7 @@ export async function make(t, { href, makeContent }, iframe = true) {
         : {
             tag: ".box-fit",
             content: makeContent(),
+            // plugins: ["ipc"],
           },
       { trusted: true }
     )

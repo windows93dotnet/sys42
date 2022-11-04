@@ -17,12 +17,14 @@ import "../../../../42/ui/components/dialog.js"
 
 const makeDialogButton = () => ({
   label: `Dialog ${inTop ? "Top" : "Iframe"}`,
-  content: [{ tag: "number", bind: "cnt", compact: true }],
+  content: [
+    { tag: "number", id: "cntDialogInput", bind: "cnt", compact: true },
+  ],
 })
 const makeContent = () => ({
   tag: ".w-full.pa-xl",
   content: [
-    { tag: "number", bind: "cnt", compact: true },
+    { tag: "number", id: "cntInput", bind: "cnt", compact: true },
     "<br>",
     "<br>",
     {
@@ -37,7 +39,9 @@ const makeContent = () => ({
       tag: "button",
       label: "Popup",
       id: "popupBtn",
-      menu: [{ label: "Dialog", dialog: makeDialogButton() }],
+      menu: [
+        { label: "Dialog", id: "menuitemDialog", dialog: makeDialogButton() },
+      ],
     },
   ],
 
@@ -45,6 +49,25 @@ const makeContent = () => ({
     cnt: 0,
   },
 })
+
+// test.ui(async (t) => {
+//   await make(t, { href, makeContent }, iframe)
+
+//   // if (inTop) return t.pass()
+
+//   if (manual) return t.pass()
+
+//   await launch(t, "#popupBtn", false, async (popup) => {
+//     const menuitem = popup.querySelector(":scope #menuitemDialog")
+//     await launch(t, menuitem, ".ui-dialog__close", async (dialog) => {
+//       await t.puppet("#cntDialogInput", dialog).input(5)
+//     })
+//   })
+
+//   if (!inTop) await system.once("ipc.plugin:end-of-update")
+
+//   t.is(t.puppet.$("#cntInput").value, "5")
+// })
 
 test.ui(async (t) => {
   await make(t, { href, makeContent }, iframe)
@@ -54,10 +77,10 @@ test.ui(async (t) => {
   if (manual) return t.pass()
 
   await launch(t, "#dialogBtn", ".ui-dialog__close", async (dialog) => {
-    await t.puppet('input[type="number"]', dialog).input(5)
+    await t.puppet("#cntDialogInput", dialog).input(5)
   })
 
   if (!inTop) await system.once("ipc.plugin:end-of-update")
 
-  t.is(t.puppet.$('input[type="number"]').value, "5")
+  t.is(t.puppet.$("#cntInput").value, "5")
 })

@@ -148,7 +148,7 @@ const dialog = rpc(
   {
     module: import.meta.url,
 
-    marshalling(def = {}, ctx) {
+    async marshalling(def = {}, ctx) {
       def = objectifyDef(def)
 
       forceOpener(def)
@@ -158,9 +158,7 @@ const dialog = rpc(
         return [def, ctx]
       }
 
-      if (ctx) {
-        normalizePlugins(ctx, ["ipc"])
-      }
+      if (ctx) await normalizePlugins(ctx, ["ipc"], { now: true })
 
       return [forkDef(def, ctx), {}]
     },
