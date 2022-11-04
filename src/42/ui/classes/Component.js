@@ -202,6 +202,7 @@ export default class Component extends HTMLElement {
       cancel: ctx?.detached ? undefined : ctx?.cancel?.fork(),
       steps: ctx?.steps ?? this.localName,
     })
+    this.detached = this.ctx.detached
     delete this.ctx.detached
 
     def = ensureDef(def, this.ctx)

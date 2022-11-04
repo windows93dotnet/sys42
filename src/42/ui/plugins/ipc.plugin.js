@@ -39,8 +39,10 @@ if (debug) {
 /* </DEV> */
 
 export default async function ipcPlugin(ctx) {
+  // const options = { signal: ctx.signal }
+  const options = {}
   if (inTop) {
-    ctx.reactive.on("update", ctx, (changes, deleteds, source) => {
+    ctx.reactive.on("update", options, (changes, deleteds, source) => {
       const data = ctx.reactive.export(changes, deleteds)
       for (const { iframe, emit } of ipc.iframes.values()) {
         if (iframe !== source) {
@@ -53,14 +55,14 @@ export default async function ipcPlugin(ctx) {
     })
 
     // Parent Top <-- Iframe
-    ipc.on(`42-ui-ipc-${ctx.id}`, ctx, (data, { iframe }) => {
+    ipc.on(`42-ui-ipc-${ctx.id}`, options, (data, { iframe }) => {
       ctx.reactive.import(data, iframe)
       debug?.("Parent Top <-- Iframe")
     })
 
     if (ctx.initiator) {
       // Top <-- Parent Iframe
-      ipc.on(`42-ui-ipc-${ctx.initiator}`, ctx, (data, { iframe }) => {
+      ipc.on(`42-ui-ipc-${ctx.initiator}`, options, (data, { iframe }) => {
         ctx.reactive.import(data, iframe)
         debug?.("Top <-- Parent Iframe")
       })
@@ -68,7 +70,7 @@ export default async function ipcPlugin(ctx) {
   }
 
   if (inIframe) {
-    ctx.reactive.on("update", ctx, (changes, deleteds, source) => {
+    ctx.reactive.on("update", options, (changes, deleteds, source) => {
       const data = ctx.reactive.export(changes, deleteds)
 
       // Parent Iframe --> Top
@@ -81,14 +83,14 @@ export default async function ipcPlugin(ctx) {
     })
 
     // Parent Iframe <-- Top
-    ipc.on(`42-ui-ipc-${ctx.id}`, ctx, (data) => {
+    ipc.on(`42-ui-ipc-${ctx.id}`, options, (data) => {
       ctx.reactive.import(data)
       debug?.("Parent Iframe <-- Top")
     })
 
     if (ctx.initiator) {
       // Iframe <-- Parent Top
-      ipc.on(`42-ui-ipc-${ctx.initiator}`, ctx, (data) => {
+      ipc.on(`42-ui-ipc-${ctx.initiator}`, options, (data) => {
         ctx.reactive.import(data, "parent")
         debug?.("Iframe <-- Parent Top")
       })
