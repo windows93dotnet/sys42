@@ -171,22 +171,24 @@ types.fs = {
   },
 }
 
-types.cast = {
-  async text(val, fallback = "") {
-    if (val === undefined) return fallback
-    if (typeof val === "string") return val
-    const [stream, sinkField] = await Promise.all([
-      import("./stream.js").then((m) => m.default),
-      import("./stream/sinkField.js").then((m) => m.default),
-    ])
-    this.el.value = ""
-    val
-      .stream()
-      .pipeThrough(stream.ts.text())
-      .pipeTo(sinkField(this.el))
-      .catch((err) => dispatch(this.el, err))
-  },
-}
+// types.cast = {
+//   async text(val, fallback = "") {
+//     if (val === undefined) return fallback
+//     if (typeof val === "string") return val
+//     const [stream, sinkField] = await Promise.all([
+//       import("./stream.js").then((m) => m.default),
+//       import("./stream/sinkField.js").then((m) => m.default),
+//     ])
+//     this.el.value = ""
+//     val
+//       .stream()
+//       .pipeThrough(stream.ts.text())
+//       .pipeTo(sinkField(this.el))
+//       .catch((err) => dispatch(this.el, err))
+//   },
+// }
+
+types.io = io
 
 types.ui = {
   async render(item) {
@@ -199,6 +201,17 @@ types.ui = {
   alert: "alert",
   confirm: "confirm",
   prompt: "prompt",
+}
+
+types.filePicker = {
+  async open(...args) {
+    return import("../ui/invocables/filePickerOpen.js") //
+      .then((m) => m.default(...args))
+  },
+  async save(...args) {
+    return import("../ui/invocables/filePickerSave.js") //
+      .then((m) => m.default(...args))
+  },
 }
 
 types.field = {
@@ -218,31 +231,19 @@ types.field = {
     })
   },
 
-  async stream(path, field = this.el, fallback = "") {
-    if (path === undefined) return fallback
-    const [fs, sinkField] = await Promise.all([
-      import("./fs.js").then((m) => m.default),
+  async sink(rs, field = this.el, fallback = "") {
+    if (rs === undefined) return fallback
+    const [stream, sinkField] = await Promise.all([
+      import("./stream.js").then((m) => m.default),
       import("./stream/sinkField.js").then((m) => m.default),
     ])
-    fs.source(path, "utf8")
+    rs.pipeThrough(stream.ts.text())
       .pipeTo(sinkField(field))
       // .then(() => {
       //   dispatch(this.el, "input")
       //   dispatch(this.el, "change")
       // })
       .catch((err) => dispatch(this.el, err))
-  },
-}
-
-types.io = io
-types.filePicker = {
-  async open(...args) {
-    return import("../ui/invocables/filePickerOpen.js") //
-      .then((m) => m.default(...args))
-  },
-  async save(...args) {
-    return import("../ui/invocables/filePickerSave.js") //
-      .then((m) => m.default(...args))
   },
 }
 

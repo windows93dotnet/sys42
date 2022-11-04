@@ -1,8 +1,6 @@
 export default {
   menubar: [
-    {
-      $ref: "./#$defs/File",
-    },
+    { $ref: "./#/$defs/File" }, // TODO: improve resolve with $ref starting with #
     {
       label: "View",
       content: [
@@ -60,9 +58,9 @@ export default {
         autofocus: true,
         lazy: true,
         bind: { to: "data" },
-        value: "{{data ? cast.text(data) : field.stream(path)}}",
+        value: "{{stream |> field.sink(^^)}}",
         on: {
-          "input": "{{dirty = true}}",
+          // "input": "{{dirty = true}}",
           ":path || :dirty || focus": `{{
             /$dialog.title = 'TextEdit - ' + path.getBasename(path ?? '');
             /$dialog.title += dirty ? '*' : '';
