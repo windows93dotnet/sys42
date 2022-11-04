@@ -5,7 +5,7 @@ const manual = 0
 const iframe = 1
 
 const { href } = new URL(
-  "../../../../demos/ui/invocables/modals.demo.html?test=true",
+  "../../../../demos/ui/invocables/demands.demo.html?test=true",
   import.meta.url
 )
 

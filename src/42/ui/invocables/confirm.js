@@ -1,8 +1,8 @@
-import modal from "./modal.js"
+import demand from "./demand.js"
 
 const DEFAULT = {
   label: "Confirm",
-  class: "ui-dialog-modal ui-dialog-confirm",
+  class: "ui-dialog-demand ui-dialog-confirm",
 }
 
 export default async function confirm(message = "", options) {
@@ -18,7 +18,7 @@ export default async function confirm(message = "", options) {
     content: { tag: "div", content: message },
   }
 
-  const res = await modal(config)
+  const res = await demand(config)
 
   return Boolean(res.ok)
 }

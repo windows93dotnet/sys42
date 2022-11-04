@@ -5,13 +5,13 @@ import forceOpener from "../forceOpener.js"
 import { objectifyDef } from "../normalize.js"
 
 const DEFAULT = {
-  class: "ui-dialog-modal",
+  class: "ui-dialog-demand",
   role: "alertdialog",
   agree: "Ok",
   decline: "Cancel",
 }
 
-export default async function modal(options) {
+export default async function demand(options) {
   const config = { ...DEFAULT, ...options }
   config.dialog ??= {}
   forceOpener(config.dialog)

@@ -1,11 +1,11 @@
-import modal from "./modal.js"
+import demand from "./demand.js"
 import uid from "../../core/uid.js"
 import forceOpener from "../forceOpener.js"
 import isErrorLike from "../../fabric/type/any/is/isErrorLike.js"
 
 const DEFAULT = {
   label: "Alert",
-  class: "ui-dialog-modal ui-dialog-alert",
+  class: "ui-dialog-demand ui-dialog-alert",
   decline: false,
 }
 
@@ -72,7 +72,7 @@ export default async function alert(message = "", options = {}) {
     content: { tag: "div", content: message },
   }
 
-  await modal(config)
+  await demand(config)
 
   return true
 }

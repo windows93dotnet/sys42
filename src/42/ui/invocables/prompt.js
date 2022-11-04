@@ -1,9 +1,9 @@
-import modal from "./modal.js"
+import demand from "./demand.js"
 import configure from "../../core/configure.js"
 
 const DEFAULT = {
   label: "Prompt",
-  class: "ui-dialog-modal ui-dialog-prompt",
+  class: "ui-dialog-demand ui-dialog-prompt",
   tag: "text",
   value: "",
   prose: true,
@@ -50,7 +50,7 @@ export default async function prompt(message = "", options) {
     ],
   }
 
-  const res = await modal(config)
+  const res = await demand(config)
 
   return res.ok ? String(res.value) : undefined
 }
