@@ -1,4 +1,4 @@
-import modal from "./modal.js"
+import demand from "./demand.js"
 import uid from "../../core/uid.js"
 import listen from "../../fabric/event/listen.js"
 import defer from "../../fabric/type/promise/defer.js"
@@ -7,7 +7,7 @@ import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 
 const DEFAULT = {
   label: "{{label}}",
-  class: "ui-dialog-modal ui-dialog-progress",
+  class: "ui-dialog-demand ui-dialog-progress",
   agree: false,
 }
 
@@ -68,7 +68,7 @@ export default function progress(total, options) {
     },
   })
 
-  const done = modal(config)
+  const done = demand(config)
 
   let bytes = 0
   const update = paintThrottle(() => {

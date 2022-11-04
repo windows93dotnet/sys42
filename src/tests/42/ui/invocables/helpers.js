@@ -58,7 +58,7 @@ export async function launch(t, open, close, ...rest) {
   })
 
   el.id = newId
-  await t.puppet(el).click()
+  t.puppet(el).click().run()
   el.id = originalId
 
   const res = responses.get(id)

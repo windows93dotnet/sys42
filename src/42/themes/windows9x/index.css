@@ -432,12 +432,11 @@ ui-dialog[active] .ui-dialog__title {
 /* modals
 ========= */
 
-.ui-dialog-modal {
-  /* min-width: 380px; */
+.ui-dialog-demand {
   width: 256px;
 }
 
-.ui-dialog-modal label {
+.ui-dialog-demand label {
   white-space: pre-wrap;
 }
 
@@ -450,9 +449,8 @@ ui-dialog[active] .ui-dialog__title {
   padding-left: 0;
 }
 
-.ui-dialog-modal .ui-dialog__footer {
+.ui-dialog-demand .ui-dialog__footer {
   justify-content: center;
-  /* padding: 12px; */
   padding: var(--unit);
   padding-top: 4px;
 }
