@@ -5,7 +5,6 @@
 import uid from "../../core/uid.js"
 import configure from "../../core/configure.js"
 import ipc from "../../core/ipc.js"
-import dispatch from "../event/dispatch.js"
 import arrify from "../type/any/arrify.js"
 import listen from "../event/listen.js"
 import isIframable from "../url/isIframable.js"
@@ -18,17 +17,10 @@ const DEFAULTS = {
   signal: undefined,
 }
 
-const errorCatcher = `
-import trap from "${new URL("../type/error/trap.js", import.meta.url).href}"
-import ipc from "${new URL("../../core/ipc.js", import.meta.url).href}"
-
-globalThis.ipc = ipc
-
-trap((err, {title, reports}) => {
-  ipc.emit("42-resource:error", [err, reports])
-  return false
-})
-`
+const { href: errorCatcher } = new URL(
+  "./Resource/raiseErrorTop.js",
+  import.meta.url
+)
 
 const SUPPORTED_FEATURES = document.featurePolicy?.features() ?? []
 
@@ -162,9 +154,14 @@ export default class Resource {
   #listenErrors() {
     this.bus?.destroy()
     this.bus = ipc.from(this.el)
-    this.bus.on("42-resource:error", ([err, reports]) => {
-      if (reports) err.reports = reports
-      dispatch(this.el, err)
+    this.bus.on("42-resource:error", async (err) => {
+      const [dispatch, deserializeError] = await Promise.all([
+        import("../event/dispatch.js") //
+          .then((m) => m.default),
+        import("../type/error/deserializeError.js") //
+          .then((m) => m.default),
+      ])
+      dispatch(this.el, deserializeError(err))
     })
   }
 
@@ -180,7 +177,7 @@ export default class Resource {
   http-equiv="Content-Security-Policy"
   content="default-src ${origin} 'unsafe-inline' data: blob:;">
 ${style}
-<script type="module">${errorCatcher}</script>
+<script type="module" src="${errorCatcher}"></script>
 <body${bodyAttributes}>
 ${html}
 `

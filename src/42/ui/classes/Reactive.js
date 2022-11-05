@@ -10,6 +10,7 @@ import dispatch from "../../fabric/event/dispatch.js"
 import equal from "../../fabric/type/any/equal.js"
 import merge from "../../fabric/type/object/merge.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
+import isSerializable from "../../fabric/type/any/is/isSerializable.js"
 import register from "../register.js"
 
 const sep = "/"
@@ -226,10 +227,14 @@ export default class Reactive extends Emitter {
   }
 
   export(changes, deleteds) {
+    // TODO: find a way to export only necessary data (e.g. using a keyword list in ui definition)
     const data = { add: [], remove: [] }
     for (const loc of changes) {
       if (deleteds.has(loc)) data.remove.push(loc)
-      else data.add.push([loc, locate(this.data, loc, sep)])
+      else {
+        const res = locate(this.data, loc, sep)
+        if (isSerializable(res)) data.add.push([loc, res])
+      }
     }
 
     return data

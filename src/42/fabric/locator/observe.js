@@ -30,8 +30,12 @@ export default function observe(root, options = {}) {
         }
 
         if (
+          val &&
+          typeof key === "string" &&
           typeof val === "object" &&
-          (val?.constructor === Object || Array.isArray(val))
+          (val.constructor === Object ||
+            Array.isArray(val) ||
+            val[Symbol.for("observe")] === true)
         ) {
           if (options.locate && "$ref" in val) return options.locate(val.$ref)
           if (proxies.has(val)) return proxies.get(val)
