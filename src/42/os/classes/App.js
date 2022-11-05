@@ -159,7 +159,6 @@ export async function launch(manifestPath, options) {
     },
     state: {
       $dialog: { title: manifest.name },
-      // $files: manifest.state.$files,
     },
   })
 }
@@ -171,6 +170,12 @@ export default class App extends UI {
   constructor(manifest) {
     manifest.state ??= {}
     manifest.state.$files ??= []
+    for (let i = 0, l = manifest.state.$files.length; i < l; i++) {
+      manifest.state.$files[i] = new FileAgent(
+        manifest.state.$files[i],
+        manifest
+      )
+    }
 
     super({
       tag: ".box-fit.box-h",
@@ -185,26 +190,14 @@ export default class App extends UI {
 
     this.manifest = manifest
 
-    for (let i = 0, l = this.state.$files.length; i < l; i++) {
-      this.state.$files[i] = new FileAgent(this.state.$files[i], manifest)
-    }
-
     import("../../io.js").then(({ default: io }) => {
       io.listenImport()
       io.on("import", ([{ id, file }]) => {
-        this.state.$files[0] = {
-          id,
-          path: file.name,
-          data: file,
-          dirty: false,
-        }
+        const init = { id, path: file.name, data: file }
+        FileAgent.recycle(this.state.$files, 0, init, manifest)
       })
       io.on("paths", ([path]) => {
-        this.state.$files[0] = {
-          path,
-          data: undefined,
-          dirty: false,
-        }
+        FileAgent.recycle(this.state.$files, 0, path, manifest)
       })
     })
   }

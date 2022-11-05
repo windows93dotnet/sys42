@@ -59,6 +59,7 @@ export default {
         lazy: true,
         bind: { to: "data" },
         value: "{{stream |> field.sink(^^)}}",
+        // value: "{{text}}",
         on: {
           // "input": "{{dirty = true}}",
           ":path || :dirty || focus": `{{
