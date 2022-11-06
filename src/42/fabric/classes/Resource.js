@@ -17,6 +17,8 @@ const DEFAULTS = {
   signal: undefined,
 }
 
+const CSP = `default-src ${location.origin} 'unsafe-inline' data: blob:;`
+
 const { href: errorCatcher } = new URL(
   "./Resource/raiseErrorTop.js",
   import.meta.url
@@ -166,16 +168,13 @@ export default class Resource {
   }
 
   async html(html, options) {
-    const { origin } = location
     const style = options?.style ?? ""
     const bodyAttributes = options?.body ?? ""
     this.el.removeAttribute("src")
-    this.el.srcdoc = `\
+    this.el.srcdoc = `
 <!DOCTYPE html>
 <meta charset="utf-8" />
-<meta
-  http-equiv="Content-Security-Policy"
-  content="default-src ${origin} 'unsafe-inline' data: blob:;">
+<meta http-equiv="Content-Security-Policy" content="${CSP}" />
 ${style}
 <script type="module" src="${errorCatcher}"></script>
 <body${bodyAttributes}>

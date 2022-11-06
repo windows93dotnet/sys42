@@ -10,6 +10,9 @@ import dataTransfertImport from "../../fabric/type/file/dataTransfertImport.js"
 
 const _setResource = Symbol("setResource")
 
+const { href: ipcUrl } = new URL("../../core/ipc.js", import.meta.url)
+const { href: uiUrl } = new URL("../../ui.js", import.meta.url)
+
 const options = {
   style: '<link rel="stylesheet" href="/style.css" id="theme" />',
   body: ' class="in-iframe"',
@@ -152,8 +155,9 @@ export class Sandbox extends Component {
       await Promise.all(undones)
       const content = forkDef(this.content, this.ctx)
       content.plugins = ["ipc"]
-      const script = `\
-import ui from "/42/ui.js"
+      const script = `
+import ipc from "${ipcUrl}"
+import ui from "${uiUrl}"
 const app = await ui(${JSON.stringify(content)})
 ${this.script ?? ""}
 `
