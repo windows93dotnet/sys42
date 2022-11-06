@@ -125,6 +125,7 @@ const popup = rpc(
     el.style.zIndex = maxZIndex("ui-dialog, ui-menu") + 1
 
     document.body.append(el)
+    dispatch(el, "uipopupopen")
     if (el.ready) await el.ready
     else {
       await ctx.reactive.done()
@@ -132,7 +133,7 @@ const popup = rpc(
     }
 
     focus.autofocus(el)
-    dispatch(el, "uipopupopen")
+    dispatch(el, "uipopupready")
 
     const deferred = defer()
 
