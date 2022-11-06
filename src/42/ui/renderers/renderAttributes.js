@@ -1,5 +1,6 @@
 import { setAttribute } from "../../fabric/dom/setAttributes.js"
 import { setStyle } from "../../fabric/dom/setStyles.js"
+import setControlData from "../../fabric/dom/setControlData.js"
 import register from "../register.js"
 
 function renderClasses(el, ctx, classes) {
@@ -49,10 +50,16 @@ export default function renderAttributes(el, ctx, attrs, prefix = "") {
     else if (key === "style") renderStyles(el, ctx, val)
     else if (key === "class" && val && typeof val === "object") {
       renderClasses(el, ctx, val)
+    } else if (key === "value" && el.form !== undefined) {
+      if (typeof val === "function") {
+        register(ctx, val, async (val) => setControlData(el, await val))
+      } else {
+        setControlData(el, val)
+      }
     } else {
       key = prefix + key
       if (typeof val === "function") {
-        register(ctx, val, (val) => setAttribute(el, key, val))
+        register(ctx, val, async (val) => setAttribute(el, key, await val))
       } else {
         setAttribute(el, key, val)
       }

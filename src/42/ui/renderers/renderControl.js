@@ -97,7 +97,7 @@ export default function renderControl(el, ctx, def) {
     let scopeTo
     if (def.bind.from) {
       scopeFrom = getBindScope(ctx, def.bind.from)
-      register(ctx, scopeFrom, (val) => setControlData(el, val))
+      register(ctx, scopeFrom, async (val) => setControlData(el, await val))
     }
 
     if (def.bind.to) {
@@ -130,14 +130,6 @@ export default function renderControl(el, ctx, def) {
     if (el.type !== "radio") {
       const name = scopeTo ?? scopeFrom
       if (name) el.name ||= name
-
-      // if (def.value) {
-      //   // Save the value in the state if a value and a bind.from are set
-      //   if (!def.attrs.value.scopes) {
-      //     setControlData(el, def.value)
-      //     ctx.reactive.set(scopeTo, getControlData(el), { silent: true })
-      //   }
-      // }
     }
   }
 

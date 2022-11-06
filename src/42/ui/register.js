@@ -18,9 +18,7 @@ export default function register(ctx, loc, fn) {
   if (typeof loc === "function") {
     scopes = loc.scopes
     renderer = async (changed) => {
-      ctx.undones.push(
-        loc(ctx.reactive.state, ctx.el?.session).then((val) => fn(val, changed))
-      )
+      ctx.undones.push(loc(ctx.reactive.state).then((val) => fn(val, changed)))
     }
   } else {
     scopes = arrify(loc)

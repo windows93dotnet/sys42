@@ -57,11 +57,11 @@ export default {
         compact: true,
         autofocus: true,
         lazy: true,
-        bind: { to: "data" },
-        value: "{{stream |> field.sink(^^)}}",
+        bind: { to: "data", from: "text" },
+        // value: "{{field.sink(stream)}}",
         // value: "{{text}}",
         on: {
-          // "input": "{{dirty = true}}",
+          "input": "{{dirty = true}}",
           ":path || :dirty || focus": `{{
             /$dialog.title = 'TextEdit - ' + path.getBasename(path ?? '');
             /$dialog.title += dirty ? '*' : '';

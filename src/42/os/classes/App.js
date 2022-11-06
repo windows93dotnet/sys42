@@ -124,7 +124,8 @@ export async function mount(manifestPath, options) {
     return appShell
   }
 
-  manifest.$defs = editor.menuitems
+  manifest.$defs ??= {}
+  Object.assign(manifest.$defs, editor.menuitems)
 
   // Execution is in a sandbox.
   // It's safe to resolve $ref keywords with potential javascript functions
