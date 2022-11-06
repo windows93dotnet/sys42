@@ -1,6 +1,7 @@
 import isHashmapLike from "../../../fabric/type/any/is/isHashmapLike.js"
 import isInstanceOf from "../../../fabric/type/any/is/isInstanceOf.js"
 
+const _noSideEffects = Symbol("FileAgent._noSideEffects")
 const _path = Symbol("FileAgent._path")
 const _url = Symbol("FileAgent._url")
 const _blob = Symbol("FileAgent._blob")
@@ -20,6 +21,7 @@ export default class FileAgent {
   }
 
   init(init) {
+    this[_noSideEffects] = false
     const type = typeof init
     if (type === "string") {
       this.path = init
@@ -29,7 +31,12 @@ export default class FileAgent {
       if ("data" in init) this.data = init.data
       if ("dirty" in init) this.dirty = init.dirty
     } else if (isInstanceOf(init, Blob)) {
-      this[_data] = init
+      this[_noSideEffects] = true
+      this.path = init.name
+      this[_noSideEffects] = false
+      this.data = init
+    } else {
+      this.path = undefined
     }
   }
 
@@ -38,6 +45,7 @@ export default class FileAgent {
   }
   set path(val) {
     this[_path] = val
+    if (this[_noSideEffects]) return
     this.data = undefined
     this.dirty = undefined
   }
@@ -61,6 +69,7 @@ export default class FileAgent {
   set data(data) {
     this[_data] = data
     this[_blob] = undefined
+    if (this[_noSideEffects]) return
     this.url = undefined
     this.text = undefined
     this.stream = undefined
