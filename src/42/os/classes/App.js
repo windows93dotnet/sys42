@@ -124,12 +124,13 @@ export async function mount(manifestPath, options) {
     return appShell
   }
 
+  // manifest.$id = new URL(manifest.manifestPath, manifest.dir).href
   manifest.$defs ??= {}
   Object.assign(manifest.$defs, editor.menuitems)
 
   // Execution is in a sandbox.
   // It's safe to resolve $ref keywords with potential javascript functions
-  manifest = await import("../../fabric/json/resolve.js") //
+  manifest = await import("../../../../.trash/yagni/resolve.js") //
     .then(({ resolve }) =>
       resolve(manifest, { strict: false, baseURL: manifest.dir })
     )

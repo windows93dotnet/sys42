@@ -1,0 +1,9 @@
+{
+  "description": "node",
+  "type": "object",
+  "properties": {
+    "value": { "type": "number" },
+    "subtree": { "$ref": "tree" }
+  },
+  "required": ["value"]
+}
