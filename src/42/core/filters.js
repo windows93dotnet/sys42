@@ -218,6 +218,7 @@ types.field = {
   select(string, field = this.el) {
     field.focus()
     field.setSelectionRange(0, 0)
+    if (!string) return
     const { value } = field
     const start = value.indexOf(string)
     start > -1
@@ -231,7 +232,13 @@ types.field = {
     })
   },
 
-  async sink(rs, field = this.el, fallback = "") {
+  async fill(value, field = this.el) {
+    const setControlData = await import("../fabric/dom/setControlData.js") //
+      .then((m) => m.default)
+    setControlData(field, value)
+  },
+
+  async sink(rs, fallback = "", field = this.el) {
     if (rs === undefined) return fallback
     const [stream, sinkField] = await Promise.all([
       import("./stream.js").then((m) => m.default),

@@ -34,6 +34,14 @@ export default function setControlData(el, val) {
       addPercentProp(el)
       break
 
+    case "textarea": {
+      const top = el.scrollTop
+      const left = el.scrollLeft
+      el.value = val ?? ""
+      requestAnimationFrame(() => el.scrollTo(top, left))
+      break
+    }
+
     default:
       el.value = val ?? ""
   }
