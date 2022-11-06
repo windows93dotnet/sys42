@@ -1,6 +1,6 @@
 export default {
   menubar: [
-    { $ref: "./#/$defs/File" }, // TODO: improve resolve with $ref starting with #
+    { $ref: "./#/$defs/FileMenu" }, // TODO: improve resolve with $ref starting with #
     {
       label: "View",
       content: [
@@ -57,8 +57,8 @@ export default {
         compact: true,
         autofocus: true,
         lazy: true,
-        bind: { to: "data", from: "text" },
-        // value: "{{field.sink(stream)}}",
+        bind: { to: "data" /* , from: "text" */ },
+        value: "{{field.sink(stream)}}",
         // value: "{{text}}",
         on: {
           "input": "{{dirty = true}}",

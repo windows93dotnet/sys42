@@ -187,19 +187,8 @@ export default class App extends UI {
       initiator: manifest.initiator,
     })
 
-    this.ctx.actions.assign("/editor", editor.makeActions(this.state))
-
     this.manifest = manifest
 
-    import("../../io.js").then(({ default: io }) => {
-      io.listenImport()
-      io.on("import", ([{ id, file }]) => {
-        const init = { id, path: file.name, data: file }
-        FileAgent.recycle(this.state.$files, 0, init, manifest)
-      })
-      io.on("paths", ([path]) => {
-        FileAgent.recycle(this.state.$files, 0, path, manifest)
-      })
-    })
+    editor.init(this)
   }
 }
