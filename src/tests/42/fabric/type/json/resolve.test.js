@@ -87,7 +87,7 @@ test("$ref with props after $ref keyword", (t) => {
   t.not(res.bar, res.foo)
 })
 
-test("data after $ref", (t) => {
+test("data before and after $ref", (t) => {
   const res = resolve.sync(
     {
       a: 1,
@@ -95,7 +95,6 @@ test("data after $ref", (t) => {
       b: 2,
     },
     {
-      strict: false,
       cache: {
         "http://localhost:1234/": { c: 3 },
       },
@@ -103,6 +102,16 @@ test("data after $ref", (t) => {
   )
 
   t.eq(res, { a: 1, b: 2, c: 3 })
+})
+
+test("data before and after $ref", "array", (t) => {
+  const res = resolve.sync({
+    a: { 0: "X", $ref: "#/$defs/arr", 1: "Y", 2: "Z" },
+    $defs: {
+      arr: ["x", "y"],
+    },
+  })
+  t.eq(res.a, ["x", "y", "Z"])
 })
 
 test("$ref in array", (t) => {
@@ -337,7 +346,7 @@ test("nested $ref and $ref at root", "$defs at the end", (t) => {
   t.eq(res, { type: "integer" })
 })
 
-test.skip("duplicate $ref", (t) => {
+test("duplicate $ref", (t) => {
   const res = resolve.sync({
     properties: {
       allOf: { $ref: "#/$defs/schemaArray" },
@@ -350,9 +359,41 @@ test.skip("duplicate $ref", (t) => {
     },
   })
 
-  t.eq(res)
-  // t.is(res.properties.allOf, res.properties.anyOf)
+  // t.eq(res)
+  t.is(res.properties.allOf, res.properties.anyOf)
   t.is(res.$defs.schemaArray, res.properties.anyOf)
+})
+
+test("duplicate $ref with data after $ref", (t) => {
+  const res = resolve.sync({
+    properties: {
+      allOf: { $ref: "#/$defs/schemaArray", length: 3 },
+      anyOf: { $ref: "#/$defs/schemaArray", length: 4 },
+    },
+    $defs: {
+      schemaArray: {
+        type: "array",
+      },
+    },
+  })
+
+  t.eq(res, {
+    properties: {
+      allOf: {
+        type: "array",
+        length: 3,
+      },
+      anyOf: {
+        type: "array",
+        length: 4,
+      },
+    },
+    $defs: {
+      schemaArray: {
+        type: "array",
+      },
+    },
+  })
 })
 
 /* from draft-07-test-suite.js */

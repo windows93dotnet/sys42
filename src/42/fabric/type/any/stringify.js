@@ -73,8 +73,8 @@ const PRESETS = {
     list: true,
     printWidth: Infinity,
     displayNewlines: false,
-    maxItems: 8,
-    maxChars: 40,
+    maxItems: 12,
+    maxChars: 64,
   },
 
   overview: {

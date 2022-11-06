@@ -1,6 +1,7 @@
 export default {
   menubar: [
-    { $ref: "./#/$defs/FileMenu" }, // TODO: improve resolve with $ref starting with #
+    // { $ref: "./#/$defs/FileMenu" }, // TODO: improve resolve with $ref starting with #
+    { $ref: "#/$defs/FileMenu" }, // TODO: improve resolve with $ref starting with #
     {
       label: "View",
       content: [

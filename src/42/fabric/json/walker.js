@@ -170,7 +170,12 @@ class Walker {
 
   addCtxLink(ctx) {
     if (this.visiteds.has(ctx.value)) {
-      ctx.link = this.visiteds.get(ctx.value)
+      const link = this.visiteds.get(ctx.value)
+      if (ctx.uri === link.uri) {
+        this.unlinkeds.add(ctx)
+      } else {
+        ctx.link = link
+      }
     } else {
       this.unlinkeds.add(ctx)
     }
