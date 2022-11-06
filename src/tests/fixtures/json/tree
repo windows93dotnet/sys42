@@ -1,0 +1,12 @@
+{
+  "description": "tree of nodes",
+  "type": "object",
+  "properties": {
+    "meta": { "type": "string" },
+    "nodes": {
+      "type": "array",
+      "items": { "$ref": "node" }
+    }
+  },
+  "required": ["meta", "nodes"]
+}

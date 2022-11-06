@@ -1,24 +1,24 @@
 import isHashmapLike from "../any/is/isHashmapLike.js"
 
-export default function merge(target, source, memory = new WeakMap()) {
+export default function merge(dest, source, memory = new WeakMap()) {
   for (const [key, val] of Object.entries(source)) {
     if (memory.has(val)) {
-      target[key] = memory.get(val)
+      dest[key] = memory.get(val)
     } else if (Array.isArray(val)) {
-      target[key] = []
-      memory.set(val, target[key])
-      merge(target[key], val, memory)
+      dest[key] = []
+      memory.set(val, dest[key])
+      merge(dest[key], val, memory)
     } else if (isHashmapLike(val)) {
-      if (target[key] === null || typeof target[key] !== "object") {
-        target[key] = {}
+      if (dest[key] === null || typeof dest[key] !== "object") {
+        dest[key] = {}
       }
 
-      memory.set(val, target[key])
-      merge(target[key], val, memory)
+      memory.set(val, dest[key])
+      merge(dest[key], val, memory)
     } else {
-      target[key] = val
+      dest[key] = val
     }
   }
 
-  return target
+  return dest
 }
