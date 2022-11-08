@@ -141,7 +141,9 @@ export default function renderControl(el, ctx, def) {
       ? toTitleCase(el.value)
       : toTitleCase(getBasename(el.name)))
 
-  if (el.role === "menuitemcheckbox" || el.role === "menuitemradio") {
+  const role = el.getAttribute("role")
+
+  if (role === "menuitemcheckbox" || role === "menuitemradio") {
     const label = render(
       { tag: "label", for: el.id, role: "none", content: labelText },
       ctx

@@ -17,7 +17,7 @@ export class Picto extends Component {
   }
 
   setup() {
-    if (this.tooltip) this.role = "img"
+    if (this.tooltip) this.setAttribute("role", "img")
     else this.setAttribute("aria-hidden", true)
   }
 }
