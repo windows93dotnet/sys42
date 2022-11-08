@@ -130,9 +130,9 @@ export async function mount(manifestPath, options) {
 
   // Execution is in a sandbox.
   // It's safe to resolve $ref keywords with potential javascript functions
-  manifest = await import("../../../../.trash/yagni/resolve.js") //
+  manifest = await import("../../fabric/json/resolve.js") //
     .then(({ resolve }) =>
-      resolve(manifest, { strict: false, baseURL: manifest.dir })
+      resolve(manifest, { strict: false, baseURI: manifest.dir })
     )
 
   return new App(manifest)
