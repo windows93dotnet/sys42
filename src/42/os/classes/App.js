@@ -111,11 +111,7 @@ export async function mount(manifestPath, options) {
         ipc.on("42_IO_READY", async () => system.pwa.files)
       })
 
-    const appShell = new UI({
-      id,
-      tag: "ui-sandbox.box-fit",
-      ...sandbox,
-    })
+    const appShell = new UI({ id, tag: "ui-sandbox.box-fit", ...sandbox })
 
     appShell.ctx.reactive.watch("/$dialog/title", (val) => {
       if (val) document.title = val
@@ -126,7 +122,7 @@ export async function mount(manifestPath, options) {
 
   // manifest.$id = new URL(manifest.manifestPath, manifest.dir).href
   manifest.$defs ??= {}
-  Object.assign(manifest.$defs, editor.menuitems)
+  Object.assign(manifest.$defs, editor.menubar)
 
   // Execution is in a sandbox.
   // It's safe to resolve $ref keywords with potential javascript functions

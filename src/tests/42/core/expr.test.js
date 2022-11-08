@@ -194,7 +194,7 @@ test("multi locals", (t) => {
   t.eq(fn({ a: 1 }, { b: 2 }), false)
 })
 
-test("async statements", async (t) => {
+test.flaky("async statements", async (t) => {
   const parsed = expr.parse("{{tmp = x(); a = tmp}}")
 
   const fn = expr.compile(parsed, { assignment: true, async: true })

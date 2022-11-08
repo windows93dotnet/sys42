@@ -47,6 +47,8 @@ export class Dialog extends Component {
       label: undefined,
       footer: undefined,
     },
+
+    on: { "pointerdown || focusin": "{{moveAbove()}}" },
   };
 
   [_axis]() {
@@ -106,16 +108,20 @@ export class Dialog extends Component {
     return def
   }
 
+  moveAbove() {
+    this.style.zIndex = maxZIndex("ui-dialog, ui-menu") + 1
+  }
+
   setup() {
     const rect = this.getBoundingClientRect()
     this.x ??= Math.round(rect.x)
     this.y ??= Math.round(rect.y)
     this.style.top = 0
     this.style.left = 0
-    this.style.zIndex = maxZIndex("ui-dialog, ui-menu") + 1
+    this.moveAbove()
+
     this.emit("open", this)
     dispatch(this, "uidialogopen")
-
     const items = this.querySelectorAll(":scope [data-autofocus]")
 
     items.length > 0
@@ -171,3 +177,4 @@ const dialog = rpc(
 )
 
 export default dialog
+export { dialog }

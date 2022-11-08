@@ -5,6 +5,7 @@ export default {
       label: "View",
       content: [
         { $ref: "fullscreen" },
+        { $ref: "openInNewTab" },
         "---",
         { tag: "checkbox", bind: "monospace" },
         { tag: "checkbox", bind: "wrap" },
@@ -34,6 +35,7 @@ export default {
         },
       ],
     },
+    { $ref: "HelpMenu" },
   ],
 
   state: {

@@ -1846,12 +1846,12 @@ new Map([
 /* circular
 =========== */
 
-test("circular object", "root", (t) => {
+test("circular object", "root", async (t) => {
   const obj = { x: { $ref: "#/y" }, y: [1] }
   obj.circular = obj
   const actual = stringify(obj)
 
-  const resolved = resolve.sync(eval(`(${actual})`))
+  const resolved = await resolve(eval(`(${actual})`))
   t.is(resolved, resolved.circular)
   t.is(resolved.x, resolved.y)
 
@@ -1870,12 +1870,12 @@ test("circular object", "root", (t) => {
   )
 })
 
-test("circular object", "nested", (t) => {
+test("circular object", "nested", async (t) => {
   const obj = { x: {} }
   obj.circular = obj.x
   const actual = stringify(obj)
 
-  const resolved = resolve.sync(eval(`(${actual})`))
+  const resolved = await resolve(eval(`(${actual})`))
   t.is(resolved.x, resolved.circular)
 
   t.is(
@@ -1888,13 +1888,13 @@ test("circular object", "nested", (t) => {
   )
 })
 
-test("circular array", (t) => {
+test("circular array", async (t) => {
   const arr = []
   arr[0] = arr
   arr[1] = 123
   const actual = stringify(arr)
 
-  const resolved = resolve.sync(eval(`(${actual})`))
+  const resolved = await resolve(eval(`(${actual})`))
   t.is(resolved[0], resolved)
 
   t.is(
@@ -1907,13 +1907,13 @@ test("circular array", (t) => {
   )
 })
 
-test("circular array", "nested", (t) => {
+test("circular array", "nested", async (t) => {
   const arr = []
   arr[0] = [arr]
   arr[1] = [arr[0]]
   const actual = stringify(arr)
 
-  const resolved = resolve.sync(eval(`(${actual})`))
+  const resolved = await resolve(eval(`(${actual})`))
   t.is(resolved[0][0], resolved)
   t.is(resolved[1][0], resolved[0])
 
@@ -1931,7 +1931,7 @@ test("circular array", "nested", (t) => {
   )
 })
 
-test("circular array", "nested", 2, (t) => {
+test("circular array", "nested", 2, async (t) => {
   const arr = []
   const x = ["a"]
   arr[0] = x
@@ -1940,7 +1940,7 @@ test("circular array", "nested", 2, (t) => {
 
   const actual = stringify(arr)
 
-  const resolved = resolve.sync(eval(`(${actual})`))
+  const resolved = await resolve(eval(`(${actual})`))
   t.is(resolved[0], resolved[1])
   t.is(resolved[1], resolved[2])
 
@@ -1960,7 +1960,7 @@ test("circular array", "nested", 2, (t) => {
   )
 })
 
-// test.only("$defs object has priority to make references", (t) => {
+// test.only("$defs object has priority to make references", async (t) => {
 //   const schema = {
 //     properties: {
 //       allOf: { $ref: "#/$defs/schemaArray" },
@@ -1973,7 +1973,7 @@ test("circular array", "nested", 2, (t) => {
 //     },
 //   }
 
-//   const obj = resolve.sync(schema)
+//   const obj = await resolve(schema)
 //   t.is(obj)
 //   t.is(obj.properties.allOf, obj.properties.anyOf)
 //   const actual = stringify(obj)
@@ -1994,8 +1994,8 @@ test("circular array", "nested", 2, (t) => {
 //   )
 // })
 
-// test("$ref in $defs", (t) => {
-//   const obj = resolve.sync({
+// test("$ref in $defs", async (t) => {
+//   const obj = await resolve({
 //     x: {
 //       $ref: "#/$defs/c",
 //     },
@@ -2026,7 +2026,7 @@ test("circular array", "nested", 2, (t) => {
 //   )
 // })
 
-test("make references relative to $id", (t) => {
+test("make references relative to $id", async (t) => {
   const schema = {
     allOf: [
       {
@@ -2043,7 +2043,7 @@ test("make references relative to $id", (t) => {
     ],
   }
 
-  const obj = resolve.sync(schema)
+  const obj = await resolve(schema)
   const actual = stringify(obj)
   t.is(
     actual,
@@ -2106,7 +2106,7 @@ test("circular Map", (t) => {
   const actual = stringify(map)
 
   /* resolving maps is not supported anymore */
-  // const resolved = resolve.sync(eval(`(${actual})`))
+  // const resolved = await resolve(eval(`(${actual})`))
   // t.is(resolved.get("circular"), resolved)
 
   t.is(

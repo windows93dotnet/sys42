@@ -183,7 +183,15 @@ ${this.script ?? ""}
     } catch {
       this.message(
         create("div", "Impossible to embed this URL"),
-        create("a", { href: this.path, target: "_blank" }, this.path)
+        create(
+          "a",
+          {
+            href: this.path,
+            target: "_blank",
+            rel: "nofollow noreferrer",
+          },
+          this.path
+        )
       )
     }
 
