@@ -1,9 +1,11 @@
 export default {
   menubar: [
-    { $ref: "./#/$defs/FileMenu" }, // TODO: improve resolve with $ref starting with #
+    { $ref: "FileMenu" },
     {
       label: "View",
       content: [
+        { $ref: "fullscreen" },
+        "---",
         { tag: "checkbox", bind: "monospace" },
         { tag: "checkbox", bind: "wrap" },
         { tag: "checkbox", bind: "spellcheck" },

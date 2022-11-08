@@ -246,3 +246,5 @@ export default async function resolve(source, options, carrier) {
 
   return out.dest
 }
+
+export { resolve }

@@ -2,62 +2,59 @@ import FileAgent from "./FileAgent.js"
 
 const editor = {
   menuitems: {
-    newFile: {
-      label: "New",
-      picto: "file",
-      shortcut: "Ctrl+N",
-      click: "{{editor.newFile(}}",
-    },
-    openFile: {
-      label: "Open…",
-      picto: "folder-open",
-      shortcut: "Ctrl+O",
-      click: "{{editor.openFile(}}",
-    },
-    saveFile: {
-      label: "Save",
-      picto: "save",
-      shortcut: "Ctrl+S",
-      click: "{{editor.saveFile()}}",
-    },
-
-    import: {
-      label: "Import…",
-      picto: "import",
-      id: "import",
-      click: "{{editor.import()}}",
-    },
-    export: {
-      label: "Export…",
-      picto: "export",
-      id: "export",
-      click: "{{editor.export()}}",
-    },
-
     fullscreen: {
+      $id: "fullscreen",
       label: "Fullscreen",
       click: "{{editor.fullscreen()}}",
       disabled: !document.fullscreenEnabled,
-    },
-    exit: {
-      label: "Exit",
-      click: "{{editor.exit()}}",
     },
   },
 }
 
 editor.menuitems.FileMenu = {
+  $id: "FileMenu",
   label: "File",
   content: [
-    editor.menuitems.newFile,
-    editor.menuitems.openFile,
-    editor.menuitems.saveFile,
+    {
+      $id: "newFile",
+      label: "New",
+      picto: "file",
+      shortcut: "Ctrl+N",
+      click: "{{editor.newFile(}}",
+    },
+    {
+      $id: "openFile",
+      label: "Open…",
+      picto: "folder-open",
+      shortcut: "Ctrl+O",
+      click: "{{editor.openFile(}}",
+    },
+    {
+      $id: "saveFile",
+      label: "Save",
+      picto: "save",
+      shortcut: "Ctrl+S",
+      click: "{{editor.saveFile()}}",
+    },
     "---",
-    editor.menuitems.import,
-    editor.menuitems.export,
+    {
+      $id: "import",
+      label: "Import…",
+      picto: "import",
+      click: "{{editor.import()}}",
+    },
+    {
+      $id: "export",
+      label: "Export…",
+      picto: "export",
+      click: "{{editor.export()}}",
+    },
     "---",
-    editor.menuitems.fullscreen,
-    editor.menuitems.exit,
+    {
+      $id: "exit",
+      label: "Exit",
+      click: "{{editor.exit()}}",
+    },
   ],
 }
 
