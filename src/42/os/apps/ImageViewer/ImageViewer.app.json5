@@ -9,6 +9,8 @@
     ],
   },
 
+  menubar: [{ $ref: "FileMenu" }],
+
   content: [
     {
       tag: ".box-center.scroll-1.max-w-full.inset.checkboard",
@@ -21,9 +23,9 @@
           "width": "{{display !== '100%' ? '100%' : 'auto'}}",
           "max-width": "none",
         },
-        src: "{{$files/0/path}}",
+        src: "{{$files/0/url}}",
         on: {
-          load: "{{width = target.width; height = target.height}}",
+          load: "{{width = target.naturalWidth; height = target.naturalHeight}}",
         },
       },
     },

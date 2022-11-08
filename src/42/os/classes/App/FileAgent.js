@@ -1,11 +1,15 @@
 import isHashmapLike from "../../../fabric/type/any/is/isHashmapLike.js"
 import isInstanceOf from "../../../fabric/type/any/is/isInstanceOf.js"
+import getBasename from "../../../core/path/core/getBasename.js"
+import disk from "../../../core/disk.js"
 
 const _noSideEffects = Symbol("FileAgent._noSideEffects")
 const _path = Symbol("FileAgent._path")
 const _url = Symbol("FileAgent._url")
 const _blob = Symbol("FileAgent._blob")
 const _data = Symbol("FileAgent._data")
+
+const dummyBlob = Promise.resolve(new Blob())
 
 export default class FileAgent {
   [Symbol.for("observe")] = true
@@ -32,8 +36,9 @@ export default class FileAgent {
       if ("dirty" in init) this.dirty = init.dirty
     } else if (isInstanceOf(init, Blob)) {
       this[_noSideEffects] = true
-      this.path = init.name
+      this.path = undefined
       this[_noSideEffects] = false
+      this.name = init.name
       this.data = init
     } else {
       this.path = undefined
@@ -46,6 +51,7 @@ export default class FileAgent {
   set path(val) {
     this[_path] = val
     if (this[_noSideEffects]) return
+    this.name = val ? getBasename(val) : undefined
     this.data = undefined
     this.dirty = undefined
   }
@@ -57,7 +63,7 @@ export default class FileAgent {
       return Promise.resolve(this[_blob])
     }
 
-    if (!this.path) return Promise.resolve(new Blob())
+    if (!this.path) return dummyBlob
 
     return import("../../../core/fs.js") //
       .then(({ default: fs }) => fs.open(this.path))
@@ -78,10 +84,20 @@ export default class FileAgent {
 
   get url() {
     if (this[_url]) return this[_url]
-    return this.data.then((blob) => {
+
+    return (async () => {
+      if (this.path) {
+        const { id } = await disk.getIdAndMask(this.path)
+        if (id === 0) {
+          this[_url] = this.path
+          return this[_url]
+        }
+      }
+
+      const blob = await this.data
       this[_url] = URL.createObjectURL(blob)
       return this[_url]
-    })
+    })()
   }
   set url(val) {
     if (this[_url]) URL.revokeObjectURL(this[_url])

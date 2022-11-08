@@ -10,6 +10,7 @@ body {
   -moz-osx-font-smoothing: unset;
   font-smoothing: unset;
   font-smooth: never;
+  filter: var(--pixel-font-filter);
 }
 
 :where(h1) { font-size: 300%; }

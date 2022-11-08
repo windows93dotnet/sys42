@@ -71,6 +71,8 @@ export default function create(ctx, tag, ...args) {
     ? document.createDocumentFragment()
     : document.createElement(tag)
 
+  if (el.localName === "a") el.rel = "noopener"
+
   // sort attributes
   const tmp = {}
   for (const key of ATTRIBUTES_ORDER) if (key in attrs) tmp[key] = attrs[key]

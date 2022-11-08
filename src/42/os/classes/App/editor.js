@@ -1,59 +1,86 @@
 import FileAgent from "./FileAgent.js"
 
 const editor = {
-  menuitems: {
-    fullscreen: {
-      $id: "fullscreen",
-      label: "Fullscreen",
-      click: "{{editor.fullscreen()}}",
-      disabled: !document.fullscreenEnabled,
-    },
-  },
-}
-
-editor.menuitems.FileMenu = {
-  $id: "FileMenu",
-  label: "File",
-  content: [
+  menubar: [
     {
-      $id: "newFile",
-      label: "New",
-      picto: "file",
-      shortcut: "Ctrl+N",
-      click: "{{editor.newFile(}}",
+      $id: "FileMenu",
+      label: "File",
+      content: [
+        {
+          $id: "newFile",
+          label: "New",
+          picto: "file",
+          shortcut: "Ctrl+N",
+          click: "{{editor.newFile(}}",
+        },
+        {
+          $id: "openFile",
+          label: "Open…",
+          picto: "folder-open",
+          shortcut: "Ctrl+O",
+          click: "{{editor.openFile(}}",
+        },
+        {
+          $id: "saveFile",
+          label: "Save",
+          picto: "save",
+          shortcut: "Ctrl+S",
+          click: "{{editor.saveFile()}}",
+        },
+        "---",
+        {
+          $id: "import",
+          label: "Import…",
+          picto: "import",
+          click: "{{editor.import()}}",
+        },
+        {
+          $id: "export",
+          label: "Export…",
+          picto: "export",
+          click: "{{editor.export()}}",
+        },
+        "---",
+        {
+          $id: "exit",
+          label: "Exit",
+          click: "{{editor.exit()}}",
+        },
+      ],
     },
     {
-      $id: "openFile",
-      label: "Open…",
-      picto: "folder-open",
-      shortcut: "Ctrl+O",
-      click: "{{editor.openFile(}}",
+      $id: "ViewMenu",
+      label: "View",
+      content: [
+        {
+          $id: "fullscreen",
+          label: "Full Screen",
+          click: "{{editor.fullscreen()}}",
+          disabled: !document.fullscreenEnabled,
+        },
+        {
+          $id: "openInNewTab",
+          label: "Open in New Tab",
+          click: "{{editor.openInNewTab()}}",
+        },
+      ],
     },
     {
-      $id: "saveFile",
-      label: "Save",
-      picto: "save",
-      shortcut: "Ctrl+S",
-      click: "{{editor.saveFile()}}",
-    },
-    "---",
-    {
-      $id: "import",
-      label: "Import…",
-      picto: "import",
-      click: "{{editor.import()}}",
-    },
-    {
-      $id: "export",
-      label: "Export…",
-      picto: "export",
-      click: "{{editor.export()}}",
-    },
-    "---",
-    {
-      $id: "exit",
-      label: "Exit",
-      click: "{{editor.exit()}}",
+      $id: "HelpMenu",
+      label: "Help",
+      content: [
+        {
+          $id: "install",
+          label: "Install on {{editor.getOS()}} desktop",
+          click: "{{editor.install()}}",
+        },
+        "---",
+        {
+          $id: "about",
+          label: "About",
+          click: "{{editor.about()}}",
+        },
+      ],
     },
   ],
 }
@@ -108,16 +135,34 @@ editor.init = (app) => {
       )
     },
 
-    async install() {
-      const openInNewTab = await import(
-        "../../../fabric/browser/openInNewTab.js"
-      ).then((m) => m.default)
-      openInNewTab(dir + "?install")
+    install() {
+      import("../../../fabric/browser/openInNewTab.js").then(
+        ({ openInNewTab }) => openInNewTab(dir + "?install")
+      )
+    },
+
+    openInNewTab() {
+      import("../../../fabric/browser/openInNewTab.js").then(
+        ({ openInNewTab }) => openInNewTab(dir)
+      )
     },
 
     fullscreen() {
       import("../../../fabric/browser/toggleFullscreen.js") //
         .then((m) => m.default())
+    },
+    about() {
+      import("../../../ui/components/dialog.js") //
+        .then(({ dialog }) => {
+          console.log(dialog)
+        })
+    },
+    getOS() {
+      return (
+        navigator.userAgentData?.platform ??
+        import("../../../core/env/parseUserAgent.js") //
+          .then((m) => m.default().os.name)
+      )
     },
 
     exit() {

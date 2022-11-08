@@ -24,7 +24,7 @@ const { href: errorCatcher } = new URL(
   import.meta.url
 )
 
-const SUPPORTED_FEATURES = document.featurePolicy?.features() ?? []
+const SUPPORTED_FEATURES = document.featurePolicy?.features() ?? undefined
 
 const DISALLOWED_FEATURES = [
   // "ambient-light-sensor",
@@ -144,8 +144,12 @@ export default class Resource {
 
     const allow = []
     for (const perm of FEATURES) {
-      if (SUPPORTED_FEATURES.includes(perm)) {
-        if (allowList.includes(perm)) allow.push(`${perm} 'src' ${origin}`)
+      if (
+        SUPPORTED_FEATURES === undefined ||
+        SUPPORTED_FEATURES.includes(perm)
+      ) {
+        // if (allowList.includes(perm)) allow.push(`${perm} 'src' ${origin}`)
+        if (allowList.includes(perm)) allow.push(`${perm} *`)
         else allow.push(`${perm} 'none'`)
       }
     }
