@@ -263,7 +263,7 @@ function handleSeq(seq, fn, el, { repeatable, options }, registry) {
   }
 }
 
-export default function on(...args) {
+export function on(...args) {
   const { list, cancels } = normalizeListen(args)
   eventsMap(list)
   if (cancels) {
@@ -277,3 +277,5 @@ export default function on(...args) {
 }
 
 export { normalizeListen, makeHandler, SPLIT_REGEX } from "./listen.js"
+
+export default on

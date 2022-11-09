@@ -9,7 +9,7 @@ const DEFAULT = {
   untitled: "untitled.txt",
 }
 
-export default async function filePickerSave(path, options) {
+export async function filePickerSave(path, options) {
   const config = { ...DEFAULT, ...options }
   const { untitled } = config
 
@@ -93,3 +93,5 @@ export default async function filePickerSave(path, options) {
     base: res.name,
   }
 }
+
+export default filePickerSave

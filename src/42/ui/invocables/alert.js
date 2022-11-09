@@ -9,7 +9,7 @@ const DEFAULT = {
   decline: false,
 }
 
-export default async function alert(message = "", options = {}) {
+export async function alert(message = "", options = {}) {
   const config = { ...DEFAULT, ...options }
   config.dialog ??= {}
   forceOpener(config.dialog)
@@ -76,3 +76,5 @@ export default async function alert(message = "", options = {}) {
 
   return true
 }
+
+export default alert

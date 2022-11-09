@@ -49,7 +49,7 @@ const DEFAULT = {
   cancelable: true,
 }
 
-export default function simulate(el, event, init) {
+export function simulate(el, event, init) {
   if (typeof el === "string") {
     init = event
     event = el
@@ -78,3 +78,5 @@ export default function simulate(el, event, init) {
     el.dispatchEvent(e)
   }
 }
+
+export default simulate

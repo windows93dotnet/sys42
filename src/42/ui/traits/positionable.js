@@ -442,6 +442,8 @@ class Positionable extends Trait {
   }
 }
 
-export default function positionable(...args) {
+export function positionable(...args) {
   return new Positionable(...args)
 }
+
+export default positionable

@@ -7,7 +7,7 @@ const DEFAULT = {
   decline: "Cancel",
 }
 
-export default async function filePickerOpen(path, options) {
+export async function filePickerOpen(path, options) {
   const config = { ...DEFAULT, ...options }
 
   const res = await explorer(path, {
@@ -62,3 +62,5 @@ export default async function filePickerOpen(path, options) {
     files,
   }
 }
+
+export default filePickerOpen

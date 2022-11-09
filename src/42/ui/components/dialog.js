@@ -153,7 +153,7 @@ Component.define(Dialog)
 
 const tracker = new Map()
 
-const dialog = rpc(
+export const dialog = rpc(
   async function dialog(def, ctx) {
     const { steps } = ctx
     let n = tracker.has(steps) ? tracker.get(steps) : 0
@@ -195,4 +195,3 @@ const dialog = rpc(
 )
 
 export default dialog
-export { dialog }

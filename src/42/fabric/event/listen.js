@@ -156,7 +156,7 @@ export function normalizeListen(args, config) {
   return { list, cancels }
 }
 
-export default function listen(...args) {
+export function listen(...args) {
   const { list, cancels } = normalizeListen(args)
   eventsMap(list)
   if (cancels) {
@@ -168,3 +168,5 @@ export default function listen(...args) {
     return forget
   }
 }
+
+export default listen

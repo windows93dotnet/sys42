@@ -10,7 +10,7 @@ const DEFAULT = {
   enterKeyHint: undefined,
 }
 
-export default async function prompt(message = "", options) {
+export async function prompt(message = "", options) {
   if (options === undefined && message && typeof message === "object") {
     options = message
     message = options.message
@@ -54,3 +54,5 @@ export default async function prompt(message = "", options) {
 
   return res.ok ? String(res.value) : undefined
 }
+
+export default prompt

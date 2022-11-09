@@ -182,6 +182,8 @@ class Selectable extends Trait {
   }
 }
 
-export default function selectable(...args) {
+export function selectable(...args) {
   return new Selectable(...args)
 }
+
+export default selectable

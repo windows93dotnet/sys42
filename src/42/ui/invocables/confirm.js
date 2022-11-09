@@ -5,7 +5,7 @@ const DEFAULT = {
   class: "ui-dialog-demand ui-dialog-confirm",
 }
 
-export default async function confirm(message = "", options) {
+export async function confirm(message = "", options) {
   if (options === undefined && message && typeof message === "object") {
     options = message
     message = options.message
@@ -22,3 +22,5 @@ export default async function confirm(message = "", options) {
 
   return Boolean(res.ok)
 }
+
+export default confirm
