@@ -12,10 +12,13 @@ const _setResource = Symbol("setResource")
 
 const { href: ipcUrl } = new URL("../../core/ipc.js", import.meta.url)
 const { href: uiUrl } = new URL("../../ui.js", import.meta.url)
+const { href: headUrl } = new URL("../head.js", import.meta.url)
 
 const options = {
-  style: '<link rel="stylesheet" href="/style.css" id="theme" />',
-  body: ' class="in-iframe"',
+  head: `
+<link rel="stylesheet" href="/style.css" id="theme" />
+<script type="module" src="${headUrl}"></script>`,
+  body: '<body class="in-iframe">',
 }
 
 // Chrome don't allow drag from top to iframe
@@ -118,9 +121,15 @@ export class Sandbox extends Component {
     this.querySelector(":scope > .ui-sandbox__message").replaceChildren(...args)
   }
 
+  get bus() {
+    return this.resource?.bus
+  }
+
   [_setResource](init) {
     if (init) return
     const { permissions } = this
+    // const { signal } = this.ctx
+    // this.resource = new Resource({ permissions, signal })
     this.resource = new Resource({ permissions })
 
     const { sandbox } = this.resource.el
@@ -200,7 +209,7 @@ ${this.script ?? ""}
 
   destroy() {
     this.#cancel?.()
-    this.channel?.destroy()
+    this.resource?.destroy()
   }
 }
 

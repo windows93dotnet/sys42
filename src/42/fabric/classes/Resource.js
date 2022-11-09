@@ -111,6 +111,8 @@ export default class Resource {
       throw new DOMException("Sandbox not supported", "SecurityError")
     }
 
+    options?.signal?.addEventListener("abort", () => this.destroy())
+
     this.config = configure(DEFAULTS, options)
 
     const permissions = this.config.permissions
@@ -126,6 +128,8 @@ export default class Resource {
     this.el.fetchpriority = "high"
 
     this.el.toggleAttribute("sandbox", true)
+
+    this.#addBus()
 
     const allowList = []
     for (const x of arrify(permissions)) {
@@ -157,35 +161,39 @@ export default class Resource {
     this.el.allow = allow.join("; ")
   }
 
-  #listenErrors() {
-    this.bus?.destroy()
+  #addBus() {
     this.bus = ipc.from(this.el)
-    this.bus.on("42-resource:error", async (err) => {
-      const [dispatch, deserializeError] = await Promise.all([
+    this.bus
+      .on("42_IFRAME_ERROR", async (err) => {
+        const [dispatch, deserializeError] = await Promise.all([
+          import("../event/dispatch.js") //
+            .then(({ dispatch }) => dispatch),
+          import("../type/error/deserializeError.js") //
+            .then((m) => m.default),
+        ])
+        dispatch(this.el, deserializeError(err))
+      })
+      .on("42_IFRAME_BLUR", () => {
         import("../event/dispatch.js") //
-          .then((m) => m.default),
-        import("../type/error/deserializeError.js") //
-          .then((m) => m.default),
-      ])
-      dispatch(this.el, deserializeError(err))
-    })
+          .then(({ dispatch }) =>
+            dispatch(this.el, "uiiframeblur", { bubbles: true })
+          )
+      })
   }
 
   async html(html, options) {
-    const style = options?.style ?? ""
-    const bodyAttributes = options?.body ?? ""
+    const head = options?.head ?? ""
+    const body = options?.body ?? ""
     this.el.removeAttribute("src")
     this.el.srcdoc = `
 <!DOCTYPE html>
 <meta charset="utf-8" />
 <meta http-equiv="Content-Security-Policy" content="${CSP}" />
-${style}
+${head}
 <script type="module" src="${errorCatcher}"></script>
-<body${bodyAttributes}>
+${body}
 ${html}
 `
-
-    this.#listenErrors()
 
     await 0 // queueMicrotask
   }
@@ -214,17 +222,17 @@ ${html}
     }
 
     return new Promise((resolve, reject) => {
-      const forgets = []
+      this.forgets = []
 
       const end = (ok) => {
         ok ? resolve() : reject()
         if (!ok) this.el.removeAttribute("src")
-        for (const forget of forgets) forget()
-        forgets.length = 0
+        for (const forget of this.forgets) forget()
+        this.forgets.length = 0
       }
 
       if (signal) {
-        forgets.push(
+        this.forgets.push(
           listen(signal, {
             abort: () => {
               this.el.removeAttribute("src")
@@ -240,7 +248,7 @@ ${html}
       if (this.config.checkIframable) {
         isIframable(url, signal).then((ok) => end(ok))
       } else {
-        forgets.push(
+        this.forgets.push(
           listen(this.el, {
             signal,
             load: () => end(true),
@@ -249,5 +257,20 @@ ${html}
         )
       }
     })
+  }
+
+  destroy() {
+    if (this.forgets?.length) {
+      for (const forget of this.forgets) forget()
+      this.forgets.length = 0
+      this.forgets = undefined
+    }
+
+    this.bus?.destroy()
+    this.bus = undefined
+    this.el?.removeAttribute("src")
+    this.el?.removeAttribute("srcdoc")
+    this.el?.remove()
+    this.el = undefined
   }
 }

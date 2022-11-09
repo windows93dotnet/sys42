@@ -337,6 +337,11 @@ export class ServiceWorkerSender extends Emitter {
 export class Receiver extends Emitter {
   #cancel
 
+  #addSource(source) {
+    this.source = source
+    sources.set(source, this)
+  }
+
   constructor(source, options) {
     super({ signal: options?.signal })
     options?.signal?.addEventListener("abort", () => this.destroy())
@@ -345,19 +350,24 @@ export class Receiver extends Emitter {
     if (typeof source === "string") {
       this.origin = source
       origins.set(source, this)
-    } else {
-      if ("port" in source) source = source.port
-
-      if (globalThis.HTMLIFrameElement && source instanceof HTMLIFrameElement) {
-        source = source.contentWindow
-      } else if ("onmessage" in source) {
-        const options = { signal: this.#cancel.signal }
-        source.addEventListener("message", messageHandler, options)
-        source.start?.()
+    } else if ("port" in source) {
+      this.#addSource(source.port)
+    } else if (
+      globalThis.HTMLIFrameElement &&
+      source instanceof HTMLIFrameElement
+    ) {
+      if (source.contentWindow) {
+        this.#addSource(source.contentWindow)
+      } else {
+        source.addEventListener("load", () => {
+          this.#addSource(source.contentWindow)
+        })
       }
-
-      this.source = source
-      sources.set(source, this)
+    } else if ("onmessage" in source) {
+      const options = { signal: this.#cancel.signal }
+      source.addEventListener("message", messageHandler, options)
+      source.start?.()
+      this.#addSource(source.contentWindow)
     }
   }
 
