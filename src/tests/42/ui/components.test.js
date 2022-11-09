@@ -2101,3 +2101,34 @@ test("obj", async (t) => {
     "/$ui/t-obj-prop/root/obj/b",
   ])
 })
+
+/* Scope chain
+============== */
+
+Component.define(
+  class extends Component {
+    static definition = {
+      tag: "ui-t-scope-chain",
+      props: {
+        a: 1,
+      },
+    }
+  }
+)
+
+test("scope chain", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest(true), {
+      tag: "ui-t-scope-chain",
+      content: {
+        state: {
+          b: 2,
+        },
+        tag: "em",
+        content: "a: {{a}} b: {{b}}",
+      },
+    })
+  )
+
+  t.is(app.el.textContent, "a: 1 b: 2")
+})

@@ -51,7 +51,7 @@ export default function findScope(ctx, loc) {
 
   // console.group("findScope", ctx.scope)
   // console.log({ scope, loc })
-  // console.log(ctx.reactive.data)
+  // // console.log(ctx.reactive.data)
   // console.groupEnd()
 
   return [scope, loc]

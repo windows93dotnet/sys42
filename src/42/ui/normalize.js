@@ -636,6 +636,18 @@ export function normalizeDefNoCtx(def = {}) {
   return def
 }
 
+export function normalizeState(def, ctx) {
+  if (def.state) {
+    normalizeData(def.state, ctx, (res, scope, options) => {
+      if (ctx.scopeChain.length > 0) {
+        ctx.scopeChain.push({ scope, props: Object.keys(def.state) })
+      }
+
+      ctx.reactive.merge(scope, res, options)
+    })
+  }
+}
+
 export function normalizeDef(def = {}, ctx, options) {
   ctx.id ??= def.id ?? hash(def)
   ctx.type = getType(def)
@@ -647,13 +659,15 @@ export function normalizeDef(def = {}, ctx, options) {
   } else if (ctx.type === "object") {
     def = ensureDef(def, ctx)
 
-    if (def.state) {
-      normalizeData(def.state, ctx, (res, scope, options) => {
-        ctx.reactive.merge(scope, res, options)
-      })
-    }
+    const keyOrder = Object.keys(def)
 
-    normalizeScope(def, ctx)
+    if (keyOrder.indexOf("scope") < keyOrder.indexOf("state")) {
+      normalizeScope(def, ctx)
+      normalizeState(def, ctx)
+    } else {
+      normalizeState(def, ctx)
+      normalizeScope(def, ctx)
+    }
 
     const traits = normalizeTraits(def, ctx)
     if (traits) def.traits = traits

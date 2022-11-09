@@ -6,25 +6,21 @@ import system from "../system.js"
 import defer from "../fabric/type/promise/defer.js"
 import pick from "../fabric/type/object/pick.js"
 import inPWA from "../core/env/runtime/inPWA.js"
+import supportInstall from "../core/env/supportInstall.js"
 import mimetypesManager from "./managers/mimetypesManager.js"
 import appCard from "./blocks/appCard.js"
 import uid from "../core/uid.js"
 
 const SHARED_MANIFEST_KEYS = ["description", "categories"]
 
-const supportInstall =
-  "relList" in HTMLLinkElement.prototype &&
-  document.createElement("link").relList.supports("manifest") &&
-  "onbeforeinstallprompt" in window
-
-export default async function preinstall(app) {
+export default async function preinstall(manifest) {
   function resolve(url) {
-    return new URL(url, app.dir).href
+    return new URL(url, manifest.dir).href
   }
 
-  const manifest = {
-    name: app.name,
-    id: `42-${app.name}`,
+  const webmanifest = {
+    name: manifest.name,
+    id: `42-${manifest.name}`,
     scope: resolve("."),
     start_url: resolve("."),
     display_override: ["window-controls-overlay", "minimal-ui"],
@@ -32,7 +28,7 @@ export default async function preinstall(app) {
     theme_color: window
       .getComputedStyle(document.documentElement)
       .getPropertyValue("--panel-bg"),
-    ...pick(app, SHARED_MANIFEST_KEYS),
+    ...pick(manifest, SHARED_MANIFEST_KEYS),
     icons: [
       {
         src: resolve("./icons/icon-16.png"),
@@ -50,9 +46,9 @@ export default async function preinstall(app) {
         type: "image/png",
       },
     ],
-    ...(app.decode?.types
+    ...(manifest.decode?.types
       ? {
-          file_handlers: app.decode.types.map((type) => {
+          file_handlers: manifest.decode.types.map((type) => {
             const out = {}
             out.action = type.action ?? resolve(".")
             out.accept = mimetypesManager.resolve(type.accept)
@@ -70,10 +66,10 @@ export default async function preinstall(app) {
     // ],
   }
 
-  const manifestJSON = encodeURIComponent(JSON.stringify(manifest))
+  const manifestJSON = encodeURIComponent(JSON.stringify(webmanifest))
   const manifestURL = `data:application/manifest+json;name=app.webmanifest,${manifestJSON}`
 
-  document.title = manifest.name
+  document.title = webmanifest.name
 
   const head = [
     document.createElement("meta"),
@@ -85,7 +81,7 @@ export default async function preinstall(app) {
   head[0].content = "width=device-width, initial-scale=1"
 
   head[1].rel = "icon"
-  head[1].href = manifest.icons[0].src
+  head[1].href = webmanifest.icons[0].src
 
   head[2].rel = "manifest"
   head[2].href = manifestURL
@@ -161,7 +157,7 @@ export default async function preinstall(app) {
         content: {
           tag: ".panel.outset.pa-xl",
           content: [
-            appCard(manifest),
+            appCard(webmanifest),
             {
               tag: "button.w-full",
               id: "install",

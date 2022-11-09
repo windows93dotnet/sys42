@@ -169,9 +169,9 @@ test("reactive data", "array", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
       tag: "em",
+      state: { arr: ["a", "b"] },
       scope: "arr",
       content: ["{{./0}}", "{{./1}}"],
-      state: { arr: ["a", "b"] },
     })
   )
 
@@ -436,11 +436,11 @@ test("scope", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
       tag: "em",
-      scope: "foo",
-      content: "{{bar}}",
       state: {
         foo: { bar: "hi" },
       },
+      scope: "foo",
+      content: "{{bar}}",
     })
   )
 
@@ -457,6 +457,18 @@ test("scope", async (t) => {
 test("scope", "relative scopes", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
+      state: {
+        a: {
+          b: {
+            c: {
+              d: 4,
+            },
+            foo: 3,
+          },
+          bar: 2,
+        },
+        baz: 1,
+      },
       scope: "a/b/c",
       content: [
         "{{d}}",
@@ -471,18 +483,6 @@ test("scope", "relative scopes", async (t) => {
         "\n",
         { scope: "/", content: "?{{d}}" },
       ],
-      state: {
-        a: {
-          b: {
-            c: {
-              d: 4,
-            },
-            foo: 3,
-          },
-          bar: 2,
-        },
-        baz: 1,
-      },
     })
   )
 
@@ -526,6 +526,18 @@ test("scope", "relative scopes", async (t) => {
 test("scope", "relative template keys", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
+      state: {
+        a: {
+          b: {
+            c: {
+              d: 4,
+            },
+            foo: 3,
+          },
+          bar: 2,
+        },
+        baz: 1,
+      },
       scope: "a/b/c",
       content: [
         "{{/a/b/c/d}}",
@@ -540,18 +552,6 @@ test("scope", "relative template keys", async (t) => {
         "\n",
         { content: "?{{/d}}" },
       ],
-      state: {
-        a: {
-          b: {
-            c: {
-              d: 4,
-            },
-            foo: 3,
-          },
-          bar: 2,
-        },
-        baz: 1,
-      },
     })
   )
 
