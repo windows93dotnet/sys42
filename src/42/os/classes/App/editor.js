@@ -1,4 +1,5 @@
 import FileAgent from "./FileAgent.js"
+import supportInstall from "../../../core/env/supportInstall.js"
 
 const editor = {
   menubar: [
@@ -73,6 +74,8 @@ const editor = {
           $id: "install",
           label: "Install on {{editor.getOS()}} desktop",
           click: "{{editor.install()}}",
+          disabled: !supportInstall,
+          title: supportInstall ? undefined : "Not supported in this browser",
         },
         "---",
         {
@@ -152,10 +155,18 @@ editor.init = (app) => {
         .then((m) => m.default())
     },
     about() {
-      import("../../../ui/components/dialog.js") //
-        .then(({ dialog }) => {
-          console.log(dialog)
+      Promise.all([
+        import("../../../ui/components/dialog.js") //
+          .then(({ dialog }) => dialog),
+        import("../../blocks/appCard.js") //
+          .then((m) => m.default),
+      ]).then(([dialog, appCard]) => {
+        dialog({
+          class: "ui-dialog-about",
+          label: "About",
+          content: appCard(manifest),
         })
+      })
     },
     getOS() {
       return (
