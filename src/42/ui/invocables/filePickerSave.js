@@ -62,7 +62,7 @@ export async function filePickerSave(path, options) {
     ...options,
   })
 
-  if (!res.ok || !res.name) return
+  if (!res.ok || !res.name) return { ok: false }
 
   await nextCycle()
 
@@ -87,6 +87,7 @@ export async function filePickerSave(path, options) {
   }
 
   return {
+    ok: true,
     saved,
     path,
     dir: res.path,
