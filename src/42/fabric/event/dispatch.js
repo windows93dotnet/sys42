@@ -1,4 +1,4 @@
-export default function dispatch(el, name, options) {
+export function dispatch(el, name, options) {
   el = el.isConnected ? el : globalThis
 
   if (name instanceof Error) {
@@ -26,4 +26,4 @@ export default function dispatch(el, name, options) {
   return event
 }
 
-export { dispatch }
+export default dispatch

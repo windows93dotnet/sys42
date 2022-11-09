@@ -11,7 +11,7 @@ const DEFAULT = {
   decline: "Cancel",
 }
 
-export default async function demand(options) {
+export async function demand(options) {
   const config = { ...DEFAULT, ...options }
   config.dialog ??= {}
   forceOpener(config.dialog)
@@ -75,3 +75,5 @@ export default async function demand(options) {
     )
   )
 }
+
+export default demand

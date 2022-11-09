@@ -81,6 +81,8 @@ class Movable extends Trait {
   }
 }
 
-export default function movable(...args) {
+export function movable(...args) {
   return new Movable(...args)
 }
+
+export default movable

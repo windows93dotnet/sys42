@@ -193,7 +193,7 @@ export class Explorer extends Component {
 
 Component.define(Explorer)
 
-export default async function explorer(path = "/", options) {
+export async function explorer(path = "/", options) {
   const selection = options?.selection ?? []
   const glob = options?.glob ?? false
 
@@ -229,3 +229,5 @@ export default async function explorer(path = "/", options) {
     )
   )
 }
+
+export default explorer

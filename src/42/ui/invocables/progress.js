@@ -11,7 +11,7 @@ const DEFAULT = {
   agree: false,
 }
 
-export default function progress(total, options) {
+export function progress(total, options) {
   if (total && typeof total === "object") {
     options = total
     total = options.total
@@ -106,3 +106,5 @@ ${bytesize(total)}`
     done,
   })
 }
+
+export default progress
