@@ -354,7 +354,7 @@ export async function readCBOR(path) {
   return read(path).then((value) => CBOR.decode(value))
 }
 
-const fs = {
+export const fs = {
   FileSystemError,
   config: configure(DEFAULTS),
   mount,

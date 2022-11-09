@@ -28,6 +28,13 @@ const editor = {
           shortcut: "Ctrl+S",
           click: "{{editor.saveFile()}}",
         },
+        {
+          $id: "saveFileAs",
+          label: "Save As…",
+          picto: "save",
+          shortcut: "Ctrl+Shift+S",
+          click: "{{editor.saveFileAs()}}",
+        },
         "---",
         {
           $id: "import",
@@ -95,7 +102,7 @@ editor.init = (app) => {
   import("../../../io.js").then(({ default: io }) => {
     io.listenImport()
     io.on("import", ([{ id, file }]) => {
-      const init = { id, path: file.name, data: file }
+      const init = { id, blob: file }
       FileAgent.recycle(state.$files, 0, init, manifest)
     })
     io.on("paths", ([path]) => {
@@ -107,13 +114,58 @@ editor.init = (app) => {
     newFile() {
       FileAgent.recycle(state.$files, 0, undefined, manifest)
     },
+
+    // save/export
+    // -----------
     async saveFile() {
-      console.log("saveFile", await state.$files[0].data)
+      if (state.$files[0].path) {
+        const [blob, fs] = await Promise.all([
+          state.$files[0].blob,
+          import("../../../core/fs.js") //
+            .then(({ fs }) => fs),
+        ])
+        await fs.write(state.$files[0].path, blob)
+        state.$files[0].dirty = false
+      } else {
+        await app.run.editor.saveFileAs()
+      }
     },
-    openFile() {
-      console.log("openFile")
+    async saveFileAs() {
+      if (!state.$files[0]) return
+      const [data, filePickerSave] = await Promise.all([
+        state.$files[0].blob,
+        import("../../../ui/invocables/filePickerSave.js") //
+          .then(({ filePickerSave }) => filePickerSave),
+      ])
+      const { ok, path } = await filePickerSave(state.$files[0].path, { data })
+      if (ok) {
+        state.$files[0].updatePath(path)
+        state.$files[0].dirty = false
+      }
+    },
+    async export() {
+      if (!state.$files[0]) return
+      const [data, fileExport] = await Promise.all([
+        state.$files[0].blob,
+        import("../../../fabric/type/file/fileExport.js") //
+          .then((m) => m.default),
+      ])
+      await fileExport(new File([data], state.$files[0].name), encode)
     },
 
+    // open/import
+    // -----------
+    async openFile() {
+      await import("../../../ui/invocables/filePickerOpen.js") //
+        .then(({ filePickerOpen }) =>
+          filePickerOpen(state.$files[0].path, { files: false })
+        )
+        .then(({ ok, selection }) => {
+          if (ok && selection.length > 0) {
+            FileAgent.recycle(state.$files, 0, selection[0], manifest)
+          }
+        })
+    },
     async import() {
       const fileImport = await import("../../../fabric/type/file/fileImport.js") //
         .then((m) => m.default)
@@ -123,39 +175,21 @@ editor.init = (app) => {
       }
     },
 
-    async export() {
-      if (!state.$files[0]) return
-      const [data, getBasename, fileExport] = await Promise.all([
-        state.$files[0].data,
-        import("../../../core/path/core/getBasename.js") //
-          .then((m) => m.default),
-        import("../../../fabric/type/file/fileExport.js") //
-          .then((m) => m.default),
-      ])
-      await fileExport(
-        new File([data], getBasename(state.$files[0].path)),
-        encode
-      )
+    async install() {
+      await import("../../../fabric/browser/openInNewTab.js") //
+        .then(({ openInNewTab }) => openInNewTab(dir + "?install"))
+    },
+    async openInNewTab() {
+      await import("../../../fabric/browser/openInNewTab.js") //
+        .then(({ openInNewTab }) => openInNewTab(dir))
     },
 
-    install() {
-      import("../../../fabric/browser/openInNewTab.js").then(
-        ({ openInNewTab }) => openInNewTab(dir + "?install")
-      )
-    },
-
-    openInNewTab() {
-      import("../../../fabric/browser/openInNewTab.js").then(
-        ({ openInNewTab }) => openInNewTab(dir)
-      )
-    },
-
-    fullscreen() {
-      import("../../../fabric/browser/toggleFullscreen.js") //
+    async fullscreen() {
+      await import("../../../fabric/browser/toggleFullscreen.js") //
         .then((m) => m.default())
     },
-    about() {
-      Promise.all([
+    async about() {
+      await Promise.all([
         import("../../../ui/components/dialog.js") //
           .then(({ dialog }) => dialog),
         import("../../blocks/appCard.js") //
@@ -168,7 +202,8 @@ editor.init = (app) => {
         })
       })
     },
-    getOS() {
+
+    async getOS() {
       return (
         navigator.userAgentData?.platform ??
         import("../../../core/env/parseUserAgent.js") //

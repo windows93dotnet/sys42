@@ -61,9 +61,8 @@ export default {
         compact: true,
         autofocus: true,
         lazy: true,
-        bind: { to: "data" /* , from: "text" */ },
+        bind: { to: "data" },
         value: "{{field.sink(stream)}}",
-        // value: "{{text}}",
         on: {
           "input": "{{dirty = true}}",
           ":path || :dirty || focus": `{{

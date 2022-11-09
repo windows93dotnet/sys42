@@ -80,14 +80,15 @@ test.ui(async (t) => {
     /* Open
     ======= */
 
-    launch(t, "#filePickerOpen", ".ui-dialog__close", undefined),
-    launch(t, "#filePickerOpen", ".ui-dialog__decline", undefined),
+    launch(t, "#filePickerOpen", ".ui-dialog__close", { ok: false }),
+    launch(t, "#filePickerOpen", ".ui-dialog__decline", { ok: false }),
     launch(
       t,
       "#filePickerOpen",
       ".ui-dialog__agree",
       {
-        path: "/",
+        ok: true,
+        dir: "/",
         selection: ["/style.css"],
         files: [files[0]],
       },
@@ -102,7 +103,8 @@ test.ui(async (t) => {
       "#filePickerOpen",
       ".ui-dialog__agree",
       {
-        path: "/",
+        ok: true,
+        dir: "/",
         selection: ["/style.css", "/index.html"],
         files,
       },
@@ -119,9 +121,10 @@ test.ui(async (t) => {
     /* Save
     ======= */
 
-    launch(t, "#filePickerSave", ".ui-dialog__close", undefined),
-    launch(t, "#filePickerSave", ".ui-dialog__decline", undefined),
+    launch(t, "#filePickerSave", ".ui-dialog__close", { ok: false }),
+    launch(t, "#filePickerSave", ".ui-dialog__decline", { ok: false }),
     launch(t, "#filePickerSave", ".ui-dialog__agree", {
+      ok: true,
       saved: undefined,
       path: "/untitled.txt",
       dir: "/",
@@ -132,6 +135,7 @@ test.ui(async (t) => {
       "#filePickerSave",
       ".ui-dialog__agree",
       {
+        ok: true,
         saved: undefined,
         path: "/style.css",
         dir: "/",
@@ -143,13 +147,14 @@ test.ui(async (t) => {
       }
     ),
 
-    launch(t, "#filePickerSaveContent", ".ui-dialog__close", undefined),
-    launch(t, "#filePickerSaveContent", ".ui-dialog__decline", undefined),
+    launch(t, "#filePickerSaveContent", ".ui-dialog__close", { ok: false }),
+    launch(t, "#filePickerSaveContent", ".ui-dialog__decline", { ok: false }),
     launch(
       t,
       "#filePickerSaveContent",
       ".ui-dialog__agree",
       {
+        ok: true,
         saved: true,
         path: "/hello.txt",
         dir: "/",
