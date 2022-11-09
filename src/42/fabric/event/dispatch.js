@@ -25,3 +25,5 @@ export default function dispatch(el, name, options) {
   el.dispatchEvent(event)
   return event
 }
+
+export { dispatch }

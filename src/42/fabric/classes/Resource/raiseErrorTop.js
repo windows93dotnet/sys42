@@ -9,7 +9,7 @@ trap((err, { reports }) => {
   ]).then(([ipc, serializeError]) => {
     const obj = serializeError(err)
     if (reports) obj.details.reports = reports
-    ipc.emit("42-resource:error", obj)
+    ipc.emit("42_IFRAME_ERROR", obj)
   })
   return false
 })

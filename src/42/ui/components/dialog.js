@@ -9,6 +9,7 @@ import forceOpener from "../forceOpener.js"
 import uid from "../../core/uid.js"
 import { autofocus } from "../../fabric/dom/focus.js"
 import nextCycle from "../../fabric/type/promise/nextCycle.js"
+import queueTask from "../../fabric/type/function/queueTask.js"
 
 const _axis = Symbol("axis")
 
@@ -48,7 +49,17 @@ export class Dialog extends Component {
       footer: undefined,
     },
 
-    on: { "pointerdown || focusin": "{{moveAbove()}}" },
+    on: [
+      { "pointerdown || focusin": "{{activate()}}" },
+      globalThis,
+      {
+        "blur || uiiframeblur"() {
+          queueTask(() => {
+            if (this.el.contains(document.activeElement)) this.el.activate()
+          })
+        },
+      },
+    ],
   };
 
   [_axis]() {
@@ -108,8 +119,21 @@ export class Dialog extends Component {
     return def
   }
 
-  moveAbove() {
+  activate() {
+    for (const item of document.querySelectorAll("ui-dialog")) {
+      item.active = false
+    }
+
+    this.active = true
     this.style.zIndex = maxZIndex("ui-dialog, ui-menu") + 1
+
+    if (!this.contains(document.activeElement)) {
+      const items = this.querySelectorAll(":scope [data-autofocus]")
+      items.length > 0
+        ? items[items.length - 1].focus()
+        : autofocus(this.querySelector(":scope > .ui-dialog__body")) ||
+          autofocus(this.querySelector(":scope > .ui-dialog__footer"))
+    }
   }
 
   setup() {
@@ -118,16 +142,10 @@ export class Dialog extends Component {
     this.y ??= Math.round(rect.y)
     this.style.top = 0
     this.style.left = 0
-    this.moveAbove()
+    this.activate()
 
     this.emit("open", this)
     dispatch(this, "uidialogopen")
-    const items = this.querySelectorAll(":scope [data-autofocus]")
-
-    items.length > 0
-      ? items[items.length - 1].focus()
-      : autofocus(this.querySelector(":scope > .ui-dialog__body")) ||
-        autofocus(this.querySelector(":scope > .ui-dialog__footer"))
   }
 }
 
