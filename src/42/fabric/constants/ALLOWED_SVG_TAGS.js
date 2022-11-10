@@ -1,7 +1,6 @@
 // https://github.com/cure53/DOMPurify/blob/main/src/tags.js
 
 export default Object.freeze([
-  "svg",
   "altglyph",
   "altglyphdef",
   "altglyphitem",
@@ -33,6 +32,7 @@ export default Object.freeze([
   "radialgradient",
   "rect",
   "stop",
+  "svg",
   "switch",
   "symbol",
   "text",
@@ -40,6 +40,7 @@ export default Object.freeze([
   "title",
   "tref",
   "tspan",
+  "use",
   "view",
   "vkern",
 

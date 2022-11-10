@@ -13,6 +13,6 @@
   content: {
     tag: "ui-player",
     path: "{{$files/0/url}}",
-    autoplay: true,
+    // autoplay: true,
   },
 }

@@ -8,7 +8,7 @@ function cleanup(el) {
   el.onerror = null
 }
 
-export default async function loadCSS(url, options) {
+export async function loadCSS(url, options) {
   return new Promise((resolve, reject) => {
     url += `?v=${Date.now()}`
     const config = { ...DEFAULTS, ...options }
@@ -36,3 +36,5 @@ export default async function loadCSS(url, options) {
     return el
   })
 }
+
+export default loadCSS

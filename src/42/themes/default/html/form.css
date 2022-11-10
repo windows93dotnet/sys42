@@ -546,16 +546,16 @@ button,
 /* picto
 ======== */
 
-:where(ui-picto,.picto) {
+/* :where(ui-picto,.picto) {
   display: inline-flex;
   align-items: center;
   align-self: start;
   justify-content: center;
   flex: 0 0 auto;
   overflow: hidden;
-}
+} */
 
-:where(ui-picto,.picto)::before {
+/* :where(ui-picto,.picto)::before {
   content: var(--zero-width-space);
 }
 
@@ -564,7 +564,7 @@ button,
   font: var(--font-pictos);
   speak: none;
   line-height: 0;
-}
+} */
 
 /* .field
 --------- */

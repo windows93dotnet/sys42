@@ -37,7 +37,7 @@ async function fromURL(url) {
   return ["fetch", mimetype]
 }
 
-export default async function preload(
+export async function preload(
   url,
   { as, crossorigin, media, type, signal, rel, prefetch } = {}
 ) {
@@ -93,3 +93,5 @@ export default async function preload(
     document.head.append(el)
   })
 }
+
+export default preload
