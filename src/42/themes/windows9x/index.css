@@ -539,3 +539,8 @@ legend button.has-picto > ui-picto,
 *::-webkit-scrollbar-button:start:increment {
   display: none;
 }
+
+button:disabled img,
+button:disabled svg {
+  filter: url("#disabled-inset");
+}
