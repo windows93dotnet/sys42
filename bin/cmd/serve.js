@@ -95,9 +95,11 @@ export default async function serve() {
 
         if (
           needDevScript &&
-          (req.headers["sec-fetch-dest"] === "document" ||
-            req.headers["sec-fetch-dest"] === "empty") &&
-          (asset.ext === ".html" || asset.ext === ".svg")
+          req.headers["sec-fetch-dest"] === "document" &&
+          asset.ext === ".html"
+          // (req.headers["sec-fetch-dest"] === "document" ||
+          //   req.headers["sec-fetch-dest"] === "empty") &&
+          // (asset.ext === ".html" || asset.ext === ".svg")
         ) {
           const devStream = makeDevScript(asset, reply.getHeader("user-agent"))
           asset.headers["content-length"] += Buffer.byteLength(

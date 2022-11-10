@@ -1,4 +1,25 @@
 import Component from "../classes/Component.js"
+import create from "../create.js"
+import loadSVG from "../../core/load/loadSVG.js"
+
+const inlineds = new Set([])
+const sprites = create("svg", { style: { display: "none" } })
+document.body.append(sprites)
+
+function ensureSymbol(val) {
+  if (!inlineds.has(val)) {
+    inlineds.add(val)
+    loadSVG(
+      new URL(`../../themes/default/pictos/${val}.svg`, import.meta.url)
+    ).then((svg) => {
+      const symbol = create("symbol")
+      symbol.id = svg.id
+      symbol.setAttribute("viewBox", svg.getAttribute("viewBox"))
+      symbol.append(...svg.children)
+      sprites.append(symbol)
+    })
+  }
+}
 
 export class Picto extends Component {
   static definition = {
@@ -10,15 +31,22 @@ export class Picto extends Component {
         reflect: true,
         storeInState: false,
         update() {
-          this.className = `picto--${this.value}`
+          this.use.setAttribute("href", `#${this.value}`)
+          ensureSymbol(this.value)
         },
       },
     },
   }
 
-  setup() {
-    if (this.tooltip) this.setAttribute("role", "img")
-    else this.setAttribute("aria-hidden", true)
+  render() {
+    return {
+      tag: "svg",
+      width: "16",
+      height: "16",
+      fill: "currentColor",
+      aria: { hidden: true },
+      content: { tag: "use", entry: "use", href: "#" + this.value },
+    }
   }
 }
 

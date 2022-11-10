@@ -1,0 +1,11 @@
+undo redo cut copy paste minimize maximize restore close help
+save file file-new folder folder-open folder-new folder-export folder-import import export envelope envelope-open calendar
+paperclip pencil pen paintbrush eyedropper magic eraser tint paintbucket palette crop cog wrench magnifier magnifier-plus magnifier-minus
+home lock lock-open key shield bug puzzle globe skull cube stack eye eye-slash
+plus-small minus-small plus minus plus-large minus-large cross cross-alt check bullet bookmark flag bolt pin info clear
+dots square-dots plus-square-dots minus-square-dots cross-thin split split-vertical split-detail split-grid split-graph image terminal window desktop
+square-thick square plus-square minus-square expand bars bars-vertical details grid graph
+font bold italic strike underline ol ul text-left text-center text-right text-justify quote code json link link-slash
+backward forward play pause stop eject loop shuffle transmission move
+grab-thick grab-thick-vertical grab grab-vertical mirror mirror-vertical ellipsis ellipsis-vertical
+up-xs right-xs down-xs left-xs up right down left arrow-up arrow-up-right arrow-right arrow-right-down arrow-down arrow-down-left arrow-left arrow-left-up
