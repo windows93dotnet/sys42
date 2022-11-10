@@ -102,8 +102,7 @@ editor.init = (app) => {
   import("../../../io.js").then(({ default: io }) => {
     io.listenImport()
     io.on("import", ([{ id, file }]) => {
-      const init = { id, blob: file }
-      FileAgent.recycle(state.$files, 0, init, manifest)
+      FileAgent.recycle(state.$files, 0, { id, file }, manifest)
     })
     io.on("paths", ([path]) => {
       FileAgent.recycle(state.$files, 0, path, manifest)
@@ -115,8 +114,8 @@ editor.init = (app) => {
       FileAgent.recycle(state.$files, 0, undefined, manifest)
     },
 
-    // save/export
-    // -----------
+    /* save/export
+    -------------- */
     async saveFile() {
       if (state.$files[0].path) {
         const [blob, fs] = await Promise.all([
@@ -145,16 +144,16 @@ editor.init = (app) => {
     },
     async export() {
       if (!state.$files[0]) return
-      const [data, fileExport] = await Promise.all([
+      const [blob, fileExport] = await Promise.all([
         state.$files[0].blob,
         import("../../../fabric/type/file/fileExport.js") //
           .then((m) => m.default),
       ])
-      await fileExport(new File([data], state.$files[0].name), encode)
+      await fileExport(new File([blob], state.$files[0].name), encode)
     },
 
-    // open/import
-    // -----------
+    /* open/import
+    -------------- */
     async openFile() {
       await import("../../../ui/invocables/filePickerOpen.js") //
         .then(({ filePickerOpen }) =>
@@ -171,7 +170,7 @@ editor.init = (app) => {
         .then((m) => m.default)
       const [file] = await fileImport(decode)
       if (file) {
-        FileAgent.recycle(state.$files, 0, file, manifest)
+        FileAgent.recycle(state.$files, 0, { file }, manifest)
       }
     },
 
