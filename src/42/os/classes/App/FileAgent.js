@@ -8,6 +8,7 @@ const _path = Symbol("FileAgent._path")
 const _url = Symbol("FileAgent._url")
 const _blob = Symbol("FileAgent._blob")
 const _data = Symbol("FileAgent._data")
+const _locked = Symbol("FileAgent._locked")
 const _resetURL = Symbol("FileAgent._resetURL")
 
 const dummyBlob = Promise.resolve(new Blob())
@@ -137,22 +138,23 @@ export default class FileAgent {
   }
 
   get stream() {
-    console.log("-> stream")
     if (this[_blob]) return this[_blob].stream()
-    return this.blob.then((blob) => {
-      const rs = blob.stream()
-      // console.log(rs)
-      return rs
-    })
+    return this.blob.then((blob) => blob.stream())
   }
   set stream(val) {}
 
   get text() {
-    console.warn("-> text")
     if (this[_blob]) return this[_blob].text()
     return this.blob.then((blob) => blob.text())
   }
   set text(val) {}
+
+  get locked() {
+    return this[_locked]
+  }
+  set locked(val) {
+    this[_locked] = Boolean(val)
+  }
 
   append(val) {
     this[_data].push(val)

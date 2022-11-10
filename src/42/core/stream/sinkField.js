@@ -1,9 +1,10 @@
 import nextCycle from "../../fabric/type/promise/nextCycle.js"
+import repaint from "../../fabric/type/promise/repaint.js"
 import defer from "../../fabric/type/promise/defer.js"
 import listen from "../../fabric/event/listen.js"
 
 export default function sinkField(el, options) {
-  const size = options?.size ?? 0x07_ff
+  let size = options?.size ?? 0x03_ff
   let pendingEdits // debounce
   let pendingScroll // throttle
   let timerId
@@ -40,6 +41,10 @@ export default function sinkField(el, options) {
 
   options?.signal.addEventListener("abort", stop)
 
+  let speedUp = false
+
+  el.replaceChildren()
+
   return new WritableStream({
     async write(chunk, controller) {
       for (let i = 0, l = chunk.length; i < l; i += size) {
@@ -47,10 +52,20 @@ export default function sinkField(el, options) {
           return controller.error((options?.signal ?? controller.signal).reason)
         }
 
-        await Promise.all([pendingEdits, pendingScroll, nextCycle()])
-        const { length } = el.value
         const text = chunk.slice(i, i + size)
-        el.setRangeText(text, length, length + text.length)
+        // const { length } = el.value
+        // el.setRangeText(text, length, length + text.length)
+
+        el.append(text)
+        await repaint()
+
+        if (el.scrollHeight > el.clientHeight) {
+          if (!speedUp) size *= 10
+          speedUp = true
+          await nextCycle()
+        } else {
+          await repaint()
+        }
       }
     },
     close() {
