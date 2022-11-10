@@ -39,8 +39,8 @@ function renderTag(ctx, tag, def) {
 
   if (localName === "button") {
     def.content ??= def.label
-  } else if (def.label && localName === "fieldset") {
-    el.append(render({ tag: "legend", content: def.label }, ctx))
+  } else if (localName === "fieldset") {
+    if (def.label) el.append(render({ tag: "legend", content: def.label }, ctx))
   } else if (el.form !== undefined && !NOT_CONTROLS.has(localName)) {
     el = renderControl(el, ctx, def)
   }

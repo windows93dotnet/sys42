@@ -11,3 +11,6 @@ if (window.top !== window.self) {
     })
   })
 }
+
+// TODO: Move in theme.js
+import "../themes/windows9x/index.js"
