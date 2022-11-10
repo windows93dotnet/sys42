@@ -341,7 +341,6 @@ ui-dialog {
 
 .ui-dialog__footer {
   margin-top: 2px;
-  /* padding: 2px; */
 }
 
 .ui-dialog__header {
@@ -368,17 +367,17 @@ ui-dialog {
   padding-left: 2px;
 }
 
-ui-dialog[active] .ui-dialog__header ui-icon {
+:where(.active, ui-dialog[active]) .ui-dialog__header ui-icon {
   background-color: var(--ActiveTitle);
 }
 
-ui-dialog[active] .ui-dialog__header {
+:where(.active, ui-dialog[active]) .ui-dialog__header {
   color: var(--TitleText);
   background-color: var(--GradientActiveTitle);
   border-bottom: 2px solid var(--ActiveBorder);
 }
 
-ui-dialog[active] .ui-dialog__title {
+:where(.active, ui-dialog[active]) .ui-dialog__title {
   background-image:
     linear-gradient(
       to right,
@@ -402,28 +401,28 @@ ui-dialog[active] .ui-dialog__title {
   min-width: 75px;
 }
 
-.ui-dialog__header button.btn-picto {
+legend button.has-picto,
+.ui-dialog__header button.has-picto {
+  padding: 0;
   height: 16px;
   width: 16px;
-  min-width: 16px;
-  padding: 0;
-  margin: 2px 0;
+}
+
+legend button.has-picto {
+  height: 18px;
+  width: 18px;
 }
 
 .ui-dialog__header button,
-.ui-dialog__header button.btn-picto:focus {
+legend button.has-picto:focus,
+.ui-dialog__header button.has-picto:focus {
   outline-offset: 0;
 }
 
-.ui-dialog__header button.btn-picto > ui-picto {
-  margin-top: -1px;
-  margin-left: -2px;
+legend button.has-picto > ui-picto,
+.ui-dialog__header button.has-picto > ui-picto {
+  min-width: 16px;
 }
-
-/* .ui-dialog__header button.focus,
-.ui-dialog__header button:focus {
-  outline: none;
-} */
 
 .ui-dialog__header button:last-of-type {
   margin-left: 2px;
