@@ -196,6 +196,7 @@ export default class Component extends HTMLElement {
       ...ctx,
       el: this,
       component: this,
+      refs: undefined,
       preload: undefined,
       components: undefined,
       postrender: undefined,
