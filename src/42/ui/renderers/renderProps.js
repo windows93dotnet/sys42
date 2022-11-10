@@ -228,6 +228,8 @@ export default async function renderProps(el, props, def) {
     if (typeof val === "function") {
       const fn = val
       ref = fn.ref ? { $ref: fn.ref } : undefined
+      if (fn.ref) ctx.refs[scope] = fn.ref
+
       register(ctx, fn, (val, changed) => {
         if (changed !== scope) write(val)
         render(val)

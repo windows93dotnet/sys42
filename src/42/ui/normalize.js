@@ -714,6 +714,7 @@ export function normalizeCtx(ctx = {}) {
   ctx.renderers ??= Object.create(null)
   ctx.plugins ??= Object.create(null)
   ctx.computeds ??= Object.create(null)
+  ctx.refs ??= Object.create(null)
   ctx.scopeChain ??= []
   ctx.pluginHandlers ??= []
   ctx.actions ??= new Locator(Object.create(null), { sep: "/" })

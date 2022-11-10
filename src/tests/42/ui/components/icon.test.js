@@ -242,14 +242,12 @@ test("each", async (t) => {
     },
   })
 
-  t.eq(Object.keys(app.ctx.renderers).slice(0, 10), [
+  t.eq(Object.keys(app.ctx.renderers).slice(0, 8), [
     "/arr",
     "/arr/0/x",
-    "/$ui/icon/root,[0]/path",
     "/$ui/icon/root,[0]/small",
     "/$ui/icon/root,[0]/label",
     "/arr/1/x",
-    "/$ui/icon/root,[1]/path",
     "/$ui/icon/root,[1]/small",
     "/$ui/icon/root,[1]/label",
     "/$ui/icon/root,[0]/infos/description",
@@ -293,14 +291,12 @@ test("each", 2, async (t) => {
     },
   })
 
-  t.eq(Object.keys(app.ctx.renderers).slice(0, 10), [
+  t.eq(Object.keys(app.ctx.renderers).slice(0, 8), [
     "/arr",
     "/arr/0",
-    "/$ui/icon/root,[0]/path",
     "/$ui/icon/root,[0]/small",
     "/$ui/icon/root,[0]/label",
     "/arr/1",
-    "/$ui/icon/root,[1]/path",
     "/$ui/icon/root,[1]/small",
     "/$ui/icon/root,[1]/label",
     "/$ui/icon/root,[0]/infos/description",
