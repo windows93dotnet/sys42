@@ -52,6 +52,7 @@ export default {
       // { tag: "text", bind: "/tabSize", compact: true },
       {
         tag: "textarea",
+        entry: "textbox",
         label: "{{path}}",
         class: "{{/monospace ? 'font-mono' : ''}}",
         style: { tabSize: "{{/tabSize}}" },
@@ -62,12 +63,16 @@ export default {
         autofocus: true,
         lazy: true,
         bind: { to: "data" },
-        value: "{{field.sink(stream)}}",
         on: {
           "input": "{{dirty = true}}",
           ":path || :dirty || focus": `{{
             /$dialog.title = 'TextEdit - ' + path.getBasename(path ?? '');
             /$dialog.title += dirty ? '*' : '';
+          }}`,
+          ":path": `{{
+            locked = true;
+            field.sink(stream, textbox);
+            locked = false;
           }}`,
         },
       },

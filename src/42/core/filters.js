@@ -227,12 +227,9 @@ types.field = {
       import("./stream.js").then((m) => m.default),
       import("./stream/sinkField.js").then((m) => m.default),
     ])
-    rs.pipeThrough(stream.ts.text())
+    return rs
+      .pipeThrough(stream.ts.text())
       .pipeTo(sinkField(field))
-      // .then(() => {
-      //   dispatch(this.el, "input")
-      //   dispatch(this.el, "change")
-      // })
       .catch((err) => dispatch(this.el, err))
   },
 }
