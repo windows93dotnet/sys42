@@ -1,10 +1,9 @@
-import repaint from "../../fabric/type/promise/repaint.js"
-import idle from "../../fabric/type/promise/idle.js"
+import nextCycle from "../../fabric/type/promise/nextCycle.js"
 import defer from "../../fabric/type/promise/defer.js"
 import listen from "../../fabric/event/listen.js"
 
 export default function sinkField(el, options) {
-  const size = options?.size ?? 0x03_ff
+  const size = options?.size ?? 0x07_ff
   let pendingEdits // debounce
   let pendingScroll // throttle
   let timerId
@@ -32,8 +31,8 @@ export default function sinkField(el, options) {
   let isRunning = true
   function stop() {
     isRunning = false
-    pendingEdits?.reject(options?.signal.reason)
-    pendingScroll?.reject(options?.signal.reason)
+    pendingEdits?.reject(options?.signal?.reason)
+    pendingScroll?.reject(options?.signal?.reason)
     pendingEdits = undefined
     pendingScroll = undefined
     off()
@@ -48,11 +47,10 @@ export default function sinkField(el, options) {
           return controller.error((options?.signal ?? controller.signal).reason)
         }
 
-        await Promise.all([pendingEdits, pendingScroll, repaint()])
+        await Promise.all([pendingEdits, pendingScroll, nextCycle()])
         const { length } = el.value
         const text = chunk.slice(i, i + size)
         el.setRangeText(text, length, length + text.length)
-        await idle()
       }
     },
     close() {
