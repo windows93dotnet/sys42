@@ -512,6 +512,7 @@ textarea
 }
 
 :is(:disabled,[aria-disabled="true"]) label,
+:is(:disabled,[aria-disabled="true"]) legend,
 :is(:disabled,[aria-disabled="true"]) + label {
   color: var(--ctrl🚫-fg);
   text-shadow: var(--ctrl🚫-tsh, none);
@@ -538,33 +539,29 @@ button,
   min-width: 0;
 }
 
-:where(button,.button,.field,.solid) > .picto {
-  margin-left: calc(-0.5 * var(--gap));
-  margin-right: calc(-0.5 * var(--gap));
-}
-
 /* picto
 ======== */
 
-/* :where(ui-picto,.picto) {
-  display: inline-flex;
-  align-items: center;
-  align-self: start;
-  justify-content: center;
-  flex: 0 0 auto;
-  overflow: hidden;
-} */
-
-/* :where(ui-picto,.picto)::before {
+:where(button,.button,.field,.solid).has-picto::before {
   content: var(--zero-width-space);
+  margin-inline-start: calc(-1 * var(--ctrl-px));
 }
 
-:where(ui-picto,.picto)::after {
-  content: var(--picto);
-  font: var(--font-pictos);
-  speak: none;
-  line-height: 0;
-} */
+:where(button,.button,.field,.solid).has-picto > ui-picto {
+  margin-block: calc(-1 * var(--ctrl-py));
+}
+
+:where(button,.button,.field,.solid).has-picto--start {
+  padding-inline-start: 0;
+}
+
+:where(button,.button,.field,.solid).has-picto--end {
+  padding-inline-end: 0;
+}
+
+:where(button,.button,.field,.solid).has-picto--only-child {
+  padding-inline: 0;
+}
 
 /* .field
 --------- */
@@ -861,36 +858,6 @@ button[type="submit"]:not(:active,:disabled),
 .btn-default:not(:active,:disabled) {
   border-image: var(--btn💾-bdi);
 }
-
-/* pictos
---------- */
-
-.btn-picto {
-  /* padding-inline: 0;
-  margin-inline: 0; */
-  /* padding: 0;
-  margin: 0; */
-  /* margin-left: calc(-1 * var(--ctrl-px));
-  margin-right: calc(-1 * var(--ctrl-px)); */
-}
-
-/* .button > .btn-picto > ui-picto:first-child {
-  margin-left: calc(-1 * var(--ctrl-px));
-} */
-
-/* .button > .btn-picto > ui-picto:last-child {
-  margin-right: calc(-1 * var(--ctrl-px));
-} */
-
-/* .btn-picto > ui-picto:first-child,
-.btn-picto > .picto:first-child {
-  margin-left: calc(-1 * var(--ctrl-px));
-}
-
-.btn-picto > ui-picto:last-child,
-.btn-picto > .picto:last-child {
-  margin-right: calc(-1 * var(--ctrl-px));
-} */
 
 /* select
 ========= */
@@ -1236,7 +1203,6 @@ p,div:not([class]),fieldset:is([role="none"],.unstyled)) > :only-child {
 =========== */
 
 :where(
-/* ui-icon span, */
 .truncate,
 .label,
 .button,
@@ -1258,7 +1224,7 @@ input::-webkit-datetime-edit-fields-wrapper
   text-overflow: ellipsis;
   white-space: nowrap;
   /* prevent hidden aliasing using pixel fonts */
-  text-indent: 1px;
+  /* text-indent: 1px; */
 }
 
 .truncate-0,

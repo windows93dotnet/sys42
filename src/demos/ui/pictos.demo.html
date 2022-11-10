@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>pictos</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/style.css" id="theme" />
+<script type="module" src="../../42/ui/head.js"></script>
+
+<script type="module">
+  import trap from "../../42/fabric/type/error/trap.js"
+  trap()
+</script>
+
+<script type="module">
+  import ui from "../../42/ui.js"
+
+  function makeDialogHeader() {
+    return [
+      { tag: "h2.ui-dialog__title", content: "Dialog Title" },
+      {
+        tag: "button",
+        content: "Button",
+      },
+      {
+        tag: "button.ui-dialog__help",
+        picto: "help",
+      },
+      {
+        tag: "button.ui-dialog__minimize",
+        picto: "minimize",
+      },
+      {
+        tag: "button.ui-dialog__maximize",
+        picto: "maximize",
+      },
+      {
+        tag: "button.ui-dialog__close",
+        picto: "close",
+      },
+    ]
+  }
+
+  function makeDemo() {
+    return [
+      {
+        tag: ".active > .ui-dialog__header",
+        content: makeDialogHeader(),
+      },
+      {
+        tag: ".ui-dialog__header",
+        content: makeDialogHeader(),
+      },
+      "---",
+      {
+        tag: "button",
+        picto: "plus-large",
+      },
+      {
+        tag: "button",
+        picto: { start: "plus-large" },
+        content: "Button",
+      },
+      {
+        tag: "button",
+        picto: { end: "plus-large" },
+        content: "Button",
+      },
+      {
+        tag: "button",
+        content: "Button",
+      },
+      // "---",
+      // {
+      //   tag: "button",
+      //   picto: "places/folder",
+      // },
+      // {
+      //   tag: "button",
+      //   picto: { start: "places/folder" },
+      //   content: "Button",
+      // },
+      // {
+      //   tag: "button",
+      //   picto: { end: "places/folder" },
+      //   content: "Button",
+      // },
+      "---",
+      {
+        tag: "checkbox",
+        label: "Indeterminate",
+      },
+      {
+        tag: "checkbox",
+        label: "Checked",
+        value: true,
+      },
+    ]
+  }
+
+  ui({
+    tag: ".box-fit._desktop",
+    content: {
+      tag: ".box-v.w-full",
+      content: [
+        {
+          tag: "fieldset.ma",
+          label: ["Enabled", { tag: "button", picto: "plus-large" }],
+          content: makeDemo(),
+        },
+        {
+          tag: "fieldset.ma",
+          label: [
+            "Disabled",
+            { tag: "button", picto: "plus-large", disabled: true },
+          ],
+          disabled: true,
+          content: makeDemo(),
+        },
+      ],
+    },
+  })
+</script>

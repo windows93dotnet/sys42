@@ -24,13 +24,7 @@ const SPECIAL_STRINGS = {
 }
 
 const PRELOAD = new Set(["link", "script"])
-const NOT_CONTROLS = new Set([
-  "label",
-  "fieldset",
-  "legend",
-  "output",
-  "option",
-])
+const NOT_CONTROLS = new Set(["label", "legend", "output", "option"])
 
 function renderTag(ctx, tag, def) {
   let el = create(ctx, tag, def.attrs)
@@ -43,18 +37,19 @@ function renderTag(ctx, tag, def) {
   const { localName } = el
   if (localName) ctx.el = el
 
-  if (def.picto) {
-    if (el.localName === "button") {
-      el.classList.add("btn-picto")
-    }
-
-    el.append(renderComponent(create("ui-picto"), { value: def.picto }, ctx))
-  }
-
   if (localName === "button") {
     def.content ??= def.label
+  } else if (def.label && localName === "fieldset") {
+    el.append(render({ tag: "legend", content: def.label }, ctx))
   } else if (el.form !== undefined && !NOT_CONTROLS.has(localName)) {
     el = renderControl(el, ctx, def)
+  }
+
+  if (def.picto) {
+    el.classList.add("has-picto")
+    if (!def.content) el.classList.add("has-picto--only-child")
+    if (def.picto.start) el.classList.add("has-picto--start")
+    if (def.picto.end) el.classList.add("has-picto--end")
   }
 
   if (
@@ -141,6 +136,12 @@ export default function render(def, ctx, options) {
     el = document.createDocumentFragment()
   }
 
+  if (def.picto?.start) {
+    el.append(
+      renderComponent(create("ui-picto"), { value: def.picto.start }, ctx)
+    )
+  }
+
   if (def.content) {
     if (def.content instanceof Node) el.append(def.content)
     else {
@@ -153,6 +154,12 @@ export default function render(def, ctx, options) {
         })
       )
     }
+  }
+
+  if (def.picto?.end) {
+    el.append(
+      renderComponent(create("ui-picto"), { value: def.picto.end }, ctx)
+    )
   }
 
   def.traits?.(ctx.el)

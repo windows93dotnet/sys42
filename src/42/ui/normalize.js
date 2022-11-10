@@ -348,6 +348,10 @@ export function normalizeFromTo(obj) {
     : obj
 }
 
+export function normalizeStartEnd(obj) {
+  return typeof obj === "string" ? { start: obj } : obj
+}
+
 export function normalizeComputeds(computeds, ctx) {
   for (const [key, val] of Object.entries(computeds)) {
     normalizeComputed(resolveScope(...findScope(ctx, key), ctx), val, ctx)
@@ -692,6 +696,8 @@ export function normalizeDef(def = {}, ctx, options) {
       def.plugins ??= []
       if (!def.plugins.includes("ipc")) def.plugins.push("ipc")
     }
+
+    if (def.picto) def.picto = normalizeStartEnd(def.picto)
 
     if (def.plugins) {
       normalizeData(def.plugins, ctx, (res) => {
