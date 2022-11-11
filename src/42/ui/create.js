@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import renderAttributes from "./renderers/renderAttributes.js"
 import parseTagSelector from "../core/formats/emmet/parseTagSelector.js"
 import { normalizeAttrs } from "./normalize.js"
@@ -29,7 +30,7 @@ const BUTTON_TYPES = new Set([
   "submit",
 ])
 
-const ATTRIBUTES_ORDER = ["id", "class"]
+const ATTRIBUTES_ORDER = ["type", "id", "class"]
 
 export default function create(ctx, tag, ...args) {
   if (typeof ctx === "string") {
@@ -72,6 +73,7 @@ export default function create(ctx, tag, ...args) {
     : document.createElement(tag)
 
   if (el.localName === "a") el.rel = "noopener"
+  if (attrs.label && "label" in el === false) delete attrs.label
 
   // sort attributes
   const tmp = {}

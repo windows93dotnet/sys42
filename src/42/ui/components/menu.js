@@ -86,12 +86,12 @@ export class Menu extends Component {
         item.aria ??= {}
         item.aria.keyshortcuts = item.shortcut
         item.label = [
-          { tag: "span", content: item.label },
+          { tag: "span", content: label },
           { tag: "kbd", aria: { hidden: true }, content: item.shortcut },
         ]
       } else {
         item.label = [
-          { tag: "span", content: item.label }, //
+          { tag: "span", content: label }, //
         ]
       }
 
@@ -113,7 +113,6 @@ export class Menu extends Component {
         }
 
         if (!inMenubar) item.label.push({ tag: "ui-picto", value: "right" })
-        item.content = item.label
       } else if (item.tag === "checkbox") {
         item.role = "menuitemcheckbox"
       } else if (item.tag === "radio") {
@@ -126,10 +125,7 @@ export class Menu extends Component {
       } else {
         item.tag = "button"
         item.role = "menuitem"
-        item.content = item.label
       }
-
-      delete item.label
 
       if (item.disabled) {
         item.aria ??= {}

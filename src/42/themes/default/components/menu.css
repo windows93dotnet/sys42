@@ -8,7 +8,8 @@
   --menu-br: var(--outset-br);
   --menu-tsh: var(--outset-tsh, none);
   --menu-bsh: var(--outset-bsh);
-  --menu-picto-size: 16px;
+  --menu-w: var(--ctrl-w);
+  --menu-picto-size: var(--picto-size);
 }
 
 ui-menu,
@@ -32,8 +33,10 @@ ui-menubar {
 
 ui-menu {
   display: block;
+  flex: 0 1 auto;
   width: max-content;
-  min-width: min(var(--ctrl-w), 100%);
+  height: max-content;
+  min-width: min(var(--menu-w), 100%);
   z-index: var(--z-popups);
 
   border-width: var(--menu-bdw);
@@ -45,7 +48,7 @@ ui-menu {
 }
 
 ui-menu ui-menu {
-  min-width: var(--ctrl-w);
+  min-width: var(--menu-w);
 }
 
 ui-menu > li {
