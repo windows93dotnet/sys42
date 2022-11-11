@@ -65,7 +65,7 @@ export class Explorer extends Component {
   render() {
     return [
       {
-        tag: "header.box-v",
+        tag: "header.box-h",
         content: [
           {
             tag: "ui-menubar",
@@ -93,7 +93,7 @@ export class Explorer extends Component {
         ],
       },
       {
-        tag: "header.box-v.ctrl-group.mb-xs",
+        tag: "header.box-h.ctrl-group.mb-xs",
         content: [
           {
             tag: "button",
@@ -134,7 +134,7 @@ export class Explorer extends Component {
       },
       {
         if: "{{!isPicker}}",
-        tag: "footer.w-full.mt-xs.ma-0.box-v",
+        tag: "footer.w-full.mt-xs.ma-0.box-h",
         content: [
           {
             tag: ".py-xs.px-md.mr-xs.inset-shallow.panel.item-shrink",

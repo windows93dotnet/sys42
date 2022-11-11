@@ -79,7 +79,7 @@ export async function make(t, { href, makeContent }, iframe = true) {
         ? {
             tag: ".box-fit.desktop",
             content: {
-              tag: ".box-v.size-full",
+              tag: ".box-h.size-full",
               content: [
                 makeContent(),
                 iframe && {

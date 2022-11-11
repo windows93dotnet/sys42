@@ -25,7 +25,7 @@ export function progress(total, options) {
     tag: ".box-center-y.pa-md",
     content: [
       {
-        tag: ".box-h",
+        tag: ".box-v",
         content: [
           { tag: "progress", max: 100, id, value: "{{value}}" },
           {

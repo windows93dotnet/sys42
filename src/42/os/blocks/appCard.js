@@ -1,7 +1,7 @@
 export default function appCard(manifest) {
   return {
     state: manifest,
-    tag: ".box-v.mb-xl",
+    tag: ".box-h.mb-xl",
     content: [
       {
         if: "{{icons.length}}",

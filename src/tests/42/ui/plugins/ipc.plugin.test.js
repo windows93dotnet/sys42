@@ -7,7 +7,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
     ui(
       dest({ connect: true }),
       {
-        tag: ".box-fit.box-h._desktop",
+        tag: ".box-fit.box-v",
         content: [
           {
             tag: ".bb",

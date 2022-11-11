@@ -30,7 +30,7 @@ export async function prompt(message = "", options) {
     : { enterKeyHint: config.enterKeyHint ?? "done", on: { Enter: "{{ok()}}" } }
 
   config.content = {
-    tag: ".box-h",
+    tag: ".box-v",
     content: [
       config.beforefield,
       configure(

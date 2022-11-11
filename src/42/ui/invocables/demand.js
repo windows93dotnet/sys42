@@ -18,7 +18,7 @@ export async function demand(options) {
 
   let { content } = config
 
-  content = { tag: ".ui-dialog-modal__content.box-h", content }
+  content = { tag: ".ui-dialog-modal__content.box-v", content }
 
   let src = config.img
 
@@ -31,7 +31,7 @@ export async function demand(options) {
 
   if (src) {
     content = {
-      tag: ".box-v",
+      tag: ".box-h",
       content: [
         {
           tag: ".ui-dialog-modal__image.box-center.item-shrink.pa",
