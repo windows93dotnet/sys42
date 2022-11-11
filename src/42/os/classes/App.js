@@ -176,7 +176,7 @@ export default class App extends UI {
     }
 
     super({
-      tag: ".box-fit.box-h",
+      tag: ".box-fit.box-v",
       content: manifest.menubar
         ? [{ tag: "ui-menubar", content: manifest.menubar }, manifest.content]
         : manifest.content,

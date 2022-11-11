@@ -1,4 +1,5 @@
 /* @read https://css-tricks.com/responsive-layouts-fewer-media-queries/ */
+/* @read @read https://doc.qt.io/qt-6/layout.html */
 
 /* fit
 ====== */
@@ -91,38 +92,37 @@ textarea.box-fit {
 }
 
 /* layout
-=========
-@read https://doc.qt.io/qt-6/layout.html
+========= */
 
-[1] prevent flex child is growing out of parent https://stackoverflow.com/a/41675912
-*/
+/* [1] prevent flex child is growing out of parent https://stackoverflow.com/a/41675912 */
 
-.box-v {
+.box-h {
   display: flex;
-  flex-direction: row;
   max-width: 100%;
 }
-:where(.box-v) { flex-wrap: wrap; min-width: 0; } /* [1] */
-:where(.box-v > *) {
+:where(.box-h) { flex-wrap: wrap; min-width: 0; }
+
+:where(.box-h > *) {
   flex: 1 1 0%;
   min-width: 0; /* [1] */
   position: relative;
 }
 
-.box-h {
+.box-v {
   display: flex;
   flex-direction: column;
   max-height: 100%;
 }
-:where(.box-h) { flex-wrap: wrap; min-height: 0; } /* [1] */
-:where(.box-h > *) {
+:where(.box-v) { flex-wrap: wrap; min-height: 0; }
+
+:where(.box-v > *) {
   flex: 1 1 0%;
   min-height: 0; /* [1] */
   position: relative;
 }
 
 :where(
-.box-v > :not(:only-child):is(
+.box-h > :not(:only-child):is(
   .button,
   button,
   input:is([type="button"],[type="submit"],[type="reset"],[type="color"]),
@@ -140,11 +140,12 @@ textarea.box-fit {
 )) {
   flex: 0 0 auto;
   max-width: 50%;
-  /* overflow-y: auto; */
 }
 
 :where(
-.box-h > :is(
+.box-v > :is(
+  span,
+  nav,
   footer,
   header,
   button,
@@ -153,8 +154,6 @@ textarea.box-fit {
   form,
   label,
   progress,
-  nav,
-  span,
   ui-menubar,
   ui-toolbar,
   [role="menubar"],
@@ -165,50 +164,50 @@ textarea.box-fit {
   width: auto;
 }
 
-:where(.box-h > textarea) {
+:where(.box-v > textarea) {
   width: auto;
 }
 
-:is(.box-h,.box-v) > :not(:only-child,:first-child,:last-child),
-.ctrl-group:is(.box-h,.box-v) > :not(:only-child,:first-child,:last-child) > :is(
+:is(.box-v,.box-h) > :not(:only-child,:first-child,:last-child),
+.ctrl-group:is(.box-v,.box-h) > :not(:only-child,:first-child,:last-child) > :is(
   textarea,select,button,.button,input:not([type="radio"],[type="checkbox"])
 ) {
   border-radius: 0;
-}
-
-.box-h > :first-child:not(:only-child),
-.ctrl-group.box-h > :first-child:not(:only-child) > :is(
-  textarea,select,button,.button,input:not([type="radio"],[type="checkbox"])
-) {
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
-}
-
-.box-h > :last-child:not(:only-child),
-.ctrl-group.box-h > :last-child:not(:only-child) > :is(
-  textarea,select,button,.button,input:not([type="radio"],[type="checkbox"])
-) {
-  border-top-right-radius: 0;
-  border-top-left-radius: 0;
 }
 
 .box-v > :first-child:not(:only-child),
 .ctrl-group.box-v > :first-child:not(:only-child) > :is(
   textarea,select,button,.button,input:not([type="radio"],[type="checkbox"])
 ) {
-  border-top-right-radius: 0;
   border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
 }
 
 .box-v > :last-child:not(:only-child),
 .ctrl-group.box-v > :last-child:not(:only-child) > :is(
   textarea,select,button,.button,input:not([type="radio"],[type="checkbox"])
 ) {
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+}
+
+.box-h > :first-child:not(:only-child),
+.ctrl-group.box-h > :first-child:not(:only-child) > :is(
+  textarea,select,button,.button,input:not([type="radio"],[type="checkbox"])
+) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.box-h > :last-child:not(:only-child),
+.ctrl-group.box-h > :last-child:not(:only-child) > :is(
+  textarea,select,button,.button,input:not([type="radio"],[type="checkbox"])
+) {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
 
-.box-v > img {
+.box-h > img {
   height: fit-content; /* don't stretch images */
 }
 

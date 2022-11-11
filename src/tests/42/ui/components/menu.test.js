@@ -218,7 +218,7 @@ if (inTop) {
       ui(dest({ connect: true }), {
         tag: ".box-fit.desktop",
         content: {
-          tag: ".box-v.w-full",
+          tag: ".box-h.w-full",
           content: [
             makeDemo({
               content: [
@@ -296,7 +296,7 @@ if (inTop) {
           id: "menuDemo",
           tag: ".box-fit.desktop",
           content: {
-            tag: ".box-v.w-full",
+            tag: ".box-h.w-full",
             content: [
               makeDemo(),
               {

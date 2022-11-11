@@ -12,7 +12,7 @@ const button = (label) => ({
 })
 
 const buttons = (label) => ({
-  tag: ".box-h",
+  tag: ".box-v",
   content: [
     button(label),
     {
@@ -45,7 +45,7 @@ test.ui("popup behavior", async (t, { decay, dest, pickValues }) => {
       {
         tag: ".box-fit.box-center",
         content: {
-          tag: ".box-v.w-full",
+          tag: ".box-h.w-full",
           content: [
             {
               tag: ".box-center.ground",
