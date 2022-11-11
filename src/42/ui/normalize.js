@@ -606,11 +606,12 @@ export function forkDef(def, ctx) {
   def = { ...def }
 
   if (ctx) {
-    if (ctx.plugins) def.plugins = Object.keys(ctx.plugins)
+    const { data } = ctx.reactive
+    if (!isEmptyObject(data)) def.state = structuredClone(data)
+    if (ctx.id) def.initiator = ctx.id
     if (ctx.scope) def.scope = ctx.scope
     if (ctx.scopeChain) def.scopeChain = structuredClone(ctx.scopeChain)
-    if (ctx.reactive) def.state = structuredClone(ctx.reactive.data)
-    if (ctx.id) def.initiator = ctx.id
+    if (ctx.plugins) def.plugins = Object.keys(ctx.plugins)
     if (ctx.actions) def.actions = merge({}, ctx.actions.value)
   }
 
@@ -640,10 +641,10 @@ export function normalizeDefNoCtx(def = {}) {
   return def
 }
 
-export function normalizeState(def, ctx) {
+export function normalizeState(def, ctx, initiator) {
   if (def.state) {
     normalizeData(def.state, ctx, (res, scope, options) => {
-      if (ctx.scopeChain.length > 0) {
+      if (ctx.scopeChain.length > 0 && !initiator) {
         ctx.scopeChain.push({ scope, props: Object.keys(def.state) })
       }
 
@@ -661,15 +662,16 @@ export function normalizeDef(def = {}, ctx, options) {
     ctx.type = typeof fn
     if (ctx.type === "function") def = fn
   } else if (ctx.type === "object") {
+    const { initiator } = def
     def = ensureDef(def, ctx)
 
     const keyOrder = Object.keys(def)
 
     if (keyOrder.indexOf("scope") < keyOrder.indexOf("state")) {
       normalizeScope(def, ctx)
-      normalizeState(def, ctx)
+      normalizeState(def, ctx, initiator)
     } else {
-      normalizeState(def, ctx)
+      normalizeState(def, ctx, initiator)
       normalizeScope(def, ctx)
     }
 
