@@ -25,14 +25,12 @@ textarea.box-fit {
 
 .box-grid,
 .box-grid-auto {
-  --gap: 0;
   --edge: 0;
   --ratio: 0;
   --cols: 4;
   --line: max-content;
   --edge-color: currentColor;
   display: grid;
-  grid-gap: calc(var(--gap) * var(--unit));
   grid-template-columns: repeat(var(--cols), minmax(min-content, 1fr));
   grid-auto-rows: var(--line);
   ---: calc(var(--edge) * 1px);
@@ -90,12 +88,14 @@ textarea.box-fit {
 
 :where(.box-stack > *) {
   grid-area: 1 / 1;
-  /* position: relative; */
 }
 
 /* layout
-========= */
-/* [1] prevent flex child is growing out of parent https://stackoverflow.com/a/41675912 */
+=========
+@read https://doc.qt.io/qt-6/layout.html
+
+[1] prevent flex child is growing out of parent https://stackoverflow.com/a/41675912
+*/
 
 .box-v {
   display: flex;
@@ -237,6 +237,11 @@ textarea.box-fit {
 .d-grid { display: grid; }
 .d-inline-grid { display: inline-grid; }
 .d-flow-root { display: flow-root; }
+
+.flex-h { display: flex; }
+.flex-v { display: flex; flex-direction: column; }
+.flex-h-reverse { display: flex; flex-direction: row-reverse; }
+.flex-v-reverse { display: flex; flex-direction: column-reverse; }
 
 /* scroll
 ========= */

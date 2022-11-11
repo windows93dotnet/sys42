@@ -257,14 +257,14 @@
 
   --dim-fg: #808080;
 
-  --addon-w: 16px;
+  --addon-w: var(--picto-size);
   --addon-bg: var(--ButtonFace);
   --addon-bdw: 2px;
   --addon-bdi: var(--outset-bdi);
 
   --fieldset__legend-pa: 2px;
 
-  --scrollbar-thumb-size: 16px;
+  --scrollbar-thumb-size: var(--picto-size);
   --scrollbar-track-br: 0;
 
   --range__track-h: 7px;
@@ -309,8 +309,7 @@ legend {
 
 input[type="radio" i],
 input[type="checkbox" i] {
-  margin-left: 2px;
-  margin-right: 2px;
+  margin-inline: 2px;
 }
 
 input[type="number" i]::-webkit-inner-spin-button {
@@ -344,11 +343,19 @@ ui-dialog {
 }
 
 .ui-dialog__header {
-  padding-right: 2px;
+  padding-inline-end: 2px;
   display: flex;
   color: var(--InactiveTitleText);
   background-color: var(--GradientInactiveTitle);
   border-bottom: 2px solid var(--InactiveBorder);
+}
+
+:root {
+  --gradient-dir: right;
+}
+
+:root:dir(rtl) {
+  --gradient-dir: left;
 }
 
 .ui-dialog__title {
@@ -356,7 +363,7 @@ ui-dialog {
   font-weight: 800;
   background-image:
     linear-gradient(
-      to right,
+      to var(--gradient-dir),
       var(--InactiveTitle),
       var(--GradientInactiveTitle)
     );
@@ -364,7 +371,7 @@ ui-dialog {
 
 .ui-dialog__header ui-icon {
   background-color: var(--InactiveTitle);
-  padding-left: 2px;
+  padding-inline-start: 2px;
 }
 
 :where(.active, ui-dialog[active]) .ui-dialog__header ui-icon {
@@ -380,22 +387,18 @@ ui-dialog {
 :where(.active, ui-dialog[active]) .ui-dialog__title {
   background-image:
     linear-gradient(
-      to right,
+      to var(--gradient-dir),
       var(--ActiveTitle),
       var(--GradientActiveTitle)
     );
 }
 
 .ui-dialog__header button {
-  height: 16px;
-  min-width: 16px;
+  height: var(--picto-size);
+  min-width: var(--picto-size);
   padding: 2px;
   margin: 2px 0;
 }
-
-/* .ui-dialog__footer button:not(:first-of-type) {
-  margin-left: 4px;
-} */
 
 .ui-dialog__footer button {
   min-width: 75px;
@@ -404,13 +407,14 @@ ui-dialog {
 legend button.has-picto,
 .ui-dialog__header button.has-picto {
   padding: 0;
-  height: 16px;
-  width: 16px;
+  height: var(--picto-size);
+  width: var(--picto-size);
 }
 
 legend button.has-picto {
-  height: 18px;
-  width: 18px;
+  ---: calc(var(--picto-size) + 2px);
+  height: var(---);
+  width: var(---);
 }
 
 .ui-dialog__header button,
@@ -421,11 +425,11 @@ legend button.has-picto:focus,
 
 legend button.has-picto > ui-picto,
 .ui-dialog__header button.has-picto > ui-picto {
-  min-width: 16px;
+  min-width: var(--picto-size);
 }
 
 .ui-dialog__header button:last-of-type {
-  margin-left: 2px;
+  margin-inline-start: 2px;
 }
 
 /* modals
@@ -445,7 +449,7 @@ legend button.has-picto > ui-picto,
 }
 
 .ui-dialog-modal__image + .ui-dialog-modal__content {
-  padding-left: 0;
+  padding-inline-start: 0;
 }
 
 .ui-dialog-demand .ui-dialog__footer {
@@ -453,17 +457,6 @@ legend button.has-picto > ui-picto,
   padding: var(--unit);
   padding-top: 4px;
 }
-
-/*  */
-
-/* ui-menu hr {
-  margin-left: -1px;
-  width: calc(100% + 1px);
-} */
-
-/* ui-accordion > section:not(:last-of-type) > div {
-  box-shadow: inset 0 -1px 0 0 var(--ButtonDkShadow);
-} */
 
 /* scrollbars
 ============= */

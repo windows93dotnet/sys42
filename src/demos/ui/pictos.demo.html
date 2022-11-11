@@ -51,55 +51,111 @@
       },
       "---",
       {
-        tag: "button",
-        picto: "plus-large",
-      },
-      {
-        tag: "button",
-        picto: { start: "plus-large" },
-        content: "Button",
-      },
-      {
-        tag: "button",
-        picto: { end: "plus-large" },
-        content: "Button",
-      },
-      {
-        tag: "button",
-        content: "Button",
-      },
-      "---",
-      {
-        tag: "button",
+        tag: ".flex-h.gap",
         content: [
-          "Button",
           {
-            tag: "img",
-            src: "../../42/themes/default/icons/places/16/folder.png",
+            tag: "ui-menu",
+            content: [
+              {
+                label: "Menuitem",
+                picto: "plus-large",
+                shortcut: "Ctrl+Alt+Del",
+              },
+              "---",
+              {
+                label: "Indeterminate",
+                tag: "checkbox",
+                value: undefined,
+              },
+              {
+                label: "Checked",
+                tag: "checkbox",
+                value: true,
+              },
+              {
+                label: "Radio 1",
+                tag: "radio",
+                name: "choice",
+                value: "foo",
+              },
+              {
+                label: "Radio 2",
+                tag: "radio",
+                name: "choice",
+                value: "bar",
+                checked: true,
+              },
+            ],
+          },
+          {
+            tag: ".d-flex-v.gap",
+            content: [
+              {
+                tag: "textarea",
+                value:
+                  "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quas, quo quidem voluptate, consectetur, sint repellendus expedita consequatur pariatur delectus cum inventore iure aperiam? Ad facere nemo tenetur nesciunt quam autem voluptatibus vel temporibus dolorem atque. Dolores beatae magnam iure, architecto eius explicabo aut molestias voluptas itaque dolorum sunt quisquam. Totam, corrupti animi! Velit soluta repudiandae temporibus facere. Ad atque nihil quisquam amet deleniti doloremque, ut molestiae cumque quidem cum vitae voluptates dicta quas dolor, nam ipsum laboriosam odit iusto animi, fugit tempore saepe vero corrupti cupiditate! Nam numquam mollitia esse quam labore, laborum sequi optio consequuntur natus ex, corporis quae?",
+                rows: 4,
+              },
+            ],
+          },
+          {
+            tag: "div",
+            content: [
+              {
+                tag: "button",
+                picto: "plus-large",
+              },
+              {
+                tag: "button",
+                picto: { start: "plus-large" },
+                content: "Button",
+              },
+              {
+                tag: "button",
+                picto: { end: "plus-large" },
+                content: "Button",
+              },
+              {
+                tag: "button",
+                content: "Button",
+              },
+              "---",
+              {
+                tag: "button",
+                content: [
+                  "Button",
+                  {
+                    tag: "img",
+                    src: "../../42/themes/default/icons/places/16/folder.png",
+                  },
+                ],
+              },
+              {
+                tag: "button",
+                content: [
+                  "Button",
+                  {
+                    tag: "img",
+                    width: "16px",
+                    height: "16px",
+                    src: "../../42/themes/default/icons/type/audio.png",
+                  },
+                ],
+              },
+              "---",
+              {
+                tag: "checkbox",
+                label: "Indeterminate",
+                value: undefined,
+              },
+              {
+                tag: "checkbox",
+                label: "Checked",
+                value: true,
+              },
+            ],
           },
         ],
-      },
-      {
-        tag: "button",
-        content: [
-          "Button",
-          {
-            tag: "img",
-            width: "16px",
-            height: "16px",
-            src: "../../42/themes/default/icons/type/audio.png",
-          },
-        ],
-      },
-      "---",
-      {
-        tag: "checkbox",
-        label: "Indeterminate",
-      },
-      {
-        tag: "checkbox",
-        label: "Checked",
-        value: true,
       },
     ]
   }
@@ -107,15 +163,15 @@
   ui({
     tag: ".box-fit._desktop",
     content: {
-      tag: ".box-v.w-full",
+      tag: ".box-v.pa.gap",
       content: [
         {
-          tag: "fieldset.ma",
+          tag: "div > fieldset",
           label: ["Enabled", { tag: "button", picto: "plus-large" }],
           content: makeDemo(),
         },
         {
-          tag: "fieldset.ma",
+          tag: "div > fieldset",
           label: [
             "Disabled",
             { tag: "button", picto: "plus-large", disabled: true },
