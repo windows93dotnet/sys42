@@ -39,7 +39,7 @@
     ]
   }
 
-  function makeDemo() {
+  function makeDemo(name = "") {
     return [
       {
         tag: ".active > .ui-dialog__header",
@@ -75,13 +75,13 @@
               {
                 label: "Radio 1",
                 tag: "radio",
-                name: "choice",
+                name: "choice" + name,
                 value: "foo",
               },
               {
                 label: "Radio 2",
                 tag: "radio",
-                name: "choice",
+                name: "choice" + name,
                 value: "bar",
                 checked: true,
               },
@@ -157,6 +157,25 @@
           },
         ],
       },
+      "---",
+      {
+        tag: "div > .d-flex.gap",
+        content: [
+          {
+            tag: "div > radio",
+            bind: "radioChoice",
+            value: "foo",
+          },
+          {
+            tag: "div > radio",
+            bind: "radioChoice",
+            value: "bar",
+          },
+        ],
+        state: {
+          radioChoice: "bar",
+        },
+      },
     ]
   }
 
@@ -177,7 +196,7 @@
             { tag: "button", picto: "plus-large", disabled: true },
           ],
           disabled: true,
-          content: makeDemo(),
+          content: makeDemo("disabled"),
         },
       ],
     },

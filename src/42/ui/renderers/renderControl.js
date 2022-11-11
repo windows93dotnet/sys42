@@ -50,7 +50,6 @@ function setValidation(def, { localName, type }) {
 }
 
 function getBindScope(ctx, bind) {
-  // console.log(scope, resolveScope(ctx.scope, def.bind.from, ctx))
   return resolveScope(...findScope(ctx, bind), ctx)
 }
 
@@ -127,7 +126,10 @@ export default function renderControl(el, ctx, def) {
       )
     }
 
-    if (el.type !== "radio") {
+    if (el.type === "radio") {
+      el.value = def.value
+      el.checked = def.checked
+    } else {
       const name = scopeTo ?? scopeFrom
       if (name) el.name ||= name
     }
