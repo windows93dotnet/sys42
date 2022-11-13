@@ -26,7 +26,7 @@ export async function demand(options) {
     const theme = await import("../../os/managers/themeManager.js").then(
       (m) => m.default
     )
-    src = theme.getIconImage(config.icon)
+    src = theme.getIconPath(config.icon)
   }
 
   if (src) {
