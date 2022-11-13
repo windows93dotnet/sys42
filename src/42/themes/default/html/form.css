@@ -1171,13 +1171,13 @@ fieldset:not([role="none"],.unstyled) > fieldset + fieldset {
   margin-top: var(--fieldset-my);
 }
 
-fieldset:not([role="none"],.unstyled) > :where(
+/* fieldset:not([role="none"],.unstyled) > :where(
 p,div,fieldset:is([role="none"],.unstyled)) {
   position: relative;
   margin: 0;
   margin-top: var(--unit);
   --ctrl-w: 100%;
-}
+} */
 
 fieldset:not([role="none"],.unstyled) > legend + *,
 fieldset:not([role="none"],.unstyled) > :first-child { margin-top: 0; }

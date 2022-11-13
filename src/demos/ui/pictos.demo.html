@@ -12,6 +12,8 @@
 
 <script type="module">
   import ui from "../../42/ui.js"
+  import cssVar from "../../42/fabric/cssom/cssVar.js"
+  import Color from "../../42/fabric/classes/Color.js"
 
   function makeDialogHeader() {
     return [
@@ -88,7 +90,7 @@
             ],
           },
           {
-            tag: ".d-flex-v.gap",
+            tag: ".flex-v.gap",
             content: [
               {
                 tag: "textarea",
@@ -96,6 +98,8 @@
                   "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quas, quo quidem voluptate, consectetur, sint repellendus expedita consequatur pariatur delectus cum inventore iure aperiam? Ad facere nemo tenetur nesciunt quam autem voluptatibus vel temporibus dolorem atque. Dolores beatae magnam iure, architecto eius explicabo aut molestias voluptas itaque dolorum sunt quisquam. Totam, corrupti animi! Velit soluta repudiandae temporibus facere. Ad atque nihil quisquam amet deleniti doloremque, ut molestiae cumque quidem cum vitae voluptates dicta quas dolor, nam ipsum laboriosam odit iusto animi, fugit tempore saepe vero corrupti cupiditate! Nam numquam mollitia esse quam labore, laborum sequi optio consequuntur natus ex, corporis quae?",
                 rows: 4,
               },
+              { tag: "date" },
+              { tag: "select" },
             ],
           },
           {
@@ -179,26 +183,37 @@
     ]
   }
 
+  const mh = cssVar.get("MenuHilight")
+  console.log(mh, new Color(mh))
+
   ui({
-    tag: ".box-fit._desktop",
-    content: {
-      tag: ".box-h.pa.gap",
-      content: [
-        {
-          tag: "div > fieldset",
-          label: ["Enabled", { tag: "button", picto: "plus-large" }],
-          content: makeDemo(),
-        },
-        {
-          tag: "div > fieldset",
-          label: [
-            "Disabled",
-            { tag: "button", picto: "plus-large", disabled: true },
+    tag: "._box-fit._desktop",
+    content: [
+      // { tag: ".pa > color", value: "#ff0000" },
+      // { tag: ".pa > color", value: "var(--MenuHilight)" },
+      // { tag: ".pa > color", value: cssVar("MenuHilight").trim() },
+      { tag: ".pa > color", value: new Color(cssVar("MenuHilight")).toHex() },
+      {
+        content: {
+          tag: ".box-h.pa.gap",
+          content: [
+            {
+              tag: "div > fieldset",
+              label: ["Enabled", { tag: "button", picto: "plus-large" }],
+              content: makeDemo(),
+            },
+            {
+              tag: "div > fieldset",
+              label: [
+                "Disabled",
+                { tag: "button", picto: "plus-large", disabled: true },
+              ],
+              disabled: true,
+              content: makeDemo("disabled"),
+            },
           ],
-          disabled: true,
-          content: makeDemo("disabled"),
         },
-      ],
-    },
+      },
+    ],
   })
 </script>
