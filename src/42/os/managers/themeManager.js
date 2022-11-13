@@ -16,9 +16,9 @@ class ThemeManager extends ConfigFile {
     // el.id = "theme"
   }
 
-  getIconImage(infos) {
-    for (const theme of this.value.icons) {
-      const path = findIconPath(theme, infos)
+  getIconPath(infos) {
+    for (const themePath of this.value.icons) {
+      const path = findIconPath(themePath, infos)
       if (path) return path
     }
   }

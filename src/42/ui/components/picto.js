@@ -43,7 +43,6 @@ export class Picto extends Component {
       tag: "svg",
       width: "16",
       height: "16",
-      fill: "currentColor",
       aria: { hidden: true },
       content: { tag: "use", entry: "use", href: "#" + this.value },
     }
