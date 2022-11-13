@@ -1,6 +1,7 @@
 export function setCssVar(el, name, val) {
   if (val === undefined) {
-    val = el
+    val = name
+    name = el
     el = document.documentElement
   }
 
