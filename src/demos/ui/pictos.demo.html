@@ -183,16 +183,21 @@
     ]
   }
 
-  const mh = cssVar.get("MenuHilight")
-  console.log(mh, new Color(mh))
+  cssVar.set("ButtonText", "red")
+  cssVar.set("GrayText", "blue")
 
   ui({
     tag: "._box-fit._desktop",
     content: [
-      // { tag: ".pa > color", value: "#ff0000" },
-      // { tag: ".pa > color", value: "var(--MenuHilight)" },
-      // { tag: ".pa > color", value: cssVar("MenuHilight").trim() },
-      { tag: ".pa > color", value: new Color(cssVar("MenuHilight")).toHex() },
+      {
+        tag: ".pa > color",
+        value: new Color(cssVar.get("ButtonText")).toHex(),
+        on: {
+          input(e, target) {
+            cssVar.set("ButtonText", target.value)
+          },
+        },
+      },
       {
         content: {
           tag: ".box-h.pa.gap",

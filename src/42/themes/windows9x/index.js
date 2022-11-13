@@ -15,7 +15,7 @@ disabledInset.innerHTML = `
   <feFuncA type="discrete" tableValues="0 0.5 0 1"/>
 </feComponentTransfer>
 <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -1000 -1000 -1000 1 0" in="contrast" result="black-isolated" />
-<feFlood flood-color="var(--ButtonShadow)" result="shadow-color" />
+<feFlood flood-color="var(--GrayText)" result="shadow-color" />
 <feFlood flood-color="var(--ButtonHilight)" result="hilight-color" />
 <feOffset dx="1" dy="1" in="black-isolated" result="offset" />
 <feComposite operator="in" in="hilight-color" in2="offset" result="hilight" />

@@ -185,22 +185,27 @@ export default class Color {
 
         if (code === 40 /* ( */) {
           cur++
+          let advanced = false
           while (cur < val.length) {
             code = val.charCodeAt(cur)
             if (code === 41 /* ) */) break main
-            if (code === 32 /* " " */) {
-              cur++
-              continue
-            }
+            if (
+              code === 32 /* " " */ ||
+              code === 44 /* , */ ||
+              code === 47 /* / */
+            ) {
+              if (!advanced) {
+                advanced = true
+                pushOrder++
+              }
 
-            if (code === 44 /* , */) {
-              pushOrder++
               cur++
               continue
             }
 
             if (funcSyntax[pushOrder]) {
               res[funcSyntax[pushOrder]] += val.charAt(cur++)
+              advanced = false
               continue
             } else break main
           }

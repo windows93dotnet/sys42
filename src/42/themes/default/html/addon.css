@@ -1,6 +1,11 @@
 :root {
   --addon-bds: solid;
   --addon-bdw: 0;
+  --addon-fg: var(--btn-fg);
+}
+
+:disabled {
+  --addon-fg: var(--btn🚫-fg);
 }
 
 select,
@@ -12,12 +17,9 @@ input[type="datetime-local" i],
 input[type="time" i],
 input[type="week" i],
 input[type="date" i] {
-  /* padding-right: var(--unit-sm); */
   padding-right: calc(var(--addon-w) + calc(2 * var(--addon-right)));
   position: relative;
 }
-
-/* input[type="number"] { -moz-appearance: textfield; } */
 
 ::-webkit-datetime-edit-fields-wrapper {
   padding: 0;
@@ -153,7 +155,6 @@ input::-webkit-datetime-edit-year-field:focus {
   input[type="time" i],
   input[type="week" i],
   input[type="date" i] {
-    /* appearance: textfield; */
     padding-right: var(--addon-right);
   }
 }

@@ -535,5 +535,6 @@ legend button.has-picto > ui-picto,
 
 button:disabled img,
 button:disabled svg {
+  fill: #000;
   filter: url("#disabled-inset");
 }
