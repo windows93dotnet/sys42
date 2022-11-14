@@ -126,7 +126,7 @@
 
 :where(input[type="range" i]).focus::-webkit-slider-runnable-track,
 :where(input[type="range" i]):focus::-webkit-slider-runnable-track {
-  --_range__track-bg: var(--range🎯__track-bg, var(--range_gradient));
+  /* --_range__track-bg: var(--range🎯__track-bg, var(--range_gradient)); */
   --range__track-h: var(--range🎯__track-h);
   --range__track-bdw: var(--range🎯__track-bdw);
   --range__track-bds: var(--range🎯__track-bds);
@@ -140,7 +140,7 @@
 
 :where(input[type="range" i]).focus::-moz-range-track,
 :where(input[type="range" i]):focus::-moz-range-track {
-  --_range__track-bg: var(--range🎯__track-bg, var(--range_gradient));
+  /* --_range__track-bg: var(--range🎯__track-bg, var(--range_gradient)); */
   --range__track-h: var(--range🎯__track-h);
   --range__track-bdw: var(--range🎯__track-bdw);
   --range__track-bds: var(--range🎯__track-bds);
@@ -154,7 +154,7 @@
 
 :where(input[type="range" i]).focus::-ms-track,
 :where(input[type="range" i]):focus::-ms-track {
-  --_range__track-bg: var(--range🎯__track-bg, var(--range_gradient));
+  /* --_range__track-bg: var(--range🎯__track-bg, var(--range_gradient)); */
   --range__track-h: var(--range🎯__track-h);
   --range__track-bdw: var(--range🎯__track-bdw);
   --range__track-bds: var(--range🎯__track-bds);

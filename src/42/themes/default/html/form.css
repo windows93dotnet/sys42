@@ -361,7 +361,7 @@ legend.label {
 }
 
 :where(label, .label):not(.button) {
-  padding-right: var(--unit-md);
+  margin-right: var(--unit-md);
 }
 
 :where(label,.label) abbr[title] {
