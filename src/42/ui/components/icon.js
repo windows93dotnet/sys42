@@ -91,10 +91,10 @@ class Icon extends Component {
     }
   }
 
-  getInfos(path) {
+  async getInfos(path) {
     if (path === undefined) return
     const infos = getPathInfos(path, { getURIMimetype: false })
-    infos.image ??= themeManager.getIconPath(infos)
+    infos.image ??= await themeManager.getIconPath(infos)
     infos.description ??= infos.isDir ? "folder" : infos.isURI ? "uri" : "file"
     infos.name ??= (
       infos.isURI

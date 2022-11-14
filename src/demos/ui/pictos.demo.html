@@ -11,6 +11,7 @@
 </script>
 
 <script type="module">
+  /* eslint-disable no-unused-vars */
   import ui from "../../42/ui.js"
   import cssVar from "../../42/fabric/cssom/cssVar.js"
   import themeManager from "../../42/os/managers/themeManager.js"
@@ -198,11 +199,11 @@
     ]
   }
 
-  // cssVar.set("ButtonFace", "#444")
-  cssVar.set("ButtonText", "red")
-  cssVar.set("GrayText", "blue")
-  console.log(themeManager.module)
-  themeManager.update()
+  // cssVar.set("--ButtonFace", "#444")
+  // cssVar.set("--ButtonHilight", "lime")
+  cssVar.set("--ButtonText", "red")
+  cssVar.set("--GrayText", "blue")
+  // themeManager.refresh()
 
   ui({
     tag: "._box-fit._desktop",

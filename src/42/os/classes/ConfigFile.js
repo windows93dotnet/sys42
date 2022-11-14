@@ -7,10 +7,25 @@ import persist from "../../core/persist.js"
 import dispatch from "../../fabric/event/dispatch.js"
 
 export default class ConfigFile {
+  #instanceInit
+
   constructor(filename, defaults) {
     this.path = `$HOME/${getBasename(filename)}`
     persist.ensureType(filename)
     this.defaults = configure({ version: -1 * Date.now() }, defaults)
+
+    this.ready = defer()
+    this.#instanceInit = this.init
+    this.init = async (...args) => {
+      try {
+        await this.#init(...args)
+        if (this.#instanceInit) await this.#instanceInit(...args)
+        this.ready.resolve()
+      } catch (err) {
+        this.ready.reject(err)
+        throw err
+      }
+    }
   }
 
   async #init() {
@@ -23,21 +38,9 @@ export default class ConfigFile {
     }
 
     persist.watch(this.path, async () => {
-      this.ready = defer()
       await this.load()
       this.ready.resolve()
     })
-  }
-
-  async init(...args) {
-    this.ready = defer()
-    try {
-      await this.#init(...args)
-      this.ready.resolve()
-    } catch (err) {
-      this.ready.reject(err)
-      throw err
-    }
   }
 
   async load() {

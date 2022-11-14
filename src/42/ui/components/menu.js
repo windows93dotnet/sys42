@@ -129,8 +129,6 @@ export class Menu extends Component {
         item.content = item.label
       }
 
-      delete item.label
-
       if (item.disabled) {
         item.aria ??= {}
         item.aria.disabled = item.disabled
