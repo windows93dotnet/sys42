@@ -22,10 +22,10 @@ class ThemeManager extends ConfigFile {
     // el.id = "theme"
   }
 
-  async getIconPath(infos) {
+  async getIconPath(infos, size) {
     await this.ready
     for (const themePath of this.value.icons) {
-      const path = findIconPath(themePath, infos)
+      const path = findIconPath(themePath, infos, size)
       if (path) return path
     }
   }
@@ -36,7 +36,7 @@ class ThemeManager extends ConfigFile {
   }
 }
 
-const themeManager = new ThemeManager("theme.json", DEFAULTS)
+export const themeManager = new ThemeManager("theme.json", DEFAULTS)
 themeManager.init()
 
 export default themeManager

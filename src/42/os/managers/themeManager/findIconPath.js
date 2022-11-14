@@ -6,10 +6,7 @@ import disk from "../../../core/disk.js"
 import locate from "../../../fabric/locator/locate.js"
 import getDirBasePair from "../../../core/path/core/getDirBasePair.js"
 
-export default function findIconPath(themePath, val) {
-  const obj = disk.get(themePath)
-  if (!obj) return
-
+function searchIcon(themePath, obj, val) {
   if (typeof val === "string") {
     if (val.includes("/")) {
       const { dir, base } = getDirBasePair(val)
@@ -32,7 +29,7 @@ export default function findIconPath(themePath, val) {
 
   const { filename, ext, mime, protocol, host } = val
 
-  if (protocol.startsWith("http")) {
+  if (protocol?.startsWith("http")) {
     if ("host" in obj) {
       for (const k in obj.host) {
         if (k.startsWith(`${host}.`)) return `${themePath}/host/${k}`
@@ -48,7 +45,7 @@ export default function findIconPath(themePath, val) {
     return
   }
 
-  if (filename.endsWith("/")) {
+  if (filename?.endsWith("/")) {
     if ("places" in obj) {
       for (const k in obj.places) {
         if (k.startsWith(`folder.`)) return `${themePath}/places/${k}`
@@ -58,26 +55,40 @@ export default function findIconPath(themePath, val) {
     return
   }
 
-  if ("ext" in obj) {
+  if (ext && "ext" in obj) {
     for (const k in obj.ext) {
       if (k.startsWith(`${ext}.`)) return `${themePath}/ext/${k}`
     }
   }
 
-  if ("subtype" in obj) {
-    for (const k in obj.subtype) {
-      if (
-        k.startsWith(`${mime.subtype}.`) ||
-        (mime.suffix && k.startsWith(`${mime.suffix}.`))
-      ) {
-        return `${themePath}/subtype/${k}`
+  if (mime) {
+    if (mime.subtype && "subtype" in obj) {
+      for (const k in obj.subtype) {
+        if (
+          k.startsWith(`${mime.subtype}.`) ||
+          (mime.suffix && k.startsWith(`${mime.suffix}.`))
+        ) {
+          return `${themePath}/subtype/${k}`
+        }
+      }
+    }
+
+    if (mime.type && "type" in obj) {
+      for (const k in obj.type) {
+        if (k.startsWith(`${mime.type}.`)) return `${themePath}/type/${k}`
       }
     }
   }
+}
 
-  if ("type" in obj) {
-    for (const k in obj.type) {
-      if (k.startsWith(`${mime.type}.`)) return `${themePath}/type/${k}`
-    }
+export default function findIconPath(themePath, val, size) {
+  const obj = disk.get(themePath)
+  if (!obj) return
+
+  if (size && size in obj) {
+    const res = searchIcon(`${themePath}/${size}`, obj[size], val)
+    if (res) return res
   }
+
+  return searchIcon(themePath, obj, val)
 }

@@ -1,5 +1,6 @@
 import Component from "../classes/Component.js"
 import create from "../create.js"
+import render from "../render.js"
 import loadSVG from "../../core/load/loadSVG.js"
 
 const inlineds = new Set([])
@@ -30,22 +31,41 @@ export class Picto extends Component {
         type: "string",
         reflect: true,
         storeInState: false,
-        update() {
-          this.use.setAttribute("href", `#${this.value}`)
-          ensureSymbol(this.value)
+        async update() {
+          const type = typeof this.value
+          if (type !== "string" || this.value.includes("/")) {
+            let src = this.value
+            if (type !== "string" || !this.value.includes(".")) {
+              src = await import("../../os/managers/themeManager.js").then(
+                async ({ themeManager }) =>
+                  themeManager.getIconPath(this.value, 16)
+              )
+            }
+
+            this.replaceChildren(
+              render({
+                tag: "img",
+                width: "16",
+                height: "16",
+                aria: { hidden: true },
+                src,
+              })
+            )
+          } else {
+            ensureSymbol(this.value)
+            this.replaceChildren(
+              render({
+                tag: "svg",
+                width: "16",
+                height: "16",
+                aria: { hidden: true },
+                content: { tag: "use", entry: "use", href: "#" + this.value },
+              })
+            )
+          }
         },
       },
     },
-  }
-
-  render() {
-    return {
-      tag: "svg",
-      width: "16",
-      height: "16",
-      aria: { hidden: true },
-      content: { tag: "use", entry: "use", href: "#" + this.value },
-    }
   }
 }
 

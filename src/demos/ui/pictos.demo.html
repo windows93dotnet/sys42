@@ -69,6 +69,11 @@
                   },
                   "---",
                   {
+                    label: "Menuitem",
+                    picto: "places/folder",
+                  },
+                  "---",
+                  {
                     label: "Indeterminate",
                     tag: "checkbox",
                     value: undefined,
@@ -120,16 +125,19 @@
                 tag: "button",
                 picto: "plus-large",
               },
+              " ",
               {
                 tag: "button",
                 picto: { start: "plus-large" },
                 content: "Button",
               },
+              " ",
               {
                 tag: "button",
                 picto: { end: "plus-large" },
                 content: "Button",
               },
+              " ",
               {
                 tag: "button",
                 content: "Button",
@@ -137,25 +145,24 @@
               "---",
               {
                 tag: "button",
-                content: [
-                  "Button",
-                  {
-                    tag: "img",
-                    src: "../../42/themes/default/icons/places/16/folder.png",
-                  },
-                ],
+                picto: "places/folder",
               },
+              " ",
               {
                 tag: "button",
-                content: [
-                  "Button",
-                  {
-                    tag: "img",
-                    width: "16px",
-                    height: "16px",
-                    src: "../../42/themes/default/icons/type/audio.png",
-                  },
-                ],
+                picto: "places/user-trash",
+                content: "Button",
+              },
+              " ",
+              {
+                tag: "button",
+                picto: { end: "type/audio" },
+                content: "Button",
+              },
+              " ",
+              {
+                tag: "button",
+                content: "Button",
               },
               "---",
               {
@@ -201,8 +208,8 @@
 
   // cssVar.set("--ButtonFace", "#444")
   // cssVar.set("--ButtonHilight", "lime")
-  cssVar.set("--ButtonText", "red")
-  cssVar.set("--GrayText", "blue")
+  // cssVar.set("--ButtonText", "red")
+  // cssVar.set("--GrayText", "blue")
   // themeManager.refresh()
 
   ui({

@@ -349,7 +349,9 @@ export function normalizeFromTo(obj) {
 }
 
 export function normalizeStartEnd(obj) {
-  return typeof obj === "string" ? { start: obj } : obj
+  return typeof obj === "string" || !("start" in obj || "end" in obj)
+    ? { start: obj }
+    : obj
 }
 
 export function normalizeComputeds(computeds, ctx) {
