@@ -21,7 +21,6 @@ export default {
         "**/dynamicImport.js",
         "**/themes/**/fonts/**",
         "**/scripts/pictos/**",
-        "**/src/tests/fixtures/pictos.js",
       ],
       graph: false,
     },
