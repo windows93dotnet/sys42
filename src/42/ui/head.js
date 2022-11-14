@@ -1,4 +1,5 @@
 import "./form.js"
+import "../os/managers/themeManager.js"
 
 document.documentElement.lang ||= "en"
 
@@ -11,6 +12,3 @@ if (window.top !== window.self) {
     })
   })
 }
-
-// TODO: Move in theme.js
-import "../themes/windows9x/index.js"

@@ -2,12 +2,13 @@
 
 const NS = "http://www.w3.org/2000/svg"
 
-const filters = document.createElementNS(NS, "svg")
-filters.style = "position:absolute;pointer-events:none;"
+export function install() {
+  const filters = document.createElementNS(NS, "svg")
+  filters.style = "position:absolute;pointer-events:none;"
 
-const disabledInset = document.createElementNS(NS, "filter")
-disabledInset.id = "disabled-inset"
-disabledInset.innerHTML = `
+  const disabledInset = document.createElementNS(NS, "filter")
+  disabledInset.id = "disabled-inset"
+  disabledInset.innerHTML = `
 <feComponentTransfer in="SourceGraphic" result="contrast">
   <feFuncR type="discrete" tableValues="0 0.5 0 1"/>
   <feFuncG type="discrete" tableValues="0 0.5 0 1"/>
@@ -22,12 +23,15 @@ disabledInset.innerHTML = `
 <feComposite operator="in" in="shadow-color" in2="black-isolated" result="shadow" />
 <feMerge><feMergeNode in="hilight" /><feMergeNode in="shadow" /></feMerge>
 `
-filters.append(disabledInset)
-document.body.append(filters)
+  filters.append(disabledInset)
+  document.body.append(filters)
 
-window.addEventListener("resize", () => {
-  // work around a browser bug in Chrome where
-  // the SVG filter behaves differently based on the INITIAL zoom level
-  // (if you zoom in, the icons get cut off, if you zoom out, the effect is too thick)
-  disabledInset.setAttribute("x", "0")
-})
+  window.addEventListener("resize", () => {
+    // work around a browser bug in Chrome where
+    // the SVG filter behaves differently based on the INITIAL zoom level
+    // (if you zoom in, the icons get cut off, if you zoom out, the effect is too thick)
+    disabledInset.setAttribute("x", "0")
+  })
+}
+
+export function update() {}
