@@ -62,11 +62,3 @@
   resize: none;
   overflow: auto;
 }
-
-:where([aria-busy="true" i]) {
-  cursor: var(--cursor-progress, progress);
-}
-
-:where([aria-disabled="true" i], [disabled]) {
-  cursor: var(--cursor-not-allowed, not-allowed);
-}
