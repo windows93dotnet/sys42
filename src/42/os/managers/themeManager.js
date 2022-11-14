@@ -11,11 +11,10 @@ const DEFAULTS = {
 
 class ThemeManager extends ConfigFile {
   async init() {
-    await super.init()
     if (this.value.module) {
       await import(this.value.module).then((module) => {
         this.module = module
-        module.install()
+        return module.install()
       })
     }
     // const el = await loadCSS(this.value.style)
@@ -23,16 +22,17 @@ class ThemeManager extends ConfigFile {
     // el.id = "theme"
   }
 
-  getIconPath(infos) {
+  async getIconPath(infos) {
+    await this.ready
     for (const themePath of this.value.icons) {
       const path = findIconPath(themePath, infos)
       if (path) return path
     }
   }
 
-  async update() {
+  async refresh() {
     await this.ready
-    this.module?.update()
+    this.module?.refresh()
   }
 }
 

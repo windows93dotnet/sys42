@@ -92,14 +92,14 @@ export default class Component extends HTMLElement {
 
   #observed
   #animateTo
-  #destroyCallback
+  #instanceDestroy
   #hasNewScope
   #lifecycle = CREATE
 
   constructor(...args) {
     super()
     this.ready = defer()
-    this.#destroyCallback = this.destroy
+    this.#instanceDestroy = this.destroy
     this.destroy = this.#destroy
     const shouldInit =
       args.length > 0 ||
@@ -356,7 +356,7 @@ export default class Component extends HTMLElement {
     if (this.#lifecycle === DESTROY || this.#lifecycle === CREATE) return
     this.#lifecycle = DESTROY
 
-    this.#destroyCallback?.()
+    if (this.#instanceDestroy) await this.#instanceDestroy(options)
 
     const reason = `${this.localName} destroyed`
     this.ctx.cancel(reason)

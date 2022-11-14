@@ -170,7 +170,7 @@
 ----------------- */
 
 :where(input[type="range" i]):disabled::-webkit-slider-runnable-track {
-  --_range__track-bg: var(--range🚫__track-bg, var(--range_gradient));
+  /* --_range__track-bg: var(--range🚫__track-bg, var(--range_gradient)); */
   --range__track-h: var(--range🚫__track-h);
   --range__track-bdw: var(--range🚫__track-bdw);
   --range__track-bds: var(--range🚫__track-bds);
@@ -180,7 +180,7 @@
 }
 
 :where(input[type="range" i]):disabled::-moz-range-track {
-  --_range__track-bg: var(--range🚫__track-bg, var(--range_gradient));
+  /* --_range__track-bg: var(--range🚫__track-bg, var(--range_gradient)); */
   --range__track-h: var(--range🚫__track-h);
   --range__track-bdw: var(--range🚫__track-bdw);
   --range__track-bds: var(--range🚫__track-bds);
@@ -190,7 +190,7 @@
 }
 
 :where(input[type="range" i]):disabled::-ms-track {
-  --_range__track-bg: var(--range🚫__track-bg, var(--range_gradient));
+  /* --_range__track-bg: var(--range🚫__track-bg, var(--range_gradient)); */
   --range__track-h: var(--range🚫__track-h);
   --range__track-bdw: var(--range🚫__track-bdw);
   --range__track-bds: var(--range🚫__track-bds);

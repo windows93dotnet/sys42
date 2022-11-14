@@ -279,7 +279,6 @@
   --range__thumb-bg: var(--ButtonFace);
   --range__thumb-bdi: var(--btn-bdi);
 
-  --range🚫__track-bg: var(--ButtonFace) var(--screentone-url);
   --range🚫__thumb-bg: var(--ButtonFace) var(--screentone-url);
 
   --progress__value-bg:
