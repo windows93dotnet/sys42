@@ -169,8 +169,6 @@ export class Explorer extends Component {
     if (keyboard.keys.Control) return // TODO: check how to do this in template
     this.path = path
 
-    this.message = this.querySelector(".message") // TODO: write `elementAs` ui keyword
-
     if (this.folder.err) {
       this.message.textContent = this.folder.err
     } else {

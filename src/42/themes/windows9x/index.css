@@ -113,20 +113,15 @@
 
   /* pictos
   ========= */
-  --picto--up-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(0 0 0)" d="M7 6h1v1h1v1h1v1h1v1h-7v-1h1v-1h1v-1h1z"/></svg>');
-  --picto--down-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(0 0 0)" d="M4 6h7v1h-1v1h-1v1h-1v1h-1v-1h-1v-1h-1v-1h-1z"/></svg>');
-  --picto--up-xs-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(0 0 0)" d="M7 6h1v1h1v1h-3v-1h1z"/></svg>');
-  --picto--down-xs-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(0 0 0)" d="M6 7h3v1h-1v1h-1v-1h-1z"/></svg>');
-
-  /* Scrollbar icons */
   --pictos-url: url("./sprites.svg");
 
-  --picto-up: -0px 0 no-repeat var(--pictos-url);
-  --picto-down: -16px 0 no-repeat var(--pictos-url);
-  --picto-left: -32px 0 no-repeat var(--pictos-url);
-  --picto-right: -48px 0 no-repeat var(--pictos-url);
-  --picto-clear: -64px 0 no-repeat var(--pictos-url);
-  --picto-calendar: -80px 0 no-repeat var(--pictos-url);
+  --picto--up-xs: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(0 0 0)" d="M7 6h1v1h1v1h-3v-1h1z"/></svg>');
+  --picto--down-xs: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(0 0 0)" d="M6 7h3v1h-1v1h-1v-1h-1z"/></svg>');
+
+  --scrollbar-up-bg: -0px 0 no-repeat var(--pictos-url);
+  --scrollbar-down-bg: -16px 0 no-repeat var(--pictos-url);
+  --scrollbar-left-bg: -32px 0 no-repeat var(--pictos-url);
+  --scrollbar-right-bg: -48px 0 no-repeat var(--pictos-url);
 }
 
 :root {
@@ -313,9 +308,9 @@ input[type="checkbox" i] {
 
 input[type="number" i]::-webkit-inner-spin-button {
   background-image:
-    var(--picto--up-xs-url),
+    var(--picto--up-xs),
     linear-gradient(to bottom, var(--ButtonShadow) 1px, #fff 1px),
-    var(--picto--down-xs-url);
+    var(--picto--down-xs);
   background-position-x: 0, center, 0;
   background-position-y: -2px, center, 5px;
   background-origin: border-box;
@@ -525,22 +520,22 @@ legend button:active,
 }
 
 *::-webkit-scrollbar-button:vertical:decrement {
-  background: var(--ButtonFace) var(--picto-up);
+  background: var(--ButtonFace) var(--scrollbar-up-bg);
   background-origin: border-box;
 }
 
 *::-webkit-scrollbar-button:vertical:increment {
-  background: var(--ButtonFace) var(--picto-down);
+  background: var(--ButtonFace) var(--scrollbar-down-bg);
   background-origin: border-box;
 }
 
 *::-webkit-scrollbar-button:horizontal:decrement {
-  background: var(--ButtonFace) var(--picto-left);
+  background: var(--ButtonFace) var(--scrollbar-left-bg);
   background-origin: border-box;
 }
 
 *::-webkit-scrollbar-button:horizontal:increment {
-  background: var(--ButtonFace) var(--picto-right);
+  background: var(--ButtonFace) var(--scrollbar-right-bg);
   background-origin: border-box;
 }
 

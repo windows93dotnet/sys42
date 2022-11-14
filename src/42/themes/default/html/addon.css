@@ -82,7 +82,7 @@ input[type="date" i]::after {
   height: var(--addon-h);
   width: var(--addon-w);
   background: var(--addon-fg, currentColor);
-  -webkit-mask-image: var(--picto--calendar-url);
+  -webkit-mask-image: var(--picto--calendar);
   -webkit-mask-position-x: 50%;
   -webkit-mask-position-y: 50%;
   -webkit-mask-repeat: no-repeat;
@@ -103,24 +103,24 @@ input[type="date" i]:disabled::after {
 ::file-selector-button {
   font-size: 0;
   margin: 0;
-  -webkit-mask-image: var(--picto--upload-url);
+  -webkit-mask-image: var(--picto--upload);
 }
 
 selectmenu::after {
-  -webkit-mask-image: var(--picto--down-url);
+  -webkit-mask-image: var(--picto--down);
 }
 
 input[list]::-webkit-calendar-picker-indicator {
   color: inherit;
   background: var(--addon-fg, currentColor);
-  -webkit-mask-image: var(--picto--ellipsis-vertical-url);
+  -webkit-mask-image: var(--picto--ellipsis-vertical);
   -webkit-mask-position-x: 50%;
   -webkit-mask-position-y: 50%;
   -webkit-mask-repeat: no-repeat;
 }
 
 input[type="number" i]::-webkit-inner-spin-button {
-  background-image: var(--picto--up-url), var(--picto--down-url);
+  background-image: var(--picto--up), var(--picto--down);
   background-position-x: center;
   background-repeat: no-repeat;
   --_y: calc(2px + 0.5 * var(--ctrl-py));

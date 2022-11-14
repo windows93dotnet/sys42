@@ -196,8 +196,6 @@ States
 
   --check-o: 1px solid var(--check-oc, var(--check-fg));
   --check-oo: 3px;
-  --check-picto: var(--picto--check);
-  --check-picto--indeterminate: var(--picto--minus-large);
   --check-size: calc(7 * 2px);
   --check__bullet-ma: 3px;
   --check__bullet-speed: 0; /* 120ms */
@@ -235,13 +233,13 @@ States
 
   --picto-size: 16px;
 
-  --picto--up-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(80 80 80)" d="M7 6h1v1h1v1h1v1h1v1h-7v-1h1v-1h1v-1h1z"/></svg>');
-  --picto--down-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(80 80 80)" d="M4 6h7v1h-1v1h-1v1h-1v1h-1v-1h-1v-1h-1v-1h-1z"/></svg>');
-  --picto--upload-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(80 80 80)" d="M7 4h2v1h1v1h1v1h-2v3h-2v-3h-2v-1h1v-1h1z M3 9h1v2h8v-2h1v3h-10z"/></svg>');
-  --picto--calendar-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(80 80 80)" d="M4 3h1v1h5v-1h1v1h1v8h-9v-8h1z M4 6v5h7v-5z M5 7h2v2h-2z"/></svg>');
-  --picto--check-url: url("../pictos/check.svg");
-  --picto--indeterminate-url: url("../pictos/minus-large.svg");
-  --picto--ellipsis-vertical-url: url("../pictos/ellipsis-vertical.svg");
+  --picto--up: url("../pictos/up.svg");
+  --picto--down: url("../pictos/down.svg");
+  --picto--upload: url("../pictos/import.svg");
+  --picto--calendar: url("../pictos/calendar.svg");
+  --picto--check: url("../pictos/check.svg");
+  --picto--indeterminate: url("../pictos/minus-large.svg");
+  --picto--ellipsis-vertical: url("../pictos/ellipsis-vertical.svg");
 }
 
 /* reset
@@ -888,7 +886,7 @@ button[type="submit"]:not(:active,:disabled),
 
 select {
   appearance: none;
-  background-image: var(--picto--down-url);
+  background-image: var(--picto--down);
   background-position-x: calc(100% - var(--addon-right) - calc(0.5 * calc(var(--addon-w) - var(--picto-size))));
   background-position-y: center;
   background-repeat: no-repeat;
@@ -1084,7 +1082,7 @@ input[type="radio"]
 
 :where(input[type="checkbox"]:checked)::before,
 :where(input[type="checkbox"]:checked)::after {
-  -webkit-mask-image: var(--picto--check-url);
+  -webkit-mask-image: var(--picto--check);
   -webkit-mask-position-x: 50%;
   -webkit-mask-position-y: 50%;
   -webkit-mask-repeat: no-repeat;
@@ -1092,7 +1090,7 @@ input[type="radio"]
 
 :where(input[type="checkbox"]:indeterminate)::before,
 :where(input[type="checkbox"]:indeterminate)::after {
-  -webkit-mask-image: var(--picto--indeterminate-url);
+  -webkit-mask-image: var(--picto--indeterminate);
 }
 
 input[type="radio"]:not([role="menuitemradio"]) { border-radius: 100%; }
