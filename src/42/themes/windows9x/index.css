@@ -169,7 +169,7 @@
   --ctrl-bdw: 2px;
 
   --ctrl-o: 1px dotted;
-  --ctrl-oo: -4px;
+  --ctrl-oo: -3px;
   --ctrl🚫-alpha: 1;
   --ctrl🚫-bg: var(--ButtonFace);
   --ctrl🚫-fg: var(--GrayText);
@@ -186,6 +186,7 @@
   --btn-fg: var(--ButtonText);
   --btn-bdw: 2px;
   --btn-bdc: var(--ButtonShadow);
+  --btn-oo: -5px;
   --fieldset-bdw: 2px;
   --fieldset-bdc: var(--ButtonShadow);
 
@@ -213,8 +214,7 @@
   --btn☑️-bg: var(--btn-bg) var(--screentone-url);
   --btn☑️🚫-bdi: var(--btn☑️-bdi);
 
-  --check-o: var(--ctrl-o);
-  --check-oo: 1px;
+  --check-o: none;
   --check-size: 10px;
   --check__bullet-ma: 3px;
   --check-bdw: 0;
@@ -322,6 +322,22 @@ input[type="number" i]::-webkit-inner-spin-button {
   background-size: auto, 16px 2px, auto;
 }
 
+:is(button, .button):focus:not(:active) {
+  border-image: var(--btn💾-bdi);
+}
+
+.check-cont label {
+  padding-inline: 2px;
+  padding-block: 0;
+  margin-block: calc(var(--ctrl-py));
+  line-height: 14px;
+}
+
+.check-cont:focus-within label {
+  outline: var(--ctrl-o);
+  outline-offset: -1px;
+}
+
 ui-menu {
   padding: 2px;
 }
@@ -412,7 +428,7 @@ legend button.has-picto {
 .ui-dialog__header button,
 legend button.has-picto:focus,
 .ui-dialog__header button.has-picto:focus {
-  outline-offset: 0;
+  outline-offset: -1px;
 }
 
 legend button.has-picto > ui-picto,
@@ -434,6 +450,10 @@ legend button.has-picto > ui-picto,
 legend button:active,
 .ui-dialog__header button:active {
   padding: 2px 1px 1px 2px;
+}
+
+.ui-dialog__header button:active {
+  border-image: var(--fld-bdi);
 }
 
 .ui-dialog__footer button {
@@ -471,8 +491,6 @@ legend button:active,
 
 *::-webkit-scrollbar {
   background: var(--Scrollbar) var(--screentone-url) repeat;
-  /* cursor: var(--cursor-default, default); */
-  cursor: default;
 }
 
 *::-webkit-scrollbar,
@@ -504,7 +522,6 @@ legend button:active,
 
 *::-webkit-scrollbar-button:hover:active {
   border: 1px solid var(--ButtonShadow);
-  box-shadow: none;
 }
 
 *::-webkit-scrollbar-button:vertical:decrement {
@@ -526,6 +543,30 @@ legend button:active,
   background: var(--ButtonFace) var(--picto-right);
   background-origin: border-box;
 }
+
+/* active */
+
+*::-webkit-scrollbar-button:hover:active {
+  background-position-y: 1px;
+}
+
+*::-webkit-scrollbar-button:vertical:decrement:active {
+  background-position-x: 1px;
+}
+
+*::-webkit-scrollbar-button:vertical:increment:active {
+  background-position-x: -15px;
+}
+
+*::-webkit-scrollbar-button:horizontal:decrement:active {
+  background-position-x: -31px;
+}
+
+*::-webkit-scrollbar-button:horizontal:increment:active {
+  background-position-x: -47px;
+}
+
+/* disabled */
 
 *::-webkit-scrollbar-button:horizontal:disabled {
   background-position-y: -16px;
