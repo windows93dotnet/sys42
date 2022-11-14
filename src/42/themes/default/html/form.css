@@ -566,7 +566,7 @@ button,
 /* picto
 ======== */
 
-:where(button,.button,.field,.solid).has-picto::before {
+:where(button,.button,.field,.solid).has-picto::after {
   content: var(--zero-width-space);
   margin-inline-start: calc(-1 * var(--ctrl-px));
 }

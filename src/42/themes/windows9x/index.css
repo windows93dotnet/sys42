@@ -279,6 +279,9 @@
   --range__thumb-bg: var(--ButtonFace);
   --range__thumb-bdi: var(--btn-bdi);
 
+  --range🚫__track-bg: var(--ButtonFace) var(--screentone-url);
+  --range🚫__thumb-bg: var(--ButtonFace) var(--screentone-url);
+
   --progress__value-bg:
     0 0 / 10px 50px
     linear-gradient(90deg, var(--Hilight) 8px, transparent 8px);
@@ -289,14 +292,6 @@
   --separator-v-bdw: 0 1px 0 1px;
   --separator-v-bdc: transparent var(--ButtonHilight) transparent var(--ButtonShadow);
 }
-
-/* :where(label,.label):not(.button)::after {
-  content: ":";
-}
-
-input:is([type="radio" i],[type="checkbox" i]) + label::after {
-  content: "";
-} */
 
 select:is([multiple],[size]),
 textarea {
