@@ -331,22 +331,27 @@ ui-menu hr {
   margin-bottom: 2px;
 }
 
-/*  */
+/* Not needed ? */
 
+/*
 ui-dialog {
-  padding: 2px;
+  --_activity-border: var(--InactiveBorder);
+  box-shadow:
+    inset 1px 1px 1px 0 var(--_activity-border),
+    inset -1px -1px 1px 0 var(--_activity-border);
 }
 
-.ui-dialog__footer {
-  margin-top: 2px;
+ui-dialog[active] {
+  --_activity-border: var(--ActiveBorder);
 }
+*/
 
 .ui-dialog__header {
+  padding: 0;
   padding-inline-end: 2px;
   display: flex;
   color: var(--InactiveTitleText);
   background-color: var(--GradientInactiveTitle);
-  border-bottom: 2px solid var(--InactiveBorder);
 }
 
 :root {
@@ -380,7 +385,6 @@ ui-dialog {
 :where(.active, ui-dialog[active]) .ui-dialog__header {
   color: var(--TitleText);
   background-color: var(--GradientActiveTitle);
-  border-bottom: 2px solid var(--ActiveBorder);
 }
 
 :where(.active, ui-dialog[active]) .ui-dialog__title {
@@ -390,17 +394,6 @@ ui-dialog {
       var(--ActiveTitle),
       var(--GradientActiveTitle)
     );
-}
-
-.ui-dialog__header button {
-  height: var(--picto-size);
-  min-width: var(--picto-size);
-  padding: 2px;
-  margin: 2px 0;
-}
-
-.ui-dialog__footer button {
-  min-width: 75px;
 }
 
 legend button.has-picto,
@@ -429,6 +422,22 @@ legend button.has-picto > ui-picto,
 
 .ui-dialog__header button:last-of-type {
   margin-inline-start: 2px;
+}
+
+.ui-dialog__header button {
+  height: var(--picto-size);
+  min-width: var(--picto-size);
+  padding: 2px;
+  margin: 2px 0;
+}
+
+legend button:active,
+.ui-dialog__header button:active {
+  padding: 2px 1px 1px 2px;
+}
+
+.ui-dialog__footer button {
+  min-width: 75px;
 }
 
 /* modals
