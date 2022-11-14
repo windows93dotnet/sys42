@@ -8,6 +8,7 @@
   --dialog-br: var(--outset-br);
   --dialog-tsh: var(--outset-tsh, none);
   --dialog-bsh: var(--outset-bsh);
+  --dialog-pa: var(--unit-xs);
 }
 
 ui-dialog {
@@ -19,6 +20,7 @@ ui-dialog {
   flex-direction: column;
   width: max-content;
   min-width: var(--ctrl-w);
+  padding: var(--dialog-pa);
 
   --bg: var(--dialog-bg);
   --fg: var(--dialog-fg);
@@ -55,13 +57,15 @@ ui-dialog:focus {
 }
 
 .ui-dialog__header {
-  justify-content: center;
+  align-items: center;
+  margin-bottom: var(--unit-xs);
 }
 
 .ui-dialog__footer {
   justify-content: end;
   flex-wrap: wrap;
   gap: var(--unit-sm);
+  margin-top: var(--unit-xs);
 }
 
 .ui-dialog__title {
@@ -73,7 +77,6 @@ ui-dialog:focus {
   font-weight: inherit;
   position: relative;
   user-select: none;
-  /* max-width: 100%; */
 
   overflow: hidden;
   text-overflow: ellipsis;

@@ -11,8 +11,6 @@
   --bg: var(--setting-color);
   /* --bg: tomato; */
   --fg: #fff;
-  background-color: var(--bg);
-  color: var(--fg);
 
   --highlight-bg: rgba(255 255 255 / 0.2);
   --highlight-fg: var(--fg);
@@ -70,8 +68,9 @@
   --tooltip-bdw: 2px;
 }
 
-.outset {
-  padding: 0;
+body {
+  background-color: var(--bg);
+  color: var(--fg);
 }
 
 legend {

@@ -7,6 +7,13 @@ const inlineds = new Set([])
 const sprites = create("svg", { style: { display: "none" } })
 document.body.append(sprites)
 
+const visual = {
+  width: "16",
+  height: "16",
+  draggable: false,
+  aria: { hidden: true },
+}
+
 function ensureSymbol(val) {
   if (!inlineds.has(val)) {
     inlineds.add(val)
@@ -45,9 +52,9 @@ export class Picto extends Component {
             this.replaceChildren(
               render({
                 tag: "img",
-                width: "16",
-                height: "16",
-                aria: { hidden: true },
+                fetchpriority: "high",
+                decoding: "async",
+                ...visual,
                 src,
               })
             )
@@ -56,9 +63,7 @@ export class Picto extends Component {
             this.replaceChildren(
               render({
                 tag: "svg",
-                width: "16",
-                height: "16",
-                aria: { hidden: true },
+                ...visual,
                 content: { tag: "use", entry: "use", href: "#" + this.value },
               })
             )

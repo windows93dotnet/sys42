@@ -1,7 +1,6 @@
 :root {
   --player-bg: #000;
   --player-fullscreen-controls-pa: var(--unit);
-  /* --player-bg: #111; */
 }
 
 ui-player {
@@ -9,6 +8,7 @@ ui-player {
   flex-direction: column;
   min-width: var(--ctrl-w);
   min-height: calc(var(--ctrl-w) / 2);
+  max-width: 100%;
 }
 
 ui-player[audio]:not([waveform]) {
@@ -51,7 +51,7 @@ ui-player[audio]:not([waveform]) .ui-player__stage {
 .ui-player__stage {
   background-color: var(--player-bg);
   overflow: hidden;
-  margin-bottom: var(--unit-sm);
+  margin-bottom: var(--unit-xs);
 }
 
 .ui-player__media {

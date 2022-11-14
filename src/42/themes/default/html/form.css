@@ -276,7 +276,7 @@ States
   outline-offset: -1px;
 }
 
-/* :focus:not(:focus-visible, [aria-pressed]), */
+:focus:not(:focus-visible, [aria-pressed]),
 [tabindex="-1"]:focus,
 [tabindex="-1"].focus {
   outline: none;
@@ -412,6 +412,30 @@ fieldset[disabled]) {
 [aria-busy="true" i] * {
   cursor: var(--cursor-progress, progress);
 }
+
+/* picto
+======== */
+
+:where(button,.button,.field,.solid).has-picto::after {
+  content: var(--zero-width-space);
+  margin-inline-start: calc(-1 * var(--ctrl-px));
+}
+
+:where(button,.button,.field,.solid).has-picto > ui-picto {
+  margin-block: calc(-1 * var(--ctrl-py));
+}
+
+/* :where(button,.button,.field,.solid).has-picto--start {
+  padding-inline-start: var(--ctrl-picto-px);
+}
+
+:where(button,.button,.field,.solid).has-picto--end {
+  padding-inline-end: var(--ctrl-picto-px);
+}
+
+:where(button,.button,.field,.solid).has-picto--only-child {
+  padding-inline: var(--ctrl-picto-px);
+} */
 
 /* field
 ======== */
@@ -561,30 +585,6 @@ button,
 :where(button,.button,.solid) > * {
   flex: 1 1 0%;
   min-width: 0;
-}
-
-/* picto
-======== */
-
-:where(button,.button,.field,.solid).has-picto::after {
-  content: var(--zero-width-space);
-  margin-inline-start: calc(-1 * var(--ctrl-px));
-}
-
-:where(button,.button,.field,.solid).has-picto > ui-picto {
-  margin-block: calc(-1 * var(--ctrl-py));
-}
-
-:where(button,.button,.field,.solid).has-picto--start {
-  padding-inline-start: var(--ctrl-picto-px);
-}
-
-:where(button,.button,.field,.solid).has-picto--end {
-  padding-inline-end: var(--ctrl-picto-px);
-}
-
-:where(button,.button,.field,.solid).has-picto--only-child {
-  padding-inline: var(--ctrl-picto-px);
 }
 
 /* .field
