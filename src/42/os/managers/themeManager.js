@@ -13,7 +13,7 @@ class ThemeManager extends ConfigFile {
   async init() {
     await super.init()
     if (this.value.module) {
-      import(this.value.module).then((module) => {
+      await import(this.value.module).then((module) => {
         this.module = module
         module.install()
       })
@@ -28,6 +28,11 @@ class ThemeManager extends ConfigFile {
       const path = findIconPath(themePath, infos)
       if (path) return path
     }
+  }
+
+  async update() {
+    await this.ready
+    this.module?.update()
   }
 }
 

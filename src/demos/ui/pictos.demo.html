@@ -13,6 +13,7 @@
 <script type="module">
   import ui from "../../42/ui.js"
   import cssVar from "../../42/fabric/cssom/cssVar.js"
+  import themeManager from "../../42/os/managers/themeManager.js"
 
   function makeDialogHeader() {
     return [
@@ -200,6 +201,8 @@
   // cssVar.set("ButtonFace", "#444")
   cssVar.set("ButtonText", "red")
   cssVar.set("GrayText", "blue")
+  console.log(themeManager.module)
+  themeManager.update()
 
   ui({
     tag: "._box-fit._desktop",
