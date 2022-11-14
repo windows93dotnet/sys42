@@ -31,6 +31,7 @@ function findTopImport(href, url, rule) {
       const el = rule.parentStyleSheet.ownerNode
       const clone = el.cloneNode(true)
       el.after(clone)
+      el.textContent = ""
       el.remove()
     }
   } else if (rule.parentStyleSheet.ownerRule?.type === IMPORT_RULE) {
@@ -56,17 +57,31 @@ async function updateRule(rule, sheet, relativeURL, url, i) {
 
 async function updateElement(el, url, key) {
   url.searchParams.set("t", Date.now())
+
+  // prevent duplicates
+  const sel = `${el.localName}[${key}^="${url.origin}${url.pathname}?t="]`
+  const previous = document.querySelectorAll(sel)
+
   const clone = el.cloneNode(true)
-  const { display } = clone.style
-  clone.style.display = "none"
-  clone[key] = url.href
+  const { cssText } = clone.style
+  clone.style = "display:none"
+  clone.setAttribute(key, url.href)
   el.after(clone)
+
   await Promise.race([
     sleep(500),
     when(clone, "load || error || readystatechange", { race: true }),
   ])
+
+  el.removeAttribute(key)
   el.remove()
-  clone.style.display = display
+  for (const item of previous) {
+    item.removeAttribute(key)
+    item.remove()
+  }
+
+  if (cssText) clone.style = cssText
+  else clone.removeAttribute("style")
 }
 
 export default function liveReload(path) {
@@ -100,6 +115,7 @@ export default function liveReload(path) {
     walkCSSRules((rule, i, sheet) => {
       const urls = rule.href ? [rule.href] : parseCSSUrl(rule.cssText)
       for (const relativeURL of urls) {
+        if (relativeURL.startsWith("#")) continue
         const url = new URL(relativeURL, sheet.href ?? location.origin)
         if (url.pathname === path) {
           task.log(` reload ${log.format.file(path)}`)
