@@ -17,6 +17,13 @@
   --range🎯__track-bdi: var(--range__track-bdi);
   --range🎯__track-bsh: var(--range__track-bsh);
 
+  --range🚫__track-h: var(--range__track-h);
+  --range🚫__track-bdw: var(--range__track-bdw);
+  --range🚫__track-bds: var(--range__track-bds);
+  --range🚫__track-bdc: var(--range__track-bdc);
+  --range🚫__track-bdi: var(--range__track-bdi);
+  --range🚫__track-bsh: var(--range__track-bsh);
+
   --range__thumb-h: var(--check-size);
   --range__thumb-w: var(--check-size);
   --range__thumb-br: 100%;
@@ -38,21 +45,29 @@
   --range🎯__thumb-bdi: var(--range__thumb-bdi);
   --range🎯__thumb-br: var(--range__thumb-br);
   --range🎯__thumb-bsh: var(--range__thumb-bsh);
+
+  --range🚫__thumb-w: var(--range__thumb-w);
+  --range🚫__thumb-h: var(--range__thumb-h);
+  --range🚫__thumb-bg: var(--range__thumb-bg);
+  --range🚫__thumb-bdw: var(--range__thumb-bdw);
+  --range🚫__thumb-bds: var(--range__thumb-bds);
+  --range🚫__thumb-bdc: var(--range__thumb-bdc);
+  --range🚫__thumb-bdi: var(--range__thumb-bdi);
+  --range🚫__thumb-br: var(--range__thumb-br);
+  --range🚫__thumb-bsh: var(--range__thumb-bsh);
 }
 
 :where(input[type="range" i]) {
   height: var(--range-h, var(--ctrl-h));
   width: var(--range-w, var(--ctrl-w));
   --percent: 100;
-  --_range__track-bg:
-    var(
-      --range__track-bg,
-      linear-gradient(
-        to right,
-        var(--range__track-active-c) calc(1% * var(--percent)),
-        var(--range__track-inactive-c) 0%
-      )
+  --range_gradient:
+    linear-gradient(
+      to right,
+      var(--range__track-active-c) calc(1% * var(--percent)),
+      var(--range__track-inactive-c) 0%
     );
+  --_range__track-bg: var(--range__track-bg, var(--range_gradient));
   appearance: none;
   padding-left: 0;
   padding-right: 0;
@@ -111,6 +126,7 @@
 
 :where(input[type="range" i]).focus::-webkit-slider-runnable-track,
 :where(input[type="range" i]):focus::-webkit-slider-runnable-track {
+  --_range__track-bg: var(--range🎯__track-bg, var(--range_gradient));
   --range__track-h: var(--range🎯__track-h);
   --range__track-bdw: var(--range🎯__track-bdw);
   --range__track-bds: var(--range🎯__track-bds);
@@ -124,6 +140,7 @@
 
 :where(input[type="range" i]).focus::-moz-range-track,
 :where(input[type="range" i]):focus::-moz-range-track {
+  --_range__track-bg: var(--range🎯__track-bg, var(--range_gradient));
   --range__track-h: var(--range🎯__track-h);
   --range__track-bdw: var(--range🎯__track-bdw);
   --range__track-bds: var(--range🎯__track-bds);
@@ -137,6 +154,7 @@
 
 :where(input[type="range" i]).focus::-ms-track,
 :where(input[type="range" i]):focus::-ms-track {
+  --_range__track-bg: var(--range🎯__track-bg, var(--range_gradient));
   --range__track-h: var(--range🎯__track-h);
   --range__track-bdw: var(--range🎯__track-bdw);
   --range__track-bds: var(--range🎯__track-bds);
@@ -146,6 +164,39 @@
 
   outline: var(--range__track-o);
   outline-offset: var(--range__track-oo);
+}
+
+/* disabled track
+----------------- */
+
+:where(input[type="range" i]):disabled::-webkit-slider-runnable-track {
+  --_range__track-bg: var(--range🚫__track-bg, var(--range_gradient));
+  --range__track-h: var(--range🚫__track-h);
+  --range__track-bdw: var(--range🚫__track-bdw);
+  --range__track-bds: var(--range🚫__track-bds);
+  --range__track-bdc: var(--range🚫__track-bdc);
+  --range__track-bdi: var(--range🚫__track-bdi);
+  --range__track-bsh: var(--range🚫__track-bsh);
+}
+
+:where(input[type="range" i]):disabled::-moz-range-track {
+  --_range__track-bg: var(--range🚫__track-bg, var(--range_gradient));
+  --range__track-h: var(--range🚫__track-h);
+  --range__track-bdw: var(--range🚫__track-bdw);
+  --range__track-bds: var(--range🚫__track-bds);
+  --range__track-bdc: var(--range🚫__track-bdc);
+  --range__track-bdi: var(--range🚫__track-bdi);
+  --range__track-bsh: var(--range🚫__track-bsh);
+}
+
+:where(input[type="range" i]):disabled::-ms-track {
+  --_range__track-bg: var(--range🚫__track-bg, var(--range_gradient));
+  --range__track-h: var(--range🚫__track-h);
+  --range__track-bdw: var(--range🚫__track-bdw);
+  --range__track-bds: var(--range🚫__track-bds);
+  --range__track-bdc: var(--range🚫__track-bdc);
+  --range__track-bdi: var(--range🚫__track-bdi);
+  --range__track-bsh: var(--range🚫__track-bsh);
 }
 
 /* thumb
@@ -248,4 +299,43 @@
 
   outline: var(--range__thumb-o);
   outline-offset: var(--range__thumb-oo);
+}
+
+/* disabled thumb
+----------------- */
+
+:where(input[type="range" i]):disabled::-webkit-slider-thumb {
+  --range__thumb-w: var(--range🚫__thumb-w);
+  --range__thumb-h: var(--range🚫__thumb-h);
+  --range__thumb-bg: var(--range🚫__thumb-bg);
+  --range__thumb-bdw: var(--range🚫__thumb-bdw);
+  --range__thumb-bds: var(--range🚫__thumb-bds);
+  --range__thumb-bdc: var(--range🚫__thumb-bdc);
+  --range__thumb-bdi: var(--range🚫__thumb-bdi);
+  --range__thumb-br: var(--range🚫__thumb-br);
+  --range__thumb-bsh: var(--range🚫__thumb-bsh);
+}
+
+:where(input[type="range" i]):disabled::-moz-range-thumb {
+  --range__thumb-w: var(--range🚫__thumb-w);
+  --range__thumb-h: var(--range🚫__thumb-h);
+  --range__thumb-bg: var(--range🚫__thumb-bg);
+  --range__thumb-bdw: var(--range🚫__thumb-bdw);
+  --range__thumb-bds: var(--range🚫__thumb-bds);
+  --range__thumb-bdc: var(--range🚫__thumb-bdc);
+  --range__thumb-bdi: var(--range🚫__thumb-bdi);
+  --range__thumb-br: var(--range🚫__thumb-br);
+  --range__thumb-bsh: var(--range🚫__thumb-bsh);
+}
+
+:where(input[type="range" i]):disabled::-ms-thumb {
+  --range__thumb-w: var(--range🚫__thumb-w);
+  --range__thumb-h: var(--range🚫__thumb-h);
+  --range__thumb-bg: var(--range🚫__thumb-bg);
+  --range__thumb-bdw: var(--range🚫__thumb-bdw);
+  --range__thumb-bds: var(--range🚫__thumb-bds);
+  --range__thumb-bdc: var(--range🚫__thumb-bdc);
+  --range__thumb-bdi: var(--range🚫__thumb-bdi);
+  --range__thumb-br: var(--range🚫__thumb-br);
+  --range__thumb-bsh: var(--range🚫__thumb-bsh);
 }
