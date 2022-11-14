@@ -69,7 +69,9 @@ function renderTag(ctx, tag, def) {
 }
 
 export default function render(def, ctx, options) {
-  for (const handle of ctx.pluginHandlers) handle(def, ctx, options)
+  if (ctx?.pluginHandlers) {
+    for (const handle of ctx.pluginHandlers) handle(def, ctx, options)
+  }
 
   if (def?.tag?.startsWith("ui-")) {
     delete def.attrs
