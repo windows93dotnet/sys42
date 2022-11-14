@@ -45,6 +45,7 @@ input::-webkit-calendar-picker-indicator {
   color: inherit;
   font-size: 0;
   opacity: 1;
+  visibility: visible;
   appearance: none;
   box-sizing: border-box;
   position: absolute;
@@ -60,6 +61,7 @@ input::-webkit-calendar-picker-indicator {
   border-radius: var(--addon-bdr);
   box-shadow: var(--addon-bsh);
   background-color: var(--addon-bg, var(--empty));
+  cursor: var(--cursor-default, default);
 }
 
 ::file-selector-button,
@@ -84,9 +86,22 @@ input[type="date" i]::after {
   -webkit-mask-position-x: 50%;
   -webkit-mask-position-y: 50%;
   -webkit-mask-repeat: no-repeat;
+  cursor: var(--cursor-default, default);
+}
+
+:disabled ::file-selector-button,
+selectmenu:disabled::after,
+input[list]:disabled::after,
+input[type="month" i]:disabled::after,
+input[type="datetime-local" i]:disabled::after,
+input[type="time" i]:disabled::after,
+input[type="week" i]:disabled::after,
+input[type="date" i]:disabled::after {
+  cursor: var(--cursor-not-allowed, not-allowed);
 }
 
 ::file-selector-button {
+  font-size: 0;
   margin: 0;
   -webkit-mask-image: var(--picto--upload-url);
 }

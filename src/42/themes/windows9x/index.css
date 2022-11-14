@@ -312,6 +312,11 @@ input[type="checkbox" i] {
   margin-inline: 2px;
 }
 
+:where(input[type="checkbox"]:disabled)::before {
+  background-color: var(--ButtonHilight);
+  transform: translate(1px, 1px);
+}
+
 input[type="number" i]::-webkit-inner-spin-button {
   background-image:
     var(--picto--up-xs-url),
@@ -464,6 +469,7 @@ legend button.has-picto > ui-picto,
 *::-webkit-scrollbar {
   background: var(--Scrollbar) var(--screentone-url) repeat;
   /* cursor: var(--cursor-default, default); */
+  cursor: default;
 }
 
 *::-webkit-scrollbar,
@@ -476,13 +482,13 @@ legend button.has-picto > ui-picto,
 *::-webkit-scrollbar-thumb,
 *::-webkit-scrollbar-button {
   color: var(--ButtonText);
-  background: var(--Scrollbar);
+  background: var(--ButtonFace);
   border: 2px solid;
   border-image: var(--outset-bdi);
 }
 
 *::-webkit-scrollbar-corner {
-  background: var(--Scrollbar);
+  background: var(--ButtonFace);
 }
 
 *::-webkit-scrollbar-track-piece:active {
@@ -499,31 +505,29 @@ legend button.has-picto > ui-picto,
 }
 
 *::-webkit-scrollbar-button:vertical:decrement {
-  background: var(--Scrollbar) var(--picto-up);
+  background: var(--ButtonFace) var(--picto-up);
   background-origin: border-box;
 }
 
 *::-webkit-scrollbar-button:vertical:increment {
-  background: var(--Scrollbar) var(--picto-down);
+  background: var(--ButtonFace) var(--picto-down);
   background-origin: border-box;
 }
 
 *::-webkit-scrollbar-button:horizontal:decrement {
-  background: var(--Scrollbar) var(--picto-left);
+  background: var(--ButtonFace) var(--picto-left);
   background-origin: border-box;
 }
 
 *::-webkit-scrollbar-button:horizontal:increment {
-  background: var(--Scrollbar) var(--picto-right);
+  background: var(--ButtonFace) var(--picto-right);
   background-origin: border-box;
 }
 
-*:disabled::-webkit-scrollbar-button:horizontal,
 *::-webkit-scrollbar-button:horizontal:disabled {
   background-position-y: -16px;
 }
 
-*:disabled::-webkit-scrollbar-button:vertical,
 *::-webkit-scrollbar-button:vertical:disabled {
   background-position-y: -16px;
 }

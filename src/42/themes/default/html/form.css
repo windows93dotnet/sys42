@@ -28,8 +28,6 @@ States
   --ctrl-px: var(--unit-sm);
   --ctrl-py: var(--unit-xs);
   --ctrl-picto-px: var(--unit-xs);
-  /* --ctrl-lh: 1.2; */
-  /* --ctrl-lh: normal; */
   --ctrl-lh: var(--lh);
   --ctrl-fs: var(--fs);
 
@@ -241,6 +239,8 @@ States
   --picto--down-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(80 80 80)" d="M4 6h7v1h-1v1h-1v1h-1v1h-1v-1h-1v-1h-1v-1h-1z"/></svg>');
   --picto--upload-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(80 80 80)" d="M7 4h2v1h1v1h1v1h-2v3h-2v-3h-2v-1h1v-1h1z M3 9h1v2h8v-2h1v3h-10z"/></svg>');
   --picto--calendar-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(80 80 80)" d="M4 3h1v1h5v-1h1v1h1v8h-9v-8h1z M4 6v5h7v-5z M5 7h2v2h-2z"/></svg>');
+  --picto--check-url: url("../pictos/check.svg");
+  --picto--indeterminate-url: url("../pictos/minus-large.svg");
   --picto--ellipsis-vertical-url: url("../pictos/ellipsis-vertical.svg");
 }
 
@@ -266,12 +266,8 @@ States
   border-radius: 0;
 }
 
-:where(:disabled,[aria-disabled="true"]) {
+:where(:disabled:not(form,fieldset),[aria-disabled="true"]) {
   opacity: var(--ctrl🚫-alpha);
-}
-
-:where(:disabled,[aria-disabled="true"]) :where(:disabled,[aria-disabled="true"]) {
-  opacity: 1;
 }
 
 :focus,
@@ -379,15 +375,43 @@ legend.label {
 /* cursors
 ========== */
 
-body { cursor: var(--cursor-default); }
-*::-webkit-scrollbar { cursor: var(--cursor-default); }
-a { cursor: var(--cursor-pointer); }
+body { cursor: var(--cursor-default, default); }
+*::-webkit-scrollbar { cursor: var(--cursor-default, default); }
+a { cursor: var(--cursor-pointer, pointer); }
 
-/* TODO: debug this */
-/* body,
-body * {
-  cursor: url("../../../themes/windows9x/cursors/default.cur"), default;
-} */
+:where(input, textarea) {
+  cursor: var(--cursor-text, text);
+}
+
+:where(
+input:is(
+  [type="checkbox" i],
+  [type="radio" i],
+  [type="file" i],
+  [type="color" i],
+  [type="range" i],
+  [type="button" i],
+  [type="reset" i],
+  [type="submit" i]
+),
+label,
+button,
+.label,
+.button,
+select,
+form[disabled],
+fieldset[disabled]) {
+  cursor: var(--cursor-default, default);
+}
+
+:where(:disabled:not(form,fieldset),[aria-disabled="true"]) {
+  cursor: var(--cursor-not-allowed, not-allowed);
+}
+
+[aria-busy="true" i],
+[aria-busy="true" i] * {
+  cursor: var(--cursor-progress, progress);
+}
 
 /* field
 ======== */
@@ -395,12 +419,12 @@ body * {
 :where(
 .field,
 input:not(
-  [type="checkbox"],
-  [type="radio"],
-  [type="range"],
-  [type="button"],
-  [type="reset"],
-  [type="submit"]
+  [type="checkbox" i],
+  [type="radio" i],
+  [type="range" i],
+  [type="button" i],
+  [type="reset" i],
+  [type="submit" i]
 ),
 select,
 selectmenu,
@@ -422,7 +446,6 @@ textarea
   width: var(--ctrl-w);
   overscroll-behavior: none;
   overflow: hidden;
-  cursor: var(--cursor-text, text);
 }
 
 textarea {
@@ -869,7 +892,6 @@ select {
   background-position-x: calc(100% - var(--addon-right) - calc(0.5 * calc(var(--addon-w) - var(--picto-size))));
   background-position-y: center;
   background-repeat: no-repeat;
-  cursor: var(--cursor-default, default);
 }
 
 select:is([multiple],[size]) {
@@ -1051,28 +1073,32 @@ input[type="radio"]
   vertical-align: middle;
 }
 
-:where(input[type="radio"],input[type="checkbox"])::after {
+:where(input[type="checkbox"]:is(:checked,:indeterminate))::before,
+:where(input[type="checkbox"]:is(:checked,:indeterminate))::after {
+  position: absolute;
   content: var(--zero-width-space);
-  font: var(--font-pictos);
-  speak: none;
-  display: block;
+  background-color: currentColor;
+  width: 16px;
+  height: 16px;
 }
 
-input[type="checkbox"]:not(:checked)::after {
-  content: var(--zero-width-space);
-}
-
+:where(input[type="checkbox"]:checked)::before,
 :where(input[type="checkbox"]:checked)::after {
-  content: var(--check-picto);
+  -webkit-mask-image: var(--picto--check-url);
+  -webkit-mask-position-x: 50%;
+  -webkit-mask-position-y: 50%;
+  -webkit-mask-repeat: no-repeat;
 }
 
-input[type="checkbox"]:indeterminate::after {
-  content: var(--check-picto--indeterminate);
+:where(input[type="checkbox"]:indeterminate)::before,
+:where(input[type="checkbox"]:indeterminate)::after {
+  -webkit-mask-image: var(--picto--indeterminate-url);
 }
 
 input[type="radio"]:not([role="menuitemradio"]) { border-radius: 100%; }
 
 input[type="radio"]::after {
+  content: "";
   background: currentColor;
   position: absolute;
   inset: var(--check__bullet-ma);

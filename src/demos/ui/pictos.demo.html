@@ -56,36 +56,41 @@
         tag: ".flex-h.gap",
         content: [
           {
-            tag: "ui-menu",
+            tag: "div",
             content: [
               {
-                label: "Menuitem",
-                picto: "plus-large",
-                shortcut: "Ctrl+Alt+Del",
-              },
-              "---",
-              {
-                label: "Indeterminate",
-                tag: "checkbox",
-                value: undefined,
-              },
-              {
-                label: "Checked",
-                tag: "checkbox",
-                value: true,
-              },
-              {
-                label: "Radio 1",
-                tag: "radio",
-                name: "choice" + name,
-                value: "foo",
-              },
-              {
-                label: "Radio 2",
-                tag: "radio",
-                name: "choice" + name,
-                value: "bar",
-                checked: true,
+                tag: "ui-menu",
+                content: [
+                  {
+                    label: "Menuitem",
+                    picto: "plus-large",
+                    shortcut: "Ctrl+Alt+Del",
+                  },
+                  "---",
+                  {
+                    label: "Indeterminate",
+                    tag: "checkbox",
+                    value: undefined,
+                  },
+                  {
+                    label: "Checked",
+                    tag: "checkbox",
+                    value: true,
+                  },
+                  {
+                    label: "Radio 1",
+                    tag: "radio",
+                    name: "choice" + name,
+                    value: "foo",
+                  },
+                  {
+                    label: "Radio 2",
+                    tag: "radio",
+                    name: "choice" + name,
+                    value: "bar",
+                    checked: true,
+                  },
+                ],
               },
             ],
           },
@@ -95,11 +100,16 @@
               {
                 tag: "textarea",
                 value:
-                  "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quas, quo quidem voluptate, consectetur, sint repellendus expedita consequatur pariatur delectus cum inventore iure aperiam? Ad facere nemo tenetur nesciunt quam autem voluptatibus vel temporibus dolorem atque. Dolores beatae magnam iure, architecto eius explicabo aut molestias voluptas itaque dolorum sunt quisquam. Totam, corrupti animi! Velit soluta repudiandae temporibus facere. Ad atque nihil quisquam amet deleniti doloremque, ut molestiae cumque quidem cum vitae voluptates dicta quas dolor, nam ipsum laboriosam odit iusto animi, fugit tempore saepe vero corrupti cupiditate! Nam numquam mollitia esse quam labore, laborum sequi optio consequuntur natus ex, corporis quae?",
+                  name === "disabled"
+                    ? ""
+                    : "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quas, quo quidem voluptate, consectetur, sint repellendus expedita consequatur pariatur delectus cum inventore iure aperiam? Ad facere nemo tenetur nesciunt quam autem voluptatibus vel temporibus dolorem atque. Dolores beatae magnam iure, architecto eius explicabo aut molestias voluptas itaque dolorum sunt quisquam. Totam, corrupti animi! Velit soluta repudiandae temporibus facere. Ad atque nihil quisquam amet deleniti doloremque, ut molestiae cumque quidem cum vitae voluptates dicta quas dolor, nam ipsum laboriosam odit iusto animi, fugit tempore saepe vero corrupti cupiditate! Nam numquam mollitia esse quam labore, laborum sequi optio consequuntur natus ex, corporis quae?",
                 rows: 4,
               },
               { tag: "date" },
+              { tag: "file" },
+              { tag: "number" },
               { tag: "select" },
+              { tag: "range" },
             ],
           },
           {
@@ -157,47 +167,44 @@
                 label: "Checked",
                 value: true,
               },
+              {
+                tag: "checkbox",
+                label: "Unchecked",
+                value: false,
+              },
+              "---",
+              {
+                tag: "div > .d-flex.gap",
+                content: [
+                  {
+                    tag: "div > radio",
+                    bind: "radioChoice",
+                    value: "foo",
+                  },
+                  {
+                    tag: "div > radio",
+                    bind: "radioChoice",
+                    value: "bar",
+                  },
+                ],
+                state: {
+                  radioChoice: "bar",
+                },
+              },
             ],
           },
         ],
       },
-      "---",
-      {
-        tag: "div > .d-flex.gap",
-        content: [
-          {
-            tag: "div > radio",
-            bind: "radioChoice",
-            value: "foo",
-          },
-          {
-            tag: "div > radio",
-            bind: "radioChoice",
-            value: "bar",
-          },
-        ],
-        state: {
-          radioChoice: "bar",
-        },
-      },
     ]
   }
 
+  // cssVar.set("ButtonFace", "#444")
   cssVar.set("ButtonText", "red")
   cssVar.set("GrayText", "blue")
 
   ui({
     tag: "._box-fit._desktop",
     content: [
-      {
-        tag: ".pa > color",
-        value: new Color(cssVar.get("ButtonText")).toHex(),
-        on: {
-          input(e, target) {
-            cssVar.set("ButtonText", target.value)
-          },
-        },
-      },
       {
         content: {
           tag: ".box-h.pa.gap",
