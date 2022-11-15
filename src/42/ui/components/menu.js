@@ -2,6 +2,7 @@
 import inTop from "../../core/env/realm/inTop.js"
 import Component from "../classes/Component.js"
 import uid from "../../core/uid.js"
+import { toTitleCase } from "../../fabric/type/string/letters.js"
 
 function seq(el, dir) {
   const items = [
@@ -96,7 +97,7 @@ export class Menu extends Component {
       }
 
       if (content) {
-        item.tag = "button.ui-menu__menuitem--submenu"
+        item.tag ??= "button.ui-menu__menuitem--submenu"
         item.role = "menuitem"
         item.on = {
           [shortcuts.openSubmenu]: {
@@ -114,9 +115,10 @@ export class Menu extends Component {
 
         if (!inMenubar) item.label.push({ tag: "ui-picto", value: "right" })
         item.content = item.label
-      } else if (item.tag === "checkbox") {
+      } else if (item.tag?.startsWith("checkbox")) {
         item.role = "menuitemcheckbox"
-      } else if (item.tag === "radio") {
+      } else if (item.tag?.startsWith("radio")) {
+        item.label[0].content ??= toTitleCase(item.value)
         item.role = "menuitemradio"
         item.on ??= []
         item.on.push({
@@ -124,7 +126,7 @@ export class Menu extends Component {
             e.preventDefault(),
         })
       } else {
-        item.tag = "button"
+        item.tag ??= "button"
         item.role = "menuitem"
         item.content = item.label
       }

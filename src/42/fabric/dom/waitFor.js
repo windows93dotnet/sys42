@@ -6,7 +6,7 @@ function cleanup(intervalID, timeoutID) {
 export default async function waitFor(selector, options) {
   const timeout = options?.timeout ?? 3000
   const polling = options?.polling ?? 100
-  const base = options?.base ?? document.body
+  const base = options?.base ?? document.documentElement
 
   if (options?.all) {
     const res = base.querySelectorAll(`:scope ${selector}`)

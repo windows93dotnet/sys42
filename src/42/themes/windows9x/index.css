@@ -140,7 +140,6 @@
 
   --desktop-bg: var(--Background);
   --desktop-fg: #fff;
-  /* --desktop-tsh: #000 0 1px; */
 
   --document-bg: var(--Window);
   --document-fg: var(--WindowText);
@@ -288,13 +287,9 @@
 }
 
 select:is([multiple],[size]),
-textarea {
-  overflow-y: scroll;
-}
+textarea { overflow-y: scroll; }
 
-legend {
-  --legend-bg: var(--bg);
-}
+legend { --legend-bg: var(--bg); }
 
 input[type="radio" i],
 input[type="checkbox" i] {
@@ -342,10 +337,7 @@ ui-menu hr {
   margin-bottom: 2px;
 }
 
-/* Not needed ? */
-
-/*
-ui-dialog {
+/* ui-dialog {
   --_activity-border: var(--InactiveBorder);
   box-shadow:
     inset 1px 1px 1px 0 var(--_activity-border),
@@ -354,8 +346,7 @@ ui-dialog {
 
 ui-dialog[active] {
   --_activity-border: var(--ActiveBorder);
-}
-*/
+} */
 
 .ui-dialog__header {
   padding: 0;
@@ -455,8 +446,8 @@ legend button:active,
   min-width: 75px;
 }
 
-/* modals
-========= */
+/* demand dialogs
+================= */
 
 .ui-dialog-demand {
   width: 256px;
@@ -484,9 +475,7 @@ legend button:active,
 /* scrollbars
 ============= */
 
-*::-webkit-scrollbar {
-  background: var(--Scrollbar) var(--screentone-url) repeat;
-}
+*::-webkit-scrollbar { background: var(--Scrollbar) var(--screentone-url) repeat; }
 
 *::-webkit-scrollbar,
 *::-webkit-scrollbar-thumb,
@@ -503,17 +492,9 @@ legend button:active,
   border-image: var(--outset-bdi);
 }
 
-*::-webkit-scrollbar-corner {
-  background: var(--ButtonFace);
-}
-
-*::-webkit-scrollbar-track-piece:active {
-  background: var(--ButtonDkShadow);
-}
-
-*::-webkit-scrollbar-button {
-  display: block;
-}
+*::-webkit-scrollbar-corner { background: var(--ButtonFace); }
+*::-webkit-scrollbar-track-piece:active { background: var(--ButtonDkShadow); }
+*::-webkit-scrollbar-button { display: block; }
 
 *::-webkit-scrollbar-button:hover:active {
   border: 1px solid var(--ButtonShadow);
@@ -539,7 +520,8 @@ legend button:active,
   background-origin: border-box;
 }
 
-/* active */
+/* active
+--------- */
 
 *::-webkit-scrollbar-button:hover:active {
   background-position-y: 1px;
@@ -561,7 +543,8 @@ legend button:active,
   background-position-x: -47px;
 }
 
-/* disabled */
+/* disabled
+----------- */
 
 *::-webkit-scrollbar-button:horizontal:disabled {
   background-position-y: -16px;
@@ -576,8 +559,7 @@ legend button:active,
   display: none;
 }
 
-button:disabled img,
-button:disabled svg {
+button:is(:disabled,[aria-disabled="true"]) :is(img, svg) {
   fill: #000;
   filter: url("#disabled-inset");
 }
