@@ -1,11 +1,37 @@
-import defer from "../../fabric/type/promise/defer.js"
+/* eslint-disable guard-for-in */
 import cssVar from "../../fabric/cssom/cssVar.js"
 
-const NS = "http://www.w3.org/2000/svg"
+// [1] 1j01 solution to Chrome bug with filters on browser zoom
+// @see https://github.com/1j01/98/blob/34a69bf37d77f0ffbb50840f6622717202e41790/programs/explorer/index.html#L191
 
-const ready = defer()
-let spritesTemplate
+const NS = "http://www.w3.org/2000/svg"
 const styles = document.createElement("style")
+
+const imagesKeys = [
+  "--fld-bdi",
+  "--btn-bdi",
+  "--outset-bdi",
+  "--btn☑️-bdi",
+  "--btn👇-bdi",
+  "--btn💾-bdi",
+  "--fieldset-bdi",
+  "--screentone-url",
+  "--sprites-url",
+  "--picto--up-xs",
+  "--picto--down-xs",
+  "--picto--up-xs--d",
+  "--picto--down-xs--d",
+]
+
+const colorsRef = {
+  "--ButtonText": "rgb(0 0 0)",
+  "--ButtonDkShadow": "rgb(64 64 64)",
+  "--ButtonShadow": "rgb(128 128 128)",
+  "--ButtonHilight": "rgb(255 255 255)",
+}
+
+const images = Object.create(null)
+const colors = Object.create(null)
 
 export function install() {
   const filters = document.createElementNS(NS, "svg")
@@ -13,7 +39,7 @@ export function install() {
 
   const disabledInset = document.createElementNS(NS, "filter")
   disabledInset.id = "disabled-inset"
-  /* @src https://github.com/1j01/98/blob/master/programs/explorer/index.html#L165 */
+  /* @src https://github.com/1j01/98/blob/34a69bf37d77f0ffbb50840f6622717202e41790/programs/explorer/index.html#L165 */
   disabledInset.innerHTML = `
 <feComponentTransfer in="SourceGraphic" result="contrast">
   <feFuncR type="discrete" tableValues="0 0.5 0 1"/>
@@ -21,7 +47,7 @@ export function install() {
   <feFuncB type="discrete" tableValues="0 0.5 0 1"/>
   <feFuncA type="discrete" tableValues="0 0.5 0 1"/>
 </feComponentTransfer>
-<feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -1000 -1000 -1000 1 0" in="contrast" result="black-isolated" />
+<feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -1 -1 -1 1 0" in="contrast" result="black-isolated" />
 <feFlood flood-color="var(--ButtonShadow)" result="shadow-color" />
 <feFlood flood-color="var(--ButtonHilight)" result="hilight-color" />
 <feOffset dx="1" dy="1" in="black-isolated" result="offset" />
@@ -30,38 +56,33 @@ export function install() {
 <feMerge><feMergeNode in="hilight" /><feMergeNode in="shadow" /></feMerge>
 `
   filters.append(disabledInset)
-  document.body.append(styles)
+  document.head.append(styles)
   document.body.append(filters)
 
   window.addEventListener("resize", () => {
-    // work around a browser bug in Chrome where
-    // the SVG filter behaves differently based on the INITIAL zoom level
-    // (if you zoom in, the icons get cut off, if you zoom out, the effect is too thick)
-    disabledInset.setAttribute("x", "0")
+    disabledInset.setAttribute("x", "0") // [1]
   })
 
-  fetch(new URL("./sprites.svg", import.meta.url))
-    .then((res) => res.text())
-    .then((sprites) => {
-      spritesTemplate = sprites
-      ready.resolve()
-      refresh()
-    })
+  for (const key of imagesKeys) images[key] = cssVar.get(key)
+  refresh()
+}
+
+function replaceColors(s) {
+  for (const [key, val] of Object.entries(colorsRef)) {
+    s = s.replaceAll(val, colors[key])
+  }
+
+  return s
 }
 
 export async function refresh() {
-  await ready
-  const s = spritesTemplate
-    .replaceAll("rgb(0 0 0)", cssVar.get("--ButtonText"))
-    .replaceAll("rgb(64 64 64)", cssVar.get("--ButtonDkShadow"))
-    .replaceAll("rgb(128 128 128)", cssVar.get("--ButtonShadow"))
-    .replaceAll("rgb(255 255 255)", cssVar.get("--ButtonHilight"))
-    .replaceAll("#", "%23")
-    .replaceAll("  ", " ")
-    .replaceAll("\n", "")
+  for (const key of Object.keys(colorsRef)) colors[key] = cssVar.get(key)
 
-  styles.textContent = `
-  :root {
-    --sprites-url: url('data:image/svg+xml,${s}');
-  }`
+  let styleContent = ""
+
+  for (const key in images) {
+    styleContent += `  ${key}:${replaceColors(images[key])};\n`
+  }
+
+  styles.textContent = `:root {\n${styleContent}}`
 }
