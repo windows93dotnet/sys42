@@ -53,43 +53,8 @@ function getBindScope(ctx, bind) {
   return resolveScope(...findScope(ctx, bind), ctx)
 }
 
-function normalizeOptions(list) {
-  return list.map((item) => {
-    if (typeof item === "string") {
-      return { tag: "option", content: item, label: item }
-    }
-
-    if (Array.isArray(item)) {
-      return {
-        tag: "option",
-        content: item[1],
-        label: item[1],
-        value: item[0],
-      }
-    }
-
-    item.label ??= item.content
-
-    if (Array.isArray(item.content)) {
-      item.tag ??= "optgroup"
-      item.content = normalizeOptions(item.content)
-    }
-
-    return item
-  })
-}
-
 export default function renderControl(el, ctx, def) {
   el.id ||= hash(ctx.steps)
-
-  if (el.localName === "select" || el.localName === "datalist") {
-    if (Array.isArray(def.content)) {
-      def.content = normalizeOptions(def.content)
-    }
-
-    el.append(render(def.content, ctx))
-    delete def.content
-  }
 
   if (def.bind) {
     let scopeFrom
