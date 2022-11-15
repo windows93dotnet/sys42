@@ -11,6 +11,7 @@ import renderIf from "./renderers/renderIf.js"
 import renderEach from "./renderers/renderEach.js"
 import renderOn from "./renderers/renderOn.js"
 import renderAnimation from "./renderers/renderAnimation.js"
+import renderOptions from "./renderers/renderOptions.js"
 
 const { ELEMENT_NODE } = Node
 
@@ -25,21 +26,29 @@ const SPECIAL_STRINGS = {
 
 const PRELOAD = new Set(["link", "script"])
 const NOT_CONTROLS = new Set(["label", "legend", "output", "option"])
+const HAS_OPTIONS = new Set(["select", "selectmenu", "optgroup", "datalist"])
 
 function renderTag(ctx, tag, def) {
   let el = create(ctx, tag, def.attrs)
+
+  const { localName } = el
+  if (localName) ctx.el = el
+
+  if (
+    localName &&
+    ctx.trusted !== true &&
+    !ALLOWED_HTML_TAGS.includes(localName) &&
+    !ALLOWED_SVG_TAGS.includes(localName)
+  ) {
+    throw new DOMException(`Disallowed tag: ${localName}`, "SecurityError")
+  }
 
   if (def.entry) {
     addEntry(ctx.component, def.entry, el)
     delete def.entry
   }
 
-  const { localName } = el
-  if (localName) ctx.el = el
-
-  if (localName === "datalist") {
-    console.log(localName, el.form)
-  }
+  if (HAS_OPTIONS.has(localName)) renderOptions(el, ctx, def)
 
   if (localName === "button") {
     def.content ??= def.label
@@ -54,15 +63,6 @@ function renderTag(ctx, tag, def) {
     if (!def.content) el.classList.add("has-picto--only-child")
     if (def.picto.start) el.classList.add("has-picto--start")
     if (def.picto.end) el.classList.add("has-picto--end")
-  }
-
-  if (
-    localName &&
-    ctx.trusted !== true &&
-    !ALLOWED_HTML_TAGS.includes(localName) &&
-    !ALLOWED_SVG_TAGS.includes(localName)
-  ) {
-    throw new DOMException(`Disallowed tag: ${localName}`, "SecurityError")
   }
 
   if (PRELOAD.has(localName)) {
