@@ -37,6 +37,10 @@ function renderTag(ctx, tag, def) {
   const { localName } = el
   if (localName) ctx.el = el
 
+  if (localName === "datalist") {
+    console.log(localName, el.form)
+  }
+
   if (localName === "button") {
     def.content ??= def.label
   } else if (localName === "fieldset") {

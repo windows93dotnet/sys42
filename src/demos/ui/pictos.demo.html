@@ -83,7 +83,7 @@
         tag: ".flex-h.gap",
         content: [
           {
-            tag: "div",
+            tag: ".flex-v.gap",
             content: [
               {
                 tag: "ui-menu",
@@ -124,6 +124,8 @@
                   },
                 ],
               },
+              { tag: ".inset-shallow.pa-xs", content: ".inset-shallow" },
+              { tag: ".outset-shallow.pa-xs", content: ".outset-shallow" },
             ],
           },
           {
@@ -137,7 +139,9 @@
               { tag: "date" },
               { tag: "file" },
               { tag: "number" },
-              { tag: "select" },
+              { tag: "select", content: ["Option 1", "Option 2", "Option 3"] },
+              { tag: "text", list: "list" },
+              { tag: "datalist", id: "list", content: ["a", "b", "c"] },
               { tag: "range" },
             ],
           },
