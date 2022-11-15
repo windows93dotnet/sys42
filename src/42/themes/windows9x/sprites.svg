@@ -1,47 +1,27 @@
-<svg id="sprites" width="96" height="32" viewBox="0 0 96 32" xmlns="http://www.w3.org/2000/svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="32">
   <defs>
-    <path id="up" d="M7 6h1v1h1v1h1v1h1v1h-7v-1h1v-1h1v-1h1z" />
-    <path id="down" d="M4 6h7v1h-1v1h-1v1h-1v1h-1v-1h-1v-1h-1v-1h-1z" />
-    <path id="left" d="M8 4h1v7h-1v-1h-1v-1h-1v-1h-1v-1h1v-1h1v-1h1z" />
-    <path id="right" d="M6 4h1v1h1v1h1v1h1v1h-1v1h-1v1h-1v1h-1z" />
-    <path id="clear"
-      d="M4 3h10v9h-10v-1h-1v-1h-1v-1h-1v-1h-1v-1h1v-1h1v-1h1v-1h1z M7 5v1h1v-1z M11 5v1h1v-1z M9 6h-1v1h1z M10 6v1h1v-1z M10 7h-1v1h1z M8 8v1h1v-1z M11 8h-1v1h1z M7 9v1h1v-1z M12 9h-1v1h1z" />
-    <path id="calendar" d="M4 3h1v1h5v-1h1v1h1v8h-9v-8h1z M4 6v5h7v-5z M5 7h2v2h-2z" />
+    <filter id="f" width="128" height="32">
+      <feOffset dx="0" dy="16" in="SourceGraphic" result="o1" />
+      <feOffset dx="1" dy="17" in="SourceGraphic" result="o2" />
+      <feFlood flood-color="rgb(128 128 128)" result="c1" />
+      <feFlood flood-color="rgb(255 255 255)" result="c2" />
+      <feComposite operator="in" in="c1" in2="o1" result="a" />
+      <feComposite operator="in" in="c2" in2="o2" result="b" />
+      <feMerge>
+        <feMergeNode in="b" />
+        <feMergeNode in="a" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
   </defs>
-
-  <g style="fill:#000000">
-    <use transform="translate(0, 0)" href="#up" />
-    <use transform="translate(16, 0)" href="#down" />
-    <use transform="translate(32, 0)" href="#left" />
-    <use transform="translate(48, 0)" href="#right" />
-    <use transform="translate(64, 0)" href="#clear" />
-    <use transform="translate(80, 0)" href="#calendar" />
-  </g>
-
-  <g style="fill:#808080">
-    <g transform="translate(0, 16)">
-      <use x="1px" y="1px" style="fill:#ffffff" href="#up" />
-      <use href="#up" />
-    </g>
-    <g transform="translate(16, 16)">
-      <use x="1px" y="1px" style="fill:#ffffff" href="#down" />
-      <use href="#down" />
-    </g>
-    <g transform="translate(32, 16)">
-      <use x="1px" y="1px" style="fill:#ffffff" href="#left" />
-      <use href="#left" />
-    </g>
-    <g transform="translate(48, 16)">
-      <use x="1px" y="1px" style="fill:#ffffff" href="#right" />
-      <use href="#right" />
-    </g>
-    <g transform="translate(64, 16)">
-      <use x="1px" y="1px" style="fill:#ffffff" href="#clear" />
-      <use href="#clear" />
-    </g>
-    <g transform="translate(80, 16)">
-      <use x="1px" y="1px" style="fill:#ffffff" href="#calendar" />
-      <use href="#calendar" />
-    </g>
+  <g style="fill:rgb(0 0 0);filter:url(#f)">
+    <path transform="translate(0, 0)" d="M7 6h1v1h1v1h1v1h1v1h-7v-1h1v-1h1v-1h1z" />
+    <path transform="translate(16, 0)" d="M4 6h7v1h-1v1h-1v1h-1v1h-1v-1h-1v-1h-1v-1h-1z" />
+    <path transform="translate(32, 0)" d="M8 4h1v7h-1v-1h-1v-1h-1v-1h-1v-1h1v-1h1v-1h1z" />
+    <path transform="translate(48, 0)" d="M6 4h1v1h1v1h1v1h1v1h-1v1h-1v1h-1v1h-1z" />
+    <path transform="translate(64, 0)" d="M7 6h1v1h1v1h-3v-1h1z" />
+    <path transform="translate(80, 0)" d="M6 7h3v1h-1v1h-1v-1h-1z" />
+    <path transform="translate(96, 0)" d="M4 3h1v1h5v-1h1v1h1v8h-9v-8h1z M4 6v5h7v-5z M5 7h2v2h-2z" />
+    <path transform="translate(112, 0)" d="M7 4h2v3h2v1h-1v1h-1v1h-2v-1h-1v-1h-1v-1h2z M3 9h1v2h8v-2h1v3h-10z" />
   </g>
 </svg>

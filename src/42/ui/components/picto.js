@@ -44,8 +44,10 @@ export class Picto extends Component {
             let src = this.value
             if (type !== "string" || !this.value.includes(".")) {
               src = await import("../../os/managers/themeManager.js").then(
-                async ({ themeManager }) =>
-                  themeManager.getIconPath(this.value, 16)
+                async ({ themeManager }) => {
+                  await themeManager.ready
+                  return themeManager.getIconPath(this.value, 16)
+                }
               )
             }
 
