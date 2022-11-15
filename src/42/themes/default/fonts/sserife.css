@@ -19,7 +19,7 @@
 }
 
 @font-face {
-  /* fallback for missing glyphes in sserife-bold */
+  /* fallback for missing glyphs in sserife-bold */
   font-family: sserife-fallback;
   src:
     url("./sserife/sserife.woff2") format("woff2"),
