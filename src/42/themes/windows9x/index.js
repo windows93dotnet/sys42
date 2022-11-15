@@ -22,7 +22,7 @@ export function install() {
   <feFuncA type="discrete" tableValues="0 0.5 0 1"/>
 </feComponentTransfer>
 <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -1000 -1000 -1000 1 0" in="contrast" result="black-isolated" />
-<feFlood flood-color="var(--GrayText)" result="shadow-color" />
+<feFlood flood-color="var(--ButtonShadow)" result="shadow-color" />
 <feFlood flood-color="var(--ButtonHilight)" result="hilight-color" />
 <feOffset dx="1" dy="1" in="black-isolated" result="offset" />
 <feComposite operator="in" in="hilight-color" in2="offset" result="hilight" />
@@ -52,12 +52,16 @@ export function install() {
 export async function refresh() {
   await ready
   const s = spritesTemplate
-    .replaceAll("#000000", cssVar.get("--ButtonText"))
-    .replaceAll("#808080", cssVar.get("--GrayText"))
-    .replaceAll("#ffffff", cssVar.get("--ButtonHilight"))
+    .replaceAll("rgb(0 0 0)", cssVar.get("--ButtonText"))
+    .replaceAll("rgb(64 64 64)", cssVar.get("--ButtonDkShadow"))
+    .replaceAll("rgb(128 128 128)", cssVar.get("--ButtonShadow"))
+    .replaceAll("rgb(255 255 255)", cssVar.get("--ButtonHilight"))
     .replaceAll("#", "%23")
     .replaceAll("  ", " ")
     .replaceAll("\n", "")
 
-  styles.textContent = `:root { --sprites-url: url('data:image/svg+xml,${s}'); }`
+  styles.textContent = `
+  :root {
+    --sprites-url: url('data:image/svg+xml,${s}');
+  }`
 }
