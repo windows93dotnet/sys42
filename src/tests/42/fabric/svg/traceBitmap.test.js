@@ -43,8 +43,7 @@ test.setup(async () => {
   shared.height = height
   shared.canvas.height = height
 
-  const ctx = shared.canvas.getContext("2d")
-  ctx.willReadFrequently = true
+  const ctx = shared.canvas.getContext("2d", { willReadFrequently: true })
   ctx.drawImage(image, 0, 0)
   shared.ctx = ctx
 
@@ -102,7 +101,6 @@ test("compare generated svg with original image", async (t) => {
   canvas.width = width
   canvas.height = height
   const ctx = canvas.getContext("2d")
-  ctx.willReadFrequently = true
   ctx.drawImage(image, 0, 0)
   // document.body.append(canvas)
 

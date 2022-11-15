@@ -55,7 +55,7 @@ export class Dialog extends Component {
       {
         "blur || uiiframeblur"() {
           queueTask(() => {
-            if (this.el.contains(document.activeElement)) this.el.activate()
+            if (this.el?.contains(document.activeElement)) this.el.activate()
           })
         },
       },
@@ -182,7 +182,7 @@ export const dialog = rpc(
         return [def, ctx]
       }
 
-      if (ctx) await normalizePlugins(ctx, ["ipc"], { now: true })
+      if (ctx?.plugins) await normalizePlugins(ctx, ["ipc"], { now: true })
 
       return [forkDef(def, ctx), {}]
     },

@@ -76,7 +76,8 @@ class Icon extends Component {
     },
   }
 
-  setup() {
+  async setup() {
+    await themeManager.ready
     const parentRole = this.parentNode.getAttribute("role")
     if (TREEITEM_PARENTS.has(parentRole)) {
       this.setAttribute("role", "treeitem")
@@ -91,13 +92,10 @@ class Icon extends Component {
     }
   }
 
-  async getInfos(path) {
+  getInfos(path) {
     if (path === undefined) return
     const infos = getPathInfos(path, { getURIMimetype: false })
-    infos.image ??= await themeManager.getIconPath(
-      infos,
-      this.small ? 16 : undefined
-    )
+    infos.image ??= themeManager.getIconPath(infos, this.small ? 16 : undefined)
     infos.description ??= infos.isDir ? "folder" : infos.isURI ? "uri" : "file"
     infos.name ??= (
       infos.isURI

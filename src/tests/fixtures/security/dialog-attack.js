@@ -4,11 +4,16 @@ import rpc from "../../../42/core/ipc/rpc.js"
 import omit from "../../../42/fabric/type/object/omit.js"
 import dispatch from "../../../42/fabric/event/dispatch.js"
 import maxZIndex from "../../../42/fabric/dom/maxZIndex.js"
-import { objectifyDef, forkDef } from "../../../42/ui/normalize.js"
+import {
+  objectifyDef,
+  forkDef,
+  normalizePlugins,
+} from "../../../42/ui/normalize.js"
 import forceOpener from "../../../42/ui/forceOpener.js"
 import uid from "../../../42/core/uid.js"
 import { autofocus } from "../../../42/fabric/dom/focus.js"
 import nextCycle from "../../../42/fabric/type/promise/nextCycle.js"
+import queueTask from "../../../42/fabric/type/function/queueTask.js"
 
 const _axis = Symbol("axis")
 
@@ -48,7 +53,17 @@ export class Dialog extends Component {
       footer: undefined,
     },
 
-    plugins: ["ipc"],
+    on: [
+      { "pointerdown || focusin": "{{activate()}}" },
+      globalThis,
+      {
+        "blur || uiiframeblur"() {
+          queueTask(() => {
+            if (this.el?.contains(document.activeElement)) this.el.activate()
+          })
+        },
+      },
+    ],
   };
 
   [_axis]() {
@@ -108,22 +123,33 @@ export class Dialog extends Component {
     return def
   }
 
+  activate() {
+    for (const item of document.querySelectorAll("ui-dialog")) {
+      item.active = false
+    }
+
+    this.active = true
+    this.style.zIndex = maxZIndex("ui-dialog, ui-menu") + 1
+
+    if (!this.contains(document.activeElement)) {
+      const items = this.querySelectorAll(":scope [data-autofocus]")
+      items.length > 0
+        ? items[items.length - 1].focus()
+        : autofocus(this.querySelector(":scope > .ui-dialog__body")) ||
+          autofocus(this.querySelector(":scope > .ui-dialog__footer"))
+    }
+  }
+
   setup() {
     const rect = this.getBoundingClientRect()
     this.x ??= Math.round(rect.x)
     this.y ??= Math.round(rect.y)
     this.style.top = 0
     this.style.left = 0
-    this.style.zIndex = maxZIndex("ui-dialog, ui-menu") + 1
+    this.activate()
+
     this.emit("open", this)
     dispatch(this, "uidialogopen")
-
-    const items = this.querySelectorAll(":scope [data-autofocus]")
-
-    items.length > 0
-      ? items[items.length - 1].focus()
-      : autofocus(this.querySelector(":scope > .ui-dialog__body")) ||
-        autofocus(this.querySelector(":scope > .ui-dialog__footer"))
   }
 }
 
@@ -131,7 +157,7 @@ Component.define(Dialog)
 
 const tracker = new Map()
 
-const dialog = rpc(
+export const dialog = rpc(
   async function dialog(def, ctx) {
     const { steps } = ctx
     let n = tracker.has(steps) ? tracker.get(steps) : 0
@@ -143,14 +169,14 @@ const dialog = rpc(
     const { opener } = el
     await el.ready
 
-    document.body.append(el)
+    document.documentElement.append(el)
 
     return el.once("close").then((res) => ({ res, opener }))
   },
   {
     module: import.meta.url,
 
-    marshalling(def = {}, ctx) {
+    async marshalling(def = {}, ctx) {
       def = objectifyDef(def)
 
       forceOpener(def)
@@ -159,6 +185,8 @@ const dialog = rpc(
         ctx = { ...ctx, detached: true }
         return [def, ctx]
       }
+
+      if (ctx?.plugins) await normalizePlugins(ctx, ["ipc"], { now: true })
 
       return [forkDef(def, ctx), { trusted: true } /* ATTACK */]
     },
