@@ -123,8 +123,10 @@ const popup = rpc(
     el.style.position = "fixed"
     el.style.transform = "translate(-200vw, -200vh)"
     el.style.zIndex = maxZIndex("ui-dialog, ui-menu") + 1
+    await el.ready
 
-    document.body.append(el)
+    document.documentElement.append(el)
+
     dispatch(el, "uipopupopen")
     if (el.ready) await el.ready
     else {

@@ -59,5 +59,5 @@ export async function refresh() {
     .replaceAll("  ", " ")
     .replaceAll("\n", "")
 
-  styles.textContent = `:root { --pictos-url: url('data:image/svg+xml,${s}'); }`
+  styles.textContent = `:root { --sprites-url: url('data:image/svg+xml,${s}'); }`
 }

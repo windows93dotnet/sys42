@@ -165,7 +165,6 @@ export const dialog = rpc(
     const { opener } = el
     await el.ready
 
-    // document.body.append(el)
     document.documentElement.append(el)
 
     return el.once("close").then((res) => ({ res, opener }))

@@ -238,7 +238,7 @@ States
   --picto--upload: url("../pictos/import.svg");
   --picto--calendar: url("../pictos/calendar.svg");
   --picto--check: url("../pictos/check.svg");
-  --picto--indeterminate: url("../pictos/minus.svg");
+  --picto--indeterminate: url("../pictos/indeterminate.svg");
   --picto--ellipsis-vertical: url("../pictos/ellipsis-vertical.svg");
 }
 
@@ -358,11 +358,11 @@ legend.label {
   justify-self: flex-start;
 }
 
-:where(label, .label):not(.button) {
+:where(:is(label, .label):not(.button)) {
   margin-right: var(--unit-md);
 }
 
-:where(label,.label) abbr[title] {
+:where(:is(label,.label) abbr[title]) {
   color: var(--label__required-fg);
   text-decoration: none;
   position: relative;
