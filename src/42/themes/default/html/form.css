@@ -414,6 +414,10 @@ fieldset[disabled]) {
 /* picto
 ======== */
 
+ui-picto {
+  flex: 0 0 var(--picto-size);
+}
+
 :where(button,.button,.field,.solid).has-picto::after {
   content: var(--zero-width-space);
   margin-inline-start: calc(-1 * var(--ctrl-px));

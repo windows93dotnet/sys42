@@ -145,7 +145,7 @@ dialog(
       }
 
       res ??= await Promise.race([
-        when(document.body, "error").then((e) => {
+        when("error").then((e) => {
           e.preventDefault()
           return normalizeError(e)
         }),

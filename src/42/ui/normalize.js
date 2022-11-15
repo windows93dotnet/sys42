@@ -608,7 +608,7 @@ export function forkDef(def, ctx) {
   def = { ...def }
 
   if (ctx) {
-    const { data } = ctx.reactive
+    const data = ctx.reactive?.data
     if (!isEmptyObject(data)) def.state = structuredClone(data)
     if (ctx.id) def.initiator = ctx.id
     if (ctx.scope) def.scope = ctx.scope
