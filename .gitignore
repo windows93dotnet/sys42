@@ -6,4 +6,3 @@ dist
 .tmp
 src/files.cbor
 src/tests/fixtures/formats/tmp/
-src/42/themes/default/pictos/
