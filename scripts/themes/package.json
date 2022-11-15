@@ -1,0 +1,8 @@
+{
+  "name": "42-scripts-themes",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "jimp": "^0.16.2"
+  }
+}

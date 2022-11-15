@@ -238,7 +238,7 @@ States
   --picto--upload: url("../pictos/import.svg");
   --picto--calendar: url("../pictos/calendar.svg");
   --picto--check: url("../pictos/check.svg");
-  --picto--indeterminate: url("../pictos/minus-large.svg");
+  --picto--indeterminate: url("../pictos/minus.svg");
   --picto--ellipsis-vertical: url("../pictos/ellipsis-vertical.svg");
 }
 

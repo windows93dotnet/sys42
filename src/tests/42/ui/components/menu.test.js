@@ -65,7 +65,7 @@ const makeMenu = (name) => {
     "---",
     {
       label: "{{cnt}}", //
-      picto: "plus-large",
+      picto: "plus",
       click: "{{cnt = incr(cnt)}}",
       // click: "{{cnt++}}",
     },
@@ -118,7 +118,7 @@ const makeMenu = (name) => {
     {
       label: "{{cnt}}", //
       id: `menuItemIncr${name}${__}`,
-      picto: "plus-large",
+      picto: "plus",
       click: "{{cnt = incr(cnt)}}",
       // click: "{{cnt++}}",
     },
