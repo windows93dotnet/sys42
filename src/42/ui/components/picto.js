@@ -64,7 +64,11 @@ export class Picto extends Component {
               render({
                 tag: "svg",
                 ...visual,
-                content: { tag: "use", entry: "use", href: "#" + this.value },
+                content: {
+                  tag: "use",
+                  entry: "use",
+                  href: "#picto-" + this.value,
+                },
               })
             )
           }

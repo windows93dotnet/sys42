@@ -177,7 +177,7 @@ export class Player extends Component {
             {
               tag: "button.ui-player__mute",
               aria: { label: "{{muted ? 'mute' : 'unmute'}}" },
-              picto: "{{muted ? 'lock' : 'lock-open'}}",
+              picto: "{{muted ? 'volume-off' : 'volume'}}",
               click: () => {
                 this.media.muted = !this.media.muted
               },

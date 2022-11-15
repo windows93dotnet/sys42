@@ -67,7 +67,7 @@
                 content: [
                   {
                     label: "Menuitem",
-                    picto: "plus-large",
+                    picto: "plus",
                     shortcut: "Ctrl+Alt+Del",
                   },
                   "---",
@@ -123,18 +123,18 @@
             content: [
               {
                 tag: "button",
-                picto: "plus-large",
+                picto: "plus",
               },
               " ",
               {
                 tag: "button",
-                picto: { start: "plus-large" },
+                picto: { start: "plus" },
                 content: "Button",
               },
               " ",
               {
                 tag: "button",
-                picto: { end: "plus-large" },
+                picto: { end: "plus" },
                 content: "Button",
               },
               " ",
@@ -221,14 +221,14 @@
           content: [
             {
               tag: "div > fieldset",
-              label: ["Enabled", { tag: "button", picto: "plus-large" }],
+              label: ["Enabled", { tag: "button", picto: "plus" }],
               content: makeDemo(),
             },
             {
               tag: "div > fieldset",
               label: [
                 "Disabled",
-                { tag: "button", picto: "plus-large", disabled: true },
+                { tag: "button", picto: "plus", disabled: true },
               ],
               disabled: true,
               content: makeDemo("disabled"),
