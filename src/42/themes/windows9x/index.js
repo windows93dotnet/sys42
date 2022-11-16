@@ -19,12 +19,18 @@ const imagesKeys = [
   "--select-bg-url",
   "--screentone-url",
   "--addon-sprites-url",
+
   "--picto--up-xs",
   "--picto--down-xs",
+  "--picto--down",
+  "--picto--calendar",
+  "--picto--import",
+
   "--picto--up-xs--d",
   "--picto--down-xs--d",
-  "--picto--down",
   "--picto--down--d",
+  "--picto--calendar--d",
+  "--picto--import--d",
 ]
 
 const colorsRef = {
