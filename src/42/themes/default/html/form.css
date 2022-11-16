@@ -995,8 +995,7 @@ selectmenu::part(selected-value) {
 
 /* @read https://moderncss.dev/pure-css-custom-checkbox-style/ */
 
-input[type="checkbox"],
-input[type="radio"] {
+:where(input[type="checkbox"], input[type="radio"]) {
   /* all: unset; */
   text-indent: 0;
 
@@ -1017,8 +1016,9 @@ input[type="radio"] {
   height: var(--check-size);
 }
 
+:where(
 input[type="checkbox"]:not([role="menuitemcheckbox"]),
-input[type="radio"]:not([role="menuitemradio"]) {
+input[type="radio"]:not([role="menuitemradio"])) {
   color: var(--check-fg);
   background: var(--check-bg);
   border-width: var(--check-bdw);
@@ -1088,10 +1088,7 @@ input[type="radio"]
 
 :where(input[type="checkbox"]:checked)::before,
 :where(input[type="checkbox"]:checked)::after {
-  -webkit-mask-image: var(--picto--check);
-  -webkit-mask-position-x: 50%;
-  -webkit-mask-position-y: 50%;
-  -webkit-mask-repeat: no-repeat;
+  -webkit-mask: var(--picto--check) 50% 50% no-repeat;
 }
 
 :where(input[type="checkbox"]:indeterminate)::before,
@@ -1099,7 +1096,7 @@ input[type="radio"]
   -webkit-mask-image: var(--picto--indeterminate);
 }
 
-input[type="radio"]:not([role="menuitemradio"]) { border-radius: 100%; }
+:where(input[type="radio"]:not([role="menuitemradio"])) { border-radius: 100%; }
 
 input[type="radio"]::after {
   content: "";

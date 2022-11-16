@@ -16,6 +16,7 @@ const imagesKeys = [
   "--btn👇-bdi",
   "--btn💾-bdi",
   "--fieldset-bdi",
+  "--radio-bdi",
   "--select-bg-url",
   "--screentone-url",
   "--addon-sprites-url",
