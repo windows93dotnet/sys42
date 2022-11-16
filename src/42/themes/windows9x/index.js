@@ -10,30 +10,32 @@ const styles = document.createElement("style")
 const imagesKeys = [
   "--fld-bdi-url",
   "--btn-bdi-url",
-  "--outset-bdi",
-  "--outset-shallow-bdi",
-  "--btn☑️-bdi",
-  "--btn👇-bdi",
-  "--btn💾-bdi",
-  "--fieldset-bdi",
-  "--radio-bdi",
-  "--select-bg-url",
+  "--outset-bdi-url",
+  "--outset-shallow-bdi-url",
+
+  "--btn☑️-bdi-url",
+  "--btn👇-bdi-url",
+  "--btn💾-bdi-url",
+  "--fieldset-bdi-url",
+  "--radio-bdi-url",
+
+  "--addon-bg-url",
   "--screentone-url",
-  "--addon-sprites-url",
+  "--scrollbar-sprites-url",
 
   "--picto--up-xs",
   "--picto--down-xs",
   "--picto--down",
   "--picto--calendar",
   "--picto--import",
-  "--picto--ellipsis-vertical",
+  "--picto--datalist",
 
   "--picto--up-xs--d",
   "--picto--down-xs--d",
   "--picto--down--d",
   "--picto--calendar--d",
   "--picto--import--d",
-  "--picto--ellipsis-vertical--d",
+  "--picto--datalist--d",
 ]
 
 const colorsRef = {

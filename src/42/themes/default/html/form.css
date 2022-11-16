@@ -239,7 +239,7 @@ States
   --picto--calendar: url("../pictos/calendar.svg");
   --picto--check: url("../pictos/check.svg");
   --picto--indeterminate: url("../pictos/indeterminate.svg");
-  --picto--ellipsis-vertical: url("../pictos/ellipsis-vertical.svg");
+  --picto--datalist: url("../pictos/datalist.svg");
 }
 
 /* reset
@@ -421,7 +421,7 @@ ui-picto {
 }
 
 :where(button,.button,.field,.solid).has-picto::after {
-  content: var(--zero-width-space);
+  content: var(--ZERO_WIDTH_SPACE);
   margin-inline-start: calc(-1 * var(--ctrl-px));
 }
 
@@ -704,7 +704,7 @@ a.button {
 
 :where(button,.button,.solid):empty::before,
 :where(button,.button,.solid) > :only-child:empty::before {
-  content: var(--zero-width-space);
+  content: var(--ZERO_WIDTH_SPACE);
 }
 
 :where(
@@ -1080,10 +1080,10 @@ input[type="radio"]
 :where(input[type="checkbox"]:is(:checked,:indeterminate))::before,
 :where(input[type="checkbox"]:is(:checked,:indeterminate))::after {
   position: absolute;
-  content: var(--zero-width-space);
+  content: var(--ZERO_WIDTH_SPACE);
   background-color: currentColor;
-  width: 16px;
-  height: 16px;
+  width: var(--picto-size);
+  height: var(--picto-size);
 }
 
 :where(input[type="checkbox"]:checked)::before,
