@@ -9,22 +9,26 @@ const styles = document.createElement("style")
 
 const imagesKeys = [
   "--fld-bdi-url",
+  "--btn-bdi-url",
   "--outset-bdi",
   "--outset-shallow-bdi",
-  "--btn-bdi",
   "--btn☑️-bdi",
   "--btn👇-bdi",
   "--btn💾-bdi",
   "--fieldset-bdi",
+  "--select-bg-url",
   "--screentone-url",
   "--addon-sprites-url",
   "--picto--up-xs",
   "--picto--down-xs",
   "--picto--up-xs--d",
   "--picto--down-xs--d",
+  "--picto--down",
+  "--picto--down--d",
 ]
 
 const colorsRef = {
+  "--ButtonFace": "rgb(212 208 200)",
   "--ButtonText": "rgb(0 0 0)",
   "--ButtonDkShadow": "rgb(64 64 64)",
   "--ButtonShadow": "rgb(128 128 128)",
