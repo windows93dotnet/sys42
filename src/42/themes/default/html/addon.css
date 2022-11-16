@@ -2,6 +2,8 @@
   --addon-bds: solid;
   --addon-bdw: 0;
   --addon-fg: var(--btn-fg);
+  --addon-back-opacity: 1;
+  --addon-front-opacity: 1;
 }
 
 :disabled {
@@ -44,7 +46,7 @@ input::-webkit-calendar-picker-indicator {
   background-image: none;
   color: inherit;
   font-size: 0;
-  opacity: 1;
+  opacity: var(--addon-back-opacity);
   visibility: visible;
   appearance: none;
   box-sizing: border-box;
@@ -77,34 +79,26 @@ input[type="date" i]::after {
   z-index: 1;
   color: inherit;
   position: absolute;
+  opacity: var(--addon-front-opacity);
   top: var(--addon-top);
   bottom: var(--addon-bottom);
   right: var(--addon-right);
   height: var(--addon-h);
   width: var(--addon-w);
   background: var(--addon-fg, currentColor);
-  -webkit-mask-image: var(--picto--calendar);
-  -webkit-mask-position-x: 50%;
-  -webkit-mask-position-y: 50%;
-  -webkit-mask-repeat: no-repeat;
+  -webkit-mask: var(--picto--calendar) 50% 50% no-repeat;
   cursor: var(--cursor-default, default);
 }
 
-:disabled ::file-selector-button,
-selectmenu:disabled::after,
-input[list]:disabled::after,
-input[type="month" i]:disabled::after,
-input[type="datetime-local" i]:disabled::after,
-input[type="time" i]:disabled::after,
-input[type="week" i]:disabled::after,
-input[type="date" i]:disabled::after {
-  cursor: var(--cursor-not-allowed, not-allowed);
-}
-
 ::file-selector-button {
+  pointer-events: auto;
   font-size: 0;
   margin: 0;
   -webkit-mask-image: var(--picto--upload);
+}
+
+:disabled ::file-selector-button {
+  cursor: var(--cursor-not-allowed, not-allowed);
 }
 
 selectmenu::after {
@@ -113,11 +107,9 @@ selectmenu::after {
 
 input[list]::-webkit-calendar-picker-indicator {
   color: inherit;
+  opacity: var(--addon-front-opacity);
   background: var(--addon-fg, currentColor);
-  -webkit-mask-image: var(--picto--ellipsis-vertical);
-  -webkit-mask-position-x: 50%;
-  -webkit-mask-position-y: 50%;
-  -webkit-mask-repeat: no-repeat;
+  -webkit-mask: var(--picto--ellipsis-vertical) 50% 50% no-repeat;
 }
 
 input[type="number" i]::-webkit-inner-spin-button {
