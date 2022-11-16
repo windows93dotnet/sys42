@@ -25,12 +25,14 @@ const imagesKeys = [
   "--picto--down",
   "--picto--calendar",
   "--picto--import",
+  "--picto--ellipsis-vertical",
 
   "--picto--up-xs--d",
   "--picto--down-xs--d",
   "--picto--down--d",
   "--picto--calendar--d",
   "--picto--import--d",
+  "--picto--ellipsis-vertical--d",
 ]
 
 const colorsRef = {
