@@ -8,15 +8,16 @@ const NS = "http://www.w3.org/2000/svg"
 const styles = document.createElement("style")
 
 const imagesKeys = [
-  "--fld-bdi",
-  "--btn-bdi",
+  "--fld-bdi-url",
   "--outset-bdi",
+  "--outset-shallow-bdi",
+  "--btn-bdi",
   "--btn☑️-bdi",
   "--btn👇-bdi",
   "--btn💾-bdi",
   "--fieldset-bdi",
   "--screentone-url",
-  "--sprites-url",
+  "--addon-sprites-url",
   "--picto--up-xs",
   "--picto--down-xs",
   "--picto--up-xs--d",
@@ -27,6 +28,7 @@ const colorsRef = {
   "--ButtonText": "rgb(0 0 0)",
   "--ButtonDkShadow": "rgb(64 64 64)",
   "--ButtonShadow": "rgb(128 128 128)",
+  "--ButtonLight": "rgb(223 223 223)",
   "--ButtonHilight": "rgb(255 255 255)",
 }
 
@@ -35,7 +37,7 @@ const colors = Object.create(null)
 
 export function install() {
   const filters = document.createElementNS(NS, "svg")
-  filters.style = "position:absolute;pointer-events:none;"
+  filters.style = "position:absolute;pointer-events:none;top:0"
 
   const disabledInset = document.createElementNS(NS, "filter")
   disabledInset.id = "disabled-inset"

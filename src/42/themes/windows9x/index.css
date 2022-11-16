@@ -114,9 +114,15 @@
   /* Borders
   ---------- */
 
-  --fld-bdi: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(128 128 128)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(64 64 64)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(223 223 223)" d="M5 1h1v5H1V5h4z"/><path fill="rgb(255 255 255)" d="M6 0h1v7H0V6h6z"/></svg>') 2 / 2px;
-  --btn-bdi: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(255 255 255)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(223 223 223)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(128 128 128)" d="M5 1h1v5H1V5h4z"/><path fill="rgb(64 64 64)" d="M6 0h1v7H0V6h6z"/></svg>') 2 / 2px;
+  --fld-bdi-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(128 128 128)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(64 64 64)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(223 223 223)" d="M5 1h1v5H1V5h4z"/><path fill="rgb(255 255 255)" d="M6 0h1v7H0V6h6z"/></svg>');
+
+  --fld-bdi: var(--fld-bdi-url) 2 / 2px;
+  --inset-shallow-bdi: var(--fld-bdi-url) 1 / 1px;
+
   --outset-bdi: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(223 223 223)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(255 255 255)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(128 128 128)" d="M5 1h1v5H1V5h4z"/><path fill="rgb(64 64 64)" d="M6 0h1v7H0V6h6z"/></svg>') 2 / 2px;
+  --outset-shallow-bdi: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(255 255 255)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(128 128 128)" d="M6 0h1v7H0V6h6z"/></svg>') 1 / 1px;
+
+  --btn-bdi: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(255 255 255)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(223 223 223)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(128 128 128)" d="M5 1h1v5H1V5h4z"/><path fill="rgb(64 64 64)" d="M6 0h1v7H0V6h6z"/></svg>') 2 / 2px;
   --btn☑️-bdi: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(64 64 64)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(128 128 128)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(223 223 223)" d="M5 1h1v5H1V5h4z"/><path fill="rgb(255 255 255)" d="M6 0h1v7H0V6h6z"/></svg>') 2 / 2px;
   --btn👇-bdi: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(64 64 64)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(128 128 128)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(128 128 128)" d="M5 1h1v5H1V5h4z"/><path fill="rgb(64 64 64)" d="M6 0h1v7H0V6h6z"/></svg>') 2 / 2px;
   --btn💾-bdi: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(64 64 64)" d="M7 0v7H0V0h7Z"/><path fill="rgb(255 255 255)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(223 223 223)" d="M2 2h2v1H3v1H2Z"/><path fill="rgb(128 128 128)" d="M4 2h1v3H2V4h2z"/></svg>') 3 / 3px;
@@ -129,13 +135,13 @@
   /* pictos
   --------- */
 
-  /* --sprites-url: url("./sprites.svg"); */
-  --sprites-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="128" height="32"><filter id="f" width="128" height="32"><feOffset dx="0" dy="16" in="SourceGraphic" result="o1" /><feOffset dx="1" dy="17" in="SourceGraphic" result="o2" /><feFlood flood-color="rgb(128 128 128)" result="c1" /><feFlood flood-color="rgb(255 255 255)" result="c2" /><feComposite operator="in" in="c1" in2="o1" result="a" /><feComposite operator="in" in="c2" in2="o2" result="b" /><feMerge><feMergeNode in="b" /><feMergeNode in="a" /><feMergeNode in="SourceGraphic" /></feMerge></filter><g style="fill:rgb(0 0 0);filter:url(%23f)"><path style="translate:0px" d="M7 6h1v1h1v1h1v1h1v1h-7v-1h1v-1h1v-1h1z" /><path style="translate:16px" d="M4 6h7v1h-1v1h-1v1h-1v1h-1v-1h-1v-1h-1v-1h-1z" /><path style="translate:32px" d="M8 4h1v7h-1v-1h-1v-1h-1v-1h-1v-1h1v-1h1v-1h1z" /><path style="translate:48px" d="M6 4h1v1h1v1h1v1h1v1h-1v1h-1v1h-1v1h-1z" /><path style="translate:64px" d="M4 3h1v1h5v-1h1v1h1v8h-9v-8h1z M4 6v5h7v-5z M5 7h2v2h-2z" /><path style="translate:80px" d="M7 4h2v3h2v1h-1v1h-1v1h-2v-1h-1v-1h-1v-1h2z M3 9h1v2h8v-2h1v3h-10z" /></g></svg>');
+  /* --addon-sprites-url: url("./sprites.svg"); */
+  --addon-sprites-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="128" height="32"><filter id="f" width="128" height="32"><feOffset dx="0" dy="16" in="SourceGraphic" result="o1" /><feOffset dx="1" dy="17" in="SourceGraphic" result="o2" /><feFlood flood-color="rgb(128 128 128)" result="c1" /><feFlood flood-color="rgb(255 255 255)" result="c2" /><feComposite operator="in" in="c1" in2="o1" result="a" /><feComposite operator="in" in="c2" in2="o2" result="b" /><feMerge><feMergeNode in="b" /><feMergeNode in="a" /><feMergeNode in="SourceGraphic" /></feMerge></filter><g style="fill:rgb(0 0 0);filter:url(%23f)"><path style="translate:0px" d="M7 6h1v1h1v1h1v1h1v1h-7v-1h1v-1h1v-1h1z" /><path style="translate:16px" d="M4 6h7v1h-1v1h-1v1h-1v1h-1v-1h-1v-1h-1v-1h-1z" /><path style="translate:32px" d="M8 4h1v7h-1v-1h-1v-1h-1v-1h-1v-1h1v-1h1v-1h1z" /><path style="translate:48px" d="M6 4h1v1h1v1h1v1h1v1h-1v1h-1v1h-1v1h-1z" /><path style="translate:64px" d="M4 3h1v1h5v-1h1v1h1v8h-9v-8h1z M4 6v5h7v-5z M5 7h2v2h-2z" /><path style="translate:80px" d="M7 4h2v3h2v1h-1v1h-1v1h-2v-1h-1v-1h-1v-1h2z M3 9h1v2h8v-2h1v3h-10z" /></g></svg>');
 
-  --scrollbar-up-bg: var(--sprites-url) 0 0 no-repeat;
-  --scrollbar-down-bg: var(--sprites-url) -16px 0 no-repeat;
-  --scrollbar-left-bg: var(--sprites-url) -32px 0 no-repeat;
-  --scrollbar-right-bg: var(--sprites-url) -48px 0 no-repeat;
+  --scrollbar-up-bg: var(--addon-sprites-url) 0 0 no-repeat;
+  --scrollbar-down-bg: var(--addon-sprites-url) -16px 0 no-repeat;
+  --scrollbar-left-bg: var(--addon-sprites-url) -32px 0 no-repeat;
+  --scrollbar-right-bg: var(--addon-sprites-url) -48px 0 no-repeat;
 
   --picto--up-xs: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(0 0 0)" d="M7 6h1v1h1v1h-3v-1h1z"/></svg>');
   --picto--down-xs: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(0 0 0)" d="M6 7h3v1h-1v1h-1v-1h-1z"/></svg>');
@@ -251,10 +257,6 @@
     -1px   2px 0 var(--ButtonHilight),
     -2px   2px 0 var(--ButtonHilight);
 
-  --inset-shallow-bdw: 1px;
-  --inset-shallow-bdc: var(--ButtonShadow) var(--ButtonHilight) var(--ButtonHilight) var(--ButtonShadow);
-  --inset-shallow-bdi: none;
-
   --link-fg: var(--Hilight);
   --link👇-fg: #f00;
 
@@ -318,7 +320,7 @@ input[type="number" i]::-webkit-inner-spin-button {
   --_down: var(--picto--down-xs);
   background-image:
     var(--_up),
-    linear-gradient(to bottom, var(--ButtonShadow) 1px, #fff 1px),
+    linear-gradient(to bottom, var(--ButtonShadow) 1px, var(--ButtonHilight) 1px),
     var(--_down);
   background-position-x: 0, center, 0;
   background-position-y: -2px, center, 5px;
