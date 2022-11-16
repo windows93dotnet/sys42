@@ -165,7 +165,7 @@ States
   /* checkable
   ============ */
 
-  --check-fg: var(--ctrl-bdc);
+  --check-fg: var(--fld-fg);
   --check-bg: var(--fld-bg);
   --check-bdw: var(--fld-bdw);
   --check-bds: var(--fld-bds);

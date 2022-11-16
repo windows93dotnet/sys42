@@ -150,12 +150,14 @@
   --picto--down: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(0 0 0)" d="M4 6h7v1h-1v1h-1v1h-1v1h-1v-1h-1v-1h-1v-1h-1z"/></svg>');
   --picto--calendar: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(0 0 0)" d="M4 3h1v1h5v-1h1v1h1v8h-9v-8h1z M4 6v5h7v-5z M5 7h2v2h-2z"/></svg>');
   --picto--import: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(0 0 0)" d="M7 4h2v3h2v1h-1v1h-1v1h-2v-1h-1v-1h-1v-1h2z M3 9h1v2h8v-2h1v3h-10z"/></svg>');
+  --picto--ellipsis-vertical: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(0 0 0)" d="M7 4h2v2h-2z M7 7h2v2h-2z M7 10h2v2h-2z"/></svg>');
 
   --picto--up-xs--d: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path style="filter:drop-shadow(1px 1px 0 rgb(255 255 255))" fill="rgb(128 128 128)" d="M7 6h1v1h1v1h-3v-1h1z"/></svg>');
   --picto--down-xs--d: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path style="filter:drop-shadow(1px 1px 0 rgb(255 255 255))" fill="rgb(128 128 128)" d="M6 7h3v1h-1v1h-1v-1h-1z"/></svg>');
   --picto--down--d: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path style="filter:drop-shadow(1px 1px 0 rgb(255 255 255))" fill="rgb(128 128 128)" d="M4 6h7v1h-1v1h-1v1h-1v1h-1v-1h-1v-1h-1v-1h-1z"/></svg>');
   --picto--calendar--d: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path style="filter:drop-shadow(1px 1px 0 rgb(255 255 255))" fill="rgb(128 128 128)" d="M4 3h1v1h5v-1h1v1h1v8h-9v-8h1z M4 6v5h7v-5z M5 7h2v2h-2z"/></svg>');
   --picto--import--d: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path style="filter:drop-shadow(1px 1px 0 rgb(255 255 255))" fill="rgb(128 128 128)" d="M7 4h2v3h2v1h-1v1h-1v1h-2v-1h-1v-1h-1v-1h2z M3 9h1v2h8v-2h1v3h-10z"/></svg>');
+  --picto--ellipsis-vertical--d: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path style="filter:drop-shadow(1px 1px 0 rgb(255 255 255))" fill="rgb(128 128 128)" d="M7 4h2v2h-2z M7 7h2v2h-2z M7 10h2v2h-2z"/></svg>');
 }
 
 :root {
@@ -318,7 +320,7 @@ textarea { overflow-y: scroll; }
 select,
 input[list],
 input[type="file" i],
-/* input[type="number" i], */
+input[type="number" i],
 input[type="month" i],
 input[type="datetime-local" i],
 input[type="time" i],
@@ -331,6 +333,12 @@ input[type="date" i] {
   background-repeat: no-repeat;
 }
 
+@-moz-document url-prefix("") {
+  input[type="number"] {
+    background-image: none;
+  }
+}
+
 select { --_picto: var(--picto--down); }
 select:disabled { --_picto: var(--picto--down--d); }
 
@@ -339,6 +347,9 @@ input[type="file" i]:disabled { --_picto: var(--picto--import--d); }
 
 input[type="date" i] { --_picto: var(--picto--calendar); }
 input[type="date" i]:disabled { --_picto: var(--picto--calendar--d); }
+
+input[list] { --_picto: var(--picto--ellipsis-vertical); }
+input[list]:disabled { --_picto: var(--picto--ellipsis-vertical--d); }
 
 input[type="radio" i],
 input[type="checkbox" i] {
@@ -352,6 +363,7 @@ input[type="checkbox" i] {
 
 input[type="number" i]::-webkit-inner-spin-button {
   opacity: 1 !important;
+  background-color: transparent;
   --_up: var(--picto--up-xs);
   --_down: var(--picto--down-xs);
   background-image:
