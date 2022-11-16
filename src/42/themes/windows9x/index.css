@@ -128,6 +128,7 @@
   --btn👇-bdi: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(64 64 64)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(128 128 128)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(128 128 128)" d="M5 1h1v5H1V5h4z"/><path fill="rgb(64 64 64)" d="M6 0h1v7H0V6h6z"/></svg>') 2 / 2px;
   --btn💾-bdi: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(64 64 64)" d="M7 0v7H0V0h7Z"/><path fill="rgb(255 255 255)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(223 223 223)" d="M2 2h2v1H3v1H2Z"/><path fill="rgb(128 128 128)" d="M4 2h1v3H2V4h2z"/></svg>') 3 / 3px;
   --fieldset-bdi: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(128 128 128)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(255 255 255)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(128 128 128)" d="M5 1h1v5H1V5h4z"/><path fill="rgb(255 255 255)" d="M6 0h1v7H0V6h6z"/></svg>') 2 / 2px;
+  --radio-bdi: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"><path fill="rgb(64 64 64)" d="M4 1h4v1h2v1H8V2H4v1H3v1H2v4h1v1H2V8H1V4h1V2h2z"/><path fill="rgb(128 128 128)" d="M4 0h4v1h2v1H8V1H4v1H2v2H1v4h1v2H1V8H0V4h1V2h1V1h2z"/><path fill="rgb(223 223 223)" d="M9 3h1v1h1v4h-1v2H8v1H4v-1H2V9h2v1h4V9h1V8h1V4H9z"/><path fill="rgb(255 255 255)" d="M10 2h1v2h1v4h-1v2h-1v1H8v1H4v-1H2v-1h2v1h4v-1h2V8h1V4h-1z"/></svg>') 4 / 4px;
 
   --select-bg-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" style="background:rgb(212 208 200)" width="16px" height="18px"><path fill="rgb(223 223 223)" d="M0 0h15v1H1v16H0Z" /><path fill="rgb(64 64 64)" d="M15 0h1v18H0V17h15z" /><path fill="rgb(255 255 255)" d="M1 1h13v1H2v14H1Z" /><path fill="rgb(128 128 128)" d="M14 1h1v16H1V16h13z" /></svg>');
 
@@ -237,11 +238,12 @@
   --btn☑️🚫-bdi: var(--btn☑️-bdi);
 
   --check-o: none;
-  --check-size: 10px;
+  --check-size: 13px;
   --check__bullet-ma: 3px;
-  --check-bdw: 0;
-  --check-bdi: none; /* TODO: remake pixel art radio button */
-  --check-bsh:
+  /* --check-bdw: 2px;
+  --check-bdi: var(--fld-bdi); */
+  /* --check-bdi: none; TODO: remake pixel art radio button */
+  /* --check-bsh:
     -1px  -1px 0 var(--ButtonDkShadow),
      0px  -1px 0 var(--ButtonDkShadow),
     -1px   0px 0 var(--ButtonDkShadow),
@@ -265,7 +267,7 @@
      1px   2px 0 var(--ButtonHilight),
      0px   2px 0 var(--ButtonHilight),
     -1px   2px 0 var(--ButtonHilight),
-    -2px   2px 0 var(--ButtonHilight);
+    -2px   2px 0 var(--ButtonHilight); */
 
   --link-fg: var(--Hilight);
   --link👇-fg: #f00;
@@ -351,14 +353,22 @@ input[type="date" i]:disabled { --_picto: var(--picto--calendar--d); }
 input[list] { --_picto: var(--picto--ellipsis-vertical); }
 input[list]:disabled { --_picto: var(--picto--ellipsis-vertical--d); }
 
-input[type="radio" i],
-input[type="checkbox" i] {
-  margin-inline: 2px;
+:where(input[type="checkbox" i]:checked)::before,
+:where(input[type="checkbox" i]:checked)::after {
+  -webkit-mask-position-x: 1px;
 }
 
-:where(input[type="checkbox"]:disabled)::before {
+:where(input[type="checkbox" i]:disabled)::before {
   background-color: var(--ButtonHilight);
   transform: translate(1px, 1px);
+}
+
+input[type="radio" i] {
+  --check-size: 12px;
+  background-clip: padding-box;
+  border-radius: 12px;
+  border-width: 1px;
+  border-image: var(--radio-bdi);
 }
 
 input[type="number" i]::-webkit-inner-spin-button {
@@ -373,7 +383,7 @@ input[type="number" i]::-webkit-inner-spin-button {
   background-position-x: 0, center, 0;
   background-position-y: -2px, center, 5px;
   background-origin: border-box;
-  background-size: auto, 16px 2px, auto;
+  background-size: auto, 14px 2px, auto;
 }
 
 input[type="number" i]:disabled::-webkit-inner-spin-button {

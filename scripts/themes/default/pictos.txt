@@ -1,8 +1,8 @@
-undo redo cut copy paste minimize maximize restore close help
+undo redo cut copy paste minimize maximize restore close help info bookmark flag bolt pin
 save file file-new folder folder-open folder-new folder-export folder-import import export envelope envelope-open calendar trash
 paperclip pencil pen paintbrush eyedropper magic eraser tint paintbucket palette crop cog wrench magnifier magnifier-plus magnifier-minus
 home lock lock-open key shield bug puzzle globe skull leaf cube stack eye eye-off volume volume-off
-plus-xs minus-xs plus-thin minus-thin plus minus cross cross-alt check indeterminate bullet bookmark flag bolt pin info
+plus-xs minus-xs plus-thin minus-thin plus minus cross cross-alt check indeterminate bullet bullet-small
 dots square-dots plus-square-dots minus-square-dots shrink shrink-alt cross-thin split split-vertical split-detail split-grid split-graph image terminal window desktop
 square-thick square plus-square minus-square expand expand-alt clear bars bars-vertical details grid graph
 font bold italic strike underline ol ul text-left text-center text-right text-justify quote code json link link-off
