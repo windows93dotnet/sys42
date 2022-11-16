@@ -73,6 +73,7 @@ input[type="time" i]::after,
 input[type="week" i]::after,
 input[type="date" i]::after {
   content: "";
+  pointer-events: none;
   z-index: 1;
   color: inherit;
   position: absolute;
@@ -171,5 +172,9 @@ input::-webkit-datetime-edit-year-field:focus {
   input[type="week" i],
   input[type="date" i] {
     padding-right: var(--addon-right);
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
   }
 }
