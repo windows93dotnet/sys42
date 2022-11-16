@@ -10,34 +10,29 @@
   trap()
 </script>
 
-<!-- <style>
-  body {
-    margin: 100px;
-  }
-  #test {
-    zoom: 3;
-    width: 200px;
-    height: 100px;
-    border: 1px solid;
-    background: url("../../42/themes/windows9x/sprites.svg");
-    /* background: url("../../42/themes/windows9x/sprites.svg"); */
-    /* background: url("/#up"); */
-    /*
-    background: url("../../42/themes/windows9x/sprites.svg#svgView(viewBox(0, 0, 16, 16))");
-    background-position: 50%;
-    background-size: 16px 16px;
-    */
-    background-repeat: no-repeat;
-  }
-</style>
-
-<div id="test"></div> -->
-
 <script type="module">
-  /* eslint-disable no-unused-vars */
+  import "../../42/ui/components/menu.js"
+  import "../../42/ui/components/picto.js"
   import ui from "../../42/ui.js"
   import cssVar from "../../42/fabric/cssom/cssVar.js"
   import themeManager from "../../42/os/managers/themeManager.js"
+
+  cssVar.set("--Scrollbar", "mediumturquoise")
+  cssVar.set("--ButtonFace", "mediumturquoise")
+  cssVar.set("--ButtonLight", "turquoise")
+  cssVar.set("--ButtonHilight", "aquamarine")
+  cssVar.set("--ButtonText", "mediumblue") // darkslategray
+  cssVar.set("--GrayText", "darkcyan")
+  cssVar.set("--ButtonShadow", "darkcyan") // lightseagreen
+  cssVar.set("--ButtonDkShadow", "darkslategray")
+  cssVar.set("--Window", "paleturquoise")
+  cssVar.set("--WindowText", "darkslategray")
+  // themeManager.refresh()
+
+  await Promise.all([document.fonts.ready, themeManager.ready])
+
+  // import dialog from "../../42/ui/components/dialog.js"
+  // dialog("hello")
 
   const lorem =
     "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quas, quo quidem voluptate, consectetur, sint repellendus expedita consequatur pariatur delectus cum inventore iure aperiam? Ad facere nemo tenetur nesciunt quam autem voluptatibus vel temporibus dolorem atque. Dolores beatae magnam iure, architecto eius explicabo aut molestias voluptas itaque dolorum sunt quisquam. Totam, corrupti animi! Velit soluta repudiandae temporibus facere. Ad atque nihil quisquam amet deleniti doloremque, ut molestiae cumque quidem cum vitae voluptates dicta quas dolor, nam ipsum laboriosam odit iusto animi, fugit tempore saepe vero corrupti cupiditate! Nam numquam mollitia esse quam labore, laborum sequi optio consequuntur natus ex, corporis quae?"
@@ -124,6 +119,8 @@
                   },
                 ],
               },
+              { tag: ".inset.pa-xs", content: ".inset" },
+              { tag: ".outset.pa-xs", content: ".outset" },
               { tag: ".inset-shallow.pa-xs", content: ".inset-shallow" },
               { tag: ".outset-shallow.pa-xs", content: ".outset-shallow" },
             ],
@@ -139,6 +136,10 @@
               { tag: "date" },
               { tag: "file" },
               { tag: "number" },
+              // {
+              //   tag: "selectmenu",
+              //   content: ["Option 1", "Option 2", "Option 3"],
+              // },
               { tag: "select", content: ["Option 1", "Option 2", "Option 3"] },
               { tag: "text", list: "list" },
               { tag: "datalist", id: "list", content: ["a", "b", "c"] },
@@ -232,13 +233,6 @@
       },
     ]
   }
-
-  // cssVar.set("--ButtonFace", "#444")
-  cssVar.set("--ButtonHilight", "lime")
-  cssVar.set("--ButtonText", "red")
-  cssVar.set("--GrayText", "blue")
-  cssVar.set("--ButtonShadow", "blue")
-  // themeManager.refresh()
 
   ui({
     tag: "._box-fit._desktop",

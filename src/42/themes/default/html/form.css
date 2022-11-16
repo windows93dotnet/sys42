@@ -416,6 +416,8 @@ fieldset[disabled]) {
 
 ui-picto {
   flex: 0 0 var(--picto-size);
+  width: var(--picto-size);
+  height: var(--picto-size);
 }
 
 :where(button,.button,.field,.solid).has-picto::after {

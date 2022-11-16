@@ -3,9 +3,7 @@
 :root {
   --unit: 8px;
   --pixel-font-filter: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="f"><feComponentTransfer><feFuncA type="discrete" tableValues="0 0 0.5 0.9 1 1" /></feComponentTransfer></filter></svg>#f');
-}
 
-body {
   -webkit-font-smoothing: none;
   -moz-osx-font-smoothing: unset;
   font-smoothing: unset;
