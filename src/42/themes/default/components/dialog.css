@@ -84,6 +84,6 @@ ui-dialog:focus {
 }
 
 .ui-dialog__title::before {
-  content: var(--zero-width-space);
+  content: var(--ZERO_WIDTH_SPACE);
   speak: none;
 }

@@ -2,7 +2,7 @@
 save file file-new folder folder-open folder-new folder-export folder-import import export envelope envelope-new envelope-open trash file-stack file-duplicate
 paperclip pencil pen paintbrush eyedropper magic eraser tint paintbucket palette crop cog wrench magnifier magnifier-plus magnifier-minus
 home lock lock-open key shield bug puzzle globe skull leaf cube stack eye eye-off volume volume-off
-plus-xs minus-xs plus-thin minus-thin plus minus cross cross-thin cross-alt check indeterminate bullet bullet-small bullet-list
+plus-xs minus-xs plus-thin minus-thin plus minus cross cross-thin cross-alt check indeterminate bullet bullet-small datalist
 dots square-dots plus-square-dots minus-square-dots shrink shrink-alt shrink-alt2 split split-vertical split-details split-grid split-graph
 square-thick square plus-square minus-square expand expand-alt expand-alt2 bars bars-vertical details grid graph
 font bold italic strike underline ol ul text-left text-center text-right text-justify quote code json link link-off

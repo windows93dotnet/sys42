@@ -62,7 +62,7 @@ input::-webkit-calendar-picker-indicator {
   border-image: var(--addon-bdi);
   border-radius: var(--addon-bdr);
   box-shadow: var(--addon-bsh);
-  background-color: var(--addon-bg, var(--empty));
+  background-color: var(--addon-bg, var(--EMPTY));
   cursor: var(--cursor-default, default);
 }
 
@@ -109,7 +109,7 @@ input[list]::-webkit-calendar-picker-indicator {
   color: inherit;
   opacity: var(--addon-front-opacity);
   background: var(--addon-fg, currentColor);
-  -webkit-mask: var(--picto--ellipsis-vertical) 50% 50% no-repeat;
+  -webkit-mask: var(--picto--datalist) 50% 50% no-repeat;
 }
 
 input[type="number" i]::-webkit-inner-spin-button {

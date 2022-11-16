@@ -2,16 +2,17 @@
 /* @read https://css-tricks.com/consistent-fluidly-scaling-type-and-spacing/ */
 
 :root {
-  --empty: ; /* stylelint-disable-line */
+  --EMPTY: ; /* stylelint-disable-line */
+  --EMPTY_IMAGE: linear-gradient(transparent, transparent);
 
   /* Useful to ensure line-height */
-  --zero-width-space: "\200B";
+  --ZERO_WIDTH_SPACE: "\200B";
 
   /* fonts
   ======== */
 
   --_ff-emoji:
-    var(--ff-emoji, --empty),
+    var(--ff-emoji, --EMPTY),
     "Apple Color Emoji",
     "Segoe UI Emoji",
     "Segoe UI Symbol",
@@ -20,7 +21,7 @@
   --fs-sans: 12px;
   --lh-sans: 1.16667;
   --_ff-sans:
-    var(--ff-sans, --empty),
+    var(--ff-sans, --EMPTY),
     system-ui,
     -apple-system,
     "Segoe UI",
@@ -36,7 +37,7 @@
   --fs-mono: 9px;
   --lh-mono: 1.222223;
   --_ff-mono:
-    var(--ff-mono, --empty),
+    var(--ff-mono, --EMPTY),
     ui-monospace,
     "Menlo",
     "Consolas",
