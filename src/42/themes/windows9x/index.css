@@ -158,14 +158,14 @@
   --picto--down: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(0 0 0)" d="M4 6h7v1h-1v1h-1v1h-1v1h-1v-1h-1v-1h-1v-1h-1z"/></svg>');
   --picto--calendar: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(0 0 0)" d="M4 3h1v1h5v-1h1v1h1v8h-9v-8h1z M4 6v5h7v-5z M5 7h2v2h-2z"/></svg>');
   --picto--import: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(0 0 0)" d="M7 4h2v3h2v1h-1v1h-1v1h-2v-1h-1v-1h-1v-1h2z M3 9h1v2h8v-2h1v3h-10z"/></svg>');
-  --picto--datalist: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(0 0 0)" d="M6 6h4v1h-4z M6 8h4v1h-4z M6 10h4v1h-4z"/></svg>');
+  --input-datalist-picto: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="rgb(0 0 0)" d="M6 6h4v1h-4z M6 8h4v1h-4z M6 10h4v1h-4z"/></svg>');
 
   --picto--up-xs--d: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path style="filter:drop-shadow(1px 1px 0 rgb(255 255 255))" fill="rgb(128 128 128)" d="M7 6h1v1h1v1h-3v-1h1z"/></svg>');
   --picto--down-xs--d: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path style="filter:drop-shadow(1px 1px 0 rgb(255 255 255))" fill="rgb(128 128 128)" d="M6 7h3v1h-1v1h-1v-1h-1z"/></svg>');
   --picto--down--d: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path style="filter:drop-shadow(1px 1px 0 rgb(255 255 255))" fill="rgb(128 128 128)" d="M4 6h7v1h-1v1h-1v1h-1v1h-1v-1h-1v-1h-1v-1h-1z"/></svg>');
   --picto--calendar--d: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path style="filter:drop-shadow(1px 1px 0 rgb(255 255 255))" fill="rgb(128 128 128)" d="M4 3h1v1h5v-1h1v1h1v8h-9v-8h1z M4 6v5h7v-5z M5 7h2v2h-2z"/></svg>');
   --picto--import--d: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path style="filter:drop-shadow(1px 1px 0 rgb(255 255 255))" fill="rgb(128 128 128)" d="M7 4h2v3h2v1h-1v1h-1v1h-2v-1h-1v-1h-1v-1h2z M3 9h1v2h8v-2h1v3h-10z"/></svg>');
-  --picto--datalist--d: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path style="filter:drop-shadow(1px 1px 0 rgb(255 255 255))" fill="rgb(128 128 128)" d="M6 6h4v1h-4z M6 8h4v1h-4z M6 10h4v1h-4z"/></svg>');
+  --input-datalist-picto--d: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path style="filter:drop-shadow(1px 1px 0 rgb(255 255 255))" fill="rgb(128 128 128)" d="M6 6h4v1h-4z M6 8h4v1h-4z M6 10h4v1h-4z"/></svg>');
 }
 
 :root {
@@ -326,14 +326,15 @@ input[type="file" i]:disabled { --_picto: var(--picto--import--d); }
 input[type="date" i] { --_picto: var(--picto--calendar); }
 input[type="date" i]:disabled { --_picto: var(--picto--calendar--d); }
 
-input[list] { --_picto: var(--picto--datalist); }
-input[list]:disabled { --_picto: var(--picto--datalist--d); }
+input[list] { --_picto: var(--input-datalist-picto); }
+input[list]:disabled { --_picto: var(--input-datalist-picto--d); }
 
-:where(input[type="checkbox" i]:checked)::before,
-:where(input[type="checkbox" i]:checked)::after {
-  -webkit-mask-position-x: 1px;
+input[type="checkbox"]:not([role="menuitemcheckbox"]):is(:checked,:indeterminate)::before,
+input[type="checkbox"]:not([role="menuitemcheckbox"]):is(:checked,:indeterminate)::after {
+  left: -3px;
 }
 
+:where(input[type="radio" i]:disabled)::before,
 :where(input[type="checkbox" i]:disabled)::before {
   background-color: var(--ButtonHilight);
   transform: translate(1px, 1px);
@@ -342,13 +343,16 @@ input[list]:disabled { --_picto: var(--picto--datalist--d); }
 input[type="radio" i] {
   --check-size: 12px;
   background-clip: padding-box;
-  border-radius: 12px;
-  border-width: 1px;
+  border-radius: var(--check-size);
   border-image: var(--radio-bdi);
 }
 
+input[type="radio" i]:not([role="menuitemradio"]) {
+  --radio-picto: url("../pictos/bullet-small.svg");
+}
+
 input[type="number" i]::-webkit-inner-spin-button {
-  opacity: 1 !important;
+  opacity: 1;
   background-color: transparent;
   --_up: var(--picto--up-xs);
   --_down: var(--picto--down-xs);

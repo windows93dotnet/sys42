@@ -97,3 +97,17 @@ ui-accordion {
   border-radius: var(--outset-br);
   /* border: 1px solid transparent; */
 }
+
+/* input[type="radio"]::after {
+  content: "";
+  background: currentColor;
+  position: absolute;
+  inset: var(--check__bullet-ma);
+  border-radius: 100%;
+  transform: scale(0);
+  transition: transform var(--check__bullet-speed) ease-in-out;
+}
+
+input[type="radio"]:checked::after {
+  transform: scale(1);
+} */

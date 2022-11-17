@@ -109,14 +109,14 @@ input[list]::-webkit-calendar-picker-indicator {
   color: inherit;
   opacity: var(--addon-front-opacity);
   background: var(--addon-fg, currentColor);
-  -webkit-mask: var(--picto--datalist) 50% 50% no-repeat;
+  -webkit-mask: var(--input-datalist-picto) 50% 50% no-repeat;
 }
 
 input[type="number" i]::-webkit-inner-spin-button {
-  background-image: var(--picto--up), var(--picto--down);
+  background-image: var(--input-number-up-picto), var(--input-number-down-picto);
   background-position-x: center;
   background-repeat: no-repeat;
-  --_y: calc(2px + 0.5 * var(--ctrl-py));
+  --_y: calc(2px + 0.7 * var(--ctrl-py));
   background-position-y: calc(50% - var(--_y)), calc(50% + var(--_y));
 }
 
