@@ -28,14 +28,14 @@ const imagesKeys = [
   "--picto--down",
   "--picto--calendar",
   "--picto--import",
-  "--picto--datalist",
+  "--input-datalist-picto",
 
   "--picto--up-xs--d",
   "--picto--down-xs--d",
   "--picto--down--d",
   "--picto--calendar--d",
   "--picto--import--d",
-  "--picto--datalist--d",
+  "--input-datalist-picto--d",
 ]
 
 const colorsRef = {

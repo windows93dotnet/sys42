@@ -198,7 +198,6 @@ States
   --check-oo: 3px;
   --check-size: calc(7 * 2px);
   --check__bullet-ma: 3px;
-  --check__bullet-speed: 0; /* 120ms */
 
   /* others
   ========= */
@@ -237,9 +236,14 @@ States
   --picto--down: url("../pictos/down.svg");
   --picto--upload: url("../pictos/import.svg");
   --picto--calendar: url("../pictos/calendar.svg");
-  --picto--check: url("../pictos/check.svg");
-  --picto--indeterminate: url("../pictos/indeterminate.svg");
-  --picto--datalist: url("../pictos/datalist.svg");
+
+  --input-number-up-picto: var(--picto--up);
+  --input-number-down-picto: var(--picto--down);
+
+  --radio-picto: url("../pictos/bullet.svg");
+  --checkbox-picto: url("../pictos/check.svg");
+  --checkbox-indeterminate-picto: url("../pictos/indeterminate.svg");
+  --input-datalist-picto: url("../pictos/bullet-list.svg");
 }
 
 /* reset
@@ -1058,14 +1062,14 @@ input[type="radio"]:not([role="menuitemradio"])) {
   --check-bsh: var(--check🚫-bsh);
 }
 
-:where(label :is(
+/* :where(label :is(
 input[type="checkbox"],
 input[type="radio"]
 )) {
   vertical-align: middle;
   margin-top: -3px;
   margin-right: var(--unit-md);
-}
+} */
 
 :where(:is(
 input[type="checkbox"],
@@ -1077,40 +1081,42 @@ input[type="radio"]
   vertical-align: middle;
 }
 
+/* :is(ui-menu, ui-menubar) > li > label > input[type="radio" i],
+:is(ui-menu, ui-menubar) > li > label > input[type="checkbox" i] {
+  box-shadow: 0 0 0 1px red !important;
+} */
+
+:where(input[type="radio"]:checked)::before,
+:where(input[type="radio"]:checked)::after,
 :where(input[type="checkbox"]:is(:checked,:indeterminate))::before,
 :where(input[type="checkbox"]:is(:checked,:indeterminate))::after {
-  position: absolute;
   content: var(--ZERO_WIDTH_SPACE);
+  position: absolute;
+  /* top: calc(calc(var(--check-size) * 0.5) - calc(var(--picto-size) * 0.5));
+  left: calc(calc(var(--check-size) * 0.5) - calc(var(--picto-size) * 0.5)); */
   background-color: currentColor;
+  /* background-color: red; */
   width: var(--picto-size);
   height: var(--picto-size);
+  --_pos: center no-repeat;
 }
 
 :where(input[type="checkbox"]:checked)::before,
 :where(input[type="checkbox"]:checked)::after {
-  -webkit-mask: var(--picto--check) 50% 50% no-repeat;
+  -webkit-mask: var(--checkbox-picto) var(--_pos);
 }
 
 :where(input[type="checkbox"]:indeterminate)::before,
 :where(input[type="checkbox"]:indeterminate)::after {
-  -webkit-mask-image: var(--picto--indeterminate);
+  -webkit-mask: var(--checkbox-indeterminate-picto) var(--_pos);
+}
+
+:where(input[type="radio"]:checked)::before,
+:where(input[type="radio"]:checked)::after {
+  -webkit-mask: var(--radio-picto) var(--_pos);
 }
 
 :where(input[type="radio"]:not([role="menuitemradio"])) { border-radius: 100%; }
-
-input[type="radio"]::after {
-  content: "";
-  background: currentColor;
-  position: absolute;
-  inset: var(--check__bullet-ma);
-  border-radius: 100%;
-  transform: scale(0);
-  transition: transform var(--check__bullet-speed) ease-in-out;
-}
-
-input[type="radio"]:checked::after {
-  transform: scale(1);
-}
 
 input:where([type="radio"],[type="checkbox"]) + label {
   padding-left: var(--unit-sm);
