@@ -26,7 +26,6 @@
   --check-br: 5px;
   --check🎯-bg: var(--highlight-bg);
   --check-size: 18px;
-  --check__bullet-ma: 5px;
 
   --addon-w: 23px;
   --addon-top: 4px;
@@ -102,7 +101,7 @@ ui-accordion {
   content: "";
   background: currentColor;
   position: absolute;
-  inset: var(--check__bullet-ma);
+  inset: 5px;
   border-radius: 100%;
   transform: scale(0);
   transition: transform var(--check__bullet-speed) ease-in-out;

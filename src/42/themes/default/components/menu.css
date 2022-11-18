@@ -23,8 +23,6 @@ ui-menubar {
   background: var(--bg);
   color: var(--fg);
   text-shadow: var(--menu-tsh, none);
-
-  --check__bullet-ma: calc(var(--menu-picto-size) * 0.3);
 }
 
 ui-menubar {

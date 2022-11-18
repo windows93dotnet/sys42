@@ -119,10 +119,11 @@ export default function renderControl(el, ctx, def) {
     return label
   }
 
-  const field =
-    el.type === "radio" || el.type === "checkbox"
-      ? create(".check-cont")
-      : document.createDocumentFragment()
+  const isCheckField = el.type === "radio" || el.type === "checkbox"
+
+  const field = isCheckField
+    ? create(".check-cont")
+    : document.createDocumentFragment()
 
   if (labelText) {
     el.removeAttribute("label")
@@ -140,7 +141,8 @@ export default function renderControl(el, ctx, def) {
     field.append(label)
   }
 
-  field.append(el)
+  if (isCheckField) field.prepend(el)
+  else field.append(el)
 
   return field
 }
