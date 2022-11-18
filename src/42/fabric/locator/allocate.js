@@ -18,6 +18,7 @@ allocate.evaluate = (obj, tokens, val, options) => {
 
   for (let i = 0, l = tokens.length; i < l; i++) {
     const key = tokens[i]
+    if (key === "__proto__") continue
     if (tokens.length - 1 === i) {
       current[key] = val
     } else {

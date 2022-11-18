@@ -20,6 +20,7 @@ locate.evaluate = (obj, tokens, options) => {
     }
 
     if (typeof current !== "object" || key in current === false) return
+    if (key === "constructor" || key === "__proto__") return
 
     current =
       options?.autobind && typeof current[key] === "function"
