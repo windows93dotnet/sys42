@@ -1,7 +1,7 @@
 import test from "../../../../42/test.js"
 import ui from "../../../../42/ui.js"
 import cssPrefix from "../../../../42/fabric/dom/cssPrefix.js"
-import { toKebabCase } from "../../../../42/fabric/type/string/letters.js"
+import toKebabCase from "../../../../42/fabric/type/string/case/toKebabCase.js"
 
 test.suite.timeout(1000)
 

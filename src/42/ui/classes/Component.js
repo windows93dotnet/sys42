@@ -3,7 +3,7 @@
 // @read https://github.com/webcomponents/gold-standard/wiki
 
 import system from "../../system.js"
-import { toKebabCase } from "../../fabric/type/string/letters.js"
+import toKebabCase from "../../fabric/type/string/case/toKebabCase.js"
 import defer from "../../fabric/type/promise/defer.js"
 import renderAttributes from "../renderers/renderAttributes.js"
 import renderProps from "../renderers/renderProps.js"
