@@ -348,6 +348,19 @@ export default class Assert {
     }
   }
 
+  any(actual, expected, message) {
+    this.#addCall()
+    for (const item of expected) {
+      if (equal(actual, item, { placeholder: PLACEHOLDER })) return
+    }
+
+    const clonedActual = clone(actual)
+    throw new AssertionError(message, "None of the expected values are equal", {
+      actual: clonedActual,
+      expected,
+    })
+  }
+
   // "equal" without check for prototypes
   // simplify deep equal test for objects created using Object.create(null)
   alike(actual, expected, message) {
