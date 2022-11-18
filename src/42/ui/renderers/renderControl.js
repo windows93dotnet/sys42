@@ -10,7 +10,7 @@ import findScope from "../findScope.js"
 import resolveScope from "../resolveScope.js"
 import getBasename from "../../core/path/core/getBasename.js"
 import debounce from "../../fabric/type/function/debounce.js"
-import { toTitleCase } from "../../fabric/type/string/letters.js"
+import toTitleCase from "../../fabric/type/string/case/toTitleCase.js"
 import hash from "../../fabric/type/any/hash.js"
 
 const TEXTBOX_TYPES = new Set(["text", "email", "search"])

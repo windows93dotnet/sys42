@@ -2,7 +2,7 @@
 import inTop from "../../core/env/realm/inTop.js"
 import Component from "../classes/Component.js"
 import uid from "../../core/uid.js"
-import { toTitleCase } from "../../fabric/type/string/letters.js"
+import toTitleCase from "../../fabric/type/string/case/toTitleCase.js"
 
 function seq(el, dir) {
   const items = [

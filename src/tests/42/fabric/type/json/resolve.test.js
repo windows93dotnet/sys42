@@ -643,7 +643,7 @@ test(
 ======== */
 
 test("fetch", "json", async (t) => {
-  t.timeout(500)
+  t.timeout(1000)
   const res = await resolve({
     $ref: new URL("../../../../fixtures/json/integer.json", import.meta.url),
   })
@@ -651,7 +651,7 @@ test("fetch", "json", async (t) => {
 })
 
 test.skip("fetch", "json", "not found", async (t) => {
-  t.timeout(500)
+  t.timeout(1000)
   await t.throws(
     () =>
       resolve({
@@ -662,7 +662,7 @@ test.skip("fetch", "json", "not found", async (t) => {
 })
 
 test("fetch", "javascript", "strict", async (t) => {
-  t.timeout(500)
+  t.timeout(1000)
   await t.throws(
     () =>
       resolve({
@@ -673,7 +673,7 @@ test("fetch", "javascript", "strict", async (t) => {
 })
 
 test("fetch", "javascript", async (t) => {
-  t.timeout(500)
+  t.timeout(1000)
   const res = await resolve(
     { $ref: new URL("../../../../fixtures/json/integer.js", import.meta.url) },
     { strict: false }
@@ -682,7 +682,7 @@ test("fetch", "javascript", async (t) => {
 })
 
 test("fetch", "circular dependencies", async (t) => {
-  t.timeout(500)
+  t.timeout(1000)
   const res = await resolve({
     $ref: new URL("../../../../fixtures/json/tree", import.meta.url),
   })

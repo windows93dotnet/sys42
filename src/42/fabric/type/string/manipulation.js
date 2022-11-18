@@ -3,20 +3,18 @@ import pluralize from "./pluralize.js"
 import { countLetters, countWords, countBytes } from "./count.js"
 import { trim, trimStart, trimEnd } from "./trim.js"
 
-import {
-  toCamelCase,
-  toCapitalCase,
-  toConstantCase,
-  toHeaderCase,
-  toKebabCase,
-  toLowerCase,
-  toNoCase,
-  toPascalCase,
-  toSentenceCase,
-  toSnakeCase,
-  toTitleCase,
-  toUpperCase,
-} from "./letters.js"
+import toCamelCase from "./case/toCamelCase.js"
+import toCapitalCase from "./case/toCapitalCase.js"
+import toConstantCase from "./case/toConstantCase.js"
+import toHeaderCase from "./case/toHeaderCase.js"
+import toKebabCase from "./case/toKebabCase.js"
+import toLowerCase from "./case/toLowerCase.js"
+import toNoCase from "./case/toNoCase.js"
+import toPascalCase from "./case/toPascalCase.js"
+import toSentenceCase from "./case/toSentenceCase.js"
+import toSnakeCase from "./case/toSnakeCase.js"
+import toTitleCase from "./case/toTitleCase.js"
+import toUpperCase from "./case/toUpperCase.js"
 
 export default {
   camelCase: toCamelCase,
