@@ -5,6 +5,8 @@ import system from "../../../42/system.js"
 import "../../../42/ui/components/dialog.js"
 import "../../../42/ui/popup.js"
 
+const manual = 0
+
 const button = (label) => ({
   tag: `button#btnIncr${label}`,
   content: "{{cnt}}",
@@ -19,6 +21,7 @@ const buttons = (label) => ({
       tag: `button#btnDialog${label}`,
       content: "dialog",
       dialog: {
+        y: window.innerHeight / 2 - 70,
         x:
           label === "Top"
             ? window.innerWidth / 2 - 200
@@ -35,10 +38,30 @@ const buttons = (label) => ({
         content: [`hello from ${label}`, "\n\n", button(`Popup${label}`)],
       },
     },
+    {
+      tag: `button#btnMenu${label}`,
+      content: "menu",
+      menu: [
+        { label: "{{cnt}}", click: "{{cnt++}}" },
+        {
+          label: "Dialog",
+          class: `menuitemDialog`,
+          dialog: {
+            y: window.innerHeight / 2 + 20,
+            x:
+              label === "Top"
+                ? window.innerWidth / 2 - 200
+                : window.innerWidth / 2 + 50,
+            label: `Menu ${label}`,
+            content: button(`MenuDialog${label}`),
+          },
+        },
+      ],
+    },
   ],
 })
 
-test.ui("popup behavior", async (t, { decay, dest, pickValues }) => {
+test.ui.flaky("popup behavior", async (t, { decay, dest, pickValues }) => {
   const app = decay(
     await ui(
       dest({ connect: true }),
@@ -59,7 +82,11 @@ test.ui("popup behavior", async (t, { decay, dest, pickValues }) => {
                 tag: ".box-fit.box-center.desktop",
                 content: buttons("Iframe"),
               },
-              script: `app.el.querySelector("#btnDialogIframe").click()`,
+              script: `
+                import puppet from "../../../42/core/dev/puppet.js"
+                await puppet("#btnMenuIframe").click()
+                await puppet("#btnDialogIframe").click()
+              `,
             },
           ],
         },
@@ -71,14 +98,22 @@ test.ui("popup behavior", async (t, { decay, dest, pickValues }) => {
     )
   )
 
-  app.el.querySelector("#btnDialogTop").click()
+  t.puppet("#btnDialogTop").click().run()
+  t.puppet("#btnMenuTop").click().run()
 
   await new Promise((resolve) => {
     let cnt = 0
-    t.utils.on({ uidialogopen: () => ++cnt === 2 && resolve() })
+    t.utils.on({
+      uipopupopen(e, target) {
+        t.puppet(".menuitemDialog", target).click().run()
+      },
+      uidialogopen: () => ++cnt === 4 && resolve(),
+    })
   })
 
   t.timeout("reset")
+
+  if (manual) return t.pass()
 
   const iframe = app.el.querySelector("ui-sandbox iframe")
   const sandbox = iframe.contentDocument
@@ -86,8 +121,10 @@ test.ui("popup behavior", async (t, { decay, dest, pickValues }) => {
   const incrBtns = {
     top: document.querySelector("#btnIncrTop"),
     dialogTop: document.querySelector("#btnIncrDialogTop"),
+    menuDialogTop: document.querySelector("#btnIncrMenuDialogTop"),
     iframe: sandbox.querySelector("#btnIncrIframe"),
     dialogIframe: document.querySelector("#btnIncrDialogIframe"),
+    menuDialogIframe: document.querySelector("#btnIncrMenuDialogIframe"),
   }
 
   const popupBtns = {
@@ -118,10 +155,10 @@ test.ui("popup behavior", async (t, { decay, dest, pickValues }) => {
     let incr = document.querySelector(sel)
     t.isElement(incr)
 
-    let closePromise
+    let popupClosePromise
 
     if (options?.close) {
-      closePromise = t.utils.when("uipopupclose")
+      popupClosePromise = t.utils.when("uipopupclose")
       await puppet(options.close).click()
     }
 
@@ -130,8 +167,10 @@ test.ui("popup behavior", async (t, { decay, dest, pickValues }) => {
       t.eq(pickValues(incrBtns), {
         top: String(cnt),
         dialogTop: String(cnt),
+        menuDialogTop: String(cnt),
         iframe: String(cnt),
         dialogIframe: String(cnt),
+        menuDialogIframe: String(cnt),
       })
 
       incr.click()
@@ -142,11 +181,13 @@ test.ui("popup behavior", async (t, { decay, dest, pickValues }) => {
       t.eq(pickValues(incrBtns), {
         top: String(cnt),
         dialogTop: String(cnt),
+        menuDialogTop: String(cnt),
         iframe: String(cnt),
         dialogIframe: String(cnt),
+        menuDialogIframe: String(cnt),
       })
 
-      closePromise = t.utils.when("uipopupclose")
+      popupClosePromise = t.utils.when("uipopupclose")
 
       // popup is still open
       incr = document.querySelector(sel)
@@ -164,17 +205,20 @@ test.ui("popup behavior", async (t, { decay, dest, pickValues }) => {
       t.eq(pickValues(incrBtns), {
         top: String(cnt),
         dialogTop: String(cnt),
+        menuDialogTop: String(cnt),
         iframe: String(cnt),
         dialogIframe: String(cnt),
+        menuDialogIframe: String(cnt),
       })
     }
 
-    await closePromise
+    await popupClosePromise
+    await t.utils.idle() // TODO: verify why idle is needed
 
     // popup is closed
     incr = document.querySelector(sel)
 
-    t.isNull(incr)
+    t.isNull(incr, `${sel} is still present`)
     t.is(
       btn.getAttribute("aria-expanded"),
       "false",
@@ -197,4 +241,26 @@ test.ui("popup behavior", async (t, { decay, dest, pickValues }) => {
   await checkPopupBtn(popupBtns.top, "Top", { incr: incrBtns.iframe })
   await checkPopupBtn(popupBtns.iframe, "Iframe", { incr: incrBtns.top })
   await checkPopupBtn(popupBtns.iframe, "Iframe", { incr: incrBtns.iframe })
+
+  await t.utils.idle()
+
+  async function incr(btn) {
+    await t.puppet(btn).click()
+    await system.once("ipc.plugin:end-of-update")
+    cnt++
+
+    t.eq(pickValues(incrBtns), {
+      top: String(cnt),
+      dialogTop: String(cnt),
+      menuDialogTop: String(cnt),
+      iframe: String(cnt),
+      dialogIframe: String(cnt),
+      menuDialogIframe: String(cnt),
+    })
+  }
+
+  await incr(incrBtns.dialogTop)
+  await incr(incrBtns.dialogIframe)
+  await incr(incrBtns.menuDialogTop)
+  await incr(incrBtns.menuDialogIframe)
 })

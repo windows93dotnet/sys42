@@ -123,11 +123,9 @@ const popup = rpc(
     el.style.position = "fixed"
     el.style.transform = "translate(-200vw, -200vh)"
     el.style.zIndex = maxZIndex("ui-dialog, ui-menu") + 1
-    await el.ready
 
     document.documentElement.append(el)
 
-    dispatch(el, "uipopupopen")
     if (el.ready) await el.ready
     else {
       await ctx.reactive.done()
@@ -135,7 +133,7 @@ const popup = rpc(
     }
 
     focus.autofocus(el)
-    dispatch(el, "uipopupready")
+    dispatch(el, "uipopupopen")
 
     const deferred = defer()
 
@@ -146,13 +144,13 @@ const popup = rpc(
       if (event.defaultPrevented) return
       unsee(el)
       if (el.contains(document.activeElement)) document.activeElement.blur()
+      queueTask(() => deferred.resolve({ opener, focusBack, ...options }))
       requestIdleCallback(async () => {
         await ctx.reactive.pendingUpdate
         ctx.cancel()
         dispatch(el, "uipopupclose")
         el.remove()
       })
-      queueTask(() => deferred.resolve({ opener, focusBack, ...options }))
     }
 
     if (map.length === 0) listenGlobalEvents()
