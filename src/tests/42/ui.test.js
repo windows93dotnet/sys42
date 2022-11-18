@@ -119,17 +119,26 @@ test("reactive data", "attributes", async (t) => {
 
   await app
 
-  t.is(app.el.innerHTML, '<em class="red" style="color: red;">red</em>')
+  t.any(app.el.innerHTML, [
+    '<em class="red" style="color: red;">red</em>',
+    '<em style="color: red;" class="red">red</em>',
+  ])
 
   app.state.foo = "tan"
   await app
 
-  t.is(app.el.innerHTML, '<em class="tan" style="color: tan;">tan</em>')
+  t.any(app.el.innerHTML, [
+    '<em class="tan" style="color: tan;">tan</em>',
+    '<em style="color: tan;" class="tan">tan</em>',
+  ])
 
   delete app.state.foo
   await app
 
-  t.is(app.el.innerHTML, '<em class="" style=""></em>')
+  t.any(app.el.innerHTML, [
+    '<em class="" style=""></em>',
+    '<em style="" class=""></em>',
+  ])
 })
 
 test("reactive async state", async (t) => {
