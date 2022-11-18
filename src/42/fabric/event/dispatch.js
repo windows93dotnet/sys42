@@ -19,6 +19,8 @@ export function dispatch(el, name, options) {
 
       el.dispatchEvent(new ErrorEvent("error", eventInit))
     })
+
+    return
   }
 
   const event = new CustomEvent(name, { bubbles: true, ...options })
