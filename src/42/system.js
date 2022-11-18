@@ -23,7 +23,7 @@ if (globalThis.sys42 && globalThis.sys42 instanceof System) {
   }
 
   if (globalThis.sys42) Object.assign(system, globalThis.sys42)
-  else globalThis.sys42 = system
+  globalThis.sys42 = system
 }
 
 export default system

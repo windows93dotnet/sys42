@@ -47,7 +47,7 @@ input::-webkit-calendar-picker-indicator {
   color: inherit;
   font-size: 0;
   opacity: var(--addon-back-opacity);
-  visibility: visible;
+  /* visibility: visible; */
   appearance: none;
   box-sizing: border-box;
   position: absolute;

@@ -50,6 +50,7 @@ States
   /* field
   ======== */
 
+  --fld-fg: var(--fg);
   --fld-bdw: 1px;
   --fld-bds: solid;
   --fld-bdc: var(--ctrl-bdc);
@@ -195,9 +196,8 @@ States
   --check🚫-bsh: var(--check-bsh);
 
   --check-o: 1px solid var(--check-oc, var(--check-fg));
-  --check-oo: 3px;
+  --check-oo: 2px;
   --check-size: calc(7 * 2px);
-  --check__bullet-ma: 3px;
 
   /* others
   ========= */
@@ -570,6 +570,7 @@ textarea
 :is(:disabled,[aria-disabled="true"]) label,
 :is(:disabled,[aria-disabled="true"]) legend,
 :is(:disabled,[aria-disabled="true"]) + label {
+  opacity: var(--ctrl🚫-alpha);
   color: var(--ctrl🚫-fg);
   text-shadow: var(--ctrl🚫-tsh, none);
 }
@@ -1046,6 +1047,10 @@ input[type="radio"]:not([role="menuitemradio"])) {
   --check-br: var(--check🎯-br);
   --check-tsh: var(--check🎯-tsh);
   --check-bsh: var(--check🎯-bsh);
+  /* outline: var(--check-o);
+  outline-offset: var(--check-oo); */
+
+  outline: 1px solid red;
   outline: var(--check-o);
   outline-offset: var(--check-oo);
 }
@@ -1081,21 +1086,13 @@ input[type="radio"]
   vertical-align: middle;
 }
 
-/* :is(ui-menu, ui-menubar) > li > label > input[type="radio" i],
-:is(ui-menu, ui-menubar) > li > label > input[type="checkbox" i] {
-  box-shadow: 0 0 0 1px red !important;
-} */
-
 :where(input[type="radio"]:checked)::before,
 :where(input[type="radio"]:checked)::after,
 :where(input[type="checkbox"]:is(:checked,:indeterminate))::before,
 :where(input[type="checkbox"]:is(:checked,:indeterminate))::after {
   content: var(--ZERO_WIDTH_SPACE);
   position: absolute;
-  /* top: calc(calc(var(--check-size) * 0.5) - calc(var(--picto-size) * 0.5));
-  left: calc(calc(var(--check-size) * 0.5) - calc(var(--picto-size) * 0.5)); */
   background-color: currentColor;
-  /* background-color: red; */
   width: var(--picto-size);
   height: var(--picto-size);
   --_pos: center no-repeat;
@@ -1119,7 +1116,6 @@ input[type="radio"]
 :where(input[type="radio"]:not([role="menuitemradio"])) { border-radius: 100%; }
 
 input:where([type="radio"],[type="checkbox"]) + label {
-  padding-left: var(--unit-sm);
   user-select: none;
 }
 
@@ -1130,10 +1126,15 @@ input:where([type="radio"],[type="checkbox"]) + label {
 }
 
 .check-cont {
-  overflow: hidden;
   max-width: 100%;
   display: flex;
   align-items: center;
+  --gap: var(--unit-sm);
+  column-gap: var(--gap);
+}
+
+.check-cont > label {
+  margin: 0;
 }
 
 /* color

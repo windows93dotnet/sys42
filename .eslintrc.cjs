@@ -98,7 +98,7 @@ module.exports = {
     "no-eq-null": 0,
     "eqeqeq": [2, "always", { null: "ignore" }],
 
-    "unicorn/prefer-export-from": [2, { ignoreUsedVariables: false }],
+    "unicorn/prefer-export-from": [2, { ignoreUsedVariables: true }],
 
     // false positives with BroadcastChannel
     "unicorn/require-post-message-target-origin": 0,
