@@ -31,7 +31,10 @@ allocate.run = (obj, segments, val, options) => {
     if (segments.length - 1 === i) {
       current[key] = val
     } else {
-      current[key] ??= options?.hashmap ? Object.create(null) : {}
+      if (key in current && !Object.hasOwn(current, key)) {
+        // never change prototype chain
+        current[key] = options?.hashmap ? Object.create(null) : {}
+      } else current[key] ??= options?.hashmap ? Object.create(null) : {}
       current = current[key]
     }
   }
