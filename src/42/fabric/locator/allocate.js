@@ -1,12 +1,12 @@
 /* eslint-disable max-params */
 
-import parseDotNotation from "./parseDotNotation.js"
+import separate from "../type/string/separate.js"
 
 export default function allocate(obj, loc, val, sep = ".", options) {
-  return allocate.evaluate(obj, parseDotNotation(loc, sep), val, options)
+  return allocate.evaluate(obj, separate(loc, sep), val, options)
 }
 
-allocate.parse = parseDotNotation
+allocate.parse = separate
 
 allocate.evaluate = (obj, tokens, val, options) => {
   let current = obj

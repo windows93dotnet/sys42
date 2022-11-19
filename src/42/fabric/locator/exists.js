@@ -1,10 +1,10 @@
-import parseDotNotation from "./parseDotNotation.js"
+import separate from "../type/string/separate.js"
 
 export default function exists(obj, loc, sep) {
-  return exists.evaluate(obj, parseDotNotation(loc, sep))
+  return exists.evaluate(obj, separate(loc, sep))
 }
 
-exists.parse = parseDotNotation
+exists.parse = separate
 
 exists.evaluate = (obj, tokens) => {
   let current = obj

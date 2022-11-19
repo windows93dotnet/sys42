@@ -1,10 +1,10 @@
-import parseDotNotation from "./parseDotNotation.js"
+import separate from "../type/string/separate.js"
 
 export default function deallocate(obj, loc, sep = ".") {
-  return deallocate.evaluate(obj, parseDotNotation(loc, sep))
+  return deallocate.evaluate(obj, separate(loc, sep))
 }
 
-deallocate.parse = parseDotNotation
+deallocate.parse = separate
 
 deallocate.evaluate = (obj, tokens) => {
   let current = obj
