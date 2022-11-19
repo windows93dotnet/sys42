@@ -25,7 +25,7 @@ function compileRun(val, ctx) {
   const fn = expr.compile(tokens, {
     assignment: true,
     async: true,
-    sep: "/",
+    delimiter: "/",
     actions,
     locals,
   })

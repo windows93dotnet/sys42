@@ -7,23 +7,23 @@ import merge from "../type/object/merge.js"
 export default class Locator {
   constructor(value = {}, options) {
     this.value = value
-    this.sep = options?.sep ?? "."
+    this.delimiter = options?.delimiter ?? "."
   }
 
   has(path) {
-    return exists(this.value, path, this.sep)
+    return exists(this.value, path, this.delimiter)
   }
 
   get(path) {
-    return locate(this.value, path, this.sep)
+    return locate(this.value, path, this.delimiter)
   }
 
   set(path, val) {
-    allocate(this.value, path, val, this.sep)
+    allocate(this.value, path, val, this.delimiter)
   }
 
   delete(path) {
-    deallocate(this.value, path, this.sep)
+    deallocate(this.value, path, this.delimiter)
   }
 
   assign(path, val) {

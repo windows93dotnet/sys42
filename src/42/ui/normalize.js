@@ -71,7 +71,7 @@ const _INSTANCES = Symbol.for("Trait.INSTANCES")
 const _isComponent = Symbol.for("Component.isComponent")
 const _isTrait = Symbol.for("Trait.isTrait")
 
-const sep = "/"
+const delimiter = "/"
 
 const makeActionFn =
   (fn, thisArg, el) =>
@@ -209,7 +209,7 @@ export function normalizeTokens(tokens, ctx, options) {
         })
       }
 
-      allocate(actions, loc, fn, sep)
+      allocate(actions, loc, fn, delimiter)
 
       token.value = loc
     }
@@ -254,7 +254,7 @@ export function normalizeString(item, ctx) {
 
     item = template.compile(parsed, {
       async: true,
-      sep: "/",
+      delimiter: "/",
       actions,
       locals,
     })
@@ -390,7 +390,7 @@ export function normalizeWatch(scope, fn, ctx) {
     fn = expr.compile(tokens, {
       assignment: true,
       async: true,
-      sep: "/",
+      delimiter: "/",
       actions,
     })
   }
@@ -727,7 +727,7 @@ export function normalizeCtx(ctx = {}) {
   ctx.refs ??= Object.create(null)
   ctx.scopeChain ??= []
   ctx.pluginHandlers ??= []
-  ctx.actions ??= new Locator(Object.create(null), { sep: "/" })
+  ctx.actions ??= new Locator(Object.create(null), { delimiter: "/" })
 
   ctx.preload ??= new Undones()
   ctx.components ??= new Undones()

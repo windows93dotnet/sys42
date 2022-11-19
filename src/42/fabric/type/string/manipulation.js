@@ -32,7 +32,7 @@ export default {
 
   nospace: (str) => str.replace(/\s+/g, "_"),
   slice: (str, ...rest) => str.slice(...rest),
-  split: (str, sep) => str.split(sep),
+  split: (str, delimiter) => str.split(delimiter),
   repeat: (str, num) => str.repeat(num),
   replace: (str, ...rest) => str.replace(...rest),
   replaceAll: (str, ...rest) => str.replaceAll(...rest),
@@ -51,7 +51,4 @@ export default {
   trim,
   trimStart,
   trimEnd,
-
-  // TODO:
-  // normalize
 }

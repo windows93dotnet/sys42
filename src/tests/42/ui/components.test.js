@@ -1794,9 +1794,9 @@ test("computed", async (t) => {
         },
       }
 
-      split(formated, sep) {
+      split(formated, delimiter) {
         cnt++
-        return formated.split(sep)
+        return formated.split(delimiter)
       }
     }
   )
@@ -1875,9 +1875,9 @@ test("computed", "from prop with state:true", async (t) => {
         },
       }
 
-      split(formated, sep) {
+      split(formated, delimiter) {
         cnt++
-        return formated.split(sep)
+        return formated.split(delimiter)
       }
     }
   )
@@ -1949,9 +1949,9 @@ test("computed", "computed prop", async (t) => {
         },
       }
 
-      split(formated, sep) {
+      split(formated, delimiter) {
         cnt++
-        return formated.split(sep)
+        return formated.split(delimiter)
       }
     }
   )

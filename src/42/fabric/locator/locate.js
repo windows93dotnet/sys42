@@ -1,15 +1,15 @@
 import separate from "../type/string/separate.js"
 
-export default function locate(obj, loc, sep = ".") {
-  return locate.evaluate(obj, separate(loc, sep))
+export default function locate(obj, loc, delimiter = ".") {
+  return locate.evaluate(obj, separate(loc, delimiter))
 }
 
 locate.parse = separate
 
-locate.evaluate = (obj, tokens, options) => {
+locate.evaluate = (obj, segments, options) => {
   let current = obj
 
-  for (const key of tokens) {
+  for (const key of segments) {
     if (
       key.startsWith("-") &&
       key !== "-" &&
