@@ -1,4 +1,4 @@
-import parseDotNotation from "../../locator/parseDotNotation.js"
+import separate from "../string/separate.js"
 
 export default function getBoundSchema(schema, path) {
   let found = false
@@ -9,7 +9,7 @@ export default function getBoundSchema(schema, path) {
     found = true
   } else {
     let requiredList = []
-    for (const key of parseDotNotation(path)) {
+    for (const key of separate(path)) {
       if (key in schema) {
         if (requiredList.includes(key)) required = true
         if (key === "properties" && "required" in schema) {

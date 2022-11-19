@@ -1,10 +1,10 @@
-import parseDotNotation from "./parseDotNotation.js"
+import separate from "../type/string/separate.js"
 
 export default function locate(obj, loc, sep = ".") {
-  return locate.evaluate(obj, parseDotNotation(loc, sep))
+  return locate.evaluate(obj, separate(loc, sep))
 }
 
-locate.parse = parseDotNotation
+locate.parse = separate
 
 locate.evaluate = (obj, tokens, options) => {
   let current = obj
