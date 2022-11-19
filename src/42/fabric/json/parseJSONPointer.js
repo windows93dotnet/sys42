@@ -13,7 +13,7 @@ export const encodeJSONPointerURI = (key) =>
   encodeJSONPointer(encodeURIComponent(key).replaceAll("%24", "$"))
 
 // TODO: write real parser
-export default function splitJSONPointer(path) {
+export default function parseJSONPointer(path) {
   if (Array.isArray(path)) return path
 
   assertPath(path)

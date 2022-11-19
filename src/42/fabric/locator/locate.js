@@ -1,12 +1,12 @@
 import separate from "../type/string/separate.js"
 
 export default function locate(obj, loc, delimiter = ".") {
-  return locate.evaluate(obj, separate(loc, delimiter))
+  return locate.run(obj, separate(loc, delimiter))
 }
 
-locate.parse = separate
+locate.separate = separate
 
-locate.evaluate = (obj, segments, options) => {
+locate.run = (obj, segments, options) => {
   let current = obj
 
   for (const key of segments) {

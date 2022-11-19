@@ -1,12 +1,12 @@
 import separate from "../type/string/separate.js"
 
 export default function exists(obj, loc, delimiter) {
-  return exists.evaluate(obj, separate(loc, delimiter))
+  return exists.run(obj, separate(loc, delimiter))
 }
 
-exists.parse = separate
+exists.separate = separate
 
-exists.evaluate = (obj, segments) => {
+exists.run = (obj, segments) => {
   let current = obj
 
   for (const key of segments) {

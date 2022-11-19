@@ -265,11 +265,11 @@ export default async function filters(name) {
     }
   }
 
-  let segments = locate.parse(name)
-  if (segments.length === 1) segments = locate.parse(name, "/")
+  let segments = locate.separate(name)
+  if (segments.length === 1) segments = locate.separate(name, "/")
 
   if (segments.length > 1) {
-    const item = locate.evaluate(types, segments)
+    const item = locate.run(types, segments)
     if (item) return getFilter(item, segments[0], segments[1])
   }
 }

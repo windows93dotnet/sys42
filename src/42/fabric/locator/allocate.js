@@ -2,12 +2,12 @@ import separate from "../type/string/separate.js"
 
 export default function allocate(obj, loc, val, options) {
   if (typeof options === "string") options = { delimiter: options }
-  return allocate.evaluate(obj, separate(loc, options?.delimiter), val, options)
+  return allocate.run(obj, separate(loc, options?.delimiter), val, options)
 }
 
-allocate.parse = separate
+allocate.separate = separate
 
-allocate.evaluate = (obj, segments, val, options) => {
+allocate.run = (obj, segments, val, options) => {
   let current = obj
 
   if (segments.length === 0) {
