@@ -89,7 +89,7 @@ types.number = {
 
 // TODO: find a way to register globstar renderer when using filters.array or filters.object
 types.array = {
-  join: (arr, sep) => arr.join(sep),
+  join: (arr, delimiter) => arr.join(delimiter),
   at: (arr, index) => arr.at(index),
   includes: (arr, search) => arr.includes(search),
   pop: (arr) => arr.pop(),
@@ -265,12 +265,12 @@ export default async function filters(name) {
     }
   }
 
-  let tokens = locate.parse(name)
-  if (tokens.length === 1) tokens = locate.parse(name, "/")
+  let segments = locate.parse(name)
+  if (segments.length === 1) segments = locate.parse(name, "/")
 
-  if (tokens.length > 1) {
-    const item = locate.evaluate(types, tokens)
-    if (item) return getFilter(item, tokens[0], tokens[1])
+  if (segments.length > 1) {
+    const item = locate.evaluate(types, segments)
+    if (item) return getFilter(item, segments[0], segments[1])
   }
 }
 

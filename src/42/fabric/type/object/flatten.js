@@ -1,10 +1,10 @@
-export default function flatten(obj, sep = ".", prefix = "") {
+export default function flatten(obj, delimiter = ".", prefix = "") {
   const out = {}
 
   for (const [key, val] of Object.entries(obj)) {
-    const pre = prefix.length > 0 ? prefix + sep : ""
+    const pre = prefix.length > 0 ? prefix + delimiter : ""
     if (val && typeof val === "object") {
-      const res = flatten(val, sep, pre + key)
+      const res = flatten(val, delimiter, pre + key)
       if (Object.keys(res).length > 0) {
         Object.assign(out, res)
         continue
@@ -17,13 +17,13 @@ export default function flatten(obj, sep = ".", prefix = "") {
   return out
 }
 
-flatten.entries = (obj, sep = ".", prefix = "") => {
+flatten.entries = (obj, delimiter = ".", prefix = "") => {
   const out = []
 
   for (const [key, val] of Object.entries(obj)) {
-    const pre = prefix.length > 0 ? prefix + sep : ""
+    const pre = prefix.length > 0 ? prefix + delimiter : ""
     if (val && typeof val === "object") {
-      const res = flatten.entries(val, sep, pre + key)
+      const res = flatten.entries(val, delimiter, pre + key)
       if (res.length > 0) {
         out.push(...res)
         continue
@@ -36,13 +36,13 @@ flatten.entries = (obj, sep = ".", prefix = "") => {
   return out
 }
 
-flatten.keys = (obj, sep = ".", prefix = "") => {
+flatten.keys = (obj, delimiter = ".", prefix = "") => {
   const out = []
 
   for (const [key, val] of Object.entries(obj)) {
-    const pre = prefix.length > 0 ? prefix + sep : ""
+    const pre = prefix.length > 0 ? prefix + delimiter : ""
     if (val && typeof val === "object") {
-      const res = flatten.keys(val, sep, pre + key)
+      const res = flatten.keys(val, delimiter, pre + key)
       if (res.length > 0) {
         out.push(...res)
         continue

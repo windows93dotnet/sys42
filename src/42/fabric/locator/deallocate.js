@@ -1,24 +1,24 @@
 import separate from "../type/string/separate.js"
 
-export default function deallocate(obj, loc, sep = ".") {
-  return deallocate.evaluate(obj, separate(loc, sep))
+export default function deallocate(obj, loc, delimiter = ".") {
+  return deallocate.evaluate(obj, separate(loc, delimiter))
 }
 
 deallocate.parse = separate
 
-deallocate.evaluate = (obj, tokens) => {
+deallocate.evaluate = (obj, segments) => {
   let current = obj
 
-  if (tokens.length === 0) {
+  if (segments.length === 0) {
     for (const key in obj) if (Object.hasOwn(obj, key)) delete obj[key]
     return obj
   }
 
-  for (let i = 0, l = tokens.length; i < l; i++) {
-    const key = tokens[i]
+  for (let i = 0, l = segments.length; i < l; i++) {
+    const key = segments[i]
     if (typeof current !== "object" || key in current === false) return obj
 
-    if (tokens.length - 1 === i) {
+    if (segments.length - 1 === i) {
       delete current[key]
       return obj
     }

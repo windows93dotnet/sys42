@@ -4,9 +4,9 @@ import synchronize from "../../../fabric/type/function/synchronize.js"
 
 const PIPE = Symbol("pipe")
 
-function resolveAction(locals, locate, value, sep) {
+function resolveAction(locals, locate, value, delimiter) {
   for (const obj of locals) {
-    const res = locate(obj, value, sep)
+    const res = locate(obj, value, delimiter)
     if (res !== undefined) return res
   }
 }
@@ -21,7 +21,7 @@ function ensureAction(action, value) {
 
 function compileToken(i, list, tokens, options) {
   const { type, value, negated } = tokens[i]
-  const { locate, actions, sep } = options
+  const { locate, actions, delimiter } = options
 
   if (type === "function") {
     let argTokens = []
@@ -45,7 +45,7 @@ function compileToken(i, list, tokens, options) {
     let action
 
     if (actions) {
-      action = locate(actions, value, sep)
+      action = locate(actions, value, delimiter)
       if (!options.async && typeof action !== "function") {
         throw new TypeError(`Template action is not a function: "${value}"`)
       }
@@ -54,7 +54,7 @@ function compileToken(i, list, tokens, options) {
     list.push(
       options.async
         ? async (locals, args = [], res) => {
-            action ??= resolveAction(locals, locate, value, sep, action)
+            action ??= resolveAction(locals, locate, value, delimiter, action)
             args.unshift(action)
             for (const arg of argTokens) args.push(arg(locals, res))
             const [asyncFn, ...rest] = await Promise.all(args)
@@ -62,7 +62,7 @@ function compileToken(i, list, tokens, options) {
             return asyncFn(...rest)
           }
         : (locals, args = [], res) => {
-            action ??= resolveAction(locals, locate, value, sep, action)
+            action ??= resolveAction(locals, locate, value, delimiter, action)
             ensureAction(action, value)
             for (const arg of argTokens) args.push(arg(locals, res))
             return action(...args)
@@ -82,7 +82,7 @@ function compileToken(i, list, tokens, options) {
       negated
         ? (locals) => {
             for (const obj of locals) {
-              const res = locate(obj, value, sep)
+              const res = locate(obj, value, delimiter)
               if (res !== undefined) return !res
             }
 
@@ -90,7 +90,7 @@ function compileToken(i, list, tokens, options) {
           }
         : (locals) => {
             for (const obj of locals) {
-              const res = locate(obj, value, sep)
+              const res = locate(obj, value, delimiter)
               if (res !== undefined) return res
             }
           }
@@ -156,12 +156,12 @@ export function compileStatement(tokens, options = {}) {
       const fn = options.async
         ? synchronize(async (locals) => {
             const res = await assign(await left(locals), await right(locals))
-            allocate(locals[0], left.path, res, options.sep)
+            allocate(locals[0], left.path, res, options)
             return res
           })
         : (locals) => {
             const res = assign(left(locals), right(locals))
-            allocate(locals[0], left.path, res, options.sep)
+            allocate(locals[0], left.path, res, options)
             return res
           }
 

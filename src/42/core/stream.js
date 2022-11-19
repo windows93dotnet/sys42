@@ -249,14 +249,14 @@ export function tsFilter(cb) {
   )
 }
 
-export function tsSplit(sep = "\n", options) {
+export function tsSplit(delimiter = "\n", options) {
   let buffer = ""
-  const end = options?.exclude ? "" : sep
+  const end = options?.exclude ? "" : delimiter
   return new TransformStream(
     {
       transform(chunk, controller) {
         buffer += chunk
-        const parts = buffer.split(sep)
+        const parts = buffer.split(delimiter)
         for (const part of parts.slice(0, -1)) controller.enqueue(part + end)
         buffer = parts.at(-1)
       },
@@ -268,13 +268,13 @@ export function tsSplit(sep = "\n", options) {
   )
 }
 
-export function tsJoin(separator = "\n") {
+export function tsJoin(delimiter = "\n") {
   let buffer = ""
   let first = false
   return new TransformStream(
     {
       transform(chunk, controller) {
-        if (first) controller.enqueue(buffer + separator)
+        if (first) controller.enqueue(buffer + delimiter)
         else first = true
         buffer = chunk
       },

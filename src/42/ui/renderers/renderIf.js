@@ -26,7 +26,7 @@ export default function renderIf(def, ctx) {
   const check = expr.compile(parsed, {
     boolean: true,
     async: true,
-    sep: "/",
+    delimiter: "/",
     actions,
   })
 

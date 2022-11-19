@@ -13,7 +13,7 @@ import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 import isSerializable from "../../fabric/type/any/is/isSerializable.js"
 import register from "../register.js"
 
-const sep = "/"
+const delimiter = "/"
 
 export default class Reactive extends Emitter {
   #update = {}
@@ -56,7 +56,7 @@ export default class Reactive extends Emitter {
     this.state = observe(this.data, {
       signal: this.ctx.cancel.signal,
 
-      locate: (ref) => locate(this.state, ref, sep),
+      locate: (ref) => locate(this.state, ref, delimiter),
 
       change: (path, val, oldVal, deleted) => {
         this.update(path, val, oldVal, deleted)
@@ -64,7 +64,7 @@ export default class Reactive extends Emitter {
 
       has: (path, { key }) => {
         if (key.startsWith("@") || key.startsWith("#")) return true
-        if (exists(this.data, `$computed${path}`, sep)) return true
+        if (exists(this.data, `$computed${path}`, delimiter)) return true
         return false
       },
 
@@ -83,8 +83,8 @@ export default class Reactive extends Emitter {
           }
         }
 
-        if (exists(this.data, `$computed${path}`, sep)) {
-          return locate(this.state, `$computed${path}`, sep)
+        if (exists(this.data, `$computed${path}`, delimiter)) {
+          return locate(this.state, `$computed${path}`, delimiter)
         }
       },
     })
@@ -131,8 +131,8 @@ export default class Reactive extends Emitter {
   refresh(path) {
     const { bypassEqualCheck } = this
     this.bypassEqualCheck = true
-    const val = locate(this.data, path, sep)
-    if (val?.$ref) this.update(val.$ref, locate(this.data, val.$ref, sep))
+    const val = locate(this.data, path, delimiter)
+    if (val?.$ref) this.update(val.$ref, locate(this.data, val.$ref, delimiter))
     else this.update(path, val)
     this.bypassEqualCheck = bypassEqualCheck
   }
@@ -207,10 +207,10 @@ export default class Reactive extends Emitter {
     }
 
     // root renderers
-    if (sep in this.ctx.renderers) {
-      for (const render of this.ctx.renderers[sep]) {
+    if (delimiter in this.ctx.renderers) {
+      for (const render of this.ctx.renderers[delimiter]) {
         if (rendered.has(render)) continue
-        render(sep)
+        render(delimiter)
         rendered.add(render)
       }
     }
@@ -232,7 +232,7 @@ export default class Reactive extends Emitter {
     for (const loc of changes) {
       if (deleteds.has(loc)) data.remove.push(loc)
       else {
-        const res = locate(this.data, loc, sep)
+        const res = locate(this.data, loc, delimiter)
         if (isSerializable(res)) data.add.push([loc, res])
       }
     }
@@ -247,12 +247,12 @@ export default class Reactive extends Emitter {
     }
 
     for (const [loc, val] of add) {
-      allocate(this.data, loc, val, sep)
+      allocate(this.data, loc, val, delimiter)
       this.enqueue(queue, loc, val)
     }
 
     for (const loc of remove) {
-      deallocate(this.data, loc, sep)
+      deallocate(this.data, loc, delimiter)
       this.enqueue(queue, loc, undefined, undefined, true)
     }
 
@@ -266,19 +266,19 @@ export default class Reactive extends Emitter {
   }
 
   has(path) {
-    return exists(this.state, path, sep)
+    return exists(this.state, path, delimiter)
   }
 
   get(path, options) {
-    return locate(options?.silent ? this.data : this.state, path, sep)
+    return locate(options?.silent ? this.data : this.state, path, delimiter)
   }
 
   set(path, val, options) {
-    allocate(options?.silent ? this.data : this.state, path, val, sep)
+    allocate(options?.silent ? this.data : this.state, path, val, delimiter)
   }
 
   delete(path, options) {
-    deallocate(options?.silent ? this.data : this.state, path, sep)
+    deallocate(options?.silent ? this.data : this.state, path, delimiter)
   }
 
   assign(path, val, options) {

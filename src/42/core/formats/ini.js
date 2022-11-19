@@ -116,8 +116,7 @@ export function tokenize(source) {
   return tokens
 }
 
-const sep = "."
-const opt = { hashmap: true }
+const opt = { delimiter: ".", hashmap: true }
 
 export function decode(str, options) {
   const parse = options?.parse ?? JSON.parse
@@ -139,13 +138,13 @@ export function decode(str, options) {
 
         if (array) array.push(val)
         else {
-          allocate(current, key, val, sep, opt)
+          allocate(current, key, val, opt)
           key = undefined
         }
 
         continue
       } else if (key) {
-        allocate(current, key, true, sep, opt)
+        allocate(current, key, true, opt)
       }
     }
 
@@ -157,20 +156,20 @@ export function decode(str, options) {
 
     if (type === "object") {
       current = Object.create(null)
-      allocate(out, buffer, current, sep, opt)
+      allocate(out, buffer, current, opt)
       continue
     }
 
     if (type === "array") {
       array = locate(current, buffer) ?? []
       if (!Array.isArray(array)) array = [array]
-      allocate(current, buffer, array, sep, opt)
+      allocate(current, buffer, array, opt)
       continue
     }
   }
 
   if (key) {
-    allocate(current, key, true, sep, opt)
+    allocate(current, key, true, opt)
   }
 
   return out
