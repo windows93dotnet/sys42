@@ -212,8 +212,7 @@ export default async function resolve(source, options, carrier) {
       res = carrier.dynamicAnchors[hash]
     } else {
       const obj = carrier.cache[path]
-      const ref = parseJSONPointer(hash)
-      res = locate.evaluate(obj, ref)
+      res = locate.run(obj, parseJSONPointer(hash))
     }
 
     if (res === UNLINKED) {

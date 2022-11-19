@@ -1,12 +1,12 @@
 import separate from "../type/string/separate.js"
 
 export default function deallocate(obj, loc, delimiter = ".") {
-  return deallocate.evaluate(obj, separate(loc, delimiter))
+  return deallocate.run(obj, separate(loc, delimiter))
 }
 
-deallocate.parse = separate
+deallocate.separate = separate
 
-deallocate.evaluate = (obj, segments) => {
+deallocate.run = (obj, segments) => {
   let current = obj
 
   if (segments.length === 0) {

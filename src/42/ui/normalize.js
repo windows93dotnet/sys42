@@ -84,12 +84,12 @@ const makeActionFn =
     }
   }
 
-const findAction = (obj, tokens) => {
+const findAction = (obj, segments) => {
   let current = obj
   let thisArg = obj
   let lastObj
 
-  for (const key of tokens) {
+  for (const key of segments) {
     if (typeof current !== "object" || key in current === false) return
     lastObj = current
     current = current[key]
@@ -106,14 +106,14 @@ function findComponentAction(ctx, cpn, value) {
   if (loc.startsWith("./")) loc = loc.slice(2)
 
   const levels = loc.split("../")
-  const tokens = locate.parse(levels.pop())
+  const segments = locate.separate(levels.pop())
   let i = levels.length
   let cpnCnt = 0
 
   while (cpn) {
     cpnCnt++
     if (i-- < 1) {
-      const res = findAction(cpn, tokens)
+      const res = findAction(cpn, segments)
       if (res) return res
       if (levels.length > 0) break
     }
@@ -123,7 +123,7 @@ function findComponentAction(ctx, cpn, value) {
 
   if (levels.length > 0) {
     if (cpnCnt === levels.length) {
-      const fn = locate.evaluate(ctx.actions.value, tokens)
+      const fn = locate.run(ctx.actions.value, segments)
       if (fn) return [ctx, fn]
     }
 
@@ -140,9 +140,9 @@ function findComponentAction(ctx, cpn, value) {
 
 export function addEntry(obj, entry, el) {
   if (obj) {
-    const tokens = allocate.parse(entry)
-    if (exists.evaluate(obj, tokens) === false) {
-      allocate.evaluate(obj, tokens, el)
+    const segments = allocate.separate(entry)
+    if (exists.run(obj, segments) === false) {
+      allocate.run(obj, segments, el)
     }
   }
 }

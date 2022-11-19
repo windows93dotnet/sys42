@@ -33,12 +33,12 @@ class Config {
 export default function settings(name, defaults, presets) {
   let config
 
-  const segments = exists.parse(name)
-  if (exists.evaluate(configs, segments)) {
-    config = locate.evaluate(configs, segments)
+  const segments = exists.separate(name)
+  if (exists.run(configs, segments)) {
+    config = locate.run(configs, segments)
   } else {
     config = new Config(name, defaults, presets)
-    allocate.evaluate(configs, segments, config)
+    allocate.run(configs, segments, config)
   }
 
   return (...options) => {

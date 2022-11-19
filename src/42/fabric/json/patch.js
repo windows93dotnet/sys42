@@ -140,12 +140,12 @@ export function copy(obj, from, path, options) {
 }
 
 export function move(obj, from, path, options) {
-  const tokens = splitJSONPointer(from)
-  if (options?.strict && exists.evaluate(obj, tokens) === false) {
+  const segments = splitJSONPointer(from)
+  if (options?.strict && exists.run(obj, segments) === false) {
     throw new RangeError(`path ${from} does not exist`)
   }
 
-  const value = locate.evaluate(obj, tokens)
+  const value = locate.run(obj, segments)
   remove(obj, from, options)
   add(obj, path, value, options)
   return obj
@@ -175,7 +175,7 @@ export function replace(obj, path, val, options) {
 }
 
 export function test(obj, path, expected) {
-  const actual = locate.evaluate(obj, splitJSONPointer(path))
+  const actual = locate.run(obj, splitJSONPointer(path))
 
   if (equal(actual, expected) === false) {
     throw Object.assign(
