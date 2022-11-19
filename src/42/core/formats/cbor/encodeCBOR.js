@@ -7,7 +7,7 @@ const POW_2_53 = 9_007_199_254_740_992
 
 const BUF_NEG_ZERO = [0xf9, 0x80, 0x00]
 
-export default function encode(value) {
+export function encodeCBOR(value) {
   let data = new ArrayBuffer(256)
   let dataView = new DataView(data)
   let lastLength
@@ -182,3 +182,5 @@ export default function encode(value) {
 
   return ret
 }
+
+export default encodeCBOR

@@ -1,5 +1,6 @@
 /* eslint-disable no-proto */
-import ini, { parseINI } from "../../../../42/core/formats/ini.js"
+import ini from "../../../../42/core/formats/ini.js"
+import parseINI from "../../../../42/core/formats/ini/parseINI.js"
 import test from "../../../../42/test.js"
 
 // example from https://github.com/npm/ini#usage
@@ -41,14 +42,14 @@ test("tokenize", (t) => {
     { type: "comment", buffer: "this comment is being ignored" },
     { type: "key", buffer: "scope" },
     { type: "value", buffer: "global" },
-    { type: "object", buffer: "database" },
+    { type: "section", buffer: "database" },
     { type: "key", buffer: "user" },
     { type: "value", buffer: "dbuser" },
     { type: "key", buffer: "password" },
     { type: "value", buffer: "dbpassword" },
     { type: "key", buffer: "database" },
     { type: "value", buffer: "use_this_database" },
-    { type: "object", buffer: "paths.default" },
+    { type: "section", buffer: "paths.default" },
     { type: "key", buffer: "datadir" },
     { type: "value", buffer: "/var/lib/data" },
     { type: "array", buffer: "arr" },
@@ -71,6 +72,8 @@ test("decode", (t) => {
 test.tasks(
   [
     { str: "foo", obj: { foo: true } },
+    { str: "foo=string", obj: { foo: "string" } },
+    { str: "foo = string", obj: { foo: "string" } },
     { str: "foo\nbar=false", obj: { foo: true, bar: false } },
     { str: "foo\nbar=", obj: { foo: true, bar: undefined } },
     { str: "foo\nbar=\nbaz", obj: { foo: true, bar: undefined, baz: true } },
@@ -86,9 +89,36 @@ test.tasks(
   ],
 
   (test, { str, obj, tokens }) => {
-    test(str, (t) => {
+    test("decode", str, (t) => {
       if (tokens) t.eq(parseINI(str), tokens)
       if (obj) t.alike(ini.decode(str), obj)
+    })
+  }
+)
+
+test.tasks(
+  [
+    { obj: { foo: true }, str: "foo=true\n" },
+    { obj: { foo: 0.1 }, str: "foo=0.1\n" },
+    { obj: { foo: null }, str: "foo=null\n" },
+    { obj: { foo: undefined }, str: "foo=undefined\n" },
+    { obj: { foo: 1 }, str: "foo = 1\n", options: { whitespace: true } },
+    { obj: { foo: 1, bar: 2 }, str: "foo=1\nbar=2\n" },
+    {
+      obj: { foo: 1, bar: 2 },
+      str: "foo=1\r\nbar=2\r\n",
+      options: { eol: "\r\n" },
+    },
+    {
+      only: true,
+      obj: { foo: 0, a: { b: 1, c: { d: 2, e: 3 }, f: 4 }, e: 5 },
+      str: "",
+    },
+  ],
+
+  (test, { str, obj, options }) => {
+    test("decode", str, (t) => {
+      t.is(ini.encode(obj, options), str)
     })
   }
 )
@@ -126,15 +156,15 @@ foo = asdfasdf
   t.isUndefined(Array.prototype[1])
 
   t.alike(res, {
-    constructor: { prototype: { foo: "asdfasdf" } },
-    foo: "baz",
-    other: { foo: "asdf" },
-    kid: { foo: { foo: "kid" } },
-    arrproto: { hello: "snyk", thanks: true },
-    ctor: { constructor: { prototype: { foo: "asdfasdf" } } },
+    "constructor.prototype.foo": "asdfasdf",
+    "foo": "baz",
+    "other": { foo: "asdf" },
+    "kid": { foo: { foo: "kid" } },
+    "arrproto": { hello: "snyk", thanks: true },
+    "ctor": { constructor: { prototype: { foo: "asdfasdf" } } },
   })
 })
 
 // test("encode", (t) => {
-//   t.alike(ini.encode(example), object)
+//   t.is(ini.encode({foo: {bar: true}}), example)
 // })

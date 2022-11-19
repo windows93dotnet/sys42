@@ -14,6 +14,7 @@ export const escapeUnicode = (str, ignoreList = []) =>
     switch (code) {
       case 9: return "\\t"
       case 10: return "\\n"
+      case 13: return "\\r"
       default: return code < 256
         ? charCodeToHex(code)
         : charCodeToUnicode(code)
