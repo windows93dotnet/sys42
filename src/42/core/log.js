@@ -79,6 +79,12 @@ export class Log extends Logger {
             if (data[key] && stringifyPresetsKeys.includes(key)) {
               data.config ??= Object.create(null)
               data.config.stringify ??= Object.create(null)
+
+              if (typeof data.config.stringify === "string") {
+                // data.config.stringify = system.configs.stringify.presets[key]
+                data.config.stringify = Object.create(null)
+              }
+
               Object.assign(
                 data.config.stringify,
                 system.configs.stringify.presets[key]

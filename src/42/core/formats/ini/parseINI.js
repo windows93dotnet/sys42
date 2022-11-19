@@ -1,9 +1,13 @@
-export function parseINI(source) {
+export const SPECIAL_CHARS = [";", "#", "[", "]", "="]
+
+export function parseINI(source, delimiters = []) {
   const tokens = []
 
   let type = "key"
   let buffer = ""
   let current = 0
+
+  const specialChars = new Set([...SPECIAL_CHARS, ...delimiters])
 
   const eatWhitespace = () => {
     let i = current
@@ -32,6 +36,25 @@ export function parseINI(source) {
   while (current < source.length) {
     const char = source[current]
 
+    if (char === "\\") {
+      if (specialChars.has(source[current + 1])) {
+        lastCharEscaped = true
+        current++
+        continue
+      }
+
+      buffer += char
+      current++
+      continue
+    }
+
+    if (lastCharEscaped) {
+      lastCharEscaped = false
+      buffer += char
+      current++
+      continue
+    }
+
     if (isNewline) {
       if (char === ";") {
         type = "comment"
@@ -47,19 +70,6 @@ export function parseINI(source) {
       }
 
       isNewline = false
-    }
-
-    if (lastCharEscaped) {
-      lastCharEscaped = false
-      buffer += char
-      current++
-      continue
-    }
-
-    if (char === "\\") {
-      lastCharEscaped = true
-      current++
-      continue
     }
 
     if (char === "[" && source[current + 1] === "]") {

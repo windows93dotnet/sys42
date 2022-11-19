@@ -1,4 +1,5 @@
 import configure from "../../configure.js"
+import arrify from "../../../fabric/type/any/arrify.js"
 import locate from "../../../fabric/locator/locate.js"
 import allocate from "../../../fabric/locator/allocate.js"
 import parseINI from "./parseINI.js"
@@ -6,7 +7,7 @@ import parseINI from "./parseINI.js"
 const DEFAULT = {
   parseValue: JSON.parse,
   sectionDelimiter: [".", "\\"],
-  keyDelimiter: "",
+  keyDelimiter: null,
   hashmap: true,
 }
 
@@ -18,12 +19,16 @@ export function decodeINI(str, options) {
   const { hashmap } = config
   const sectionOptions = { hashmap, delimiter: config.sectionDelimiter }
   const keyOptions = { hashmap, delimiter: config.keyDelimiter }
+  const delimiters = [
+    ...arrify(config.sectionDelimiter),
+    ...arrify(config.keyDelimiter),
+  ]
 
   let key
   let array
   let current = out
 
-  for (const { type, buffer } of parseINI(str)) {
+  for (const { type, buffer } of parseINI(str, delimiters)) {
     if (key || array) {
       if (type === "value") {
         let val
