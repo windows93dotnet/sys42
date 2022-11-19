@@ -1,6 +1,7 @@
 import arrify from "../any/arrify.js"
 
 export default function segmentize(source, delimiters = ".") {
+  if (!delimiters) return [source]
   delimiters = arrify(delimiters)
   const segments = []
   source = String(source)
