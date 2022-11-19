@@ -5,7 +5,7 @@
 // @src https://github.com/gregsexton/json-patch-gen
 
 import equal from "../type/any/equal.js"
-import { joinJSONPointer } from "./pointer.js"
+import joinJSONPointer from "./joinJSONPointer.js"
 import isHashmapLike from "../type/any/is/isHashmapLike.js"
 
 import LinkedListNode from "../structure/LinkedListNode.js"

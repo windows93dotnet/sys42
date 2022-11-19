@@ -9,7 +9,10 @@ import chainable from "../../traits/chainable.js"
 import replaceIndentation from "../string/replaceIndentation.js"
 import pluralize from "../string/pluralize.js"
 import { escapeUnicode, unescapeUnicode } from "../string/escapeUnicode.js"
-import { joinJSONPointer, joinJSONPointerURI } from "../../json/pointer.js"
+import {
+  joinJSONPointer,
+  joinJSONPointerURI,
+} from "../../json/joinJSONPointer.js"
 
 const IGNORE_UNICODE = ["↖", "…", "└", "├", "─", "│"].map(
   (x) => `\\${escapeUnicode(x)}`
