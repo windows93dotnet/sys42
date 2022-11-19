@@ -1,3 +1,4 @@
+import configure from "../configure.js"
 import locate from "../../fabric/locator/locate.js"
 import allocate from "../../fabric/locator/allocate.js"
 
@@ -116,10 +117,15 @@ export function tokenize(source) {
   return tokens
 }
 
-const opt = { delimiter: ".", hashmap: true }
+const DECODE_DEFAULT = {
+  parseValue: JSON.parse,
+  delimiter: ".",
+  hashmap: true,
+}
 
 export function decode(str, options) {
-  const parse = options?.parse ?? JSON.parse
+  const config = configure(DECODE_DEFAULT, options)
+  const { parseValue } = config
   const out = Object.create(null)
 
   let key
@@ -131,20 +137,20 @@ export function decode(str, options) {
       if (type === "value") {
         let val
         try {
-          val = parse(buffer)
+          val = parseValue(buffer)
         } catch {
           val = buffer
         }
 
         if (array) array.push(val)
         else {
-          allocate(current, key, val, opt)
+          allocate(current, key, val, config)
           key = undefined
         }
 
         continue
       } else if (key) {
-        allocate(current, key, true, opt)
+        allocate(current, key, true, config)
       }
     }
 
@@ -156,20 +162,20 @@ export function decode(str, options) {
 
     if (type === "object") {
       current = Object.create(null)
-      allocate(out, buffer, current, opt)
+      allocate(out, buffer, current, config)
       continue
     }
 
     if (type === "array") {
       array = locate(current, buffer) ?? []
       if (!Array.isArray(array)) array = [array]
-      allocate(current, buffer, array, opt)
+      allocate(current, buffer, array, config)
       continue
     }
   }
 
   if (key) {
-    allocate(current, key, true, opt)
+    allocate(current, key, true, config)
   }
 
   return out

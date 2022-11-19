@@ -5,19 +5,13 @@ import JSON5 from "./formats/json5.js"
 import parseExpression from "./formats/template/parseExpression.js"
 import compileExpression from "./formats/template/compileExpression.js"
 
-const jsonParse = JSON5.parse
-
 export default function expr(locals, str, options) {
   return expr.compile(expr.parse(str), options)(locals)
 }
 
-expr.parse = (source) => parseExpression(source, jsonParse)
+expr.parse = (source) => parseExpression(source, JSON5.parse)
 
 expr.compile = (parsed, options) =>
-  compileExpression(parsed, {
-    locate,
-    jsonParse,
-    ...options,
-  })
+  compileExpression(parsed, { locate, ...options })
 
 expr.evaluate = (str, options) => expr.compile(expr.parse(str), options)

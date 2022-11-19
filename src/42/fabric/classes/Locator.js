@@ -7,7 +7,10 @@ import merge from "../type/object/merge.js"
 export default class Locator {
   constructor(value = {}, options) {
     this.value = value
-    this.delimiter = options?.delimiter ?? "."
+    this.delimiter =
+      typeof options === "string" //
+        ? options
+        : options?.delimiter ?? "."
   }
 
   has(path) {

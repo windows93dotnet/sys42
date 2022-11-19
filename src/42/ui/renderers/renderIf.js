@@ -21,9 +21,9 @@ export default function renderIf(def, ctx) {
   const placeholder = document.createComment(PLACEHOLDER)
   el.append(placeholder)
 
-  const parsed = expr.parse(def.if)
-  const { scopes, actions } = normalizeTokens(parsed, ctx)
-  const check = expr.compile(parsed, {
+  const tokens = expr.parse(def.if)
+  const { scopes, actions } = normalizeTokens(tokens, ctx)
+  const check = expr.compile(tokens, {
     boolean: true,
     async: true,
     delimiter: "/",

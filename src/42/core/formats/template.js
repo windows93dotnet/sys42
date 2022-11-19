@@ -2,53 +2,39 @@
 // @read https://web.dev/sanitizer/
 // @read https://web.dev/trusted-types/
 
-import locate from "../../fabric/locator/locate.js"
 import parseTemplate from "./template/parseTemplate.js"
 import compileTemplate from "./template/compileTemplate.js"
 import makeTemplate from "./template/makeTemplate.js"
 import escapeTemplate from "./template/escapeTemplate.js"
 import JSON5 from "./json5.js"
 
-const jsonParse = JSON5.parse
+const parseValue = JSON5.parse
 
-export default function template(source, { actions, locals } = {}) {
-  return compileTemplate(
-    parseTemplate(source, jsonParse), //
-    { locate, actions, jsonParse, locals }
-  )
+export default function template(source, options) {
+  return compileTemplate(parseTemplate(source, parseValue), options)
 }
 
 template.make = makeTemplate
 template.escape = escapeTemplate
 
-template.parse = (source) => parseTemplate(source, jsonParse)
+template.parse = (source) => parseTemplate(source, parseValue)
 
-template.compile = (parsed, options = {}) =>
-  compileTemplate(
-    parsed, //
-    { locate, jsonParse, ...options }
-  )
+template.compile = (parsed, options) => compileTemplate(parsed, options)
 
 template.format = (parsed, locals, actions) =>
-  compileTemplate(
-    parsed, //
-    { locate, jsonParse, actions, locals }
-  )(locals)
+  compileTemplate(parsed, { actions, locals })(locals)
 
 template.formatAsync = async (parsed, locals, actions) =>
-  compileTemplate(
-    parsed, //
-    { locate, jsonParse, actions, locals, async: true }
-  )(locals)
+  compileTemplate(parsed, { actions, locals, async: true })(locals)
 
 template.render = (source, locals, actions) =>
   compileTemplate(
-    parseTemplate(source, jsonParse), //
-    { locate, jsonParse, actions, locals }
+    parseTemplate(source, parseValue), //
+    { actions, locals }
   )(locals)
 
 template.renderAsync = async (source, locals, actions) =>
   compileTemplate(
-    parseTemplate(source, jsonParse), //
-    { locate, jsonParse, actions, locals, async: true }
+    parseTemplate(source, parseValue), //
+    { actions, locals, async: true }
   )(locals)
