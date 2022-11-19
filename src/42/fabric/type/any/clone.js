@@ -54,6 +54,8 @@ function walk(
       : source.then()
   }
 
+  const realConstructor = !Object.hasOwn(source, "constructor")
+
   if (type === "function") {
     const fnBody = source.toString()
     const fnName = source.name
@@ -64,9 +66,9 @@ function walk(
         return Reflect.get(target, prop, receiver)
       },
     })
-  } else if (VALUE_OF.has(source.constructor)) {
+  } else if (VALUE_OF.has(source.constructor) && realConstructor) {
     target = new source.constructor(source.valueOf())
-  } else if (ARRAYS.has(source.constructor)) {
+  } else if (ARRAYS.has(source.constructor) && realConstructor) {
     target = new source.constructor(source.length)
   } else if (globalThis.File && source instanceof File) {
     target = new File([source], source.name, {
@@ -91,7 +93,8 @@ function walk(
     if (Object.getPrototypeOf(source) === null) target = Object.create(null)
     else {
       try {
-        target = source.constructor ? new source.constructor() : {}
+        target =
+          source.constructor && realConstructor ? new source.constructor() : {}
       } catch (error) {
         target = { $name: source.constructor.name, $error: error.message }
       }

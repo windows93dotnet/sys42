@@ -19,8 +19,14 @@ locate.run = (obj, segments, options) => {
       continue
     }
 
-    if (typeof current !== "object" || key in current === false) return
-    if (key === "constructor" || key === "__proto__") return
+    if (
+      typeof current !== "object" ||
+      key in current === false ||
+      key === "__proto__" ||
+      (key === "constructor" && !Object.hasOwn(current, key))
+    ) {
+      return
+    }
 
     current =
       options?.autobind && typeof current[key] === "function"
