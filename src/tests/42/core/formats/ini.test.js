@@ -86,6 +86,43 @@ test.tasks(
     { str: "[x]\r\ny=1\r\nz=2", obj: { x: { y: 1, z: 2 } } },
     { str: "[x]\r\ny=1\r\ny[]=2\r\n", obj: { x: { y: [1, 2] } } },
     { str: "=just junk!\r\n[foo]\r\nbar\r\n", obj: { foo: { bar: true } } },
+    {
+      str: `\
+[Control Panel\\Desktop\\WindowMetrics]
+
+[Control Panel\\Colors]
+ActiveTitle=90 78 177
+Background=0 0 0
+Hilight=90 78 177
+
+
+[Metrics]
+CaptionFont=@themeui.dll,-2037
+SmCaptionFont=@themeui.dll,-2038
+
+[Control Panel\\Cursors]
+Arrow=%SystemRoot%\\cursors\\aero_arrow.cur
+Help=%SystemRoot%\\cursors\\aero_helpsel.cur
+    `,
+      obj: {
+        "Control Panel": {
+          Desktop: { WindowMetrics: {} },
+          Colors: {
+            ActiveTitle: "90 78 177",
+            Background: "0 0 0",
+            Hilight: "90 78 177",
+          },
+          Cursors: {
+            Arrow: "%SystemRoot%\\cursors\\aero_arrow.cur",
+            Help: "%SystemRoot%\\cursors\\aero_helpsel.cur",
+          },
+        },
+        "Metrics": {
+          CaptionFont: "@themeui.dll,-2037",
+          SmCaptionFont: "@themeui.dll,-2038",
+        },
+      },
+    },
   ],
 
   (test, { str, obj, tokens }) => {
@@ -109,11 +146,10 @@ test.tasks(
       str: "foo=1\r\nbar=2\r\n",
       options: { eol: "\r\n" },
     },
-    {
-      only: true,
-      obj: { foo: 0, a: { b: 1, c: { d: 2, e: 3 }, f: 4 }, e: 5 },
-      str: "",
-    },
+    // {
+    //   obj: { foo: 0, a: { b: 1, c: { d: 2, e: 3 }, f: 4 }, e: 5 },
+    //   str: "",
+    // },
   ],
 
   (test, { str, obj, options }) => {
@@ -165,6 +201,15 @@ foo = asdfasdf
   })
 })
 
-// test("encode", (t) => {
-//   t.is(ini.encode({foo: {bar: true}}), example)
-// })
+test.skip(async (t) => {
+  const res = await t.utils.load.text(
+    new URL("../../../fixtures/formats/theme/liac.theme", import.meta.url),
+    "ascii"
+  )
+
+  // t.log.sample.clean(res)
+  // t.log.clean(parseINI(res))
+  t.log.sample.clean(ini.decode(res))
+
+  t.pass()
+})

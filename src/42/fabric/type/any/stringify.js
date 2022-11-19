@@ -54,6 +54,7 @@ const PRESETS = {
   },
 
   clean: {
+    list: false,
     printWidth: Infinity,
     traceNullProto: false,
     traceDescriptor: false,
@@ -76,8 +77,9 @@ const PRESETS = {
     list: true,
     printWidth: Infinity,
     displayNewlines: false,
-    maxItems: 12,
+    maxBytes: 64,
     maxChars: 64,
+    maxItems: 12,
   },
 
   overview: {

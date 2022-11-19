@@ -11,22 +11,26 @@ export default function segmentize(source, delimiters = ".") {
   let buffer = ""
   let current = 0
 
+  const hasBackslashDelimiter = delimiters.includes("\\")
+
   let lastCharEscaped = false
 
   while (current < source.length) {
     const char = source[current]
 
-    if (char === "\\") {
-      lastCharEscaped = true
-      current++
-      continue
-    }
+    if (!hasBackslashDelimiter) {
+      if (char === "\\") {
+        lastCharEscaped = true
+        current++
+        continue
+      }
 
-    if (lastCharEscaped) {
-      lastCharEscaped = false
-      buffer += char
-      current++
-      continue
+      if (lastCharEscaped) {
+        lastCharEscaped = false
+        buffer += char
+        current++
+        continue
+      }
     }
 
     if (delimiters.includes(char)) {
