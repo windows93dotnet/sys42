@@ -1,17 +1,18 @@
 // TODO: arbitrary precision decimal floating point arithmetic https://github.com/davidmartinez10/bigfloat-esnext
 
-import locate from "../fabric/locator/locate.js"
 import JSON5 from "./formats/json5.js"
 import parseExpression from "./formats/template/parseExpression.js"
 import compileExpression from "./formats/template/compileExpression.js"
 
-export default function expr(locals, str, options) {
-  return expr.compile(expr.parse(str), options)(locals)
+const parseValue = JSON5.parse
+
+export default function expr(str, locals, options) {
+  return compileExpression(parseExpression(str, parseValue), options)(locals)
 }
 
-expr.parse = (source) => parseExpression(source, JSON5.parse)
+expr.parse = (str) => parseExpression(str, parseValue)
 
-expr.compile = (parsed, options) =>
-  compileExpression(parsed, { locate, ...options })
+expr.compile = compileExpression
 
-expr.evaluate = (str, options) => expr.compile(expr.parse(str), options)
+expr.evaluate = (str, options) =>
+  compileExpression(parseExpression(str, parseValue), options)
