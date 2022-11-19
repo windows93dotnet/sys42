@@ -2,7 +2,7 @@ import configure from "../configure.js"
 import locate from "../../fabric/locator/locate.js"
 import allocate from "../../fabric/locator/allocate.js"
 
-export function tokenize(source) {
+export function parseINI(source) {
   const tokens = []
 
   let type = "key"
@@ -132,7 +132,7 @@ export function decode(str, options) {
   let array
   let current = out
 
-  for (const { type, buffer } of tokenize(str)) {
+  for (const { type, buffer } of parseINI(str)) {
     if (key || array) {
       if (type === "value") {
         let val

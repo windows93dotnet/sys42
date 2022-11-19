@@ -1,8 +1,18 @@
 import segmentize from "../type/string/segmentize.js"
 
-export default function allocate(obj, loc, val, options) {
+/**
+ * Set value in object using path
+ * @param {Object} obj
+ * @param {string} path
+ * @param {*} val
+ * @param {Object|string} [options] - Delimiter if string
+ * @param {string|array<string>} [options.delimiter=.]
+ * @param {boolean} [options.hashmap=false]
+ * @returns {Object} obj
+ */
+export default function allocate(obj, path, val, options) {
   if (typeof options === "string") options = { delimiter: options }
-  return allocate.run(obj, segmentize(loc, options?.delimiter), val, options)
+  return allocate.run(obj, segmentize(path, options?.delimiter), val, options)
 }
 
 allocate.segmentize = segmentize

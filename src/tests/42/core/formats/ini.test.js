@@ -1,5 +1,5 @@
 /* eslint-disable no-proto */
-import ini, { tokenize } from "../../../../42/core/formats/ini.js"
+import ini, { parseINI } from "../../../../42/core/formats/ini.js"
 import test from "../../../../42/test.js"
 
 // example from https://github.com/npm/ini#usage
@@ -37,7 +37,7 @@ const object = {
 }
 
 test("tokenize", (t) => {
-  t.eq(tokenize(example), [
+  t.eq(parseINI(example), [
     { type: "comment", buffer: "this comment is being ignored" },
     { type: "key", buffer: "scope" },
     { type: "value", buffer: "global" },
@@ -87,7 +87,7 @@ test.tasks(
 
   (test, { str, obj, tokens }) => {
     test(str, (t) => {
-      if (tokens) t.eq(tokenize(str), tokens)
+      if (tokens) t.eq(parseINI(str), tokens)
       if (obj) t.alike(ini.decode(str), obj)
     })
   }
