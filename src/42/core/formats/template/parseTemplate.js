@@ -1,6 +1,6 @@
 import parseExpression from "../template/parseExpression.js"
 
-export default function parseTemplate(source, jsonParser) {
+export default function parseTemplate(source, parseValue) {
   const strings = []
   const substitutions = []
   let buffer = ""
@@ -49,7 +49,7 @@ export default function parseTemplate(source, jsonParser) {
         strings.push(buffer)
         buffer = ""
 
-        substitutions.push(parseExpression(expr, jsonParser))
+        substitutions.push(parseExpression(expr, parseValue))
 
         current = i
         continue

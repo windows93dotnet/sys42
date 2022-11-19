@@ -34,7 +34,7 @@ const numbers = new Set("0123456789".split(""))
 const regexFlags = new Set("dgimsuy".split(""))
 const pairsKeys = new Set(Object.keys(pairs))
 
-export default function parseExpression(source, jsonParse = JSON.parse) {
+export default function parseExpression(source, parseValue = JSON.parse) {
   if (source.startsWith("{" + "{") && source.endsWith("}" + "}")) {
     source = source.slice(2, -2)
   }
@@ -69,7 +69,7 @@ export default function parseExpression(source, jsonParse = JSON.parse) {
           state = "key"
         } else {
           try {
-            buffer = jsonParse(buffer)
+            buffer = parseValue(buffer)
             state = "arg"
           } catch {
             state = "key"

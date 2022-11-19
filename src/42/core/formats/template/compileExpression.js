@@ -1,10 +1,11 @@
 import { operators, assignments } from "./operators.js"
+import locate from "../../../fabric/locator/locate.js"
 import allocate from "../../../fabric/locator/allocate.js"
 import synchronize from "../../../fabric/type/function/synchronize.js"
 
 const PIPE = Symbol("pipe")
 
-function resolveAction(locals, locate, value, delimiter) {
+function resolveAction(locals, value, delimiter) {
   for (const obj of locals) {
     const res = locate(obj, value, delimiter)
     if (res !== undefined) return res
@@ -21,7 +22,7 @@ function ensureAction(action, value) {
 
 function compileToken(i, list, tokens, options) {
   const { type, value, negated } = tokens[i]
-  const { locate, actions, delimiter } = options
+  const { actions, delimiter } = options
 
   if (type === "function") {
     let argTokens = []
@@ -54,7 +55,7 @@ function compileToken(i, list, tokens, options) {
     list.push(
       options.async
         ? async (locals, args = [], res) => {
-            action ??= resolveAction(locals, locate, value, delimiter, action)
+            action ??= resolveAction(locals, value, delimiter, action)
             args.unshift(action)
             for (const arg of argTokens) args.push(arg(locals, res))
             const [asyncFn, ...rest] = await Promise.all(args)
@@ -62,7 +63,7 @@ function compileToken(i, list, tokens, options) {
             return asyncFn(...rest)
           }
         : (locals, args = [], res) => {
-            action ??= resolveAction(locals, locate, value, delimiter, action)
+            action ??= resolveAction(locals, value, delimiter, action)
             ensureAction(action, value)
             for (const arg of argTokens) args.push(arg(locals, res))
             return action(...args)
