@@ -33,11 +33,7 @@ export function decodeCodePointsArray(codePoints) {
   return res
 }
 
-export default function decode(
-  data,
-  tagger = (val) => val,
-  simpleValue = noop
-) {
+export function decodeCBOR(data, tagger = (val) => val, simpleValue = noop) {
   const dataView = new DataView(data)
   let offset = 0
 
@@ -259,3 +255,5 @@ export default function decode(
 
   return ret
 }
+
+export default decodeCBOR
