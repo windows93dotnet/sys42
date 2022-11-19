@@ -4,7 +4,7 @@ import configure, { merge } from "../../core/configure.js"
 import omit from "../type/object/omit.js"
 import isHashmapLike from "../type/any/is/isHashmapLike.js"
 import locate from "../locator/locate.js"
-import parseJSONPointer from "./parseJSONPointer.js"
+import splitJSONPointer from "./splitJSONPointer.js"
 import removeItem from "../type/array/removeItem.js"
 
 const { isArray } = Array
@@ -212,7 +212,7 @@ export default async function resolve(source, options, carrier) {
       res = carrier.dynamicAnchors[hash]
     } else {
       const obj = carrier.cache[path]
-      res = locate.run(obj, parseJSONPointer(hash))
+      res = locate.run(obj, splitJSONPointer(hash))
     }
 
     if (res === UNLINKED) {

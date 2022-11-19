@@ -8,7 +8,7 @@ import locate from "../locator/locate.js"
 import exists from "../locator/exists.js"
 import arrify from "../type/any/arrify.js"
 import equal from "../type/any/equal.js"
-import { splitJSONPointer } from "./pointer.js"
+import splitJSONPointer from "./splitJSONPointer.js"
 
 function splice(str, index, count, add = "") {
   // We cannot pass negative indexes directly to the 2nd slicing operation.
@@ -20,13 +20,23 @@ function splice(str, index, count, add = "") {
   return str.slice(0, index) + add + str.slice(index + count)
 }
 
-function op(obj, path, options, objectOp, arrayOp, stringOp, raise, remove) {
+function op(
+  obj,
+  segments,
+  options,
+  objectOp,
+  arrayOp,
+  stringOp,
+  raise,
+  remove
+) {
   let track = ""
   let raised = false
   let previousValue = obj
   let previousKey
   let acc = obj
-  splitJSONPointer(path).forEach((key, i, arr) => {
+
+  segments.forEach((key, i, arr) => {
     track += `/${key}`
 
     if (arr.length - 1 === i) {
@@ -65,17 +75,18 @@ function op(obj, path, options, objectOp, arrayOp, stringOp, raise, remove) {
 
     acc = acc[key]
   })
+
   if (raised) throw new RangeError(`path "${track}" does not exist`)
 }
 
 export function add(obj, path, val, options) {
   let out = obj
-  if (path === "") out = val
-  else if (path === "/") obj[""] = val
+  const segments = splitJSONPointer(path)
+  if (segments.length === 0) out = val
   else {
     op(
       out,
-      path,
+      segments,
       options,
       (out, key) => (out[key] = val),
       (arr, index) => arr.splice(index, 0, val),
@@ -93,13 +104,13 @@ export function add(obj, path, val, options) {
 
 export function remove(obj, path, val = 1, options) {
   let out = obj
-  if (path === "") out = undefined
-  else if (path === "/") delete out[""]
+  const segments = typeof path === "string" ? splitJSONPointer(path) : path
+  if (segments.length === 0) out = undefined
   else {
     let raise
     op(
       out,
-      path,
+      segments,
       options,
       (out, key) => delete out[key],
       (arr, index) => arr.splice(index, 1),
@@ -117,7 +128,7 @@ export function remove(obj, path, val = 1, options) {
       true
     )
     if (raise && options?.strict) {
-      throw new RangeError(`path ${path} does not exist`)
+      throw new RangeError(`path "${path}" does not exist`)
     }
   }
 
@@ -125,10 +136,18 @@ export function remove(obj, path, val = 1, options) {
 }
 
 export function copy(obj, from, path, options) {
+  const segments = splitJSONPointer(from)
+  if (
+    options?.strict &&
+    (segments.length === 0 || exists.run(obj, segments) === false)
+  ) {
+    throw new RangeError(`path "${from}" does not exist`)
+  }
+
   let value
   op(
     obj,
-    from,
+    segments,
     options,
     (obj, key) => (value = obj[key]),
     (arr, index) => (value = arr[index]),
@@ -141,24 +160,27 @@ export function copy(obj, from, path, options) {
 
 export function move(obj, from, path, options) {
   const segments = splitJSONPointer(from)
-  if (options?.strict && exists.run(obj, segments) === false) {
-    throw new RangeError(`path ${from} does not exist`)
+  if (
+    options?.strict &&
+    (segments.length === 0 || exists.run(obj, segments) === false)
+  ) {
+    throw new RangeError(`path "${from}" does not exist`)
   }
 
   const value = locate.run(obj, segments)
-  remove(obj, from, options)
+  remove(obj, segments, options)
   add(obj, path, value, options)
   return obj
 }
 
 export function replace(obj, path, val, options) {
   let out = obj
-  if (path === "") out = val
-  else if (path === "/") out[""] = val
+  const segments = splitJSONPointer(path)
+  if (segments.length === 0) out = val
   else {
     op(
       out,
-      path,
+      segments,
       options,
       (obj, key) => (obj[key] = val),
       (arr, index) => (arr[index] = val),
