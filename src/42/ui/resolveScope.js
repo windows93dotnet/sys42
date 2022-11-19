@@ -1,5 +1,5 @@
 import resolvePath from "../core/path/core/resolvePath.js"
-import separate from "../fabric/type/string/separate.js"
+import segmentize from "../fabric/type/string/segmentize.js"
 import getBasename from "../core/path/core/getBasename.js"
 
 export default function resolveScope(scope, loc, ctx) {
@@ -10,7 +10,7 @@ export default function resolveScope(scope, loc, ctx) {
     loc = `../${loc}:${getBasename(scope)}`
   }
 
-  const out = separate(resolvePath(scope, loc)).join("/")
+  const out = segmentize(resolvePath(scope, loc)).join("/")
   if (ctx === undefined) return out
   return out in ctx.refs ? ctx.refs[out] : out
 }

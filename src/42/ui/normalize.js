@@ -106,7 +106,7 @@ function findComponentAction(ctx, cpn, value) {
   if (loc.startsWith("./")) loc = loc.slice(2)
 
   const levels = loc.split("../")
-  const segments = locate.separate(levels.pop())
+  const segments = locate.segmentize(levels.pop())
   let i = levels.length
   let cpnCnt = 0
 
@@ -140,7 +140,7 @@ function findComponentAction(ctx, cpn, value) {
 
 export function addEntry(obj, entry, el) {
   if (obj) {
-    const segments = allocate.separate(entry)
+    const segments = allocate.segmentize(entry)
     if (exists.run(obj, segments) === false) {
       allocate.run(obj, segments, el)
     }

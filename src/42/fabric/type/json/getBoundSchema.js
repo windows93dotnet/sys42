@@ -1,4 +1,4 @@
-import separate from "../string/separate.js"
+import segmentize from "../string/segmentize.js"
 
 export default function getBoundSchema(schema, path) {
   let found = false
@@ -9,7 +9,7 @@ export default function getBoundSchema(schema, path) {
     found = true
   } else {
     let requiredList = []
-    for (const key of separate(path)) {
+    for (const key of segmentize(path)) {
       if (key in schema) {
         if (requiredList.includes(key)) required = true
         if (key === "properties" && "required" in schema) {

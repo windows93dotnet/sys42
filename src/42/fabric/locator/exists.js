@@ -1,10 +1,10 @@
-import separate from "../type/string/separate.js"
+import segmentize from "../type/string/segmentize.js"
 
 export default function exists(obj, loc, delimiter) {
-  return exists.run(obj, separate(loc, delimiter))
+  return exists.run(obj, segmentize(loc, delimiter))
 }
 
-exists.separate = separate
+exists.segmentize = segmentize
 
 exists.run = (obj, segments) => {
   let current = obj

@@ -1,10 +1,10 @@
-import separate from "../type/string/separate.js"
+import segmentize from "../type/string/segmentize.js"
 
 export default function locate(obj, loc, delimiter = ".") {
-  return locate.run(obj, separate(loc, delimiter))
+  return locate.run(obj, segmentize(loc, delimiter))
 }
 
-locate.separate = separate
+locate.segmentize = segmentize
 
 locate.run = (obj, segments, options) => {
   let current = obj

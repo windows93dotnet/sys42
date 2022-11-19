@@ -1,11 +1,11 @@
-import separate from "../type/string/separate.js"
+import segmentize from "../type/string/segmentize.js"
 
 export default function allocate(obj, loc, val, options) {
   if (typeof options === "string") options = { delimiter: options }
-  return allocate.run(obj, separate(loc, options?.delimiter), val, options)
+  return allocate.run(obj, segmentize(loc, options?.delimiter), val, options)
 }
 
-allocate.separate = separate
+allocate.segmentize = segmentize
 
 allocate.run = (obj, segments, val, options) => {
   let current = obj

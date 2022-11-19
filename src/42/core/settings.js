@@ -33,7 +33,7 @@ class Config {
 export default function settings(name, defaults, presets) {
   let config
 
-  const segments = exists.separate(name)
+  const segments = exists.segmentize(name)
   if (exists.run(configs, segments)) {
     config = locate.run(configs, segments)
   } else {
