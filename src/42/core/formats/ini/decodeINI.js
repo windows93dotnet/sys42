@@ -6,8 +6,7 @@ import parseINI from "./parseINI.js"
 
 const DEFAULT = {
   parseValue: JSON.parse,
-  sectionDelimiter: [".", "\\"],
-  keyDelimiter: null,
+  delimiter: [".", "\\"],
   hashmap: true,
 }
 
@@ -17,12 +16,9 @@ export function decodeINI(str, options) {
   const out = Object.create(null)
 
   const { hashmap } = config
-  const sectionOptions = { hashmap, delimiter: config.sectionDelimiter }
-  const keyOptions = { hashmap, delimiter: config.keyDelimiter }
-  const delimiters = [
-    ...arrify(config.sectionDelimiter),
-    ...arrify(config.keyDelimiter),
-  ]
+  const sectionOptions = { hashmap, delimiter: config.delimiter }
+  const keyOptions = { hashmap, delimiter: "" }
+  const delimiters = arrify(config.delimiter)
 
   let key
   let array
