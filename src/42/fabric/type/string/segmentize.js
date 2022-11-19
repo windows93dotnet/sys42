@@ -1,6 +1,6 @@
 import arrify from "../any/arrify.js"
 
-export default function separate(source, delimiters = ".") {
+export default function segmentize(source, delimiters = ".") {
   delimiters = arrify(delimiters)
   const segments = []
   source = String(source)

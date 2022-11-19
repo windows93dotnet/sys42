@@ -1,10 +1,10 @@
-import separate from "../type/string/separate.js"
+import segmentize from "../type/string/segmentize.js"
 
 export default function deallocate(obj, loc, delimiter = ".") {
-  return deallocate.run(obj, separate(loc, delimiter))
+  return deallocate.run(obj, segmentize(loc, delimiter))
 }
 
-deallocate.separate = separate
+deallocate.segmentize = segmentize
 
 deallocate.run = (obj, segments) => {
   let current = obj

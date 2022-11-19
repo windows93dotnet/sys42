@@ -1,7 +1,7 @@
 import occurrences from "../fabric/type/string/occurrences.js"
 import resolveScope from "./resolveScope.js"
 import getDirname from "../core/path/core/getDirname.js"
-import separate from "../fabric/type/string/separate.js"
+import segmentize from "../fabric/type/string/segmentize.js"
 
 export default function findScope(ctx, loc) {
   if (loc == null) throw new Error("Undefined path")
@@ -38,7 +38,7 @@ export default function findScope(ctx, loc) {
     }
 
     let i = ctx.scopeChain.length
-    const prop = separate(loc, [".", "/"])[0]
+    const prop = segmentize(loc, [".", "/"])[0]
 
     if (ctx.scopeChain.at(-1).props !== undefined) {
       while (i--) {

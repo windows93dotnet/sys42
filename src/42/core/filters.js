@@ -265,8 +265,8 @@ export default async function filters(name) {
     }
   }
 
-  let segments = locate.separate(name)
-  if (segments.length === 1) segments = locate.separate(name, "/")
+  let segments = locate.segmentize(name)
+  if (segments.length === 1) segments = locate.segmentize(name, "/")
 
   if (segments.length > 1) {
     const item = locate.run(types, segments)
