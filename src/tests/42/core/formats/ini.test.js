@@ -1,7 +1,64 @@
 /* eslint-disable no-proto */
 import ini from "../../../../42/core/formats/ini.js"
 import parseINI from "../../../../42/core/formats/ini/parseINI.js"
+import toCamelCase from "../../../../42/fabric/type/string/case/toCamelCase.js"
 import test from "../../../../42/test.js"
+
+const windowsTheme = `\
+[Control Panel\\Desktop]
+Wallpaper=
+Pattern=
+MultimonBackgrounds=0
+PicturePosition=4
+
+[Control Panel\\Desktop\\WindowMetrics]
+
+[Control Panel\\Colors]
+ActiveTitle=90 78 177
+Background=0 0 0
+Hilight=90 78 177
+
+[Control Panel\\Cursors]
+Arrow=%SystemRoot%\\cursors\\aero_arrow.cur
+Help=%SystemRoot%\\cursors\\aero_helpsel.cur
+Crosshair=
+IBeam=
+SizeNWSE=%SystemRoot%\\cursors\\aero_nwse.cur
+Link=
+
+[Metrics]
+CaptionFont=@themeui.dll,-2037
+SmCaptionFont=@themeui.dll,-2038
+`
+
+const windowsThemeObject = {
+  "Control Panel": {
+    Desktop: {
+      WindowMetrics: {},
+      Wallpaper: undefined,
+      Pattern: undefined,
+      MultimonBackgrounds: 0,
+      PicturePosition: 4,
+    },
+    Colors: {
+      ActiveTitle: "90 78 177",
+      Background: "0 0 0",
+      Hilight: "90 78 177",
+    },
+    Cursors: {
+      Arrow: "%SystemRoot%\\cursors\\aero_arrow.cur",
+      Help: "%SystemRoot%\\cursors\\aero_helpsel.cur",
+      Crosshair: undefined,
+      IBeam: undefined,
+      SizeNWSE: "%SystemRoot%\\cursors\\aero_nwse.cur",
+      Link: undefined,
+    },
+  },
+  "Metrics": {
+    CaptionFont: "@themeui.dll,-2037",
+    SmCaptionFont: "@themeui.dll,-2038",
+  },
+}
 
 // @src https://github.com/npm/ini/blob/main/test
 test.tasks(
@@ -9,7 +66,22 @@ test.tasks(
     { obj: { foo: true }, str: "foo=true\n" },
     { obj: { foo: 0.1 }, str: "foo=0.1\n" },
     { obj: { foo: null }, str: "foo=null\n" },
-    { obj: { foo: undefined }, str: "foo=undefined\n" },
+    { obj: { foo: undefined }, str: "foo=\n" },
+    {
+      obj: { foo: undefined },
+      str: "foo=undefined\n",
+      options: { undefined: "undefined" },
+    },
+    {
+      obj: { foo: undefined },
+      str: "",
+      options: { undefined: false },
+    },
+    {
+      obj: { foo: undefined, bar: 42 },
+      str: "bar=42\n",
+      options: { undefined: false },
+    },
     { obj: { foo: 1 }, str: "foo = 1\n", options: { whitespace: true } },
     { obj: { foo: 1, bar: 2 }, str: "foo=1\nbar=2\n" },
     {
@@ -17,10 +89,26 @@ test.tasks(
       str: "foo=1\r\nbar=2\r\n",
       options: { eol: "\r\n" },
     },
-    // {
-    //   obj: { foo: 0, a: { b: 1, c: { d: 2, e: 3 }, f: 4 }, e: 5 },
-    //   str: "",
-    // },
+    {
+      obj: { foo: 0, a: { b: 1, c: { d: 2, e: 3 }, f: 4 }, e: 5 },
+      str: `\
+foo=0
+e=5
+
+[a]
+b=1
+f=4
+
+[a.c]
+d=2
+e=3
+`,
+    },
+    {
+      obj: windowsThemeObject,
+      options: { delimiter: "\\" },
+      str: windowsTheme,
+    },
   ],
 
   (test, { str, obj, options }) => {
@@ -48,41 +136,8 @@ test.tasks(
     { str: "[x]\r\ny=1\r\ny[]=2\r\n", obj: { x: { y: [1, 2] } } },
     { str: "=just junk!\r\n[foo]\r\nbar\r\n", obj: { foo: { bar: true } } },
     {
-      str: `\
-[Control Panel\\Desktop\\WindowMetrics]
-
-[Control Panel\\Colors]
-ActiveTitle=90 78 177
-Background=0 0 0
-Hilight=90 78 177
-
-
-[Metrics]
-CaptionFont=@themeui.dll,-2037
-SmCaptionFont=@themeui.dll,-2038
-
-[Control Panel\\Cursors]
-Arrow=%SystemRoot%\\cursors\\aero_arrow.cur
-Help=%SystemRoot%\\cursors\\aero_helpsel.cur
-    `,
-      obj: {
-        "Control Panel": {
-          Desktop: { WindowMetrics: {} },
-          Colors: {
-            ActiveTitle: "90 78 177",
-            Background: "0 0 0",
-            Hilight: "90 78 177",
-          },
-          Cursors: {
-            Arrow: "%SystemRoot%\\cursors\\aero_arrow.cur",
-            Help: "%SystemRoot%\\cursors\\aero_helpsel.cur",
-          },
-        },
-        "Metrics": {
-          CaptionFont: "@themeui.dll,-2037",
-          SmCaptionFont: "@themeui.dll,-2038",
-        },
-      },
+      str: windowsTheme,
+      obj: windowsThemeObject,
     },
   ],
 
@@ -206,9 +261,33 @@ test.skip(async (t) => {
     "ascii"
   )
 
-  // t.log.sample.clean(res)
-  // t.log.clean(parseINI(res))
-  t.log.sample.clean(ini.decode(res))
+  t.log.clean(res)
+  // t.log.sample.clean(ini.decode(res))
+  t.log.clean(ini.decode(res))
+
+  t.pass()
+})
+
+test.skip(async (t) => {
+  const res = await t.utils.load.text(
+    new URL(
+      "../../../fixtures/formats/desktop/example.desktop",
+      import.meta.url
+    )
+  )
+
+  t.log.clean(
+    ini.decode(res, {
+      formatKey: toCamelCase,
+      formatSection: toCamelCase,
+      parseValue(val) {
+        if (val === "false") return false
+        if (val === "true") return true
+        if (val.includes(";")) return val.split(";").filter(Boolean)
+        return val
+      },
+    })
+  )
 
   t.pass()
 })

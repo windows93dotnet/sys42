@@ -8,6 +8,8 @@ const DEFAULT = {
   parseValue: JSON.parse,
   delimiter: [".", "\\"],
   hashmap: true,
+  formatKey: false,
+  formatSection: false,
 }
 
 export function decodeINI(str, options) {
@@ -48,18 +50,21 @@ export function decodeINI(str, options) {
 
     if (type === "key") {
       if (array) array = undefined
-      key = buffer
+      key = config.formatKey ? config.formatKey(buffer) : buffer
       continue
     }
 
     if (type === "section") {
-      current = Object.create(null)
-      allocate(out, buffer, current, sectionOptions)
+      const sectionName = config.formatSection
+        ? config.formatSection(buffer)
+        : buffer
+      current = locate(out, sectionName, delimiters) ?? Object.create(null)
+      allocate(out, sectionName, current, sectionOptions)
       continue
     }
 
     if (type === "array") {
-      array = locate(current, buffer) ?? []
+      array = locate(current, buffer, delimiters) ?? []
       if (!Array.isArray(array)) array = [array]
       allocate(current, buffer, array, keyOptions)
       continue
