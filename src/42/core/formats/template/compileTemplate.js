@@ -1,6 +1,6 @@
 import compileExpression from "./compileExpression.js"
 
-export default function compileTemplate(parsed, options = {}) {
+export default function compileTemplate(parsed, options) {
   const { strings } = parsed
   const substitutions = []
 
@@ -19,9 +19,9 @@ export default function compileTemplate(parsed, options = {}) {
     substitutions.push(list[0][0])
   }
 
-  return options.async
+  return config.async
     ? async (...locals) => {
-        if (options.locals) locals = [...locals, options.locals]
+        if (config.locals) locals = [...locals, config.locals]
         let out = strings[0] ? [strings[0]] : []
 
         for (let i = 0, l = substitutions.length; i < l; i++) {
@@ -34,7 +34,7 @@ export default function compileTemplate(parsed, options = {}) {
         return out.length === 1 ? out[0] : out.join("")
       }
     : (...locals) => {
-        if (options.locals) locals = [...locals, options.locals]
+        if (config.locals) locals = [...locals, config.locals]
         let out = strings[0]
 
         for (let i = 0, l = substitutions.length; i < l; i++) {

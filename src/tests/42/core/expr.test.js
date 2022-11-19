@@ -64,7 +64,7 @@ test.tasks(
 
   (test, { str, res }) => {
     test(str, (t) => {
-      t.is(expr(targ, str), res, str)
+      t.is(expr(str, targ), res, str)
       t.is(expr.compile(expr.parse(str))(targ), res, str)
       t.is(expr.evaluate(str)(targ), res, str)
       t.is(expr.evaluate(str, { boolean: true })(targ), Boolean(res), str)
@@ -103,9 +103,9 @@ test.tasks(
     test("assignment", str, targ, (t) => {
       targ ??= { a: 2, b: 3 }
 
-      t.throws(() => expr(targ, str), "Assignment not allowed")
+      t.throws(() => expr(str, targ), "Assignment not allowed")
 
-      const out = expr(targ, str, { assignment: true })
+      const out = expr(str, targ, { assignment: true })
       t.eq(targ, expect)
       if (res !== undefined) t.eq(out, res)
     })
@@ -175,13 +175,13 @@ test.tasks(
   (test, { targ, str, res, expect, throws }) => {
     test("actions", str, targ, (t) => {
       if (throws) {
-        t.throws(() => expr(targ, str, { assignment: true }), throws)
+        t.throws(() => expr(str, targ, { assignment: true }), throws)
         return
       }
 
       targ ??= { a: 2, b: 3 }
 
-      const out = expr(targ, str, { assignment: true })
+      const out = expr(str, targ, { assignment: true })
       t.eq(targ.a, expect.a)
       if (res !== undefined) t.eq(out, res)
     })

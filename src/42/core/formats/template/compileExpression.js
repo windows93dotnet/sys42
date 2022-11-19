@@ -107,7 +107,7 @@ function compileToken(i, list, tokens, options) {
   return i
 }
 
-export function compileStatement(tokens, options = {}) {
+function compileStatement(tokens, options) {
   const list = []
 
   // reduce function, key and arg tokens
@@ -174,7 +174,7 @@ export function compileStatement(tokens, options = {}) {
   return list
 }
 
-export default function compileExpression(tokens, options) {
+export default function compileExpression(tokens, options = {}) {
   const statements = []
   let statement = []
   for (const token of tokens) {
