@@ -14,6 +14,7 @@ import uid from "../../../42/core/uid.js"
 import { autofocus } from "../../../42/fabric/dom/focus.js"
 import nextCycle from "../../../42/fabric/type/promise/nextCycle.js"
 import queueTask from "../../../42/fabric/type/function/queueTask.js"
+import postrenderAutofocus from "../../../42/ui/postrenderAutofocus.js"
 
 const _axis = Symbol("axis")
 
@@ -132,11 +133,9 @@ export class Dialog extends Component {
     this.style.zIndex = maxZIndex("ui-dialog, ui-menu") + 1
 
     if (!this.contains(document.activeElement)) {
-      const items = this.querySelectorAll(":scope [data-autofocus]")
-      items.length > 0
-        ? items[items.length - 1].focus()
-        : autofocus(this.querySelector(":scope > .ui-dialog__body")) ||
-          autofocus(this.querySelector(":scope > .ui-dialog__footer"))
+      postrenderAutofocus(this) ||
+        autofocus(this.querySelector(":scope > .ui-dialog__body")) ||
+        autofocus(this.querySelector(":scope > .ui-dialog__footer"))
     }
   }
 

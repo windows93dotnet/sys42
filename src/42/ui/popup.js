@@ -124,7 +124,7 @@ const popup = rpc(
     el.style.transform = "translate(-200vw, -200vh)"
     el.style.zIndex = maxZIndex("ui-dialog, ui-menu") + 1
 
-    document.documentElement.append(el)
+    document.documentElement.prepend(el)
 
     if (el.ready) await el.ready
     else {

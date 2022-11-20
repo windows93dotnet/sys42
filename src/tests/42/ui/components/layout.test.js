@@ -54,10 +54,9 @@ for (const item of planets) {
   }
 }
 
-planets[0].label = { picto: "globe", content: "Earth" }
 planets[0].content = planets[0].description
 
-ui({
+window.app = ui({
   tag: "body.box-fit.box-h",
   content: [
     {
@@ -67,11 +66,7 @@ ui({
         style: { width: "300px", height: "200px" },
         content: {
           tag: "ui-tabs",
-          current: 1,
-          // map: {
-          //   label: "{{name}}",
-          //   content: { tag: "textarea", content: "{{description}}" },
-          // },
+          current: "{{currentTab}}",
           content: "{{planets}}",
         },
       },
@@ -79,7 +74,7 @@ ui({
   ],
 
   state: {
-    foo: "bar",
+    currentTab: 1,
     planets,
   },
 })
