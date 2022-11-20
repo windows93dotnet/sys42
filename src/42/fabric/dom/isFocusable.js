@@ -3,6 +3,7 @@ export const isVisible = (el) =>
 
 export function isFocusable(el) {
   if (
+    !el ||
     el.tabIndex < 0 ||
     el.disabled ||
     el.getAttribute("aria-disabled") === "true" ||

@@ -93,22 +93,12 @@ export class Folder extends Component {
       },
     },
 
+    dropzone: true,
     on: [
       // drag n drop
       // ===========
       {
-        "prevent": true,
-        "dragover || dragenter"(e) {
-          // // console.log(e.dataTransfer.effectAllowed)
-          if (e.ctrlKey) {
-            e.dataTransfer.dropEffect = "copy"
-          } else if (e.shiftKey) {
-            e.dataTransfer.dropEffect = "link"
-          } else {
-            e.dataTransfer.dropEffect = "move"
-          }
-        },
-        async "drop"(e) {
+        async drop(e) {
           const { files, folders, paths } = await dt.import(e)
           if (paths) io.movePath(paths, this.el.path)
           else if (files || folders) {
@@ -134,7 +124,7 @@ export class Folder extends Component {
         },
         dragstart(e, target) {
           this.el.autoSelect(target.path)
-          dt.export(e.dataTransfer, { paths: this.el.selection })
+          dt.export(e, { paths: this.el.selection })
         },
         // drag(e) {
         //   console.log(e.x, e.y)

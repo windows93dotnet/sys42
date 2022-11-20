@@ -20,6 +20,7 @@ import hash from "../fabric/type/any/hash.js"
 import getType from "../fabric/type/any/getType.js"
 import inTop from "../core/env/realm/inTop.js"
 import merge from "../fabric/type/object/merge.js"
+import { handleEffect } from "../core/dt/dataTransferEffects.js"
 import ALLOWED_HTML_ATTRIBUTES from "../fabric/constants/ALLOWED_HTML_ATTRIBUTES.js"
 import ALLOWED_SVG_ATTRIBUTES from "../fabric/constants/ALLOWED_SVG_ATTRIBUTES.js"
 
@@ -41,6 +42,7 @@ const DEF_KEYWORDS = new Set([
   "contextmenu",
   "defaults",
   "dialog",
+  "dropzone",
   "each",
   "else",
   "if",
@@ -585,6 +587,8 @@ function normalizeOn(def) {
         },
       },
     })
+
+    delete def.menu
   }
 
   if (def.contextmenu) {
@@ -597,6 +601,16 @@ function normalizeOn(def) {
           closeEvents: "pointerdown",
           ...objectifyDef(def.contextmenu),
         },
+      },
+    })
+  }
+
+  if (def.dropzone) {
+    def.on ??= []
+    def.on.push({
+      "prevent": true,
+      "dragover || dragenter"(e) {
+        handleEffect(e)
       },
     })
   }

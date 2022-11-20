@@ -6,7 +6,7 @@ import { forkDef } from "../normalize.js"
 import setTemp from "../../fabric/dom/setTemp.js"
 import listen from "../../fabric/event/listen.js"
 import ipc from "../../core/ipc.js"
-import dataTransfertImport from "../../fabric/type/file/dataTransfertImport.js"
+import dataTransfertImport from "../../core/dt/dataTransfertImport.js"
 
 const _setResource = Symbol("setResource")
 
