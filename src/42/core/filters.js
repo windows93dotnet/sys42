@@ -121,7 +121,8 @@ types.any = {
   clone: "any/clone",
   equal: "any/equal",
   stringify: "any/stringify",
-  log: (...args) => import("./log.js").then((m) => void m.default(...args)),
+  log: (...args) => import("./log.js").then(({ log }) => void log(...args)),
+  uid: (...args) => import("./uid.js").then(({ uid }) => uid(...args)),
   bytesize: (bytes, options) => bytesize(bytes ?? 0, options),
 }
 

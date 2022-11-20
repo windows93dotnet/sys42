@@ -107,7 +107,7 @@ export default function renderOn(el, defs, ctx) {
 
   eventsMap(list)
 
-  // ctx.postrender.push(() => {
-  //   el.dispatchEvent(new CustomEvent("render"))
-  // })
+  ctx.postrender.push(() => {
+    el.dispatchEvent(new CustomEvent("render"))
+  })
 }
