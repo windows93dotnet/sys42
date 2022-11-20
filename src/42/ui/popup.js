@@ -16,6 +16,8 @@ import normalize, {
   normalizePlugins,
 } from "./normalize.js"
 
+const zIndexSector = ":root > :is(ui-dialog, ui-menu)"
+
 const map = []
 const _close = Symbol.for("42_POPUP_CLOSE")
 const { ELEMENT_NODE } = Node
@@ -122,7 +124,7 @@ const popup = rpc(
     const el = render(...normalized, { skipNormalize: true })
     el.style.position = "fixed"
     el.style.transform = "translate(-200vw, -200vh)"
-    el.style.zIndex = maxZIndex("ui-dialog, ui-menu") + 1
+    el.style.zIndex = maxZIndex(zIndexSector) + 1
 
     document.documentElement.prepend(el)
 
