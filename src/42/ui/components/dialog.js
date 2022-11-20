@@ -14,6 +14,8 @@ import postrenderAutofocus from "../postrenderAutofocus.js"
 
 const _axis = Symbol("axis")
 
+const zIndexSector = ":root > :is(ui-dialog, ui-menu)"
+
 export class Dialog extends Component {
   static definition = {
     tag: "ui-dialog",
@@ -23,7 +25,7 @@ export class Dialog extends Component {
 
     traits: {
       emittable: true,
-      movable: { handler: ".ui-dialog__title" },
+      movable: { handler: ".ui-dialog__title", maxZIndex: zIndexSector },
     },
 
     props: {
@@ -126,7 +128,7 @@ export class Dialog extends Component {
     }
 
     this.active = true
-    this.style.zIndex = maxZIndex("ui-dialog, ui-menu") + 1
+    this.style.zIndex = maxZIndex(zIndexSector) + 1
 
     if (!this.contains(document.activeElement)) {
       postrenderAutofocus(this) ||
