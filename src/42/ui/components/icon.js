@@ -2,6 +2,8 @@ import Component from "../classes/Component.js"
 import getPathInfos from "../../core/path/getPathInfos.js"
 import themeManager from "../../os/managers/themeManager.js"
 
+await themeManager.ready // TODO: remove this
+
 // [1] @read https://www.stefanjudis.com/blog/aria-selected-and-when-to-use-it/
 
 const TREEITEM_PARENTS = new Set(["tree", "treegrid", "group"])
@@ -55,8 +57,8 @@ class Icon extends Component {
           ],
         },
         {
-          tag: ".ui-icon__label",
           if: "{{../label}}",
+          tag: ".ui-icon__label",
           content: [
             { tag: "svg", content: { tag: "rect.ui-icon__focusring" } },
             {
@@ -77,7 +79,6 @@ class Icon extends Component {
   }
 
   async setup() {
-    await themeManager.ready
     const parentRole = this.parentNode.getAttribute("role")
     if (TREEITEM_PARENTS.has(parentRole)) {
       this.setAttribute("role", "treeitem")

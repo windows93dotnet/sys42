@@ -16,7 +16,12 @@ export default function listenImport(io) {
           if (paths?.length > 0) io.emit("paths", paths)
           else {
             files = Object.values(files)
-            if (files.length > 0) io.emit("import", files)
+            if (files.length > 0) {
+              io.emit(
+                "import",
+                files.map((file) => ({ file }))
+              )
+            }
           }
         })
       )
