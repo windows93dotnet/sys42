@@ -3,6 +3,7 @@ import ensureElement from "../../fabric/dom/ensureElement.js"
 import asyncable from "../../fabric/traits/asyncable.js"
 import render from "../render.js"
 import normalize from "../normalize.js"
+import postrenderAutofocus from "../postrenderAutofocus.js"
 
 export default class UI {
   constructor(...args) {
@@ -24,8 +25,7 @@ export default class UI {
     this.ctx = ctx
 
     this.ctx.postrender.push(() => {
-      const items = this.el.querySelectorAll(":scope [data-autofocus]")
-      if (items.length > 0) items[items.length - 1].focus()
+      postrenderAutofocus(this.el)
     })
 
     asyncable(this, async () => {

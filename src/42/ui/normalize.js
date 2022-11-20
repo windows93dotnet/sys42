@@ -72,6 +72,7 @@ const _isComponent = Symbol.for("Component.isComponent")
 const _isTrait = Symbol.for("Trait.isTrait")
 
 const delimiter = "/"
+const UNALLOWED_COMPONENT_ACTIONS = new Set(["render"])
 
 const makeActionFn =
   (fn, thisArg, el) =>
@@ -90,7 +91,26 @@ const findAction = (obj, segments) => {
   let lastObj
 
   for (const key of segments) {
-    if (typeof current !== "object" || key in current === false) return
+    if (
+      typeof current !== "object" ||
+      key in current === false ||
+      UNALLOWED_COMPONENT_ACTIONS.has(key)
+    ) {
+      return
+    }
+
+    // ensure component action is not from base constructors
+    let hasAction
+    let proto = current
+    do {
+      proto = Object.getPrototypeOf(proto)
+      hasAction = Object.hasOwn(proto, key)
+      const name = proto?.constructor?.name
+      if (name === "Component" || name === "HTMLElement") break
+    } while (!hasAction && proto)
+
+    if (!hasAction) return
+
     lastObj = current
     current = current[key]
   }

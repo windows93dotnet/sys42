@@ -31,13 +31,13 @@ export class Tabs extends Component {
               tag: "button.ui-tabs__tab",
               role: "tab",
               id: `tab-${id}-{{@index}}`,
-              tabIndex: "{{ ../../current === @index ? 0 : -1}}",
-              content: "{{ui.render(label)}}",
+              tabIndex: "{{../../current === @index ? 0 : -1}}",
+              content: "{{render(label)}}",
               aria: {
-                selected: `{{ ../../current === @index }}`,
+                selected: `{{../../current === @index}}`,
                 controls: `panel-${id}-{{@index}}`,
               },
-              click: `{{ ../../current = @index }}`,
+              click: `{{../../current = @index}}`,
             },
           },
           {
@@ -47,7 +47,7 @@ export class Tabs extends Component {
               tag: ".ui-tabs__panel._inset",
               role: "tabpanel",
               id: `panel-${id}-{{@index}}`,
-              content: "{{ui.render(content)}}",
+              content: "{{render(content)}}",
               tabIndex: 0,
               aria: {
                 labelledby: `tab-${id}-{{@index}}`,

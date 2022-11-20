@@ -10,6 +10,7 @@ import uid from "../../core/uid.js"
 import { autofocus } from "../../fabric/dom/focus.js"
 import nextCycle from "../../fabric/type/promise/nextCycle.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
+import postrenderAutofocus from "../postrenderAutofocus.js"
 
 const _axis = Symbol("axis")
 
@@ -128,11 +129,9 @@ export class Dialog extends Component {
     this.style.zIndex = maxZIndex("ui-dialog, ui-menu") + 1
 
     if (!this.contains(document.activeElement)) {
-      const items = this.querySelectorAll(":scope [data-autofocus]")
-      items.length > 0
-        ? items[items.length - 1].focus()
-        : autofocus(this.querySelector(":scope > .ui-dialog__body")) ||
-          autofocus(this.querySelector(":scope > .ui-dialog__footer"))
+      postrenderAutofocus(this) ||
+        autofocus(this.querySelector(":scope > .ui-dialog__body")) ||
+        autofocus(this.querySelector(":scope > .ui-dialog__footer"))
     }
   }
 
@@ -165,7 +164,7 @@ export const dialog = rpc(
     const { opener } = el
     await el.ready
 
-    document.documentElement.append(el)
+    document.documentElement.prepend(el)
 
     return el.once("close").then((res) => ({ res, opener }))
   },
