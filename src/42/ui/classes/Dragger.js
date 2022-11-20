@@ -100,7 +100,7 @@ export default class Dragger {
 
       this.#isStarted = true
       this.isDragging = true
-      restore = setTemp(document.body, {
+      restore = setTemp(document.documentElement, {
         signal,
         class: {
           "pointer-iframes-0": true,

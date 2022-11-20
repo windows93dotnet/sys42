@@ -28,7 +28,7 @@ let restore
 listen(
   {
     "dragstart || dragover"() {
-      restore ??= setTemp(document.body, {
+      restore ??= setTemp(document.documentElement, {
         class: { "pointer-iframes-0": true },
       })
     },

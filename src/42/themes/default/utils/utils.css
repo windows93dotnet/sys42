@@ -14,38 +14,38 @@
   border-width: 0 !important;
 }
 
-.reveal:not(:hover,:active,:focus,:focus-within) { --alpha: 0; opacity: var(--alpha); }
+.reveal:not(:hover,:active,:focus,:focus-within) { opacity: 0; }
 *:is(:hover,:active,:focus,:focus-within) > .reveal { opacity: 1; }
 
 /* [hidden], */
 .hide { display: none !important; }
 
-.motionless, body.motionless *,
-.animation-0, body.animation-0 * {
+.motionless, :is(:root,body).motionless *,
+.animation-0, :is(:root,body).animation-0 * {
   animation-delay: -1ms !important;
   animation-duration: 1ms !important;
   animation-iteration-count: 1 !important;
 }
 
-.motionless, body.motionless *,
-.transition-0, body.transition-0 * { transition: none !important; }
+.motionless, :is(:root,body).motionless *,
+.transition-0, :is(:root,body).transition-0 * { transition: none !important; }
 
-.selection-0, body.selection-0 * { user-select: none !important; }
-.selection-1, body.selection-0 .selection-1 { user-select: auto !important; }
+.selection-0, :is(:root,body).selection-0 * { user-select: none !important; }
+.selection-1, :is(:root,body).selection-0 .selection-1 { user-select: auto !important; }
 
-.touch-0, body.touch-0 * { touch-action: none !important; }
-.touch-1, body.touch-0 .touch-1 { touch-action: auto !important; }
+.touch-0, :is(:root,body).touch-0 * { touch-action: none !important; }
+.touch-1, :is(:root,body).touch-0 .touch-1 { touch-action: auto !important; }
 
-.pointer-0, body.pointer-0 * { pointer-events: none !important; }
-.pointer-1, body.pointer-0 .pointer-1 { pointer-events: auto !important; }
+.pointer-0, :is(:root,body).pointer-0 * { pointer-events: none !important; }
+.pointer-1, :is(:root,body).pointer-0 .pointer-1 { pointer-events: auto !important; }
 
-.action-0, body.action-0 * {
+.action-0, :is(:root,body).action-0 * {
   user-select: none !important;
   touch-action: none !important;
   pointer-events: none !important;
 }
 
-.action-1, body.action-0 .action-1 {
+.action-1, :is(:root,body).action-0 .action-1 {
   user-select: auto !important;
   touch-action: auto !important;
   pointer-events: auto !important;
@@ -75,7 +75,7 @@
   background: transparent !important;
 }
 
-.pixelated, body.pixelated * {
+.pixelated, :is(:root,body).pixelated * {
   image-rendering: optimizeSpeed; /* Legal fallback */
   image-rendering: -moz-crisp-edges; /* Firefox */
   image-rendering: -o-crisp-edges; /* Opera */
@@ -124,10 +124,11 @@
   transform-origin: var(--top) var(--left);
 }
 
-:where(.resize) {
-  overflow: hidden;
-  resize: both;
-}
+:where(.resize, .resize-x, .resize-y) { overflow: hidden; }
+.resize { resize: both; }
+.resize-x { resize: horizontal; }
+.resize-y { resize: vertical; }
+.resize-0 { resize: none; }
 
 /* States
 ========= */

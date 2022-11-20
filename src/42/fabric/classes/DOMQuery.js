@@ -5,7 +5,7 @@ import listen from "../event/listen.js"
 import Callabale from "./Callable.js"
 
 export default class DOMQuery extends Callabale {
-  constructor(el = document.body) {
+  constructor(el = document.documentElement) {
     super((/* DOMQuery.each */ ...args) => this.each(...args))
     this.el = ensureElement(el)
   }

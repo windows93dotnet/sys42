@@ -49,7 +49,6 @@ export default {
     scope: "$files/0",
     content: [
       // { tag: "text", bind: "/$dialog.title", compact: true },
-      // { tag: "text", bind: "/tabSize", compact: true },
       {
         tag: "textarea",
         entry: "textbox",
@@ -66,10 +65,10 @@ export default {
         on: {
           "input": "{{dirty = true}}",
           ":path || :dirty || focus": `{{
-            /$dialog.title = 'TextEdit - ' + path.getBasename(path ?? '');
+            /$dialog.title = 'TextEdit - ' + name;
             /$dialog.title += dirty ? '*' : '';
           }}`,
-          ":path": `{{
+          ":stream": `{{
             locked = true;
             field.sink(stream, textbox);
             locked = false;
