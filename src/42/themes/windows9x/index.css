@@ -370,7 +370,7 @@ input[type="number" i]:disabled::-webkit-inner-spin-button {
   --_down: var(--picto--down-xs--d);
 }
 
-:is(button, .button):focus:not(:active) {
+:is(button, .button):not(:active,[role="tab"],[aria-selected="true"]):focus {
   border-image: var(--btn💾-bdi);
 }
 
