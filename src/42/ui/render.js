@@ -28,7 +28,7 @@ const PRELOAD = new Set(["link", "script"])
 const NOT_CONTROLS = new Set(["label", "legend", "output", "option"])
 const HAS_OPTIONS = new Set(["select", "selectmenu", "optgroup", "datalist"])
 
-function renderTag(ctx, tag, def) {
+function renderTag(tag, def, ctx) {
   let el = create(ctx, tag, def.attrs)
 
   const { localName } = el
@@ -130,13 +130,13 @@ export default function render(def, ctx, options) {
       const nesteds = def.tag.split(/\s*>\s*/)
       for (let i = 0, l = nesteds.length; i < l; i++) {
         const tag = nesteds[i]
-        const cur = i === l - 1 ? renderTag(ctx, tag, def) : create(tag)
+        const cur = i === l - 1 ? renderTag(tag, def, ctx) : create(tag)
         if (el) el.append(cur)
         else container = cur
         el = cur
       }
     } else {
-      el = renderTag(ctx, def.tag, def)
+      el = renderTag(def.tag, def, ctx)
     }
   } else {
     el = document.createDocumentFragment()
@@ -170,7 +170,7 @@ export default function render(def, ctx, options) {
 
   def.traits?.(ctx.el)
 
-  if (def.on) renderOn(ctx.el, def.on, ctx)
+  if (def.on) renderOn(ctx.el, def, ctx)
 
   if (def.animate?.from) renderAnimation(ctx, ctx.el, "from", def.animate.from)
 

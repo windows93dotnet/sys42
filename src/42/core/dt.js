@@ -1,7 +1,9 @@
-import dataTransfertImport from "../fabric/type/file/dataTransfertImport.js"
-import dataTransfertExport from "../fabric/type/file/dataTransfertExport.js"
+import dataTransfertImport from "./dt/dataTransfertImport.js"
+import dataTransfertExport from "./dt/dataTransfertExport.js"
+import dataTransferEffects from "./dt/dataTransferEffects.js"
 
 export default {
   import: dataTransfertImport, //
   export: dataTransfertExport,
+  effects: dataTransferEffects,
 }

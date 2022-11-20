@@ -1,7 +1,8 @@
 // @see https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/Recommended_drag_types
 // @see https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/Multiple_items
 
-import arrify from "../any/arrify.js"
+import arrify from "../../fabric/type/any/arrify.js"
+import { fromOptions } from "./dataTransferEffects.js"
 
 const hidden = [
   Object.assign(new Image(), {
@@ -14,13 +15,17 @@ const hidden = [
 // [1] transparent gif https://stackoverflow.com/a/13139830
 // [2] Make the image far away from the cursor because Firefox/Linux don't always support transparency
 
-export default async function dataTransfertExport(dataTransfer, options) {
-  if (dataTransfer?.dataTransfer) dataTransfer = dataTransfer.dataTransfer
+export default async function dataTransfertExport(e, options) {
+  // if (dataTransfer?.dataTransfer) dataTransfer = dataTransfer.dataTransfer
+  const { dataTransfer } = e
 
-  dataTransfer.setDragImage(
-    ...(options?.dragImage ? arrify(options?.dragImage) : hidden)
-  )
-  dataTransfer.effectAllowed = options?.effect ?? "all"
+  if (options?.image !== true) {
+    dataTransfer.setDragImage(
+      ...(options?.image ? arrify(options?.image) : hidden)
+    )
+  }
+
+  dataTransfer.effectAllowed = fromOptions(options?.effect)
 
   if (options?.paths) {
     const { paths } = options
@@ -28,6 +33,11 @@ export default async function dataTransfertExport(dataTransfer, options) {
     const data = JSON.stringify({ DT_PATHS_42: navigator.userAgent, paths })
     dataTransfer.setData("text/x-moz-url", urls.join("\n"))
     dataTransfer.setData("text/uri-list", urls.join("\r\n"))
+    dataTransfer.setData("text/plain", data)
+  }
+
+  if (options?.data) {
+    const data = JSON.stringify({ DT_DATA_42: options?.data })
     dataTransfer.setData("text/plain", data)
   }
 }

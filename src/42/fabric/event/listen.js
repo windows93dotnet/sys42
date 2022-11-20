@@ -130,7 +130,7 @@ export function normalizeListen(args, config) {
         continue
       }
 
-      item.events = getEvents(ensureEvents(events))
+      item.events = getEvents(ensureEvents(events), item, options)
       item.options = options
       current.listeners.push(item)
     }

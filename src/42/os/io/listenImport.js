@@ -1,7 +1,5 @@
 import inIframe from "../../core/env/realm/inIframe.js"
 import noop from "../../fabric/type/function/noop.js"
-// import listen from "../../fabric/event/listen.js"
-// import dt from "../../core/dt.js"
 
 export default function listenImport(io) {
   const forgets = []

@@ -1,4 +1,5 @@
-import readDirectoryEntry from "./readDirectoryEntry.js"
+import readDirectoryEntry from "../../fabric/type/file/readDirectoryEntry.js"
+import { handleEffect } from "./dataTransferEffects.js"
 
 const TYPE_STANDARD = {
   "application/x-javascript": "text/javascript",
@@ -35,13 +36,14 @@ async function normalizeDataTransferItem(item, options) {
   return out
 }
 
-export default async function dataTransfertImport(dataTransfer, options) {
-  if (dataTransfer?.clipboardData) dataTransfer = dataTransfer.clipboardData
-  else if (dataTransfer?.dataTransfer) dataTransfer = dataTransfer.dataTransfer
+export default async function dataTransfertImport(e, options) {
+  const dataTransfer = e?.clipboardData ?? e?.dataTransfer
 
   if (!(dataTransfer instanceof DataTransfer)) {
     throw new TypeError(`dataTransfer argument must be a DataTransfer instance`)
   }
+
+  handleEffect(e, options)
 
   const out = {
     files: {},
@@ -50,6 +52,8 @@ export default async function dataTransfertImport(dataTransfer, options) {
     objects: [],
     items: [],
     paths: undefined,
+    data: undefined,
+    effect: dataTransfer.dropEffect,
   }
 
   const undones = []
@@ -64,6 +68,8 @@ export default async function dataTransfertImport(dataTransfer, options) {
             item.object.DT_PATHS_42 === navigator.userAgent
           ) {
             out.paths = item.object.paths
+          } else if (item.string?.startsWith('{"DT_DATA_42')) {
+            out.data = item.object.DT_DATA_42
           } else if (item.object) {
             out.objects.push(item.object)
           } else {

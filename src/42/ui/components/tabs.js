@@ -2,6 +2,7 @@ import Component from "../classes/Component.js"
 import uid from "../../core/uid.js"
 import isFocusable from "../../fabric/dom/isFocusable.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
+import dt from "../../core/dt.js"
 
 export class Tabs extends Component {
   static definition = {
@@ -27,6 +28,15 @@ export class Tabs extends Component {
           {
             tag: ".ui-tabs__tablist",
             role: "tablist",
+            dropzone: true,
+            on: {
+              async drop(e) {
+                const { data, effect } = await dt.import(e)
+                if (data) {
+                  console.log("drop", effect, data.id === id)
+                }
+              },
+            },
             each: {
               tag: "button.ui-tabs__tab",
               role: "tab",
@@ -38,6 +48,16 @@ export class Tabs extends Component {
                 controls: `panel-${id}-{{@index}}`,
               },
               click: `{{../../current = @index}}`,
+              draggable: true,
+              on: {
+                dragstart(e) {
+                  dt.export(e, {
+                    effect: "move",
+                    image: true,
+                    data: { id, hello: "world" },
+                  })
+                },
+              },
             },
           },
           {
