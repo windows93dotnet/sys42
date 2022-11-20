@@ -171,6 +171,6 @@ export class Log extends Logger {
   }
 }
 
-export const logger = new Log()
+export const log = new Log()
 
-export default logger
+export default log

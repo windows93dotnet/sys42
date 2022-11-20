@@ -27,6 +27,7 @@ export default function findScope(ctx, loc) {
       const n = occurrences(loc, "../")
       const previous = ctx.scopeChain.at(-n)
       const newLoc = loc.slice(n * 3)
+      // console.log(loc, previous, n, ctx.scope)
       if (
         previous &&
         (previous.props === undefined || previous.props.includes(newLoc))

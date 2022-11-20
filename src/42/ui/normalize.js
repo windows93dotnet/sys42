@@ -401,12 +401,6 @@ export function normalizeWatch(scope, fn, ctx) {
   })
 }
 
-export function normalizeScope(def, ctx) {
-  if (def?.scope) {
-    ctx.scope = resolveScope(ctx.scope, def.scope, ctx)
-  }
-}
-
 export function normalizeData(def, ctx, cb) {
   if (typeof def === "function") {
     const { scope } = ctx
@@ -652,6 +646,19 @@ export function normalizeState(def, ctx, initiator) {
 
       ctx.reactive.merge(scope, res, options)
     })
+  }
+}
+
+export function normalizeScope(def, ctx) {
+  if (def?.scope) {
+    if (ctx.scopeChain.length > 0) {
+      ctx.scopeChain.push({
+        scope: ctx.scope,
+        props: ctx.scopeChain.at(-1).props,
+      })
+    }
+
+    ctx.scope = resolveScope(ctx.scope, def.scope, ctx)
   }
 }
 
