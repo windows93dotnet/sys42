@@ -222,8 +222,8 @@ types.field = {
     setControlData(field, value)
   },
 
-  async sink(rs, fallback = "", field = this.el) {
-    if (rs === undefined) return fallback
+  async sink(rs, field = this.el) {
+    if (rs === undefined) return
     const [stream, sinkField] = await Promise.all([
       import("./stream.js").then((m) => m.default),
       import("./stream/sinkField.js").then((m) => m.default),
