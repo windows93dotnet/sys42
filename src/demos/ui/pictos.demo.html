@@ -12,7 +12,9 @@
 
 <script type="module">
   import "../../42/ui/components/menu.js"
+  import "../../42/ui/components/tabs.js"
   import "../../42/ui/components/picto.js"
+
   import ui from "../../42/ui.js"
   import cssVar from "../../42/fabric/cssom/cssVar.js"
   import themeManager from "../../42/os/managers/themeManager.js"
@@ -129,10 +131,28 @@
                   },
                 ],
               },
-              { tag: ".inset.pa-xs", content: ".inset" },
-              { tag: ".outset.pa-xs", content: ".outset" },
-              { tag: ".inset-shallow.pa-xs", content: ".inset-shallow" },
-              { tag: ".outset-shallow.pa-xs", content: ".outset-shallow" },
+              {
+                tag: ".box-h.gap",
+                content: [
+                  { tag: ".inset.pa-xs", content: ".inset" },
+                  { tag: ".outset.pa-xs", content: ".outset" },
+                ],
+              },
+              {
+                tag: ".box-h.gap",
+                content: [
+                  { tag: ".inset-shallow.pa-xs", content: ".inset-shallow" },
+                  { tag: ".outset-shallow.pa-xs", content: ".outset-shallow" },
+                ],
+              },
+              {
+                tag: "ui-tabs.w-ctrl",
+                current: name === "disabled" ? 1 : 0,
+                content: [
+                  { label: "Tab 1", content: "Tab Content 1" },
+                  { label: "Tab 2", content: "Tab Content 2" },
+                ],
+              },
             ],
           },
           {

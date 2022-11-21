@@ -38,7 +38,7 @@ export class Tabs extends Component {
               },
             },
             each: {
-              tag: "button.ui-tabs__tab",
+              tag: ".ui-tabs__tab.button",
               role: "tab",
               id: `tab-${id}-{{@index}}`,
               tabIndex: "{{../../current === @index ? 0 : -1}}",
@@ -61,10 +61,10 @@ export class Tabs extends Component {
             },
           },
           {
-            tag: ".ui-tabs__panels.outset.pa-sm",
+            tag: ".ui-tabs__panels",
             each: {
               if: "{{../../current === @index}}",
-              tag: ".ui-tabs__panel._inset",
+              tag: ".ui-tabs__panel",
               role: "tabpanel",
               id: `panel-${id}-{{@index}}`,
               content: "{{render(content)}}",

@@ -18,6 +18,7 @@ const imagesKeys = [
   "--btn💾-bdi-url",
   "--fieldset-bdi-url",
   "--radio-bdi-url",
+  "--tabs__tab-bdi-url",
 
   "--addon-bg-url",
   "--screentone-url",
