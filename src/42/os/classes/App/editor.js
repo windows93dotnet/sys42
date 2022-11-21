@@ -102,22 +102,28 @@ editor.init = (app) => {
   import("../../../io.js").then(({ default: io }) => {
     io.listenImport()
     io.on("import", ([{ id, file }]) => {
-      FileAgent.recycle(state.$files, 0, { id, file }, manifest)
+      FileAgent.recycle(state.$files, 0, { id, file })
     })
     io.on("paths", ([path]) => {
-      FileAgent.recycle(state.$files, 0, path, manifest)
+      FileAgent.recycle(state.$files, 0, path)
     })
   })
 
+  const defaultFolder = manifest.defaultFolder ?? "/users/anonymous/" // "$HOME"
+
+  // setTimeout(() => {
+  //   FileAgent.recycle(state.$files, 0, "/style.css")
+  // }, 100)
+
   app.ctx.actions.assign("/editor", {
     newFile() {
-      FileAgent.recycle(state.$files, 0, undefined, manifest)
+      FileAgent.recycle(state.$files, 0, { path: undefined, dirty: false })
     },
 
     /* save/export
     -------------- */
     async saveFile() {
-      if (state.$files[0].path) {
+      if (state.$files[0]?.path) {
         const [blob, fs] = await Promise.all([
           state.$files[0].blob,
           import("../../../core/fs.js") //
@@ -131,12 +137,18 @@ editor.init = (app) => {
     },
     async saveFileAs() {
       if (!state.$files[0]) return
+
+      FileAgent.recycle(state.$files, 0) // Ensure modified data are stored in a FileAgent
+
       const [data, filePickerSave] = await Promise.all([
         state.$files[0].blob,
         import("../../../ui/invocables/filePickerSave.js") //
           .then(({ filePickerSave }) => filePickerSave),
       ])
-      const { ok, path } = await filePickerSave(state.$files[0].path, { data })
+      const { ok, path } = await filePickerSave(
+        state.$files[0]?.path ?? defaultFolder,
+        { data }
+      )
       if (ok) {
         state.$files[0].updatePath(path)
         state.$files[0].dirty = false
@@ -157,11 +169,13 @@ editor.init = (app) => {
     async openFile() {
       await import("../../../ui/invocables/filePickerOpen.js") //
         .then(({ filePickerOpen }) =>
-          filePickerOpen(state.$files[0].path, { files: false })
+          filePickerOpen(state.$files[0]?.path ?? defaultFolder, {
+            files: false,
+          })
         )
         .then(({ ok, selection }) => {
           if (ok && selection.length > 0) {
-            FileAgent.recycle(state.$files, 0, selection[0], manifest)
+            FileAgent.recycle(state.$files, 0, selection[0])
           }
         })
     },
@@ -170,7 +184,7 @@ editor.init = (app) => {
         .then((m) => m.default)
       const [file] = await fileImport(decode)
       if (file) {
-        FileAgent.recycle(state.$files, 0, { file }, manifest)
+        FileAgent.recycle(state.$files, 0, { file, path: undefined })
       }
     },
 

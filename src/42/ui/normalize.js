@@ -405,8 +405,8 @@ export function normalizeWatchs(watch, ctx) {
 }
 
 export function normalizeWatch(scope, fn, ctx) {
-  const locals = {}
   if (typeof fn === "string") {
+    const locals = {}
     const tokens = expr.parse(fn)
     const { actions } = normalizeTokens(tokens, ctx, { locals })
     fn = expr.compile(tokens, {
@@ -415,12 +415,24 @@ export function normalizeWatch(scope, fn, ctx) {
       delimiter: "/",
       actions,
     })
+    register(ctx, scope, async (changed) => {
+      if (!changed) return
+      await 0
+      await fn(ctx.reactive.state, locals)
+    })
+  } else {
+    // If the value is a function
+    // The first argument should be the scopped state
+    // to mimic template get/set
+    // e.g.
+    // ":foo": "{{bar = foo + 1}}"
+    // ":foo": (state) => { state.bar = state.foo + 1 }
+    register(ctx, scope, async (changed) => {
+      if (!changed) return
+      await 0
+      await fn(ctx.reactive.get(ctx.scope), ctx)
+    })
   }
-
-  register(ctx, scope, async () => {
-    await 0
-    await fn(ctx.reactive.state, locals)
-  })
 }
 
 export function normalizeData(def, ctx, cb) {

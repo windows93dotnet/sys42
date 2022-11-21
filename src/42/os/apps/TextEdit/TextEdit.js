@@ -64,14 +64,16 @@ export default {
         bind: { to: "data" },
         on: {
           "input": "{{dirty = true}}",
-          ":path || :dirty || focus": `{{
+          ":name || :dirty || focus": `{{
             /$dialog.title = 'TextEdit - ' + name;
             /$dialog.title += dirty ? '*' : '';
           }}`,
+
           ":stream": `{{
-            locked = true;
+            // locked = true;
+            // log(textbox);
             field.sink(stream, textbox);
-            locked = false;
+            // locked = false;
           }}`,
         },
       },

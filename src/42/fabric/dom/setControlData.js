@@ -37,7 +37,7 @@ export default function setControlData(el, val) {
     case "textarea": {
       const top = el.scrollTop
       const left = el.scrollLeft
-      el.replaceChildren(val ?? "")
+      el.value = val ?? ""
       requestAnimationFrame(() => el.scrollTo(top, left))
       break
     }

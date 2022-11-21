@@ -43,7 +43,7 @@ export default function sinkField(el, options) {
 
   let speedUp = false
 
-  el.replaceChildren()
+  el.value = ""
 
   return new WritableStream({
     async write(chunk, controller) {
@@ -53,10 +53,9 @@ export default function sinkField(el, options) {
         }
 
         const text = chunk.slice(i, i + size)
-        // const { length } = el.value
-        // el.setRangeText(text, length, length + text.length)
+        const { length } = el.value
+        el.setRangeText(text, length, length + text.length)
 
-        el.append(text)
         await repaint()
 
         if (el.scrollHeight > el.clientHeight) {

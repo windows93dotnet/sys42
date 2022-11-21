@@ -16,13 +16,15 @@ const dummyBlob = Promise.resolve(new Blob())
 export default class FileAgent {
   [Symbol.for("observe")] = true
 
-  static recycle(obj, key, init, manifest) {
-    if (key in obj) obj[key].init(init)
-    else obj[key] = new FileAgent(init, manifest)
+  static recycle(obj, key, init) {
+    if (key in obj) {
+      if (obj[key] instanceof FileAgent) {
+        if (init) obj[key].init(init)
+      } else obj[key] = new FileAgent(init ?? obj[key])
+    } else obj[key] = new FileAgent(init)
   }
 
-  constructor(init, manifest) {
-    this.manifest = manifest
+  constructor(init) {
     this[_data] = []
     this.dirty = false
     this.init(init)
@@ -36,7 +38,10 @@ export default class FileAgent {
     } else if (isHashmapLike(init)) {
       const blob = init.file ?? init.blob
       if ("path" in init) {
-        if ("data" in init || blob) this[_noSideEffects] = true
+        if (init.noSideEffects || "data" in init || blob) {
+          this[_noSideEffects] = true
+        }
+
         this.path = init.path
         this[_noSideEffects] = false
       }
@@ -62,8 +67,8 @@ export default class FileAgent {
   set path(val) {
     this[_path] = val
     this[_data].length = 0
-    if (this[_noSideEffects]) return
     this.name = val ? getBasename(val) : undefined
+    if (this[_noSideEffects]) return
     this.id = undefined
     this.blob = undefined
     this.dirty = false
