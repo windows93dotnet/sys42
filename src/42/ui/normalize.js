@@ -105,8 +105,8 @@ const findAction = (obj, segments) => {
     let hasAction
     let proto = current
     do {
-      proto = Object.getPrototypeOf(proto)
       hasAction = Object.hasOwn(proto, key)
+      proto = Object.getPrototypeOf(proto)
       const name = proto?.constructor?.name
       if (name === "Component" || name === "HTMLElement") break
     } while (!hasAction && proto)

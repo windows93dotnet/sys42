@@ -2017,54 +2017,6 @@ test("computed", "computed prop", async (t) => {
   })
 })
 
-/* actions
-========== */
-
-Component.define(
-  class extends Component {
-    static definition = {
-      tag: "ui-t-actions-above-root",
-      computed: { y: "y" },
-    }
-  }
-)
-
-test("actions", "above root path", async (t) => {
-  t.plan(1)
-
-  t.utils.decay(
-    ui(t.utils.dest({ connect: true }), {
-      content: {
-        tag: "ui-t-actions-above-root",
-        content: [{ tag: "button#child-e2", click: "{{../../../../x()}}" }],
-      },
-
-      actions: {
-        x() {
-          this.state.from = ["x", "ui"]
-        },
-      },
-    })
-  )
-
-  await new Promise((resolve) => {
-    t.utils.on({
-      error(e) {
-        if (e.message.startsWith("Action")) {
-          e.preventDefault()
-          e.stopPropagation()
-          e.stopImmediatePropagation()
-          t.is(
-            e.message,
-            "Action path is going above root by 3 level(s): ../../../../x"
-          )
-          resolve()
-        }
-      },
-    })
-  })
-})
-
 /* Object prop
 ============== */
 
@@ -2135,6 +2087,153 @@ test("scope chain", async (t) => {
 
 /* actions
 ========== */
+
+/* Find Component Actions
+------------------------- */
+class ParentComponent extends Component {
+  static definition = {
+    tag: "ui-t-parent-cpn",
+    props: { a: 1 },
+    content: "{{foo()}}",
+  }
+
+  foo() {
+    return "parent-foo"
+  }
+
+  bar() {
+    return "parent-bar"
+  }
+}
+Component.define(ParentComponent)
+
+Component.define(
+  class ChildComponent extends ParentComponent {
+    static definition = {
+      tag: "ui-t-child-cpn",
+      props: { a: 1 },
+    }
+
+    foo() {
+      return "child-foo"
+    }
+
+    render({ content }) {
+      return content
+    }
+  }
+)
+
+test("find component actions", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest(true), { tag: "ui-t-parent-cpn" })
+  )
+
+  t.is(app.el.textContent, "parent-foo")
+})
+
+test("find component actions", "child class", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest(true), {
+      tag: "ui-t-child-cpn",
+      content: "{{foo()}} - {{bar()}}",
+    })
+  )
+
+  t.is(app.el.textContent, "child-foo - parent-bar")
+})
+
+test("find component actions", "always ignore 'render'", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest(true), {
+      tag: "ui-t-child-cpn",
+      content: "{{render('hello')}}",
+    })
+  )
+
+  t.is(app.el.textContent, "hello")
+})
+
+test("find component actions", "ignore base class methods", async (t) => {
+  t.plan(2)
+
+  const expected1 = 'Template action didn\'t resolve as a function: "/init"'
+  const expected2 = 'Template filter is not a function: "init"'
+
+  try {
+    await t.utils.decay(
+      ui(t.utils.dest(true), {
+        tag: "ui-t-child-cpn",
+        content: "{{init()}}",
+      })
+    )
+  } catch (err) {
+    t.is(err.message, expected1)
+  }
+
+  await new Promise((resolve) => {
+    t.utils.on({
+      error(e) {
+        if (e.message === expected2) {
+          t.pass()
+          e.preventDefault()
+          e.stopPropagation()
+          e.stopImmediatePropagation()
+          resolve()
+        }
+      },
+    })
+  })
+})
+
+/* --------- */
+
+Component.define(
+  class extends Component {
+    static definition = {
+      tag: "ui-t-actions-above-root",
+      computed: { y: "y" },
+    }
+  }
+)
+
+test("actions", "above root path", async (t) => {
+  t.plan(1)
+
+  t.utils.decay(
+    ui(t.utils.dest({ connect: true }), {
+      content: {
+        tag: "ui-t-actions-above-root",
+        content: [{ tag: "button#child-e2", click: "{{../../../../x()}}" }],
+      },
+
+      actions: {
+        x() {
+          this.state.from = ["x", "ui"]
+        },
+      },
+    })
+  )
+
+  await new Promise((resolve) => {
+    t.utils.on({
+      error(e) {
+        if (e.message.startsWith("Action")) {
+          e.preventDefault()
+          e.stopPropagation()
+          e.stopImmediatePropagation()
+          t.is(
+            e.message,
+            "Action path is going above root by 3 level(s): ../../../../x"
+          )
+          resolve()
+        }
+      },
+    })
+  })
+})
+
+/* --------- */
 
 async function makeSuite(name, def) {
   Component.define(
