@@ -587,6 +587,7 @@ button,
   justify-content: center;
   align-items: center;
   position: relative;
+  background-clip: padding-box;
   --gap: var(--ctrl-px);
   gap: var(--gap);
 }

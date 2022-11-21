@@ -1,8 +1,37 @@
+:root {
+  --tabs__tab-fg: var(--btn-fg, var(--fg));
+  --tabs__tab-bg: var(--btn-bg, var(--bg));
+  --tabs__tab-pa: var(--btn-pa);
+  --tabs__tab-bdw: var(--btn-bdw);
+  --tabs__tab-bds: var(--btn-bds);
+  --tabs__tab-bdc: var(--btn-bdc);
+  --tabs__tab-bdi: var(--btn-bdi);
+  --tabs__tab-br: var(--btn-br);
+  --tabs__tab-tsh: var(--btn-tsh);
+  --tabs__tab-bsh: var(--btn-bsh);
+
+  --tabs__panel-fg: var(--panel-fg);
+  --tabs__panel-bg: var(--panel-bg);
+  --tabs__panel-pa: var(--unit-sm);
+  --tabs__panel-bdw: var(--outset-bdw);
+  --tabs__panel-bds: var(--outset-bds);
+  --tabs__panel-bdc: var(--outset-bdc);
+  --tabs__panel-bdi: var(--outset-bdi);
+  --tabs__panel-br: var(--outset-br);
+  --tabs__panel-tsh: var(--outset-tsh);
+  --tabs__panel-bsh: var(--outset-bsh);
+
+  --tabs-overlap: calc(var(--tabs__tab-bdw) + var(--tabs__panel-bdw));
+  --tabs-active-overlap: var(--tabs__tab-bdw);
+  --tabs-gap: calc(-1 * var(--tabs__tab-bdw));
+}
+
 ui-tabs {
   display: flex;
   flex-direction: column;
   flex: 1 0 auto;
   max-height: 100%;
+  max-width: 100%;
 }
 
 .ui-tabs__panels {
@@ -19,4 +48,46 @@ ui-tabs {
   height: 100%;
   width: 100%;
   overflow: auto;
+
+  color: var(--tabs__panel-fg);
+  background: var(--tabs__panel-bg);
+  padding: var(--tabs__panel-pa);
+  border-width: var(--tabs__panel-bdw);
+  border-style: var(--tabs__panel-bds, solid);
+  border-color: var(--tabs__panel-bdc);
+  border-image: var(--tabs__panel-bdi);
+  border-radius: var(--tabs__panel-br);
+  text-shadow: var(--tabs__panel-tsh, none);
+  box-shadow: var(--tabs__panel-bsh);
+}
+
+.ui-tabs__tablist {
+  position: relative;
+  bottom: calc(-1 * var(--tabs-overlap));
+
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+}
+
+.ui-tabs__tab {
+  color: var(--tabs__tab-fg);
+  background: var(--tabs__tab-bg);
+  padding: var(--tabs__tab-pa);
+  border-width: var(--tabs__tab-bdw);
+  border-style: var(--tabs__tab-bds, solid);
+  border-color: var(--tabs__tab-bdc);
+  border-image: var(--tabs__tab-bdi);
+  border-radius: var(--tabs__tab-br);
+  text-shadow: var(--tabs__tab-tsh, none);
+  box-shadow: var(--tabs__tab-bsh);
+
+  clip-path: inset(0 0 var(--tabs-overlap) 0);
+
+  margin-right: var(--tabs-gap);
+}
+
+.ui-tabs__tab[aria-selected="true"] {
+  background-image: none;
+  clip-path: inset(0 0 var(--tabs-active-overlap) 0);
 }
