@@ -33,7 +33,7 @@ const SETUP = 3
 const RECYCLE = 4
 const DESTROY = 5
 
-const getStep = (steps) => (system.DEV ? steps : hash(steps))
+const stepsToHash = (steps) => (system.DEV ? steps : hash(steps))
 
 function filterPropsKeys(configProps) {
   const out = []
@@ -51,6 +51,7 @@ function filterPropsKeys(configProps) {
 }
 
 const _isComponent = Symbol.for("Component.isComponent")
+const _lifecycle = Symbol.for("Component.lifecycle")
 
 export default class Component extends HTMLElement {
   [_isComponent] = true
@@ -93,8 +94,8 @@ export default class Component extends HTMLElement {
   #observed
   #animateTo
   #instanceDestroy
-  #hasNewScope
-  #lifecycle = CREATE
+  #hasNewScope;
+  [_lifecycle] = CREATE
 
   constructor(...args) {
     super()
@@ -117,39 +118,39 @@ export default class Component extends HTMLElement {
 
   async connectedCallback() {
     if (!this.isConnected || this.hasAttribute("data-no-init")) return
-    if (this.#lifecycle === RENDER) {
+    if (this[_lifecycle] === RENDER) {
       try {
         await this.#setup()
       } catch (err) {
         if (this.ready.isPending) this.ready.resolve()
         dispatch(this, err)
       }
-    } else if (this.#lifecycle === INIT) this.ready.then(() => this.#setup())
-    else if (this.#lifecycle === CREATE) this.init().then(() => this.#setup())
-    else if (this.#lifecycle === RECYCLE) this.#lifecycle = SETUP
+    } else if (this[_lifecycle] === INIT) this.ready.then(() => this.#setup())
+    else if (this[_lifecycle] === CREATE) this.init().then(() => this.#setup())
+    else if (this[_lifecycle] === RECYCLE) this[_lifecycle] = SETUP
   }
 
   disconnectedCallback() {
-    if (this.#lifecycle >= RECYCLE) return
+    if (this[_lifecycle] >= RECYCLE) return
     this.#destroy()
   }
 
   recycle() {
-    this.#lifecycle = RECYCLE
+    this[_lifecycle] = RECYCLE
     this.remove()
     return this
   }
 
   async #setup() {
     if (
-      this.#lifecycle === SETUP ||
-      this.#lifecycle === DESTROY ||
-      this.#lifecycle === CREATE
+      this[_lifecycle] === SETUP ||
+      this[_lifecycle] === DESTROY ||
+      this[_lifecycle] === CREATE
     ) {
       return
     }
 
-    this.#lifecycle = SETUP
+    this[_lifecycle] = SETUP
     await this.update?.()
     await this.setup?.(this.ctx)
   }
@@ -164,7 +165,7 @@ export default class Component extends HTMLElement {
     if (prefix === "ui") prefix = "$" + prefix
     this.ctx.scope = resolveScope(
       `${prefix}/${suffix}`,
-      getStep(this.ctx.steps)
+      stepsToHash(this.ctx.steps)
     )
   }
 
@@ -172,7 +173,7 @@ export default class Component extends HTMLElement {
     if (ctx?.cancel?.signal.aborted) return
 
     this.removeAttribute("data-no-init")
-    this.#lifecycle = INIT
+    this[_lifecycle] = INIT
 
     const { definition } = this.constructor
 
@@ -337,24 +338,25 @@ export default class Component extends HTMLElement {
     await this.ctx.undones.done()
     await this.ctx.postrender.call()
 
-    if (this.#lifecycle === INIT) this.#lifecycle = RENDER
+    if (this[_lifecycle] === INIT) this[_lifecycle] = RENDER
   }
 
   async init(...args) {
+    if (this.localName === "ui-picto") console.log("init")
     this.ready ??= defer()
     try {
       await this.#init(...args)
       if (this.isConnected) await this.#setup()
       this.ready.resolve()
     } catch (err) {
-      this.ready.resolve()
+      this.ready?.resolve()
       throw err
     }
   }
 
   async #destroy(options) {
-    if (this.#lifecycle === DESTROY || this.#lifecycle === CREATE) return
-    this.#lifecycle = DESTROY
+    if (this[_lifecycle] === DESTROY || this[_lifecycle] === CREATE) return
+    this[_lifecycle] = DESTROY
 
     if (this.#instanceDestroy) await this.#instanceDestroy(options)
 
@@ -398,6 +400,6 @@ export default class Component extends HTMLElement {
     delete this.ctx.el
     delete this.ctx
 
-    this.#lifecycle = CREATE
+    this[_lifecycle] = CREATE
   }
 }
