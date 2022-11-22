@@ -26,6 +26,7 @@
   --ansi-fg: #eff0eb;
   --ansi-bg: var(--ansi-black);
   --ansi-cursor: var(--ansi-greenBright);
+  --ansi-dim: 0.6;
 }
 
 .ansi-black { color: var(--ansi-black); }

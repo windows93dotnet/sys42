@@ -19,7 +19,8 @@ deallocate.run = (obj, segments) => {
     if (typeof current !== "object" || key in current === false) return obj
 
     if (segments.length - 1 === i) {
-      delete current[key]
+      if (Array.isArray(current)) current.splice(key, 1)
+      else delete current[key]
       return obj
     }
 

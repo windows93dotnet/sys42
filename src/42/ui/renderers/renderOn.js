@@ -88,9 +88,8 @@ function setPopupOpener(el, ctx, key, def) {
 export default function renderOn(el, def, ctx) {
   const { list } = normalizeListen([{ signal: ctx.signal }, el, ...def.on], {
     returnForget: false,
-    getEvents(events, item) {
+    getEvents(events) {
       for (const [key, val] of Object.entries(events)) {
-        if (def.dropzone && key.includes("drop")) item.prevent = true
         if (typeof val === "string") {
           events[key] = compileRun(val, forkCtx(ctx, key))
         } else if ("dialog" in val) {

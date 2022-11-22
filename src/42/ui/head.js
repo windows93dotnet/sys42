@@ -12,3 +12,7 @@ if (window.top !== window.self) {
     })
   })
 }
+
+const prevent = (e) => e.preventDefault()
+document.documentElement.addEventListener("dragover", prevent)
+document.documentElement.addEventListener("drop", prevent)
