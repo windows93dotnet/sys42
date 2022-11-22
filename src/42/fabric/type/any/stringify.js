@@ -74,7 +74,7 @@ const PRESETS = {
   },
 
   sample: {
-    list: true,
+    // list: true,
     printWidth: Infinity,
     displayNewlines: false,
     maxBytes: 64,

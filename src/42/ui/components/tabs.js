@@ -1,13 +1,14 @@
 import Component from "../classes/Component.js"
 import isFocusable from "../../fabric/dom/isFocusable.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
+import hash from "../../fabric/type/any/hash.js"
+import getIndex from "../../fabric/dom/getIndex.js"
 import dt from "../../core/dt.js"
 
 export class Tabs extends Component {
   static definition = {
     tag: "ui-tabs",
     role: "none",
-    id: true,
 
     props: {
       current: {
@@ -19,6 +20,7 @@ export class Tabs extends Component {
   }
 
   render() {
+    this.id ||= hash(this.ctx.steps)
     const { id } = this
 
     return [
@@ -30,19 +32,42 @@ export class Tabs extends Component {
             role: "tablist",
             dropzone: true,
             on: {
-              async drop(e) {
-                const { data, effect } = await dt.import(e)
-                if (data) {
-                  console.log("drop", effect, data.id === id)
+              async drop(e, target) {
+                console.log("drop")
+                const { data } = await dt.import(e)
+                if (data?.type === "layout") {
+                  const tab = target.closest(".ui-tabs__tab")
+                  const list = this.reactive.get(this.scope)
+                  let index
+                  if (tab) {
+                    index = getIndex(tab)
+                    const { x, width } = tab.getBoundingClientRect()
+                    if (e.x > x + width / 2) index++
+                    list.splice(index, 0, data.state)
+                  } else {
+                    index = list.push(data.state) - 1
+                  }
+
+                  this.component.current = index
                 }
               },
             },
             each: {
-              tag: ".ui-tabs__tab.button",
+              tag: ".ui-tabs__tab._button",
               role: "tab",
               id: `tab-${id}-{{@index}}`,
               tabIndex: "{{../../current === @index ? 0 : -1}}",
-              content: "{{render(label)}}",
+              content: [
+                { tag: "span.solid", content: "{{render(label)}}" },
+                {
+                  tag: "button.ui-tabs__close.pa-0.btn-clear",
+                  picto: "close",
+                  click() {
+                    console.log("close", this.scope)
+                    this.reactive.delete(this.scope)
+                  },
+                },
+              ],
               aria: {
                 selected: `{{../../current === @index}}`,
                 controls: `panel-${id}-{{@index}}`,
@@ -51,12 +76,20 @@ export class Tabs extends Component {
               draggable: true,
               on: {
                 dragstart(e) {
+                  const { scope } = this
+                  const state = this.reactive.get(scope, { silent: true })
                   dt.export(e, {
-                    effect: "move",
-                    image: true,
-                    data: { id, hello: "world" },
+                    effect: ["copy", "move"],
+                    // image: true,
+                    data: { type: "layout", scope, state },
                   })
                 },
+                // dragend(e) {
+                //   console.log("dragend")
+                //   if (e.dataTransfer.dropEffect === "move") {
+                //     this.reactive.delete(this.scope)
+                //   }
+                // },
               },
             },
           },

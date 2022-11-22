@@ -121,6 +121,14 @@ types.any = {
   clone: "any/clone",
   equal: "any/equal",
   stringify: "any/stringify",
+  async trace(...args) {
+    const [logAsHTML, highlight, stringify] = await Promise.all([
+      import("./console/logAsHTML.js").then((m) => m.default),
+      import("./console/formats/highlight.js").then((m) => m.default),
+      import("../fabric/type/any/stringify.js").then((m) => m.default),
+    ])
+    this.el.replaceChildren(logAsHTML(highlight(stringify(...args))))
+  },
   log: (...args) => import("./log.js").then(({ log }) => void log(...args)),
   uid: (...args) => import("./uid.js").then(({ uid }) => uid(...args)),
   bytesize: (bytes, options) => bytesize(bytes ?? 0, options),
