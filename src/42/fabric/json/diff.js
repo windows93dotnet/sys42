@@ -172,15 +172,15 @@ function valueDiff(a, b, path, options, parents = {}) {
   let typeB = typeof b
   if (typeA !== typeB) return replaceWithB(path, b)
 
-  if (typeA === "string" && typeB === "string") {
-    // return arrayDiff(a, b, path, options, parents)
-  }
+  // if (typeA === "string" && typeB === "string") {
+  //   return arrayDiff(a, b, path, options, parents)
+  // }
 
   if (typeA === "object") {
-    const circualrA = parents.a && parents.a.indexOfNext(a)
-    const circualrB = parents.b && parents.b.indexOfNext(b)
-    if (circualrA !== circualrB) return replaceWithB(path, b)
-    if (circualrA > -1) return []
+    const circularA = parents.a && parents.a.indexOfNext(a)
+    const circularB = parents.b && parents.b.indexOfNext(b)
+    if (circularA !== circularB) return replaceWithB(path, b)
+    if (circularA > -1) return []
     parents.a = new LinkedListNode(a, parents.a)
     parents.b = new LinkedListNode(b, parents.b)
 

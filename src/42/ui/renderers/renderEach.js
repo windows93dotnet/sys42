@@ -1,3 +1,5 @@
+/* eslint-disable complexity */
+/* eslint-disable max-depth */
 import render from "../render.js"
 import omit from "../../fabric/type/object/omit.js"
 import NodesRange from "../../fabric/range/NodesRange.js"
@@ -5,6 +7,8 @@ import removeRange from "./removeRange.js"
 import register from "../register.js"
 import Canceller from "../../fabric/classes/Canceller.js"
 import { normalizeDefNoCtx } from "../normalize.js"
+import diff from "../../fabric/json/diff.js"
+import renderAnimation from "./renderAnimation.js"
 
 const PLACEHOLDER = "[each]"
 const ITEM = "[#]"
@@ -33,6 +37,15 @@ export default function renderEach(def, ctx) {
     scopeChain.push({ scope: ctx.scope })
   }
 
+  let prevArray
+  const removedIndices = []
+  const removedElements = []
+  const addedIndices = []
+  const addedElements = []
+
+  const animTo = eachDef?.animate?.to
+  const animFrom = eachDef?.animate?.from
+
   register(ctx, ctx.scope, (array) => {
     const container = lastItem?.parentElement
 
@@ -52,6 +65,22 @@ export default function renderEach(def, ctx) {
     let i = 0
     const { length } = array
 
+    if (animTo || animFrom) {
+      if (prevArray) {
+        const changes = diff(prevArray, array)
+        removedIndices.length = 0
+        removedElements.length = 0
+        addedIndices.length = 0
+        addedElements.length = 0
+        for (const { op, path } of changes) {
+          if (op === "remove") removedIndices.push(Number(path.slice(1)))
+          if (op === "add") addedIndices.push(Number(path.slice(1)))
+        }
+      }
+
+      prevArray = [...array]
+    }
+
     let endItem
 
     if (lastItem) {
@@ -67,6 +96,14 @@ export default function renderEach(def, ctx) {
 
       while ((node = walker.nextNode())) {
         if (node.textContent === ITEM) {
+          if (animTo && removedIndices.includes(i)) {
+            removedElements.push(node.previousSibling)
+          }
+
+          if (animFrom && addedIndices.includes(i)) {
+            addedElements.push(node.previousSibling)
+          }
+
           i++
 
           endItem = node
@@ -75,8 +112,28 @@ export default function renderEach(def, ctx) {
           // remove extra items only
           if (i > l) {
             cancelExtraItems(i, cancels)
-            const range = new NodesRange(endItem, lastItem, container)
-            removeRange(ctx, range, eachDef)
+
+            if (animTo) {
+              const range = new NodesRange(endItem, lastItem, container)
+              for (const inert of range.nodes) {
+                if (inert.nodeType === Node.ELEMENT_NODE) {
+                  const recycled = removedElements.shift()
+                  if (recycled) {
+                    inert.replaceChildren(
+                      ...recycled.cloneNode(true).childNodes
+                    )
+                    recycled.before(inert)
+                  }
+
+                  renderAnimation(ctx, inert, "to", animTo) //
+                    .then(() => inert.remove())
+                } else inert.remove()
+              }
+            } else {
+              const range = new NodesRange(endItem, lastItem, container)
+              range.deleteContents()
+            }
+
             lastItem = endItem
             break
           }
@@ -90,9 +147,17 @@ export default function renderEach(def, ctx) {
       const cancel = new Canceller(ctx.signal)
       cancels.push(cancel)
 
+      let ddd = eachDef
+
+      if (addedElements.length > 0) {
+        const recycled = addedElements.pop()
+        renderAnimation(ctx, recycled, "from", animFrom)
+        ddd = { ...ddd, animate: { to: animTo } }
+      }
+
       fragment.append(
         render(
-          eachDef,
+          ddd,
           {
             ...ctx,
             cancel,
