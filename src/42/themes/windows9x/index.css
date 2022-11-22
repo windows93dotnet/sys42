@@ -544,7 +544,8 @@ legend button:active,
 ======= */
 
 .ui-tabs__tablist {
-  left: 2px;
+  padding-left: 2px;
+  padding-right: 6px;
 }
 
 .ui-tabs__tab[aria-selected="true"] {

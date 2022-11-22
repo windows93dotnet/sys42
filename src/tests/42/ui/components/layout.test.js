@@ -70,7 +70,7 @@ window.app = await ui({
           tag: ".box-center",
           content: {
             tag: ".pa.outset.resize.flex-v",
-            style: { width: "400px", height: "200px" },
+            style: { width: "300px", height: "200px" },
             content: {
               tag: "ui-tabs",
               id: "tabs1",
@@ -83,7 +83,7 @@ window.app = await ui({
           tag: ".box-center",
           content: {
             tag: ".pa.outset.resize.flex-v",
-            style: { width: "400px", height: "200px" },
+            style: { width: "300px", height: "200px" },
             content: {
               tag: "ui-tabs",
               id: "tabs2",

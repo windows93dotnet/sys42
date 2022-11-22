@@ -88,13 +88,13 @@ export class Tabs extends Component {
               drop: "{{onDrop(e, target)}}",
             },
             each: {
-              tag: ".ui-tabs__tab._button",
+              tag: ".ui-tabs__tab.button",
               role: "tab",
               id: `tab-${id}-{{@index}}`,
               tabIndex: "{{../../current === @index ? 0 : -1}}",
               // animate: { opacity: 0, ms: 1000 },
               content: [
-                { tag: "span.solid", content: "{{render(label)}}" },
+                { tag: "span", content: "{{render(label)}}" },
                 {
                   tag: "button.ui-tabs__close.pa-0.btn-clear",
                   tabIndex: "{{../../current === @index ? 0 : -1}}",
