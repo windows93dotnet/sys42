@@ -76,7 +76,7 @@ export function install() {
 `
   filters.append(disabledInset)
   document.head.append(styles)
-  document.body.append(filters)
+  document.documentElement.append(filters)
 
   window.addEventListener("resize", () => {
     disabledInset.setAttribute("x", "0") // [1]

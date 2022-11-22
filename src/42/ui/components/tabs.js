@@ -1,5 +1,4 @@
 import Component from "../classes/Component.js"
-import uid from "../../core/uid.js"
 import isFocusable from "../../fabric/dom/isFocusable.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
 import dt from "../../core/dt.js"
@@ -8,6 +7,7 @@ export class Tabs extends Component {
   static definition = {
     tag: "ui-tabs",
     role: "none",
+    id: true,
 
     props: {
       current: {
@@ -19,7 +19,7 @@ export class Tabs extends Component {
   }
 
   render() {
-    const id = uid()
+    const { id } = this
 
     return [
       {

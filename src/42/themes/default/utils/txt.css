@@ -37,9 +37,9 @@
 .txt-left { text-align: left; justify-content: start; }
 .txt-right { text-align: right; justify-content: end; }
 .txt-justify { text-align: justify; }
-.txt-wrap { overflow-wrap: break-word; }
-.txt-break { white-space: break-spaces; }
 .txt-pre { white-space: pre; }
+.txt-wrap { white-space: pre-wrap; }
+.txt-nowrap { white-space: nowrap; }
 
 .txt-b { font-weight: bold; }
 .txt-i { font-style: italic; }

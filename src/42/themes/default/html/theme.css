@@ -87,6 +87,10 @@
   font: var(--font);
 }
 
+* {
+  overflow-wrap: break-word;
+}
+
 .breath {
   padding: var(--breath);
 }
@@ -263,6 +267,7 @@ output {
   overflow-x: auto;
   white-space: pre;
   speak-as: literal-punctuation;
+  max-width: 100%;
 }
 
 :where(

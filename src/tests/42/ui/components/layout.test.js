@@ -59,34 +59,41 @@ for (const item of planets) {
 planets[0].content = planets[0].description
 
 window.app = ui({
-  tag: "body.box-fit.box-h",
+  tag: "body.box-fit.box-v",
   content: [
     {
-      tag: ".box-center",
-      content: {
-        tag: ".pa.outset.resize.flex-v",
-        style: { width: "300px", height: "200px" },
-        content: {
-          tag: "ui-tabs",
-          current: "{{currentTab}}",
-          content: "{{planets}}",
+      tag: ".box-h",
+      content: [
+        {
+          tag: ".box-center",
+          content: {
+            tag: ".pa.outset.resize.flex-v",
+            style: { width: "300px", height: "200px" },
+            content: {
+              tag: "ui-tabs",
+              current: "{{currentTab}}",
+              content: "{{planets}}",
+            },
+          },
         },
-      },
-    },
-    {
-      tag: ".box-center",
-      content: {
-        tag: ".pa.outset.resize.flex-v",
-        style: { width: "300px", height: "200px" },
-        content: {
-          tag: "ui-tabs",
-          content: [
-            { label: "One", content: lorem }, //
-            { label: "Two", content: "hello" }, //
-          ],
+        {
+          tag: ".box-center",
+          content: {
+            tag: ".pa.outset.resize.flex-v",
+            style: { width: "300px", height: "200px" },
+            content: {
+              tag: "ui-tabs",
+              content: [
+                { label: "One", content: lorem }, //
+                { label: "Two", content: "hello" }, //
+              ],
+            },
+          },
         },
-      },
+      ],
     },
+
+    { tag: "pre.code.txt-wrap.ma-0", content: "{{stringify(/)}}" },
   ],
 
   state: {
