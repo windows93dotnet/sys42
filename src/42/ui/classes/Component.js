@@ -342,7 +342,6 @@ export default class Component extends HTMLElement {
   }
 
   async init(...args) {
-    if (this.localName === "ui-picto") console.log("init")
     this.ready ??= defer()
     try {
       await this.#init(...args)
