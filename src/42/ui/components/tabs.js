@@ -6,6 +6,8 @@ import getIndex from "../../fabric/dom/getIndex.js"
 import moveItem from "../../fabric/type/array/moveItem.js"
 import dt from "../../core/dt.js"
 
+const _isSorting = Symbol("LayoutPanel._isSorting")
+
 export class Tabs extends Component {
   static definition = {
     tag: "ui-tabs",
@@ -25,6 +27,51 @@ export class Tabs extends Component {
     if (this.current === this.content.length) this.current--
   }
 
+  onDragStart(e, index) {
+    const { id } = this
+    const path = `${this.ctx.scope}/content/${index}`
+    const state = this.ctx.reactive.get(path)
+    const data = { type: "layout", id, index, state }
+    dt.export(e, { effect: ["copy", "move"], data })
+  }
+
+  onDragEnd(e, index) {
+    if (this[_isSorting]) {
+      this[_isSorting] = false
+      return
+    }
+
+    if (e.dataTransfer.dropEffect === "move") this.removeTab(index)
+  }
+
+  async onDrop(e) {
+    const { data } = await dt.import(e)
+    if (data?.type === "layout") {
+      const tab = e.target.closest(".ui-tabs__tab")
+      let index
+
+      if (data.id === this.id) this[_isSorting] = true
+
+      if (tab) {
+        index = getIndex(tab)
+        if (data.id === this.id && data.index === index) return
+        const { x, width } = tab.getBoundingClientRect()
+        if (e.x > x + width / 2) index++
+      } else {
+        index = this.content.length
+      }
+
+      if (this[_isSorting]) {
+        if (index > this.content.length - 1) index = this.content.length - 1
+        moveItem(this.content, data.index, index)
+        this.current = index
+      } else {
+        this.content.splice(index, 0, data.state)
+        this.current = index
+      }
+    }
+  }
+
   render() {
     this.id ||= hash(this.ctx.steps)
     const { id } = this
@@ -38,24 +85,7 @@ export class Tabs extends Component {
             role: "tablist",
             dropzone: true,
             on: {
-              async drop(e, target) {
-                const { data } = await dt.import(e)
-                if (data?.type === "layout") {
-                  const tab = target.closest(".ui-tabs__tab")
-                  const list = this.reactive.get(this.scope)
-                  let index
-                  if (tab) {
-                    index = getIndex(tab)
-                    const { x, width } = tab.getBoundingClientRect()
-                    if (e.x > x + width / 2) index++
-                    list.splice(index, 0, data.state)
-                  } else {
-                    index = list.push(data.state) - 1
-                  }
-
-                  this.component.current = index
-                }
-              },
+              drop: "{{onDrop(e, target)}}",
             },
             each: {
               tag: ".ui-tabs__tab._button",
@@ -69,10 +99,7 @@ export class Tabs extends Component {
                   tag: "button.ui-tabs__close.pa-0.btn-clear",
                   tabIndex: "{{../../current === @index ? 0 : -1}}",
                   picto: "close",
-                  on: {
-                    stop: true,
-                    click: "{{removeTab(@index)}}",
-                  },
+                  on: { stop: true, click: "{{removeTab(@index)}}" },
                 },
               ],
               aria: {
@@ -82,16 +109,8 @@ export class Tabs extends Component {
               click: `{{../../current = @index}}`,
               draggable: true,
               on: {
-                dragstart(e) {
-                  const { scope } = this
-                  const state = this.reactive.get(scope, { silent: true })
-                  dt.export(e, {
-                    effect: ["copy", "move"],
-                    data: { type: "layout", id, scope, state },
-                  })
-                },
-                dragend: `{{e.dataTransfer.dropEffect === "move"
-                  ? removeTab(@index) : undefined}}`,
+                dragstart: "{{onDragStart(e, @index)}}",
+                dragend: "{{onDragEnd(e, @index)}}",
               },
             },
           },
