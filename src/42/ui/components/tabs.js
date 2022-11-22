@@ -19,6 +19,11 @@ export class Tabs extends Component {
     },
   }
 
+  removeTab(index) {
+    this.content.splice(index, 1)
+    if (this.current === this.content.length) this.current--
+  }
+
   render() {
     this.id ||= hash(this.ctx.steps)
     const { id } = this
@@ -33,7 +38,6 @@ export class Tabs extends Component {
             dropzone: true,
             on: {
               async drop(e, target) {
-                console.log("drop")
                 const { data } = await dt.import(e)
                 if (data?.type === "layout") {
                   const tab = target.closest(".ui-tabs__tab")
@@ -57,14 +61,16 @@ export class Tabs extends Component {
               role: "tab",
               id: `tab-${id}-{{@index}}`,
               tabIndex: "{{../../current === @index ? 0 : -1}}",
+              // animate: { opacity: 0, ms: 1000 },
               content: [
                 { tag: "span.solid", content: "{{render(label)}}" },
                 {
                   tag: "button.ui-tabs__close.pa-0.btn-clear",
+                  tabIndex: "{{../../current === @index ? 0 : -1}}",
                   picto: "close",
-                  click() {
-                    console.log("close", this.scope)
-                    this.reactive.delete(this.scope)
+                  on: {
+                    stop: true,
+                    click: "{{removeTab(@index)}}",
                   },
                 },
               ],
@@ -80,16 +86,11 @@ export class Tabs extends Component {
                   const state = this.reactive.get(scope, { silent: true })
                   dt.export(e, {
                     effect: ["copy", "move"],
-                    // image: true,
                     data: { type: "layout", scope, state },
                   })
                 },
-                // dragend(e) {
-                //   console.log("dragend")
-                //   if (e.dataTransfer.dropEffect === "move") {
-                //     this.reactive.delete(this.scope)
-                //   }
-                // },
+                dragend: `{{e.dataTransfer.dropEffect === "move"
+                  ? removeTab(@index) : undefined}}`,
               },
             },
           },
@@ -108,7 +109,10 @@ export class Tabs extends Component {
               on: {
                 render(e, target) {
                   queueTask(() => {
-                    if (isFocusable(target.firstElementChild)) {
+                    if (
+                      isFocusable(target.firstElementChild) ||
+                      target.firstElementChild?.localName === "label"
+                    ) {
                       target.tabIndex = -1
                     }
                   })
