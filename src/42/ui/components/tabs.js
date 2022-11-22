@@ -3,6 +3,7 @@ import isFocusable from "../../fabric/dom/isFocusable.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
 import hash from "../../fabric/type/any/hash.js"
 import getIndex from "../../fabric/dom/getIndex.js"
+import moveItem from "../../fabric/type/array/moveItem.js"
 import dt from "../../core/dt.js"
 
 export class Tabs extends Component {
@@ -86,7 +87,7 @@ export class Tabs extends Component {
                   const state = this.reactive.get(scope, { silent: true })
                   dt.export(e, {
                     effect: ["copy", "move"],
-                    data: { type: "layout", scope, state },
+                    data: { type: "layout", id, scope, state },
                   })
                 },
                 dragend: `{{e.dataTransfer.dropEffect === "move"

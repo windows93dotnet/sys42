@@ -349,7 +349,8 @@ export default class Component extends HTMLElement {
       if (this.isConnected) await this.#setup()
       this.ready.resolve()
     } catch (err) {
-      this.ready?.resolve()
+      if (this[_lifecycle] === DESTROY || this[_lifecycle] === CREATE) return
+      this.ready.resolve()
       throw err
     }
   }
