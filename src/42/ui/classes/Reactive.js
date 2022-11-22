@@ -59,6 +59,7 @@ export default class Reactive extends Emitter {
       locate: (ref) => locate(this.state, ref, delimiter),
 
       change: (path, val, oldVal, deleted) => {
+        // console.log(path, val, oldVal, deleted)
         this.update(path, val, oldVal, deleted)
       },
 

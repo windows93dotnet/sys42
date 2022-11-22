@@ -95,6 +95,7 @@ types.array = {
   pop: (arr) => arr.pop(),
   shift: (arr) => arr.shift(),
   push: (arr, ...item) => arr.push(...item),
+  splice: (arr, ...item) => arr.splice(...item),
   slice: MANIPULATION,
   difference: "array/difference",
   groupBy: "array/groupBy",
