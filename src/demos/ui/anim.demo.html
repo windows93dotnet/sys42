@@ -16,72 +16,72 @@
     tag: "body.box-fit.box-v._txt-center.pa-xxl.desktop",
 
     content: [
-      {
-        tag: ".item-shrink.box-h",
-        content: {
-          tag: "button#toggle.item-spread",
-          content: "toggle",
-          on: { click: "{{show = !show}}" },
-        },
-      },
-      {
-        tag: ".box-h",
-        content: [
-          {
-            tag: ".box-center.box-stack",
-            content: {
-              if: "{{show}}",
-              tag: ".ratio.bd.pa-xxl",
-              animate: {
-                from: { rotate: "360deg", scale: 0, ms: 1000 },
-                to: { rotate: "-360deg", scale: 0, ms: 1000 },
-              },
-              content: "a",
-            },
-          },
-          {
-            tag: ".box-center.box-stack",
-            content: {
-              if: "{{show}}",
-              tag: ".ratio.bd.pa-xxl",
-              animate: { translate: "-150px", scale: 0 },
-              content: "a",
-              else: {
-                tag: ".ratio.bd.pa-xxl",
-                content: "b",
-                animate: { translate: "150px", scale: 0 },
-              },
-            },
-          },
-          {
-            tag: ".box-center.box-stack",
-            content: {
-              if: "{{show}}",
-              tag: ".ratio.bd.pa-xxl",
-              animate: { translate: "0 -150px", scale: 0 },
-              content: "a",
-              else: {
-                tag: ".ratio.bd.pa-xxl",
-                content: "b",
-              },
-            },
-          },
-          {
-            tag: ".box-center.box-stack",
-            content: {
-              if: "{{show}}",
-              tag: ".ratio.bd.pa-xxl",
-              animate: { translate: "0 -150px", scale: 0 },
-              content: "a",
-              else: {
-                tag: ".ratio.bd.pa-xxl",
-                content: "b",
-                animate: false,
-              },
-            },
-          },
-        ],
-      },
+      // {
+      //   tag: ".item-shrink.box-h",
+      //   content: {
+      //     tag: "button#toggle.item-spread",
+      //     content: "toggle",
+      //     on: { click: "{{show = !show}}" },
+      //   },
+      // },
+      // {
+      //   tag: ".box-h",
+      //   content: [
+      //     {
+      //       tag: ".box-center.box-stack",
+      //       content: {
+      //         if: "{{show}}",
+      //         tag: ".ratio.bd.pa-xxl",
+      //         animate: {
+      //           from: { rotate: "360deg", scale: 0, ms: 1000 },
+      //           to: { rotate: "-360deg", scale: 0, ms: 1000 },
+      //         },
+      //         content: "a",
+      //       },
+      //     },
+      //     {
+      //       tag: ".box-center.box-stack",
+      //       content: {
+      //         if: "{{show}}",
+      //         tag: ".ratio.bd.pa-xxl",
+      //         animate: { translate: "-150px", scale: 0 },
+      //         content: "a",
+      //         else: {
+      //           tag: ".ratio.bd.pa-xxl",
+      //           content: "b",
+      //           animate: { translate: "150px", scale: 0 },
+      //         },
+      //       },
+      //     },
+      //     {
+      //       tag: ".box-center.box-stack",
+      //       content: {
+      //         if: "{{show}}",
+      //         tag: ".ratio.bd.pa-xxl",
+      //         animate: { translate: "0 -150px", scale: 0 },
+      //         content: "a",
+      //         else: {
+      //           tag: ".ratio.bd.pa-xxl",
+      //           content: "b",
+      //         },
+      //       },
+      //     },
+      //     {
+      //       tag: ".box-center.box-stack",
+      //       content: {
+      //         if: "{{show}}",
+      //         tag: ".ratio.bd.pa-xxl",
+      //         animate: { translate: "0 -150px", scale: 0 },
+      //         content: "a",
+      //         else: {
+      //           tag: ".ratio.bd.pa-xxl",
+      //           content: "b",
+      //           animate: false,
+      //         },
+      //       },
+      //     },
+      //   ],
+      // },
       {
         tag: ".item-shrink.box-h",
         content: [
@@ -121,18 +121,24 @@
         each: {
           tag: ".ratio.bd.pa-xxl",
           content: "{{.}}",
+          id: "item-{{@index + 1}}",
           animate: { rotate: "360deg", scale: 0, ms: 400 },
+          click: "{{splice(/arr, @index, 1)}}",
         },
       },
     ],
 
     state: {
       show: true,
-      arr: ["1"],
+      arr: ["1", "2", "3", "4", "5", "6"],
     },
   })
 
   setTimeout(() => {
-    document.querySelector("#toggle")?.click()
-  }, 1500)
+    document.querySelector("#item-3")?.click()
+  }, 600)
+
+  // setTimeout(() => {
+  //   document.querySelector("#toggle")?.click()
+  // }, 1500)
 </script>
