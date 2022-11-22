@@ -560,6 +560,7 @@ function normalizeOn(def) {
   if (def.click) {
     def.on ??= []
     def.on.push({ click: def.click })
+    delete def.click
   }
 
   if (def.toggle) {
@@ -576,16 +577,19 @@ function normalizeOn(def) {
         }
       },
     })
+    delete def.toggle
   }
 
   if (def.dialog) {
     def.on ??= []
     def.on.push({ click: { dialog: def.dialog } })
+    delete def.dialog
   }
 
   if (def.popup) {
     def.on ??= []
     def.on.push({ "pointerdown || Enter || ArrowRight": { popup: def.popup } })
+    delete def.popup
   }
 
   if (def.menu) {
@@ -599,7 +603,6 @@ function normalizeOn(def) {
         },
       },
     })
-
     delete def.menu
   }
 
@@ -615,6 +618,7 @@ function normalizeOn(def) {
         },
       },
     })
+    delete def.contextmenu
   }
 
   if (def.dropzone) {
@@ -625,6 +629,7 @@ function normalizeOn(def) {
         handleEffect(e)
       },
     })
+    delete def.dropzone
   }
 
   if (def.on) extractWatchFromOn(def)
