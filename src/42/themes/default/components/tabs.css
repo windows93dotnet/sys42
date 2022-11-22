@@ -23,7 +23,7 @@
 
   --tabs-overlap: calc(var(--tabs__tab-bdw) + var(--tabs__panel-bdw));
   --tabs-active-overlap: var(--tabs__tab-bdw);
-  --tabs-gap: calc(-1 * var(--tabs__tab-bdw));
+  --tabs-gap: var(--tabs__tab-bdw);
 }
 
 ui-tabs {
@@ -68,6 +68,7 @@ ui-tabs {
   display: flex;
   flex-direction: row;
   align-items: flex-end;
+  padding-right: var(--tabs-gap);
 }
 
 .ui-tabs__tab {
@@ -83,8 +84,7 @@ ui-tabs {
   box-shadow: var(--tabs__tab-bsh);
 
   clip-path: inset(0 0 var(--tabs-overlap) 0);
-
-  margin-right: var(--tabs-gap);
+  margin-right: calc(-1 * var(--tabs-gap));
 }
 
 .ui-tabs__tab[aria-selected="true"] {

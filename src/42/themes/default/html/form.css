@@ -278,7 +278,7 @@ States
   outline-offset: -1px;
 }
 
-:focus:not(:focus-visible, [aria-pressed]),
+/* :focus:not(:focus-visible, [aria-pressed]), */
 [tabindex="-1"]:focus,
 [tabindex="-1"].focus {
   outline: none;
@@ -856,8 +856,11 @@ input:is([type="checkbox"],[type="radio"]):checked:disabled + label.button {
   }
 }
 
-.button > .btn-clear {
+.button > .btn-clear.has-picto {
   border: 0;
+  flex: 0 0 var(--picto-size);
+  height: var(--picto-size);
+  --btn-oo: 0;
 }
 
 :where(.solid),

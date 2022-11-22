@@ -17,6 +17,7 @@
 :where(h4, h5, h6) { font-size: 100%; font-weight: bold; }
 
 :where(
+.ui-tabs__tab > span,
 .ui-icon__text,
 .pixel-font) {
   transform: translateX(0.16px) scale(1.001);
@@ -26,6 +27,7 @@
 /* Firefox */
 @-moz-document url-prefix("") {
   :where(
+  .ui-tabs__tab > span,
   .ui-icon__text,
   .pixel-font) {
     transform: translateX(0.7px);
