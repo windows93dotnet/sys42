@@ -12,76 +12,76 @@
 <script type="module">
   import ui from "../../42/ui.js"
 
-  await ui({
+  const app = await ui({
     tag: "body.box-fit.box-v._txt-center.pa-xxl.desktop",
 
     content: [
-      // {
-      //   tag: ".item-shrink.box-h",
-      //   content: {
-      //     tag: "button#toggle.item-spread",
-      //     content: "toggle",
-      //     on: { click: "{{show = !show}}" },
-      //   },
-      // },
-      // {
-      //   tag: ".box-h",
-      //   content: [
-      //     {
-      //       tag: ".box-center.box-stack",
-      //       content: {
-      //         if: "{{show}}",
-      //         tag: ".ratio.bd.pa-xxl",
-      //         animate: {
-      //           from: { rotate: "360deg", scale: 0, ms: 1000 },
-      //           to: { rotate: "-360deg", scale: 0, ms: 1000 },
-      //         },
-      //         content: "a",
-      //       },
-      //     },
-      //     {
-      //       tag: ".box-center.box-stack",
-      //       content: {
-      //         if: "{{show}}",
-      //         tag: ".ratio.bd.pa-xxl",
-      //         animate: { translate: "-150px", scale: 0 },
-      //         content: "a",
-      //         else: {
-      //           tag: ".ratio.bd.pa-xxl",
-      //           content: "b",
-      //           animate: { translate: "150px", scale: 0 },
-      //         },
-      //       },
-      //     },
-      //     {
-      //       tag: ".box-center.box-stack",
-      //       content: {
-      //         if: "{{show}}",
-      //         tag: ".ratio.bd.pa-xxl",
-      //         animate: { translate: "0 -150px", scale: 0 },
-      //         content: "a",
-      //         else: {
-      //           tag: ".ratio.bd.pa-xxl",
-      //           content: "b",
-      //         },
-      //       },
-      //     },
-      //     {
-      //       tag: ".box-center.box-stack",
-      //       content: {
-      //         if: "{{show}}",
-      //         tag: ".ratio.bd.pa-xxl",
-      //         animate: { translate: "0 -150px", scale: 0 },
-      //         content: "a",
-      //         else: {
-      //           tag: ".ratio.bd.pa-xxl",
-      //           content: "b",
-      //           animate: false,
-      //         },
-      //       },
-      //     },
-      //   ],
-      // },
+      {
+        tag: ".item-shrink.box-h",
+        content: {
+          tag: "button#toggle.item-spread",
+          content: "toggle",
+          on: { click: "{{show = !show}}" },
+        },
+      },
+      {
+        tag: ".box-h",
+        content: [
+          {
+            tag: ".box-center.box-stack",
+            content: {
+              if: "{{show}}",
+              tag: ".ratio.bd.pa-xxl",
+              animate: {
+                from: { rotate: "360deg", scale: 0, ms: 1000 },
+                to: { rotate: "-360deg", scale: 0, ms: 1000 },
+              },
+              content: "a",
+            },
+          },
+          {
+            tag: ".box-center.box-stack",
+            content: {
+              if: "{{show}}",
+              tag: ".ratio.bd.pa-xxl",
+              animate: { translate: "-150px", scale: 0 },
+              content: "a",
+              else: {
+                tag: ".ratio.bd.pa-xxl",
+                content: "b",
+                animate: { translate: "150px", scale: 0 },
+              },
+            },
+          },
+          {
+            tag: ".box-center.box-stack",
+            content: {
+              if: "{{show}}",
+              tag: ".ratio.bd.pa-xxl",
+              animate: { translate: "0 -150px", scale: 0 },
+              content: "a",
+              else: {
+                tag: ".ratio.bd.pa-xxl",
+                content: "b",
+              },
+            },
+          },
+          {
+            tag: ".box-center.box-stack",
+            content: {
+              if: "{{show}}",
+              tag: ".ratio.bd.pa-xxl",
+              animate: { translate: "0 -150px", scale: 0 },
+              content: "a",
+              else: {
+                tag: ".ratio.bd.pa-xxl",
+                content: "b",
+                animate: false,
+              },
+            },
+          },
+        ],
+      },
       {
         tag: ".item-shrink.box-h",
         content: [
@@ -121,8 +121,20 @@
         each: {
           tag: ".ratio.bd.pa-xxl",
           content: "{{.}}",
+          style: {
+            // transformOrigin: "left",
+            // background: "tan",
+            clipPath: "inset(0 0 0 0)",
+          },
           id: "item-{{@index + 1}}",
-          animate: { rotate: "360deg", scale: 0, ms: 400 },
+          // animate: { rotate: "360deg", scale: 0, ms: 400 },
+          animate: {
+            clipPath: "inset(0 0 100% 0)",
+            translate: "0 100%",
+            // clipPath: "inset(0 0 0 100%)",
+            // translate: "-100% 0",
+            ms: 400,
+          },
           click: "{{splice(/arr, @index, 1)}}",
         },
       },
@@ -135,8 +147,16 @@
   })
 
   setTimeout(() => {
-    document.querySelector("#item-3")?.click()
+    app.state.arr.splice(3, 0, "^^^")
   }, 600)
+
+  setTimeout(() => {
+    app.state.arr.push("<<<")
+  }, 1200)
+
+  // setTimeout(() => {
+  //   document.querySelector("#item-3")?.click()
+  // }, 600)
 
   // setTimeout(() => {
   //   document.querySelector("#toggle")?.click()

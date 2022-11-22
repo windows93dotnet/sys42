@@ -14,4 +14,8 @@ export default class NodesRange extends StaticRange {
   deleteContents() {
     for (const el of getNodesInRange(this)) el.remove()
   }
+
+  get nodes() {
+    return getNodesInRange(this)
+  }
 }
