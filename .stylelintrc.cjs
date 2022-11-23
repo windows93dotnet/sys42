@@ -29,6 +29,7 @@ module.exports = {
     "value-keyword-case": null,
 
     "number-max-precision": null,
+    "at-rule-no-unknown": [true, { ignoreAtRules: ["container"] }],
     "length-zero-no-unit": [true, { ignore: ["custom-properties"] }],
     "property-no-unknown": [true, { ignoreProperties: [/^font-smooth/] }],
     "selector-pseudo-class-no-unknown": [

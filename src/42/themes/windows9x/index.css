@@ -557,7 +557,6 @@ legend button:active,
 
 .ui-tabs__tab {
   position: relative;
-  overflow: visible;
 }
 
 .ui-tabs__tab:first-of-type[aria-selected="true"]::after {
