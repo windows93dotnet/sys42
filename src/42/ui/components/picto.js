@@ -4,8 +4,11 @@ import render from "../render.js"
 import loadSVG from "../../core/load/loadSVG.js"
 
 const inlineds = new Set([])
-const sprites = create("svg", { style: { display: "none" } })
-document.body.append(sprites)
+const sprites = create("svg#picto-sprites", {
+  hidden: true,
+  aria: { hidden: true },
+})
+document.documentElement.append(sprites)
 
 const visual = {
   width: "16",
@@ -37,46 +40,75 @@ export class Picto extends Component {
       value: {
         type: "string",
         reflect: true,
-        storeInState: false,
-        async update() {
-          const type = typeof this.value
-          if (type !== "string" || this.value.includes("/")) {
-            let src = this.value
-            if (type !== "string" || !this.value.includes(".")) {
-              src = await import("../../os/managers/themeManager.js").then(
-                async ({ themeManager }) => {
-                  await themeManager.ready
-                  return themeManager.getIconPath(this.value, 16)
-                }
-              )
-            }
-
-            this.replaceChildren(
-              render({
-                tag: "img",
-                fetchpriority: "high",
-                decoding: "async",
-                ...visual,
-                src,
-              })
-            )
-          } else {
-            ensureSymbol(this.value)
-            this.replaceChildren(
-              render({
-                tag: "svg",
-                ...visual,
-                content: {
-                  tag: "use",
-                  entry: "use",
-                  href: "#picto-" + this.value,
-                },
-              })
-            )
-          }
-        },
+        update: true,
       },
     },
+  }
+
+  async update() {
+    // if (!this.value) return
+    const type = typeof this.value
+
+    if (type !== "string" || this.value.includes("/")) {
+      let src = this.value
+      if (type !== "string" || !this.value.includes(".")) {
+        src = await import("../../os/managers/themeManager.js").then(
+          async ({ themeManager }) => {
+            await themeManager.ready
+            return themeManager.getIconPath(this.value, 16)
+          }
+        )
+      }
+
+      if (this.rasterImage) {
+        this.rasterImage.src = src
+        return
+      }
+
+      if (this.vectorImage) {
+        this.vectorImage.remove()
+        this.vectorImage = undefined
+      }
+
+      this.rasterImage = render({
+        tag: "img",
+        entry: "rasterImage",
+        fetchpriority: "high",
+        decoding: "async",
+        ...visual,
+        src,
+      })
+
+      this.append(this.rasterImage)
+      return
+    }
+
+    ensureSymbol(this.value)
+
+    const href = "#picto-" + this.value
+
+    if (this.vectorImage) {
+      this.vectorImage.firstChild.setAttribute("href", href)
+      return
+    }
+
+    if (this.rasterImage) {
+      this.rasterImage.remove()
+      this.rasterImage = undefined
+    }
+
+    this.vectorImage = render({
+      tag: "svg",
+      entry: "vectorImage",
+      ...visual,
+      content: {
+        tag: "use",
+        entry: "use",
+        href,
+      },
+    })
+
+    this.append(this.vectorImage)
   }
 }
 

@@ -69,7 +69,6 @@ export default function renderEach(def, ctx) {
     if (animTo || animFrom) {
       if (prevArray) {
         const changes = arrayDiff(prevArray, array)
-        // console.table(changes)
         replacedIndices.length = 0
         removedIndices.length = 0
         removedElements.length = 0
@@ -117,12 +116,11 @@ export default function renderEach(def, ctx) {
                 recycled.before(inert)
                 const { display } = recycled.style
                 recycled.style.display = "none"
-                renderAnimation(ctx, inert, "to", animTo) //
-                  .then(() => {
-                    inert.remove()
-                    recycled.style.display = display
-                    renderAnimation(ctx, recycled, "from", animFrom)
-                  })
+                renderAnimation(ctx, inert, "to", animTo).then(() => {
+                  inert.remove()
+                  recycled.style.display = display
+                  renderAnimation(ctx, recycled, "from", animFrom)
+                })
               } else renderAnimation(ctx, recycled, "from", animFrom)
             }
           }
@@ -132,7 +130,6 @@ export default function renderEach(def, ctx) {
           endItem = node
           if (endItem === lastItem) break
 
-          // remove extra items only
           if (i > l) {
             cancelExtraItems(i, cancels)
 
@@ -142,6 +139,8 @@ export default function renderEach(def, ctx) {
                 if (inert.nodeType === Node.ELEMENT_NODE) {
                   const recycled = removedElements.shift()
                   if (recycled) {
+                    // console.log(recycled.innerHTML)
+                    // inert.innerHTML = recycled.innerHTML
                     inert.replaceChildren(
                       ...recycled.cloneNode(true).childNodes
                     )
@@ -170,17 +169,17 @@ export default function renderEach(def, ctx) {
       const cancel = new Canceller(ctx.signal)
       cancels.push(cancel)
 
-      let ddd = eachDef
+      let itemDef = eachDef
 
       if (addedElements.length > 0) {
         const recycled = addedElements.pop()
         renderAnimation(ctx, recycled, "from", animFrom)
-        ddd = { ...ddd, animate: { to: animTo } }
+        itemDef = { ...eachDef, animate: { to: animTo } }
       }
 
       fragment.append(
         render(
-          ddd,
+          itemDef,
           {
             ...ctx,
             cancel,

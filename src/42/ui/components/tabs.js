@@ -36,11 +36,7 @@ export class Tabs extends Component {
   }
 
   onDragEnd(e, index) {
-    if (this[_isSorting]) {
-      this[_isSorting] = false
-      return
-    }
-
+    if (this[_isSorting]) return (this[_isSorting] = false)
     if (e.dataTransfer.dropEffect === "move") this.removeTab(index)
   }
 
@@ -93,6 +89,11 @@ export class Tabs extends Component {
               id: `tab-${id}-{{@index}}`,
               tabIndex: "{{../../current === @index ? 0 : -1}}",
               // animate: { opacity: 0, ms: 1000 },
+              animate: {
+                clipPath: "inset(0 0 100% 0)",
+                translate: "0 100%",
+                ms: 1000,
+              },
               content: [
                 { tag: "span", content: "{{render(label)}}" },
                 {
