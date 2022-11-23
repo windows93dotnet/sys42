@@ -12,6 +12,8 @@
 <script type="module">
   import ui from "../../42/ui.js"
 
+  // document.documentElement.className = "motionless"
+
   const app = await ui({
     tag: "body.box-fit.box-v._txt-center.pa-xxl.desktop",
 
@@ -128,12 +130,25 @@
           },
           id: "item-{{@index + 1}}",
           // animate: { rotate: "360deg", scale: 0, ms: 400 },
+          // animate: {
+          //   clipPath: "inset(0 0 100% 0)",
+          //   translate: "0 100%",
+          //   // clipPath: "inset(0 0 0 100%)",
+          //   // translate: "-100% 0",
+          //   ms: 400,
+          // },
+
           animate: {
-            clipPath: "inset(0 0 100% 0)",
-            translate: "0 100%",
-            // clipPath: "inset(0 0 0 100%)",
-            // translate: "-100% 0",
-            ms: 400,
+            from: {
+              clipPath: "inset(0 0 100% 0)",
+              translate: "0 100%",
+              ms: 400,
+            },
+            to: {
+              clipPath: "inset(100% 0 0 0)",
+              translate: "0 -100%",
+              ms: 400,
+            },
           },
           click: "{{splice(/arr, @index, 1)}}",
         },
@@ -147,18 +162,22 @@
   })
 
   setTimeout(() => {
-    app.state.arr.splice(3, 0, "^^^")
+    app.state.arr.splice(3, 2, "^^1", "^^2")
   }, 600)
 
-  setTimeout(() => {
-    app.state.arr.push("<<<")
-  }, 1200)
-
   // setTimeout(() => {
-  //   document.querySelector("#item-3")?.click()
+  //   app.state.arr.splice(3, 0, "^^^")
   // }, 600)
 
   // setTimeout(() => {
-  //   document.querySelector("#toggle")?.click()
-  // }, 1500)
+  //   app.state.arr.push("<<<")
+  // }, 1200)
+
+  // // setTimeout(() => {
+  // //   document.querySelector("#item-3")?.click()
+  // // }, 600)
+
+  // // setTimeout(() => {
+  // //   document.querySelector("#toggle")?.click()
+  // // }, 1500)
 </script>

@@ -12,9 +12,18 @@ const keyframeEffectKeys = [
   "ms",
 ]
 
+const prm = window.matchMedia(`(prefers-reduced-motion: reduce)`)
+let prefersReducedMotion = prm.matches
+prm.onchange = (e) => (prefersReducedMotion = e.matches)
+
 function start(el, how, keyframe, options) {
-  // const cL = document.body.classList
-  // if (cL.contains("motionless") || cL.contains("animation-0")) return
+  if (
+    prefersReducedMotion ||
+    // check if animations are disabled using css
+    getComputedStyle(document.body).animationDuration === "0.001s"
+  ) {
+    return
+  }
 
   const temp = { class: { "action-0": true } }
   if ("x" in el && "y" in el) {

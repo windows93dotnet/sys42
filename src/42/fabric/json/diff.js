@@ -90,7 +90,7 @@ export function LCS(a, b) {
 
 // TODO: look at Hirschberg's algorithm to do better than O(n^2) space
 // @read https://stackoverflow.com/a/46706447
-const arrayDiff = function (a, b, path, options, parents) {
+export const arrayDiff = function (a, b, options, path = [], parents = {}) {
   parents.a = new LinkedListNode(a, parents.a)
   parents.b = new LinkedListNode(b, parents.b)
 
@@ -187,7 +187,7 @@ function valueDiff(a, b, path, options, parents = {}) {
     typeA = Array.isArray(a)
     typeB = Array.isArray(b)
 
-    if (typeA && typeB) return arrayDiff(a, b, path, options, parents)
+    if (typeA && typeB) return arrayDiff(a, b, options, path, parents)
     if (typeA !== typeB) return replaceWithB(path, b)
 
     // typeA = isIterable(a)
@@ -211,7 +211,7 @@ function valueDiff(a, b, path, options, parents = {}) {
     typeB = b instanceof Set
 
     if (typeA && typeB) {
-      return arrayDiff([...a], [...b], path, options, parents)
+      return arrayDiff([...a], [...b], options, path, parents)
     }
 
     if (typeA !== typeB) return replaceWithB(path, b)
