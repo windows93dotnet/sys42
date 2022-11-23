@@ -139,12 +139,13 @@ export default function renderEach(def, ctx) {
                 if (inert.nodeType === Node.ELEMENT_NODE) {
                   const recycled = removedElements.shift()
                   if (recycled) {
-                    // console.log(recycled.innerHTML)
-                    // inert.innerHTML = recycled.innerHTML
                     inert.replaceChildren(
                       ...recycled.cloneNode(true).childNodes
                     )
                     recycled.before(inert)
+                  } else {
+                    // TODO: avoid this
+                    inert.replaceChildren(...inert.cloneNode(true).childNodes)
                   }
 
                   renderAnimation(ctx, inert, "to", animTo) //

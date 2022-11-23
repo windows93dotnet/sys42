@@ -17,7 +17,8 @@ const planets = [
     // moons: ["The Moon"],
   },
   {
-    name: "Magrathea",
+    // name: "Magrathea",
+    name: "Magrathea is an ancient planet located in orbit around the twin suns Soulianis and Rahm in the heart of the Horsehead Nebula.",
     description:
       "Magrathea is an ancient planet located in orbit around the twin suns Soulianis and Rahm in the heart of the Horsehead Nebula.",
     // location: "Heart of the Horsehead Nebula",

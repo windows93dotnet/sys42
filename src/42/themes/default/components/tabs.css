@@ -69,6 +69,9 @@ ui-tabs {
   flex-direction: row;
   align-items: flex-end;
   padding-right: var(--tabs-gap);
+
+  min-height: 2ex;
+  /* background-color: var(--ground-bg); */
 }
 
 .ui-tabs__tab {
@@ -85,9 +88,33 @@ ui-tabs {
 
   clip-path: inset(0 0 var(--tabs-overlap) 0);
   margin-right: calc(-1 * var(--tabs-gap));
+  max-width: var(--ctrl-w);
+  /* max-width: min-content; */
+  /* width: max-content; */
+
+  /* flex: 0; */
+  /* flex: 0 0 auto; */
+  /* flex: 0 1 var(--ctrl-w); */
+  flex: 0 1 max-content;
+  /* width: 50px; */
+  /* width: auto; */
+  min-width: min-content;
+
+  /* align-items: flex-start; */
+  /* text-align: left; */
+
+  /* container: tab / inline-size; */
 }
 
 .ui-tabs__tab[aria-selected="true"] {
   background-image: none;
   clip-path: inset(0 0 var(--tabs-active-overlap) 0);
+  /* width: min-content; */
+  /* flex: 0 0 min-content; */
+}
+
+@container tab (max-width: 35px) {
+  button {
+    display: none;
+  }
 }

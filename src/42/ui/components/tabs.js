@@ -84,7 +84,7 @@ export class Tabs extends Component {
               drop: "{{onDrop(e, target)}}",
             },
             each: {
-              tag: ".ui-tabs__tab.button",
+              tag: ".ui-tabs__tab._button",
               role: "tab",
               id: `tab-${id}-{{@index}}`,
               tabIndex: "{{../../current === @index ? 0 : -1}}",
@@ -92,7 +92,7 @@ export class Tabs extends Component {
               animate: {
                 clipPath: "inset(0 0 100% 0)",
                 translate: "0 100%",
-                ms: 1000,
+                ms: 300,
               },
               content: [
                 { tag: "span", content: "{{render(label)}}" },
