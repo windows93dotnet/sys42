@@ -99,13 +99,26 @@ export default class Component extends HTMLElement {
 
   constructor(...args) {
     super()
+
     this.ready = defer()
     this.#instanceDestroy = this.destroy
     this.destroy = this.#destroy
+
+    if (this.isRendered()) return
+
     const shouldInit =
       args.length > 0 ||
       (this.parentElement !== null && !this.hasAttribute("data-no-init"))
+
     if (shouldInit) this.init(...args)
+  }
+
+  isRendered() {
+    // a component created using cloneNode(true) should not init itself
+    return (
+      this.firstChild?.nodeType === Node.COMMENT_NODE &&
+      this.firstChild.textContent === "[rendered]"
+    )
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -117,6 +130,7 @@ export default class Component extends HTMLElement {
   }
 
   async connectedCallback() {
+    if (this.isRendered()) return
     if (!this.isConnected || this.hasAttribute("data-no-init")) return
     if (this[_lifecycle] === RENDER) {
       try {
@@ -333,6 +347,8 @@ export default class Component extends HTMLElement {
         step: this.localName,
       })
     )
+
+    this.prepend(document.createComment("[rendered]"))
 
     await this.ctx.components.done()
     await this.ctx.undones.done()
