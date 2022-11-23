@@ -84,7 +84,7 @@ export class Tabs extends Component {
               drop: "{{onDrop(e, target)}}",
             },
             each: {
-              tag: ".ui-tabs__tab._button",
+              tag: ".ui-tabs__tab",
               role: "tab",
               id: `tab-${id}-{{@index}}`,
               tabIndex: "{{../../current === @index ? 0 : -1}}",
@@ -95,9 +95,9 @@ export class Tabs extends Component {
                 ms: 300,
               },
               content: [
-                { tag: "span", content: "{{render(label)}}" },
+                { tag: "span.ui-tabs__label", content: "{{render(label)}}" },
                 {
-                  tag: "button.ui-tabs__close.pa-0.btn-clear",
+                  tag: "button.ui-tabs__close._pa-0._btn-clear",
                   tabIndex: "{{../../current === @index ? 0 : -1}}",
                   picto: "close",
                   on: { stop: true, click: "{{removeTab(@index)}}" },
