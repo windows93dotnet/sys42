@@ -85,6 +85,7 @@ types.number = {
   multiply: (a, b) => a * b,
   divide: (a, b) => a / b,
   modulo: (a, b) => a % b,
+  random: () => Math.random(),
 }
 
 // TODO: find a way to register globstar renderer when using filters.array or filters.object

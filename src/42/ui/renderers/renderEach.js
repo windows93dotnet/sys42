@@ -7,7 +7,7 @@ import removeRange from "./removeRange.js"
 import register from "../register.js"
 import Canceller from "../../fabric/classes/Canceller.js"
 import { normalizeDefNoCtx } from "../normalize.js"
-import diff from "../../fabric/json/diff.js"
+import { arrayDiff } from "../../fabric/json/diff.js"
 import renderAnimation from "./renderAnimation.js"
 
 const PLACEHOLDER = "[each]"
@@ -38,6 +38,7 @@ export default function renderEach(def, ctx) {
   }
 
   let prevArray
+  const replacedIndices = []
   const removedIndices = []
   const removedElements = []
   const addedIndices = []
@@ -67,14 +68,18 @@ export default function renderEach(def, ctx) {
 
     if (animTo || animFrom) {
       if (prevArray) {
-        const changes = diff(prevArray, array)
+        const changes = arrayDiff(prevArray, array)
+        // console.table(changes)
+        replacedIndices.length = 0
         removedIndices.length = 0
         removedElements.length = 0
         addedIndices.length = 0
         addedElements.length = 0
         for (const { op, path } of changes) {
-          if (op === "remove") removedIndices.push(Number(path.slice(1)))
-          if (op === "add") addedIndices.push(Number(path.slice(1)))
+          const index = Number(path.slice(1))
+          if (op === "remove") removedIndices.push(index)
+          if (op === "add") addedIndices.push(index)
+          if (op === "replace") replacedIndices.push(index)
         }
       }
 
@@ -100,8 +105,26 @@ export default function renderEach(def, ctx) {
             removedElements.push(node.previousSibling)
           }
 
-          if (animFrom && addedIndices.includes(i)) {
-            addedElements.push(node.previousSibling)
+          if (animFrom) {
+            if (addedIndices.includes(i)) {
+              addedElements.push(node.previousSibling)
+            }
+
+            if (replacedIndices.includes(i)) {
+              const recycled = node.previousSibling
+              if (animTo) {
+                const inert = recycled.cloneNode(true)
+                recycled.before(inert)
+                const { display } = recycled.style
+                recycled.style.display = "none"
+                renderAnimation(ctx, inert, "to", animTo) //
+                  .then(() => {
+                    inert.remove()
+                    recycled.style.display = display
+                    renderAnimation(ctx, recycled, "from", animFrom)
+                  })
+              } else renderAnimation(ctx, recycled, "from", animFrom)
+            }
           }
 
           i++
