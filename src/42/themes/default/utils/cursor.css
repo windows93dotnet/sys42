@@ -83,12 +83,3 @@
 /* Zooming */
 .cursor-zoom-in, body.cursor-zoom-in * { cursor: var(--cursor-zoom-in); }
 .cursor-zoom-out, body.cursor-zoom-out * { cursor: var(--cursor-zoom-out); }
-
-/* https://www.w3.org/TR/wai-aria-1.1/#aria-dropeffect */
-/* https://www.levelaccess.com/differences-aria-1-0-1-1-deprecations-additions/ */
-[aria-dropeffect="copy" i] { cursor: var(--cursor-copy); }
-[aria-dropeffect="execute" i] { cursor: var(--cursor-execute, var(--cursor-progress)); }
-[aria-dropeffect="link" i] { cursor: var(--cursor-alias); }
-[aria-dropeffect="move" i] { cursor: var(--cursor-default); }
-[aria-dropeffect="none" i] { cursor: var(--cursor-no-drop); }
-[aria-dropeffect="popup" i] { cursor: var(--cursor-context-menu); }

@@ -40,13 +40,12 @@ export class Picto extends Component {
       value: {
         type: "string",
         reflect: true,
-        update: true,
+        storeInState: false,
       },
     },
   }
 
   async update() {
-    // if (!this.value) return
     const type = typeof this.value
 
     if (type !== "string" || this.value.includes("/")) {
