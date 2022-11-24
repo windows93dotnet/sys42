@@ -126,7 +126,7 @@ const popup = rpc(
     el.style.transform = "translate(-200vw, -200vh)"
     el.style.zIndex = maxZIndex(zIndexSector) + 1
 
-    document.documentElement.prepend(el)
+    document.documentElement.append(el)
 
     if (el.ready) await el.ready
     else {

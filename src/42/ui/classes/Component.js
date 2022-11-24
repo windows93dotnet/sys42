@@ -130,7 +130,6 @@ export default class Component extends HTMLElement {
   }
 
   async connectedCallback() {
-    if (this.isRendered()) return
     if (!this.isConnected || this.hasAttribute("data-no-init")) return
     if (this[_lifecycle] === RENDER) {
       try {
@@ -139,7 +138,13 @@ export default class Component extends HTMLElement {
         if (this.ready.isPending) this.ready.resolve()
         dispatch(this, err)
       }
-    } else if (this[_lifecycle] === INIT) this.ready.then(() => this.#setup())
+
+      return
+    }
+
+    if (this.isRendered()) return
+
+    if (this[_lifecycle] === INIT) this.ready.then(() => this.#setup())
     else if (this[_lifecycle] === CREATE) this.init().then(() => this.#setup())
     else if (this[_lifecycle] === RECYCLE) this[_lifecycle] = SETUP
   }
