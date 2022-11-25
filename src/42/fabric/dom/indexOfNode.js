@@ -1,4 +1,6 @@
-export default function indexOfNode(node, parent = node.parentElement) {
+export function indexOfNode(node, parent = node?.parentElement) {
+  if (!parent) return -1
+
   const { childNodes } = parent
 
   for (let i = 0, l = childNodes.length; i < l; i++) {
@@ -7,3 +9,5 @@ export default function indexOfNode(node, parent = node.parentElement) {
 
   return -1
 }
+
+export default indexOfNode

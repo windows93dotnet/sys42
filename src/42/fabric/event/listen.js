@@ -2,6 +2,7 @@ import stopEvent from "./stopEvent.js"
 import distribute from "../type/object/distribute.js"
 import ensureElement from "../dom/ensureElement.js"
 import Canceller from "../classes/Canceller.js"
+import ensureScopeSelector from "./ensureScopeSelector.js"
 
 export const SPLIT_REGEX = /\s*\|\|\s*/
 
@@ -33,7 +34,7 @@ function cleanup(item, e) {
   if (item.stopImmediatePropagation) e.stopImmediatePropagation()
 }
 
-export const makeHandler = ({ selector, ...item }, fn) => {
+export const makeHandler = ({ selector, ...item }, fn, el) => {
   if (item.prevent || item.disrupt) {
     item.preventDefault = true
   }
@@ -41,6 +42,10 @@ export const makeHandler = ({ selector, ...item }, fn) => {
   if (item.stop || item.disrupt) {
     item.stopPropagation = true
     item.stopImmediatePropagation = true
+  }
+
+  if (selector?.includes(":scope")) {
+    selector = ensureScopeSelector(selector, el)
   }
 
   return selector
@@ -61,7 +66,7 @@ export const eventsMap = (list) => {
   for (const { el, listeners } of list) {
     for (const { events, options, ...item } of listeners) {
       for (let [key, fn] of Object.entries(events)) {
-        fn = makeHandler(item, fn)
+        fn = makeHandler(item, fn, el)
         for (const event of key.split(SPLIT_REGEX)) {
           el.addEventListener(event, fn, options)
         }

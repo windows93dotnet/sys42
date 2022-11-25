@@ -2,11 +2,6 @@ import Component from "../classes/Component.js"
 import isFocusable from "../../fabric/dom/isFocusable.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
 import hash from "../../fabric/type/any/hash.js"
-import getIndex from "../../fabric/dom/getIndex.js"
-import moveItem from "../../fabric/type/array/moveItem.js"
-import dt from "../../core/dt.js"
-
-const _isSorting = Symbol("LayoutPanel._isSorting")
 
 export class Tabs extends Component {
   static definition = {
@@ -14,58 +9,46 @@ export class Tabs extends Component {
     role: "none",
 
     props: {
+      vertical: {
+        type: "boolean",
+        reflect: true,
+      },
       current: {
         type: "number",
         default: 0,
       },
-      content: { type: "array", default: [] },
+      content: {
+        type: "array",
+        default: [],
+        update() {
+          const max = this.content.length - 1
+          if (this.current > max) this.current = max
+        },
+      },
     },
+  }
+
+  addTab(data) {
+    this.content.push(data)
   }
 
   removeTab(index) {
     this.content.splice(index, 1)
-    if (this.current === this.content.length) this.current--
   }
 
-  onDragStart(e, index) {
-    const { id } = this
-    const path = `${this.ctx.scope}/content/${index}`
-    const state = this.ctx.reactive.get(path)
-    const data = { type: "layout", id, index, state }
-    dt.export(e, { effect: ["copy", "move"], data })
-  }
+  selectTab(index, options) {
+    const max = this.content.length - 1
+    if (index > max) index = max
+    else if (index < 0) index = 0
 
-  onDragEnd(e, index) {
-    if (this[_isSorting]) return (this[_isSorting] = false)
-    if (e.dataTransfer.dropEffect === "move") this.removeTab(index)
-  }
+    this.current = index
 
-  async onDrop(e) {
-    const { data } = await dt.import(e)
-    if (data?.type === "layout") {
-      const tab = e.target.closest(".ui-tabs__tab")
-      let index
-
-      if (data.id === this.id) this[_isSorting] = true
-
-      if (tab) {
-        index = getIndex(tab)
-        if (data.id === this.id && data.index === index) return
-        const { x, width } = tab.getBoundingClientRect()
-        if (e.x > x + width / 2) index++
-      } else {
-        index = this.content.length
-      }
-
-      if (this[_isSorting]) {
-        if (index > this.content.length - 1) index = this.content.length - 1
-        moveItem(this.content, data.index, index)
-        this.current = index
-      } else {
-        this.content.splice(index, 0, data.state)
-        this.current = index
-      }
-    }
+    if (options?.focus === false) return
+    queueTask(() => {
+      this.querySelector(`#tab-${this.id}-${index}`)?.focus({
+        preventScroll: true,
+      })
+    })
   }
 
   render() {
@@ -79,39 +62,48 @@ export class Tabs extends Component {
           {
             tag: ".ui-tabs__tablist",
             role: "tablist",
-            dropzone: true,
-            on: {
-              drop: "{{onDrop(e, target)}}",
+            aria: {
+              orientation: '{{../vertical ? "vertical" : "horizontal" }}',
             },
+
+            transferable: {
+              items: ":scope > .ui-tabs__tab",
+              list: this.content,
+              indexChange: (index) => this.selectTab(index),
+            },
+
             each: {
               tag: ".ui-tabs__tab",
               role: "tab",
               id: `tab-${id}-{{@index}}`,
+              dataset: { index: "{{@index}}" },
               tabIndex: "{{../../current === @index ? 0 : -1}}",
-              // animate: { opacity: 0, ms: 1000 },
               animate: {
                 clipPath: "inset(0 0 100% 0)",
                 translate: "0 100%",
                 ms: 300,
               },
-              content: [
-                { tag: "span.ui-tabs__label", content: "{{render(label)}}" },
-                {
-                  tag: "button.ui-tabs__close._pa-0._btn-clear",
-                  tabIndex: "{{../../current === @index ? 0 : -1}}",
-                  picto: "close",
-                  on: { stop: true, click: "{{removeTab(@index)}}" },
-                },
-              ],
+              content: {
+                tag: "span.ui-tabs__container",
+                content: [
+                  { tag: "span.ui-tabs__label", content: "{{render(label)}}" },
+                  {
+                    tag: "button.ui-tabs__close._pa-0._btn-clear",
+                    tabIndex: "{{../../current === @index ? 0 : -1}}",
+                    picto: "close",
+                    on: {
+                      stop: true,
+                      click: "{{removeTab(@index)}}",
+                    },
+                  },
+                ],
+              },
               aria: {
-                selected: `{{../../current === @index}}`,
+                selected: "{{../../current === @index}}",
                 controls: `panel-${id}-{{@index}}`,
               },
-              click: `{{../../current = @index}}`,
-              draggable: true,
               on: {
-                dragstart: "{{onDragStart(e, @index)}}",
-                dragend: "{{onDragEnd(e, @index)}}",
+                "pointerdown || Space || Enter": "{{selectTab(@index)}}",
               },
             },
           },
@@ -126,6 +118,7 @@ export class Tabs extends Component {
               tabIndex: 0,
               aria: {
                 labelledby: `tab-${id}-{{@index}}`,
+                expanded: "{{../../current === @index}}",
               },
               on: {
                 render(e, target) {

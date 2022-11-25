@@ -67,6 +67,7 @@ const TRAIT_KEYWORDS = new Set([
   "movable",
   "positionable",
   "selectable",
+  "transferable",
 ])
 
 const _INSTANCES = Symbol.for("Trait.INSTANCES")

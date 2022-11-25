@@ -1,3 +1,5 @@
+import "./preventUnwantedDrop.js"
+
 const effectUnits = ["copy", "link", "move"]
 
 const EFFECTS = {
@@ -41,7 +43,7 @@ export function fromString(effects) {
 }
 
 export function handleEffect(e, options) {
-  if (options?.silent) {
+  if (options?.silentEffectCheck) {
     const allowed = fromString(e.dataTransfer.effectAllowed)
     if (e.ctrlKey && allowed.includes("copy")) {
       e.dataTransfer.dropEffect = "copy"
