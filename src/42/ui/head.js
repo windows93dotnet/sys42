@@ -1,4 +1,5 @@
 import "./form.js"
+import "../core/dt/preventUnwantedDrop.js"
 import "../os/managers/themeManager.js"
 
 document.documentElement.lang ||= "en"
@@ -12,7 +13,3 @@ if (window.top !== window.self) {
     })
   })
 }
-
-// const prevent = (e) => e.preventDefault()
-// document.documentElement.addEventListener("dragover", prevent)
-// document.documentElement.addEventListener("drop", prevent)

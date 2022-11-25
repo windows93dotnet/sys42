@@ -1,8 +1,11 @@
 // @see https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/Recommended_drag_types
 // @see https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/Multiple_items
 
+import "./preventUnwantedDrop.js"
 import arrify from "../../fabric/type/any/arrify.js"
 import { fromOptions } from "./dataTransferEffects.js"
+
+const { userAgent } = navigator
 
 const hidden = [
   Object.assign(new Image(), {
@@ -16,7 +19,6 @@ const hidden = [
 // [2] Make the image far away from the cursor because Firefox/Linux don't always support transparency
 
 export default async function dataTransfertExport(e, options) {
-  // if (dataTransfer?.dataTransfer) dataTransfer = dataTransfer.dataTransfer
   const { dataTransfer } = e
 
   if (options?.image !== true) {
@@ -25,19 +27,19 @@ export default async function dataTransfertExport(e, options) {
     )
   }
 
-  dataTransfer.effectAllowed = fromOptions(options?.effect)
+  dataTransfer.effectAllowed = fromOptions(options?.effects)
 
   if (options?.paths) {
     const { paths } = options
     const urls = paths.map((path) => new URL(path, location.origin).href)
-    const data = JSON.stringify({ DT_PATHS_42: navigator.userAgent, paths })
     dataTransfer.setData("text/x-moz-url", urls.join("\n"))
     dataTransfer.setData("text/uri-list", urls.join("\r\n"))
-    dataTransfer.setData("text/plain", data)
+
+    const data = JSON.stringify({ userAgent, paths })
+    dataTransfer.setData("application/42-paths+json", data)
   }
 
   if (options?.data) {
-    const data = JSON.stringify({ DT_DATA_42: options?.data })
-    dataTransfer.setData("text/plain", data)
+    dataTransfer.setData("application/json", JSON.stringify(options.data))
   }
 }

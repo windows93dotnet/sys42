@@ -1,5 +1,5 @@
 import getNodesInRange from "./getNodesInRange.js"
-import indexOfNode from "./indexOfNode.js"
+import indexOfNode from "../dom/indexOfNode.js"
 
 export default class NodesRange extends StaticRange {
   constructor(startNode, endNode, container = startNode.parentElement) {

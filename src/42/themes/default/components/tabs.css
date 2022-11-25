@@ -98,15 +98,19 @@ ui-tabs {
   max-width: var(--ctrl-w);
   min-width: 3ch;
 
-  overflow: hidden;
+  background-clip: padding-box;
+  column-gap: var(--unit-sm);
 
+  user-select: none;
+}
+
+.ui-tabs__container {
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   background-clip: padding-box;
   column-gap: var(--unit-sm);
-
-  /* flex-basis: var(--ctrl-w); */
   /* container: tab / inline-size; */
 }
 
@@ -146,4 +150,13 @@ ui-tabs {
   .ui-tabs__tab:not([aria-selected="true"]) .ui-tabs__close {
     display: none;
   }
+}
+
+ui-tabs[vertical] {
+  flex-direction: row;
+}
+
+ui-tabs[vertical] .ui-tabs__tablist {
+  /* writing-mode: vertical-lr; */
+  flex-direction: column;
 }

@@ -232,10 +232,10 @@ function valueDiff(a, b, path, options, parents = {}) {
         acc.push({
           op: "add",
           path: joinJSONPointer(path.concat(key)),
-          value: options.strict ? checkIsJsonValue(b[key]) : b[key],
+          value: options?.strict ? checkIsJsonValue(b[key]) : b[key],
         })
       }
-    } else if (options.strict) {
+    } else if (options?.strict) {
       throw new Error(b.toString() + " has a prototype")
     }
   }
@@ -245,7 +245,7 @@ function valueDiff(a, b, path, options, parents = {}) {
       if (!(key in b)) {
         acc.push({ op: "remove", path: joinJSONPointer(path.concat(key)) })
       }
-    } else if (options.strict) {
+    } else if (options?.strict) {
       throw new Error(a.toString() + " has a prototype")
     }
   }
