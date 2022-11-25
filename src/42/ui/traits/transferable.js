@@ -7,6 +7,8 @@ import uid from "../../core/uid.js"
 import noop from "../../fabric/type/function/noop.js"
 import indexOfElement from "../../fabric/dom/indexOfElement.js"
 import ensureScopeSelector from "../../fabric/event/ensureScopeSelector.js"
+import setTemp from "../../fabric/dom/setTemp.js"
+import ghostify from "../../fabric/dom/ghostify.js"
 
 const DEFAULTS = {
   items: ":scope > *",
@@ -15,6 +17,7 @@ const DEFAULTS = {
   effects: ["copy", "move", "link"],
   silentEffectCheck: false,
   handle: false,
+  hint: "ghost",
 }
 
 const configure = settings("ui.trait.transferable", DEFAULTS)
@@ -120,11 +123,17 @@ class Transferable extends Trait {
       this.removeItem = this.config.removeItem ?? noop
     }
 
+    let offsetX = 0
+    let ghost
+    let restoreStyles
+    const hintIsGhost = this.config.hint === "ghost"
+
     listen(
       dropzone,
       {
         "prevent": true,
         "dragover || dragenter": (e) => {
+          console.log(777, e.target)
           // const item = e.target.closest(selector)
           dt.effects.handleEffect(e, this.config)
         },
@@ -142,15 +151,30 @@ class Transferable extends Trait {
           target.draggable = true
         },
         dragstart: (e, target) => {
+          offsetX = e.x
+
           isSorting = false
           const index = getIndex(target)
           dt.export(e, { effects, data: this.export({ index, target }) })
+
+          if (hintIsGhost) {
+            ghost = ghostify(target)
+            document.documentElement.append(ghost)
+            restoreStyles = setTemp(target, { style: { opacity: 0 } })
+          }
+        },
+        drag(e) {
+          if (hintIsGhost) {
+            if (e.x) ghost.style.translate = `${e.x - offsetX}px`
+          }
         },
         dragend: (e, target) => {
-          if (isSorting) {
-            isSorting = false
-            return
+          if (hintIsGhost) {
+            ghost?.remove()
+            restoreStyles?.()
           }
+
+          if (isSorting) return void (isSorting = false)
 
           if (e.dataTransfer.dropEffect === "move") {
             const index = getIndex(target)
