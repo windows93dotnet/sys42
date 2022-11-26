@@ -7,7 +7,6 @@ import uid from "../../core/uid.js"
 import noop from "../../fabric/type/function/noop.js"
 import indexOfElement from "../../fabric/dom/indexOfElement.js"
 import ensureScopeSelector from "../../fabric/event/ensureScopeSelector.js"
-import setTemp from "../../fabric/dom/setTemp.js"
 import ghostify from "../../fabric/dom/ghostify.js"
 import paintDebounce from "../../fabric/type/function/paintDebounce.js"
 
@@ -21,9 +20,13 @@ const DEFAULTS = {
   hint: "slide",
 }
 
-const style = document.createElement("style")
-style.id = "ui-trait-transferable"
-document.head.append(style)
+const style1 = document.createElement("style")
+style1.id = "ui-trait-transferable1"
+document.head.append(style1)
+
+const style2 = document.createElement("style")
+style2.id = "ui-trait-transferable2"
+document.head.append(style2)
 
 const configure = settings("ui.trait.transferable", DEFAULTS)
 
@@ -90,23 +93,41 @@ class Transferable extends Trait {
         targetWidth: 0,
         offsetX: 0,
         offsetY: 0,
+        currentIndex: 0,
       }
     }
 
     const replaceEmptySpace = hint
       ? paintDebounce(({ x, y }) => {
-          const { textContent } = style
-          style.textContent = ""
-          const X = x
+          if (x === hint.lastX) return
+
+          const { textContent } = style1
+          style1.textContent = ""
+
+          let X = x
           const Y = y
+          let dir = 1
+
+          if (x > hint.lastX) {
+            X -= hint.targetWidth
+            dir = 2
+          }
+
           const item = document.elementFromPoint(X, Y)?.closest(selector)
           if (item) {
             const index = getNewIndex(X, Y, item, orientation)
-            style.textContent = `
-          ${selector}:nth-child(n+${index + 1}) {
-            translate: ${hint.targetWidth}px;
-          }`
-          } else style.textContent = textContent
+            style1.textContent = `
+              ${hint.hideCurrent}
+              ${selector}:nth-child(n+${index + dir}) {
+                translate: ${hint.targetWidth}px;
+              }`
+          }
+
+          if (!item) {
+            style1.textContent = textContent
+          }
+
+          hint.lastX = x
         })
       : noop
 
@@ -163,12 +184,12 @@ class Transferable extends Trait {
         "prevent": true,
         "dragover || dragenter": (e) => {
           dt.effects.handleEffect(e, this.config)
-          // const item = e.target.closest(selector)
-          // console.log(777, item)
+        },
+        "dragover"(e) {
+          replaceEmptySpace(e)
         },
 
         "drop": async (e) => {
-          // console.log("drop")
           const res = dt.import(e, this.config)
           const item = e.target.closest(selector)
           const index = getNewIndex(e.x, e.y, item, orientation)
@@ -196,19 +217,29 @@ class Transferable extends Trait {
             hint.targetWidth =
               carrier.width + carrier.marginLeft + carrier.marginRight
 
+            hint.targetCenterX = e.x - (carrier.x + hint.targetWidth / 2)
+
+            hint.currentIndex = index
+
             requestAnimationFrame(() => {
-              hint.restoreStyles = setTemp(target, {
-                style: {
-                  opacity: "0",
-                  width: "0px",
-                  flexBasis: "0px",
-                  minWidth: "0",
-                  paddingInline: "0",
-                },
-              })
-              style.textContent = `
+              hint.hideCurrent = `
+                ${selector}:nth-child(${index + 1}) {
+                  opacity: 0;
+                  width: 0px;
+                  flex-basis: 0px;
+                  min-width: 0px;
+                  padding-inline: 0px;
+                }
+              `
+              style1.textContent = `
+                ${hint.hideCurrent}
                 ${selector}:nth-child(n+${index + 2}) {
                   translate: ${hint.targetWidth}px;
+                }`
+
+              style2.textContent = `
+                ${selector} {
+                  transition: translate 120ms ease-in-out;
                 }`
             })
           }
@@ -216,14 +247,12 @@ class Transferable extends Trait {
         drag(e) {
           if (hint) {
             if (e.x) hint.ghost.style.translate = `${e.x - offsetX}px`
-            replaceEmptySpace(e)
           }
         },
         dragend: (e, target) => {
           if (hint) {
             hint.ghost?.remove()
-            hint.restoreStyles?.()
-            style.textContent = ""
+            style1.textContent = ""
           }
 
           if (isSorting) return void (isSorting = false)
