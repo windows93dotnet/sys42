@@ -8,7 +8,7 @@ import noop from "../../fabric/type/function/noop.js"
 import indexOfElement from "../../fabric/dom/indexOfElement.js"
 import ensureScopeSelector from "../../fabric/event/ensureScopeSelector.js"
 import ghostify from "../../fabric/dom/ghostify.js"
-import paintDebounce from "../../fabric/type/function/paintDebounce.js"
+import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 
 const DEFAULTS = {
   items: ":scope > *",
@@ -62,6 +62,8 @@ function getNewIndex(X, Y, item, orientation) {
   }
 }
 
+let hint
+
 class Transferable extends Trait {
   constructor(el, options) {
     super(el, options)
@@ -83,53 +85,36 @@ class Transferable extends Trait {
     const selector = ensureScopeSelector(this.config.items, dropzone)
 
     let isSorting = false
-    let offsetX = 0
 
-    let hint
-    if (this.config.hint === "slide") {
-      hint = {
-        ghost: undefined,
-        restoreStyles: undefined,
-        targetWidth: 0,
-        offsetX: 0,
-        offsetY: 0,
-        currentIndex: 0,
+    const replaceEmptySpace = paintThrottle(({ x, y }) => {
+      if (x === hint.lastX) return
+
+      const { textContent } = style1
+      style1.textContent = ""
+
+      let X = x - hint.targetOffsetX
+      const Y = y
+      let dir = 1
+
+      if (x > hint.lastX) {
+        X -= hint.targetWidth
+        dir = 2
       }
-    }
 
-    const replaceEmptySpace = hint
-      ? paintDebounce(({ x, y }) => {
-          if (x === hint.lastX) return
+      hint.lastX = x
 
-          const { textContent } = style1
-          style1.textContent = ""
-
-          let X = x
-          const Y = y
-          let dir = 1
-
-          if (x > hint.lastX) {
-            X -= hint.targetWidth
-            dir = 2
-          }
-
-          const item = document.elementFromPoint(X, Y)?.closest(selector)
-          if (item) {
-            const index = getNewIndex(X, Y, item, orientation)
-            style1.textContent = `
-              ${hint.hideCurrent}
-              ${selector}:nth-child(n+${index + dir}) {
-                translate: ${hint.targetWidth}px;
-              }`
-          }
-
-          if (!item) {
-            style1.textContent = textContent
-          }
-
-          hint.lastX = x
-        })
-      : noop
+      const item = document.elementFromPoint(X, Y)?.closest(selector)
+      if (item) {
+        const index = getNewIndex(X, Y, item, orientation)
+        style1.textContent = `
+          ${hint.hideCurrent}
+          ${selector}:nth-child(n+${index + dir}) {
+            translate: ${hint.targetWidth}px;
+          }`
+      } else {
+        style1.textContent = textContent
+      }
+    })
 
     if (options?.list) {
       const { list } = options
@@ -145,7 +130,7 @@ class Transferable extends Trait {
 
           if (data.id === id) {
             isSorting = true
-            if (data.index === index) return // nothing to move
+            if (data.index === index) return
 
             if (data.index > index) {
               list.splice(data.index, 1)
@@ -182,13 +167,9 @@ class Transferable extends Trait {
       dropzone,
       {
         "prevent": true,
-        "dragover || dragenter": (e) => {
-          dt.effects.handleEffect(e, this.config)
-        },
-        "dragover"(e) {
-          replaceEmptySpace(e)
-        },
-
+        "dragover || dragenter": (e) => dt.effects.handleEffect(e, this.config),
+        "dragover":
+          this.config.hint === "slide" ? replaceEmptySpace : undefined,
         "drop": async (e) => {
           const res = dt.import(e, this.config)
           const item = e.target.closest(selector)
@@ -203,50 +184,53 @@ class Transferable extends Trait {
           target.draggable = true
         },
         dragstart: (e, target) => {
-          offsetX = e.x
-
           isSorting = false
           const index = getIndex(target)
           dt.export(e, { effects, data: this.export({ index, target }) })
 
-          if (hint) {
+          if (this.config.hint === "slide") {
+            hint = {
+              ghost: undefined,
+              targetWidth: 0,
+              offsetX: e.x,
+            }
+
             const carrier = {}
             hint.ghost = ghostify(target, { carrier })
             document.documentElement.append(hint.ghost)
 
+            hint.targetOffsetX = e.x - carrier.x
+
             hint.targetWidth =
               carrier.width + carrier.marginLeft + carrier.marginRight
 
-            hint.targetCenterX = e.x - (carrier.x + hint.targetWidth / 2)
-
-            hint.currentIndex = index
+            hint.hideCurrent = `
+              ${selector}:nth-child(${index + 1}) {
+                opacity: 0;
+                width: 0px;
+                flex-basis: 0px;
+                min-width: 0px;
+                padding-inline: 0px;
+              }`
 
             requestAnimationFrame(() => {
-              hint.hideCurrent = `
-                ${selector}:nth-child(${index + 1}) {
-                  opacity: 0;
-                  width: 0px;
-                  flex-basis: 0px;
-                  min-width: 0px;
-                  padding-inline: 0px;
-                }
-              `
               style1.textContent = `
                 ${hint.hideCurrent}
                 ${selector}:nth-child(n+${index + 2}) {
                   translate: ${hint.targetWidth}px;
                 }`
-
-              style2.textContent = `
-                ${selector} {
-                  transition: translate 120ms ease-in-out;
-                }`
+              requestAnimationFrame(() => {
+                style2.textContent = `
+                  ${selector} {
+                    transition: translate 120ms ease-in-out 10ms;
+                  }`
+              })
             })
           }
         },
         drag(e) {
           if (hint) {
-            if (e.x) hint.ghost.style.translate = `${e.x - offsetX}px`
+            if (e.x) hint.ghost.style.translate = `${e.x - hint.offsetX}px`
           }
         },
         dragend: (e, target) => {
