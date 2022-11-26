@@ -20,6 +20,10 @@ const DEFAULTS = {
   hint: "ghost",
 }
 
+const style = document.createElement("style")
+style.id = "ui-trait-transferable"
+document.head.append(style)
+
 const configure = settings("ui.trait.transferable", DEFAULTS)
 
 function exportElement(target) {
@@ -124,6 +128,7 @@ class Transferable extends Trait {
     }
 
     let offsetX = 0
+    let targetWidth = 0
     let ghost
     let restoreStyles
     const hintIsGhost = this.config.hint === "ghost"
@@ -133,11 +138,13 @@ class Transferable extends Trait {
       {
         "prevent": true,
         "dragover || dragenter": (e) => {
-          console.log(777, e.target)
-          // const item = e.target.closest(selector)
           dt.effects.handleEffect(e, this.config)
+          const item = e.target.closest(selector)
+          console.log(777, item)
         },
+
         "drop": async (e) => {
+          // console.log("drop")
           const item = e.target.closest(selector)
           const index = getNewIndex(e, item, itemsOrientation)
           const res = dt.import(e, this.config)
@@ -158,9 +165,28 @@ class Transferable extends Trait {
           dt.export(e, { effects, data: this.export({ index, target }) })
 
           if (hintIsGhost) {
-            ghost = ghostify(target)
+            const carrier = {}
+            ghost = ghostify(target, { carrier })
             document.documentElement.append(ghost)
-            restoreStyles = setTemp(target, { style: { opacity: 0 } })
+
+            targetWidth =
+              carrier.width + carrier.marginLeft + carrier.marginRight
+
+            requestAnimationFrame(() => {
+              restoreStyles = setTemp(target, {
+                style: {
+                  opacity: "0",
+                  width: "0px",
+                  flexBasis: "0px",
+                  minWidth: "0",
+                  paddingInline: "0",
+                },
+              })
+              style.textContent = `
+                ${selector}:nth-child(n+${index + 2}) {
+                  translate: ${targetWidth}px;
+                }`
+            })
           }
         },
         drag(e) {
@@ -172,6 +198,7 @@ class Transferable extends Trait {
           if (hintIsGhost) {
             ghost?.remove()
             restoreStyles?.()
+            style.textContent = ""
           }
 
           if (isSorting) return void (isSorting = false)
