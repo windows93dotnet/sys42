@@ -102,6 +102,8 @@ ui-tabs {
   column-gap: var(--unit-sm);
 
   user-select: none;
+
+  transition: translate 100ms;
 }
 
 .ui-tabs__container {

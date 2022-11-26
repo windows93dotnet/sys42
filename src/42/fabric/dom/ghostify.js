@@ -10,6 +10,7 @@ export function ghostify(el, options) {
   const marginTop = Number.parseInt(styles.marginTop, 10)
   const marginLeft = Number.parseInt(styles.marginLeft, 10)
 
+  clone.style.transition = "none"
   clone.style.position = "fixed"
   clone.style.pointerEvents = "none"
   clone.style.top = `${y - marginTop}px`

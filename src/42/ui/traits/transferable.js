@@ -9,15 +9,16 @@ import indexOfElement from "../../fabric/dom/indexOfElement.js"
 import ensureScopeSelector from "../../fabric/event/ensureScopeSelector.js"
 import setTemp from "../../fabric/dom/setTemp.js"
 import ghostify from "../../fabric/dom/ghostify.js"
+import paintDebounce from "../../fabric/type/function/paintDebounce.js"
 
 const DEFAULTS = {
   items: ":scope > *",
-  itemsOrientation: undefined,
+  orientation: undefined,
   dropzone: undefined,
   effects: ["copy", "move", "link"],
   silentEffectCheck: false,
   handle: false,
-  hint: "ghost",
+  hint: "slide",
 }
 
 const style = document.createElement("style")
@@ -43,15 +44,15 @@ function getIndex(item) {
   return Number(item.dataset.index ?? indexOfElement(item))
 }
 
-function getNewIndex(e, item, orientation) {
+function getNewIndex(X, Y, item, orientation) {
   if (item) {
     const index = getIndex(item)
     if (orientation === "horizontal") {
       const { x, width } = item.getBoundingClientRect()
-      if (e.x > x + width / 2) return index + 1
+      if (X > x + width / 2) return index + 1
     } else {
       const { y, height } = item.getBoundingClientRect()
-      if (e.y > y + height / 2) return index + 1
+      if (Y > y + height / 2) return index + 1
     }
 
     return index
@@ -71,14 +72,43 @@ class Transferable extends Trait {
     dropzone.id ||= uid()
     const { id } = dropzone
 
-    const itemsOrientation =
-      this.config.itemsOrientation ??
+    const orientation =
+      this.config.orientation ??
       dropzone.getAttribute("aria-orientation") ??
       "horizontal"
 
     const selector = ensureScopeSelector(this.config.items, dropzone)
 
     let isSorting = false
+    let offsetX = 0
+
+    let hint
+    if (this.config.hint === "slide") {
+      hint = {
+        ghost: undefined,
+        restoreStyles: undefined,
+        targetWidth: 0,
+        offsetX: 0,
+        offsetY: 0,
+      }
+    }
+
+    const replaceEmptySpace = hint
+      ? paintDebounce(({ x, y }) => {
+          const { textContent } = style
+          style.textContent = ""
+          const X = x
+          const Y = y
+          const item = document.elementFromPoint(X, Y)?.closest(selector)
+          if (item) {
+            const index = getNewIndex(X, Y, item, orientation)
+            style.textContent = `
+          ${selector}:nth-child(n+${index + 1}) {
+            translate: ${hint.targetWidth}px;
+          }`
+          } else style.textContent = textContent
+        })
+      : noop
 
     if (options?.list) {
       const { list } = options
@@ -127,27 +157,21 @@ class Transferable extends Trait {
       this.removeItem = this.config.removeItem ?? noop
     }
 
-    let offsetX = 0
-    let targetWidth = 0
-    let ghost
-    let restoreStyles
-    const hintIsGhost = this.config.hint === "ghost"
-
     listen(
       dropzone,
       {
         "prevent": true,
         "dragover || dragenter": (e) => {
           dt.effects.handleEffect(e, this.config)
-          const item = e.target.closest(selector)
-          console.log(777, item)
+          // const item = e.target.closest(selector)
+          // console.log(777, item)
         },
 
         "drop": async (e) => {
           // console.log("drop")
-          const item = e.target.closest(selector)
-          const index = getNewIndex(e, item, itemsOrientation)
           const res = dt.import(e, this.config)
+          const item = e.target.closest(selector)
+          const index = getNewIndex(e.x, e.y, item, orientation)
           this.import(res, { item, index })
         },
       },
@@ -164,16 +188,16 @@ class Transferable extends Trait {
           const index = getIndex(target)
           dt.export(e, { effects, data: this.export({ index, target }) })
 
-          if (hintIsGhost) {
+          if (hint) {
             const carrier = {}
-            ghost = ghostify(target, { carrier })
-            document.documentElement.append(ghost)
+            hint.ghost = ghostify(target, { carrier })
+            document.documentElement.append(hint.ghost)
 
-            targetWidth =
+            hint.targetWidth =
               carrier.width + carrier.marginLeft + carrier.marginRight
 
             requestAnimationFrame(() => {
-              restoreStyles = setTemp(target, {
+              hint.restoreStyles = setTemp(target, {
                 style: {
                   opacity: "0",
                   width: "0px",
@@ -184,20 +208,21 @@ class Transferable extends Trait {
               })
               style.textContent = `
                 ${selector}:nth-child(n+${index + 2}) {
-                  translate: ${targetWidth}px;
+                  translate: ${hint.targetWidth}px;
                 }`
             })
           }
         },
         drag(e) {
-          if (hintIsGhost) {
-            if (e.x) ghost.style.translate = `${e.x - offsetX}px`
+          if (hint) {
+            if (e.x) hint.ghost.style.translate = `${e.x - offsetX}px`
+            replaceEmptySpace(e)
           }
         },
         dragend: (e, target) => {
-          if (hintIsGhost) {
-            ghost?.remove()
-            restoreStyles?.()
+          if (hint) {
+            hint.ghost?.remove()
+            hint.restoreStyles?.()
             style.textContent = ""
           }
 
