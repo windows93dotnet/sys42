@@ -93,17 +93,16 @@ class Transferable extends Trait {
     const replaceEmptySpace = paintThrottle(({ x, y }) => {
       if (x === hint.lastX) return
 
-      const { textContent } = style1
-      style1.textContent = ""
-
-      const X = x - hint.targetOffsetX
+      let X = x - hint.targetOffsetX
       const Y = y
 
-      let dir = 0
+      const dir = 1
 
-      if (x > hint.targetX) dir = 1
-
-      // if (x > hint.lastX) {}
+      if (x > hint.lastX) {
+        X += hint.targetWidth / 2
+      } else {
+        X -= hint.targetWidth / 2
+      }
 
       hint.lastX = x
 
@@ -115,8 +114,6 @@ class Transferable extends Trait {
           ${selector}:nth-child(n+${index + dir}) {
             translate: ${hint.targetWidth}px;
           }`
-      } else {
-        style1.textContent = textContent
       }
     })
 
@@ -237,7 +234,7 @@ class Transferable extends Trait {
               requestAnimationFrame(() => {
                 style2.textContent = `
                   ${selector} {
-                    // transition: translate 120ms ease-in-out;
+                    transition: translate 120ms ease-in-out;
                   }`
               })
             })
