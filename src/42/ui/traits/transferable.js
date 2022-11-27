@@ -28,6 +28,10 @@ const style2 = document.createElement("style")
 style2.id = "ui-trait-transferable2"
 document.head.append(style2)
 
+const style3 = document.createElement("style")
+style3.id = "ui-trait-transferable2"
+document.head.append(style3)
+
 const configure = settings("ui.trait.transferable", DEFAULTS)
 
 function exportElement(target) {
@@ -94,21 +98,20 @@ class Transferable extends Trait {
 
       const X = x - hint.targetOffsetX
       const Y = y
-      let dir = 1
 
-      if (x > hint.lastX) {
-        // X -= hint.targetWidth
-        dir = 2
-      }
+      let dir = 0
+
+      if (x > hint.targetX) dir = 1
+
+      // if (x > hint.lastX) {}
 
       hint.lastX = x
 
       const item = document.elementFromPoint(X, Y)?.closest(selector)
       if (item) {
         const index = getNewIndex(X, Y, item, orientation)
-        hint.index = index + dir - 1
+        hint.index = index + dir
         style1.textContent = `
-          ${hint.hideCurrent}
           ${selector}:nth-child(n+${index + dir}) {
             translate: ${hint.targetWidth}px;
           }`
@@ -209,7 +212,9 @@ class Transferable extends Trait {
             hint.ghost = ghostify(target, { carrier })
             document.documentElement.append(hint.ghost)
 
-            hint.targetOffsetX = e.x - carrier.x
+            hint.targetX = carrier.x
+
+            hint.targetOffsetX = e.x - (carrier.x + carrier.width / 2)
 
             hint.targetWidth =
               carrier.width + carrier.marginLeft + carrier.marginRight
@@ -224,15 +229,15 @@ class Transferable extends Trait {
               }`
 
             requestAnimationFrame(() => {
+              style3.textContent = `${hint.hideCurrent}`
               style1.textContent = `
-                ${hint.hideCurrent}
                 ${selector}:nth-child(n+${index + 2}) {
                   translate: ${hint.targetWidth}px;
                 }`
               requestAnimationFrame(() => {
                 style2.textContent = `
                   ${selector} {
-                    transition: translate 120ms ease-in-out;
+                    // transition: translate 120ms ease-in-out;
                   }`
               })
             })
@@ -247,6 +252,7 @@ class Transferable extends Trait {
           if (hint) {
             hint.ghost?.remove()
             style1.textContent = ""
+            style3.textContent = ""
           }
 
           if (isSorting) return void (isSorting = false)
