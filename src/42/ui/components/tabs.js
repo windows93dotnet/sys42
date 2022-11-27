@@ -73,6 +73,7 @@ export class Tabs extends Component {
             transferable: {
               items: ":scope > .ui-tabs__tab",
               list: this.content,
+              reactive: this.ctx.reactive,
               indexChange: (index) => this.selectTab(index),
             },
 
