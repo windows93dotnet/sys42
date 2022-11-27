@@ -152,6 +152,11 @@ ui-tabs {
   }
 }
 
+ui-tabs[balanced] .ui-tabs__tab,
+ui-tabs[balanced] .ui-tabs__tab[aria-selected="true"] {
+  flex: 1;
+}
+
 ui-tabs[vertical] {
   flex-direction: row;
 }

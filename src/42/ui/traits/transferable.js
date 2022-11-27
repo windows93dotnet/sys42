@@ -92,12 +92,12 @@ class Transferable extends Trait {
       const { textContent } = style1
       style1.textContent = ""
 
-      let X = x - hint.targetOffsetX
+      const X = x - hint.targetOffsetX
       const Y = y
       let dir = 1
 
       if (x > hint.lastX) {
-        X -= hint.targetWidth
+        // X -= hint.targetWidth
         dir = 2
       }
 
@@ -106,7 +106,7 @@ class Transferable extends Trait {
       const item = document.elementFromPoint(X, Y)?.closest(selector)
       if (item) {
         const index = getNewIndex(X, Y, item, orientation)
-        hint.index = index
+        hint.index = index + dir - 1
         style1.textContent = `
           ${hint.hideCurrent}
           ${selector}:nth-child(n+${index + dir}) {
@@ -202,6 +202,7 @@ class Transferable extends Trait {
               ghost: undefined,
               targetWidth: 0,
               offsetX: e.x,
+              lastX: e.x,
             }
 
             const carrier = {}
@@ -231,7 +232,7 @@ class Transferable extends Trait {
               requestAnimationFrame(() => {
                 style2.textContent = `
                   ${selector} {
-                    transition: translate 120ms ease-in-out 10ms;
+                    transition: translate 120ms ease-in-out;
                   }`
               })
             })

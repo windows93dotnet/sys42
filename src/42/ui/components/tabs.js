@@ -13,6 +13,10 @@ export class Tabs extends Component {
         type: "boolean",
         reflect: true,
       },
+      balanced: {
+        type: "boolean",
+        reflect: true,
+      },
       current: {
         type: "number",
         default: 0,
