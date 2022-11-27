@@ -8,7 +8,7 @@ const lorem =
 // @src https://hitchhikers.fandom.com/
 const planets = [
   {
-    name: "Computer",
+    name: "Earth",
     description:
       "Earth was a giant supercomputer designed to find the Ultimate Question of Life, the Universe and Everything. Designed by Deep Thought and built by the Magratheans, it was commonly mistaken for a planet,",
     // location: "Solar System, Milky Way",

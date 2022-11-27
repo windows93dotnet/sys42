@@ -114,12 +114,13 @@ export class Tabs extends Component {
           {
             tag: ".ui-tabs__panels",
             each: {
-              if: "{{../../current === @index}}",
+              // if: "{{../../current === @index}}",
               tag: ".ui-tabs__panel",
               role: "tabpanel",
               id: `panel-${id}-{{@index}}`,
               content: "{{render(content)}}",
               tabIndex: 0,
+              hidden: "{{../../current !== @index}}",
               aria: {
                 labelledby: `tab-${id}-{{@index}}`,
                 expanded: "{{../../current === @index}}",

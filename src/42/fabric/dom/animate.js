@@ -1,6 +1,6 @@
 // @src https://youtu.be/9-6CKCz58A8
 
-function configure(options) {
+function configure(options = {}) {
   if (typeof options === "number") return { duration: options }
   if ("ms" in options) options.duration = options.ms
   return options

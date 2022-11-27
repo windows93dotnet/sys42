@@ -9,6 +9,7 @@ import indexOfElement from "../../fabric/dom/indexOfElement.js"
 import ensureScopeSelector from "../../fabric/event/ensureScopeSelector.js"
 import ghostify from "../../fabric/dom/ghostify.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
+// import animate from "../../fabric/dom/animate.js"
 
 const DEFAULTS = {
   items: ":scope > *",
@@ -27,10 +28,6 @@ document.head.append(style1)
 const style2 = document.createElement("style")
 style2.id = "ui-trait-transferable2"
 document.head.append(style2)
-
-const style3 = document.createElement("style")
-style3.id = "ui-trait-transferable2"
-document.head.append(style3)
 
 const configure = settings("ui.trait.transferable", DEFAULTS)
 
@@ -96,12 +93,10 @@ class Transferable extends Trait {
       let X = x - hint.targetOffsetX
       const Y = y
 
-      const dir = 1
-
       if (x > hint.lastX) {
-        X += hint.targetWidth / 2
+        X += hint.blankHalfWidth
       } else {
-        X -= hint.targetWidth / 2
+        X -= hint.blankHalfWidth
       }
 
       hint.lastX = x
@@ -109,10 +104,11 @@ class Transferable extends Trait {
       const item = document.elementFromPoint(X, Y)?.closest(selector)
       if (item) {
         const index = getNewIndex(X, Y, item, orientation)
-        hint.index = index + dir
+        hint.index = index
         style1.textContent = `
-          ${selector}:nth-child(n+${index + dir}) {
-            translate: ${hint.targetWidth}px;
+          ${hint.hideCurrent}
+          ${selector}:nth-child(n+${index + 1}) {
+            translate: ${hint.blankWidth}px;
           }`
       }
     })
@@ -169,8 +165,9 @@ class Transferable extends Trait {
       {
         "prevent": true,
         "dragover || dragenter": (e) => dt.effects.handleEffect(e, this.config),
-        "dragover":
-          this.config.hint === "slide" ? replaceEmptySpace : undefined,
+        "dragover"(e) {
+          if (hint) replaceEmptySpace(e)
+        },
         "drop": async (e) => {
           const res = dt.import(e, this.config)
           if (hint) {
@@ -200,7 +197,7 @@ class Transferable extends Trait {
             hint = {
               index,
               ghost: undefined,
-              targetWidth: 0,
+              blankWidth: 0,
               offsetX: e.x,
               lastX: e.x,
             }
@@ -213,8 +210,10 @@ class Transferable extends Trait {
 
             hint.targetOffsetX = e.x - (carrier.x + carrier.width / 2)
 
-            hint.targetWidth =
+            hint.blankWidth =
               carrier.width + carrier.marginLeft + carrier.marginRight
+
+            hint.blankHalfWidth = hint.blankWidth / 2
 
             hint.hideCurrent = `
               ${selector}:nth-child(${index + 1}) {
@@ -226,10 +225,10 @@ class Transferable extends Trait {
               }`
 
             requestAnimationFrame(() => {
-              style3.textContent = `${hint.hideCurrent}`
               style1.textContent = `
+                ${hint.hideCurrent}
                 ${selector}:nth-child(n+${index + 2}) {
-                  translate: ${hint.targetWidth}px;
+                  translate: ${hint.blankWidth}px;
                 }`
               requestAnimationFrame(() => {
                 style2.textContent = `
@@ -247,9 +246,26 @@ class Transferable extends Trait {
         },
         dragend: (e, target) => {
           if (hint) {
-            hint.ghost?.remove()
+            hint.ghost.remove()
             style1.textContent = ""
-            style3.textContent = ""
+
+            // setTimeout(() => {
+            //   // console.log(2, hint.index)
+            //   const item = document.querySelector(
+            //     `${selector}:nth-child(${hint.index + 1})`
+            //   )
+            //   // console.log(item)
+            //   item.style.opacity = "0"
+            //   if (item) {
+            //     const { x } = item.getBoundingClientRect()
+            //     console.log(x)
+            //     animate.to(hint.ghost, { translate: `${x}px` }).then(() => {
+            //       item.style.opacity = "1"
+            //       hint.ghost.remove()
+            //       style1.textContent = ""
+            //     })
+            //   }
+            // }, 1000)
           }
 
           if (isSorting) return void (isSorting = false)

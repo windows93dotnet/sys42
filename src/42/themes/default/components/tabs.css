@@ -101,10 +101,6 @@ ui-tabs {
   background-clip: padding-box;
   column-gap: var(--unit-sm);
 
-  /* min-height: 3rem; */
-  padding-top: 1rem;
-  padding-inline: 1rem;
-
   user-select: none;
 }
 
