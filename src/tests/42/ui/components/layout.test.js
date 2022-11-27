@@ -88,7 +88,7 @@ window.app = await ui({
             content: {
               tag: "ui-tabs",
               id: "tabs2",
-              // vertical: true,
+              vertical: true,
               content: [
                 { label: "One", content: lorem }, //
                 { label: "Two", content: "hello" }, //

@@ -121,7 +121,7 @@
   --btn-bdi-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(255 255 255)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(223 223 223)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(128 128 128)" d="M5 1h1v5H1V5h4z"/><path fill="rgb(64 64 64)" d="M6 0h1v7H0V6h6z"/></svg>');
   --outset-bdi-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(223 223 223)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(255 255 255)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(128 128 128)" d="M5 1h1v5H1V5h4z"/><path fill="rgb(64 64 64)" d="M6 0h1v7H0V6h6z"/></svg>');
   --outset-shallow-bdi-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(255 255 255)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(128 128 128)" d="M6 0h1v7H0V6h6z"/></svg>');
-  --tabs__tab-bdi-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(255 255 255)" d="M2 0h3v1H2z  M1 1h1v1H1z M0 2h1v4H0z" /><path fill="rgb(223 223 223)" d="M2 1h3v1H2z M1 2h1v4H1z" /><path fill="rgb(128 128 128)" d="M5 2h1v4H5z" /><path fill="rgb(64 64 64)" d="M6 2h1v4H6z M5 1h1v1H5z" /><path fill="rgb(212 208 200)" d="M0 6v1h7V6H5V5H2v1Z" /></svg>');
+  --tabs__tab-bdi-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(255 255 255)" d="M2 0h3v1H2z  M1 1h1v1H1z M0 2h1v3H0z" /><path fill="rgb(223 223 223)" d="M2 1h3v1H2z M1 2h1v3H1z" /><path fill="rgb(128 128 128)" d="M5 2h1v3H5z M2 5h3v1H2z" /><path fill="rgb(64 64 64)" d="M6 2h1v3H6z M5 1h1v1H5z M5 5h1v1H5z M2 6h3v1H2z M1 5h1v1H1z" /></svg>');
 
   --btn☑️-bdi-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(64 64 64)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(128 128 128)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(223 223 223)" d="M5 1h1v5H1V5h4z"/><path fill="rgb(255 255 255)" d="M6 0h1v7H0V6h6z"/></svg>');
   --btn👇-bdi-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(64 64 64)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(128 128 128)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(128 128 128)" d="M5 1h1v5H1V5h4z"/><path fill="rgb(64 64 64)" d="M6 0h1v7H0V6h6z"/></svg>');
@@ -557,17 +557,49 @@ legend button:active,
 
 .ui-tabs__tab {
   position: relative;
+  overflow: visible;
 }
 
-.ui-tabs__tab:first-of-type[aria-selected="true"]::after {
+.ui-tabs__tab[aria-selected="true"] {
+  clip-path: none;
+}
+
+.ui-tabs__tab[aria-selected="true"]::before {
   content: "";
   position: absolute;
   bottom: -2px;
   left: -2px;
+  right: -2px;
   height: 2px;
-  width: 2px;
-  background-color: var(--ButtonLight);
-  border-left: 1px solid var(--ButtonHilight);
+  background-color: var(--ButtonFace);
+}
+
+.ui-tabs__tab[aria-selected="true"]::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: -2px;
+  right: -2px;
+  height: 1px;
+  image-rendering: pixelated;
+  background:
+  linear-gradient(
+    90deg,
+    var(--ButtonHilight) 0,
+    var(--ButtonHilight) 1px,
+    var(--ButtonLight) 1px,
+    var(--ButtonLight) 2px,
+    var(--ButtonFace) 2px,
+    var(--ButtonFace) calc(100% - 2px),
+    var(--ButtonShadow) calc(100% - 2px),
+    var(--ButtonShadow) calc(100% - 1px),
+    var(--ButtonDkShadow) calc(100% - 1px),
+    var(--ButtonDkShadow) 100%
+  );
+}
+
+.ui-tabs__tab:first-of-type[aria-selected="true"]::before {
+  left: 0;
 }
 
 /* scrollbars
