@@ -9,7 +9,7 @@ import indexOfElement from "../../fabric/dom/indexOfElement.js"
 import ensureScopeSelector from "../../fabric/event/ensureScopeSelector.js"
 import ghostify from "../../fabric/dom/ghostify.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
-// import animate from "../../fabric/dom/animate.js"
+import animate from "../../fabric/dom/animate.js"
 
 const DEFAULTS = {
   items: ":scope > *",
@@ -171,10 +171,36 @@ class Transferable extends Trait {
         "drop": async (e) => {
           const res = dt.import(e, this.config)
           if (hint) {
-            style1.textContent = ""
-            style2.textContent = ""
             const { index } = hint
             this.import(res, { index })
+            // style2.textContent = ""
+            // style1.textContent = ""
+            // hint.ghost.remove()
+
+            requestAnimationFrame(() => {
+              style2.textContent = ""
+              style1.textContent = ""
+              const dir = hint.index > hint.targetIndex ? 0 : 1
+              const item = document.querySelector(
+                `${selector}:nth-child(${hint.index + dir})`
+              )
+              if (item) {
+                item.style.opacity = 0
+                const { x } = item.getBoundingClientRect()
+                animate
+                  .to(
+                    hint.ghost,
+                    { translate: `${x - hint.targetX}px` },
+                    { ms: 180 }
+                  )
+                  .then(() => {
+                    item.style.opacity = 1
+                    hint.ghost.remove()
+                  })
+              } else {
+                hint.ghost.remove()
+              }
+            })
           } else {
             const item = e.target.closest(selector)
             const index = getNewIndex(e.x, e.y, item, orientation)
@@ -196,6 +222,7 @@ class Transferable extends Trait {
           if (this.config.hint === "slide") {
             hint = {
               index,
+              targetIndex: index,
               ghost: undefined,
               blankWidth: 0,
               offsetX: e.x,
@@ -217,11 +244,12 @@ class Transferable extends Trait {
 
             hint.hideCurrent = `
               ${selector}:nth-child(${index + 1}) {
-                opacity: 0;
-                width: 0px;
-                flex-basis: 0px;
-                min-width: 0px;
-                padding-inline: 0px;
+                opacity: 0 !important;
+                width: 0px !important;
+                flex-basis: 0px !important;
+                min-width: 0px !important;
+                padding-inline: 0px !important;
+                outline: none !important;
               }`
 
             requestAnimationFrame(() => {
@@ -234,6 +262,7 @@ class Transferable extends Trait {
                 style2.textContent = `
                   ${selector} {
                     transition: translate 120ms ease-in-out;
+                    outline: none !important;
                   }`
               })
             })
@@ -245,29 +274,6 @@ class Transferable extends Trait {
           }
         },
         dragend: (e, target) => {
-          if (hint) {
-            hint.ghost.remove()
-            style1.textContent = ""
-
-            // setTimeout(() => {
-            //   // console.log(2, hint.index)
-            //   const item = document.querySelector(
-            //     `${selector}:nth-child(${hint.index + 1})`
-            //   )
-            //   // console.log(item)
-            //   item.style.opacity = "0"
-            //   if (item) {
-            //     const { x } = item.getBoundingClientRect()
-            //     console.log(x)
-            //     animate.to(hint.ghost, { translate: `${x}px` }).then(() => {
-            //       item.style.opacity = "1"
-            //       hint.ghost.remove()
-            //       style1.textContent = ""
-            //     })
-            //   }
-            // }, 1000)
-          }
-
           if (isSorting) return void (isSorting = false)
 
           if (e.dataTransfer.dropEffect === "move") {
