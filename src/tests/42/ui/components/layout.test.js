@@ -75,6 +75,7 @@ window.app = await ui({
             content: {
               tag: "ui-tabs",
               id: "tabs1",
+              // balanced: true,
               // current: "{{currentTab}}",
               content: "{{planets}}",
             },
