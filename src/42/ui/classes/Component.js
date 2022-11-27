@@ -142,11 +142,11 @@ export default class Component extends HTMLElement {
       return
     }
 
+    if (this[_lifecycle] === RECYCLE) this[_lifecycle] = SETUP
     if (this.isRendered()) return
 
     if (this[_lifecycle] === INIT) this.ready.then(() => this.#setup())
     else if (this[_lifecycle] === CREATE) this.init().then(() => this.#setup())
-    else if (this[_lifecycle] === RECYCLE) this[_lifecycle] = SETUP
   }
 
   disconnectedCallback() {
