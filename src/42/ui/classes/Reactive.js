@@ -38,6 +38,12 @@ export default class Reactive extends Emitter {
     }
 
     const update = () => {
+      if (this.queue.objects.size === 0 && this.queue.paths.size === 0) {
+        this.pendingUpdate?.resolve?.()
+        this.pendingUpdate = false
+        return
+      }
+
       const res = this.render(this.queue)
       this.pendingUpdate?.resolve?.()
       this.pendingUpdate = false
@@ -189,7 +195,7 @@ export default class Reactive extends Emitter {
       changes.add(path)
       if (deleted) deleteds.add(path)
       for (const key in this.ctx.renderers) {
-        if (key.startsWith(path) /*  && key in this.ctx.renderers */) {
+        if (key.startsWith(path)) {
           for (const render of this.ctx.renderers[key]) {
             if (rendered.has(render)) continue
             render(key)

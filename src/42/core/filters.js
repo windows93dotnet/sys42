@@ -1,6 +1,7 @@
 // @read https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters
 // @read https://ansible-docs.readthedocs.io/zh/stable-2.0/rst/playbooks_filters.html
 
+import render from "../ui/render.js"
 import locate from "../fabric/locator/locate.js"
 import bytesize from "../fabric/type/file/bytesize.js"
 import trailZeros from "../fabric/type/number/trailZeros.js"
@@ -185,8 +186,7 @@ types.fs = {
 types.io = io
 
 types.ui = {
-  async render(item) {
-    const render = await import("../ui/render.js").then((m) => m.default)
+  render(item) {
     queueMicrotask(() => {
       if (!this.el) return
       this.el.replaceChildren(render(item, this))

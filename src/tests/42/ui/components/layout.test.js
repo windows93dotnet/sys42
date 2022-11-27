@@ -67,22 +67,19 @@ window.app = await ui({
     {
       tag: ".box-h",
       content: [
-        // {
-        //   tag: ".box-center",
-        //   content: {
-        //     tag: ".pa.outset.resize.flex-v",
-        //     style: { width: "450px", height: "200px" },
-        //     content: {
-        //       tag: "ui-tabs",
-        //       id: "tabs1",
-        //       // current: 3,
-        //       // current: 1,
-        //       // balanced: true,
-        //       // current: "{{currentTab}}",
-        //       content: "{{planets}}",
-        //     },
-        //   },
-        // },
+        {
+          tag: ".box-center",
+          content: {
+            tag: ".pa.outset.resize.flex-v",
+            style: { width: "450px", height: "200px" },
+            content: {
+              tag: "ui-tabs",
+              id: "tabs1",
+              // balanced: true,
+              content: "{{planets}}",
+            },
+          },
+        },
         {
           tag: ".box-center",
           content: {
@@ -91,7 +88,6 @@ window.app = await ui({
             content: {
               tag: "ui-tabs",
               id: "tabs2",
-              // current: 1,
               // vertical: true,
               content: [
                 { label: "One", content: lorem }, //
@@ -110,16 +106,15 @@ window.app = await ui({
   ],
 
   state: {
-    // currentTab: 1,
     planets,
   },
 })
 
 // await puppet("#tab-tabs1-3 .ui-tabs__close").click()
 
-setTimeout(() => {
-  const tabs = window.app.el.querySelector("#tabs2")
-  const removed = tabs.content.splice(0, 1)[0]
-  tabs.content.splice(1, 0, removed)
-  tabs.current = 1
-}, 500)
+// setTimeout(() => {
+//   const tabs = window.app.el.querySelector("#tabs2")
+//   const [removed] = tabs.content.splice(0, 1)
+//   tabs.content.splice(1, 0, removed)
+//   tabs.current = 1
+// }, 500)
