@@ -4,15 +4,20 @@ export function ghostify(el, options) {
   clone.id = `${el.id}--ghost`
   const styles = getComputedStyle(el)
 
-  clone.style.width = width
-  clone.style.height = height
-
   const marginTop = Number.parseInt(styles.marginTop, 10)
   const marginLeft = Number.parseInt(styles.marginLeft, 10)
 
   clone.style.transition = "none"
   clone.style.position = "fixed"
   clone.style.pointerEvents = "none"
+  clone.style.display = "inline-block"
+  clone.style.minWidth = "0"
+  clone.style.minHeight = "0"
+  clone.style.maxWidth = "none"
+  clone.style.maxHeight = "none"
+
+  clone.style.width = `${width}px`
+  clone.style.height = `${height}px`
   clone.style.top = `${y - marginTop}px`
   clone.style.left = `${x - marginLeft}px`
 
