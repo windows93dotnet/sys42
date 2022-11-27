@@ -34,7 +34,7 @@ test.tasks(
       },
       html: "<ui-t-basic></ui-t-basic>",
       def: { tag: "ui-t-basic" },
-      expected: "<ui-t-basic></ui-t-basic>",
+      expected: "<ui-t-basic><!--[rendered]--></ui-t-basic>",
     }),
 
     task({
@@ -46,7 +46,7 @@ test.tasks(
       },
       html: "<ui-t-string></ui-t-string>",
       def: { tag: "ui-t-string" },
-      expected: "<ui-t-string>hello</ui-t-string>",
+      expected: "<ui-t-string><!--[rendered]-->hello</ui-t-string>",
     }),
 
     task({
@@ -57,7 +57,7 @@ test.tasks(
         }
       },
       def: { tag: "ui-t-attr" },
-      expected: '<ui-t-attr class="derp">hello</ui-t-attr>',
+      expected: '<ui-t-attr class="derp"><!--[rendered]-->hello</ui-t-attr>',
     }),
 
     task({
@@ -69,7 +69,7 @@ test.tasks(
         content: { tag: "ui-t-data" },
         state: { foo: 1 },
       },
-      expected: "<ui-t-data>foo: 1</ui-t-data>",
+      expected: "<ui-t-data><!--[rendered]-->foo: 1</ui-t-data>",
     }),
 
     task({
@@ -89,7 +89,7 @@ test.tasks(
         },
         state: { foo: "bar" },
       },
-      expected: "<ui-t-dynamic>x:bar</ui-t-dynamic>",
+      expected: "<ui-t-dynamic><!--[rendered]-->x:bar</ui-t-dynamic>",
     }),
 
     task({
@@ -165,7 +165,8 @@ test.tasks(
         content: { tag: "ui-t-props", bar: 0 },
         state: { foo: 1 },
       },
-      expected: '<ui-t-props bar="0">foo: 1, bar: 0</ui-t-props>',
+      expected:
+        '<ui-t-props bar="0"><!--[rendered]-->foo: 1, bar: 0</ui-t-props>',
     }),
 
     task({
@@ -173,7 +174,8 @@ test.tasks(
         content: { tag: "ui-t-props" },
         state: { foo: 1 },
       },
-      expected: '<ui-t-props bar="2">foo: 1, bar: 2</ui-t-props>',
+      expected:
+        '<ui-t-props bar="2"><!--[rendered]-->foo: 1, bar: 2</ui-t-props>',
       async check(t, app) {
         const el = app.el.querySelector("ui-t-props")
 
@@ -184,7 +186,7 @@ test.tasks(
 
         t.is(
           app.el.innerHTML,
-          '<ui-t-props bar="3">foo: 1, bar: 3</ui-t-props>'
+          '<ui-t-props bar="3"><!--[rendered]-->foo: 1, bar: 3</ui-t-props>'
         )
 
         el.bar = 4
@@ -192,7 +194,7 @@ test.tasks(
 
         t.is(
           app.el.innerHTML,
-          '<ui-t-props bar="4">foo: 1, bar: 4</ui-t-props>'
+          '<ui-t-props bar="4"><!--[rendered]-->foo: 1, bar: 4</ui-t-props>'
         )
 
         el.setAttribute("bar", "5")
@@ -200,7 +202,7 @@ test.tasks(
 
         t.is(
           app.el.innerHTML,
-          '<ui-t-props bar="5">foo: 1, bar: 5</ui-t-props>'
+          '<ui-t-props bar="5"><!--[rendered]-->foo: 1, bar: 5</ui-t-props>'
         )
       },
     }),
@@ -222,7 +224,8 @@ test.tasks(
         content: { tag: "ui-t-props-state" },
         state: { foo: 1 },
       },
-      expected: '<ui-t-props-state bar="2">foo: 1, bar: 2</ui-t-props-state>',
+      expected:
+        '<ui-t-props-state bar="2"><!--[rendered]-->foo: 1, bar: 2</ui-t-props-state>',
       async check(t, app) {
         const el = app.el.querySelector("ui-t-props-state")
 
@@ -235,7 +238,7 @@ test.tasks(
         t.is(el.bar, 3)
         t.is(
           app.el.innerHTML,
-          '<ui-t-props-state bar="3">foo: 1, bar: 3</ui-t-props-state>'
+          '<ui-t-props-state bar="3"><!--[rendered]-->foo: 1, bar: 3</ui-t-props-state>'
         )
 
         el.bar = 4
@@ -244,7 +247,7 @@ test.tasks(
 
         t.is(
           app.el.innerHTML,
-          '<ui-t-props-state bar="4">foo: 1, bar: 4</ui-t-props-state>'
+          '<ui-t-props-state bar="4"><!--[rendered]-->foo: 1, bar: 4</ui-t-props-state>'
         )
 
         el.setAttribute("bar", "5")
@@ -253,7 +256,7 @@ test.tasks(
 
         t.is(
           app.el.innerHTML,
-          '<ui-t-props-state bar="5">foo: 1, bar: 5</ui-t-props-state>'
+          '<ui-t-props-state bar="5"><!--[rendered]-->foo: 1, bar: 5</ui-t-props-state>'
         )
       },
     }),
@@ -284,7 +287,8 @@ test.tasks(
         content: { tag: "ui-t-filter" },
         state: { foo: 1 },
       },
-      expected: '<ui-t-filter bar="2">foo: 6, bar: 12</ui-t-filter>',
+      expected:
+        '<ui-t-filter bar="2"><!--[rendered]-->foo: 6, bar: 12</ui-t-filter>',
     }),
 
     task({
@@ -296,7 +300,7 @@ test.tasks(
         content: { tag: "ui-t-ready" },
         state: { foo: "/42/index.html" },
       },
-      expected: "<ui-t-ready>ext: .html</ui-t-ready>",
+      expected: "<ui-t-ready><!--[rendered]-->ext: .html</ui-t-ready>",
     }),
 
     task({
@@ -313,7 +317,7 @@ test.tasks(
       def: {
         content: { tag: "ui-t-noprops" },
       },
-      expected: "<ui-t-noprops>foo: </ui-t-noprops>",
+      expected: "<ui-t-noprops><!--[rendered]-->foo: </ui-t-noprops>",
     }),
 
     task({
@@ -329,7 +333,7 @@ test.tasks(
       def: {
         content: { tag: "ui-t-css" /* , foo: "red" */ },
       },
-      expected: "<ui-t-css></ui-t-css>",
+      expected: "<ui-t-css><!--[rendered]--></ui-t-css>",
       async check(t, app) {
         const el = app.el.firstChild
         el.foo = "red"
@@ -337,26 +341,32 @@ test.tasks(
 
         t.match(
           app.el.innerHTML,
-          /<ui-t-css style="--foo:\s*red;"><\/ui-t-css>/
+          /<ui-t-css style="--foo:\s*red;"><!--\[rendered]--><\/ui-t-css>/
         )
 
         el.foo = undefined
         await app
 
-        t.is(app.el.innerHTML, '<ui-t-css style=""></ui-t-css>')
+        t.is(
+          app.el.innerHTML,
+          '<ui-t-css style=""><!--[rendered]--></ui-t-css>'
+        )
 
         el.foo = "blue"
         await app
 
         t.match(
           app.el.innerHTML,
-          /<ui-t-css style="--foo:\s*blue;"><\/ui-t-css>/
+          /<ui-t-css style="--foo:\s*blue;"><!--\[rendered]--><\/ui-t-css>/
         )
 
         el.foo = undefined
         await app
 
-        t.is(app.el.innerHTML, '<ui-t-css style=""></ui-t-css>')
+        t.is(
+          app.el.innerHTML,
+          '<ui-t-css style=""><!--[rendered]--></ui-t-css>'
+        )
       },
     }),
 
@@ -374,33 +384,39 @@ test.tasks(
       def: {
         content: { tag: "ui-t-css-state" /* , foo: "red" */ },
       },
-      expected: "<ui-t-css-state></ui-t-css-state>",
+      expected: "<ui-t-css-state><!--[rendered]--></ui-t-css-state>",
       async check(t, app) {
         app.reactive.set("foo", "red")
         await app
 
         t.match(
           app.el.innerHTML,
-          /<ui-t-css-state style="--foo:\s*red;"><\/ui-t-css-state>/
+          /<ui-t-css-state style="--foo:\s*red;"><!--\[rendered]--><\/ui-t-css-state>/
         )
 
         app.reactive.set("foo", undefined)
         await app
 
-        t.is(app.el.innerHTML, '<ui-t-css-state style=""></ui-t-css-state>')
+        t.is(
+          app.el.innerHTML,
+          '<ui-t-css-state style=""><!--[rendered]--></ui-t-css-state>'
+        )
 
         app.reactive.set("foo", "blue")
         await app
 
         t.match(
           app.el.innerHTML,
-          /<ui-t-css-state style="--foo:\s*blue;"><\/ui-t-css-state>/
+          /<ui-t-css-state style="--foo:\s*blue;"><!--\[rendered]--><\/ui-t-css-state>/
         )
 
         app.reactive.delete("foo")
         await app
 
-        t.is(app.el.innerHTML, '<ui-t-css-state style=""></ui-t-css-state>')
+        t.is(
+          app.el.innerHTML,
+          '<ui-t-css-state style=""><!--[rendered]--></ui-t-css-state>'
+        )
       },
     }),
 
@@ -430,7 +446,8 @@ test.tasks(
       def: {
         content: { tag: "ui-t-throttle", path: "world" },
       },
-      expected: '<ui-t-throttle path="world">hello WORLD</ui-t-throttle>',
+      expected:
+        '<ui-t-throttle path="world"><!--[rendered]-->hello WORLD</ui-t-throttle>',
     }),
   ],
 
@@ -490,7 +507,7 @@ test("component child", async (t) => {
 
   t.is(
     app.el.innerHTML,
-    '<ui-t-props bar="4"><em>derp:5, bar:4</em></ui-t-props>'
+    '<ui-t-props bar="4"><!--[rendered]--><em>derp:5, bar:4</em></ui-t-props>'
   )
 })
 
@@ -726,7 +743,10 @@ test("custom content", async (t) => {
     })
   )
 
-  t.is(app.el.innerHTML, '<ui-one bar="1" one="1">hi 1</ui-one>')
+  t.is(
+    app.el.innerHTML,
+    '<ui-one bar="1" one="1"><!--[rendered]-->hi 1</ui-one>'
+  )
 })
 
 test("custom content", 2, async (t) => {
@@ -745,7 +765,10 @@ test("custom content", 2, async (t) => {
     })
   )
 
-  t.is(app.el.innerHTML, '<ui-one one="1" bar="5">hi 5, root: 0</ui-one>')
+  t.is(
+    app.el.innerHTML,
+    '<ui-one one="1" bar="5"><!--[rendered]-->hi 5, root: 0</ui-one>'
+  )
 })
 
 test("custom content", "nested components", 2, async (t) => {
@@ -796,7 +819,7 @@ bar: {{bar}}
   t.is(
     app.el.innerHTML,
     `\
-<ui-one bar="1" one="1"><ui-two bar="2" two="2">
+<ui-one bar="1" one="1"><!--[rendered]--><ui-two bar="2" two="2"><!--[rendered]-->
 root: 0
 one: 1
 two: 2
@@ -1010,17 +1033,17 @@ test("props", 1, async (t) => {
     "/foo",
   ])
 
-  t.is(app.el.innerHTML, '<ui-a bar="-">foo: 1, bar: -</ui-a>')
+  t.is(app.el.innerHTML, '<ui-a bar="-"><!--[rendered]-->foo: 1, bar: -</ui-a>')
 
   app.el.querySelector("ui-a").bar = 0
   await app
 
-  t.is(app.el.innerHTML, '<ui-a bar="0">foo: 1, bar: 0</ui-a>')
+  t.is(app.el.innerHTML, '<ui-a bar="0"><!--[rendered]-->foo: 1, bar: 0</ui-a>')
 
   app.state.foo = 2
   await app
 
-  t.is(app.el.innerHTML, '<ui-a bar="0">foo: 2, bar: 0</ui-a>')
+  t.is(app.el.innerHTML, '<ui-a bar="0"><!--[rendered]-->foo: 2, bar: 0</ui-a>')
 })
 
 test("props", 2, async (t) => {
@@ -1036,12 +1059,12 @@ test("props", 2, async (t) => {
     $ui: { a: { root: { bar: 0 } } },
   })
 
-  t.is(app.el.innerHTML, '<ui-a bar="0">foo: 1, bar: 0</ui-a>')
+  t.is(app.el.innerHTML, '<ui-a bar="0"><!--[rendered]-->foo: 1, bar: 0</ui-a>')
 
   app.state.foo = 2
   await app
 
-  t.is(app.el.innerHTML, '<ui-a bar="0">foo: 2, bar: 0</ui-a>')
+  t.is(app.el.innerHTML, '<ui-a bar="0"><!--[rendered]-->foo: 2, bar: 0</ui-a>')
 })
 
 test("props", 3, async (t) => {
@@ -1069,8 +1092,8 @@ test("props", 3, async (t) => {
   t.is(
     app.el.innerHTML,
     `\
-<ui-a id="a1" bar="-1">foo: 1, bar: -1</ui-a>
-<ui-a id="a2" bar="-2">foo: 1, bar: -2</ui-a>`
+<ui-a id="a1" bar="-1"><!--[rendered]-->foo: 1, bar: -1</ui-a>
+<ui-a id="a2" bar="-2"><!--[rendered]-->foo: 1, bar: -2</ui-a>`
   )
 
   app.el.querySelector("#a1").bar = -3
@@ -1079,8 +1102,8 @@ test("props", 3, async (t) => {
   t.is(
     app.el.innerHTML,
     `\
-<ui-a id="a1" bar="-3">foo: 1, bar: -3</ui-a>
-<ui-a id="a2" bar="-2">foo: 1, bar: -2</ui-a>`
+<ui-a id="a1" bar="-3"><!--[rendered]-->foo: 1, bar: -3</ui-a>
+<ui-a id="a2" bar="-2"><!--[rendered]-->foo: 1, bar: -2</ui-a>`
   )
 
   app.state.foo = 2
@@ -1089,8 +1112,8 @@ test("props", 3, async (t) => {
   t.is(
     app.el.innerHTML,
     `\
-<ui-a id="a1" bar="-3">foo: 2, bar: -3</ui-a>
-<ui-a id="a2" bar="-2">foo: 2, bar: -2</ui-a>`
+<ui-a id="a1" bar="-3"><!--[rendered]-->foo: 2, bar: -3</ui-a>
+<ui-a id="a2" bar="-2"><!--[rendered]-->foo: 2, bar: -2</ui-a>`
   )
 })
 
@@ -1107,12 +1130,12 @@ test("props", 4, async (t) => {
     $ui: { a: { root: { bar: { $ref: "/foo" } } } },
   })
 
-  t.is(app.el.innerHTML, '<ui-a bar="a">foo: a, bar: a</ui-a>')
+  t.is(app.el.innerHTML, '<ui-a bar="a"><!--[rendered]-->foo: a, bar: a</ui-a>')
 
   app.state.foo = "b"
   await app
 
-  t.is(app.el.innerHTML, '<ui-a bar="b">foo: b, bar: b</ui-a>')
+  t.is(app.el.innerHTML, '<ui-a bar="b"><!--[rendered]-->foo: b, bar: b</ui-a>')
 
   app.el.querySelector("ui-a").bar = "c"
   await app
@@ -1122,7 +1145,7 @@ test("props", 4, async (t) => {
     $ui: { a: { root: { bar: { $ref: "/foo" } } } },
   })
 
-  t.is(app.el.innerHTML, '<ui-a bar="c">foo: c, bar: c</ui-a>')
+  t.is(app.el.innerHTML, '<ui-a bar="c"><!--[rendered]-->foo: c, bar: c</ui-a>')
 
   app.state.foo = "d"
   await app
@@ -1132,7 +1155,7 @@ test("props", 4, async (t) => {
     $ui: { a: { root: { bar: { $ref: "/foo" } } } },
   })
 
-  t.is(app.el.innerHTML, '<ui-a bar="d">foo: d, bar: d</ui-a>')
+  t.is(app.el.innerHTML, '<ui-a bar="d"><!--[rendered]-->foo: d, bar: d</ui-a>')
 })
 
 test("props", 5, async (t) => {
@@ -1148,12 +1171,12 @@ test("props", 5, async (t) => {
     $ui: { a: { root: { bar: "A" } } },
   })
 
-  t.is(app.el.innerHTML, '<ui-a bar="A">foo: a, bar: A</ui-a>')
+  t.is(app.el.innerHTML, '<ui-a bar="A"><!--[rendered]-->foo: a, bar: A</ui-a>')
 
   app.state.foo = "b"
   await app
 
-  t.is(app.el.innerHTML, '<ui-a bar="B">foo: b, bar: B</ui-a>')
+  t.is(app.el.innerHTML, '<ui-a bar="B"><!--[rendered]-->foo: b, bar: B</ui-a>')
 
   app.el.querySelector("ui-a").bar = "c"
   await app
@@ -1163,7 +1186,7 @@ test("props", 5, async (t) => {
     $ui: { a: { root: { bar: "c" } } },
   })
 
-  t.is(app.el.innerHTML, '<ui-a bar="c">foo: b, bar: c</ui-a>')
+  t.is(app.el.innerHTML, '<ui-a bar="c"><!--[rendered]-->foo: b, bar: c</ui-a>')
 
   app.state.foo = "d"
   await app
@@ -1173,7 +1196,7 @@ test("props", 5, async (t) => {
     $ui: { a: { root: { bar: "D" } } },
   })
 
-  t.is(app.el.innerHTML, '<ui-a bar="D">foo: d, bar: D</ui-a>')
+  t.is(app.el.innerHTML, '<ui-a bar="D"><!--[rendered]-->foo: d, bar: D</ui-a>')
 })
 
 /* props state
@@ -1204,12 +1227,12 @@ test("props state", 1, async (t) => {
     bar: 2,
   })
 
-  t.is(app.el.innerHTML, '<ui-b bar="2">foo: 1, bar: 2</ui-b>')
+  t.is(app.el.innerHTML, '<ui-b bar="2"><!--[rendered]-->foo: 1, bar: 2</ui-b>')
 
   app.state.foo = 2
   await app
 
-  t.is(app.el.innerHTML, '<ui-b bar="2">foo: 2, bar: 2</ui-b>')
+  t.is(app.el.innerHTML, '<ui-b bar="2"><!--[rendered]-->foo: 2, bar: 2</ui-b>')
 
   app.state.bar = 3
   await app
@@ -1219,7 +1242,7 @@ test("props state", 1, async (t) => {
     bar: 3,
   })
 
-  t.is(app.el.innerHTML, '<ui-b bar="3">foo: 2, bar: 3</ui-b>')
+  t.is(app.el.innerHTML, '<ui-b bar="3"><!--[rendered]-->foo: 2, bar: 3</ui-b>')
 })
 
 test("props state", 2, async (t) => {
@@ -1235,12 +1258,12 @@ test("props state", 2, async (t) => {
     bar: 0,
   })
 
-  t.is(app.el.innerHTML, '<ui-b bar="0">foo: 1, bar: 0</ui-b>')
+  t.is(app.el.innerHTML, '<ui-b bar="0"><!--[rendered]-->foo: 1, bar: 0</ui-b>')
 
   app.state.foo = 2
   await app
 
-  t.is(app.el.innerHTML, '<ui-b bar="0">foo: 2, bar: 0</ui-b>')
+  t.is(app.el.innerHTML, '<ui-b bar="0"><!--[rendered]-->foo: 2, bar: 0</ui-b>')
 
   app.state.bar = 3
   await app
@@ -1250,7 +1273,7 @@ test("props state", 2, async (t) => {
     bar: 3,
   })
 
-  t.is(app.el.innerHTML, '<ui-b bar="3">foo: 2, bar: 3</ui-b>')
+  t.is(app.el.innerHTML, '<ui-b bar="3"><!--[rendered]-->foo: 2, bar: 3</ui-b>')
 })
 
 test("scopped", 1, async (t) => {
@@ -1278,8 +1301,8 @@ test("scopped", 1, async (t) => {
   t.is(
     app.el.innerHTML,
     `\
-<ui-a bar="0">foo: , bar: 0</ui-a>
-<ui-a bar="1">foo: , bar: 1</ui-a>`
+<ui-a bar="0"><!--[rendered]-->foo: , bar: 0</ui-a>
+<ui-a bar="1"><!--[rendered]-->foo: , bar: 1</ui-a>`
   )
 })
 
@@ -1321,12 +1344,12 @@ test("scopped", 2, async (t) => {
   t.is(
     app.el.innerHTML,
     `\
-<ui-a bar="-1">foo: 1, bar: -1</ui-a>
-<ui-a bar="0">foo: 2, bar: 0</ui-a>
-<ui-a bar="2">foo: 2, bar: 2</ui-a>
-<ui-a bar="1">foo: 2, bar: 1</ui-a>
-<ui-a bar="1">foo: 2, bar: 1</ui-a>
-<ui-a bar="3">foo: , bar: 3</ui-a>`
+<ui-a bar="-1"><!--[rendered]-->foo: 1, bar: -1</ui-a>
+<ui-a bar="0"><!--[rendered]-->foo: 2, bar: 0</ui-a>
+<ui-a bar="2"><!--[rendered]-->foo: 2, bar: 2</ui-a>
+<ui-a bar="1"><!--[rendered]-->foo: 2, bar: 1</ui-a>
+<ui-a bar="1"><!--[rendered]-->foo: 2, bar: 1</ui-a>
+<ui-a bar="3"><!--[rendered]-->foo: , bar: 3</ui-a>`
   )
 
   app.el.querySelector("ui-a:last-of-type").destroy()
@@ -1348,11 +1371,11 @@ test("scopped", 2, async (t) => {
   t.is(
     app.el.innerHTML,
     `\
-<ui-a bar="-1">foo: 1, bar: -1</ui-a>
-<ui-a bar="0">foo: 2, bar: 0</ui-a>
-<ui-a bar="2">foo: 2, bar: 2</ui-a>
-<ui-a bar="1">foo: 2, bar: 1</ui-a>
-<ui-a bar="1">foo: 2, bar: 1</ui-a>\n`
+<ui-a bar="-1"><!--[rendered]-->foo: 1, bar: -1</ui-a>
+<ui-a bar="0"><!--[rendered]-->foo: 2, bar: 0</ui-a>
+<ui-a bar="2"><!--[rendered]-->foo: 2, bar: 2</ui-a>
+<ui-a bar="1"><!--[rendered]-->foo: 2, bar: 1</ui-a>
+<ui-a bar="1"><!--[rendered]-->foo: 2, bar: 1</ui-a>\n`
   )
 })
 
@@ -1380,8 +1403,8 @@ test("array", 1, async (t) => {
     app.el.innerHTML,
     `\
 <!--[each]-->
-<ui-a bar="a">foo: , bar: a</ui-a><!--[#]-->
-<ui-a bar="b">foo: , bar: b</ui-a><!--[#]-->`
+<ui-a bar="a"><!--[rendered]-->foo: , bar: a</ui-a><!--[#]-->
+<ui-a bar="b"><!--[rendered]-->foo: , bar: b</ui-a><!--[#]-->`
   )
 
   t.eq(app.reactive.data, {
@@ -1402,9 +1425,9 @@ test("array", 1, async (t) => {
     app.el.innerHTML,
     `\
 <!--[each]-->
-<ui-a bar="a">foo: , bar: a</ui-a><!--[#]-->
-<ui-a bar="b">foo: , bar: b</ui-a><!--[#]-->
-<ui-a bar="c">foo: , bar: c</ui-a><!--[#]-->`
+<ui-a bar="a"><!--[rendered]-->foo: , bar: a</ui-a><!--[#]-->
+<ui-a bar="b"><!--[rendered]-->foo: , bar: b</ui-a><!--[#]-->
+<ui-a bar="c"><!--[rendered]-->foo: , bar: c</ui-a><!--[#]-->`
   )
 
   t.eq(app.reactive.data, {
@@ -1426,9 +1449,9 @@ test("array", 1, async (t) => {
     app.el.innerHTML,
     `\
 <!--[each]-->
-<ui-a bar="A">foo: , bar: A</ui-a><!--[#]-->
-<ui-a bar="b">foo: , bar: b</ui-a><!--[#]-->
-<ui-a bar="c">foo: , bar: c</ui-a><!--[#]-->`
+<ui-a bar="A"><!--[rendered]-->foo: , bar: A</ui-a><!--[#]-->
+<ui-a bar="b"><!--[rendered]-->foo: , bar: b</ui-a><!--[#]-->
+<ui-a bar="c"><!--[rendered]-->foo: , bar: c</ui-a><!--[#]-->`
   )
 
   t.eq(app.reactive.data, {
@@ -1460,7 +1483,7 @@ test("array", 1, async (t) => {
     app.el.innerHTML,
     `\
 <!--[each]-->
-<ui-a bar="A">foo: , bar: A</ui-a><!--[#]-->`
+<ui-a bar="A"><!--[rendered]-->foo: , bar: A</ui-a><!--[#]-->`
   )
 
   t.eq(app.reactive.data, {
@@ -1482,8 +1505,8 @@ test("array", 1, async (t) => {
     app.el.innerHTML,
     `\
 <!--[each]-->
-<ui-a bar="A">foo: , bar: A</ui-a><!--[#]-->
-<ui-a bar="B">foo: , bar: B</ui-a><!--[#]-->`
+<ui-a bar="A"><!--[rendered]-->foo: , bar: A</ui-a><!--[#]-->
+<ui-a bar="B"><!--[rendered]-->foo: , bar: B</ui-a><!--[#]-->`
   )
 
   t.eq(app.reactive.data, {
@@ -1519,8 +1542,8 @@ test("array", 2, async (t) => {
     app.el.innerHTML,
     `\
 <!--[each]-->
-<ui-a bar="0 - a">foo: , bar: 0 - a</ui-a><!--[#]-->
-<ui-a bar="1 - b">foo: , bar: 1 - b</ui-a><!--[#]-->`
+<ui-a bar="0 - a"><!--[rendered]-->foo: , bar: 0 - a</ui-a><!--[#]-->
+<ui-a bar="1 - b"><!--[rendered]-->foo: , bar: 1 - b</ui-a><!--[#]-->`
   )
 
   t.eq(app.reactive.data, {
@@ -1824,7 +1847,10 @@ test("computed", async (t) => {
       $ui: { "t-computed": { root: { parsed: ["FOO", "BAR"] } } },
     },
   })
-  t.is(app.el.innerHTML, "<ui-t-computed>foo: FOO, bar: BAR</ui-t-computed>")
+  t.is(
+    app.el.innerHTML,
+    "<ui-t-computed><!--[rendered]-->foo: FOO, bar: BAR</ui-t-computed>"
+  )
 
   const updates = [
     "/$ui/t-computed/root/formated",
@@ -1839,7 +1865,7 @@ test("computed", async (t) => {
 
   t.is(
     app.el.innerHTML,
-    "<ui-t-computed>foo: HELLO, bar: WORLD</ui-t-computed>"
+    "<ui-t-computed><!--[rendered]-->foo: HELLO, bar: WORLD</ui-t-computed>"
   )
   t.is(cnt, 2)
   t.eq(t.utils.omit(app.reactive.data, ["$computed"]), {
@@ -1901,7 +1927,10 @@ test("computed", "from prop with state:true", async (t) => {
     formated: "FOO/BAR",
     $computed: { $ui: { "t-compu-sta": { root: { parsed: ["FOO", "BAR"] } } } },
   })
-  t.is(app.el.innerHTML, "<ui-t-compu-sta>foo: FOO, bar: BAR</ui-t-compu-sta>")
+  t.is(
+    app.el.innerHTML,
+    "<ui-t-compu-sta><!--[rendered]-->foo: FOO, bar: BAR</ui-t-compu-sta>"
+  )
 
   const updates = ["/formated", "/$ui/t-compu-sta/root/parsed"]
   app.reactive.on("update", (changes) => {
@@ -1920,7 +1949,7 @@ test("computed", "from prop with state:true", async (t) => {
   t.is(cnt, 2)
   t.is(
     app.el.innerHTML,
-    "<ui-t-compu-sta>foo: HELLO, bar: WORLD</ui-t-compu-sta>"
+    "<ui-t-compu-sta><!--[rendered]-->foo: HELLO, bar: WORLD</ui-t-compu-sta>"
   )
 })
 
@@ -1984,7 +2013,7 @@ test("computed", "computed prop", async (t) => {
 
   t.is(
     app.el.innerHTML,
-    "<ui-t-compu-prop>foo: FOO, bar: BAR</ui-t-compu-prop>"
+    "<ui-t-compu-prop><!--[rendered]-->foo: FOO, bar: BAR</ui-t-compu-prop>"
   )
 
   const updates = [
@@ -2000,7 +2029,7 @@ test("computed", "computed prop", async (t) => {
 
   t.is(
     app.el.innerHTML,
-    "<ui-t-compu-prop>foo: HELLO, bar: WORLD</ui-t-compu-prop>"
+    "<ui-t-compu-prop><!--[rendered]-->foo: HELLO, bar: WORLD</ui-t-compu-prop>"
   )
   t.is(cnt, 2)
   t.eq(app.reactive.data, {
