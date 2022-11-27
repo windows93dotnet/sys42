@@ -159,12 +159,12 @@ export default async function renderProps(el, props, def) {
         return
       }
 
-      ctx.reactive.now(() => {
-        const silent = options?.silent ?? false
-        fromWrite = true
-        ctx.reactive.set(scope, ref ?? value, { silent })
-        if (silent) fromWrite = false
-      })
+      // ctx.reactive.now(() => {
+      const silent = options?.silent ?? false
+      fromWrite = true
+      ctx.reactive.set(scope, ref ?? value, { silent })
+      if (silent) fromWrite = false
+      // })
     }
 
     const render = (val) => {
@@ -256,7 +256,8 @@ export default async function renderProps(el, props, def) {
               render(value)
             }
           : (val) => {
-              if (ref) ctx.reactive.now(() => ctx.reactive.set(ref.$ref, val))
+              // if (ref) ctx.reactive.now(() => ctx.reactive.set(ref.$ref, val))
+              if (ref) ctx.reactive.set(ref.$ref, val)
               else {
                 write(val)
                 render(val)

@@ -114,7 +114,7 @@ ui-tabs {
   /* container: tab / inline-size; */
 }
 
-.ui-tabs__tab:focus {
+.ui-tabs__tab:focus-visible {
   outline: var(--ctrl-o);
   outline-offset: -5px;
 }

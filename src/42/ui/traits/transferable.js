@@ -129,7 +129,7 @@ class Transferable extends Trait {
             isSorting = true
             if (data.index === index) return
 
-            const removed = list.splice(data.index, 1)[0]
+            const [removed] = list.splice(data.index, 1)
             if (index > data.index) index--
             list.splice(index, 0, removed)
           } else {
@@ -166,39 +166,37 @@ class Transferable extends Trait {
         "drop": async (e) => {
           const res = dt.import(e, this.config)
           if (hint) {
+            style1.textContent = ""
+            style2.textContent = ""
+
             const { index } = hint
-            options?.reactive?.setThrottle(false)
             this.import(res, { index })
-            options?.reactive?.setThrottle(true)
 
-            // style1.textContent = ""
-            // style2.textContent = ""
-            // hint.ghost.remove()
-
-            requestAnimationFrame(() => {
-              style2.textContent = ""
-              style1.textContent = ""
-              const dir = hint.index > hint.targetIndex ? 0 : 1
-              const item = document.querySelector(
-                `${selector}:nth-child(${hint.index + dir})`
-              )
-              if (item) {
-                item.style.opacity = 0
+            const { ghost } = hint
+            const dir = hint.index > hint.targetIndex ? 0 : 1
+            const item = document.querySelector(
+              `${selector}:nth-child(${hint.index + dir})`
+            )
+            if (item) {
+              item.style.opacity = 0
+              requestAnimationFrame(() => {
                 const { x } = item.getBoundingClientRect()
                 animate
                   .to(
-                    hint.ghost,
+                    ghost,
                     { translate: `${x - hint.targetX}px` },
                     { ms: 180 }
                   )
                   .then(() => {
                     item.style.opacity = 1
-                    hint.ghost.remove()
+                    ghost.remove()
+                    style1.textContent = ""
+                    style2.textContent = ""
                   })
-              } else {
-                hint.ghost.remove()
-              }
-            })
+              })
+            } else {
+              ghost.remove()
+            }
           } else {
             const item = e.target.closest(selector)
             const index = getNewIndex(e.x, e.y, item, orientation)
@@ -218,6 +216,7 @@ class Transferable extends Trait {
           dt.export(e, { effects, data: this.export({ index, target }) })
 
           if (this.config.hint === "slide") {
+            hint?.ghost?.remove()
             hint = {
               index,
               targetIndex: index,
@@ -227,17 +226,13 @@ class Transferable extends Trait {
               lastX: e.x,
             }
 
-            const carrier = {}
-            hint.ghost = ghostify(target, { carrier })
+            const c = {}
+            hint.ghost = ghostify(target, { carrier: c })
             document.documentElement.append(hint.ghost)
 
-            hint.targetX = carrier.x
-
-            hint.targetOffsetX = e.x - (carrier.x + carrier.width / 2)
-
-            hint.blankWidth =
-              carrier.width + carrier.marginLeft + carrier.marginRight
-
+            hint.targetX = c.x
+            hint.targetOffsetX = e.x - (c.x + c.width / 2)
+            hint.blankWidth = c.width + c.marginLeft + c.marginRight
             hint.blankHalfWidth = hint.blankWidth / 2
 
             hint.hideCurrent = `
@@ -250,13 +245,15 @@ class Transferable extends Trait {
                 outline: none !important;
               }`
 
-            requestAnimationFrame(() => {
+            cancelAnimationFrame(hint.raf1)
+            cancelAnimationFrame(hint.raf2)
+            hint.raf1 = requestAnimationFrame(() => {
               style1.textContent = `
                 ${hint.hideCurrent}
                 ${selector}:nth-child(n+${index + 2}) {
                   translate: ${hint.blankWidth}px;
                 }`
-              requestAnimationFrame(() => {
+              hint.raf2 = requestAnimationFrame(() => {
                 style2.textContent = `
                   ${selector} {
                     transition: translate 120ms ease-in-out;
