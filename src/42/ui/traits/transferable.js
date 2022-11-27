@@ -129,14 +129,9 @@ class Transferable extends Trait {
             isSorting = true
             if (data.index === index) return
 
-            if (data.index > index) {
-              list.splice(data.index, 1)
-              list.splice(index, 0, data.state)
-            } else {
-              list.splice(index, 0, data.state)
-              list.splice(data.index, 1)
-              index--
-            }
+            const removed = list.splice(data.index, 1)[0]
+            if (index > data.index) index--
+            list.splice(index, 0, removed)
           } else {
             list.splice(index, 0, data.state)
           }
@@ -172,9 +167,12 @@ class Transferable extends Trait {
           const res = dt.import(e, this.config)
           if (hint) {
             const { index } = hint
+            options?.reactive?.setThrottle(false)
             this.import(res, { index })
-            // style2.textContent = ""
+            options?.reactive?.setThrottle(true)
+
             // style1.textContent = ""
+            // style2.textContent = ""
             // hint.ghost.remove()
 
             requestAnimationFrame(() => {
@@ -273,9 +271,8 @@ class Transferable extends Trait {
             if (e.x) hint.ghost.style.translate = `${e.x - hint.offsetX}px`
           }
         },
-        dragend: (e, target) => {
+        dragend(e, target) {
           if (isSorting) return void (isSorting = false)
-
           if (e.dataTransfer.dropEffect === "move") {
             const index = getIndex(target)
             this.removeItem(index)
