@@ -9,8 +9,8 @@ export class Tabs extends Component {
     role: "none",
 
     props: {
-      vertical: {
-        type: "boolean",
+      side: {
+        type: "string",
         reflect: true,
       },
       balanced: {
@@ -67,7 +67,8 @@ export class Tabs extends Component {
             tag: ".ui-tabs__tablist",
             role: "tablist",
             aria: {
-              orientation: '{{../vertical ? "vertical" : "horizontal" }}',
+              orientation:
+                '{{ includes(["left", "right"], ../side) ? "vertical" : "horizontal" }}',
             },
 
             transferable: {

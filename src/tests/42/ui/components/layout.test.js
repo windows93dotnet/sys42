@@ -70,12 +70,52 @@ window.app = await ui({
         {
           tag: ".box-center",
           content: {
-            tag: ".pa.outset.resize.flex-v",
+            tag: ".pa._outset.resize.flex-v",
             style: { width: "450px", height: "200px" },
             content: {
               tag: "ui-tabs",
               id: "tabs1",
               // balanced: true,
+              // content: "{{planets}}",
+              content: [
+                { label: "One", content: lorem },
+                { label: "Two", content: "hello" },
+                { label: "Three", content: "world" },
+              ],
+            },
+          },
+        },
+        {
+          tag: ".box-center",
+          content: {
+            tag: ".pa._outset.resize.flex-v",
+            style: { width: "450px", height: "200px" },
+            content: {
+              tag: "ui-tabs",
+              id: "tabs2",
+              side: "left",
+              content: [
+                { label: "One", content: lorem },
+                { label: "Two", content: "hello" },
+                { label: "Three", content: "world" },
+              ],
+            },
+          },
+        },
+      ],
+    },
+    {
+      tag: ".box-h",
+      content: [
+        {
+          tag: ".box-center",
+          content: {
+            tag: ".pa._outset.resize.flex-v",
+            style: { width: "450px", height: "200px" },
+            content: {
+              tag: "ui-tabs",
+              id: "tabs1",
+              side: "bottom",
               content: "{{planets}}",
             },
           },
@@ -83,26 +123,22 @@ window.app = await ui({
         {
           tag: ".box-center",
           content: {
-            tag: ".pa.outset.resize.flex-v",
+            tag: ".pa._outset.resize.flex-v",
             style: { width: "450px", height: "200px" },
             content: {
               tag: "ui-tabs",
               id: "tabs2",
-              vertical: true,
+              side: "right",
               content: [
-                { label: "One", content: lorem }, //
-                { label: "Two", content: "hello" }, //
+                { label: "One", content: lorem },
+                { label: "Two", content: "hello" },
+                { label: "Three", content: "world" },
               ],
             },
           },
         },
       ],
     },
-
-    // {
-    //   tag: "pre.code.txt-wrap.ma-0",
-    //   content: '{{trace(/, "sample")}}',
-    // },
   ],
 
   state: {
