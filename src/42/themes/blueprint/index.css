@@ -8,9 +8,9 @@
 
 :root {
   --setting-color: #00aced;
-  --bg: var(--setting-color);
-  /* --bg: tomato; */
-  --fg: #fff;
+  /* --bg: var(--setting-color); */
+  --bg: #aaa;
+  --fg: #000;
 
   --highlight-bg: rgba(255 255 255 / 0.2);
   --highlight-fg: var(--fg);

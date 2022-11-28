@@ -21,9 +21,10 @@
   --tabs__panel-tsh: var(--outset-tsh);
   --tabs__panel-bsh: var(--outset-bsh);
 
-  --tabs-overlap: calc(var(--tabs__tab-bdw) + var(--tabs__panel-bdw));
-  --tabs-active-overlap: var(--tabs__tab-bdw);
-  --tabs-gap: var(--tabs__tab-bdw);
+  --tabs-overlap: var(--tabs__tab-bdw);
+  --tabs-gap: calc(-1 * var(--tabs__tab-bdw));
+  --tabs-active-grow-y: var(--ctrl-py);
+  --tabs-active-grow-x: var(--ctrl-px);
 }
 
 ui-tabs {
@@ -63,13 +64,8 @@ ui-tabs {
 
 .ui-tabs__tablist {
   position: relative;
-  bottom: calc(-1 * var(--tabs-overlap));
-
   display: flex;
   flex-direction: row;
-  align-items: flex-end;
-  padding-right: var(--tabs-gap);
-
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -93,15 +89,14 @@ ui-tabs {
   text-shadow: var(--tabs__tab-tsh, none);
   box-shadow: var(--tabs__tab-bsh);
 
-  clip-path: inset(0 0 var(--tabs-overlap) 0);
-  margin-right: calc(-1 * var(--tabs-gap));
   max-width: var(--ctrl-w);
   min-width: 3ch;
 
-  background-clip: padding-box;
+  /* background-clip: padding-box; */
   column-gap: var(--unit-sm);
 
   user-select: none;
+  /* will-change: transform; */
 }
 
 .ui-tabs__container {
@@ -141,8 +136,6 @@ ui-tabs {
 }
 
 .ui-tabs__tab[aria-selected="true"] {
-  background-image: none;
-  clip-path: inset(0 0 var(--tabs-active-overlap) 0);
   flex: 0 0 min-content;
 }
 
@@ -152,16 +145,121 @@ ui-tabs {
   }
 }
 
+/* balanced
+=========== */
+
 ui-tabs[balanced] .ui-tabs__tab,
 ui-tabs[balanced] .ui-tabs__tab[aria-selected="true"] {
   flex: 1;
 }
 
-ui-tabs[vertical] {
-  flex-direction: row;
+/* side
+======= */
+
+ui-tabs[side="left"], ui-tabs[side="right"] { flex-direction: row; }
+ui-tabs[side="right"] { flex-direction: row-reverse; }
+ui-tabs[side="bottom"] { flex-direction: column-reverse; }
+
+:is(ui-tabs[side="left"], ui-tabs[side="right"]) > .ui-tabs__tablist {
+  flex-direction: column;
 }
 
-ui-tabs[vertical] .ui-tabs__tablist {
-  /* writing-mode: vertical-lr; */
-  flex-direction: column;
+/* top
+------ */
+
+ui-tabs:is(:not([side]), [side="top"]) > .ui-tabs__tablist {
+  align-items: flex-end;
+  padding-right: calc(-1 * var(--tabs-gap));
+  bottom: calc(-1 * var(--tabs-overlap));
+}
+
+ui-tabs:is(:not([side]), [side="top"]) > .ui-tabs__tablist > .ui-tabs__tab[aria-selected="true"] {
+  border-bottom-color: transparent;
+  padding-top: var(--tabs-active-grow-y);
+}
+
+ui-tabs:is(:not([side]), [side="top"]) > .ui-tabs__tablist > .ui-tabs__tab {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-right: var(--tabs-gap);
+}
+
+ui-tabs:is(:not([side]), [side="top"]) > .ui-tabs__panels,
+ui-tabs:is(:not([side]), [side="top"]) > .ui-tabs__panels > .ui-tabs__panel {
+  border-top-left-radius: 0;
+}
+
+/* bottom
+--------- */
+
+ui-tabs[side="bottom"] > .ui-tabs__tablist {
+  align-items: flex-start;
+  padding-right: calc(-1 * var(--tabs-gap));
+  top: calc(-1 * var(--tabs-overlap));
+}
+
+ui-tabs[side="bottom"] > .ui-tabs__tablist > .ui-tabs__tab[aria-selected="true"] {
+  border-top-color: transparent;
+  padding-bottom: var(--tabs-active-grow-y);
+}
+
+ui-tabs[side="bottom"] > .ui-tabs__tablist > .ui-tabs__tab {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  margin-right: var(--tabs-gap);
+}
+
+ui-tabs[side="bottom"] > .ui-tabs__panels,
+ui-tabs[side="bottom"] > .ui-tabs__panels > .ui-tabs__panel {
+  border-bottom-left-radius: 0;
+}
+
+/* left
+------- */
+
+ui-tabs[side="left"] > .ui-tabs__tablist {
+  align-items: flex-end;
+  padding-bottom: calc(-1 * var(--tabs-gap));
+  right: calc(-1 * var(--tabs-overlap));
+}
+
+ui-tabs[side="left"] > .ui-tabs__tablist > .ui-tabs__tab[aria-selected="true"] {
+  border-right-color: transparent;
+  padding-right: var(--tabs-active-grow-x);
+}
+
+ui-tabs[side="left"] > .ui-tabs__tablist > .ui-tabs__tab {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-bottom: var(--tabs-gap);
+}
+
+ui-tabs[side="left"] > .ui-tabs__panels,
+ui-tabs[side="left"] > .ui-tabs__panels > .ui-tabs__panel {
+  border-top-left-radius: 0;
+}
+
+/* right
+-------- */
+
+ui-tabs[side="right"] > .ui-tabs__tablist {
+  align-items: flex-start;
+  padding-bottom: calc(-1 * var(--tabs-gap));
+  left: calc(-1 * var(--tabs-overlap));
+}
+
+ui-tabs[side="right"] > .ui-tabs__tablist > .ui-tabs__tab[aria-selected="true"] {
+  border-left-color: transparent;
+  padding-left: var(--tabs-active-grow-x);
+}
+
+ui-tabs[side="right"] > .ui-tabs__tablist > .ui-tabs__tab {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  margin-bottom: var(--tabs-gap);
+}
+
+ui-tabs[side="right"] > .ui-tabs__panels,
+ui-tabs[side="right"] > .ui-tabs__panels > .ui-tabs__panel {
+  border-top-right-radius: 0;
 }
