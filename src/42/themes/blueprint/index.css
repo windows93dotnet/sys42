@@ -9,7 +9,8 @@
 :root {
   --setting-color: #00aced;
   /* --bg: var(--setting-color); */
-  --bg: #aaa;
+  /* --fg: #fff; */
+  --bg: #bbb;
   --fg: #000;
 
   --highlight-bg: rgba(255 255 255 / 0.2);
@@ -65,6 +66,14 @@
   --tooltip-fg: var(--bg);
   --tooltip-bdc: var(--bg);
   --tooltip-bdw: 2px;
+
+  --tabs-gap: -3px;
+  --tabs__panel-bsh:
+    1.5px 1px 3px 0px rgba(0 0 0 / 0.4),
+    0 0 4px 0 rgba(0 0 0 / 0.2);
+  --tabs__tab-bsh:
+    2px 2px 3px 0px rgba(0 0 0 / 0.5),
+    0 0 4px 0 rgba(0 0 0 / 0.2);
 }
 
 body {

@@ -1,8 +1,13 @@
+import applyStyleDeclaration from "./applyStyleDeclaration.js"
+
 export function ghostify(el, options) {
   const { x, y, width, height } = el.getBoundingClientRect()
   const clone = el.cloneNode(true)
   clone.id = `${el.id}--ghost`
+  clone.classList.add("ghost")
   const styles = getComputedStyle(el)
+
+  applyStyleDeclaration(clone, styles)
 
   const marginTop = Number.parseInt(styles.marginTop, 10)
   const marginLeft = Number.parseInt(styles.marginLeft, 10)

@@ -82,7 +82,7 @@ export class Tabs extends Component {
               tag: ".ui-tabs__tab",
               role: "tab",
               id: `tab-${id}-{{@index}}`,
-              dataset: { index: "{{@index}}" },
+              style: { "--index": "{{@index}}" },
               tabIndex: "{{../../current === @index ? 0 : -1}}",
               // animate: {
               //   clipPath: "inset(0 0 100% 0)",

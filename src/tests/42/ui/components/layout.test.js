@@ -3,7 +3,7 @@ import ui from "../../../../42/ui.js"
 // import puppet from "../../../../42/core/dev/puppet.js"
 
 const lorem =
-  "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quas, quo quidem voluptate, consectetur, sint repellendus expedita consequatur pariatur delectus cum inventore iure aperiam? Ad facere nemo tenetur nesciunt quam autem voluptatibus vel temporibus dolorem atque. Dolores beatae magnam iure, architecto eius explicabo aut molestias voluptas itaque dolorum sunt quisquam. Totam, corrupti animi! Velit soluta repudiandae temporibus facere. Ad atque nihil quisquam amet deleniti doloremque, ut molestiae cumque quidem cum vitae voluptates dicta quas dolor, nam ipsum laboriosam odit iusto animi, fugit tempore saepe vero corrupti cupiditate! Nam numquam mollitia esse quam labore, laborum sequi optio consequuntur natus ex, corporis quae?"
+  "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quas, quo quidem voluptate, consectetur, sint repellendus expedita consequatur pariatur delectus cum inventore iure aperiam? Ad facere nemo tenetur nesciunt quam autem voluptatibus vel temporibus dolorem atque. Dolores beatae magnam iure, architecto eius explicabo aut molestias voluptas itaque dolorum sunt quisquam. Totam, corrupti animi! Velit soluta repudiandae temporibus facere. Ad atque nihil quisquam amet deleniti doloremque, ut molestiae cumque quidem cum vitae voluptates dicta quas dolor, nam ipsum laboriosam odit iusto animi, fugit tempore saepe vero corrupti cupiditate!"
 
 // @src https://hitchhikers.fandom.com/
 const planets = [
@@ -62,6 +62,7 @@ for (const item of planets) {
 
 window.app = await ui({
   tag: "body.box-fit.box-v",
+  style: { padding: "90px", background: "#aaa" },
   // plugins: ["persist"],
   content: [
     {
@@ -71,7 +72,7 @@ window.app = await ui({
           tag: ".box-center",
           content: {
             tag: ".pa._outset.resize.flex-v",
-            style: { width: "450px", height: "200px" },
+            style: { width: "350px", height: "200px" },
             content: {
               tag: "ui-tabs",
               id: "tabs1",
@@ -89,7 +90,7 @@ window.app = await ui({
           tag: ".box-center",
           content: {
             tag: ".pa._outset.resize.flex-v",
-            style: { width: "450px", height: "200px" },
+            style: { width: "350px", height: "200px" },
             content: {
               tag: "ui-tabs",
               id: "tabs2",
@@ -111,7 +112,7 @@ window.app = await ui({
           tag: ".box-center",
           content: {
             tag: ".pa._outset.resize.flex-v",
-            style: { width: "450px", height: "200px" },
+            style: { width: "350px", height: "200px" },
             content: {
               tag: "ui-tabs",
               id: "tabs1",
@@ -124,7 +125,7 @@ window.app = await ui({
           tag: ".box-center",
           content: {
             tag: ".pa._outset.resize.flex-v",
-            style: { width: "450px", height: "200px" },
+            style: { width: "350px", height: "200px" },
             content: {
               tag: "ui-tabs",
               id: "tabs2",
