@@ -174,8 +174,8 @@
   /* tabs
   ------- */
   --tabs-gap: 0;
-  --tabs-overlap: 2px;
-  --tabs-active-overlap: 0;
+  /* --tabs-overlap: 2px;
+  --tabs-active-overlap: 0; */
 }
 
 :root {
@@ -543,7 +543,7 @@ legend button:active,
 /* tabs
 ======= */
 
-.ui-tabs__tablist {
+/* .ui-tabs__tablist {
   padding-left: 2px;
   padding-right: 6px;
 }
@@ -553,18 +553,19 @@ legend button:active,
   margin-right: -2px;
   z-index: 1;
   padding-bottom: 4px;
-}
+} */
 
 .ui-tabs__tab {
   position: relative;
   overflow: visible;
+  background-clip: padding-box;
 }
 
 .ui-tabs__tab[aria-selected="true"] {
   clip-path: none;
 }
 
-.ui-tabs__tab[aria-selected="true"]::before {
+/* .ui-tabs__tab[aria-selected="true"]::before {
   content: "";
   position: absolute;
   bottom: -2px;
@@ -596,7 +597,7 @@ legend button:active,
     var(--ButtonDkShadow) calc(100% - 1px),
     var(--ButtonDkShadow) 100%
   );
-}
+} */
 
 .ui-tabs__tab:first-of-type[aria-selected="true"]::before {
   left: 0;

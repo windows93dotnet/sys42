@@ -45,7 +45,8 @@ function importElement({ data, effect }, { dropzone }) {
 }
 
 function getIndex(item) {
-  return Number(item.dataset.index ?? indexOfElement(item))
+  const index = item.style.getPropertyValue("--index")
+  return index ? Number(index) : indexOfElement(item)
 }
 
 function getNewIndex(X, Y, item, orientation) {
