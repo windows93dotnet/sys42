@@ -60,7 +60,7 @@ export function install() {
   const disabledInset = document.createElementNS(NS, "filter")
   disabledInset.id = "disabled-inset"
   /* @src https://github.com/1j01/98/blob/34a69bf37d77f0ffbb50840f6622717202e41790/programs/explorer/index.html#L165 */
-  disabledInset.innerHTML = `
+  disabledInset.innerHTML = /* svg */ `
 <feComponentTransfer in="SourceGraphic" result="contrast">
   <feFuncR type="discrete" tableValues="0 0.5 0 1"/>
   <feFuncG type="discrete" tableValues="0 0.5 0 1"/>
