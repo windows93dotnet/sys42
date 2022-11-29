@@ -562,14 +562,14 @@ legend button:active,
 
 ui-tabs:is(:not([side]), [side="top"]) .ui-tabs__tablist,
 ui-tabs[side="bottom"] .ui-tabs__tablist {
-  padding-left: 7px;
-  padding-right: 11px;
+  padding-left: 4px;
+  padding-right: 6px;
 }
 
 ui-tabs[side="left"] .ui-tabs__tablist,
 ui-tabs[side="right"] .ui-tabs__tablist {
-  padding-top: 7px;
-  padding-bottom: 11px;
+  padding-top: 4px;
+  padding-bottom: 6px;
 }
 
 ui-tabs:is(:not([side]), [side="top"]) .ui-tabs__tab[aria-selected="true"] {
@@ -587,7 +587,7 @@ ui-tabs:is(:not([side]), [side="top"]) .ui-tabs__tab[aria-selected="true"]::befo
 
 ui-tabs[side="bottom"] .ui-tabs__tab[aria-selected="true"] {
   margin-inline: -2px !important;
-  padding-bottom: 4px;
+  padding-top: 4px;
   border-image-width: 0 auto auto auto;
 }
 
@@ -629,7 +629,7 @@ ui-tabs[side="bottom"] .ui-tabs__tab[aria-selected="true"]:first-of-type::before
   left: 0;
 }
 
-ui-tabs:is(:not([side]), [side="left"]) .ui-tabs__tab[aria-selected="true"]:first-of-type::before,
+ui-tabs[side="left"] .ui-tabs__tab[aria-selected="true"]:first-of-type::before,
 ui-tabs[side="right"] .ui-tabs__tab[aria-selected="true"]:first-of-type::before {
   top: 0;
 }
