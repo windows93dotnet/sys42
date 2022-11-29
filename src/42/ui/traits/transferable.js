@@ -7,9 +7,7 @@ import uid from "../../core/uid.js"
 import noop from "../../fabric/type/function/noop.js"
 import indexOfElement from "../../fabric/dom/indexOfElement.js"
 import ensureScopeSelector from "../../fabric/event/ensureScopeSelector.js"
-import ghostify from "../../fabric/dom/ghostify.js"
-import paintThrottle from "../../fabric/type/function/paintThrottle.js"
-import animate from "../../fabric/dom/animate.js"
+import SlideHint from "./transferable/SlideHint.js"
 
 const DEFAULTS = {
   items: ":scope > *",
@@ -20,14 +18,6 @@ const DEFAULTS = {
   handle: false,
   hint: "slide",
 }
-
-const style1 = document.createElement("style")
-style1.id = "ui-trait-transferable1"
-document.head.append(style1)
-
-const style2 = document.createElement("style")
-style2.id = "ui-trait-transferable2"
-document.head.append(style2)
 
 const configure = settings("ui.trait.transferable", DEFAULTS)
 
@@ -88,32 +78,6 @@ class Transferable extends Trait {
 
     let isSorting = false
 
-    const replaceEmptySpace = paintThrottle(({ x, y }) => {
-      if (x === hint.lastX) return
-
-      let X = x - hint.targetOffsetX
-      const Y = y
-
-      if (x > hint.lastX) {
-        X += hint.blankHalfWidth
-      } else {
-        X -= hint.blankHalfWidth
-      }
-
-      hint.lastX = x
-
-      const item = document.elementFromPoint(X, Y)?.closest(selector)
-      if (item) {
-        const index = getNewIndex(X, Y, item, orientation)
-        hint.index = index
-        style1.textContent = `
-          ${hint.hideCurrent}
-          ${selector}:nth-child(n+${index + 1}) {
-            translate: ${hint.blankWidth}px;
-          }`
-      }
-    })
-
     if (options?.list) {
       const { list } = options
       effects = options.effects ?? ["copy", "move"]
@@ -162,42 +126,14 @@ class Transferable extends Trait {
         "prevent": true,
         "dragover || dragenter": (e) => dt.effects.handleEffect(e, this.config),
         "dragover"(e) {
-          if (hint) replaceEmptySpace(e)
+          if (hint) hint.layout(e)
         },
         "drop": async (e) => {
           const res = dt.import(e, this.config)
           if (hint) {
-            style1.textContent = ""
-            style2.textContent = ""
-
             const { index } = hint
             this.import(res, { index })
-
-            const { ghost } = hint
-            const dir = hint.index > hint.targetIndex ? 0 : 1
-            const item = document.querySelector(
-              `${selector}:nth-child(${hint.index + dir})`
-            )
-            if (item) {
-              item.style.opacity = 0
-              requestAnimationFrame(() => {
-                const { x } = item.getBoundingClientRect()
-                animate
-                  .to(
-                    ghost,
-                    { translate: `${x - hint.targetX}px` },
-                    { ms: 180 }
-                  )
-                  .then(() => {
-                    item.style.opacity = 1
-                    ghost.remove()
-                    style1.textContent = ""
-                    style2.textContent = ""
-                  })
-              })
-            } else {
-              ghost.remove()
-            }
+            hint.stop(e)
           } else {
             const item = e.target.closest(selector)
             const index = getNewIndex(e.x, e.y, item, orientation)
@@ -218,56 +154,11 @@ class Transferable extends Trait {
 
           if (this.config.hint === "slide") {
             hint?.ghost?.remove()
-            hint = {
-              index,
-              targetIndex: index,
-              ghost: undefined,
-              blankWidth: 0,
-              offsetX: e.x,
-              lastX: e.x,
-            }
-
-            const c = {}
-            hint.ghost = ghostify(target, { carrier: c })
-            document.documentElement.append(hint.ghost)
-
-            hint.targetX = c.x
-            hint.targetOffsetX = e.x - (c.x + c.width / 2)
-            hint.blankWidth = c.width + c.marginLeft + c.marginRight
-            hint.blankHalfWidth = hint.blankWidth / 2
-
-            hint.hideCurrent = `
-              ${selector}:nth-child(${index + 1}) {
-                opacity: 0 !important;
-                width: 0px !important;
-                flex-basis: 0px !important;
-                min-width: 0px !important;
-                padding-inline: 0px !important;
-                outline: none !important;
-              }`
-
-            cancelAnimationFrame(hint.raf1)
-            cancelAnimationFrame(hint.raf2)
-            hint.raf1 = requestAnimationFrame(() => {
-              style1.textContent = `
-                ${hint.hideCurrent}
-                ${selector}:nth-child(n+${index + 2}) {
-                  translate: ${hint.blankWidth}px;
-                }`
-              hint.raf2 = requestAnimationFrame(() => {
-                style2.textContent = `
-                  ${selector} {
-                    transition: translate 120ms ease-in-out;
-                    outline: none !important;
-                  }`
-              })
-            })
+            hint = new SlideHint(e, target, index, selector, orientation)
           }
         },
         drag(e) {
-          if (hint) {
-            if (e.x) hint.ghost.style.translate = `${e.x - hint.offsetX}px`
-          }
+          if (hint) hint.update(e)
         },
         dragend(e, target) {
           if (isSorting) return void (isSorting = false)

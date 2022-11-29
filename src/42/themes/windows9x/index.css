@@ -573,7 +573,7 @@ ui-tabs[side="right"] .ui-tabs__tablist {
 }
 
 ui-tabs:is(:not([side]), [side="top"]) .ui-tabs__tab[aria-selected="true"] {
-  margin-inline: -2px !important;
+  margin-inline: -2px;
   padding-bottom: 4px;
   border-image-width: auto auto 0 auto;
 }
@@ -586,7 +586,7 @@ ui-tabs:is(:not([side]), [side="top"]) .ui-tabs__tab[aria-selected="true"]::befo
 }
 
 ui-tabs[side="bottom"] .ui-tabs__tab[aria-selected="true"] {
-  margin-inline: -2px !important;
+  margin-inline: -2px;
   padding-top: 4px;
   border-image-width: 0 auto auto auto;
 }
@@ -598,8 +598,11 @@ ui-tabs[side="bottom"] .ui-tabs__tab[aria-selected="true"]::before {
   height: 1px;
 }
 
+ui-tabs[side="left"] .ui-tabs__tab { margin-left: 2px; }
+
 ui-tabs[side="left"] .ui-tabs__tab[aria-selected="true"] {
-  margin-block: -2px !important;
+  margin-block: -2px;
+  margin-left: 0;
   padding-right: 6px;
   border-image-width: auto 0 auto auto;
 }
@@ -611,8 +614,11 @@ ui-tabs[side="left"] .ui-tabs__tab[aria-selected="true"]::before {
   width: 1px;
 }
 
+ui-tabs[side="right"] .ui-tabs__tab { margin-right: 2px; }
+
 ui-tabs[side="right"] .ui-tabs__tab[aria-selected="true"] {
-  margin-block: -2px !important;
+  margin-block: -2px;
+  margin-right: 0;
   padding-left: 6px;
   border-image-width: auto auto auto 0;
 }
