@@ -160,7 +160,7 @@ class Transferable extends Trait {
         drag(e) {
           if (hint) hint.update(e)
         },
-        dragend(e, target) {
+        dragend: (e, target) => {
           if (isSorting) return void (isSorting = false)
           if (e.dataTransfer.dropEffect === "move") {
             const index = getIndex(target)

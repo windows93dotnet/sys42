@@ -35,9 +35,10 @@ export class SlideHint {
   constructor(e, target, index, selector, orientation) {
     this.index = index
     this.targetIndex = index
-    this.blankWidth = 0
     this.offsetX = e.x
+    this.offsetY = e.y
     this.lastX = e.x
+    this.lastY = e.y
     this.selector = selector
     this.orientation = orientation
 
@@ -46,20 +47,38 @@ export class SlideHint {
 
     document.documentElement.append(this.ghost)
 
-    this.targetX = carrier.x
+    this.targetY = carrier.y
     this.targetOffsetX = e.x - (carrier.x + carrier.width / 2)
-    this.blankWidth = carrier.width + carrier.marginLeft + carrier.marginRight
-    this.blankHalfWidth = this.blankWidth / 2
+    this.targetX = carrier.x
+    this.targetOffsetY = e.y - (carrier.y + carrier.height / 2)
 
-    this.hideCurrent = `
-      ${this.selector}:nth-child(${index + 1}) {
-        opacity: 0 !important;
-        width: 0px !important;
-        flex-basis: 0px !important;
-        min-width: 0px !important;
-        padding-inline: 0px !important;
-        outline: none !important;
-      }`
+    if (orientation === "vertical") {
+      const height = carrier.height + carrier.marginTop + carrier.marginBottom
+      this.blankHalfSize = height / 2
+      this.blank = `0 ${height}px`
+      this.hideCurrent = `
+        ${this.selector}:nth-child(${index + 1}) {
+          opacity: 0 !important;
+          height: 0px !important;
+          flex-basis: 0px !important;
+          min-height: 0px !important;
+          padding-block: 0px !important;
+          outline: none !important;
+        }`
+    } else {
+      const width = carrier.width + carrier.marginLeft + carrier.marginRight
+      this.blankHalfSize = width / 2
+      this.blank = `${width}px`
+      this.hideCurrent = `
+        ${this.selector}:nth-child(${index + 1}) {
+          opacity: 0 !important;
+          width: 0px !important;
+          flex-basis: 0px !important;
+          min-width: 0px !important;
+          padding-inline: 0px !important;
+          outline: none !important;
+        }`
+    }
 
     cancelAnimationFrame(this._raf1)
     cancelAnimationFrame(this._raf2)
@@ -67,7 +86,7 @@ export class SlideHint {
       style1.textContent = `
         ${this.hideCurrent}
         ${this.selector}:nth-child(n+${index + 2}) {
-          translate: ${this.blankWidth}px;
+          translate: ${this.blank};
         }`
       this._raf2 = requestAnimationFrame(() => {
         style2.textContent = `
@@ -79,18 +98,23 @@ export class SlideHint {
     })
 
     this.layout = paintThrottle(({ x, y }) => {
-      if (x === this.lastX) return
-
-      let X = x - this.targetOffsetX
-      const Y = y
-
-      if (x > this.lastX) {
-        X += this.blankHalfWidth
+      let X
+      let Y
+      if (this.orientation === "vertical") {
+        if (y === this.lastY) return
+        X = x
+        Y = y - this.targetOffsetY
+        if (y > this.lastY) Y += this.blankHalfSize
+        else Y -= this.blankHalfSize
+        this.lastY = y
       } else {
-        X -= this.blankHalfWidth
+        if (x === this.lastX) return
+        X = x - this.targetOffsetX
+        Y = y
+        if (x > this.lastX) X += this.blankHalfSize
+        else X -= this.blankHalfSize
+        this.lastX = x
       }
-
-      this.lastX = x
 
       const item = document.elementFromPoint(X, Y)?.closest(selector)
       if (item) {
@@ -99,14 +123,16 @@ export class SlideHint {
         style1.textContent = `
           ${this.hideCurrent}
           ${selector}:nth-child(n+${index + 1}) {
-            translate: ${this.blankWidth}px;
+            translate: ${this.blank};
           }`
       }
     })
   }
 
   update(e) {
-    if (e.x) this.ghost.style.translate = `${e.x - this.offsetX}px`
+    if (this.orientation === "vertical") {
+      if (e.y) this.ghost.style.translate = `0 ${e.y - this.offsetY}px`
+    } else if (e.x) this.ghost.style.translate = `${e.x - this.offsetX}px`
   }
 
   stop() {
@@ -121,15 +147,19 @@ export class SlideHint {
     if (item) {
       item.style.opacity = 0
       requestAnimationFrame(() => {
-        const { x } = item.getBoundingClientRect()
-        animate
-          .to(ghost, { translate: `${x - this.targetX}px` }, { ms: 180 })
-          .then(() => {
-            item.style.opacity = 1
-            ghost.remove()
-            style1.textContent = ""
-            style2.textContent = ""
-          })
+        const { x, y } = item.getBoundingClientRect()
+
+        const translate =
+          this.orientation === "vertical"
+            ? `0 ${y - this.targetY}px`
+            : `${x - this.targetX}px`
+
+        animate.to(ghost, { translate }, { ms: 180 }).then(() => {
+          item.style.opacity = 1
+          ghost.remove()
+          style1.textContent = ""
+          style2.textContent = ""
+        })
       })
     } else {
       ghost.remove()
