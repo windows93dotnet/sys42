@@ -21,6 +21,7 @@ const DEFAULTS = {
 const configure = settings("ui.trait.transferable", DEFAULTS)
 
 let hint
+let originHint
 
 /* element
 ========== */
@@ -129,9 +130,20 @@ class Transferable extends Trait {
             hint.index =
               this.list?.length ??
               this.dropzone.querySelectorAll(this.selector).length
-          }
 
-          hint?.enterDropzone?.()
+            if (hint.id === id) {
+              hint.enterDropzone?.()
+            } else {
+              originHint = hint
+              hint = new SlideHint(this, {
+                x: e.x,
+                y: e.y,
+                target: originHint.ghost,
+                index: originHint.index,
+              })
+              originHint.ghost.style.opacity = 0
+            }
+          }
         }
       },
 
@@ -139,6 +151,13 @@ class Transferable extends Trait {
         if (--counter <= 0) {
           counter = 0
           this.dropzone.classList.remove("dragover")
+
+          if (originHint) {
+            hint.destroy()
+            hint = originHint
+            originHint = undefined
+          }
+
           hint?.leaveDropzone?.()
         }
       },
@@ -202,11 +221,18 @@ class Transferable extends Trait {
         counter = 0
         this.dropzone.classList.remove("dragover")
 
+        if (originHint) {
+          originHint.destroy()
+          originHint = undefined
+        }
+
         if (e.dataTransfer.dropEffect === "none") {
           hint?.revert?.(e)
         } else {
           hint?.destroy?.(e)
         }
+
+        hint = undefined
 
         if (this.isSorting) {
           this.isSorting = false

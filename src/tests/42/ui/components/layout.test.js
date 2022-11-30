@@ -81,7 +81,7 @@ window.app = await ui({
             style: { width: "380px", height: "200px" },
             content: {
               tag: "ui-tabs",
-              id: "tabs1",
+              id: "tabs3",
               side: "bottom",
               content: "{{planets}}",
             },
@@ -94,7 +94,7 @@ window.app = await ui({
             style: { width: "400px", height: "200px" },
             content: {
               tag: "ui-tabs",
-              id: "tabs2",
+              id: "tabs4",
               side: "right",
               content: [
                 { label: "One", content: lorem },

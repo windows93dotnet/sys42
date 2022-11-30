@@ -3,14 +3,6 @@ import animate from "../../../fabric/dom/animate.js"
 import paintThrottle from "../../../fabric/type/function/paintThrottle.js"
 import indexOfElement from "../../../fabric/dom/indexOfElement.js"
 
-const style1 = document.createElement("style")
-style1.id = "ui-trait-transferable1"
-document.head.append(style1)
-
-const style2 = document.createElement("style")
-style2.id = "ui-trait-transferable2"
-document.head.append(style2)
-
 export function getIndex(item) {
   const index = item.style.getPropertyValue("--index")
   return index ? Number(index) : indexOfElement(item)
@@ -35,9 +27,19 @@ export class SlideHint {
   constructor(trait, { x, y, target, index }) {
     this.index = index
     this.targetIndex = index
+
+    this.id = trait.dropzone?.id
     this.selector = trait.selector
     this.orientation = trait.orientation
     this.insideDropzone = false
+
+    this.dynamicStyle = document.createElement("style")
+    this.dynamicStyle.id = "ui-trait-transferable1"
+    document.head.append(this.dynamicStyle)
+
+    this.allItemsStyle = document.createElement("style")
+    this.allItemsStyle.id = "ui-trait-transferable2"
+    document.head.append(this.allItemsStyle)
 
     const carrier = {}
     this.ghost = ghostify(target, { carrier })
@@ -84,14 +86,14 @@ export class SlideHint {
     cancelAnimationFrame(this._raf1)
     cancelAnimationFrame(this._raf2)
     this._raf1 = requestAnimationFrame(() => {
-      style1.textContent = `
+      this.dynamicStyle.textContent = `
         ${this.hideCurrent}
         ${this.selector}:nth-child(n+${index + 2}) {
           translate: ${this.blank};
         }`
 
       this._raf2 = requestAnimationFrame(() => {
-        style2.textContent = `
+        this.allItemsStyle.textContent = `
           ${this.selector} {
             transition: translate 120ms ease-in-out;
             outline: none !important;
@@ -125,7 +127,7 @@ export class SlideHint {
 
       if (item) {
         this.index = getNewIndex(X, Y, item, this.orientation)
-        style1.textContent = `
+        this.dynamicStyle.textContent = `
           ${this.hideCurrent}
           ${this.selector}:nth-child(n+${this.index + 1}) {
             translate: ${this.blank};
@@ -141,9 +143,10 @@ export class SlideHint {
 
   leaveDropzone() {
     this.insideDropzone = false
-    style1.textContent = `${this.hideCurrent}`
+    this.ghost.style.opacity = 1
+    this.dynamicStyle.textContent = `${this.hideCurrent}`
     this._raf3 = requestAnimationFrame(() => {
-      style1.textContent = `${this.hideCurrent}`
+      this.dynamicStyle.textContent = `${this.hideCurrent}`
     })
   }
 
@@ -162,8 +165,8 @@ export class SlideHint {
   stop() {
     this.stopped = true
     if (this.reverted !== true) {
-      style1.textContent = ""
-      style2.textContent = ""
+      this.dynamicStyle.textContent = ""
+      this.allItemsStyle.textContent = ""
     }
 
     const dir = this.index > this.targetIndex ? 0 : 1
@@ -185,8 +188,8 @@ export class SlideHint {
         animate.to(ghost, { translate }, 120).then(() => {
           item.style.opacity = 1
           ghost.remove()
-          style1.textContent = ""
-          style2.textContent = ""
+          this.dynamicStyle.remove()
+          this.allItemsStyle.remove()
         })
       })
     } else {
@@ -198,7 +201,7 @@ export class SlideHint {
     if (this.stopped) return
     this.reverted = true
     this.index = this.targetIndex
-    style1.textContent = `
+    this.dynamicStyle.textContent = `
       ${this.hideCurrent}
       ${this.selector}:nth-child(n+${this.index + 1}) {
         translate: ${this.blank};
@@ -209,8 +212,8 @@ export class SlideHint {
   destroy() {
     if (this.stopped) return
     this.ghost.remove()
-    style1.textContent = ""
-    style2.textContent = ""
+    this.dynamicStyle.remove()
+    this.allItemsStyle.remove()
   }
 }
 
