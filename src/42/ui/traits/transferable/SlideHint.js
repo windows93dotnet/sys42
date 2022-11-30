@@ -32,11 +32,11 @@ export function getNewIndex(X, Y, item, orientation) {
 }
 
 export class SlideHint {
-  constructor(e, { target, index, selector, orientation }) {
+  constructor(trait, { x, y, target, index }) {
     this.index = index
     this.targetIndex = index
-    this.selector = selector
-    this.orientation = orientation
+    this.selector = trait.selector
+    this.orientation = trait.orientation
     this.insideDropzone = false
 
     const carrier = {}
@@ -44,16 +44,16 @@ export class SlideHint {
 
     document.documentElement.append(this.ghost)
 
-    this.offsetX = e.x
-    this.offsetY = e.y
-    this.lastX = e.x
-    this.lastY = e.y
+    this.offsetX = x
+    this.offsetY = y
+    this.lastX = x
+    this.lastY = y
     this.targetY = carrier.y
-    this.targetOffsetX = e.x - (carrier.x + carrier.width / 2)
+    this.targetOffsetX = x - (carrier.x + carrier.width / 2)
     this.targetX = carrier.x
-    this.targetOffsetY = e.y - (carrier.y + carrier.height / 2)
+    this.targetOffsetY = y - (carrier.y + carrier.height / 2)
 
-    if (orientation === "vertical") {
+    if (this.orientation === "vertical") {
       const height = carrier.height + carrier.marginTop + carrier.marginBottom
       this.blankHalfSize = height / 2
       this.blank = `0 ${height}px`
@@ -84,13 +84,11 @@ export class SlideHint {
     cancelAnimationFrame(this._raf1)
     cancelAnimationFrame(this._raf2)
     this._raf1 = requestAnimationFrame(() => {
-      if (this.insideDropzone) {
-        style1.textContent = `
+      style1.textContent = `
         ${this.hideCurrent}
         ${this.selector}:nth-child(n+${index + 2}) {
           translate: ${this.blank};
         }`
-      }
 
       this._raf2 = requestAnimationFrame(() => {
         style2.textContent = `
@@ -102,30 +100,34 @@ export class SlideHint {
     })
 
     this.layout = paintThrottle(({ x, y }) => {
+      if (x === this.lastX && y === this.lastY) return
+
       let X
       let Y
+
       if (this.orientation === "vertical") {
-        if (y === this.lastY) return
         X = x
-        Y = y - this.targetOffsetY
-        if (y > this.lastY) Y += this.blankHalfSize
+        Y = y === this.lastY ? y : y - this.targetOffsetY
+        if (y >= this.lastY) Y += this.blankHalfSize
         else Y -= this.blankHalfSize
-        this.lastY = y
       } else {
-        if (x === this.lastX) return
-        X = x - this.targetOffsetX
+        X = x === this.lastX ? x : x - this.targetOffsetX
         Y = y
-        if (x > this.lastX) X += this.blankHalfSize
+        if (x >= this.lastX) X += this.blankHalfSize
         else X -= this.blankHalfSize
-        this.lastX = x
       }
 
-      const item = document.elementFromPoint(X, Y)?.closest(selector)
+      this.lastX = x
+      this.lastY = y
+
+      const target = document.elementFromPoint(X, Y)
+      const item = target?.closest(this.selector)
+
       if (item) {
         this.index = getNewIndex(X, Y, item, this.orientation)
         style1.textContent = `
           ${this.hideCurrent}
-          ${selector}:nth-child(n+${this.index + 1}) {
+          ${this.selector}:nth-child(n+${this.index + 1}) {
             translate: ${this.blank};
           }`
       }
@@ -133,12 +135,16 @@ export class SlideHint {
   }
 
   enter() {
+    cancelAnimationFrame(this._raf3)
     this.insideDropzone = true
   }
 
   leave() {
     this.insideDropzone = false
     style1.textContent = `${this.hideCurrent}`
+    this._raf3 = requestAnimationFrame(() => {
+      style1.textContent = `${this.hideCurrent}`
+    })
   }
 
   update(e) {
@@ -155,7 +161,7 @@ export class SlideHint {
 
   stop() {
     this.stopped = true
-    if (this.destroyed !== true) {
+    if (this.reverted !== true) {
       style1.textContent = ""
       style2.textContent = ""
     }
@@ -169,8 +175,8 @@ export class SlideHint {
 
     if (item) {
       item.style.opacity = 0
-      const { x, y } = item.getBoundingClientRect()
       requestAnimationFrame(() => {
+        const { x, y } = item.getBoundingClientRect()
         const translate =
           this.orientation === "vertical"
             ? `0 ${y - this.targetY}px`
@@ -188,9 +194,9 @@ export class SlideHint {
     }
   }
 
-  destroy() {
+  revert() {
     if (this.stopped) return
-    this.destroyed = true
+    this.reverted = true
     this.index = this.targetIndex
     style1.textContent = `
       ${this.hideCurrent}
@@ -198,6 +204,13 @@ export class SlideHint {
         translate: ${this.blank};
       }`
     this.stop(true)
+  }
+
+  destroy() {
+    if (this.stopped) return
+    this.ghost.remove()
+    style1.textContent = ""
+    style2.textContent = ""
   }
 }
 

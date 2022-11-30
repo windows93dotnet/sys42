@@ -81,10 +81,14 @@ export default function dataTransfertImport(e, options) {
       out.undones.push(readDirectoryEntry(item.entry, out))
     }
 
-    if (options?.handle && item.entry && "getAsFileSystemHandle" in dataItem) {
+    if (
+      options?.fileSystemHandle &&
+      item.entry &&
+      "getAsFileSystemHandle" in dataItem
+    ) {
       out.undones.push(
         item.getAsFileSystemHandle().then((res) => {
-          out.handle = res
+          out.fileSystemHandle = res
         })
       )
     }
