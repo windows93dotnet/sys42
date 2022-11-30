@@ -11,12 +11,12 @@ const style2 = document.createElement("style")
 style2.id = "ui-trait-transferable2"
 document.head.append(style2)
 
-function getIndex(item) {
+export function getIndex(item) {
   const index = item.style.getPropertyValue("--index")
   return index ? Number(index) : indexOfElement(item)
 }
 
-function getNewIndex(X, Y, item, orientation) {
+export function getNewIndex(X, Y, item, orientation) {
   if (item) {
     const index = getIndex(item)
     if (orientation === "horizontal") {
@@ -32,7 +32,7 @@ function getNewIndex(X, Y, item, orientation) {
 }
 
 export class SlideHint {
-  constructor(e, target, index, selector, orientation) {
+  constructor(e, { target, index, selector, orientation }) {
     this.index = index
     this.targetIndex = index
     this.offsetX = e.x
@@ -41,6 +41,7 @@ export class SlideHint {
     this.lastY = e.y
     this.selector = selector
     this.orientation = orientation
+    this.insideDropzone = false
 
     const carrier = {}
     this.ghost = ghostify(target, { carrier })
@@ -129,26 +130,41 @@ export class SlideHint {
     })
   }
 
+  enter() {
+    this.insideDropzone = true
+  }
+
+  leave() {
+    this.insideDropzone = false
+    style1.textContent = `${this.hideCurrent}`
+  }
+
   update(e) {
-    if (this.orientation === "vertical") {
-      if (e.y) this.ghost.style.translate = `0 ${e.y - this.offsetY}px`
-    } else if (e.x) this.ghost.style.translate = `${e.x - this.offsetX}px`
+    if (this.insideDropzone) {
+      if (this.orientation === "vertical") {
+        if (e.y) this.ghost.style.translate = `0 ${e.y - this.offsetY}px`
+      } else if (e.x) this.ghost.style.translate = `${e.x - this.offsetX}px`
+    } else if (e.x && e.y) {
+      this.ghost.style.translate = `
+        ${e.x - this.offsetX}px
+        ${e.y - this.offsetY}px`
+    }
   }
 
   stop() {
     style1.textContent = ""
     style2.textContent = ""
-    const { ghost } = this
     const dir = this.index > this.targetIndex ? 0 : 1
     const item = document.querySelector(
       `${this.selector}:nth-child(${this.index + dir})`
     )
 
+    const { ghost } = this
+
     if (item) {
       item.style.opacity = 0
+      const { x, y } = item.getBoundingClientRect()
       requestAnimationFrame(() => {
-        const { x, y } = item.getBoundingClientRect()
-
         const translate =
           this.orientation === "vertical"
             ? `0 ${y - this.targetY}px`

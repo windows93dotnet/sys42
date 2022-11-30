@@ -5,9 +5,8 @@ import ensureElement from "../../fabric/dom/ensureElement.js"
 import dt from "../../core/dt.js"
 import uid from "../../core/uid.js"
 import noop from "../../fabric/type/function/noop.js"
-import indexOfElement from "../../fabric/dom/indexOfElement.js"
 import ensureScopeSelector from "../../fabric/event/ensureScopeSelector.js"
-import SlideHint from "./transferable/SlideHint.js"
+import SlideHint, { getIndex, getNewIndex } from "./transferable/SlideHint.js"
 
 const DEFAULTS = {
   items: ":scope > *",
@@ -21,6 +20,10 @@ const DEFAULTS = {
 
 const configure = settings("ui.trait.transferable", DEFAULTS)
 
+let hint
+
+/* element
+========== */
 function exportElement(target) {
   target.id ||= uid()
   return { type: "element", id: target.id }
@@ -33,28 +36,6 @@ function importElement({ data, effect }, { dropzone }) {
     dropzone.append(el)
   }
 }
-
-function getIndex(item) {
-  const index = item.style.getPropertyValue("--index")
-  return index ? Number(index) : indexOfElement(item)
-}
-
-function getNewIndex(X, Y, item, orientation) {
-  if (item) {
-    const index = getIndex(item)
-    if (orientation === "horizontal") {
-      const { x, width } = item.getBoundingClientRect()
-      if (X > x + width / 2) return index + 1
-    } else {
-      const { y, height } = item.getBoundingClientRect()
-      if (Y > y + height / 2) return index + 1
-    }
-
-    return index
-  }
-}
-
-let hint
 
 class Transferable extends Trait {
   constructor(el, options) {
@@ -84,7 +65,7 @@ class Transferable extends Trait {
 
       this.indexChange = this.config.indexChange ?? noop
 
-      this.import = ({ data }, { index }) => {
+      this.import = function ({ data }, { index }) {
         if (data?.type === "list") {
           if (index === undefined) {
             index = list.length
@@ -105,7 +86,7 @@ class Transferable extends Trait {
         }
       }
 
-      this.export = ({ index }) => {
+      this.export = function ({ index }) {
         const state = list.at(index)
         return { type: "list", id, index, state }
       }
@@ -120,15 +101,37 @@ class Transferable extends Trait {
       this.removeItem = this.config.removeItem ?? noop
     }
 
+    let counter = 0
+
     listen(
+      /* dropzone
+      =========== */
       dropzone,
       {
         "prevent": true,
         "dragover || dragenter": (e) => dt.effects.handleEffect(e, this.config),
         "dragover"(e) {
-          if (hint) hint.layout(e)
+          hint?.layout?.(e)
+        },
+        "dragenter"(e) {
+          if (counter === 0) {
+            dropzone.classList.add("dragover")
+            hint?.enter?.(e)
+          }
+
+          counter++
+        },
+        "dragleave"(e) {
+          counter--
+          if (counter === 0) {
+            dropzone.classList.remove("dragover")
+            hint?.leave?.(e)
+          }
         },
         "drop": async (e) => {
+          counter = 0
+          dropzone.classList.remove("dragover")
+
           const res = dt.import(e, this.config)
           if (hint) {
             const { index } = hint
@@ -141,6 +144,9 @@ class Transferable extends Trait {
           }
         },
       },
+
+      /* draggable items
+      ================== */
       el,
       {
         selector,
@@ -154,13 +160,16 @@ class Transferable extends Trait {
 
           if (this.config.hint === "slide") {
             hint?.ghost?.remove()
-            hint = new SlideHint(e, target, index, selector, orientation)
+            hint = new SlideHint(e, { target, index, selector, orientation })
           }
         },
         drag(e) {
           if (hint) hint.update(e)
         },
         dragend: (e, target) => {
+          counter = 0
+          dropzone.classList.remove("dragover")
+
           if (isSorting) return void (isSorting = false)
           if (e.dataTransfer.dropEffect === "move") {
             const index = getIndex(target)
