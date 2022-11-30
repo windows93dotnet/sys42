@@ -34,17 +34,17 @@ window.app = await ui({
           tag: ".box-center",
           content: {
             tag: ".pa._outset.resize.flex-v",
-            style: { width: "350px", height: "200px" },
+            style: { width: "380px", height: "200px" },
             content: {
               tag: "ui-tabs",
               id: "tabs1",
               // balanced: true,
-              // content: "{{planets}}",
-              content: [
-                { label: "One", content: lorem },
-                { label: "Two", content: "hello" },
-                { label: "Three", content: "world" },
-              ],
+              content: "{{planets}}",
+              // content: [
+              //   { label: "One", content: lorem },
+              //   { label: "Two", content: "hello" },
+              //   { label: "Three", content: "world" },
+              // ],
             },
           },
         },
@@ -78,7 +78,7 @@ window.app = await ui({
           tag: ".box-center",
           content: {
             tag: ".pa._outset.resize.flex-v",
-            style: { width: "350px", height: "200px" },
+            style: { width: "380px", height: "200px" },
             content: {
               tag: "ui-tabs",
               id: "tabs1",

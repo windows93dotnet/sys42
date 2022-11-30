@@ -25,7 +25,10 @@ export class Dialog extends Component {
 
     traits: {
       emittable: true,
-      movable: { handler: ".ui-dialog__title", maxZIndex: zIndexSector },
+      movable: {
+        handler: ".ui-dialog__title",
+        maxZIndex: zIndexSector,
+      },
     },
 
     props: {

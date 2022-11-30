@@ -9,12 +9,12 @@ import ensureScopeSelector from "../../fabric/event/ensureScopeSelector.js"
 import SlideHint, { getIndex, getNewIndex } from "./transferable/SlideHint.js"
 
 const DEFAULTS = {
-  items: ":scope > *",
-  orientation: undefined,
+  selector: ":scope > *",
   dropzone: undefined,
+  orientation: undefined,
   effects: ["copy", "move", "link"],
   silentEffectCheck: false,
-  handle: false,
+  fileSystemHandle: false,
   hint: "slide",
 }
 
@@ -41,26 +41,31 @@ class Transferable extends Trait {
   constructor(el, options) {
     super(el, options)
 
+    if (options?.list) {
+      this.list = options?.list
+      delete options?.list
+    }
+
     this.config = configure(options)
+
     let effects
-    const dropzone = this.config.dropzone
+    this.dropzone = this.config.dropzone
       ? ensureElement(this.config.dropzone)
       : el
 
-    dropzone.id ||= uid()
-    const { id } = dropzone
+    this.dropzone.id ||= uid()
+    const { id } = this.dropzone
 
-    const orientation =
+    this.isSorting = false
+
+    this.orientation =
       this.config.orientation ??
-      dropzone.getAttribute("aria-orientation") ??
+      this.dropzone.getAttribute("aria-orientation") ??
       "horizontal"
 
-    const selector = ensureScopeSelector(this.config.items, dropzone)
+    this.selector = ensureScopeSelector(this.config.selector, this.dropzone)
 
-    let isSorting = false
-
-    if (options?.list) {
-      const { list } = options
+    if (this.list) {
       effects = options.effects ?? ["copy", "move"]
 
       this.indexChange = this.config.indexChange ?? noop
@@ -68,18 +73,18 @@ class Transferable extends Trait {
       this.import = function ({ data }, { index }) {
         if (data?.type === "list") {
           if (index === undefined) {
-            index = list.length
+            index = this.list.length
           }
 
           if (data.id === id) {
-            isSorting = true
+            this.isSorting = true
             if (data.index === index) return
 
-            const [removed] = list.splice(data.index, 1)
+            const [removed] = this.list.splice(data.index, 1)
             if (index > data.index) index--
-            list.splice(index, 0, removed)
+            this.list.splice(index, 0, removed)
           } else {
-            list.splice(index, 0, data.state)
+            this.list.splice(index, 0, data.state)
           }
 
           this.indexChange(index)
@@ -87,12 +92,12 @@ class Transferable extends Trait {
       }
 
       this.export = function ({ index }) {
-        const state = list.at(index)
+        const state = this.list.at(index)
         return { type: "list", id, index, state }
       }
 
       this.removeItem = (index) => {
-        list.splice(index, 1)
+        this.list.splice(index, 1)
       }
     } else {
       effects = this.config.effects
@@ -102,87 +107,119 @@ class Transferable extends Trait {
     }
 
     let counter = 0
+    let justStarted = false
 
-    listen(
-      /* dropzone
+    /* dropzone
       =========== */
-      dropzone,
-      {
-        prevent: true,
-        dragover: (e) => {
-          dt.effects.handleEffect(e, this.config)
-          hint?.layout?.(e)
-        },
-        dragenter: (e) => {
-          dt.effects.handleEffect(e, this.config)
-          if (counter === 0) {
-            dropzone.classList.add("dragover")
-            hint?.enter?.(e)
-          }
 
-          counter++
-        },
-        dragleave(e) {
-          counter--
-          if (counter <= 0) {
-            counter = 0
-            dropzone.classList.remove("dragover")
-            hint?.leave?.(e)
-          }
-        },
-        drop: async (e) => {
-          counter = 0
-          dropzone.classList.remove("dragover")
+    listen(this.dropzone, {
+      prevent: true,
 
-          const res = dt.import(e, this.config)
-          if (hint) {
-            const { index } = hint
-            this.import(res, { index })
-            hint?.stop?.(e)
-          } else {
-            const item = e.target.closest(selector)
-            const index = getNewIndex(e.x, e.y, item, orientation)
-            this.import(res, { index })
-          }
-        },
+      dragover: (e) => {
+        dt.effects.handleEffect(e, this.config)
+        hint?.layout?.(e)
       },
 
-      /* draggable items
+      dragenter: (e) => {
+        dt.effects.handleEffect(e, this.config)
+        if (counter++ === 0) {
+          this.dropzone.classList.add("dragover")
+          if (hint) {
+            // force index to end of the list if no item is hovered before drop
+            hint.index =
+              this.list?.length ??
+              this.dropzone.querySelectorAll(this.selector).length
+          }
+
+          hint?.enter?.()
+        }
+      },
+
+      dragleave: () => {
+        if (--counter <= 0) {
+          counter = 0
+          this.dropzone.classList.remove("dragover")
+          hint?.leave?.()
+        }
+      },
+
+      drop: (e) => {
+        counter = 0
+        this.dropzone.classList.remove("dragover")
+
+        const res = dt.import(e, this.config)
+        if (hint) {
+          const { index } = hint
+          this.import(res, { index })
+          hint?.stop?.(e)
+        } else {
+          const item = e.target.closest(this.selector)
+          const index = getNewIndex(e.x, e.y, item, this.orientation)
+          this.import(res, { index })
+        }
+      },
+    })
+
+    if (!this.selector) return
+
+    /* draggable items
       ================== */
-      el,
-      {
-        selector,
-        pointerdown(e, target) {
-          target.draggable = true
-        },
-        dragstart: (e, target) => {
-          counter = 0
-          isSorting = false
-          const index = getIndex(target)
-          dt.export(e, { effects, data: this.export({ index, target }) })
 
-          if (this.config.hint === "slide") {
-            hint?.ghost?.remove()
-            hint = new SlideHint(e, { target, index, selector, orientation })
-          }
-        },
-        drag(e) {
-          if (hint) hint.update(e)
-        },
-        dragend: (e, target) => {
-          counter = 0
-          dropzone.classList.remove("dragover")
+    listen(this.el, {
+      selector: this.selector,
 
+      pointerdown(e, target) {
+        target.draggable = true // force draggable on element
+      },
+
+      dragstart: (e, target) => {
+        counter = 0
+        this.isSorting = false
+        justStarted = true
+        const index = getIndex(target)
+        dt.export(e, { effects, data: this.export({ index, target }) })
+
+        if (this.config.hint === "slide") {
+          hint = new SlideHint(this, { x: e.x, y: e.y, target, index })
+        }
+      },
+
+      drag(e) {
+        if (justStarted) {
+          // fast drag sometimes don't trigger dragleave event
+          const isInDropzone = document
+            .elementFromPoint(e.x, e.y)
+            ?.closest(`#${id}`)
+          if (!isInDropzone) hint?.leave?.(e)
+          justStarted = false
+        }
+
+        hint?.update?.(e)
+      },
+
+      dragend: (e, target) => {
+        justStarted = false
+        counter = 0
+        this.dropzone.classList.remove("dragover")
+
+        if (e.dataTransfer.dropEffect === "none") {
           hint?.destroy?.(e)
+          // hint?.revert?.(e)
+        } else {
+          hint?.destroy?.(e)
+        }
 
-          if (isSorting) return void (isSorting = false)
-          if (e.dataTransfer.dropEffect === "move") {
-            const index = getIndex(target)
-            this.removeItem(index)
-          }
-        },
-      }
-    )
+        if (this.isSorting) {
+          this.isSorting = false
+          return
+        }
+
+        if (e.dataTransfer.dropEffect === "move") {
+          const index = getIndex(target)
+          this.removeItem(index)
+        }
+      },
+    })
   }
 }
 
