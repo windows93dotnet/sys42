@@ -108,12 +108,13 @@ class Transferable extends Trait {
       =========== */
       dropzone,
       {
-        "prevent": true,
-        "dragover || dragenter": (e) => dt.effects.handleEffect(e, this.config),
-        "dragover"(e) {
+        prevent: true,
+        dragover: (e) => {
+          dt.effects.handleEffect(e, this.config)
           hint?.layout?.(e)
         },
-        "dragenter"(e) {
+        dragenter: (e) => {
+          dt.effects.handleEffect(e, this.config)
           if (counter === 0) {
             dropzone.classList.add("dragover")
             hint?.enter?.(e)
@@ -121,14 +122,15 @@ class Transferable extends Trait {
 
           counter++
         },
-        "dragleave"(e) {
+        dragleave(e) {
           counter--
-          if (counter === 0) {
+          if (counter <= 0) {
+            counter = 0
             dropzone.classList.remove("dragover")
             hint?.leave?.(e)
           }
         },
-        "drop": async (e) => {
+        drop: async (e) => {
           counter = 0
           dropzone.classList.remove("dragover")
 
@@ -136,7 +138,7 @@ class Transferable extends Trait {
           if (hint) {
             const { index } = hint
             this.import(res, { index })
-            hint.stop(e)
+            hint?.stop?.(e)
           } else {
             const item = e.target.closest(selector)
             const index = getNewIndex(e.x, e.y, item, orientation)
@@ -154,6 +156,7 @@ class Transferable extends Trait {
           target.draggable = true
         },
         dragstart: (e, target) => {
+          counter = 0
           isSorting = false
           const index = getIndex(target)
           dt.export(e, { effects, data: this.export({ index, target }) })
@@ -169,6 +172,8 @@ class Transferable extends Trait {
         dragend: (e, target) => {
           counter = 0
           dropzone.classList.remove("dragover")
+
+          hint?.destroy?.(e)
 
           if (isSorting) return void (isSorting = false)
           if (e.dataTransfer.dropEffect === "move") {

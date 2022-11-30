@@ -35,10 +35,6 @@ export class SlideHint {
   constructor(e, { target, index, selector, orientation }) {
     this.index = index
     this.targetIndex = index
-    this.offsetX = e.x
-    this.offsetY = e.y
-    this.lastX = e.x
-    this.lastY = e.y
     this.selector = selector
     this.orientation = orientation
     this.insideDropzone = false
@@ -48,6 +44,10 @@ export class SlideHint {
 
     document.documentElement.append(this.ghost)
 
+    this.offsetX = e.x
+    this.offsetY = e.y
+    this.lastX = e.x
+    this.lastY = e.y
     this.targetY = carrier.y
     this.targetOffsetX = e.x - (carrier.x + carrier.width / 2)
     this.targetX = carrier.x
@@ -61,8 +61,8 @@ export class SlideHint {
         ${this.selector}:nth-child(${index + 1}) {
           opacity: 0 !important;
           height: 0px !important;
-          flex-basis: 0px !important;
           min-height: 0px !important;
+          flex-basis: 0px !important;
           padding-block: 0px !important;
           outline: none !important;
         }`
@@ -74,8 +74,8 @@ export class SlideHint {
         ${this.selector}:nth-child(${index + 1}) {
           opacity: 0 !important;
           width: 0px !important;
-          flex-basis: 0px !important;
           min-width: 0px !important;
+          flex-basis: 0px !important;
           padding-inline: 0px !important;
           outline: none !important;
         }`
@@ -84,11 +84,14 @@ export class SlideHint {
     cancelAnimationFrame(this._raf1)
     cancelAnimationFrame(this._raf2)
     this._raf1 = requestAnimationFrame(() => {
-      style1.textContent = `
+      if (this.insideDropzone) {
+        style1.textContent = `
         ${this.hideCurrent}
         ${this.selector}:nth-child(n+${index + 2}) {
           translate: ${this.blank};
         }`
+      }
+
       this._raf2 = requestAnimationFrame(() => {
         style2.textContent = `
           ${this.selector} {
@@ -119,11 +122,10 @@ export class SlideHint {
 
       const item = document.elementFromPoint(X, Y)?.closest(selector)
       if (item) {
-        const index = getNewIndex(X, Y, item, this.orientation)
-        this.index = index
+        this.index = getNewIndex(X, Y, item, this.orientation)
         style1.textContent = `
           ${this.hideCurrent}
-          ${selector}:nth-child(n+${index + 1}) {
+          ${selector}:nth-child(n+${this.index + 1}) {
             translate: ${this.blank};
           }`
       }
@@ -152,8 +154,12 @@ export class SlideHint {
   }
 
   stop() {
-    style1.textContent = ""
-    style2.textContent = ""
+    this.stopped = true
+    if (this.destroyed !== true) {
+      style1.textContent = ""
+      style2.textContent = ""
+    }
+
     const dir = this.index > this.targetIndex ? 0 : 1
     const item = document.querySelector(
       `${this.selector}:nth-child(${this.index + dir})`
@@ -170,7 +176,7 @@ export class SlideHint {
             ? `0 ${y - this.targetY}px`
             : `${x - this.targetX}px`
 
-        animate.to(ghost, { translate }, { ms: 180 }).then(() => {
+        animate.to(ghost, { translate }, 120).then(() => {
           item.style.opacity = 1
           ghost.remove()
           style1.textContent = ""
@@ -180,6 +186,18 @@ export class SlideHint {
     } else {
       ghost.remove()
     }
+  }
+
+  destroy() {
+    if (this.stopped) return
+    this.destroyed = true
+    this.index = this.targetIndex
+    style1.textContent = `
+      ${this.hideCurrent}
+      ${this.selector}:nth-child(n+${this.index + 1}) {
+        translate: ${this.blank};
+      }`
+    this.stop(true)
   }
 }
 
