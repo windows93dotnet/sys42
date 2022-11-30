@@ -554,7 +554,7 @@ legend button:active,
   border-image-slice: 2 fill;
 }
 
-.ui-tabs__tab[aria-selected="true"]::before {
+.ui-tabs__tab[aria-selected="true"]::after {
   content: "";
   position: absolute;
   background-color: var(--ButtonFace);
@@ -578,7 +578,7 @@ ui-tabs:is(:not([side]), [side="top"]) .ui-tabs__tab[aria-selected="true"] {
   border-image-width: auto auto 0 auto;
 }
 
-ui-tabs:is(:not([side]), [side="top"]) .ui-tabs__tab[aria-selected="true"]::before {
+ui-tabs:is(:not([side]), [side="top"]) .ui-tabs__tab[aria-selected="true"]::after {
   bottom: -2px;
   left: -2px;
   right: -2px;
@@ -591,7 +591,7 @@ ui-tabs[side="bottom"] .ui-tabs__tab[aria-selected="true"] {
   border-image-width: 0 auto auto auto;
 }
 
-ui-tabs[side="bottom"] .ui-tabs__tab[aria-selected="true"]::before {
+ui-tabs[side="bottom"] .ui-tabs__tab[aria-selected="true"]::after {
   top: -2px;
   left: -2px;
   right: -2px;
@@ -607,7 +607,7 @@ ui-tabs[side="left"] .ui-tabs__tab[aria-selected="true"] {
   border-image-width: auto 0 auto auto;
 }
 
-ui-tabs[side="left"] .ui-tabs__tab[aria-selected="true"]::before {
+ui-tabs[side="left"] .ui-tabs__tab[aria-selected="true"]::after {
   top: -2px;
   bottom: -2px;
   right: -2px;
@@ -623,20 +623,20 @@ ui-tabs[side="right"] .ui-tabs__tab[aria-selected="true"] {
   border-image-width: auto auto auto 0;
 }
 
-ui-tabs[side="right"] .ui-tabs__tab[aria-selected="true"]::before {
+ui-tabs[side="right"] .ui-tabs__tab[aria-selected="true"]::after {
   top: -2px;
   bottom: -2px;
   left: -2px;
   width: 1px;
 }
 
-ui-tabs:is(:not([side]), [side="top"]) .ui-tabs__tab[aria-selected="true"]:first-of-type::before,
-ui-tabs[side="bottom"] .ui-tabs__tab[aria-selected="true"]:first-of-type::before {
+ui-tabs:is(:not([side]), [side="top"]) .ui-tabs__tab[aria-selected="true"]:first-of-type::after,
+ui-tabs[side="bottom"] .ui-tabs__tab[aria-selected="true"]:first-of-type::after {
   left: 0;
 }
 
-ui-tabs[side="left"] .ui-tabs__tab[aria-selected="true"]:first-of-type::before,
-ui-tabs[side="right"] .ui-tabs__tab[aria-selected="true"]:first-of-type::before {
+ui-tabs[side="left"] .ui-tabs__tab[aria-selected="true"]:first-of-type::after,
+ui-tabs[side="right"] .ui-tabs__tab[aria-selected="true"]:first-of-type::after {
   top: 0;
 }
 

@@ -134,12 +134,12 @@ export class SlideHint {
     })
   }
 
-  enter() {
+  enterDropzone() {
     cancelAnimationFrame(this._raf3)
     this.insideDropzone = true
   }
 
-  leave() {
+  leaveDropzone() {
     this.insideDropzone = false
     style1.textContent = `${this.hideCurrent}`
     this._raf3 = requestAnimationFrame(() => {
