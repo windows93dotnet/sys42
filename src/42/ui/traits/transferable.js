@@ -131,7 +131,7 @@ class Transferable extends Trait {
               this.dropzone.querySelectorAll(this.selector).length
           }
 
-          hint?.enter?.()
+          hint?.enterDropzone?.()
         }
       },
 
@@ -139,7 +139,7 @@ class Transferable extends Trait {
         if (--counter <= 0) {
           counter = 0
           this.dropzone.classList.remove("dragover")
-          hint?.leave?.()
+          hint?.leaveDropzone?.()
         }
       },
 
@@ -203,8 +203,7 @@ class Transferable extends Trait {
         this.dropzone.classList.remove("dragover")
 
         if (e.dataTransfer.dropEffect === "none") {
-          hint?.destroy?.(e)
-          // hint?.revert?.(e)
+          hint?.revert?.(e)
         } else {
           hint?.destroy?.(e)
         }

@@ -25,8 +25,10 @@ export class Tabs extends Component {
         type: "array",
         default: [],
         update() {
-          const max = this.content.length - 1
-          if (this.current > max) this.current = max
+          if (this.content.length > 0) {
+            const max = this.content.length - 1
+            if (this.current > max) this.current = max
+          } else this.current = 0
         },
       },
     },

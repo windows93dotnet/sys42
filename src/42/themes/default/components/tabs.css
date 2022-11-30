@@ -38,7 +38,7 @@ ui-tabs {
   flex: 1 0 auto;
   max-height: 100%;
   max-width: 100%;
-  z-index: 0;
+  isolation: isolate;
 }
 
 .ui-tabs__panels {
@@ -127,7 +127,7 @@ ui-tabs {
   z-index: calc(var(--tabs-max-z) - var(--index));
 }
 
-.ui-tabs__tab::after {
+.ui-tabs__tab::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -141,7 +141,7 @@ ui-tabs {
   background-clip: border-box;
 }
 
-.ui-tabs__tab[aria-selected="true"]::after {
+.ui-tabs__tab[aria-selected="true"]::before {
   clip-path: var(--_clip-path);
 }
 
