@@ -54,7 +54,7 @@ const colors = Object.create(null)
 export function install() {
   const filters = document.createElementNS(NS, "svg")
   filters.id = "windows9x-filters"
-  filters.toggleAttribute("hidden", true)
+  filters.style = "position:absolute;bottom:0;pointer-events:none;"
   filters.setAttribute("aria-hidden", true)
 
   const disabledInset = document.createElementNS(NS, "filter")
