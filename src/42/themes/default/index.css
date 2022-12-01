@@ -27,6 +27,7 @@
 @import "./ui/ui.css";
 @import "./components/dialog.css";
 @import "./components/folder.css";
+@import "./components/grid.css";
 @import "./components/icon.css";
 @import "./components/menu.css";
 @import "./components/player.css";

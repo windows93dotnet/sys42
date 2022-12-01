@@ -37,7 +37,7 @@ test("html", async (t) => {
   t.is(
     test.utils.prettify(app.el.innerHTML),
     `\
-<ui-icon path="/script.js" label="" aria-description="file">
+<ui-icon path="/script.js" aria-description="file">
   <!--[rendered]-->
   <div class="ui-icon__figure" aria-hidden="true">
     <img class="ui-icon__image" fetchpriority="high" decoding="async" src="/42/themes/default/icons/subtype/javascript.png">

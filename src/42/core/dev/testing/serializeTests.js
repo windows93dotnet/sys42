@@ -109,7 +109,7 @@ export default async function serializeTests(options) {
   const config = configure(DEFAULTS, options)
   const { root } = system.testing
   const results = await serializeSuite(root.toJSON(), config)
-  results.suites = sortPath(results.suites, "filename")
+  results.suites = sortPath(results.suites, { key: "filename" })
   if (config.keepIframes) {
     for (const el of system.testing.iframes) el.style.opacity = 1
   } else for (const el of system.testing.iframes) el.remove()

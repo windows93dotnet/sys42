@@ -66,7 +66,7 @@ export default class FileIndex extends Storable {
 
   glob(patterns, options) {
     const paths = glob.locate(this.root, patterns)
-    return options?.sort === false ? paths : sortPath(paths)
+    return options?.sort === false ? paths : sortPath(paths, { stem: true })
   }
 
   isDir(path) {

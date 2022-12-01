@@ -21,8 +21,8 @@ for (const item of planets) {
 }
 
 window.app = await ui({
-  tag: "body.box-fit.box-v",
-  style: { padding: "90px", background: "#aaa" },
+  tag: "body.box-fit.box-v.ground",
+  style: { padding: "90px" },
   // plugins: ["persist"],
   content: [
     {
