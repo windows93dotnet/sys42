@@ -7,6 +7,7 @@ import preinstall from "../preinstall.js"
 import getDirname from "../../core/path/core/getDirname.js"
 import escapeTemplate from "../../core/formats/template/escapeTemplate.js"
 import configure from "../../core/configure.js"
+import toKebabCase from "../../fabric/type/string/case/toKebabCase.js"
 import editor from "./App/editor.js"
 
 // TODO: check if rpc functions can be injecteds
@@ -28,6 +29,7 @@ async function normalizeManifest(manifest, options) {
   }
 
   manifest = configure(manifest, options)
+  manifest.slug ??= toKebabCase(manifest.name)
 
   if (manifest.dir === undefined) {
     if (manifest.manifestPath) {
@@ -64,7 +66,7 @@ async function normalizeManifest(manifest, options) {
 }
 
 function makeSandbox(manifest) {
-  const id = `${manifest.name}_${uid()}`
+  const id = `app__${manifest.slug}--${uid()}`
   manifest.initiator = id
   const { permissions } = manifest
 
@@ -148,7 +150,7 @@ export async function launch(manifestPath, options) {
 
   return dialog({
     id,
-    class: manifest.name,
+    class: `app__${manifest.slug}`,
     style: { width, height },
     label: "{{$dialog.title}}",
     content: {

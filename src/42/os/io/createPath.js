@@ -21,6 +21,7 @@ export default async function createPath(path = "/", options) {
   value = incrementFilename(value, path)
 
   let name = await prompt("Enter the name", {
+    label: options?.folder ? "Create Folder" : "Create File",
     value,
     afterfield: {
       tag: ".message.my-sm",
