@@ -20,11 +20,15 @@ export default async function preinstall(manifest) {
 
   const webmanifest = {
     name: manifest.name,
-    id: `42-${manifest.name}`,
+    id: `42-${manifest.slug}`,
     scope: resolve("."),
     start_url: resolve("."),
-    display_override: ["window-controls-overlay", "minimal-ui"],
     display: "standalone",
+    display_override: [
+      // TODO: experiment with borderless https://github.com/sonkkeli/borderless/blob/main/EXPLAINER.md#proposal
+      "window-controls-overlay", //
+      "minimal-ui",
+    ],
     theme_color: window
       .getComputedStyle(document.documentElement)
       .getPropertyValue("--panel-bg"),
