@@ -105,7 +105,7 @@ function combineRect(rect1, rect2) {
   return rect1
 }
 
-const popup = rpc(
+export const popup = rpc(
   async function popup(def, ctx, rect, meta) {
     def.positionable = {
       preset: def.inMenuitem && !def.inMenubar ? "menuitem" : "popup",
