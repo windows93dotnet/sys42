@@ -20,6 +20,7 @@ import hash from "../fabric/type/any/hash.js"
 import getType from "../fabric/type/any/getType.js"
 import inTop from "../core/env/realm/inTop.js"
 import merge from "../fabric/type/object/merge.js"
+import segmentize from "../fabric/type/string/segmentize.js"
 import { handleEffect } from "../core/dt/dataTransferEffects.js"
 import ALLOWED_HTML_ATTRIBUTES from "../fabric/constants/ALLOWED_HTML_ATTRIBUTES.js"
 import ALLOWED_SVG_ATTRIBUTES from "../fabric/constants/ALLOWED_SVG_ATTRIBUTES.js"
@@ -178,14 +179,15 @@ export function normalizeTokens(tokens, ctx, options) {
   for (const token of tokens) {
     if (token.value === undefined) continue
 
-    let loc = resolveScope(...findScope(ctx, token.value), ctx)
+    let loc
 
     if (options?.specials) {
-      for (const special of options.specials) {
-        if (special === loc.split("/")[1]) {
-          loc = resolveScope(ctx.scope, token.value)
-        }
-      }
+      const segment = segmentize(token.value, [".", "/"])[0]
+      loc = options.specials.includes(segment)
+        ? resolveScope(ctx.scope, token.value)
+        : resolveScope(...findScope(ctx, token.value), ctx)
+    } else {
+      loc = resolveScope(...findScope(ctx, token.value), ctx)
     }
 
     if (token.type === "key") {
