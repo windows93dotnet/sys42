@@ -23,16 +23,6 @@
       {
         scope: "desktop",
         tag: "main#desktop.desktop",
-        // on: [
-        //   {
-        //     "selector": 'ui-icon[aria-description="folder"]',
-        //     "dblclick || Enter || Space": "{{io.launchFolder(target.path)}}",
-        //   },
-        //   {
-        //     "selector": 'ui-icon[aria-description="file"]',
-        //     "dblclick || Enter || Space": "{{io.launchFile(target.path)}}",
-        //   },
-        // ],
         content: [
           {
             tag: "ui-folder.box-fit.scroll-auto",
@@ -70,7 +60,8 @@
     },
   })
 
-  io.launchFolder("/tests/fixtures/formats/audio/")
+  io.launchFolder("/tests/fixtures/formats/")
+  // io.launchFolder("/tests/fixtures/formats/audio/")
   // io.launchFile("/tests/fixtures/formats/example.html")
   // io.launchFile("/tests/fixtures/formats/video/example.mp4")
   // io.launchFile("/tests/fixtures/formats/example.json")

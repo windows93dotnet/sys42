@@ -126,9 +126,11 @@ export class Dialog extends Component {
   }
 
   activate() {
-    for (const item of document.querySelectorAll("ui-dialog")) {
+    for (const item of document.querySelectorAll(`ui-dialog:not(${this.id})`)) {
       item.active = false
     }
+
+    if (this.active) return
 
     this.active = true
     this.style.zIndex = maxZIndex(zIndexSector) + 1
