@@ -40,17 +40,17 @@ export class Explorer extends Component {
     },
 
     on: [
-      {
-        "stop": true,
-        "selector": 'ui-icon[aria-description="folder"]',
-        "dblclick || Enter": "{{go(target.path)}}",
-      },
-      {
-        "stop": true,
-        "selector": 'ui-icon[aria-description="file"]',
-        "dblclick || Enter":
-          "{{isPicker ? pick(target.path) : open(target.path)}}",
-      },
+      // {
+      //   "stop": true,
+      //   "selector": 'ui-icon[aria-description="folder"]',
+      //   "dblclick || Enter": "{{go(target.path)}}",
+      // },
+      // {
+      //   "stop": true,
+      //   "selector": 'ui-icon[aria-description="file"]',
+      //   "dblclick || Enter":
+      //     "{{isPicker ? pick(target.path) : open(target.path)}}",
+      // },
       {
         "Alt+Up": "{{folderUp()}}",
       },

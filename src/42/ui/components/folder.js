@@ -5,7 +5,7 @@ import io from "../../io.js"
 import normalizeDirname from "../../core/path/utils/normalizeDirname.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
 import debounce from "../../fabric/type/function/debounce.js"
-import dt from "../../core/dt.js"
+// import dt from "../../core/dt.js"
 
 const { indexOf } = Array.prototype
 
@@ -93,46 +93,46 @@ export class Folder extends Component {
       },
     },
 
-    dropzone: true,
+    // dropzone: true,
     on: [
       // drag n drop
       // ===========
-      {
-        async drop(e) {
-          const { files, folders, paths } = await dt.import(e)
-          if (paths) io.movePath(paths, this.el.path)
-          else if (files || folders) {
-            const fs = await import("../../core/fs.js").then((m) => m.default)
-            const undones = []
+      // {
+      //   async drop(e) {
+      //     const { files, folders, paths } = await dt.import(e)
+      //     if (paths) io.movePath(paths, this.el.path)
+      //     else if (files || folders) {
+      //       const fs = await import("../../core/fs.js").then((m) => m.default)
+      //       const undones = []
 
-            for (const path of folders) {
-              undones.push(fs.writeDir(this.el.path + path))
-            }
+      //       for (const path of folders) {
+      //         undones.push(fs.writeDir(this.el.path + path))
+      //       }
 
-            for (const [path, file] of Object.entries(files)) {
-              undones.push(fs.write(this.el.path + path, file))
-            }
+      //       for (const [path, file] of Object.entries(files)) {
+      //         undones.push(fs.write(this.el.path + path, file))
+      //       }
 
-            await Promise.all(undones)
-          }
-        },
-      },
-      {
-        selector: "ui-icon",
-        pointerdown(e, target) {
-          if (e.button === 2) this.el.autoSelect(target.path)
-        },
-        dragstart(e, target) {
-          this.el.autoSelect(target.path)
-          dt.export(e, { paths: this.el.selection })
-        },
-        // drag(e) {
-        //   console.log(e.x, e.y)
-        // },
-        // async dragend(e) {
-        //   console.log("dragend", e.dataTransfer.dropEffect)
-        // },
-      },
+      //       await Promise.all(undones)
+      //     }
+      //   },
+      // },
+      // {
+      //   selector: "ui-icon",
+      //   pointerdown(e, target) {
+      //     if (e.button === 2) this.el.autoSelect(target.path)
+      //   },
+      //   dragstart(e, target) {
+      //     this.el.autoSelect(target.path)
+      //     dt.export(e, { paths: this.el.selection })
+      //   },
+      //   // drag(e) {
+      //   //   console.log(e.x, e.y)
+      //   // },
+      //   // async dragend(e) {
+      //   //   console.log("dragend", e.dataTransfer.dropEffect)
+      //   // },
+      // },
 
       // keyboard navigation
       // ===================
@@ -147,14 +147,14 @@ export class Folder extends Component {
 
       // icon actions
       // ============
-      // {
-      //   "selector": 'ui-icon[aria-description="file"]',
-      //   "dblclick || Enter": "{{io.openFile(target)}}",
-      // },
-      // {
-      //   "selector": 'ui-icon[aria-description="folder"]',
-      //   "dblclick || Enter": "{{io.openFolder(target.path)}}",
-      // },
+      {
+        "selector": 'ui-icon[aria-description="file"]',
+        "dblclick || Enter || Space": "{{io.launchFile(target.path)}}",
+      },
+      {
+        "selector": 'ui-icon[aria-description="folder"]',
+        "dblclick || Enter || Space": "{{io.launchFolder(target.path)}}",
+      },
       {
         prevent: true,
         [io.createFolder.meta.shortcut]: "{{io.createFolder(path)}}",
@@ -202,7 +202,7 @@ export class Folder extends Component {
         scope: "items",
         each: {
           tag: "ui-icon",
-          draggable: true,
+          // draggable: true,
           aria: { selected: "{{includes(../../selection, .)}}" },
           autofocus: "{{@first}}",
           tabIndex: "{{@first ? 0 : -1}}",
