@@ -5,7 +5,7 @@ import loadSVG from "../../core/load/loadSVG.js"
 
 const inlineds = new Set([])
 const sprites = create("svg#picto-sprites", {
-  hidden: true,
+  style: { display: "none" },
   aria: { hidden: true },
 })
 document.documentElement.append(sprites)
