@@ -31,6 +31,7 @@ export class SlideHint {
     this.id = trait.dropzone?.id
     this.selector = trait.selector
     this.orientation = trait.orientation
+    this.freeAxis = trait.freeAxis
     this.insideDropzone = false
 
     this.dynamicStyle = document.createElement("style")
@@ -151,7 +152,7 @@ export class SlideHint {
   }
 
   update(e) {
-    if (this.insideDropzone) {
+    if (this.insideDropzone && this.freeAxis !== true) {
       if (this.orientation === "vertical") {
         if (e.y) this.ghost.style.translate = `0 ${e.y - this.offsetY}px`
       } else if (e.x) this.ghost.style.translate = `${e.x - this.offsetX}px`

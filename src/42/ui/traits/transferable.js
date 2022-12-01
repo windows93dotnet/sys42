@@ -12,6 +12,7 @@ const DEFAULTS = {
   selector: ":scope > *",
   dropzone: undefined,
   orientation: undefined,
+  freeAxis: undefined,
   effects: ["copy", "move", "link"],
   silentEffectCheck: false,
   fileSystemHandle: false,
@@ -22,21 +23,6 @@ const configure = settings("ui.trait.transferable", DEFAULTS)
 
 let hint
 let originHint
-
-/* element
-========== */
-function exportElement(target) {
-  target.id ||= uid()
-  return { type: "element", id: target.id }
-}
-
-function importElement({ data, effect }, { dropzone }) {
-  if (data?.type === "element") {
-    let el = document.querySelector(`#${data.id}`)
-    if (effect === "copy") el = el.cloneNode(true)
-    dropzone.append(el)
-  }
-}
 
 class Transferable extends Trait {
   constructor(el, options) {
@@ -49,7 +35,10 @@ class Transferable extends Trait {
 
     this.config = configure(options)
 
-    let effects
+    const effects = this.list
+      ? options.effects ?? ["copy", "move"]
+      : this.config.effects
+
     this.dropzone = this.config.dropzone
       ? ensureElement(this.config.dropzone)
       : el
@@ -59,20 +48,23 @@ class Transferable extends Trait {
 
     this.isSorting = false
 
+    this.freeAxis = this.config.freeAxis
+
     this.orientation =
-      this.config.orientation ??
-      this.dropzone.getAttribute("aria-orientation") ??
-      "horizontal"
+      this.config.orientation ?? this.dropzone.getAttribute("aria-orientation")
+
+    if (!this.orientation) {
+      this.orientation = "horizontal"
+      this.freeAxis ??= true
+    }
 
     this.selector = ensureScopeSelector(this.config.selector, this.dropzone)
 
-    if (this.list) {
-      effects = options.effects ?? ["copy", "move"]
+    this.indexChange = this.config.indexChange ?? noop
 
-      this.indexChange = this.config.indexChange ?? noop
-
-      this.import = function ({ data }, { index }) {
-        if (data?.type === "list") {
+    this.import = function ({ data, effect }, { index, dropzone, x, y }) {
+      if (data?.type === "layout") {
+        if (this.list) {
           if (index === undefined) {
             index = this.list.length
           }
@@ -89,22 +81,38 @@ class Transferable extends Trait {
           }
 
           this.indexChange(index)
+        } else {
+          import("../components/dialog.js").then(({ dialog }) => {
+            const { state } = data
+            state.x = x - 64
+            state.y = y - 16
+            console.log(state)
+            dialog(state)
+          })
+        }
+      } else if (data?.type === "element") {
+        let el = document.querySelector(`#${data.id}`)
+        if (el) {
+          if (effect === "copy") el = el.cloneNode(true)
+          dropzone.append(el)
         }
       }
+    }
 
-      this.export = function ({ index }) {
+    this.export = function ({ index, target }) {
+      if (this.list) {
         const state = this.list.at(index)
-        return { type: "list", id, index, state }
+        return { type: "layout", id, index, state }
       }
 
-      this.removeItem = (index) => {
+      target.id ||= uid()
+      return { type: "element", id: target.id }
+    }
+
+    this.removeItem = (index) => {
+      if (this.list) {
         this.list.splice(index, 1)
       }
-    } else {
-      effects = this.config.effects
-      this.export = this.config.export ?? exportElement
-      this.import = this.config.import ?? importElement
-      this.removeItem = this.config.removeItem ?? noop
     }
 
     let counter = 0
@@ -167,14 +175,15 @@ class Transferable extends Trait {
         this.dropzone.classList.remove("dragover")
 
         const res = dt.import(e, this.config)
+
         if (hint) {
           const { index } = hint
-          this.import(res, { index })
+          this.import(res, { index, dropzone: this.dropzone, x: e.x, y: e.y })
           hint?.stop?.(e)
         } else {
           const item = e.target.closest(this.selector)
           const index = getNewIndex(e.x, e.y, item, this.orientation)
-          this.import(res, { index })
+          this.import(res, { index, dropzone: this.dropzone, x: e.x, y: e.y })
         }
       },
     })
@@ -226,12 +235,10 @@ class Transferable extends Trait {
           originHint = undefined
         }
 
-        if (e.dataTransfer.dropEffect === "none") {
-          hint?.revert?.(e)
-        } else {
-          hint?.destroy?.(e)
-        }
+        const { dropEffect } = e.dataTransfer
 
+        if (dropEffect === "move") hint?.destroy?.(e)
+        else hint?.revert?.(e)
         hint = undefined
 
         if (this.isSorting) {
@@ -239,7 +246,7 @@ class Transferable extends Trait {
           return
         }
 
-        if (e.dataTransfer.dropEffect === "move") {
+        if (dropEffect === "move") {
           const index = getIndex(target)
           this.removeItem(index)
         }

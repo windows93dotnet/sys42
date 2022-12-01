@@ -20,8 +20,6 @@ for (const item of planets) {
   })
 }
 
-// planets[0].content = planets[0].description
-
 window.app = await ui({
   tag: "body.box-fit.box-v",
   style: { padding: "90px", background: "#aaa" },
@@ -106,6 +104,22 @@ window.app = await ui({
         },
       ],
     },
+    {
+      tag: ".desktop.bd",
+      transferable: true,
+      // content: [
+      //   { tag: "button.bd", content: "one" },
+      //   { tag: "button.bd", content: "two" },
+      // ],
+    },
+    // {
+    //   tag: ".desktop.bd",
+    //   transferable: true,
+    //   content: [
+    //     { tag: "button.bd", content: "three" },
+    //     { tag: "button.bd", content: "four" },
+    //   ],
+    // },
   ],
 
   state,
