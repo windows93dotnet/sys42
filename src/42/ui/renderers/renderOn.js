@@ -61,7 +61,7 @@ function setDialogOpener(el, ctx, key, def) {
   return async () => {
     def.opener = el.id
     await import("../components/dialog.js") //
-      .then((m) => m.default(def, ctx))
+      .then(({ dialog }) => dialog(def, ctx))
   }
 }
 
@@ -81,7 +81,7 @@ function setPopupOpener(el, ctx, key, def) {
     }
 
     await import("../popup.js") //
-      .then((m) => m.default(el, def, ctx))
+      .then(({ popup }) => popup(el, def, ctx))
   }
 }
 

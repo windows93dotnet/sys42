@@ -5,7 +5,8 @@ import io from "../../io.js"
 import normalizeDirname from "../../core/path/utils/normalizeDirname.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
 import debounce from "../../fabric/type/function/debounce.js"
-// import dt from "../../core/dt.js"
+import contextmenu from "../invocables/contextmenu.js"
+import dt from "../../core/dt.js"
 
 const { indexOf } = Array.prototype
 
@@ -117,22 +118,22 @@ export class Folder extends Component {
       //     }
       //   },
       // },
-      // {
-      //   selector: "ui-icon",
-      //   pointerdown(e, target) {
-      //     if (e.button === 2) this.el.autoSelect(target.path)
-      //   },
-      //   dragstart(e, target) {
-      //     this.el.autoSelect(target.path)
-      //     dt.export(e, { paths: this.el.selection })
-      //   },
-      //   // drag(e) {
-      //   //   console.log(e.x, e.y)
-      //   // },
-      //   // async dragend(e) {
-      //   //   console.log("dragend", e.dataTransfer.dropEffect)
-      //   // },
-      // },
+      {
+        selector: "ui-icon",
+        pointerdown(e, target) {
+          if (e.button === 2) this.el.autoSelect(target.path)
+        },
+        dragstart(e, target) {
+          this.el.autoSelect(target.path)
+          dt.export(e, { paths: this.el.selection })
+        },
+        //   // drag(e) {
+        //   //   console.log(e.x, e.y)
+        //   // },
+        //   // async dragend(e) {
+        //   //   console.log("dragend", e.dataTransfer.dropEffect)
+        //   // },
+      },
 
       // keyboard navigation
       // ===================
@@ -162,34 +163,9 @@ export class Folder extends Component {
         [io.renameFile.meta.shortcut]: "{{io.renameFile(selection)}}",
       },
       {
-        selector: "ui-icon",
         disrupt: true,
-        contextmenu: {
-          popup: {
-            tag: "ui-menu",
-            closeEvents: "pointerdown",
-            content: [
-              "---",
-              {
-                ...io.deleteFile.meta,
-                click: "{{io.deleteFile(selection)}}",
-              },
-              "---",
-              {
-                ...io.renameFile.meta,
-                click: "{{io.renameFile(selection)}}",
-              },
-            ],
-          },
-        },
+        contextmenu: "{{displayContextmenu(e, target)}}",
       },
-    ],
-
-    contextmenu: [
-      { ...io.createFolder.meta, click: "{{io.createFolder(path)}}" },
-      { ...io.createFile.meta, click: "{{io.createFile(path)}}" },
-      "---",
-      { label: "Select all", click: "{{selectable.selectAll()}}" }, //
     ],
 
     computed: {
@@ -202,7 +178,7 @@ export class Folder extends Component {
         scope: "items",
         each: {
           tag: "ui-icon",
-          // draggable: true,
+          draggable: true,
           aria: { selected: "{{includes(../../selection, .)}}" },
           autofocus: "{{@first}}",
           tabIndex: "{{@first ? 0 : -1}}",
@@ -210,6 +186,33 @@ export class Folder extends Component {
         },
       },
     },
+  }
+
+  displayContextmenu(e, target) {
+    const icon = target.closest("ui-icon")
+    if (icon) {
+      let menu
+      let hasFolders = false
+      let hasFiles = false
+      for (const path of this.selection) {
+        if (path.endsWith("/")) hasFolders = true
+        else hasFiles = true
+      }
+
+      if (hasFolders) {
+        menu = hasFiles ? io.fileContextMenu : io.folderContextMenu
+      } else menu = io.fileContextMenu
+
+      contextmenu(icon, e, menu, this.ctx)
+    } else {
+      const menu = [
+        { ...io.createFolder.meta, click: "{{io.createFolder(path)}}" },
+        { ...io.createFile.meta, click: "{{io.createFile(path)}}" },
+        "---",
+        { label: "Select all", click: "{{selectable.selectAll()}}" }, //
+      ]
+      contextmenu(this, e, menu, this.ctx)
+    }
   }
 
   autoSelect(path) {

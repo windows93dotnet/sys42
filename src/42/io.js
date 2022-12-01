@@ -78,6 +78,22 @@ renameFile.meta = {
 
 renameFolder.meta = { ...renameFile.meta }
 
+const fileContextMenu = [
+  { ...launchFile.meta, click: "{{io.launchFile(selection)}}" },
+  "---",
+  { ...deleteFile.meta, click: "{{io.deleteFile(selection)}}" },
+  "---",
+  { ...renameFile.meta, click: "{{io.renameFile(selection)}}" },
+]
+
+const folderContextMenu = [
+  { ...launchFolder.meta, click: "{{io.launchFolder(selection)}}" },
+  "---",
+  { ...deleteFolder.meta, click: "{{io.deleteFolder(selection)}}" },
+  "---",
+  { ...renameFile.meta, click: "{{io.renameFile(selection)}}" },
+]
+
 export default Object.assign(io, {
   listenImport,
   createFile,
@@ -89,4 +105,7 @@ export default Object.assign(io, {
   renameFile,
   renameFolder,
   movePath,
+
+  fileContextMenu,
+  folderContextMenu,
 })

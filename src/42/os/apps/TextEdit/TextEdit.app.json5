@@ -14,6 +14,7 @@
         accept: [
           "text/*",
           "application/json",
+          "application/json5",
           "application/rss+xml",
           "application/xml",
         ],
