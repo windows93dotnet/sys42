@@ -6,8 +6,8 @@ await themeManager.ready // TODO: remove this
 
 // [1] @read https://www.stefanjudis.com/blog/aria-selected-and-when-to-use-it/
 
-const TREEITEM_PARENTS = new Set(["tree", "treegrid", "group"])
-const GRIDCELL_PARENTS = new Set(["grid", "row"])
+// const TREEITEM_PARENTS = new Set(["tree", "treegrid", "group"])
+// const GRIDCELL_PARENTS = new Set(["grid", "row"])
 
 class Icon extends Component {
   static definition = {
@@ -32,7 +32,6 @@ class Icon extends Component {
       },
       label: {
         type: "boolean",
-        reflect: true,
         default: true,
       },
     },
@@ -78,20 +77,20 @@ class Icon extends Component {
     },
   }
 
-  async setup() {
-    const parentRole = this.parentNode.getAttribute("role")
-    if (TREEITEM_PARENTS.has(parentRole)) {
-      this.setAttribute("role", "treeitem")
-      if (!this.hasAttribute("aria-selected")) {
-        this.setAttribute("aria-selected", "false") // [1]
-      }
-    } else if (GRIDCELL_PARENTS.has(parentRole)) {
-      this.setAttribute("role", "gridcell")
-      if (!this.hasAttribute("aria-selected")) {
-        this.setAttribute("aria-selected", "false") // [1]
-      }
-    }
-  }
+  // async setup() {
+  //   const parentRole = this.parentNode.getAttribute("role")
+  //   if (TREEITEM_PARENTS.has(parentRole)) {
+  //     this.setAttribute("role", "treeitem")
+  //     if (!this.hasAttribute("aria-selected")) {
+  //       this.setAttribute("aria-selected", "false") // [1]
+  //     }
+  //   } else if (GRIDCELL_PARENTS.has(parentRole)) {
+  //     this.setAttribute("role", "gridcell")
+  //     if (!this.hasAttribute("aria-selected")) {
+  //       this.setAttribute("aria-selected", "false") // [1]
+  //     }
+  //   }
+  // }
 
   getInfos(path) {
     if (path === undefined) return

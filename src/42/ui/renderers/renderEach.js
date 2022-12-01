@@ -6,7 +6,7 @@ import NodesRange from "../../fabric/range/NodesRange.js"
 import removeRange from "./removeRange.js"
 import register from "../register.js"
 import Canceller from "../../fabric/classes/Canceller.js"
-import { normalizeDefNoCtx } from "../normalize.js"
+import { normalizeDefNoCtx, objectifyDef } from "../normalize.js"
 import { arrayDiff } from "../../fabric/json/diff.js"
 import renderAnimation from "./renderAnimation.js"
 
@@ -14,14 +14,27 @@ const PLACEHOLDER = "[each]"
 const ITEM = "[#]"
 
 function cancelExtraItems(i, cancels) {
-  const x = i
+  const newLength = i
   for (let l = cancels.length; i < l; i++) cancels[i]("renderEach removed")
-  cancels.length = x
+  cancels.length = newLength
 }
 
 export default function renderEach(def, ctx) {
   const eachDef = normalizeDefNoCtx(def.each)
   def = omit(def, ["each"])
+
+  let renderFunction
+
+  if (typeof eachDef === "function") {
+    renderFunction = eachDef
+  } else if (typeof eachDef?.render === "function") {
+    const eachDefRender = eachDef.render
+    delete eachDef.render
+    renderFunction = (...args) => ({ ...eachDef, ...eachDefRender(...args) })
+  } else if (eachDef?.render === true) {
+    delete eachDef.render
+    renderFunction = (item) => ({ ...eachDef, ...objectifyDef(item) })
+  }
 
   const el = render(def, ctx)
 
@@ -171,6 +184,10 @@ export default function renderEach(def, ctx) {
       cancels.push(cancel)
 
       let itemDef = eachDef
+
+      if (renderFunction) {
+        itemDef = renderFunction(array[i], i, array)
+      }
 
       if (addedElements.length > 0) {
         const recycled = addedElements.pop()

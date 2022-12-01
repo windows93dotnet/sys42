@@ -78,6 +78,7 @@ export default function render(def, ctx, options) {
   }
 
   if (def?.tag?.startsWith("ui-")) {
+    // TODO: fix tags like "div > ui-foo"
     delete def.attrs
     if (options?.step !== undefined) {
       ctx = { ...ctx }
