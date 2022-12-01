@@ -2426,3 +2426,50 @@ async function makeSuite(name, def) {
 await makeSuite("actions")
 await makeSuite("actions-props", { props: { foo: ["foo"] } })
 await makeSuite("actions-computed", { computed: { bar: "{{['bar']}}" } })
+
+/* ---- */
+
+Component.define(
+  class extends Component {
+    static definition = {
+      tag: "ui-t-event-in-scope",
+      props: { text: "---" },
+      on: [
+        {
+          selector: "button",
+          click: "{{foo(e)}}",
+        },
+      ],
+
+      content: {
+        tag: "button",
+        content: "{{text}}",
+      },
+    }
+
+    foo(e) {
+      this.text = e?.type
+    }
+  }
+)
+
+test("component events inside scope", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest(), {
+      content: {
+        scope: "bar",
+        tag: "ui-t-event-in-scope",
+      },
+    })
+  )
+
+  const cpn = app.el.querySelector("ui-t-event-in-scope")
+  const el = cpn.querySelector("button")
+
+  t.is(el.textContent, "---")
+
+  el.click()
+  await app
+
+  t.is(el.textContent, "click")
+})
