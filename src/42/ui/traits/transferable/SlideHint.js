@@ -25,6 +25,10 @@ export function getNewIndex(X, Y, item, orientation) {
 
 export class SlideHint {
   constructor(trait, { x, y, target, index }) {
+    this.trait = trait
+    this.onabort = () => this.destroy()
+    this.trait.cancel.signal.addEventListener("abort", this.onabort)
+
     this.index = index
     this.targetIndex = index
 
@@ -188,13 +192,13 @@ export class SlideHint {
 
         animate.to(ghost, { translate }, 120).then(() => {
           item.style.opacity = 1
-          ghost.remove()
-          this.dynamicStyle.remove()
-          this.allItemsStyle.remove()
+          this.stopped = false
+          this.destroy()
         })
       })
     } else {
-      ghost.remove()
+      this.stopped = false
+      this.destroy()
     }
   }
 
@@ -207,11 +211,12 @@ export class SlideHint {
       ${this.selector}:nth-child(n+${this.index + 1}) {
         translate: ${this.blank};
       }`
-    this.stop(true)
+    this.stop()
   }
 
   destroy() {
     if (this.stopped) return
+    this.trait.cancel.signal.removeEventListener("abort", this.onabort)
     this.ghost.remove()
     this.dynamicStyle.remove()
     this.allItemsStyle.remove()

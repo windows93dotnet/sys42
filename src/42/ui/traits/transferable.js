@@ -121,7 +121,10 @@ class Transferable extends Trait {
     /* dropzone
       =========== */
 
+    const { signal } = this.cancel
+
     listen(this.dropzone, {
+      signal,
       prevent: true,
 
       dragover: (e) => {
@@ -194,6 +197,7 @@ class Transferable extends Trait {
       ================== */
 
     listen(this.el, {
+      signal,
       selector: this.selector,
 
       pointerdown(e, target) {
