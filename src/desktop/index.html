@@ -17,45 +17,22 @@
   // import disk from "../42/core/disk.js"
   // await disk.reinstall()
 
-  /* --- video blob test --- */
-  const videoBlobTest = 0
-  if (videoBlobTest) {
-    try {
-      await navigator.serviceWorker?.register("/42.sw.js", { type: "module" })
-      await navigator.serviceWorker.ready
-    } catch {}
-
-    const fs = await import("../42/core/fs.js").then((m) => m.default)
-    const http = await import("../42/core/http.js").then((m) => m.default)
-
-    try {
-      await fs.delete("/example.mp4")
-    } catch {}
-
-    await http
-      .source("/tests/fixtures/formats/video/example.mp4")
-      .pipeTo(fs.sink("/example.mp4"))
-
-    io.launchFile("/example.mp4")
-  }
-  /* ----- */
-
   os.desktop = await ui({
     tag: "body.box-fit.box-v._debug",
     content: [
       {
         scope: "desktop",
         tag: "main#desktop.desktop",
-        on: [
-          {
-            "selector": 'ui-icon[aria-description="folder"]',
-            "dblclick || Enter || Space": "{{io.launchFolder(target.path)}}",
-          },
-          {
-            "selector": 'ui-icon[aria-description="file"]',
-            "dblclick || Enter || Space": "{{io.launchFile(target.path)}}",
-          },
-        ],
+        // on: [
+        //   {
+        //     "selector": 'ui-icon[aria-description="folder"]',
+        //     "dblclick || Enter || Space": "{{io.launchFolder(target.path)}}",
+        //   },
+        //   {
+        //     "selector": 'ui-icon[aria-description="file"]',
+        //     "dblclick || Enter || Space": "{{io.launchFile(target.path)}}",
+        //   },
+        // ],
         content: [
           {
             tag: "ui-folder.box-fit.scroll-auto",
@@ -63,11 +40,6 @@
             // glob: true,
           },
         ],
-      },
-      videoBlobTest && {
-        tag: "video",
-        src: "/example.mp4",
-        controle: true,
       },
       {
         scope: "taskbar",
