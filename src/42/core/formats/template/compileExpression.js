@@ -102,6 +102,8 @@ function compileToken(i, list, tokens, options) {
 
   if (tokens[i + 1]?.type === "assignment") {
     list.at(-1).path = value
+      .replaceAll("outerHTML", "")
+      .replaceAll("innerHTML", "")
   }
 
   return i

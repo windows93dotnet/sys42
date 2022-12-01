@@ -64,7 +64,7 @@ test.tasks(
     task({
       title: "ctx.trusted attack",
       description:
-        "XSS Fail because ctx.trusted is not transfered to top realm",
+        "XSS Fail because ctx.trusted is not transferred to top realm",
       def: [
         {
           // dummy dialog to force top ipc response
@@ -131,7 +131,7 @@ dialog(
 
   (test, { title, def, timeout: ms, working, trusted, description }) => {
     ms ??= 2000
-    test.ui(title, async (t, { decay, dest }) => {
+    test.ui("sandbox", title, async (t, { decay, dest }) => {
       t.timeout(ms + 100)
 
       const app = decay(ui(dest({ connect: true }), def, { trusted }))
@@ -174,6 +174,66 @@ dialog(
       }
 
       t.log(res)
+    })
+  }
+)
+
+test.tasks(
+  [
+    task({
+      title: "target.innerHTML",
+      def: {
+        on: {
+          render: "{{target.innerHTML = '<img/src/onerror=attack()>'}}",
+        },
+      },
+    }),
+
+    task({
+      title: "target.outerHTML",
+      def: {
+        on: {
+          render: "{{target.outerHTML = '<img/src/onerror=attack()>'}}",
+        },
+      },
+    }),
+
+    task({
+      title: "entry innerHTML",
+      def: {
+        tag: "ui-tabs",
+        content: [
+          {
+            label: "",
+            content: [
+              {
+                tag: "em",
+                entry: "foo",
+                on: {
+                  render: "{{foo.innerHTML = '<img/src/onerror=attack()>'}}",
+                },
+              },
+            ],
+          },
+        ],
+      },
+    }),
+  ],
+
+  (test, { title, def, timeout: ms, trusted }) => {
+    ms ??= 2000
+    test.ui("xss", title, async (t, { decay, dest }) => {
+      t.timeout(ms + 100)
+
+      globalThis.attack = function () {
+        t.fail("attack was called")
+      }
+
+      await decay(ui(dest({ connect: true }), def, { trusted }))
+
+      await t.sleep(30)
+
+      t.pass()
     })
   }
 )
