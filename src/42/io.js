@@ -50,12 +50,12 @@ createFolder.meta = {
 }
 
 deleteFile.meta = {
-  label: "Delete File…",
+  label: "Delete File",
   shortcut: "Del",
 }
 
 deleteFolder.meta = {
-  label: "Delete Folder…",
+  label: "Delete Folder",
   shortcut: "Del",
 }
 
