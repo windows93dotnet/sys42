@@ -86,7 +86,7 @@ export class Explorer extends Component {
                 content: [
                   {
                     label: "Select all",
-                    click: "{{folder.selectable.selectAll()}}",
+                    click: "{{folder.selectAll()}}",
                   },
                 ],
               },
