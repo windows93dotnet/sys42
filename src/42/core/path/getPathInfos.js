@@ -1,5 +1,4 @@
 import memoize from "../../fabric/type/function/memoize.js"
-import assertPath from "./assertPath.js"
 import pick from "../../fabric/type/object/pick.js"
 import parseMimetype from "../../fabric/type/file/parseMimetype.js"
 import parsePath from "./core/parsePath.js"
@@ -20,7 +19,6 @@ const urlKeys = [
 ]
 
 const getPathInfos = memoize((filename, options) => {
-  assertPath(filename)
   const index = options?.index
 
   const url = new URL(filename, "file:")
@@ -29,10 +27,6 @@ const getPathInfos = memoize((filename, options) => {
   out.isURI = out.protocol !== "file:"
   out.isDir = !out.isURI && out.pathname.endsWith("/")
   out.isFile = !out.isURI && !out.isDir
-
-  out.filename = decodeURI(
-    index && out.isDir ? `${out.pathname}${index}` : out.pathname
-  )
 
   if (index && out.isDir) {
     out.filename = decodeURI(`${out.pathname}${index}`)
