@@ -1,12 +1,8 @@
 ui-grid {
   flex: 1 0 auto;
-  min-height: 0;
   overflow-y: auto;
   display: block;
   /* scrollbar-gutter: stable both-edges; */
-
-  position: relative;
-  padding: var(--unit-md) 0;
 }
 
 /* ui-grid > div[role="row"] {

@@ -1,15 +1,11 @@
 ui-folder {
   flex: 1;
-  display: block;
-  overflow-y: auto;
-  /* scrollbar-gutter: stable; */
-
-  position: relative;
-  padding: var(--unit-md) 0;
+  display: flex;
+  flex-direction: column;
 }
 
-ui-folder:focus {
-  outline: none;
+ui-folder > ui-grid {
+  padding: var(--unit-md) 0;
 }
 
 ui-explorer {

@@ -26,7 +26,7 @@ export class Grid extends Component {
     },
 
     props: {
-      template: {
+      item: {
         type: "object",
       },
       selection: {
@@ -35,7 +35,6 @@ export class Grid extends Component {
       },
       multiselectable: {
         type: "boolean",
-        fromView: true,
         default: true,
       },
       content: {
@@ -106,7 +105,7 @@ export class Grid extends Component {
     this.ctx.signal.addEventListener("abort", () => ro.disconnect())
   }
 
-  render({ template }) {
+  render({ itemTemplate }) {
     return [
       {
         scope: "content",
@@ -114,9 +113,8 @@ export class Grid extends Component {
         each: {
           role: "gridcell",
           aria: { selected: "{{includes(../../../selection, .)}}" },
-          // autofocus: "{{@first}}",
           tabIndex: "{{@first ? 0 : -1}}",
-          ...(template ?? { render: true }),
+          ...(itemTemplate ?? { render: true }),
         },
       },
     ]
