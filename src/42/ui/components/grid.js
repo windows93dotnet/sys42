@@ -41,9 +41,7 @@ export class Grid extends Component {
         type: "array",
         default: [],
         update(initial) {
-          if (!initial) {
-            this.#refreshIconPerLine()
-          }
+          if (!initial) requestAnimationFrame(() => this.#refreshIconPerLine())
         },
       },
     },

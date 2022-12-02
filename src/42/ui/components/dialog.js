@@ -14,7 +14,22 @@ import postrenderAutofocus from "../postrenderAutofocus.js"
 
 const _axis = Symbol("axis")
 
-const zIndexSector = ":root > :is(ui-dialog, ui-menu)"
+const rootSelector = ":is(:root, ui-workspace[active])"
+
+const zIndexSector = `${rootSelector} > :is(ui-dialog, ui-menu)`
+
+function getHeaderOffset(el) {
+  const styles = getComputedStyle(el)
+  const paddingTop = Number.parseInt(styles.paddingTop, 10)
+  const borderTopWidth = Number.parseInt(styles.borderTopWidth, 10)
+  return paddingTop + borderTopWidth
+}
+
+function activateIfFocused() {
+  queueTask(() => {
+    if (this.el?.contains(document.activeElement)) this.el.activate()
+  })
+}
 
 export class Dialog extends Component {
   static definition = {
@@ -56,15 +71,10 @@ export class Dialog extends Component {
     },
 
     on: [
-      { "pointerdown || focusin": "{{activate()}}" },
+      { pointerdown: "{{activate()}}" },
+      { focusin: activateIfFocused },
       globalThis,
-      {
-        "blur || uiiframeblur"() {
-          queueTask(() => {
-            if (this.el?.contains(document.activeElement)) this.el.activate()
-          })
-        },
-      },
+      { "blur || uiiframeblur": activateIfFocused },
     ],
   };
 
@@ -126,7 +136,9 @@ export class Dialog extends Component {
   }
 
   activate() {
-    for (const item of document.querySelectorAll(`ui-dialog:not(${this.id})`)) {
+    for (const item of document.querySelectorAll(
+      `${rootSelector} > ui-dialog:not(${this.id})`
+    )) {
       item.active = false
     }
 
@@ -144,6 +156,22 @@ export class Dialog extends Component {
 
   setup() {
     const rect = this.getBoundingClientRect()
+
+    let offset
+    for (const item of document.querySelectorAll(
+      `${rootSelector} > ui-dialog:not(#${this.id})`
+    )) {
+      if (item.x !== undefined) {
+        if (rect.x === item.x && rect.y === item.y) {
+          offset ??=
+            this.querySelector(":scope > .ui-dialog__header").clientHeight +
+            getHeaderOffset(this)
+          rect.x += offset
+          rect.y += offset
+        }
+      }
+    }
+
     this.x ??= Math.round(rect.x)
     this.y ??= Math.round(rect.y)
     this.style.top = 0

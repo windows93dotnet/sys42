@@ -8,6 +8,7 @@ import contextmenu from "../invocables/contextmenu.js"
 import dt from "../../core/dt.js"
 
 const _forgetWatch = Symbol("Folder.forgetWatch")
+const _updatePath = Symbol("Folder.updatePath")
 
 export class Folder extends Component {
   static definition = {
@@ -19,45 +20,7 @@ export class Folder extends Component {
         type: "string",
         reflect: true,
         default: "/",
-        update(init) {
-          if (this[_forgetWatch]?.path === this.path) return
-
-          if (!init) {
-            this.selection.length = 0
-            // requestAnimationFrame(() => this.#refreshIconPerLine())
-          }
-
-          const path = normalizeDirname(this.path)
-
-          this[_forgetWatch]?.()
-          this[_forgetWatch] = disk.watchDir(path, (changed, type) => {
-            if (!this.ctx) return
-
-            if (type === "delete") {
-              if (this.selection.includes(changed)) {
-                removeItem(this.selection, changed)
-              }
-
-              changed += "/"
-
-              if (this.selection.includes(changed)) {
-                removeItem(this.selection, changed)
-              }
-            }
-
-            this.ctx.reactive.now(() => {
-              this.ctx.reactive.refresh(this.ctx.scope + "/path")
-              const el = document.activeElement
-              if (el.localName === "ui-icon") {
-                // force redraw focusring
-                const focusring = el.querySelector(".ui-icon__focusring")
-                focusring.style.position = "static"
-                delete focusring.style.position
-              }
-            })
-          })
-          this[_forgetWatch].path = this.path
-        },
+        update: _updatePath,
       },
       glob: {
         type: "boolean",
@@ -69,7 +32,6 @@ export class Folder extends Component {
       },
       multiselectable: {
         type: "boolean",
-        // fromView: true,
         default: true,
       },
     },
@@ -139,6 +101,7 @@ export class Folder extends Component {
 
     content: {
       tag: "ui-grid",
+      entry: "grid",
       selection: "{{selection}}",
       itemTemplate: {
         tag: "ui-icon",
@@ -147,6 +110,44 @@ export class Folder extends Component {
       },
       content: "{{getItems(path)}}",
     },
+  };
+
+  [_updatePath](initial) {
+    if (this[_forgetWatch]?.path === this.path) return
+
+    if (!initial) this.selection.length = 0
+
+    const path = normalizeDirname(this.path)
+    const { signal } = this.ctx
+
+    this[_forgetWatch]?.()
+    this[_forgetWatch] = disk.watchDir(path, { signal }, (changed, type) => {
+      if (!this.ctx) return
+
+      if (type === "delete") {
+        if (this.selection.includes(changed)) {
+          removeItem(this.selection, changed)
+        }
+
+        changed += "/"
+
+        if (this.selection.includes(changed)) {
+          removeItem(this.selection, changed)
+        }
+      }
+
+      this.ctx.reactive.now(() => {
+        this.ctx.reactive.refresh(this.ctx.scope + "/path")
+        const el = document.activeElement
+        if (el.localName === "ui-icon") {
+          // force redraw focusring
+          const focusring = el.querySelector(".ui-icon__focusring")
+          focusring.style.position = "static"
+          delete focusring.style.position
+        }
+      })
+    })
+    this[_forgetWatch].path = this.path
   }
 
   displayContextmenu(e, target) {
@@ -170,10 +171,14 @@ export class Folder extends Component {
         { ...io.createFolder.meta, click: "{{io.createFolder(path)}}" },
         { ...io.createFile.meta, click: "{{io.createFile(path)}}" },
         "---",
-        { label: "Select all", click: "{{selectable.selectAll()}}" }, //
+        { label: "Select all", click: "{{selectAll()}}" }, //
       ]
       contextmenu(this, e, menu, this.ctx)
     }
+  }
+
+  selectAll() {
+    this.grid.selectable.selectAll()
   }
 
   autoSelect(path) {
