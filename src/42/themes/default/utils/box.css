@@ -63,17 +63,20 @@ textarea.box-fit {
 .box-main, .box-center {
   display: grid;
   align-items: center;
+  align-content: center;
   justify-content: center;
 }
 
 .box-center-x {
   display: grid;
+  align-content: start;
   justify-content: center;
 }
 
 .box-center-y {
   display: grid;
   align-items: center;
+  align-content: center;
 }
 
 /* stack

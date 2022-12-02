@@ -4,35 +4,15 @@ import disk from "../../core/disk.js"
 import io from "../../io.js"
 import normalizeDirname from "../../core/path/utils/normalizeDirname.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
-import debounce from "../../fabric/type/function/debounce.js"
 import contextmenu from "../invocables/contextmenu.js"
 import dt from "../../core/dt.js"
-
-const { indexOf } = Array.prototype
 
 const _forgetWatch = Symbol("Folder.forgetWatch")
 
 export class Folder extends Component {
   static definition = {
     tag: "ui-folder",
-    role: "grid",
-
-    aria: {
-      multiselectable: "{{multiselectable}}",
-    },
-
-    traits: {
-      selectable: {
-        items: ":scope ui-icon",
-        dragger: { ignore: "ui-icon" },
-        init() {
-          return this.selection
-        },
-        key({ path }) {
-          return path
-        },
-      },
-    },
+    role: "none",
 
     props: {
       path: {
@@ -44,7 +24,7 @@ export class Folder extends Component {
 
           if (!init) {
             this.selection.length = 0
-            requestAnimationFrame(() => this.#refreshIconPerLine())
+            // requestAnimationFrame(() => this.#refreshIconPerLine())
           }
 
           const path = normalizeDirname(this.path)
@@ -89,7 +69,7 @@ export class Folder extends Component {
       },
       multiselectable: {
         type: "boolean",
-        fromView: true,
+        // fromView: true,
         default: true,
       },
     },
@@ -135,17 +115,6 @@ export class Folder extends Component {
         //   // },
       },
 
-      // keyboard navigation
-      // ===================
-      {
-        repeatable: true,
-        prevent: true,
-        ArrowUp: "{{moveFocusUp()}}",
-        ArrowDown: "{{moveFocusDown()}}",
-        ArrowLeft: "{{moveFocusLeft()}}",
-        ArrowRight: "{{moveFocusRight()}}",
-      },
-
       // icon actions
       // ============
       {
@@ -168,23 +137,15 @@ export class Folder extends Component {
       },
     ],
 
-    computed: {
-      items: "{{getItems(path)}}",
-    },
-
     content: {
-      role: "row",
-      content: {
-        scope: "items",
-        each: {
-          tag: "ui-icon",
-          draggable: true,
-          aria: { selected: "{{includes(../../selection, .)}}" },
-          autofocus: "{{@first}}",
-          tabIndex: "{{@first ? 0 : -1}}",
-          path: "{{.}}",
-        },
+      tag: "ui-grid",
+      selection: "{{selection}}",
+      itemTemplate: {
+        tag: "ui-icon",
+        autofocus: "{{@first}}",
+        path: "{{.}}",
       },
+      content: "{{getItems(path)}}",
     },
   }
 
@@ -239,53 +200,6 @@ export class Folder extends Component {
     }
 
     return dir
-  }
-
-  moveFocusUp() {
-    const index = indexOf.call(this.#icons, document.activeElement)
-    this.#icons[index === -1 ? 0 : index - this.iconsPerLine]?.focus()
-  }
-
-  moveFocusDown() {
-    const index = indexOf.call(this.#icons, document.activeElement)
-    this.#icons[index === -1 ? 0 : index + this.iconsPerLine]?.focus()
-  }
-
-  moveFocusLeft() {
-    const index = indexOf.call(this.#icons, document.activeElement)
-    this.#icons[index === -1 ? 0 : index - 1]?.focus()
-  }
-
-  moveFocusRight() {
-    const index = indexOf.call(this.#icons, document.activeElement)
-    this.#icons[index === -1 ? 0 : index + 1]?.focus()
-  }
-
-  #refreshIconPerLine() {
-    if (this.#icons.length === 0) {
-      this.iconsPerLine = 0
-      return
-    }
-
-    const previousY = this.#icons[0].getBoundingClientRect().y
-
-    for (let i = 1, l = this.#icons.length; i < l; i++) {
-      const { y } = this.#icons[i].getBoundingClientRect()
-      if (y !== previousY) {
-        this.iconsPerLine = i
-        break
-      }
-    }
-  }
-
-  #icons
-
-  setup() {
-    this.#icons = this.children[0].children
-    this.iconsPerLine = 0
-    const ro = new ResizeObserver(debounce(() => this.#refreshIconPerLine()))
-    ro.observe(this)
-    this.ctx.signal.addEventListener("abort", () => ro.disconnect())
   }
 }
 
