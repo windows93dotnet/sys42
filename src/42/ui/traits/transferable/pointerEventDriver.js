@@ -5,7 +5,7 @@ import SlideHint, { getIndex } from "./SlideHint.js"
 let data
 let hint
 let originHint
-const dropEffect = "move"
+let dropEffect = "none"
 
 export function pointerEventDriver(trait) {
   const { /* effects, */ dropzone } = trait
@@ -16,9 +16,9 @@ export function pointerEventDriver(trait) {
   listen(dropzone, {
     signal,
 
-    pointermove(e) {
+    pointermove({ x, y }) {
       if (Dragger.isDragging) {
-        hint?.layout?.(e)
+        hint?.layout?.(x, y)
       }
     },
 
@@ -26,6 +26,11 @@ export function pointerEventDriver(trait) {
       if (Dragger.isDragging) {
         dropzone.classList.add("dragover")
         if (hint) {
+          // force index to end of the list if no item is hovered before drop
+          hint.index =
+            trait.list?.length ?? //
+            dropzone.querySelectorAll(trait.selector).length
+
           if (hint.id === id) {
             hint.enterDropzone?.()
           } else {
@@ -36,6 +41,7 @@ export function pointerEventDriver(trait) {
               target: originHint.ghost,
               index: originHint.index,
             })
+            hint.update(x, y)
             originHint.ghost.style.opacity = 0
           }
         }
@@ -52,11 +58,6 @@ export function pointerEventDriver(trait) {
           originHint = undefined
         }
 
-        // force index to end of the list if no item is hovered before drop
-        hint.index =
-          trait.list?.length ?? //
-          dropzone.querySelectorAll(trait.selector).length
-
         hint?.leaveDropzone?.()
       }
     },
@@ -64,6 +65,7 @@ export function pointerEventDriver(trait) {
     pointerup({ x, y }) {
       if (Dragger.isDragging) {
         dropzone.classList.remove("dragover")
+        dropEffect = "move"
         if (hint) {
           const { index } = hint
           trait.import({ data }, { index, dropzone, x, y })
@@ -101,6 +103,13 @@ export function pointerEventDriver(trait) {
   }
 
   dragger.stop = (x, y, e, target) => {
+    dropzone.classList.remove("dragover")
+
+    if (originHint) {
+      originHint.destroy()
+      originHint = undefined
+    }
+
     if (dropEffect === "move") hint?.destroy?.()
     else hint?.revert?.()
     hint = undefined
@@ -114,6 +123,8 @@ export function pointerEventDriver(trait) {
       const index = getIndex(target)
       trait.removeItem(index)
     }
+
+    dropEffect = "none"
   }
 }
 

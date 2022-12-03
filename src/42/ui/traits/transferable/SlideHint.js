@@ -94,7 +94,7 @@ export class SlideHint {
       this.dynamicStyle.textContent = `
         ${this.hideCurrent}
         ${this.selector}:nth-child(n+${index + 2}) {
-          translate: ${this.blank} !important;
+          translate: ${this.blank};
         }`
 
       this._raf2 = requestAnimationFrame(() => {
@@ -106,7 +106,7 @@ export class SlideHint {
       })
     })
 
-    this.layout = paintThrottle(({ x, y }) => {
+    this.layout = paintThrottle((x, y) => {
       if (x === this.lastX && y === this.lastY) return
 
       let X
@@ -135,7 +135,7 @@ export class SlideHint {
         this.dynamicStyle.textContent = `
           ${this.hideCurrent}
           ${this.selector}:nth-child(n+${this.index + 1}) {
-            translate: ${this.blank} !important;
+            translate: ${this.blank};
           }`
       }
     })
@@ -209,7 +209,7 @@ export class SlideHint {
     this.dynamicStyle.textContent = `
       ${this.hideCurrent}
       ${this.selector}:nth-child(n+${this.index + 1}) {
-        translate: ${this.blank} !important;
+        translate: ${this.blank};
       }`
     this.stop()
   }

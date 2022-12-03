@@ -8,6 +8,7 @@ let originHint
 export function dragEventDriver(trait) {
   let counter = 0
   let justStarted = false
+  let hasLeavedDropzone = false
 
   const { effects, dropzone } = trait
   const { id } = dropzone
@@ -23,7 +24,7 @@ export function dragEventDriver(trait) {
 
     dragover(e) {
       dt.effects.handleEffect(e, trait.config)
-      hint?.layout?.(e)
+      hint?.layout?.(e.x, e.y)
     },
 
     dragenter(e) {
@@ -31,16 +32,25 @@ export function dragEventDriver(trait) {
       if (counter++ === 0) {
         dropzone.classList.add("dragover")
         if (hint) {
+          if (hasLeavedDropzone) {
+            // force index to end of the list if no item is hovered before drop
+            hint.index =
+              trait.list?.length ?? //
+              dropzone.querySelectorAll(trait.selector).length
+          }
+
           if (hint.id === id) {
             hint.enterDropzone?.()
           } else {
+            const { x, y } = e
             originHint = hint
             hint = new SlideHint(trait, {
-              x: e.x,
-              y: e.y,
+              x,
+              y,
               target: originHint.ghost,
               index: originHint.index,
             })
+            hint.update(x, y)
             originHint.ghost.style.opacity = 0
           }
         }
@@ -49,6 +59,7 @@ export function dragEventDriver(trait) {
 
     dragleave() {
       if (--counter <= 0) {
+        hasLeavedDropzone = true
         counter = 0
         dropzone.classList.remove("dragover")
 
@@ -57,11 +68,6 @@ export function dragEventDriver(trait) {
           hint = originHint
           originHint = undefined
         }
-
-        // force index to end of the list if no item is hovered before drop
-        hint.index =
-          trait.list?.length ?? //
-          dropzone.querySelectorAll(trait.selector).length
 
         hint?.leaveDropzone?.()
       }
@@ -96,13 +102,15 @@ export function dragEventDriver(trait) {
     selector: trait.selector,
 
     pointerdown(e, target) {
-      target.draggable = true // force draggable on element
+      // TODO: reverse this on cancel
+      target.draggable = true // force draggable on elements
     },
 
     dragstart(e, target) {
       counter = 0
       trait.isSorting = false
       justStarted = true
+      hasLeavedDropzone = false
       const index = getIndex(target)
       dt.export(e, { effects, data: trait.export({ index, target }) })
 
@@ -113,7 +121,7 @@ export function dragEventDriver(trait) {
 
     drag(e) {
       if (justStarted) {
-        // fast drag sometimes don't trigger dragleave event
+        // fast drag outside dropzone sometimes don't trigger dragleave event
         const isInDropzone = document
           .elementFromPoint(e.x, e.y)
           ?.closest(`#${id}`)
@@ -126,6 +134,7 @@ export function dragEventDriver(trait) {
 
     dragend(e, target) {
       justStarted = false
+      hasLeavedDropzone = false
       counter = 0
       dropzone.classList.remove("dragover")
 
