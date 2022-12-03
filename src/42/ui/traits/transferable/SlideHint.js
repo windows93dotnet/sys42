@@ -94,13 +94,13 @@ export class SlideHint {
       this.dynamicStyle.textContent = `
         ${this.hideCurrent}
         ${this.selector}:nth-child(n+${index + 2}) {
-          translate: ${this.blank};
+          translate: ${this.blank} !important;
         }`
 
       this._raf2 = requestAnimationFrame(() => {
         this.allItemsStyle.textContent = `
           ${this.selector} {
-            transition: translate 120ms ease-in-out;
+            transition: translate 120ms ease-in-out !important;
             outline: none !important;
           }`
       })
@@ -135,7 +135,7 @@ export class SlideHint {
         this.dynamicStyle.textContent = `
           ${this.hideCurrent}
           ${this.selector}:nth-child(n+${this.index + 1}) {
-            translate: ${this.blank};
+            translate: ${this.blank} !important;
           }`
       }
     })
@@ -209,7 +209,7 @@ export class SlideHint {
     this.dynamicStyle.textContent = `
       ${this.hideCurrent}
       ${this.selector}:nth-child(n+${this.index + 1}) {
-        translate: ${this.blank};
+        translate: ${this.blank} !important;
       }`
     this.stop()
   }

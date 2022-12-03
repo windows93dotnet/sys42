@@ -16,8 +16,8 @@ const DEFAULTS = {
   effects: ["copy", "move", "link"],
   silentEffectCheck: false,
   fileSystemHandle: false,
-  driver: "dragEvent",
-  // driver: "pointerEvent",
+  // driver: "dragEvent",
+  driver: "pointerEvent",
   hint: "slide",
 }
 

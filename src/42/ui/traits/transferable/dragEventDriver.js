@@ -9,15 +9,15 @@ export function dragEventDriver(trait) {
   let counter = 0
   let justStarted = false
 
-  const { effects } = trait
-  const { id } = trait.dropzone
+  const { effects, dropzone } = trait
+  const { id } = dropzone
 
   /* dropzone
   =========== */
 
   const { signal } = trait.cancel
 
-  listen(trait.dropzone, {
+  listen(dropzone, {
     signal,
     prevent: true,
 
@@ -29,7 +29,7 @@ export function dragEventDriver(trait) {
     dragenter(e) {
       dt.effects.handleEffect(e, trait.config)
       if (counter++ === 0) {
-        trait.dropzone.classList.add("dragover")
+        dropzone.classList.add("dragover")
         if (hint) {
           if (hint.id === id) {
             hint.enterDropzone?.()
@@ -50,7 +50,7 @@ export function dragEventDriver(trait) {
     dragleave() {
       if (--counter <= 0) {
         counter = 0
-        trait.dropzone.classList.remove("dragover")
+        dropzone.classList.remove("dragover")
 
         if (originHint) {
           hint.destroy()
@@ -60,8 +60,8 @@ export function dragEventDriver(trait) {
 
         // force index to end of the list if no item is hovered before drop
         hint.index =
-          trait.list?.length ??
-          trait.dropzone.querySelectorAll(trait.selector).length
+          trait.list?.length ?? //
+          dropzone.querySelectorAll(trait.selector).length
 
         hint?.leaveDropzone?.()
       }
@@ -69,18 +69,19 @@ export function dragEventDriver(trait) {
 
     drop(e) {
       counter = 0
-      trait.dropzone.classList.remove("dragover")
+      dropzone.classList.remove("dragover")
 
       const res = dt.import(e, trait.config)
 
       if (hint) {
         const { index } = hint
-        trait.import(res, { index, dropzone: trait.dropzone, x: e.x, y: e.y })
+        trait.import(res, { index, dropzone, x: e.x, y: e.y })
         hint?.stop?.()
+        hint = undefined
       } else {
         const item = e.target.closest(trait.selector)
         const index = getNewIndex(e.x, e.y, item, trait.orientation)
-        trait.import(res, { index, dropzone: trait.dropzone, x: e.x, y: e.y })
+        trait.import(res, { index, dropzone, x: e.x, y: e.y })
       }
     },
   })
@@ -126,7 +127,7 @@ export function dragEventDriver(trait) {
     dragend(e, target) {
       justStarted = false
       counter = 0
-      trait.dropzone.classList.remove("dragover")
+      dropzone.classList.remove("dragover")
 
       if (originHint) {
         originHint.destroy()

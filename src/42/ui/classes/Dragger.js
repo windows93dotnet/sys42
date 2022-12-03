@@ -27,6 +27,9 @@ export default class Dragger {
     this.drag = this.config.drag ?? noop
     this.stop = this.config.stop ?? noop
 
+    this.cancel = new Canceller(options?.signal)
+    const { signal } = this.cancel
+
     let distX = 0
     let distY = 0
 
@@ -80,9 +83,6 @@ export default class Dragger {
           }
         : () => true
 
-    this.cancel = new Canceller(options?.signal)
-    const { signal } = this.cancel
-
     let forget
     let restore
 
@@ -100,6 +100,7 @@ export default class Dragger {
 
       this.#isStarted = true
       this.isDragging = true
+      Dragger.isDragging = true
       restore = setTemp(document.documentElement, {
         signal,
         class: {
@@ -125,7 +126,10 @@ export default class Dragger {
         window.getSelection().empty()
         this.#isStarted = false
         this.stop(getX(e.x), getY(e.y), e, target)
-        queueTask(() => (this.isDragging = false))
+        queueTask(() => {
+          this.isDragging = false
+          Dragger.isDragging = false
+        })
       }
     }
 
@@ -142,6 +146,7 @@ export default class Dragger {
       selector: this.config.selector,
       pointerdown: (e, target) => {
         this.isDragging = false
+        Dragger.isDragging = false
         target = this.config.selector ? target : this.el
         if (this.config.ignore && e.target.closest(this.config.ignore)) return
 
