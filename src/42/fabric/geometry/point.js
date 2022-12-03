@@ -10,3 +10,12 @@ export function inTriangle(p, a, b, c) {
   const t = (a.x * b.y - a.y * b.x + (a.y - b.y) * p.x + (b.x - a.x) * p.y) * sign;
   return s > 0 && t > 0 && (s + t) < 2 * A * sign;
 }
+
+export function inRect(p, rect) {
+  return (
+    p.x >= rect.left &&
+    p.x <= rect.right &&
+    p.y >= rect.top &&
+    p.y <= rect.bottom
+  )
+}

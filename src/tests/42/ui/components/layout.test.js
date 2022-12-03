@@ -46,79 +46,73 @@ window.app = await ui({
             },
           },
         },
-        {
-          tag: ".box-center",
-          content: {
-            tag: ".pa._outset.resize.flex-v",
-            style: { width: "400px", height: "200px" },
-            content: {
-              tag: "ui-tabs",
-              id: "tabs2",
-              side: "left",
-              // balanced: true,
-              content: [
-                { label: "One", content: lorem },
-                { label: "Two", content: "hello" },
-                {
-                  label: "Three Lorem Hello World Three Lorem Hello World",
-                  content: "world",
-                },
-              ],
-            },
-          },
-        },
+        // {
+        //   tag: ".box-center",
+        //   content: {
+        //     tag: ".pa._outset.resize.flex-v",
+        //     style: { width: "400px", height: "200px" },
+        //     content: {
+        //       tag: "ui-tabs",
+        //       id: "tabs2",
+        //       side: "left",
+        //       // balanced: true,
+        //       content: [
+        //         { label: "One", content: lorem },
+        //         { label: "Two", content: "hello" },
+        //         {
+        //           label: "Three Lorem Hello World Three Lorem Hello World",
+        //           content: "world",
+        //         },
+        //       ],
+        //     },
+        //   },
+        // },
       ],
     },
+
     {
-      tag: ".box-h",
-      content: [
-        {
-          tag: ".box-center",
-          content: {
-            tag: ".pa._outset.resize.flex-v",
-            style: { width: "380px", height: "200px" },
+      tag: "ui-sandbox.inset",
+      permissions: "app",
+      content: {
+        tag: ".box-h",
+        content: [
+          // {
+          //   tag: ".box-center",
+          //   content: {
+          //     tag: ".pa._outset.resize.flex-v",
+          //     style: { width: "380px", height: "200px" },
+          //     content: {
+          //       tag: "ui-tabs",
+          //       id: "tabs3",
+          //       side: "bottom",
+          //       content: "{{planets}}",
+          //     },
+          //   },
+          // },
+          {
+            tag: ".box-center",
             content: {
-              tag: "ui-tabs",
-              id: "tabs3",
-              side: "bottom",
-              content: "{{planets}}",
+              tag: ".pa._outset.resize.flex-v",
+              style: { width: "400px", height: "200px" },
+              content: {
+                tag: "ui-tabs",
+                id: "tabs4",
+                side: "right",
+                content: [
+                  { label: "One", content: lorem },
+                  { label: "Two", content: "hello" },
+                  { label: "Three", content: "world" },
+                ],
+              },
             },
           },
-        },
-        {
-          tag: ".box-center",
-          content: {
-            tag: ".pa._outset.resize.flex-v",
-            style: { width: "400px", height: "200px" },
-            content: {
-              tag: "ui-tabs",
-              id: "tabs4",
-              side: "right",
-              content: [
-                { label: "One", content: lorem },
-                { label: "Two", content: "hello" },
-                { label: "Three", content: "world" },
-              ],
-            },
-          },
-        },
-      ],
+        ],
+      },
     },
-    {
-      tag: ".desktop.bd",
-      transferable: true,
-      // content: [
-      //   { tag: "button.bd", content: "one" },
-      //   { tag: "button.bd", content: "two" },
-      // ],
-    },
+
     // {
     //   tag: ".desktop.bd",
     //   transferable: true,
-    //   content: [
-    //     { tag: "button.bd", content: "three" },
-    //     { tag: "button.bd", content: "four" },
-    //   ],
     // },
   ],
 
