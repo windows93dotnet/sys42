@@ -20,6 +20,8 @@ ui-dialog {
   flex-direction: column;
   width: max-content;
   min-width: var(--ctrl-w);
+  max-width: 100vw;
+  max-height: 100vh;
   padding: var(--dialog-pa);
 
   --bg: var(--dialog-bg);

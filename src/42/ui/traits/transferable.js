@@ -5,9 +5,6 @@ import uid from "../../core/uid.js"
 import noop from "../../fabric/type/function/noop.js"
 import ensureScopeSelector from "../../fabric/event/ensureScopeSelector.js"
 
-import dragEventDriver from "./transferable/dragEventDriver.js"
-import pointerEventDriver from "./transferable/pointerEventDriver.js"
-
 const DEFAULTS = {
   selector: ":scope > *",
   dropzone: undefined,
@@ -113,8 +110,13 @@ class Transferable extends Trait {
       }
     }
 
-    if (this.config.driver === "pointerEvent") pointerEventDriver(this)
-    else if (this.config.driver === "dragEvent") dragEventDriver(this)
+    if (this.config.driver === "pointerEvent") {
+      import("./transferable/pointerEventDriver.js") //
+        .then((m) => m.default(this))
+    } else if (this.config.driver === "dragEvent") {
+      import("./transferable/dragEventDriver.js") //
+        .then((m) => m.default(this))
+    }
   }
 }
 
