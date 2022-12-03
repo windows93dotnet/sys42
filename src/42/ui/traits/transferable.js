@@ -13,8 +13,8 @@ const DEFAULTS = {
   effects: ["copy", "move", "link"],
   silentEffectCheck: false,
   fileSystemHandle: false,
-  driver: "dragEvent",
-  // driver: "pointerEvent",
+  // driver: "dragEvent",
+  driver: "pointerEvent",
   hint: "slide",
 }
 
@@ -111,7 +111,7 @@ class Transferable extends Trait {
     }
 
     if (this.config.driver === "pointerEvent") {
-      import("./transferable/pointerEventDriver.js") //
+      import("./transferable/pointerEventIPCDriver.js") //
         .then((m) => m.default(this))
     } else if (this.config.driver === "dragEvent") {
       import("./transferable/dragEventDriver.js") //

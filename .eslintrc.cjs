@@ -16,6 +16,7 @@ module.exports = {
   plugins: ["unicorn", "eslint-plugin-html"],
   globals: {
     Deno: true,
+    Sanitizer: true,
     ClipboardItem: true,
     TransformStream: true,
     TextDecoderStream: true,
