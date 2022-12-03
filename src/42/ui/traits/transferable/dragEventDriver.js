@@ -76,7 +76,7 @@ export function dragEventDriver(trait) {
       if (hint) {
         const { index } = hint
         trait.import(res, { index, dropzone: trait.dropzone, x: e.x, y: e.y })
-        hint?.stop?.(e)
+        hint?.stop?.()
       } else {
         const item = e.target.closest(trait.selector)
         const index = getNewIndex(e.x, e.y, item, trait.orientation)
@@ -116,11 +116,11 @@ export function dragEventDriver(trait) {
         const isInDropzone = document
           .elementFromPoint(e.x, e.y)
           ?.closest(`#${id}`)
-        if (!isInDropzone) hint?.leave?.(e)
+        if (!isInDropzone) hint?.leaveDropzone?.()
         justStarted = false
       }
 
-      hint?.update?.(e)
+      hint?.update?.(e.x, e.y)
     },
 
     dragend(e, target) {
@@ -135,8 +135,8 @@ export function dragEventDriver(trait) {
 
       const { dropEffect } = e.dataTransfer
 
-      if (dropEffect === "move") hint?.destroy?.(e)
-      else hint?.revert?.(e)
+      if (dropEffect === "move") hint?.destroy?.()
+      else hint?.revert?.()
       hint = undefined
 
       if (trait.isSorting) {

@@ -155,15 +155,15 @@ export class SlideHint {
     })
   }
 
-  update(e) {
+  update(x, y) {
     if (this.insideDropzone && this.freeAxis !== true) {
       if (this.orientation === "vertical") {
-        if (e.y) this.ghost.style.translate = `0 ${e.y - this.offsetY}px`
-      } else if (e.x) this.ghost.style.translate = `${e.x - this.offsetX}px`
-    } else if (e.x && e.y) {
+        if (y) this.ghost.style.translate = `0 ${y - this.offsetY}px`
+      } else if (x) this.ghost.style.translate = `${x - this.offsetX}px`
+    } else if (x && y) {
       this.ghost.style.translate = `
-        ${e.x - this.offsetX}px
-        ${e.y - this.offsetY}px`
+        ${x - this.offsetX}px
+        ${y - this.offsetY}px`
     }
   }
 

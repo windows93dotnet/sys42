@@ -4,7 +4,9 @@ import ensureElement from "../../fabric/dom/ensureElement.js"
 import uid from "../../core/uid.js"
 import noop from "../../fabric/type/function/noop.js"
 import ensureScopeSelector from "../../fabric/event/ensureScopeSelector.js"
+
 import dragEventDriver from "./transferable/dragEventDriver.js"
+import pointerEventDriver from "./transferable/pointerEventDriver.js"
 
 const DEFAULTS = {
   selector: ":scope > *",
@@ -14,7 +16,8 @@ const DEFAULTS = {
   effects: ["copy", "move", "link"],
   silentEffectCheck: false,
   fileSystemHandle: false,
-  driver: "dragEvent",
+  // driver: "dragEvent",
+  driver: "pointerEvent",
   hint: "slide",
 }
 
@@ -111,7 +114,10 @@ class Transferable extends Trait {
       }
     }
 
-    if (this.config.driver === "dragEvent") dragEventDriver(this)
+    // if (this.config.driver === "dragEvent") dragEventDriver(this)
+    // if (this.config.driver === "pointerEvent") pointerEventDriver(this)
+    dragEventDriver(this)
+    // pointerEventDriver(this)
   }
 }
 
