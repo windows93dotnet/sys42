@@ -31,11 +31,6 @@ export function dragEventDriver(trait) {
       if (counter++ === 0) {
         trait.dropzone.classList.add("dragover")
         if (hint) {
-          // force index to end of the list if no item is hovered before drop
-          hint.index =
-            trait.list?.length ??
-            trait.dropzone.querySelectorAll(trait.selector).length
-
           if (hint.id === id) {
             hint.enterDropzone?.()
           } else {
@@ -62,6 +57,11 @@ export function dragEventDriver(trait) {
           hint = originHint
           originHint = undefined
         }
+
+        // force index to end of the list if no item is hovered before drop
+        hint.index =
+          trait.list?.length ??
+          trait.dropzone.querySelectorAll(trait.selector).length
 
         hint?.leaveDropzone?.()
       }

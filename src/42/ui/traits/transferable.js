@@ -16,8 +16,8 @@ const DEFAULTS = {
   effects: ["copy", "move", "link"],
   silentEffectCheck: false,
   fileSystemHandle: false,
-  // driver: "dragEvent",
-  driver: "pointerEvent",
+  driver: "dragEvent",
+  // driver: "pointerEvent",
   hint: "slide",
 }
 
@@ -85,7 +85,6 @@ class Transferable extends Trait {
             const { state } = data
             state.x = x - 64
             state.y = y - 16
-            console.log(state)
             dialog(state)
           })
         }
@@ -114,10 +113,8 @@ class Transferable extends Trait {
       }
     }
 
-    // if (this.config.driver === "dragEvent") dragEventDriver(this)
-    // if (this.config.driver === "pointerEvent") pointerEventDriver(this)
-    dragEventDriver(this)
-    // pointerEventDriver(this)
+    if (this.config.driver === "pointerEvent") pointerEventDriver(this)
+    else if (this.config.driver === "dragEvent") dragEventDriver(this)
   }
 }
 
