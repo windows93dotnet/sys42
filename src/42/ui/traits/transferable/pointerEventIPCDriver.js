@@ -65,8 +65,7 @@ export function pointerEventDriver(trait) {
           } else {
             originHint = hint
             originHint.keepGhost = true
-            const { ghost, index } = originHint
-            hint = new SlideHint(trait, { x, y, ghost, index })
+            hint = new SlideHint(trait, { origin: originHint })
             hint.update(x, y)
           }
         }

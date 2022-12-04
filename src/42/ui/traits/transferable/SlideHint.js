@@ -24,13 +24,10 @@ export function getNewIndex(X, Y, item, orientation) {
 }
 
 export class SlideHint {
-  constructor(trait, { x, y, target, ghost, index }) {
+  constructor(trait, { x, y, index, target, ghost, origin }) {
     this.trait = trait
     this.onabort = () => this.destroy()
     this.trait.cancel.signal.addEventListener("abort", this.onabort)
-
-    this.index = index
-    this.targetIndex = index
 
     this.id = trait.dropzone?.id
     this.selector = trait.selector
@@ -46,32 +43,49 @@ export class SlideHint {
     this.allItemsStyle.id = "ui-trait-transferable2"
     document.head.append(this.allItemsStyle)
 
-    let area
-    if (ghost) {
-      area = ghostify.area(ghost)
-      this.ghost = ghost
+    if (origin) {
+      this.index = origin.index
+      this.targetIndex = origin.index
+
+      this.ghost = origin.ghost
       this.keepGhost = true
+
+      this.offsetX = origin.offsetX
+      this.offsetY = origin.offsetY
+      this.lastX = origin.lastX
+      this.lastY = origin.lastY
+      this.targetY = origin.targetY
+      this.targetX = origin.targetX
+      this.targetOffsetX = origin.targetOffsetX
+      this.targetOffsetY = origin.targetOffsetY
+      this.targetHeight = origin.targetHeight
+      this.targetWidth = origin.targetWidth
     } else {
-      area = {}
-      this.ghost = ghostify(target, { area })
-      document.documentElement.append(this.ghost)
+      this.index = index
+      this.targetIndex = index
+
+      let area
+      if (ghost) {
+        area = ghostify.area(ghost)
+        this.ghost = ghost
+        this.keepGhost = true
+      } else {
+        area = {}
+        this.ghost = ghostify(target, { area })
+        document.documentElement.append(this.ghost)
+      }
+
+      this.offsetX = x - area.x
+      this.offsetY = y - area.y
+      this.lastX = x
+      this.lastY = y
+      this.targetY = area.y
+      this.targetX = area.x
+      this.targetOffsetX = x - (area.x + area.width / 2)
+      this.targetOffsetY = y - (area.y + area.height / 2)
+      this.targetHeight = area.height + area.marginTop + area.marginBottom
+      this.targetWidth = area.width + area.marginLeft + area.marginRight
     }
-
-    // const area = {}
-    // this.ghost = ghostify(target ?? ghost, { area })
-    // document.documentElement.append(this.ghost)
-
-    this.offsetX = x - area.x
-    this.offsetY = y - area.y
-    this.lastX = x
-    this.lastY = y
-    this.targetY = area.y
-    this.targetX = area.x
-    this.targetOffsetX = x - (area.x + area.width / 2)
-    this.targetOffsetY = y - (area.y + area.height / 2)
-
-    this.targetHeight = area.height + area.marginTop + area.marginBottom
-    this.targetWidth = area.width + area.marginLeft + area.marginRight
 
     if (this.orientation === "vertical") {
       this.blankHalfSize = this.targetHeight / 2
@@ -180,40 +194,37 @@ export class SlideHint {
     }
   }
 
-  stop(secondTry) {
+  stop() {
     this.stopped = true
+
     if (this.reverted !== true) {
       this.dynamicStyle.textContent = ""
       this.allItemsStyle.textContent = ""
     }
 
-    const dir = this.index > this.targetIndex ? 0 : 1
-    const item = document.querySelector(
-      `${this.selector}:nth-child(${this.index + dir})`
-    )
+    requestAnimationFrame(async () => {
+      const dir = this.index > this.targetIndex ? 0 : 1
+      const item = document.querySelector(
+        `${this.selector}:nth-child(${this.index + dir})`
+      )
 
-    const { ghost } = this
-
-    if (item) {
-      item.style.opacity = 0
-      requestAnimationFrame(async () => {
+      if (item) {
+        const { opacity } = item.style
+        item.style.opacity = 0
         const { x, y } = item.getBoundingClientRect()
         const translate = `${x}px ${y}px`
-        await animate.to(ghost, { translate }, 120).then(() => {
-          item.style.opacity = 1
+        await animate.to(this.ghost, { translate }, 120).then(() => {
+          item.style.opacity = opacity
           this.stopped = false
           this.keepGhost = false
           this.destroy()
         })
-      })
-    } else if (secondTry === true) {
-      this.stopped = false
-      this.keepGhost = false
-      this.destroy()
-    } else {
-      // retry if new item wasn't rendered yet
-      requestAnimationFrame(() => this.stop(true))
-    }
+      } else {
+        this.stopped = false
+        this.keepGhost = false
+        this.destroy()
+      }
+    })
   }
 
   revert() {
