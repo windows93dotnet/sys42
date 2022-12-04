@@ -4,33 +4,31 @@
 export default function throttle(fn, wait = 60) {
   let args
   let result
-  let timeout
+  let id
   let last = 0
 
   const call = () => {
-    timeout = undefined
+    id = undefined
     last = Date.now()
     result = fn(...args)
     args.length = 0
     args = undefined
   }
 
-  function throttled(...rest) {
+  const throttled = (...rest) => {
     args = rest
-    const delta = Date.now() - last
-    if (!timeout) {
+    if (!id) {
+      const delta = Date.now() - last
       if (delta >= wait) call()
-      else timeout = setTimeout(call, wait - delta)
+      else id = setTimeout(call, wait - delta)
     }
 
     return result
   }
 
   throttled.clear = () => {
-    if (timeout) {
-      clearTimeout(timeout)
-      timeout = undefined
-    }
+    clearTimeout(id)
+    id = undefined
   }
 
   return throttled

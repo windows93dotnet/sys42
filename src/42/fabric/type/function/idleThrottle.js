@@ -3,11 +3,13 @@ if ("requestIdleCallback" in globalThis === false) {
 }
 
 export default function idleThrottle(fn, timeout) {
+  let id
   let pending = false
-  return (...args) => {
+
+  const throttled = (...args) => {
     if (pending) return
     pending = true
-    requestIdleCallback(
+    id = requestIdleCallback(
       () => {
         fn(...args)
         pending = false
@@ -15,4 +17,11 @@ export default function idleThrottle(fn, timeout) {
       { timeout }
     )
   }
+
+  throttled.clear = () => {
+    cancelIdleCallback(id)
+    pending = false
+  }
+
+  return throttled
 }
