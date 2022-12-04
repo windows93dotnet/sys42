@@ -180,7 +180,7 @@ export class SlideHint {
     }
   }
 
-  stop() {
+  stop(secondTry) {
     this.stopped = true
     if (this.reverted !== true) {
       this.dynamicStyle.textContent = ""
@@ -202,12 +202,17 @@ export class SlideHint {
         await animate.to(ghost, { translate }, 120).then(() => {
           item.style.opacity = 1
           this.stopped = false
+          this.keepGhost = false
           this.destroy()
         })
       })
-    } else {
+    } else if (secondTry === true) {
       this.stopped = false
+      this.keepGhost = false
       this.destroy()
+    } else {
+      // retry if new item wasn't rendered yet
+      requestAnimationFrame(() => this.stop(true))
     }
   }
 

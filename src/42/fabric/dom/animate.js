@@ -13,12 +13,13 @@ function configure(options = {}) {
  * @returns {Promise<Animation>}
  */
 export async function animateFrom(el, from, options) {
+  const config = configure(options)
   const anim = el.animate(
     { ...from, offset: 0 },
     {
       easing: "ease-in-out",
-      duration: 300,
-      ...configure(options),
+      duration: 240,
+      ...config,
       fill: "backwards",
     }
   )
@@ -33,17 +34,18 @@ export async function animateFrom(el, from, options) {
  * @returns {Promise<Animation>}
  */
 export async function animateTo(el, to, options) {
+  const config = configure(options)
   const anim = el.animate(
     to, //
     {
       easing: "ease-in-out",
-      duration: 300,
-      ...configure(options),
+      duration: 240,
+      ...config,
       fill: "both",
     }
   )
   await anim.finished
-  anim.commitStyles()
+  if (el.isConnected) anim.commitStyles()
   anim.cancel()
   return anim
 }

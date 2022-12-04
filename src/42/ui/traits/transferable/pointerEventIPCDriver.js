@@ -64,10 +64,10 @@ export function pointerEventDriver(trait) {
             hint.enterDropzone?.()
           } else {
             originHint = hint
+            originHint.keepGhost = true
             const { ghost, index } = originHint
             hint = new SlideHint(trait, { x, y, ghost, index })
             hint.update(x, y)
-            // originHint.ghost.style.opacity = 0
           }
         }
       }
@@ -79,6 +79,7 @@ export function pointerEventDriver(trait) {
 
         if (originHint) {
           hint.destroy()
+          originHint.keepGhost = false
           hint = originHint
           originHint = undefined
         }
