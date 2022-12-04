@@ -46,8 +46,8 @@ export class SlideHint {
     this.allItemsStyle.id = "ui-trait-transferable2"
     document.head.append(this.allItemsStyle)
 
-    const carrier = {}
-    this.ghost = ghostify(target, { carrier })
+    const c = {}
+    this.ghost = ghostify(target, { carrier: c })
 
     document.documentElement.append(this.ghost)
 
@@ -55,15 +55,17 @@ export class SlideHint {
     this.offsetY = y
     this.lastX = x
     this.lastY = y
-    this.targetY = carrier.y
-    this.targetOffsetX = x - (carrier.x + carrier.width / 2)
-    this.targetX = carrier.x
-    this.targetOffsetY = y - (carrier.y + carrier.height / 2)
+    this.targetY = c.y
+    this.targetOffsetX = x - (c.x + c.width / 2)
+    this.targetX = c.x
+    this.targetOffsetY = y - (c.y + c.height / 2)
+
+    this.targetHeight = c.height + c.marginTop + c.marginBottom
+    this.targetWidth = c.width + c.marginLeft + c.marginRight
 
     if (this.orientation === "vertical") {
-      const height = carrier.height + carrier.marginTop + carrier.marginBottom
-      this.blankHalfSize = height / 2
-      this.blank = `0 ${height}px`
+      this.blankHalfSize = this.targetHeight / 2
+      this.blank = `0 ${this.targetHeight}px`
       this.hideCurrent = `
         ${this.selector}:nth-child(${index + 1}) {
           opacity: 0 !important;
@@ -74,9 +76,8 @@ export class SlideHint {
           outline: none !important;
         }`
     } else {
-      const width = carrier.width + carrier.marginLeft + carrier.marginRight
-      this.blankHalfSize = width / 2
-      this.blank = `${width}px`
+      this.blankHalfSize = this.targetWidth / 2
+      this.blank = `${this.targetWidth}px`
       this.hideCurrent = `
         ${this.selector}:nth-child(${index + 1}) {
           opacity: 0 !important;
