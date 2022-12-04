@@ -2,25 +2,7 @@ import listen from "../../../fabric/event/listen.js"
 import Dragger from "../../classes/Dragger.js"
 import SlideHint, { getIndex } from "./SlideHint.js"
 import { inRect } from "../../../fabric/geometry/point.js"
-
-// import ghostify from "../../../fabric/dom/ghostify.js"
-
-import ALLOWED_HTML_TAGS from "../../../fabric/constants/ALLOWED_HTML_TAGS.js"
-import ALLOWED_SVG_TAGS from "../../../fabric/constants/ALLOWED_SVG_TAGS.js"
-import ALLOWED_HTML_ATTRIBUTES from "../../../fabric/constants/ALLOWED_HTML_ATTRIBUTES.js"
-import ALLOWED_SVG_ATTRIBUTES from "../../../fabric/constants/ALLOWED_SVG_ATTRIBUTES.js"
-
-const all = ["*"]
-const namespace = "http://www.w3.org/2000/svg"
-const allowElements = [
-  ...ALLOWED_HTML_TAGS,
-  ...ALLOWED_SVG_TAGS.map((name) => ({ name, namespace })),
-  "ui-picto",
-]
-const allowAttributes = Object.fromEntries(
-  [...ALLOWED_HTML_ATTRIBUTES, ...ALLOWED_SVG_ATTRIBUTES] //
-    .map((attr) => [attr, all])
-)
+import sanitize from "../../../fabric/dom/sanitize.js"
 
 let data
 let hint
@@ -41,18 +23,7 @@ export function pointerEventDriver(trait) {
     ipc.on("42_DRAGGER_START", { signal }, (res, meta) => {
       iframeRect = meta.iframe.getBoundingClientRect()
       if (res?.hint) {
-        const div = document.createElement("div")
-        const sanitizer = new Sanitizer({
-          allowCustomElements: true,
-          allowUnknownMarkup: true,
-          allowComments: true,
-          allowElements,
-          allowAttributes,
-        })
-
-        div.setHTML(res.hint.ghostHTML, { sanitizer })
-        // div.innerHTML = res.hint.ghostHTML
-        ghost = div.firstChild
+        ghost = sanitize(res.hint.ghostHTML)
         document.documentElement.append(ghost)
       }
     })
@@ -70,17 +41,6 @@ export function pointerEventDriver(trait) {
     })
     ipc.on("42_DRAGGER_STOP", { signal }, () => {
       // ghost.remove()
-    })
-  } else {
-    // const xxx = ghostify(document.querySelector("#tab-tabs4-0"))
-
-    ipc.emit("42_DRAGGER_START", {
-      hint: {
-        // ghostHTML: xxx.outerHTML,
-        ghostHTML: `<div>
-          <img/src/onerror=alert(1)>
-          <em>hello</em><svg width="16" height="16" aria-hidden="true"><use href="#picto-close"></use></svg:svg></div>`,
-      },
     })
   }
 
