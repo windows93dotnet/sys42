@@ -3,6 +3,25 @@ import Dragger from "../../classes/Dragger.js"
 import SlideHint, { getIndex } from "./SlideHint.js"
 import { inRect } from "../../../fabric/geometry/point.js"
 
+// import ghostify from "../../../fabric/dom/ghostify.js"
+
+import ALLOWED_HTML_TAGS from "../../../fabric/constants/ALLOWED_HTML_TAGS.js"
+import ALLOWED_SVG_TAGS from "../../../fabric/constants/ALLOWED_SVG_TAGS.js"
+import ALLOWED_HTML_ATTRIBUTES from "../../../fabric/constants/ALLOWED_HTML_ATTRIBUTES.js"
+import ALLOWED_SVG_ATTRIBUTES from "../../../fabric/constants/ALLOWED_SVG_ATTRIBUTES.js"
+
+const all = ["*"]
+const namespace = "http://www.w3.org/2000/svg"
+const allowElements = [
+  ...ALLOWED_HTML_TAGS,
+  ...ALLOWED_SVG_TAGS.map((name) => ({ name, namespace })),
+  "ui-picto",
+]
+const allowAttributes = Object.fromEntries(
+  [...ALLOWED_HTML_ATTRIBUTES, ...ALLOWED_SVG_ATTRIBUTES] //
+    .map((attr) => [attr, all])
+)
+
 let data
 let hint
 let originHint
@@ -19,12 +38,20 @@ export function pointerEventDriver(trait) {
   if (ipc.inTop) {
     let iframeRect
     let ghost
-    ipc.on("42_DRAGGER_START", { signal }, (ghostHTML, meta) => {
+    ipc.on("42_DRAGGER_START", { signal }, (res, meta) => {
       iframeRect = meta.iframe.getBoundingClientRect()
-      if (ghostHTML) {
+      if (res?.hint) {
         const div = document.createElement("div")
-        const sanitizer = new Sanitizer()
-        div.setHTML(ghostHTML, { sanitizer })
+        const sanitizer = new Sanitizer({
+          allowCustomElements: true,
+          allowUnknownMarkup: true,
+          allowComments: true,
+          allowElements,
+          allowAttributes,
+        })
+
+        div.setHTML(res.hint.ghostHTML, { sanitizer })
+        // div.innerHTML = res.hint.ghostHTML
         ghost = div.firstChild
         document.documentElement.append(ghost)
       }
@@ -33,12 +60,27 @@ export function pointerEventDriver(trait) {
       x += iframeRect.left
       y += iframeRect.top
       // console.log("42_DRAGGER_DRAG", x, y)
+      ghost.style.opacity = 1
       ghost.style.translate = `
         ${x}px
         ${y}px`
     })
+    ipc.on("42_DRAGGER_INSIDE_IFRAME", { signal }, () => {
+      ghost.style.opacity = 0
+    })
     ipc.on("42_DRAGGER_STOP", { signal }, () => {
-      ghost.remove()
+      // ghost.remove()
+    })
+  } else {
+    // const xxx = ghostify(document.querySelector("#tab-tabs4-0"))
+
+    ipc.emit("42_DRAGGER_START", {
+      hint: {
+        // ghostHTML: xxx.outerHTML,
+        ghostHTML: `<div>
+          <img/src/onerror=alert(1)>
+          <em>hello</em><svg width="16" height="16" aria-hidden="true"><use href="#picto-close"></use></svg:svg></div>`,
+      },
     })
   }
 
@@ -124,9 +166,18 @@ export function pointerEventDriver(trait) {
     }
 
     docRect = document.documentElement.getBoundingClientRect()
+
     if (ipc.inIframe) {
-      const ghostHTML = hint?.ghost?.outerHTML
-      ipc.emit("42_DRAGGER_START", ghostHTML)
+      let hintClone
+      if (hint) {
+        hintClone = {
+          offsetX: hint.offsetX,
+          offsetY: hint.offsetY,
+          ghostHTML: hint.ghost.outerHTML,
+        }
+      }
+
+      ipc.emit("42_DRAGGER_START", { hint: hintClone })
     }
 
     if (dropzone.contains(target)) {
@@ -135,10 +186,18 @@ export function pointerEventDriver(trait) {
     }
   }
 
+  let isOutsideIframe = false
+
   dragger.drag = (x, y) => {
     if (ipc.inIframe) {
       const point = { x, y }
-      if (!inRect(point, docRect)) {
+      if (inRect(point, docRect)) {
+        if (isOutsideIframe) {
+          ipc.emit("42_DRAGGER_INSIDE_IFRAME")
+          isOutsideIframe = false
+        }
+      } else {
+        isOutsideIframe = true
         ipc.emit("42_DRAGGER_DRAG", point)
       }
     }
