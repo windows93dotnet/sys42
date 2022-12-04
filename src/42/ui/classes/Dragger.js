@@ -113,6 +113,8 @@ export default class Dragger {
     }
 
     const stop = (e, target) => {
+      drag.clear?.()
+
       distX = 0
       distY = 0
       fromX = 0
