@@ -1,6 +1,6 @@
 import listen from "../../../fabric/event/listen.js"
 import Dragger from "../../classes/Dragger.js"
-import SlideHint, { getIndex } from "./SlideHint.js"
+import SlideHint, { getIndex, getNewIndex } from "./SlideHint.js"
 import { inRect } from "../../../fabric/geometry/point.js"
 import sanitize from "../../../fabric/dom/sanitize.js"
 
@@ -42,6 +42,9 @@ export function pointerEventDriver(trait) {
     })
   }
 
+  /* dropzone
+  =========== */
+
   listen(dropzone, {
     signal,
 
@@ -54,6 +57,8 @@ export function pointerEventDriver(trait) {
     pointerenter({ x, y }) {
       if (Dragger.isDragging) {
         dropzone.classList.add("dragover")
+        dropEffect = "move"
+
         if (hint) {
           // force index to end of the list if no item is hovered before drop
           hint.index =
@@ -75,6 +80,7 @@ export function pointerEventDriver(trait) {
     pointerleave() {
       if (Dragger.isDragging) {
         dropzone.classList.remove("dragover")
+        dropEffect = "none"
 
         if (originHint) {
           hint.destroy()
@@ -87,22 +93,30 @@ export function pointerEventDriver(trait) {
       }
     },
 
-    pointerup({ x, y }) {
+    pointerup(e) {
       if (Dragger.isDragging) {
         dropzone.classList.remove("dragover")
         dropEffect = "move"
+
         if (hint) {
           const { index } = hint
-          trait.import({ data }, { index, dropzone, x, y })
+          trait.import({ data }, { index, dropzone, x: e.x, y: e.y })
           hint?.stop?.()
           hint = undefined
           data = undefined
+        } else {
+          const item = e.target.closest(trait.selector)
+          const index = getNewIndex(e.x, e.y, item, trait.orientation)
+          trait.import({ data }, { index, dropzone, x: e.x, y: e.y })
         }
       }
     },
   })
 
   if (!trait.selector) return
+
+  /* draggable items
+  ================== */
 
   const dragger = new Dragger(trait.el, {
     signal,
@@ -112,6 +126,7 @@ export function pointerEventDriver(trait) {
   let docRect
 
   dragger.start = (x, y, e, target) => {
+    dropEffect = "none"
     trait.isSorting = false
     const index = getIndex(target)
     data = trait.export({ index, target })
@@ -173,7 +188,9 @@ export function pointerEventDriver(trait) {
       ipc.emit("42_DRAGGER_STOP")
     }
 
-    dropzone.classList.remove("dragover")
+    for (const item of document.querySelectorAll(".dragover")) {
+      item.classList.remove("dragover")
+    }
 
     if (originHint) {
       originHint.destroy()

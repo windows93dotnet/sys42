@@ -147,6 +147,7 @@ export default class Dragger {
       signal,
       selector: this.config.selector,
       pointerdown: (e, target) => {
+        drag.clear?.()
         this.isDragging = false
         Dragger.isDragging = false
         target = this.config.selector ? target : this.el
