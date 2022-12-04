@@ -16,11 +16,10 @@ export function dragEventDriver(trait) {
 
   const { effects, dropzone } = trait
   const { id } = dropzone
+  const { signal } = trait.cancel
 
   /* dropzone
   =========== */
-
-  const { signal } = trait.cancel
 
   listen(dropzone, {
     signal,
@@ -35,6 +34,7 @@ export function dragEventDriver(trait) {
       dt.effects.handleEffect(e, trait.config)
       if (counter++ === 0) {
         dropzone.classList.add("dragover")
+
         if (hint) {
           if (hasLeavedDropzone) {
             // force index to end of the list if no item is hovered before drop
@@ -46,16 +46,10 @@ export function dragEventDriver(trait) {
           if (hint.id === id) {
             hint.enterDropzone?.()
           } else {
-            const { x, y } = e
             originHint = hint
-            hint = new SlideHint(trait, {
-              x,
-              y,
-              target: originHint.ghost,
-              index: originHint.index,
-            })
-            hint.update(x, y)
-            originHint.ghost.style.opacity = 0
+            originHint.keepGhost = true
+            hint = new SlideHint(trait, { origin: originHint })
+            hint.update(e.x, e.y)
           }
         }
       }
@@ -69,6 +63,7 @@ export function dragEventDriver(trait) {
 
         if (originHint) {
           hint.destroy()
+          originHint.keepGhost = false
           hint = originHint
           originHint = undefined
         }
@@ -140,7 +135,10 @@ export function dragEventDriver(trait) {
       justStarted = false
       hasLeavedDropzone = false
       counter = 0
-      dropzone.classList.remove("dragover")
+
+      for (const item of document.querySelectorAll(".dragover")) {
+        item.classList.remove("dragover")
+      }
 
       if (originHint) {
         originHint.destroy()

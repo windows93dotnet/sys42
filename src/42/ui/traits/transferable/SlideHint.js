@@ -23,6 +23,9 @@ export function getNewIndex(X, Y, item, orientation) {
   }
 }
 
+let raf1
+let raf2
+
 export class SlideHint {
   constructor(trait, { x, y, index, target, ghost, origin }) {
     this.trait = trait
@@ -113,16 +116,14 @@ export class SlideHint {
         }`
     }
 
-    cancelAnimationFrame(this._raf1)
-    cancelAnimationFrame(this._raf2)
-    this._raf1 = requestAnimationFrame(() => {
+    raf1 = requestAnimationFrame(() => {
       this.dynamicStyle.textContent = `
         ${this.hideCurrent}
         ${this.selector}:nth-child(n+${index + 2}) {
           translate: ${this.blank};
         }`
 
-      this._raf2 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => {
         this.allItemsStyle.textContent = `
           ${this.selector} {
             transition: translate 120ms ease-in-out !important;
@@ -167,14 +168,13 @@ export class SlideHint {
   }
 
   enterDropzone() {
-    cancelAnimationFrame(this._raf3)
     this.insideDropzone = true
   }
 
   leaveDropzone() {
     this.insideDropzone = false
     this.dynamicStyle.textContent = `${this.hideCurrent}`
-    this._raf3 = requestAnimationFrame(() => {
+    queueMicrotask(() => {
       this.dynamicStyle.textContent = `${this.hideCurrent}`
     })
   }
@@ -196,6 +196,8 @@ export class SlideHint {
 
   stop() {
     this.stopped = true
+    cancelAnimationFrame(raf1)
+    cancelAnimationFrame(raf2)
 
     if (this.reverted !== true) {
       this.dynamicStyle.textContent = ""
