@@ -127,6 +127,15 @@ export function pointerEventDriver(trait) {
 
     docRect = document.documentElement.getBoundingClientRect()
 
+    if (hint) {
+      docRect = {
+        top: docRect.top + hint.targetHeight,
+        bottom: docRect.bottom - hint.targetHeight,
+        left: docRect.left + hint.targetWidth,
+        right: docRect.right - hint.targetWidth,
+      }
+    }
+
     if (ipc.inIframe) {
       let hintClone
       if (hint) {

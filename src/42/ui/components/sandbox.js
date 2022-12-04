@@ -15,10 +15,11 @@ const { href: uiUrl } = new URL("../../ui.js", import.meta.url)
 const { href: headUrl } = new URL("../head.js", import.meta.url)
 
 const options = {
-  head: `
-<link rel="stylesheet" href="/style.css" id="theme" />
-<script type="module" src="${headUrl}"></script>`,
-  body: '<body class="in-iframe">',
+  head: /* html */ `
+    <link rel="stylesheet" href="/style.css" id="theme" />
+    <script type="module" src="${headUrl}"></script>
+  `,
+  body: /* html */ `<body class="in-iframe">`,
 }
 
 // Chrome don't allow drag from top to iframe

@@ -185,15 +185,15 @@ export default class Resource {
     const head = options?.head ?? ""
     const body = options?.body ?? ""
     this.el.removeAttribute("src")
-    this.el.srcdoc = `
-<!DOCTYPE html>
-<meta charset="utf-8" />
-<meta http-equiv="Content-Security-Policy" content="${CSP}" />
-${head}
-<script type="module" src="${errorCatcher}"></script>
-${body}
-${html}
-`
+    this.el.srcdoc = /* html */ `
+      <!DOCTYPE html>
+      <meta charset="utf-8" />
+      <meta http-equiv="Content-Security-Policy" content="${CSP}" />
+      ${head}
+      <script type="module" src="${errorCatcher}"></script>
+      ${body}
+      ${html}
+    `
 
     await 0 // queueMicrotask
   }
