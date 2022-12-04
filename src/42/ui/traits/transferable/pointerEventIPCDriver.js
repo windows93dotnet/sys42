@@ -31,14 +31,12 @@ export function pointerEventDriver(trait) {
       x += iframeRect.left
       y += iframeRect.top
       // console.log("42_DRAGGER_DRAG", x, y)
-      ghost.style.opacity = 1
-      ghost.style.translate = `
-        ${x}px
-        ${y}px`
+      // ghost.style.opacity = 1
+      ghost.style.translate = `${x}px ${y}px`
     })
-    ipc.on("42_DRAGGER_INSIDE_IFRAME", { signal }, () => {
-      ghost.style.opacity = 0
-    })
+    // ipc.on("42_DRAGGER_INSIDE_IFRAME", { signal }, () => {
+    //   ghost.style.opacity = 0
+    // })
     ipc.on("42_DRAGGER_STOP", { signal }, () => {
       // ghost.remove()
     })
@@ -66,14 +64,10 @@ export function pointerEventDriver(trait) {
             hint.enterDropzone?.()
           } else {
             originHint = hint
-            hint = new SlideHint(trait, {
-              x,
-              y,
-              target: originHint.ghost,
-              index: originHint.index,
-            })
+            const { ghost, index } = originHint
+            hint = new SlideHint(trait, { x, y, ghost, index })
             hint.update(x, y)
-            originHint.ghost.style.opacity = 0
+            // originHint.ghost.style.opacity = 0
           }
         }
       }
