@@ -24,7 +24,7 @@ export function getNewIndex(X, Y, item, orientation) {
 }
 
 export class SlideHint {
-  constructor(trait, { x, y, target, index }) {
+  constructor(trait, { x, y, target, ghost, index }) {
     this.trait = trait
     this.onabort = () => this.destroy()
     this.trait.cancel.signal.addEventListener("abort", this.onabort)
@@ -46,22 +46,32 @@ export class SlideHint {
     this.allItemsStyle.id = "ui-trait-transferable2"
     document.head.append(this.allItemsStyle)
 
-    const c = {}
-    this.ghost = ghostify(target, { carrier: c })
+    let area
+    if (ghost) {
+      area = ghostify.area(ghost)
+      this.ghost = ghost
+      this.keepGhost = true
+    } else {
+      area = {}
+      this.ghost = ghostify(target, { area })
+      document.documentElement.append(this.ghost)
+    }
 
-    document.documentElement.append(this.ghost)
+    // const area = {}
+    // this.ghost = ghostify(target ?? ghost, { area })
+    // document.documentElement.append(this.ghost)
 
-    this.offsetX = x
-    this.offsetY = y
+    this.offsetX = x - area.x
+    this.offsetY = y - area.y
     this.lastX = x
     this.lastY = y
-    this.targetY = c.y
-    this.targetOffsetX = x - (c.x + c.width / 2)
-    this.targetX = c.x
-    this.targetOffsetY = y - (c.y + c.height / 2)
+    this.targetY = area.y
+    this.targetX = area.x
+    this.targetOffsetX = x - (area.x + area.width / 2)
+    this.targetOffsetY = y - (area.y + area.height / 2)
 
-    this.targetHeight = c.height + c.marginTop + c.marginBottom
-    this.targetWidth = c.width + c.marginLeft + c.marginRight
+    this.targetHeight = area.height + area.marginTop + area.marginBottom
+    this.targetWidth = area.width + area.marginLeft + area.marginRight
 
     if (this.orientation === "vertical") {
       this.blankHalfSize = this.targetHeight / 2
@@ -149,7 +159,6 @@ export class SlideHint {
 
   leaveDropzone() {
     this.insideDropzone = false
-    this.ghost.style.opacity = 1
     this.dynamicStyle.textContent = `${this.hideCurrent}`
     this._raf3 = requestAnimationFrame(() => {
       this.dynamicStyle.textContent = `${this.hideCurrent}`
@@ -157,10 +166,13 @@ export class SlideHint {
   }
 
   update(x, y) {
+    if (x === 0 && y === 0) return
+
     if (this.insideDropzone && this.freeAxis !== true) {
-      if (this.orientation === "vertical") {
-        if (y) this.ghost.style.translate = `0 ${y - this.offsetY}px`
-      } else if (x) this.ghost.style.translate = `${x - this.offsetX}px`
+      this.ghost.style.translate =
+        this.orientation === "vertical"
+          ? `${this.targetX}px ${y - this.offsetY}px`
+          : `${x - this.offsetX}px ${this.targetY}px`
     } else if (x && y) {
       this.ghost.style.translate = `
         ${x - this.offsetX}px
@@ -184,14 +196,10 @@ export class SlideHint {
 
     if (item) {
       item.style.opacity = 0
-      requestAnimationFrame(() => {
+      requestAnimationFrame(async () => {
         const { x, y } = item.getBoundingClientRect()
-        const translate =
-          this.orientation === "vertical"
-            ? `0 ${y - this.targetY}px`
-            : `${x - this.targetX}px`
-
-        animate.to(ghost, { translate }, 120).then(() => {
+        const translate = `${x}px ${y}px`
+        await animate.to(ghost, { translate }, 120).then(() => {
           item.style.opacity = 1
           this.stopped = false
           this.destroy()
@@ -218,7 +226,9 @@ export class SlideHint {
   destroy() {
     if (this.stopped) return
     this.trait.cancel.signal.removeEventListener("abort", this.onabort)
-    this.ghost.remove()
+
+    if (this.keepGhost !== true) this.ghost.remove()
+
     this.dynamicStyle.remove()
     this.allItemsStyle.remove()
   }
