@@ -142,7 +142,7 @@ test.serial("update()", 2, async (t) => {
   t.eq(users.asuka, { name: "Asuka Langley Soryu", number: 2, role: "pilot" })
 })
 
-test("throw on not clonable objects", async (t) => {
+test("throw on not cloneable objects", async (t) => {
   await t.throws(() => db.users.replace(2, location))
   t.eq(await db.users.get(2), users.rei)
 })

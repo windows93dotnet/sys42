@@ -16,7 +16,7 @@ const TRANSFERABLES = new Set([
 ])
 
 // @src https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm#supported_types
-const CLONABLE = new Set([
+const CLONEABLE = new Set([
   "Boolean",
   "String",
   "Date",
@@ -46,7 +46,7 @@ export default function isSerializable(value) {
   if (PRIMITIVES.has(type)) return 1
   if (type !== "object") return 0
   const tag = value[Symbol.toStringTag] || toString.call(value).slice(8, -1)
-  if (CLONABLE.has(tag)) return 1
+  if (CLONEABLE.has(tag)) return 1
   if (TRANSFERABLES.has(tag)) return 2
   if ("toJSON" in value) return 3
   return 0
