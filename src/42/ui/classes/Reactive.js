@@ -47,6 +47,7 @@ export default class Reactive extends Emitter {
       const res = this.render(this.queue)
       this.pendingUpdate?.resolve?.()
       this.pendingUpdate = false
+
       try {
         this.emit("update", ...res)
       } catch (err) {
@@ -258,14 +259,14 @@ export default class Reactive extends Emitter {
       objects: new Set(),
     }
 
-    for (const [loc, val] of add) {
-      allocate(this.data, loc, val, delimiter)
-      this.enqueue(queue, loc, val)
-    }
-
     for (const loc of remove) {
       deallocate(this.data, loc, delimiter)
       this.enqueue(queue, loc, undefined, undefined, true)
+    }
+
+    for (const [loc, val] of add) {
+      allocate(this.data, loc, val, delimiter)
+      this.enqueue(queue, loc, val)
     }
 
     const res = this.render(queue)
