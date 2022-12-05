@@ -111,7 +111,7 @@ class Transferable extends Trait {
     }
 
     if (this.config.driver === "pointerEvent") {
-      import("./transferable/pointerEventIPCDriver.js") //
+      import("./transferable/pointerEventDriver.js") //
         .then((m) => m.default(this))
     } else if (this.config.driver === "dragEvent") {
       import("./transferable/dragEventDriver.js") //
