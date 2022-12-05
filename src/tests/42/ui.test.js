@@ -2255,3 +2255,20 @@ test("watch in on keyword", async (t) => {
 
   t.is(app.el.textContent, "2 - 12")
 })
+
+test("set proxy as target", async (t, { decay, dest }) => {
+  const app = await decay(
+    ui(dest(), {
+      state: {
+        arr: [{ a: 1 }],
+      },
+    })
+  )
+
+  app.state.arr.push(app.state.arr[0])
+
+  t.eq(app.data.arr[0], { a: 1 })
+  t.eq(app.data.arr[1], { a: 1 })
+  t.is(app.data.arr[0], app.data.arr[1])
+  t.isNotProxy(app.data.arr[1])
+})
