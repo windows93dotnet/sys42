@@ -1,6 +1,11 @@
 export default function observe(root, options = {}) {
-  const proxies = new WeakMap()
   const revokes = new Set()
+  const proxies = new WeakMap()
+
+  let targets
+  if (options.setProxyAsTarget !== false) {
+    targets = new WeakMap()
+  }
 
   const handler = (chain, parent) => {
     const scope = "/" + (chain.length > 0 ? chain.join("/") + "/" : "")
@@ -44,6 +49,7 @@ export default function observe(root, options = {}) {
             handler([...chain, key], target)
           )
           proxies.set(val, proxy)
+          if (options.setProxyAsTarget !== false) targets.set(proxy, val)
           revokes.add(revoke)
           return proxy
         }
@@ -57,6 +63,11 @@ export default function observe(root, options = {}) {
         if (typeof key === "string") {
           const oldVal = Reflect.get(target, key, receiver)
           const path = scope + key
+
+          if (options.setProxyAsTarget !== false && targets.has(val)) {
+            val = targets.get(val)
+          }
+
           const allow = options.set?.(path, val, oldVal, {
             key,
             chain,
@@ -97,6 +108,7 @@ export default function observe(root, options = {}) {
 
   const { proxy, revoke } = Proxy.revocable(root, handler([], root))
   proxies.set(root, proxy)
+  if (options.setProxyAsTarget !== false) targets.set(proxy, root)
   revokes.add(revoke)
 
   const destroy = () => {
