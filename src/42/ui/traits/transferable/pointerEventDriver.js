@@ -2,6 +2,7 @@ import listen from "../../../fabric/event/listen.js"
 import Dragger from "../../classes/Dragger.js"
 import SlideHint, { getIndex, getNewIndex } from "./SlideHint.js"
 import { inRect } from "../../../fabric/geometry/point.js"
+import unproxy from "../../../fabric/type/object/unproxy.js"
 import sanitize from "../../../fabric/dom/sanitize.js"
 
 let data
@@ -20,25 +21,32 @@ export function pointerEventDriver(trait) {
   if (ipc.inTop) {
     let iframeRect
     let ghost
+    let hint
     ipc.on("42_DRAGGER_START", { signal }, (res, meta) => {
       iframeRect = meta.iframe.getBoundingClientRect()
       if (res?.hint) {
+        hint = res?.hint
         ghost = sanitize(res.hint.ghostHTML)
+        ghost.style.opacity = 0
         document.documentElement.append(ghost)
       }
     })
     ipc.on("42_DRAGGER_DRAG", { signal }, ({ x, y }) => {
       x += iframeRect.left
       y += iframeRect.top
-      // console.log("42_DRAGGER_DRAG", x, y)
-      // ghost.style.opacity = 1
-      ghost.style.translate = `${x}px ${y}px`
+      ghost.style.opacity = 1
+      ghost.style.translate = `
+        ${x - hint.offsetX}px
+        ${y - hint.offsetY}px`
     })
-    // ipc.on("42_DRAGGER_INSIDE_IFRAME", { signal }, () => {
-    //   ghost.style.opacity = 0
-    // })
-    ipc.on("42_DRAGGER_STOP", { signal }, () => {
-      // ghost.remove()
+    ipc.on("42_DRAGGER_INSIDE_IFRAME", { signal }, () => {
+      ghost.style.opacity = 0
+    })
+    ipc.on("42_DRAGGER_STOP", { signal }, ({ x, y }) => {
+      ghost.remove()
+      x += iframeRect.left
+      y += iframeRect.top
+      console.log(x, y, document.elementFromPoint(x, y))
     })
   }
 
@@ -155,7 +163,7 @@ export function pointerEventDriver(trait) {
         }
       }
 
-      ipc.emit("42_DRAGGER_START", { hint: hintClone })
+      ipc.emit("42_DRAGGER_START", { hint: hintClone, data: unproxy(data) })
     }
 
     if (dropzone.contains(target)) {
@@ -185,7 +193,7 @@ export function pointerEventDriver(trait) {
 
   dragger.stop = (x, y, e, target) => {
     if (ipc.inIframe) {
-      ipc.emit("42_DRAGGER_STOP")
+      ipc.emit("42_DRAGGER_STOP", { x, y })
     }
 
     for (const item of document.querySelectorAll(".dragover")) {
