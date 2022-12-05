@@ -22,21 +22,41 @@ test("generate icon list", async (t) => {
           multiselectable: true,
         },
       },
+      grid: {
+        "root,ui-folder": {
+          item: undefined,
+          multiselectable: true,
+          selection: {
+            $ref: "/$ui/folder/root/selection",
+          },
+          content: [
+            "/tests/fixtures/components/folder/subfolder/",
+            "/tests/fixtures/components/folder/script.js",
+            "/tests/fixtures/components/folder/style.css",
+          ],
+        },
+      },
       icon: {
-        "root,ui-folder,div,[0]": {
+        "root,ui-folder,ui-grid,0,[0]": {
           small: undefined,
           label: true,
-          path: { $ref: "/$ui/folder/root/items/0" },
+          path: {
+            $ref: "/$ui/grid/root,ui-folder/content/0",
+          },
         },
-        "root,ui-folder,div,[1]": {
+        "root,ui-folder,ui-grid,0,[1]": {
           small: undefined,
           label: true,
-          path: { $ref: "/$ui/folder/root/items/1" },
+          path: {
+            $ref: "/$ui/grid/root,ui-folder/content/1",
+          },
         },
-        "root,ui-folder,div,[2]": {
+        "root,ui-folder,ui-grid,0,[2]": {
           small: undefined,
           label: true,
-          path: { $ref: "/$ui/folder/root/items/2" },
+          path: {
+            $ref: "/$ui/grid/root,ui-folder/content/2",
+          },
         },
       },
     },
