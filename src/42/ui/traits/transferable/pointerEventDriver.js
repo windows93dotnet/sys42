@@ -4,13 +4,24 @@ import SlideHint, { getIndex, getNewIndex } from "./SlideHint.js"
 import { inRect } from "../../../fabric/geometry/point.js"
 import unproxy from "../../../fabric/type/object/unproxy.js"
 import sanitize from "../../../fabric/dom/sanitize.js"
+import ipc from "../../../core/ipc.js"
 
 let data
 let hint
 let originHint
+let outsideIframe
 let dropEffect = "none"
 
-import ipc from "../../../core/ipc.js"
+function cleanup() {
+  for (const item of document.querySelectorAll(".dragover")) {
+    item.classList.remove("dragover")
+  }
+
+  if (originHint) {
+    originHint.destroy()
+    originHint = undefined
+  }
+}
 
 export function pointerEventDriver(trait) {
   const { /* effects, */ dropzone } = trait
@@ -18,42 +29,10 @@ export function pointerEventDriver(trait) {
 
   const { signal } = trait.cancel
 
-  if (ipc.inTop) {
-    let iframeRect
-    let ghost
-    let hint
-    ipc.on("42_DRAGGER_START", { signal }, (res, meta) => {
-      iframeRect = meta.iframe.getBoundingClientRect()
-      if (res?.hint) {
-        hint = res?.hint
-        ghost = sanitize(res.hint.ghostHTML)
-        ghost.style.opacity = 0
-        document.documentElement.append(ghost)
-      }
-    })
-    ipc.on("42_DRAGGER_DRAG", { signal }, ({ x, y }) => {
-      x += iframeRect.left
-      y += iframeRect.top
-      ghost.style.opacity = 1
-      ghost.style.translate = `
-        ${x - hint.offsetX}px
-        ${y - hint.offsetY}px`
-    })
-    ipc.on("42_DRAGGER_INSIDE_IFRAME", { signal }, () => {
-      ghost.style.opacity = 0
-    })
-    ipc.on("42_DRAGGER_STOP", { signal }, ({ x, y }) => {
-      ghost.remove()
-      x += iframeRect.left
-      y += iframeRect.top
-      console.log(x, y, document.elementFromPoint(x, y))
-    })
-  }
-
   /* dropzone
   =========== */
 
-  listen(dropzone, {
+  const events = {
     signal,
 
     pointermove({ x, y }) {
@@ -63,6 +42,8 @@ export function pointerEventDriver(trait) {
     },
 
     pointerenter({ x, y }) {
+      if (outsideIframe) return
+
       if (Dragger.isDragging) {
         dropzone.classList.add("dragover")
         dropEffect = "move"
@@ -119,19 +100,109 @@ export function pointerEventDriver(trait) {
         }
       }
     },
-  })
+  }
+
+  listen(dropzone, events)
+
+  /* drag from iframe
+  =================== */
+
+  if (ipc.inTop) {
+    let iframeRect
+    let insideTopDropzone
+
+    ipc.on("42_DRAGGER_START", { signal }, (res, meta) => {
+      Dragger.isDragging = true
+
+      iframeRect = meta.iframe.getBoundingClientRect()
+      data = res.data
+
+      if (res?.origin && trait.config.hint === "slide") {
+        const { origin } = res
+        origin.ghost = sanitize(origin.ghostHTML)
+        hint = new SlideHint(trait, { origin })
+        hint.keepGhost = false
+        hint.id = origin.id
+
+        hint.ghost.style.opacity = 0
+        document.documentElement.append(hint.ghost)
+      }
+    })
+
+    ipc.on("42_DRAGGER_OUTSIDE", { signal }, (point) => {
+      outsideIframe = true
+
+      if (point.insideIframeDropzone) {
+        hint.ghost.style.opacity = 0
+        return
+      }
+
+      point.x += iframeRect.left
+      point.y += iframeRect.top
+
+      if (hint) {
+        hint.ghost.style.opacity = 1
+        hint.update(point.x, point.y)
+      }
+
+      const target = document.elementFromPoint(point.x, point.y)
+
+      if (dropzone.contains(target)) {
+        if (!insideTopDropzone) {
+          insideTopDropzone = true
+          outsideIframe = false
+          events.pointerenter(point)
+          outsideIframe = true
+        }
+
+        hint?.layout?.(point.x, point.y)
+      } else if (insideTopDropzone) {
+        insideTopDropzone = false
+        events.pointerleave()
+      }
+    })
+
+    ipc.on("42_DRAGGER_INSIDE", { signal }, () => {
+      outsideIframe = false
+      hint.ghost.style.opacity = 0
+    })
+
+    ipc.on("42_DRAGGER_STOP", { signal }, ({ x, y }) => {
+      cleanup()
+
+      if (outsideIframe) {
+        x += iframeRect.left
+        y += iframeRect.top
+        const target = document.elementFromPoint(x, y)
+        if (dropzone.contains(target)) {
+          events.pointerup({ target, x, y })
+        } else hint?.destroy()
+      } else {
+        hint?.destroy()
+      }
+
+      hint = undefined
+      data = undefined
+
+      outsideIframe = false
+      Dragger.isDragging = false
+
+      return dropEffect
+    })
+  }
 
   if (!trait.selector) return
 
   /* draggable items
   ================== */
 
+  let docRect
+  let isOutsideIframe = false
+
   const dragger = new Dragger(trait.el, {
     signal,
     selector: trait.selector,
   })
-
-  let docRect
 
   dragger.start = (x, y, e, target) => {
     dropEffect = "none"
@@ -142,28 +213,27 @@ export function pointerEventDriver(trait) {
       hint = new SlideHint(trait, { x, y, target, index })
     }
 
-    docRect = document.documentElement.getBoundingClientRect()
-
-    if (hint) {
-      docRect = {
-        top: docRect.top + hint.targetHeight,
-        bottom: docRect.bottom - hint.targetHeight,
-        left: docRect.left + hint.targetWidth,
-        right: docRect.right - hint.targetWidth,
-      }
-    }
-
     if (ipc.inIframe) {
-      let hintClone
+      docRect = document.documentElement.getBoundingClientRect()
+
       if (hint) {
-        hintClone = {
-          offsetX: hint.offsetX,
-          offsetY: hint.offsetY,
-          ghostHTML: hint.ghost.outerHTML,
+        docRect = {
+          top: docRect.top + hint.targetHeight,
+          bottom: docRect.bottom - hint.targetHeight,
+          left: docRect.left + hint.targetWidth,
+          right: docRect.right - hint.targetWidth,
         }
       }
 
-      ipc.emit("42_DRAGGER_START", { hint: hintClone, data: unproxy(data) })
+      let origin
+      if (hint) {
+        origin = SlideHint.cloneHint(hint)
+        origin.ghostHTML = hint.ghost.outerHTML
+        origin.id = id
+        delete origin.ghost
+      }
+
+      ipc.emit("42_DRAGGER_START", { origin, data: unproxy(data) })
     }
 
     if (dropzone.contains(target)) {
@@ -172,42 +242,37 @@ export function pointerEventDriver(trait) {
     }
   }
 
-  let isOutsideIframe = false
-
   dragger.drag = (x, y) => {
     if (ipc.inIframe) {
       const point = { x, y }
       if (inRect(point, docRect)) {
         if (isOutsideIframe) {
-          ipc.emit("42_DRAGGER_INSIDE_IFRAME")
+          ipc.emit("42_DRAGGER_INSIDE")
           isOutsideIframe = false
         }
       } else {
         isOutsideIframe = true
-        ipc.emit("42_DRAGGER_DRAG", point)
+        point.insideIframeDropzone = hint?.insideDropzone
+        ipc.emit("42_DRAGGER_OUTSIDE", point)
       }
     }
 
     hint?.update?.(x, y)
   }
 
-  dragger.stop = (x, y, e, target) => {
+  dragger.stop = async (x, y, e, target) => {
     if (ipc.inIframe) {
-      ipc.emit("42_DRAGGER_STOP", { x, y })
+      isOutsideIframe = false
+      dropEffect = await ipc.send("42_DRAGGER_STOP", { x, y })
     }
 
-    for (const item of document.querySelectorAll(".dragover")) {
-      item.classList.remove("dragover")
-    }
-
-    if (originHint) {
-      originHint.destroy()
-      originHint = undefined
-    }
+    cleanup()
 
     if (dropEffect === "move") hint?.destroy?.()
     else hint?.revert?.()
+
     hint = undefined
+    data = undefined
 
     if (trait.isSorting) {
       trait.isSorting = false

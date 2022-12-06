@@ -1,8 +1,8 @@
 import ui from "../../../../42/ui.js"
 import planets from "../../../fixtures/data/planets.js"
 
-// const lorem =
-//   "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quas, quo quidem voluptate, consectetur, sint repellendus expedita consequatur pariatur delectus cum inventore iure aperiam? Ad facere nemo tenetur nesciunt quam autem voluptatibus vel temporibus dolorem atque. Dolores beatae magnam iure, architecto eius explicabo aut molestias voluptas itaque dolorum sunt quisquam. Totam, corrupti animi! Velit soluta repudiandae temporibus facere. Ad atque nihil quisquam amet deleniti doloremque, ut molestiae cumque quidem cum vitae voluptates dicta quas dolor"
+const lorem =
+  "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quas, quo quidem voluptate, consectetur, sint repellendus expedita consequatur pariatur delectus cum inventore iure aperiam? Ad facere nemo tenetur nesciunt quam autem voluptatibus vel temporibus dolorem atque. Dolores beatae magnam iure, architecto eius explicabo aut molestias voluptas itaque dolorum sunt quisquam. Totam, corrupti animi! Velit soluta repudiandae temporibus facere. Ad atque nihil quisquam amet deleniti doloremque, ut molestiae cumque quidem cum vitae voluptates dicta quas dolor"
 
 const state = {
   planets: [],
@@ -76,36 +76,37 @@ window.app = await ui({
       content: {
         tag: ".box-h",
         content: [
-          {
-            tag: ".box-center",
-            content: {
-              tag: ".pa._outset.resize.flex-v",
-              style: { width: "380px", height: "200px" },
-              content: {
-                tag: "ui-tabs",
-                id: "tabs3",
-                side: "bottom",
-                content: "{{planets}}",
-              },
-            },
-          },
           // {
           //   tag: ".box-center",
           //   content: {
           //     tag: ".pa._outset.resize.flex-v",
-          //     style: { width: "400px", height: "200px" },
+          //     style: { width: "380px", height: "200px" },
           //     content: {
           //       tag: "ui-tabs",
-          //       id: "tabs4",
-          //       side: "right",
-          //       content: [
-          //         { label: "One", content: lorem },
-          //         { label: "Two", content: "hello" },
-          //         { label: "Three", content: "world" },
-          //       ],
+          //       id: "tabs3",
+          //       side: "bottom",
+          //       content: "{{planets}}",
           //     },
           //   },
           // },
+          {
+            tag: ".box-center",
+            content: {
+              tag: ".pa._outset.resize.flex-v",
+              // style: { width: "400px", height: "200px" },
+              style: { width: "380px", height: "200px" },
+              content: {
+                tag: "ui-tabs",
+                id: "tabs4",
+                // side: "right",
+                content: [
+                  { label: "One", content: lorem },
+                  { label: "Two", content: "hello" },
+                  { label: "Three", content: "world" },
+                ],
+              },
+            },
+          },
         ],
       },
     },

@@ -27,6 +27,25 @@ let raf1
 let raf2
 
 export class SlideHint {
+  static cloneHint(origin, obj = {}) {
+    obj.ghost = origin.ghost
+
+    obj.index = origin.index
+    obj.targetIndex = origin.index
+
+    obj.offsetX = origin.offsetX
+    obj.offsetY = origin.offsetY
+    obj.lastX = origin.lastX
+    obj.lastY = origin.lastY
+    obj.targetY = origin.targetY
+    obj.targetX = origin.targetX
+    obj.targetOffsetX = origin.targetOffsetX
+    obj.targetOffsetY = origin.targetOffsetY
+    obj.targetHeight = origin.targetHeight
+    obj.targetWidth = origin.targetWidth
+    return obj
+  }
+
   constructor(trait, { x, y, index, target, ghost, origin }) {
     this.trait = trait
     this.onabort = () => this.destroy()
@@ -47,22 +66,8 @@ export class SlideHint {
     document.head.append(this.allItemsStyle)
 
     if (origin) {
-      this.index = origin.index
-      this.targetIndex = origin.index
-
-      this.ghost = origin.ghost
+      SlideHint.cloneHint(origin, this)
       this.keepGhost = true
-
-      this.offsetX = origin.offsetX
-      this.offsetY = origin.offsetY
-      this.lastX = origin.lastX
-      this.lastY = origin.lastY
-      this.targetY = origin.targetY
-      this.targetX = origin.targetX
-      this.targetOffsetX = origin.targetOffsetX
-      this.targetOffsetY = origin.targetOffsetY
-      this.targetHeight = origin.targetHeight
-      this.targetWidth = origin.targetWidth
     } else {
       this.index = index
       this.targetIndex = index
