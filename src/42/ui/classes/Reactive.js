@@ -265,7 +265,9 @@ export default class Reactive extends Emitter {
     }
 
     for (const [loc, val] of add) {
-      allocate(this.data, loc, val, delimiter)
+      const prev = locate(this.data, loc, delimiter)
+      if (prev && typeof prev === "object") Object.assign(prev, val)
+      else allocate(this.data, loc, val, delimiter)
       this.enqueue(queue, loc, val)
     }
 

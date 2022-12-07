@@ -38,35 +38,30 @@ window.app = await ui({
               id: "tabs1",
               // balanced: true,
               content: "{{planets}}",
-              // content: [
-              //   { label: "One", content: lorem },
-              //   { label: "Two", content: "hello" },
-              //   { label: "Three", content: "world" },
-              // ],
             },
           },
         },
-        // {
-        //   tag: ".box-center",
-        //   content: {
-        //     tag: ".pa._outset.resize.flex-v",
-        //     style: { width: "400px", height: "200px" },
-        //     content: {
-        //       tag: "ui-tabs",
-        //       id: "tabs2",
-        //       side: "left",
-        //       // balanced: true,
-        //       content: [
-        //         { label: "One", content: lorem },
-        //         { label: "Two", content: "hello" },
-        //         {
-        //           label: "Three Lorem Hello World Three Lorem Hello World",
-        //           content: "world",
-        //         },
-        //       ],
-        //     },
-        //   },
-        // },
+        {
+          tag: ".box-center",
+          content: {
+            tag: ".pa._outset.resize.flex-v",
+            style: { width: "400px", height: "200px" },
+            content: {
+              tag: "ui-tabs",
+              id: "tabs2",
+              side: "left",
+              // balanced: true,
+              content: [
+                { label: "One", content: lorem },
+                { label: "Two", content: "hello" },
+                {
+                  label: "Three Lorem Hello World Three Lorem Hello World",
+                  content: "world",
+                },
+              ],
+            },
+          },
+        },
       ],
     },
 
@@ -76,19 +71,19 @@ window.app = await ui({
       content: {
         tag: ".box-h",
         content: [
-          // {
-          //   tag: ".box-center",
-          //   content: {
-          //     tag: ".pa._outset.resize.flex-v",
-          //     style: { width: "380px", height: "200px" },
-          //     content: {
-          //       tag: "ui-tabs",
-          //       id: "tabs3",
-          //       side: "bottom",
-          //       content: "{{planets}}",
-          //     },
-          //   },
-          // },
+          {
+            tag: ".box-center",
+            content: {
+              tag: ".pa._outset.resize.flex-v",
+              style: { width: "380px", height: "200px" },
+              content: {
+                tag: "ui-tabs",
+                id: "tabs3",
+                side: "bottom",
+                content: "{{planets}}",
+              },
+            },
+          },
           {
             tag: ".box-center",
             content: {

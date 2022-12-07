@@ -10,6 +10,7 @@ let data
 let hint
 let originHint
 let outsideIframe
+let iframeRect
 let dropEffect = "none"
 
 function cleanup() {
@@ -21,6 +22,36 @@ function cleanup() {
     originHint.destroy()
     originHint = undefined
   }
+}
+
+const dropzones = new Set()
+
+if (ipc.inTop) {
+  ipc.on("42_DRAGGER_STOP", ({ x, y }) => {
+    cleanup()
+
+    if (outsideIframe) {
+      x += iframeRect.left
+      y += iframeRect.top
+      const target = document.elementFromPoint(x, y)
+      for (const { dropzone, pointerup } of dropzones) {
+        if (dropzone.contains(target)) {
+          pointerup({ target, x, y })
+        } else hint?.destroy()
+      }
+    } else {
+      hint?.destroy()
+    }
+
+    hint = undefined
+    data = undefined
+    iframeRect = undefined
+
+    outsideIframe = false
+    Dragger.isDragging = false
+
+    return dropEffect
+  })
 }
 
 export function pointerEventDriver(trait) {
@@ -106,12 +137,15 @@ export function pointerEventDriver(trait) {
 
   /* drag from iframe
   =================== */
+  const instance = { dropzone, pointerup: events.pointerup }
+  dropzones.add(instance)
+  signal.addEventListener("abort", () => dropzones.delete(instance))
 
   if (ipc.inTop) {
-    let iframeRect
     let insideTopDropzone
 
     ipc.on("42_DRAGGER_START", { signal }, (res, meta) => {
+      if (iframeRect) return
       Dragger.isDragging = true
 
       iframeRect = meta.iframe.getBoundingClientRect()
@@ -130,6 +164,7 @@ export function pointerEventDriver(trait) {
     })
 
     ipc.on("42_DRAGGER_OUTSIDE", { signal }, (point) => {
+      point = { ...point }
       outsideIframe = true
 
       if (point.insideIframeDropzone) {
@@ -165,29 +200,6 @@ export function pointerEventDriver(trait) {
     ipc.on("42_DRAGGER_INSIDE", { signal }, () => {
       outsideIframe = false
       hint.ghost.style.opacity = 0
-    })
-
-    ipc.on("42_DRAGGER_STOP", { signal }, ({ x, y }) => {
-      cleanup()
-
-      if (outsideIframe) {
-        x += iframeRect.left
-        y += iframeRect.top
-        const target = document.elementFromPoint(x, y)
-        if (dropzone.contains(target)) {
-          events.pointerup({ target, x, y })
-        } else hint?.destroy()
-      } else {
-        hint?.destroy()
-      }
-
-      hint = undefined
-      data = undefined
-
-      outsideIframe = false
-      Dragger.isDragging = false
-
-      return dropEffect
     })
   }
 
