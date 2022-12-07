@@ -754,7 +754,7 @@ export function normalizeDef(def = {}, ctx, options) {
 
     if (def.actions) {
       normalizeData(def.actions, ctx, (res) => {
-        ctx.actions.merge("/", res)
+        ctx.actions.merge(ctx.scope, res)
       })
     }
 

@@ -1,4 +1,4 @@
-// import applyStyleDeclaration from "./applyStyleDeclaration.js"
+import applyStyleDeclaration from "./applyStyleDeclaration.js"
 
 export function area(el) {
   const { x, y, width, height } = el.getBoundingClientRect()
@@ -22,19 +22,20 @@ export function ghostify(el, options) {
   clone.classList.add("ghost")
   const styles = getComputedStyle(el)
 
-  // applyStyleDeclaration(clone, styles)
-
   const marginTop = Number.parseInt(styles.marginTop, 10)
   const marginLeft = Number.parseInt(styles.marginLeft, 10)
+
+  applyStyleDeclaration(clone, styles)
 
   clone.style.transition = "none"
   clone.style.position = "fixed"
   clone.style.pointerEvents = "none"
-  clone.style.display = "inline-block"
   clone.style.minWidth = "0"
   clone.style.minHeight = "0"
   clone.style.maxWidth = "none"
   clone.style.maxHeight = "none"
+
+  if (clone.style.display === "inline") clone.style.display = "inline-block"
 
   clone.style.width = `${width}px`
   clone.style.height = `${height}px`
