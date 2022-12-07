@@ -1,8 +1,8 @@
 const { ELEMENT_NODE } = Node
 
-export default function ensureElement(val) {
+export default function ensureElement(val, base = document) {
   const type = typeof val
-  const el = type === "string" ? document.querySelector(val) : val
+  const el = type === "string" ? base.querySelector(val) : val
   if (el?.nodeType === ELEMENT_NODE) return el
 
   throw new TypeError(

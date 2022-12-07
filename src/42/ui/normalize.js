@@ -525,6 +525,7 @@ export function normalizeTraits(def, ctx) {
 
   return async (el) => {
     await ctx.preload
+    await el.ready
     for (const { module, name, val } of list) {
       const fn = (val) => {
         if (val === false) el[_INSTANCES]?.[name]?.destroy()

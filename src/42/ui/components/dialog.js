@@ -155,27 +155,33 @@ export class Dialog extends Component {
   }
 
   setup() {
-    const rect = this.getBoundingClientRect()
+    if (this.x === undefined) {
+      let { x, y } = this.getBoundingClientRect()
 
-    let offset
-    for (const item of document.querySelectorAll(
-      `${rootSelector} > ui-dialog:not(#${this.id})`
-    )) {
-      if (item.x !== undefined) {
-        if (rect.x === item.x && rect.y === item.y) {
-          offset ??=
-            this.querySelector(":scope > .ui-dialog__header").clientHeight +
-            getHeaderOffset(this)
-          rect.x += offset
-          rect.y += offset
+      x = Math.round(x)
+      y = Math.round(y)
+
+      let offset
+      for (const item of document.querySelectorAll(
+        `${rootSelector} > ui-dialog:not(#${this.id})`
+      )) {
+        if (item.x !== undefined) {
+          if (x === item.x && y === item.y) {
+            offset ??=
+              this.querySelector(":scope > .ui-dialog__header").clientHeight +
+              getHeaderOffset(this)
+            x += offset
+            y += offset
+          }
         }
       }
+
+      this.x = x
+      this.y = y
+      this.style.top = 0
+      this.style.left = 0
     }
 
-    this.x ??= Math.round(rect.x)
-    this.y ??= Math.round(rect.y)
-    this.style.top = 0
-    this.style.left = 0
     this.activate()
 
     this.emit("open", this)
@@ -200,6 +206,8 @@ export const dialog = rpc(
     await el.ready
 
     document.documentElement.append(el)
+
+    await nextCycle()
 
     return el.once("close").then((res) => ({ res, opener }))
   },
