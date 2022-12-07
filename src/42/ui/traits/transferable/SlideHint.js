@@ -219,7 +219,10 @@ export class SlideHint {
         const { opacity } = item.style
         item.style.opacity = 0
         const { x, y } = item.getBoundingClientRect()
-        const translate = `${x}px ${y}px`
+        const styles = getComputedStyle(item)
+        const marginTop = Number.parseInt(styles.marginTop, 10)
+        const marginLeft = Number.parseInt(styles.marginLeft, 10)
+        const translate = `${x - marginLeft}px ${y - marginTop}px`
         await animate.to(this.ghost, { translate }, 120).then(() => {
           item.style.opacity = opacity
           this.stopped = false

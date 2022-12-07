@@ -10,9 +10,6 @@ ui-icon {
   position: relative;
   user-select: none;
   pointer-events: none;
-
-  /* --highlight-bg: palegreen; */
-  /* --highlight-bg: red; */
 }
 
 .ui-icon__figure {
@@ -105,10 +102,6 @@ ui-icon:is([aria-pressed="true"],[aria-selected="true"]) .ui-icon__label {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
 }
-
-/* ui-icon .ui-icon__label > svg {
-  display: block;
-} */
 
 ui-icon:focus .ui-icon__label > svg {
   display: block;
