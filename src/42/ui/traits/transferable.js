@@ -36,7 +36,7 @@ class Transferable extends Trait {
       : this.config.effects
 
     this.dropzone = this.config.dropzone
-      ? ensureElement(this.config.dropzone)
+      ? ensureElement(this.config.dropzone, el)
       : el
 
     this.dropzone.id ||= uid()
