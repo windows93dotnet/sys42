@@ -101,7 +101,7 @@ export default {
   annexes: [
     {
       metaHeaders: false,
-      src: "WICG/sanitizer-api",
+      from: "WICG/sanitizer-api",
       map: [
         [
           "resources/baseline-attribute-allow-list.json",
@@ -189,15 +189,16 @@ export default {
     ========= */
 
     {
-      src: "golden-fleece",
-      dest: "src/42/core/formats/json5.js",
+      only: true,
+      from: "golden-fleece",
+      to: "src/42/core/formats/json5.js",
       foot: "export default { ast: parse, parse: evaluate, format: patch, stringify }",
       eslint: { disable: true },
     },
 
     {
-      src: "csstools/sanitize.css@main",
-      dest: "src/42/themes/default/reset/",
+      from: "csstools/sanitize.css@main",
+      to: "src/42/themes/default/reset/",
       map: [
         "sanitize.css", //
         "reduce-motion.css",
@@ -205,8 +206,7 @@ export default {
     },
 
     {
-      only: true,
-      src: "faisalman/ua-parser-js@develop",
+      from: "faisalman/ua-parser-js@develop",
       map: [["src/ua-parser.js", "src/42/core/env/parseUserAgent.js"]],
       metaHeaders: false,
       eslint: {
@@ -240,8 +240,8 @@ export default {
     =============== */
 
     {
-      src: "json-patch/json-patch-tests",
-      dest: "src/tests/annexes/JSONPatchSuite.js",
+      from: "json-patch/json-patch-tests",
+      to: "src/tests/annexes/JSONPatchSuite.js",
       map: [
         "tests.json", //
         "spec_tests.json",
@@ -250,8 +250,8 @@ export default {
     },
 
     {
-      src: "https://spec.commonmark.org/0.30/spec.json",
-      dest: "src/tests/annexes/commonmarkSuite.js",
+      from: "https://spec.commonmark.org/0.30/spec.json",
+      to: "src/tests/annexes/commonmarkSuite.js",
       replace: [[/  "(start|end)_line": \d+,\n/g, ""]],
     },
   ],
