@@ -391,7 +391,7 @@ ipc.iframes = new Map()
 ipc.from = (source, options) => new Receiver(source, options)
 ipc.to = (target, options) => new Sender(target, options)
 
-if (!realm.inOpaqueOrigin) {
+if (realm.inWindow && !realm.inOpaqueOrigin) {
   navigator.serviceWorker?.addEventListener("message", messageHandler)
 }
 
@@ -408,7 +408,7 @@ if (realm.inTop) {
   globalThis.addEventListener("pagehide", () => ipc.emit(CLOSE))
 }
 
-if (!realm.inSharedWorker) {
+if (realm.inWindow && !realm.inSharedWorker) {
   globalThis.addEventListener("message", messageHandler)
 }
 
