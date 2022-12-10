@@ -2,6 +2,7 @@ import BrowserDriver from "../BrowserDriver.js"
 import base64 from "../../formats/base64.js"
 
 class LocalStorageDriver extends BrowserDriver {
+  static mask = 0x12
   static store = {
     has(id) {
       return localStorage.getItem(id) !== null
@@ -24,7 +25,6 @@ class LocalStorageDriver extends BrowserDriver {
       return localStorage.removeItem(id)
     },
   }
-  static mask = 0x12
 }
 
 export const driver = (...args) => new LocalStorageDriver(...args).init()

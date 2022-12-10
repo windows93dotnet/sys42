@@ -1,17 +1,8 @@
-import inOpaqueOrigin from "./env/realm/inOpaqueOrigin.js"
-import inTop from "./env/realm/inTop.js"
-import configure from "./configure.js"
-import resolvePath from "../core/path/core/resolvePath.js"
-import FileSystemError from "./fs/FileSystemError.js"
-import addStack from "../fabric/type/error/addStack.js"
 import getDriverLazy from "./fs/getDriverLazy.js"
-import defer from "../fabric/type/promise/defer.js"
-import ipc from "./ipc.js"
 import removeItem from "../fabric/type/array/removeItem.js"
-
-export { default as FileSystemError } from "./fs/FileSystemError.js"
-
-const UTF8 = "utf-8"
+import resolvePath from "./path/core/resolvePath.js"
+import inOpaqueOrigin from "./env/realm/inOpaqueOrigin.js"
+import defer from "../fabric/type/promise/defer.js"
 
 const DEFAULTS = {
   places: { "/": "indexeddb" },
@@ -19,20 +10,13 @@ const DEFAULTS = {
   // places: { "/": "memory" },
 }
 
-// "/var/": "localstorage",
-// "/tmp/": "memory",
-// "/www/": "cache",
-// TODO: https://web.dev/storage-foundation/
-// TODO: https://web.dev/file-system-access/
-// TODO: https://emscripten.org/docs/api_reference/Filesystem-API.html#id2
+const UTF8 = "utf-8"
 
 let places
 
-if (inTop) ipc.on("IPCDriver", async ({ type, args }) => fs[type](...args))
-
 const queue = new Map()
 
-async function enqueue(filename) {
+export async function enqueue(filename) {
   const deferred = defer()
 
   deferred.promise.finally(() => {
@@ -81,147 +65,103 @@ export function mount(place, driverName, options) {
   places = Object.keys(fs.config.places).sort((a, b) => b.length - a.length)
 }
 
-async function findDriver(path, stack) {
+async function findDriver(path) {
   const filename = resolvePath(path)
+
   let name
   if (inOpaqueOrigin) {
     name = "ipc"
   } else {
     const place = places.find((item) => filename.startsWith(item))
     if (place in fs.config.places === false) {
-      throw addStack(new Error(`no driver mounted for '${filename}'`), stack)
+      throw new Error(`no driver mounted for '${filename}'`)
     }
 
     name = fs.config.places[place]
   }
 
-  const driver = await getDriverLazy(name, stack)
+  const driver = await getDriverLazy(name)
   return { filename, driver }
 }
 
 /* check
 ======== */
 
-export async function access(path) {
-  const { stack } = new Error()
-  const { driver, filename } = await findDriver(path, stack)
-  return driver.access(filename)
+export async function access(path, ...args) {
+  const { driver, filename } = await findDriver(path)
+  return driver.access(filename, ...args)
 }
 
-export async function isFile(path) {
-  const { stack } = new Error()
-  const { driver, filename } = await findDriver(path, stack)
-  return driver.isFile(filename)
+export async function isFile(path, ...args) {
+  const { driver, filename } = await findDriver(path)
+  return driver.isFile(filename, ...args)
 }
 
-export async function isDir(path) {
-  const { stack } = new Error()
-  const { driver, filename } = await findDriver(path, stack)
-  return driver.isDir(filename)
+export async function isDir(path, ...args) {
+  const { driver, filename } = await findDriver(path)
+  return driver.isDir(filename, ...args)
 }
 
 /* file
 ======= */
 
-export async function open(path, options = {}) {
-  const { stack } = new Error()
-  const { driver, filename } = await findDriver(path, stack)
-  if (typeof options === "string") options = { encoding: options }
-  return driver.open(filename, options).catch((err) => {
-    if ("errno" in err === false) throw err
-    throw new FileSystemError(err.errno, filename, stack)
-  })
+export async function open(path, ...args) {
+  const { driver, filename } = await findDriver(path)
+  return driver.open(filename, ...args)
 }
 
-export async function read(path, options = {}) {
-  const { stack } = new Error()
-  const { driver, filename } = await findDriver(path, stack)
-  if (typeof options === "string") options = { encoding: options }
-  return driver.read(filename, options).catch((err) => {
-    if ("errno" in err === false) throw err
-    throw new FileSystemError(err.errno, filename, stack)
-  })
+export async function read(path, ...args) {
+  const { driver, filename } = await findDriver(path)
+  return driver.read(filename, ...args)
 }
 
-export async function write(path, value, options = {}) {
-  const { stack } = new Error()
-  const { driver, filename } = await findDriver(path, stack)
-  if (typeof options === "string") options = { encoding: options }
-  return driver.write(filename, value, options).catch((err) => {
-    if ("errno" in err === false) throw err
-    throw new FileSystemError(err.errno, filename, stack)
-  })
+export async function write(path, ...args) {
+  const { driver, filename } = await findDriver(path)
+  const resolve = await enqueue(path)
+  await driver.write(filename, ...args).finally(resolve)
 }
 
-export async function deleteFile(path, options = {}) {
-  const { stack } = new Error()
-  const { driver, filename } = await findDriver(path, stack)
-  return driver.delete(filename, options).catch((err) => {
-    if ("errno" in err === false) throw err
-    throw new FileSystemError(err.errno, filename, stack)
-  })
+export async function append(path, ...args) {
+  const { driver, filename } = await findDriver(path)
+  const resolve = await enqueue(path)
+  await driver.append(filename, ...args).finally(resolve)
 }
 
-export async function append(path, value, options = {}) {
-  const { stack } = new Error()
-  const { driver, filename } = await findDriver(path, stack)
-  if (typeof options === "string") options = { encoding: options }
-  return driver.append(filename, value, options).catch((err) => {
-    if ("errno" in err === false) throw err
-    throw new FileSystemError(err.errno, filename, stack)
-  })
+export async function deleteFile(path, ...args) {
+  const { driver, filename } = await findDriver(path)
+  await driver.delete(filename, ...args)
 }
 
 /* dir
 ====== */
 
 export async function writeDir(path) {
-  const { stack } = new Error()
-  const { driver, filename } = await findDriver(path, stack)
-  return driver.writeDir(filename).catch((err) => {
-    if ("errno" in err === false) throw err
-    throw new FileSystemError(err.errno, filename, stack)
-  })
+  const { driver, filename } = await findDriver(path)
+  await driver.writeDir(filename)
 }
 
-export async function readDir(path, options = {}) {
-  const { stack } = new Error()
-  const { driver, filename } = await findDriver(path, stack)
-  return driver.readDir(filename, options).catch((err) => {
-    if ("errno" in err === false) throw err
-    throw new FileSystemError(err.errno, filename, stack)
-  })
+export async function readDir(path, ...args) {
+  const { driver, filename } = await findDriver(path)
+  return driver.readDir(filename, ...args)
 }
 
 export async function deleteDir(path) {
-  const { stack } = new Error()
-  const { driver, filename } = await findDriver(path, stack)
-  return driver.deleteDir(filename).catch((err) => {
-    if ("errno" in err === false) throw err
-    throw new FileSystemError(err.errno, filename, stack)
-  })
+  const { driver, filename } = await findDriver(path)
+  await driver.deleteDir(filename)
 }
 
 /* stream
 ========= */
 
-export function sink(path, options = {}) {
-  const { stack } = new Error()
-
+export function sink(path, options) {
   let underlyingSink
-  if (typeof options === "string") options = { encoding: options }
 
   return new WritableStream(
     {
       async write(chunk) {
         if (!underlyingSink) {
-          const { driver, filename } = await findDriver(path, stack)
-          try {
-            underlyingSink = await driver.sink(filename, options)
-          } catch (err) {
-            if ("errno" in err === false) throw err
-            throw new FileSystemError(err.errno, filename, stack)
-          }
+          const { driver, filename } = await findDriver(path)
+          underlyingSink = await driver.sink(filename, options)
         }
 
         await underlyingSink.write(chunk)
@@ -233,29 +173,22 @@ export function sink(path, options = {}) {
         await underlyingSink?.close()
       },
     },
-    options.queuingStrategy
+    options?.queuingStrategy
   )
 }
 
-export function source(path, options = {}) {
-  const { stack } = new Error()
-
+export function source(path, options) {
   let iterator
-  if (typeof options === "string") options = { encoding: options }
 
   return new ReadableStream(
     {
       async pull(controller) {
         if (!iterator) {
-          const { driver, filename } = await findDriver(path, stack)
+          const { driver, filename } = await findDriver(path)
           try {
             iterator = await driver.source(filename, options)
           } catch (err) {
-            controller.error(
-              "errno" in err === false
-                ? err
-                : new FileSystemError(err.errno, filename, stack)
-            )
+            controller.error(err)
             return
           }
         }
@@ -265,7 +198,7 @@ export function source(path, options = {}) {
         else controller.enqueue(value)
       },
     },
-    options.queuingStrategy
+    options?.queuingStrategy
   )
 }
 
@@ -308,9 +241,7 @@ export async function readText(path) {
 }
 
 export async function writeJSON(path, value, replacer, space = 2) {
-  const resolve = await enqueue(path)
   return write(path, JSON.stringify(value, replacer, space) ?? "", UTF8) //
-    .finally(resolve)
 }
 
 export async function readJSON(path, options) {
@@ -355,9 +286,8 @@ export async function readCBOR(path) {
 }
 
 export const fs = {
-  FileSystemError,
-  config: configure(DEFAULTS),
   mount,
+  config: structuredClone(DEFAULTS),
 
   access,
   isDir,
@@ -366,9 +296,8 @@ export const fs = {
   open,
   read,
   write,
-  delete: deleteFile,
-  deleteFile,
   append,
+  delete: deleteFile,
 
   writeDir,
   readDir,
@@ -388,23 +317,6 @@ export const fs = {
   writeCBOR,
   readCBOR,
 }
-
-// aliases
-
-fs.write.text = writeText
-fs.read.text = readText
-
-fs.write.json = writeJSON
-fs.read.json = readJSON
-fs.write.json5 = writeJSON5
-fs.read.json5 = readJSON
-
-fs.write.cbor = writeCBOR
-fs.read.cbor = readCBOR
-
-fs.write.dir = writeDir
-fs.read.dir = readDir
-fs.delete.dir = deleteDir
 
 mount()
 

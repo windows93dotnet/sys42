@@ -1,20 +1,18 @@
-import addStack from "../../fabric/type/error/addStack.js"
-import fs from "../fs.js"
 import { MASKS } from "./Disk.js"
 
-import { driver as fetchDriver } from "./driver/fetchDriver.js"
-import { driver as indexeddbDriver } from "./driver/indexeddbDriver.js"
-import { driver as memoryDriver } from "./driver/memoryDriver.js"
+import { driver as indexeddbDriver } from "./drivers/indexeddbDriver.js"
+import { driver as localstorageDriver } from "./drivers/localstorageDriver.js"
+import { driver as memoryDriver } from "./drivers/memoryDriver.js"
 
 const modules = {
-  fetch: fetchDriver,
   indexeddb: indexeddbDriver,
+  localstorage: localstorageDriver,
   memory: memoryDriver,
 }
 
 const drivers = {}
 
-export default async function getDriver(name, stack = "") {
+export default async function getDriver(name) {
   const type = typeof name
   if (type === "function") return name
 
@@ -22,10 +20,6 @@ export default async function getDriver(name, stack = "") {
 
   if (drivers[name]) return drivers[name]
 
-  try {
-    drivers[name] = await modules[name](fs.config, stack, getDriver)
-    return drivers[name]
-  } catch (err) {
-    throw addStack(err, stack)
-  }
+  drivers[name] = await modules[name](getDriver)
+  return drivers[name]
 }

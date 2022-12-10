@@ -9,8 +9,8 @@ const { clone, parallel, shell, stream } = test.utils
 
 const drivers = [
   "memory", //
-  "localstorage",
-  "indexeddb",
+  // "localstorage",
+  // "indexeddb",
 ]
 
 async function checkError(
@@ -25,7 +25,7 @@ async function checkError(
   await t.throws(fn, {
     name: "FileSystemError",
     path: `/tmp/${filename}`,
-    stack: /fs.test.js/,
+    // stack: /fs.test.js/,
     ...macro,
   })
 }
@@ -53,12 +53,12 @@ const makeSuite = (driver) => {
   let savedTmp
 
   const paths = { files: [], dirs: ["/tmp"] }
-  function cleanFile(...path) {
+  function decayFile(...path) {
     paths.files.push(...path)
     return path[0]
   }
 
-  function cleanable(...path) {
+  function decayDir(...path) {
     paths.dirs.push(...path)
     return path[0]
   }
@@ -97,7 +97,7 @@ const makeSuite = (driver) => {
   ======= */
 
   test("file", async (t) => {
-    const path = cleanFile(`42-${d}-foo`)
+    const path = decayFile(`42-${d}-foo`)
     const content = "hello 🌍"
     await fs.write(path, content)
     const file = await fs.read(path, "utf-8")
@@ -109,7 +109,7 @@ const makeSuite = (driver) => {
   })
 
   test("maintain write order", async (t) => {
-    const path = cleanFile(`42-${d}-foo-double-write-json`)
+    const path = decayFile(`42-${d}-foo-double-write-json`)
     // use writeJSON and make sure first write take longer than the second
     const length = 1e2
     const data1 = Array.from({ length }).fill("hello")
@@ -121,7 +121,7 @@ const makeSuite = (driver) => {
   })
 
   test("write() without encoding", async (t) => {
-    const path = cleanFile(`42-${d}-foo-binary`)
+    const path = decayFile(`42-${d}-foo-binary`)
     const content = "hello 🌍"
     const { buffer } = new TextEncoder().encode(content)
     await fs.write(path, content)
@@ -134,7 +134,7 @@ const makeSuite = (driver) => {
   })
 
   test("write() with encoding", async (t) => {
-    const path = cleanFile(`42-${d}-foo-utf8`)
+    const path = decayFile(`42-${d}-foo-utf8`)
     const content = "hello 🌍"
     const { buffer } = new TextEncoder().encode(content)
     await fs.write(path, content, "utf-8")
@@ -151,7 +151,7 @@ const makeSuite = (driver) => {
 
   test("sink()", async (t) => {
     const path = `42-${d}-sink`
-    cleanFile(path + 1, path + 2, path + 3, path + 10, path + 20, path + 30)
+    decayFile(path + 1, path + 2, path + 3, path + 10, path + 20, path + 30)
 
     const content = "h 🌍"
     const encoder = new TextEncoder()
@@ -181,7 +181,7 @@ const makeSuite = (driver) => {
     t.eq(await fs.read(path + 30, "utf-8"), content)
 
     // intermediate folder creation
-    const dir = cleanable(`42-${d}-sink-dir`) + "/"
+    const dir = decayDir(`42-${d}-sink-dir`) + "/"
     await stream.rs.array(chunks.strings).pipeTo(fs.sink(dir + path + 1))
     t.eq(await fs.read(dir + path + 1, "utf-8"), content)
     await stream.rs.array(chunks.buffers).pipeTo(fs.sink(dir + path + 2))
@@ -191,7 +191,7 @@ const makeSuite = (driver) => {
   })
 
   test("source()", async (t) => {
-    const path = cleanFile(`42-${d}-source`)
+    const path = decayFile(`42-${d}-source`)
     const content = "hello 🌍"
     const { buffer } = new TextEncoder().encode(content)
     await fs.write(path, content)
@@ -203,7 +203,7 @@ const makeSuite = (driver) => {
   ======= */
 
   test("cbor()", async (t) => {
-    const path = cleanFile(`42-${d}-cbor`)
+    const path = decayFile(`42-${d}-cbor`)
     const object = { a: 1 }
     await fs.writeCBOR(path, object)
     t.eq(await fs.readCBOR(path), object)
@@ -214,7 +214,7 @@ const makeSuite = (driver) => {
   ======= */
 
   test("json()", async (t) => {
-    const path = cleanFile(`42-${d}-json`)
+    const path = decayFile(`42-${d}-json`)
     const object = { a: 1 }
     await fs.writeJSON(path, object)
     t.eq(await fs.readJSON(path), object)
@@ -229,7 +229,7 @@ const makeSuite = (driver) => {
   })
 
   test("preserve comments using JSON5", async (t) => {
-    const path = cleanFile(`42-${d}-json5`)
+    const path = decayFile(`42-${d}-json5`)
     const content = `\
 {
   // yep
@@ -264,7 +264,7 @@ const makeSuite = (driver) => {
   ====== */
 
   test("dir", async (t) => {
-    const path = cleanable(`42-${d}-dir`)
+    const path = decayDir(`42-${d}-dir`)
     t.false(await fs.isDir(path))
     await fs.writeDir(path)
     t.true(await fs.isDir(path))
@@ -273,7 +273,7 @@ const makeSuite = (driver) => {
   })
 
   test("dir", "recursive", async (t) => {
-    cleanable(`42-${d}-a`)
+    decayDir(`42-${d}-a`)
     const path = `42-${d}-a/b/c`
     await fs.writeDir(path)
     t.true(await fs.isDir(`42-${d}-a`))
@@ -289,7 +289,7 @@ const makeSuite = (driver) => {
   })
 
   test("dir", "empty", async (t) => {
-    const path = cleanable(`42-${d}-empty`)
+    const path = decayDir(`42-${d}-empty`)
     t.false(await fs.isDir(path))
     await fs.writeDir(path)
     t.true(await fs.isDir(path))
@@ -327,7 +327,7 @@ const makeSuite = (driver) => {
   }
 
   test("dir", "readDir", async (t) => {
-    cleanable(`42-${d}-rd`)
+    decayDir(`42-${d}-rd`)
     await Promise.all([
       fs.write(`42-${d}-rd/one`, "1"),
       fs.write(`42-${d}-rd/two`, "2"),
@@ -352,7 +352,7 @@ const makeSuite = (driver) => {
   })
 
   test("dir", "errors", async (t) => {
-    cleanable(`42-${d}-err`)
+    decayDir(`42-${d}-err`)
     await Promise.all([
       fs.write(`42-${d}-err/one`, "1"),
       fs.write(`42-${d}-err/two`, "2"),
@@ -410,7 +410,24 @@ const makeSuite = (driver) => {
     await t.notThrows(() => fs.writeDir(`42-${d}-err/b`))
   })
 
+  // for (const method of ASYNC_METHODS) {
+  //   test("no driver mounted", method, async (t) => {
+  //     t.timeout(2000)
+  //     fs.config.places = {}
+  //     fs.mount()
+
+  //     await t.throws(
+  //       async () => fs[method]("42-foo"),
+  //       "no driver mounted for '/tmp/42-foo'",
+  //       `"no driver mounted" did not throw for ${method}`
+  //     )
+
+  //     fs.mount(`/tmp`, driver)
+  //   })
+  // }
+
   test("no driver mounted", async (t) => {
+    t.timeout(2000)
     fs.config.places = {}
     fs.mount()
 

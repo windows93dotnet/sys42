@@ -1,40 +1,35 @@
-/* eslint-disable no-throw-literal */
 import "../env/polyfills/ReadableStream.prototype.values.js"
+
 import system from "../../system.js"
-import Disk, { RESERVED_BYTES } from "./Disk.js"
 import Driver from "./Driver.js"
+import Disk from "./Disk.js"
+import uid from "../uid.js"
+import FileSystemError from "../fs/FileSystemError.js"
+import http from "../http.js"
 
 let disk
-const { random, floor } = Math
+
+const { ENOENT, EISDIR, EEXIST, ENOTDIR } = FileSystemError
 
 export default class BrowserDriver extends Driver {
-  static toFile = (data, encoding) =>
-    new Blob(data, {
+  static toFile = (bits, encoding) =>
+    new Blob(bits, {
       type: encoding
         ? `text/plain;charset=${encoding}`
         : "application/octet-stream",
     })
 
-  static fromFile = (data, encoding) => {
-    // TODO: use FileReader for non-utf8 encoding ?
-    if (encoding) return data.text()
-    return data.arrayBuffer()
+  static fromFile = async (data, encoding) => {
+    const buf = await data.arrayBuffer()
+    return encoding ? new TextDecoder(encoding).decode(buf) : buf
   }
 
-  makeID() {
-    const max = Number.MAX_SAFE_INTEGER - this.reservedBytes
-    let id = floor(random() * max)
-    id -= id & (this.reservedBytes - 1) /* reserve last bits */
-    id += this.mask /* apply mask */
-    return id
-  }
-
-  constructor(config, stack, getDriver) {
-    super(config, stack)
+  constructor(getDriver) {
+    super()
     this.getDriver = getDriver
     this.store = this.constructor.store
     this.mask = this.constructor.mask
-    this.reservedBytes = RESERVED_BYTES
+    this.name = this.constructor.name.slice(0, -6).toLowerCase()
   }
 
   async init() {
@@ -65,10 +60,17 @@ export default class BrowserDriver extends Driver {
   ======= */
 
   async open(filename) {
-    if (!disk.has(filename)) throw { errno: 2 }
-    else if (disk.isDir(filename)) throw { errno: 21 }
+    if (!disk.has(filename)) throw new FileSystemError(ENOENT, filename)
+    else if (disk.isDir(filename)) throw new FileSystemError(EISDIR, filename)
 
-    const { id, mask } = await disk.getIdAndMask(filename)
+    const entry = disk.get(filename)
+
+    if (entry === 0) {
+      const res = await http.get(filename)
+      return res.blob()
+    }
+
+    const [id, mask] = entry
 
     if (this.mask !== mask) {
       const driver = await this.getDriver(mask)
@@ -80,64 +82,91 @@ export default class BrowserDriver extends Driver {
     if (blob === undefined) {
       // TODO: remove memoryDriver files from FileIndex on init
       disk.delete(filename)
-      throw { errno: 2 }
+      throw new FileSystemError(ENOENT, filename)
     }
 
     return blob
   }
 
-  async read(filename, { encoding }) {
-    return BrowserDriver.fromFile(await this.open(filename), encoding)
+  async read(filename, options) {
+    if (!disk.has(filename)) throw new FileSystemError(ENOENT, filename)
+    else if (disk.isDir(filename)) throw new FileSystemError(EISDIR, filename)
+
+    if (typeof options === "string") options = { encoding: options }
+    return BrowserDriver.fromFile(await this.open(filename), options?.encoding)
   }
 
-  async write(filename, data, { encoding }) {
-    if (disk.isDir(filename)) throw { errno: 21 }
-    if (ArrayBuffer.isView(data)) data = data.buffer
+  async write(filename, data, options) {
+    if (disk.isDir(filename)) throw new FileSystemError(EISDIR, filename)
 
-    let { id, mask } = await disk.getIdAndMask(filename)
+    if (typeof options === "string") options = { encoding: options }
 
-    if (id === undefined) {
-      id = this.makeID()
-      disk.set(filename, id)
-    } else if (this.mask !== mask) {
-      const driver = await this.getDriver(mask)
-      driver.delete(filename)
-      id = this.makeID()
-      disk.set(filename, id)
+    let id
+    const previous = disk.get(filename)
+
+    if (previous) {
+      id = previous[0]
+      const mask = previous[1]
+
+      if (this.mask !== mask) {
+        const driver = await this.getDriver(mask)
+        driver.delete(filename)
+      }
+
+      previous[2].m = Date.now()
+      disk.set(filename, previous)
+    } else {
+      id = uid()
+      const time = Date.now()
+      const entry = [id, this.mask, { a: time, c: time, m: time }]
+      disk.set(filename, entry)
     }
 
-    return this.store.set(id, BrowserDriver.toFile([data], encoding))
+    await this.store.set(id, BrowserDriver.toFile([data], options?.encoding))
+  }
+
+  async append(filename, data, options) {
+    if (!disk.has(filename)) throw new FileSystemError(ENOENT, filename)
+    else if (disk.isDir(filename)) throw new FileSystemError(EISDIR, filename)
+
+    if (typeof options === "string") options = { encoding: options }
+    const entry = disk.get(filename)
+    const id = entry === 0 ? uid() : entry[0]
+    const prev = await this.open(filename)
+    const bits = [prev, data]
+    return this.store.set(id, BrowserDriver.toFile(bits, options?.encoding))
   }
 
   async delete(filename) {
-    if (!disk.has(filename)) throw { errno: 2 }
-    else if (disk.isDir(filename)) throw { errno: 21 }
+    if (!disk.has(filename)) throw new FileSystemError(ENOENT, filename)
+    else if (disk.isDir(filename)) throw new FileSystemError(EISDIR, filename)
 
-    const { id, mask } = await disk.getIdAndMask(filename)
+    let id
+    const previous = disk.get(filename)
 
     disk.delete(filename)
 
-    if (mask === 0x00) return false
+    if (previous) {
+      id = previous[0]
+      const mask = previous[1]
+      if (this.mask !== mask) {
+        const driver = await this.getDriver(mask)
+        await driver.delete(filename)
+        return
+      }
 
-    if (this.mask !== mask) {
-      const driver = await this.getDriver(mask)
-      return driver.delete(filename)
+      await this.store.delete(id)
     }
-
-    return this.store.delete(id)
-  }
-
-  async append(filename, data, { encoding }) {
-    const prev = await this.open(filename)
-    const id = disk.get(filename)
-    return this.store.set(id, BrowserDriver.toFile([prev, data], encoding))
   }
 
   /* dir
   ====== */
 
   async writeDir(filename) {
-    if (disk.has(filename) && disk.isFile(filename)) throw { errno: 17 }
+    if (disk.has(filename) && disk.isFile(filename)) {
+      throw new FileSystemError(EEXIST, filename)
+    }
+
     disk.set(filename, {})
   }
 
@@ -146,8 +175,8 @@ export default class BrowserDriver extends Driver {
   }
 
   async deleteDir(filename) {
-    if (!disk.has(filename)) throw { errno: 2 }
-    else if (!disk.isDir(filename)) throw { errno: 20 }
+    if (!disk.has(filename)) throw new FileSystemError(ENOENT, filename)
+    else if (!disk.isDir(filename)) throw new FileSystemError(ENOTDIR, filename)
 
     await Promise.all(
       disk
@@ -163,10 +192,16 @@ export default class BrowserDriver extends Driver {
   /* stream
   ========= */
 
-  async source(filename, { encoding }) {
+  async source(filename, options) {
+    if (typeof options === "string") options = { encoding: options }
+
     const blob = await this.open(filename)
     let stream = blob.stream()
-    if (encoding) stream = stream.pipeThrough(new TextDecoderStream(encoding))
+
+    if (options?.encoding) {
+      stream = stream.pipeThrough(new TextDecoderStream(options.encoding))
+    }
+
     return stream[Symbol.asyncIterator]()
   }
 }

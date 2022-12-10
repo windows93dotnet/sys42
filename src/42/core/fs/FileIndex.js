@@ -15,6 +15,11 @@ const DEFAULTS = {
   hashmap: true,
 }
 
+function isDir(entry) {
+  if (Array.isArray(entry) || entry === 0 || entry === undefined) return false
+  return true
+}
+
 export default class FileIndex extends Storable {
   constructor(root = Object.create(null), options) {
     super(root, configure(DEFAULTS, options))
@@ -70,11 +75,12 @@ export default class FileIndex extends Storable {
   }
 
   isDir(path) {
-    return typeof this.get(path) === "object"
+    return isDir(this.get(path))
   }
 
   isFile(path) {
-    return typeof this.get(path) !== "object"
+    const entry = this.get(path)
+    return Array.isArray(entry) || entry === 0
   }
 
   readDir(path, options = {}, parent = "") {
@@ -83,7 +89,7 @@ export default class FileIndex extends Storable {
 
     if (dir === undefined) {
       throw new FileSystemError(FileSystemError.ENOENT, path)
-    } else if (typeof dir !== "object") {
+    } else if (Array.isArray(dir) || dir === 0) {
       throw new FileSystemError(FileSystemError.ENOTDIR, path)
     }
 
@@ -93,7 +99,7 @@ export default class FileIndex extends Storable {
       if (Object.hasOwn(dir, key)) {
         const entry = dir[key]
         const res = absolute ? joinPath(path, key) : joinPath(parent, key)
-        if (typeof entry === "object") {
+        if (isDir(entry)) {
           if (recursive) {
             names.push(...this.readDir(`${path}/${key}`, options, res))
           } else names.push(res + this.sep)

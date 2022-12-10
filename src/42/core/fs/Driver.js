@@ -1,96 +1,66 @@
 import absorb from "../stream/absorb.js"
-import addStack from "../../fabric/type/error/addStack.js"
+// import addStack from "../../fabric/type/error/addStack.js"
 
 export default class Driver {
-  constructor(config, stack) {
+  constructor(config) {
     this.config = config
-    this.stack = stack
+  }
+
+  init() {
+    return this
   }
 
   /* check
   ======== */
 
   async access() {
-    throw addStack(
-      new Error(`${this.constructor.name}.access() is not implemented`),
-      this.stack
-    )
+    throw new Error(`${this.constructor.name}.access() is not implemented`)
   }
 
   async isFile() {
-    throw addStack(
-      new Error(`${this.constructor.name}.isFile() is not implemented`),
-      this.stack
-    )
+    throw new Error(`${this.constructor.name}.isFile() is not implemented`)
   }
 
   async isDir() {
-    throw addStack(
-      new Error(`${this.constructor.name}.isDir() is not implemented`),
-      this.stack
-    )
+    throw new Error(`${this.constructor.name}.isDir() is not implemented`)
   }
 
   /* file
   ======= */
 
   async open() {
-    throw addStack(
-      new Error(`${this.constructor.name}.open() is not implemented`),
-      this.stack
-    )
+    throw new Error(`${this.constructor.name}.open() is not implemented`)
   }
 
   async read() {
-    throw addStack(
-      new Error(`${this.constructor.name}.read() is not implemented`),
-      this.stack
-    )
+    throw new Error(`${this.constructor.name}.read() is not implemented`)
   }
 
   async write() {
-    throw addStack(
-      new Error(`${this.constructor.name}.write() is not implemented`),
-      this.stack
-    )
+    throw new Error(`${this.constructor.name}.write() is not implemented`)
   }
 
   async delete() {
-    throw addStack(
-      new Error(`${this.constructor.name}.delete() is not implemented`),
-      this.stack
-    )
+    throw new Error(`${this.constructor.name}.delete() is not implemented`)
   }
 
   async append() {
-    throw addStack(
-      new Error(`${this.constructor.name}.append() is not implemented`),
-      this.stack
-    )
+    throw new Error(`${this.constructor.name}.append() is not implemented`)
   }
 
   /* dir
   ====== */
 
   async writeDir() {
-    throw addStack(
-      new Error(`${this.constructor.name}.writeDir() is not implemented`),
-      this.stack
-    )
+    throw new Error(`${this.constructor.name}.writeDir() is not implemented`)
   }
 
   async readDir() {
-    throw addStack(
-      new Error(`${this.constructor.name}.readDir() is not implemented`),
-      this.stack
-    )
+    throw new Error(`${this.constructor.name}.readDir() is not implemented`)
   }
 
   async deleteDir() {
-    throw addStack(
-      new Error(`${this.constructor.name}.deleteDir() is not implemented`),
-      this.stack
-    )
+    throw new Error(`${this.constructor.name}.deleteDir() is not implemented`)
   }
 
   /* stream
@@ -100,20 +70,22 @@ export default class Driver {
 
   // TODO: check if encoding option is really needed
 
-  async sink(filename, { encoding }) {
-    const buffer = absorb(encoding)
+  async sink(filename, options) {
+    if (typeof options === "string") options = { encoding: options }
+    const buffer = absorb(options?.encoding)
     return {
       write(chunk) {
         buffer.add(chunk)
       },
       close: async () => {
-        await this.write(filename, buffer.value, { encoding })
+        await this.write(filename, buffer.value, options)
       },
     }
   }
 
-  async source(filename, { encoding }) {
-    const chunk = await this.read(filename, { encoding })
+  async source(filename, options) {
+    if (typeof options === "string") options = { encoding: options }
+    const chunk = await this.read(filename, options)
     return (function* () {
       yield chunk
     })()
