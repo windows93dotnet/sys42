@@ -19,7 +19,6 @@ import arrify from "../fabric/type/any/arrify.js"
 import hash from "../fabric/type/any/hash.js"
 import getType from "../fabric/type/any/getType.js"
 import inTop from "../core/env/realm/inTop.js"
-import merge from "../fabric/type/object/merge.js"
 import segmentize from "../fabric/type/string/segmentize.js"
 import { handleEffect } from "../core/dt/dataTransferEffects.js"
 import ALLOWED_HTML_ATTRIBUTES from "../fabric/constants/ALLOWED_HTML_ATTRIBUTES.js"
@@ -220,7 +219,7 @@ export function normalizeTokens(tokens, ctx, options) {
 
       let fn
 
-      if (action) {
+      if (typeof action === "function") {
         fn = makeActionFn(action, thisArg, ctx.el)
       } else {
         const thisArg = ctx
@@ -428,6 +427,9 @@ export function normalizeWatch(scope, fn, ctx) {
     // The first argument should be the scopped state
     // to mimic template get/set
     // e.g.
+    // ":foo": "{{foo + 1}}"
+    // ":foo": ({foo}) => foo + 1
+    // e.g.
     // ":foo": "{{bar = foo + 1}}"
     // ":foo": (state) => { state.bar = state.foo + 1 }
     register(ctx, scope, async (changed) => {
@@ -435,20 +437,6 @@ export function normalizeWatch(scope, fn, ctx) {
       await 0
       await fn(ctx.reactive.get(ctx.scope), ctx)
     })
-  }
-}
-
-export function normalizeData(def, ctx, cb) {
-  if (typeof def === "function") {
-    const { scope } = ctx
-    ctx.undones.push(
-      (async () => {
-        const res = await def()
-        cb(res, scope)
-      })()
-    )
-  } else {
-    cb(def, ctx.scope, { silent: true })
   }
 }
 
@@ -663,7 +651,8 @@ export function forkDef(def, ctx) {
     if (ctx.scope) def.scope = ctx.scope
     if (ctx.scopeChain) def.scopeChain = structuredClone(ctx.scopeChain)
     if (ctx.plugins) def.plugins = Object.keys(ctx.plugins)
-    if (ctx.actions) def.actions = merge({}, ctx.actions.value)
+    const actions = ctx.actions.value
+    if (!isEmptyObject(actions)) def.actions = structuredClone(actions)
   }
 
   return def
@@ -690,6 +679,20 @@ export function normalizeDefNoCtx(def = {}) {
   if (def.bind) def.bind = normalizeFromTo(def.bind)
   normalizeOn(def)
   return def
+}
+
+export function normalizeData(def, ctx, cb) {
+  if (typeof def === "function") {
+    const { scope } = ctx
+    ctx.undones.push(
+      (async () => {
+        const res = await def()
+        cb(res, scope)
+      })()
+    )
+  } else {
+    cb(def, ctx.scope, { silent: true })
+  }
 }
 
 export function normalizeState(def, ctx, initiator) {
@@ -753,8 +756,8 @@ export function normalizeDef(def = {}, ctx, options) {
     }
 
     if (def.actions) {
-      normalizeData(def.actions, ctx, (res) => {
-        ctx.actions.merge(ctx.scope, res)
+      normalizeData(def.actions, ctx, (res, scope) => {
+        ctx.actions.merge(scope, res)
       })
     }
 

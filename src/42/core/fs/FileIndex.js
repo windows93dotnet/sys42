@@ -5,8 +5,10 @@ import assertPath from "../../core/path/assertPath.js"
 import joinPath from "../../core/path/core/joinPath.js"
 import sortPath from "../../core/path/core/sortPath.js"
 import emittable from "../../fabric/traits/emittable.js"
-import glob from "../../core/path/glob.js"
-import normalizeDirname from "../../core/path/utils/normalizeDirname.js"
+import isGlob from "../path/isGlob.js"
+import glob, { Glob } from "../../core/path/glob.js"
+import normalizeDirname from "./normalizeDirname.js"
+import normalizeFilename from "./normalizeFilename.js"
 import tokenizePath from "../../core/path/utils/tokenizePath.js"
 
 const DEFAULTS = {
@@ -43,8 +45,20 @@ export default class FileIndex extends Storable {
     if (typeof options === "function") fn = options
     const signal = options?.signal
 
+    if (isGlob(pattern)) {
+      pattern = normalizeFilename(pattern)
+      const glob = new Glob(pattern)
+      return this.on("change", { signal, off: true }, (path, type) => {
+        if (glob.test(path)) {
+          fn(path, type)
+        }
+      })
+    }
+
     return this.on("change", { signal, off: true }, (path, type) => {
-      if (glob.test(path, pattern)) fn(path, type)
+      if (path === pattern) {
+        fn(path, type)
+      }
     })
   }
 

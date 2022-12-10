@@ -127,13 +127,6 @@ export const parseGlob = (source) => {
   return tokens
 }
 
-export class Glob extends RegExp {
-  constructor(pattern, options) {
-    super(...tokensToRegexArguments(parseGlob(pattern), options))
-    this.pattern = pattern
-  }
-}
-
 function tokensToRegexArguments(tokens, options = {}) {
   if (typeof options === "string") options = { flags: options }
   const config = { ...DEFAULTS, ...options }
@@ -144,6 +137,13 @@ function tokensToRegexArguments(tokens, options = {}) {
   if (!config.onlyFiles) body += "/?"
 
   return [flags && flags.includes("g") ? body : `^${body}$`, flags]
+}
+
+export class Glob extends RegExp {
+  constructor(pattern, options) {
+    super(...tokensToRegexArguments(parseGlob(pattern), options))
+    this.pattern = pattern
+  }
 }
 
 export default function glob(paths, patterns) {

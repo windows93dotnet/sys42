@@ -39,7 +39,7 @@ export default class ConfigFile {
 
     persist.watch(this.path, async () => {
       await this.load()
-      this.ready.resolve()
+      // this.ready.resolve()
     })
   }
 

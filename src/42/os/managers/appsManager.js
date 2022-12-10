@@ -30,6 +30,8 @@ class AppsManager extends ConfigFile {
   }
 
   async add(manifestPath, options) {
+    await mimetypesManager.ready
+
     const fs = await import("../../core/fs.js") //
       .then((m) => m.default)
 
@@ -54,6 +56,7 @@ class AppsManager extends ConfigFile {
 
   async open(paths) {
     await this.ready
+    await mimetypesManager.ready
 
     const openers = {}
 

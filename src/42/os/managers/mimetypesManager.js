@@ -122,10 +122,9 @@ class MimetypesManager extends ConfigFile {
   }
 
   lookup(path) {
+    path = path.toLowerCase()
     return (
-      this.extnames[getExtname(path).toLowerCase()] ??
-      this.basenames[getBasename(path).toLowerCase()] ??
-      {}
+      this.extnames[getExtname(path)] ?? this.basenames[getBasename(path)] ?? {}
     )
   }
 
