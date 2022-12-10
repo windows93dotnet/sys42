@@ -1,10 +1,10 @@
 // @read http://www.gnu.org/software/libc/manual/html_node/Error-Codes.html
 // @thanks https://github.com/jvilk/BrowserFS/blob/master/src/core/api_error.ts
 
-import addStack from "../../fabric/type/error/addStack.js"
+// import addStack from "../../fabric/type/error/addStack.js"
 
 export default class FileSystemError extends Error {
-  constructor(errno, path, stack) {
+  constructor(errno, path /* , stack */) {
     errno = Math.abs(errno)
     const message = FileSystemError.descriptions[errno]
     const code = FileSystemError.codes[errno]
@@ -17,7 +17,7 @@ export default class FileSystemError extends Error {
     this.errno = errno
     this.code = code
 
-    if (stack) addStack(this, stack)
+    // if (stack) addStack(this, stack)
   }
 }
 

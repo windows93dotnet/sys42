@@ -14,8 +14,6 @@ export const MASKS = {
   0x13: "indexeddb",
 }
 
-export const RESERVED_BYTES = 0x80
-
 const getFiles = async () => {
   const url = new URL("/files.cbor", import.meta.url)
   const res = await fetch(url)
@@ -25,15 +23,11 @@ const getFiles = async () => {
 let instance
 
 export default class Disk extends FileIndex {
-  static MASKS = MASKS
-
   constructor() {
     if (instance) return instance
 
     super(getFiles)
 
-    this.MASKS = MASKS
-    this.RESERVED_BYTES = RESERVED_BYTES
     instance = this
 
     bc.onmessage = ({ data: [path, type, val] }) => {
@@ -45,12 +39,6 @@ export default class Disk extends FileIndex {
         bc.postMessage(args)
       })
     }
-  }
-
-  async getIdAndMask(filename) {
-    const id = this.get(filename)
-    const mask = id % RESERVED_BYTES
-    return { id, mask }
   }
 
   async format() {
