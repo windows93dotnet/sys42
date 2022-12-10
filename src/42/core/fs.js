@@ -1,8 +1,11 @@
+import normalizeFilename from "./fs/normalizeFilename.js"
 import getDriverLazy from "./fs/getDriverLazy.js"
 import removeItem from "../fabric/type/array/removeItem.js"
 import resolvePath from "./path/core/resolvePath.js"
 import inOpaqueOrigin from "./env/realm/inOpaqueOrigin.js"
 import defer from "../fabric/type/promise/defer.js"
+import inTop from "./env/realm/inTop.js"
+import ipc from "./ipc.js"
 
 const DEFAULTS = {
   places: { "/": "indexeddb" },
@@ -10,13 +13,19 @@ const DEFAULTS = {
   // places: { "/": "memory" },
 }
 
+// TODO: https://web.dev/storage-foundation/
+// TODO: https://web.dev/file-system-access/
+// TODO: https://emscripten.org/docs/api_reference/Filesystem-API.html#id2
+
+if (inTop) ipc.on("IPCDriver", async ({ type, args }) => fs[type](...args))
+
 const UTF8 = "utf-8"
 
 let places
 
 const queue = new Map()
 
-export async function enqueue(filename) {
+async function enqueue(filename) {
   const deferred = defer()
 
   deferred.promise.finally(() => {
@@ -66,7 +75,7 @@ export function mount(place, driverName, options) {
 }
 
 async function findDriver(path) {
-  const filename = resolvePath(path)
+  const filename = normalizeFilename(path)
 
   let name
   if (inOpaqueOrigin) {
@@ -317,6 +326,23 @@ export const fs = {
   writeCBOR,
   readCBOR,
 }
+
+// aliases
+
+fs.write.text = writeText
+fs.read.text = readText
+
+fs.write.json = writeJSON
+fs.read.json = readJSON
+fs.write.json5 = writeJSON5
+fs.read.json5 = readJSON
+
+fs.write.cbor = writeCBOR
+fs.read.cbor = readCBOR
+
+fs.write.dir = writeDir
+fs.read.dir = readDir
+fs.delete.dir = deleteDir
 
 mount()
 

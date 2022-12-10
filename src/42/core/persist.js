@@ -1,7 +1,7 @@
 import fs from "./fs.js"
-import dispatch from "../fabric/event/dispatch.js"
-import systemPath from "./fs/systemPath.js"
 import disk from "./disk.js"
+import normalizeFilename from "./fs/normalizeFilename.js"
+import dispatch from "../fabric/event/dispatch.js"
 import getExtname from "./path/core/getExtname.js"
 
 if ("requestIdleCallback" in globalThis === false) {
@@ -26,12 +26,11 @@ persist.ensureType = (path) => {
   return ext.slice(1)
 }
 
-persist.has = (path) => disk.has(systemPath(path))
+persist.has = (path) => disk.has(normalizeFilename(path))
 
 persist.watch = (path, fn) => disk.watch(path, fn)
 
-persist.get = async (path) =>
-  fs.read[persist.ensureType(path)](systemPath(path))
+persist.get = async (path) => fs.read[persist.ensureType(path)](path)
 
 persist.set = (path, data) => {
   if (pending.has(path)) {
@@ -44,7 +43,7 @@ persist.set = (path, data) => {
   return new Promise((resolve) => {
     const fn = async () => {
       try {
-        await fs.write[persist.ensureType(path)](systemPath(path), data)
+        await fs.write[persist.ensureType(path)](path, data)
       } catch (err) {
         dispatch(globalThis, err)
         resolve(false)
@@ -58,7 +57,7 @@ persist.set = (path, data) => {
 
     if (!isListening) listen()
     const id = requestIdleCallback(fn)
-    pending.set(path, { id, resolve })
+    pending.set(path, { id, resolve, fn })
   })
 }
 
@@ -66,8 +65,8 @@ const handler = (e) => {
   if (pending.size > 0) {
     queueMicrotask(() => {
       // force saving
-      for (const fn of pending.values()) {
-        cancelIdleCallback(fn.id)
+      for (const { id, fn } of pending.values()) {
+        cancelIdleCallback(id)
         fn()
       }
 

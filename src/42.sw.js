@@ -23,35 +23,36 @@ self.addEventListener("fetch", async (e) => {
 
   // console.log(`🛰 ${pathname}`)
 
-  const { id, mask } = await disk.getIdAndMask(
+  const entry = disk.get(
     pathname.endsWith("/") ? pathname + "index.html" : pathname
   )
 
-  if (mask !== 0 && typeof id === "number") {
-    const infos = getPathInfos(pathname, { headers: true })
+  if (!entry) return
 
-    // console.group(`🛰 ${pathname}: id:${id} mask:${mask}`)
-    // console.log(e.request)
-    // console.log(infos)
-    // console.groupEnd()
+  const infos = getPathInfos(pathname, { headers: true })
 
-    e.respondWith(
-      getDriver(mask)
-        .then((driver) => driver.open(pathname))
-        .then(
-          (blob) =>
-            new Response(blob, {
-              headers: {
-                ...infos.headers,
-                // "Content-Security-Policy": "sandbox allow-scripts; default-src 'self' data:; script-src 'self' 'unsafe-inline';",
-                // "Cross-Origin-Resource-Policy": "same-origin",
-                // "Cross-Origin-Embedder-Policy:": "require-corp",
-                // "Cross-Origin-Opener-Policy:": "same-origin",
-              },
-            })
-        )
-    )
-  }
+  // console.group(`🛰 ${pathname}`)
+  // console.log(e.request)
+  // console.log(infos)
+  // console.log(entry)
+  // console.groupEnd()
+
+  e.respondWith(
+    getDriver(entry[1])
+      .then((driver) => driver.open(pathname))
+      .then(
+        (blob) =>
+          new Response(blob, {
+            headers: {
+              ...infos.headers,
+              // "Content-Security-Policy": "sandbox allow-scripts; default-src 'self' data:; script-src 'self' 'unsafe-inline';",
+              // "Cross-Origin-Resource-Policy": "same-origin",
+              // "Cross-Origin-Embedder-Policy:": "require-corp",
+              // "Cross-Origin-Opener-Policy:": "same-origin",
+            },
+          })
+      )
+  )
 })
 
 for (const event of [

@@ -71,6 +71,8 @@ export default class BrowserDriver extends Driver {
     }
 
     const [id, mask] = entry
+    entry[2].a = Date.now()
+    disk.set(filename, entry)
 
     if (this.mask !== mask) {
       const driver = await this.getDriver(mask)
@@ -89,9 +91,6 @@ export default class BrowserDriver extends Driver {
   }
 
   async read(filename, options) {
-    if (!disk.has(filename)) throw new FileSystemError(ENOENT, filename)
-    else if (disk.isDir(filename)) throw new FileSystemError(EISDIR, filename)
-
     if (typeof options === "string") options = { encoding: options }
     return BrowserDriver.fromFile(await this.open(filename), options?.encoding)
   }
@@ -102,23 +101,24 @@ export default class BrowserDriver extends Driver {
     if (typeof options === "string") options = { encoding: options }
 
     let id
-    const previous = disk.get(filename)
+    let entry = disk.get(filename)
 
-    if (previous) {
-      id = previous[0]
-      const mask = previous[1]
+    if (entry) {
+      id = entry[0]
+      const mask = entry[1]
 
       if (this.mask !== mask) {
         const driver = await this.getDriver(mask)
         driver.delete(filename)
       }
 
-      previous[2].m = Date.now()
-      disk.set(filename, previous)
+      entry[2].m = Date.now()
+      entry[2].c = entry[2].m
+      disk.set(filename, entry)
     } else {
       id = uid()
       const time = Date.now()
-      const entry = [id, this.mask, { a: time, c: time, m: time }]
+      entry = [id, this.mask, { a: time, c: time, m: time, cr: time }]
       disk.set(filename, entry)
     }
 
