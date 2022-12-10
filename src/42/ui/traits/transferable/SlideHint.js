@@ -24,7 +24,6 @@ export function getNewIndex(X, Y, item, orientation) {
 }
 
 let raf1
-let raf2
 
 export class SlideHint {
   static cloneHint(origin, obj = {}) {
@@ -121,20 +120,16 @@ export class SlideHint {
         }`
     }
 
-    raf1 = requestAnimationFrame(() => {
-      this.dynamicStyle.textContent = `
-        ${this.hideCurrent}
-        ${this.selector}:nth-child(n+${index + 2}) {
-          translate: ${this.blank};
-        }`
+    this.dynamicStyle.textContent = `
+      ${this.hideCurrent}
+      ${this.selector}:nth-child(n+${index + 2}) { translate: ${this.blank}; }`
 
-      raf2 = requestAnimationFrame(() => {
-        this.allItemsStyle.textContent = `
-          ${this.selector} {
-            transition: translate 120ms ease-in-out !important;
-            outline: none !important;
-          }`
-      })
+    raf1 = requestAnimationFrame(() => {
+      this.allItemsStyle.textContent = `
+        ${this.selector} {
+          transition: translate 120ms ease-in-out !important;
+          outline: none !important;
+        }`
     })
 
     this.layout = paintThrottle((x, y) => {
@@ -202,7 +197,7 @@ export class SlideHint {
   stop() {
     this.stopped = true
     cancelAnimationFrame(raf1)
-    cancelAnimationFrame(raf2)
+    this.layout.clear()
 
     if (this.reverted !== true) {
       this.dynamicStyle.textContent = ""

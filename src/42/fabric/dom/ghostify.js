@@ -1,8 +1,16 @@
 import applyStyleDeclaration from "./applyStyleDeclaration.js"
 
-export function area(el) {
-  const { x, y, width, height } = el.getBoundingClientRect()
+export function area(el, options) {
+  let { x, y, width, height } = el.getBoundingClientRect()
   const styles = getComputedStyle(el)
+
+  if (options?.subpixel !== true) {
+    x = Math.round(x)
+    y = Math.round(y)
+    width = Math.round(width)
+    height = Math.round(height)
+  }
+
   const area = {}
   area.marginTop = Number.parseInt(styles.marginTop, 10)
   area.marginLeft = Number.parseInt(styles.marginLeft, 10)
@@ -16,16 +24,23 @@ export function area(el) {
 }
 
 export function ghostify(el, options) {
-  const { x, y, width, height } = el.getBoundingClientRect()
+  let { x, y, width, height } = el.getBoundingClientRect()
   const clone = el.cloneNode(true)
   clone.id = `${el.id}--ghost`
   clone.classList.add("ghost")
   const styles = getComputedStyle(el)
 
+  if (options?.subpixel !== true) {
+    x = Math.round(x)
+    y = Math.round(y)
+    width = Math.round(width)
+    height = Math.round(height)
+  }
+
   const marginTop = Number.parseInt(styles.marginTop, 10)
   const marginLeft = Number.parseInt(styles.marginLeft, 10)
 
-  applyStyleDeclaration(clone, styles)
+  if (options?.cloneStyles !== false) applyStyleDeclaration(clone, styles)
 
   clone.style.transition = "none"
   clone.style.position = "fixed"
