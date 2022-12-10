@@ -10,3 +10,8 @@
 .dragover {
   outline: 1px dashed;
 }
+
+.ghost,
+.ghost * {
+  pointer-events: none !important;
+}
