@@ -60,14 +60,16 @@ export class SlideHint {
     this.insideDropzone = false
 
     this.dynamicStyle = document.createElement("style")
-    this.dynamicStyle.id = "ui-trait-transferable1"
+    this.dynamicStyle.id = "transferable-dynamicStyle"
     document.head.append(this.dynamicStyle)
 
     this.allItemsStyle = document.createElement("style")
-    this.allItemsStyle.id = "ui-trait-transferable2"
+    this.allItemsStyle.id = "transferable-allItemsStyle"
     document.head.append(this.allItemsStyle)
 
     const styles = getComputedStyle(trait.dropzone)
+    const paddingRight = Number.parseInt(styles.paddingRight, 10)
+    const paddingBottom = Number.parseInt(styles.paddingBottom, 10)
     let columnGap = Number.parseInt(styles.columnGap, 10)
     if (Number.isNaN(columnGap)) columnGap = 0
     let rowGap = Number.parseInt(styles.rowGap, 10)
@@ -102,33 +104,42 @@ export class SlideHint {
       this.targetOffsetY = y - (area.y + area.height / 2)
       // this.targetHeight = area.height + area.marginTop + area.marginBottom
       // this.targetWidth = area.width + area.marginLeft + area.marginRight
-      this.targetHeight = area.height + rowGap
-      this.targetWidth = area.width + columnGap
+      this.targetHeight = Math.round(area.height + rowGap)
+      this.targetWidth = Math.round(area.width + columnGap)
       this.targetMarginRight = area.marginRight
       this.targetMarginTop = area.marginTop
     }
 
     let hideDirection = ""
+    let dropzoneStyle = ""
 
     if (this.orientation === "vertical") {
+      dropzoneStyle = `padding-bottom: ${
+        this.targetHeight + paddingBottom
+      }px !important;`
       this.blankHalfSize = this.targetHeight / 2
       this.blank = `0 ${this.targetHeight}px`
+      const marginTop = Math.round(this.targetMarginTop - rowGap)
       hideDirection = `
         height: 0 !important;
         min-height: 0 !important;
         padding-block: 0 !important;
         border-block-width: 0 !important;
-        margin-top: ${this.targetMarginTop - rowGap}px !important;
+        margin-top: ${marginTop}px !important;
         `
     } else {
+      dropzoneStyle = `padding-right: ${
+        this.targetWidth + paddingRight
+      }px !important;`
       this.blankHalfSize = this.targetWidth / 2
       this.blank = `${this.targetWidth}px`
+      const marginRight = Math.round(this.targetMarginRight - columnGap)
       hideDirection = `
         width: 0 !important;
         min-width: 0 !important;
         padding-inline: 0 !important;
         border-inline-width: 0 !important;
-        margin-right: ${this.targetMarginRight - columnGap}px !important;
+        margin-right: ${marginRight}px !important;
         `
     }
 
@@ -142,10 +153,12 @@ export class SlideHint {
 
     this.dynamicStyle.textContent = `
       ${this.hideCurrent}
+      #${this.id} { ${dropzoneStyle} }
       ${this.selector}:nth-child(n+${index + 2}) { translate: ${this.blank}; }`
 
     raf1 = requestAnimationFrame(() => {
       this.allItemsStyle.textContent = `
+        #${this.id} { ${dropzoneStyle} }
         ${this.selector} {
           transition: translate 120ms ease-in-out !important;
           outline: none !important;
