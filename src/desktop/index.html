@@ -9,7 +9,22 @@
   trap()
 </script>
 
+<div style="display: flex; width: 150px">
+  <span class="bd pa ratio-square">a</span>
+  <span class="bd pa ratio-square">b</span>
+  <span class="bd pa ratio-square">c</span>
+  <span class="bd pa ratio-square">d</span>
+  <span class="bd pa ratio-square">e</span>
+  <span class="bd pa ratio-square">f</span>
+  <span class="bd pa ratio-square">g</span>
+</div>
+
 <script type="module">
+  import transferable from "../42/ui/traits/transferable.js"
+  transferable("div")
+</script>
+
+<script type="_module">
   import os from "../42/os.js"
   import ui from "../42/ui.js"
   import io from "../42/io.js"
