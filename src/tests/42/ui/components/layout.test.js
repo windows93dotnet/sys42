@@ -29,7 +29,7 @@ window.app = await ui({
       tag: ".box-h",
       content: [
         {
-          tag: ".box-center",
+          tag: "._box-center",
           content: {
             tag: ".pa._outset.resize.flex-v",
             style: { width: "320px", height: "200px" },
@@ -42,7 +42,7 @@ window.app = await ui({
           },
         },
         {
-          tag: ".box-center",
+          tag: "._box-center",
           content: {
             tag: ".pa._outset.resize.flex-v",
             style: { width: "400px", height: "200px" },
@@ -72,7 +72,7 @@ window.app = await ui({
         tag: ".box-h",
         content: [
           {
-            tag: ".box-center",
+            tag: "._box-center",
             content: {
               tag: ".pa._outset.resize.flex-v",
               style: { width: "320px", height: "200px" },
@@ -85,7 +85,7 @@ window.app = await ui({
             },
           },
           {
-            tag: ".box-center",
+            tag: "._box-center",
             content: {
               tag: ".pa._outset.resize.flex-v",
               // style: { width: "400px", height: "200px" },
