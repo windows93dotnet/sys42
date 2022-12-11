@@ -5,6 +5,14 @@ import freeze from "../../../42/fabric/type/object/freeze.js"
 
 export const planets = freeze([
   {
+    name: "Magrathea",
+    description:
+      "Magrathea is an ancient planet located in orbit around the twin suns Soulianis and Rahm in the heart of the Horsehead Nebula.",
+    location: "Heart of the Horsehead Nebula",
+    status: "Closed, was briefly opened",
+    species: ["Magratheans"],
+  },
+  {
     name: "Earth",
     description:
       "Earth was a giant supercomputer designed to find the Ultimate Question of Life, the Universe and Everything. Designed by Deep Thought and built by the Magratheans, it was commonly mistaken for a planet,",
@@ -12,14 +20,6 @@ export const planets = freeze([
     status: "Destroyed",
     species: ["Dolphins", "Humans", "Mices"],
     moons: ["The Moon"],
-  },
-  {
-    name: "Magrathea",
-    description:
-      "Magrathea is an ancient planet located in orbit around the twin suns Soulianis and Rahm in the heart of the Horsehead Nebula.",
-    location: "Heart of the Horsehead Nebula",
-    status: "Closed, was briefly opened",
-    species: ["Magratheans"],
   },
   {
     name: "Damogran",

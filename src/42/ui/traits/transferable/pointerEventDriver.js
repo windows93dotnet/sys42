@@ -34,8 +34,6 @@ const dropzones = new Set()
 
 if (ipc.inTop) {
   ipc.on("42_DRAGGER_STOP", ({ x, y }) => {
-    Dragger.isDragging = false
-
     if (outsideIframe) {
       x += iframeRect.left
       y += iframeRect.top
@@ -48,6 +46,8 @@ if (ipc.inTop) {
     } else {
       hint?.destroy()
     }
+
+    Dragger.isDragging = false
 
     const res = dropEffect
     cleanup()
@@ -274,30 +274,22 @@ export function pointerEventDriver(trait) {
   }
 
   dragger.stop = async (x, y, e, target) => {
-    let dropEffectPromise
     if (ipc.inIframe) {
       isOutsideIframe = false
-      dropEffectPromise = ipc.send("42_DRAGGER_STOP", { x, y })
+      dropEffect = await ipc.send("42_DRAGGER_STOP", { x, y })
     }
 
     if (dropEffect === "move") hint?.destroy?.()
     else hint?.revert?.()
 
-    cleanup()
-
     if (trait.isSorting) {
       trait.isSorting = false
-      return
-    }
-
-    if (ipc.inIframe) dropEffect = await dropEffectPromise
-
-    if (dropEffect === "move") {
+    } else if (dropEffect === "move") {
       const index = getIndex(target)
       trait.removeItem(index)
     }
 
-    dropEffect = "none"
+    cleanup()
   }
 }
 

@@ -44,8 +44,10 @@ export class SlideHint {
     obj.targetHeight = origin.targetHeight
     obj.targetWidth = origin.targetWidth
 
-    obj.targetMarginRight = origin.targetMarginRight
-    obj.targetMarginTop = origin.targetMarginTop
+    obj.targetMR = origin.targetMR
+    obj.targetML = origin.targetML
+    obj.targetMT = origin.targetMT
+    obj.targetMB = origin.targetMB
     return obj
   }
 
@@ -68,13 +70,13 @@ export class SlideHint {
     this.allItemsStyle.id = "transferable-allItemsStyle"
     document.head.append(this.allItemsStyle)
 
-    const styles = getComputedStyle(trait.dropzone)
-    const paddingRight = Number.parseInt(styles.paddingRight, 10)
-    const paddingBottom = Number.parseInt(styles.paddingBottom, 10)
-    let columnGap = Number.parseInt(styles.columnGap, 10)
-    if (Number.isNaN(columnGap)) columnGap = 0
-    let rowGap = Number.parseInt(styles.rowGap, 10)
-    if (Number.isNaN(rowGap)) rowGap = 0
+    const dzStyles = getComputedStyle(trait.dropzone)
+    const dzPR = Number.parseInt(dzStyles.paddingRight, 10)
+    const dzPB = Number.parseInt(dzStyles.paddingBottom, 10)
+    let dzColGap = Number.parseInt(dzStyles.columnGap, 10)
+    if (Number.isNaN(dzColGap)) dzColGap = 0
+    let dzRowGap = Number.parseInt(dzStyles.rowGap, 10)
+    if (Number.isNaN(dzRowGap)) dzRowGap = 0
 
     let area
 
@@ -104,45 +106,49 @@ export class SlideHint {
       this.lastY = y
       this.targetY = area.y
       this.targetX = area.x
+      this.targetMR = area.marginRight
+      this.targetML = area.marginLeft
+      this.targetMT = area.marginTop
+      this.targetMB = area.marginBottom
       this.targetOffsetX = x - (area.x + area.width / 2)
       this.targetOffsetY = y - (area.y + area.height / 2)
-      // this.targetHeight = area.height + area.marginTop + area.marginBottom
-      // this.targetWidth = area.width + area.marginLeft + area.marginRight
-      this.targetHeight = Math.round(area.height + rowGap)
-      this.targetWidth = Math.round(area.width + columnGap)
-      this.targetMarginRight = area.marginRight
-      this.targetMarginTop = area.marginTop
+      this.targetHeight = Math.round(
+        area.height + dzRowGap + this.targetMT + this.targetMB
+      )
+      this.targetWidth = Math.round(
+        area.width + dzColGap + this.targetML + this.targetMR
+      )
     }
 
     let hideDirection = ""
     let dropzoneStyle = ""
 
     if (this.orientation === "vertical") {
-      dropzoneStyle = `padding-bottom: ${
-        this.targetHeight + paddingBottom
-      }px !important;`
+      dropzoneStyle = `padding-bottom: ${this.targetHeight + dzPB}px`
       this.blankHalfSize = this.targetHeight / 2
       this.blank = `0 ${this.targetHeight}px`
-      const marginTop = Math.round(this.targetMarginTop - rowGap)
+      const marginBottom = this.targetMB - dzRowGap
+      const marginTop = this.targetMT + this.targetMB * -1
       hideDirection = `
         height: 0 !important;
         min-height: 0 !important;
         padding-block: 0 !important;
         border-block-width: 0 !important;
         margin-top: ${marginTop}px !important;
+        margin-bottom: ${marginBottom}px !important;
         `
     } else {
-      dropzoneStyle = `padding-right: ${
-        this.targetWidth + paddingRight
-      }px !important;`
+      dropzoneStyle = `padding-right: ${this.targetWidth + dzPR}px`
       this.blankHalfSize = this.targetWidth / 2
       this.blank = `${this.targetWidth}px`
-      const marginRight = Math.round(this.targetMarginRight - columnGap)
+      const marginRight = this.targetMR - dzColGap
+      const marginLeft = this.targetML + this.targetMR * -1
       hideDirection = `
         width: 0 !important;
         min-width: 0 !important;
         padding-inline: 0 !important;
         border-inline-width: 0 !important;
+        margin-left: ${marginLeft}px !important;
         margin-right: ${marginRight}px !important;
         `
     }
@@ -151,18 +157,22 @@ export class SlideHint {
     this.hideCurrent = `${this.selector}:nth-child(${i}) {
       ${hideDirection}
       opacity: 0 !important;
+      flex-grow: 0 !important;
+      flex-shrink: 0 !important;
       flex-basis: 0px !important;
       outline: none !important;
     }`
 
+    dropzoneStyle = `#${dropzoneId} { ${dropzoneStyle} !important; }`
+
     this.dynamicStyle.textContent = `
       ${this.hideCurrent}
-      #${dropzoneId} { ${dropzoneStyle} }
+      ${dropzoneStyle}
       ${this.selector}:nth-child(n+${index + 2}) { translate: ${this.blank}; }`
 
     raf1 = requestAnimationFrame(() => {
       this.allItemsStyle.textContent = `
-        #${dropzoneId} { ${dropzoneStyle} }
+        ${dropzoneStyle}
         ${this.selector} {
           transition: translate 120ms ease-in-out !important;
           outline: none !important;
@@ -209,15 +219,13 @@ export class SlideHint {
   }
 
   leaveDropzone() {
+    this.layout.clear()
     this.insideDropzone = false
     this.dynamicStyle.textContent = `${this.hideCurrent}`
-    queueMicrotask(() => {
-      this.dynamicStyle.textContent = `${this.hideCurrent}`
-    })
   }
 
   update(x, y) {
-    if (x === 0 && y === 0) return
+    if (x === 0 && y === 0) return // needed for "drag" event returning 0 before "drop" event
 
     if (this.insideDropzone && this.freeAxis !== true) {
       this.ghost.style.translate =
@@ -251,10 +259,7 @@ export class SlideHint {
         const { opacity } = item.style
         item.style.opacity = 0
         const { x, y } = item.getBoundingClientRect()
-        const styles = getComputedStyle(item)
-        const marginTop = Number.parseInt(styles.marginTop, 10)
-        const marginLeft = Number.parseInt(styles.marginLeft, 10)
-        const translate = `${x - marginLeft}px ${y - marginTop}px`
+        const translate = `${x}px ${y}px`
         await animate.to(this.ghost, { translate }, 120).then(() => {
           item.style.opacity = opacity
           this.stopped = false

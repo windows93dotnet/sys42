@@ -124,6 +124,9 @@ ui-tabs {
 
   position: relative;
 
+  translate: 0 0;
+  will-change: translate;
+
   z-index: calc(var(--tabs-max-z) - var(--index));
 }
 

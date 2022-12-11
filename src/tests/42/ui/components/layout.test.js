@@ -32,7 +32,7 @@ window.app = await ui({
           tag: "._box-center",
           content: {
             tag: ".pa._outset.resize.flex-v",
-            style: { width: "320px", height: "200px" },
+            style: { width: "420px", height: "200px" },
             content: {
               tag: "ui-tabs",
               id: "tabs1",
@@ -75,7 +75,7 @@ window.app = await ui({
             tag: "._box-center",
             content: {
               tag: ".pa._outset.resize.flex-v",
-              style: { width: "320px", height: "200px" },
+              style: { width: "420px", height: "200px" },
               content: {
                 tag: "ui-tabs",
                 id: "tabs3",
