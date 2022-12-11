@@ -42,6 +42,9 @@ export class SlideHint {
     obj.targetOffsetY = origin.targetOffsetY
     obj.targetHeight = origin.targetHeight
     obj.targetWidth = origin.targetWidth
+
+    obj.targetMarginRight = origin.targetMarginRight
+    obj.targetMarginTop = origin.targetMarginTop
     return obj
   }
 
@@ -64,6 +67,14 @@ export class SlideHint {
     this.allItemsStyle.id = "ui-trait-transferable2"
     document.head.append(this.allItemsStyle)
 
+    const styles = getComputedStyle(trait.dropzone)
+    let columnGap = Number.parseInt(styles.columnGap, 10)
+    if (Number.isNaN(columnGap)) columnGap = 0
+    let rowGap = Number.parseInt(styles.rowGap, 10)
+    if (Number.isNaN(rowGap)) rowGap = 0
+
+    let area
+
     if (origin) {
       SlideHint.cloneHint(origin, this)
       this.keepGhost = true
@@ -71,7 +82,6 @@ export class SlideHint {
       this.index = index
       this.targetIndex = index
 
-      let area
       if (ghost) {
         area = ghostify.area(ghost)
         this.ghost = ghost
@@ -90,8 +100,12 @@ export class SlideHint {
       this.targetX = area.x
       this.targetOffsetX = x - (area.x + area.width / 2)
       this.targetOffsetY = y - (area.y + area.height / 2)
-      this.targetHeight = area.height + area.marginTop + area.marginBottom
-      this.targetWidth = area.width + area.marginLeft + area.marginRight
+      // this.targetHeight = area.height + area.marginTop + area.marginBottom
+      // this.targetWidth = area.width + area.marginLeft + area.marginRight
+      this.targetHeight = area.height + rowGap
+      this.targetWidth = area.width + columnGap
+      this.targetMarginRight = area.marginRight
+      this.targetMarginTop = area.marginTop
     }
 
     let hideDirection = ""
@@ -103,7 +117,8 @@ export class SlideHint {
         height: 0 !important;
         min-height: 0 !important;
         padding-block: 0 !important;
-        /* border-block-width: 0 !important; */
+        border-block-width: 0 !important;
+        margin-top: ${this.targetMarginTop - rowGap}px !important;
         `
     } else {
       this.blankHalfSize = this.targetWidth / 2
@@ -112,7 +127,8 @@ export class SlideHint {
         width: 0 !important;
         min-width: 0 !important;
         padding-inline: 0 !important;
-        /* border-inline-width: 0 !important; */
+        border-inline-width: 0 !important;
+        margin-right: ${this.targetMarginRight - columnGap}px !important;
         `
     }
 

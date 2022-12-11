@@ -156,7 +156,7 @@ export default class Dragger {
         forget = listen({
           signal,
           "pointermove": (e) => drag(e, target),
-          "pointerup || pointercancel": (e) => stop(e, target),
+          "pointerup || pointercancel || contextmenu": (e) => stop(e, target),
         })
       },
     })
