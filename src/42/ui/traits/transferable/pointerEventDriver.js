@@ -69,7 +69,7 @@ export function pointerEventDriver(trait) {
 
     pointermove({ x, y }) {
       if (Dragger.isDragging) {
-        hint?.layout?.(x, y)
+        hint?.dragoverDropzone?.(x, y)
       }
     },
 
@@ -92,7 +92,7 @@ export function pointerEventDriver(trait) {
             originHint = hint
             originHint.keepGhost = true
             hint = new SlideHint(trait, { origin: originHint })
-            hint.update(x, y)
+            hint.move(x, y)
           }
         }
       }
@@ -178,7 +178,7 @@ export function pointerEventDriver(trait) {
 
       if (hint) {
         hint.ghost.style.opacity = 1
-        hint.update(point.x, point.y)
+        hint.move(point.x, point.y)
       }
 
       const target = document.elementFromPoint(point.x, point.y)
@@ -191,7 +191,7 @@ export function pointerEventDriver(trait) {
           outsideIframe = true
         }
 
-        hint?.layout?.(point.x, point.y)
+        hint?.dragoverDropzone?.(point.x, point.y)
       } else if (insideTopDropzone) {
         insideTopDropzone = false
         events.pointerleave()
@@ -270,7 +270,7 @@ export function pointerEventDriver(trait) {
       }
     }
 
-    hint?.update?.(x, y)
+    hint?.move?.(x, y)
   }
 
   dragger.stop = async (x, y, e, target) => {
