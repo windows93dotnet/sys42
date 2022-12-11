@@ -9,8 +9,8 @@ import ipc from "../../../core/ipc.js"
 let data
 let hint
 let originHint
-let outsideIframe
 let iframeRect
+let outsideIframe
 let dropEffect = "none"
 
 function cleanup() {
@@ -22,13 +22,19 @@ function cleanup() {
     originHint.destroy()
     originHint = undefined
   }
+
+  data = undefined
+  hint = undefined
+  iframeRect = undefined
+  outsideIframe = undefined
+  dropEffect = "none"
 }
 
 const dropzones = new Set()
 
 if (ipc.inTop) {
   ipc.on("42_DRAGGER_STOP", ({ x, y }) => {
-    cleanup()
+    Dragger.isDragging = false
 
     if (outsideIframe) {
       x += iframeRect.left
@@ -43,14 +49,9 @@ if (ipc.inTop) {
       hint?.destroy()
     }
 
-    hint = undefined
-    data = undefined
-    iframeRect = undefined
-
-    outsideIframe = false
-    Dragger.isDragging = false
-
-    return dropEffect
+    const res = dropEffect
+    cleanup()
+    return res
   })
 }
 
@@ -273,23 +274,23 @@ export function pointerEventDriver(trait) {
   }
 
   dragger.stop = async (x, y, e, target) => {
+    let dropEffectPromise
     if (ipc.inIframe) {
       isOutsideIframe = false
-      dropEffect = await ipc.send("42_DRAGGER_STOP", { x, y })
+      dropEffectPromise = ipc.send("42_DRAGGER_STOP", { x, y })
     }
-
-    cleanup()
 
     if (dropEffect === "move") hint?.destroy?.()
     else hint?.revert?.()
 
-    hint = undefined
-    data = undefined
+    cleanup()
 
     if (trait.isSorting) {
       trait.isSorting = false
       return
     }
+
+    if (ipc.inIframe) dropEffect = await dropEffectPromise
 
     if (dropEffect === "move") {
       const index = getIndex(target)

@@ -1,5 +1,6 @@
 import ghostify from "../../../fabric/dom/ghostify.js"
 import animate from "../../../fabric/dom/animate.js"
+import uid from "../../../core/uid.js"
 import paintThrottle from "../../../fabric/type/function/paintThrottle.js"
 import indexOfElement from "../../../fabric/dom/indexOfElement.js"
 
@@ -77,8 +78,11 @@ export class SlideHint {
 
     let area
 
+    let dropzoneId = trait.dropzone?.id
+
     if (origin) {
       SlideHint.cloneHint(origin, this)
+      dropzoneId = uid()
       this.keepGhost = true
     } else {
       this.index = index
@@ -153,12 +157,12 @@ export class SlideHint {
 
     this.dynamicStyle.textContent = `
       ${this.hideCurrent}
-      #${this.id} { ${dropzoneStyle} }
+      #${dropzoneId} { ${dropzoneStyle} }
       ${this.selector}:nth-child(n+${index + 2}) { translate: ${this.blank}; }`
 
     raf1 = requestAnimationFrame(() => {
       this.allItemsStyle.textContent = `
-        #${this.id} { ${dropzoneStyle} }
+        #${dropzoneId} { ${dropzoneStyle} }
         ${this.selector} {
           transition: translate 120ms ease-in-out !important;
           outline: none !important;
