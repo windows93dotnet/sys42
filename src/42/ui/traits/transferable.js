@@ -36,8 +36,8 @@ class Transferable extends Trait {
       : this.config.effects
 
     this.dropzone = this.config.dropzone
-      ? ensureElement(this.config.dropzone, el)
-      : el
+      ? ensureElement(this.config.dropzone, this.el)
+      : this.el
 
     this.dropzone.id ||= uid()
     const { id } = this.dropzone
@@ -88,8 +88,12 @@ class Transferable extends Trait {
       } else if (data?.type === "element") {
         let el = document.querySelector(`#${data.id}`)
         if (el) {
-          if (effect === "copy") el = el.cloneNode(true)
-          dropzone.append(el)
+          if (effect === "copy") {
+            el = el.cloneNode(true)
+            el.id += "-copy"
+          }
+
+          dropzone.insertBefore(el, dropzone.children[index])
         }
       }
     }

@@ -94,31 +94,35 @@ export class SlideHint {
       this.targetWidth = area.width + area.marginLeft + area.marginRight
     }
 
+    let hideDirection = ""
+
     if (this.orientation === "vertical") {
       this.blankHalfSize = this.targetHeight / 2
       this.blank = `0 ${this.targetHeight}px`
-      this.hideCurrent = `
-        ${this.selector}:nth-child(${index + 1}) {
-          opacity: 0 !important;
-          height: 0px !important;
-          min-height: 0px !important;
-          flex-basis: 0px !important;
-          padding-block: 0px !important;
-          outline: none !important;
-        }`
+      hideDirection = `
+        height: 0 !important;
+        min-height: 0 !important;
+        padding-block: 0 !important;
+        /* border-block-width: 0 !important; */
+        `
     } else {
       this.blankHalfSize = this.targetWidth / 2
       this.blank = `${this.targetWidth}px`
-      this.hideCurrent = `
-        ${this.selector}:nth-child(${index + 1}) {
-          opacity: 0 !important;
-          width: 0px !important;
-          min-width: 0px !important;
-          flex-basis: 0px !important;
-          padding-inline: 0px !important;
-          outline: none !important;
-        }`
+      hideDirection = `
+        width: 0 !important;
+        min-width: 0 !important;
+        padding-inline: 0 !important;
+        /* border-inline-width: 0 !important; */
+        `
     }
+
+    const i = index + 1
+    this.hideCurrent = `${this.selector}:nth-child(${i}) {
+      ${hideDirection}
+      opacity: 0 !important;
+      flex-basis: 0px !important;
+      outline: none !important;
+    }`
 
     this.dynamicStyle.textContent = `
       ${this.hideCurrent}

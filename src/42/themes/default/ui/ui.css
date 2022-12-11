@@ -13,5 +13,6 @@
 
 .ghost,
 .ghost * {
+  transition: none !important;
   pointer-events: none !important;
 }

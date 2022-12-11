@@ -7,6 +7,8 @@ export default function findScope(ctx, loc) {
   if (loc == null) throw new Error("Undefined path")
   loc = String(loc)
 
+  // TODO: debug "===" loc in ../../tests/42/ui/components/layout.test.js
+
   let { scope } = ctx
 
   if (!ctx.actions.has(loc)) {

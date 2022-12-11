@@ -1,18 +1,13 @@
 const defaultStyles = {}
 
-const iframe = document.createElement("iframe")
-iframe.srcdoc = `<div></div><script>globalThis.defaultStyles = getComputedStyle(document.querySelector("div"))</script>`
-iframe.addEventListener(
-  "load",
-  () => {
-    const x = iframe.contentWindow.defaultStyles
-    for (const item of x) defaultStyles[item] = x[item]
-    delete defaultStyles.display
-    iframe.remove()
-  },
-  { once: true }
-)
-document.documentElement.append(iframe)
+void (() => {
+  const div = document.createElement("div")
+  document.documentElement.append(div)
+  const styles = getComputedStyle(div)
+  for (const item of styles) defaultStyles[item] = styles[item]
+  delete defaultStyles.display
+  div.remove()
+})()
 
 export function applyStyleDeclaration(el, styleDeclaration) {
   for (const item of styleDeclaration) {

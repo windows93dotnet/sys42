@@ -1,21 +1,24 @@
 import applyStyleDeclaration from "./applyStyleDeclaration.js"
 
+const { parseInt } = Number
+const { round } = Math
+
 export function area(el, options) {
   let { x, y, width, height } = el.getBoundingClientRect()
   const styles = getComputedStyle(el)
 
   if (options?.subpixel !== true) {
-    x = Math.round(x)
-    y = Math.round(y)
-    width = Math.round(width)
-    height = Math.round(height)
+    x = round(x)
+    y = round(y)
+    width = round(width)
+    height = round(height)
   }
 
   const area = {}
-  area.marginTop = Number.parseInt(styles.marginTop, 10)
-  area.marginLeft = Number.parseInt(styles.marginLeft, 10)
-  area.marginRight = Number.parseInt(styles.marginRight, 10)
-  area.marginBottom = Number.parseInt(styles.marginBottom, 10)
+  area.marginTop = parseInt(styles.marginTop, 10)
+  area.marginLeft = parseInt(styles.marginLeft, 10)
+  area.marginRight = parseInt(styles.marginRight, 10)
+  area.marginBottom = parseInt(styles.marginBottom, 10)
   area.x = x
   area.y = y
   area.width = width
@@ -31,14 +34,14 @@ export function ghostify(el, options) {
   const styles = getComputedStyle(el)
 
   if (options?.subpixel !== true) {
-    x = Math.round(x)
-    y = Math.round(y)
-    width = Math.round(width)
-    height = Math.round(height)
+    x = round(x)
+    y = round(y)
+    width = round(width)
+    height = round(height)
   }
 
-  const marginTop = Number.parseInt(styles.marginTop, 10)
-  const marginLeft = Number.parseInt(styles.marginLeft, 10)
+  const marginTop = parseInt(styles.marginTop, 10)
+  const marginLeft = parseInt(styles.marginLeft, 10)
 
   if (options?.cloneStyles !== false) applyStyleDeclaration(clone, styles)
 
@@ -54,6 +57,7 @@ export function ghostify(el, options) {
 
   clone.style.width = `${width}px`
   clone.style.height = `${height}px`
+  clone.style.margin = 0
   clone.style.marginTop = marginTop
   clone.style.marginLeft = marginLeft
   clone.style.top = 0
@@ -63,8 +67,8 @@ export function ghostify(el, options) {
   if (options?.area) {
     options.area.marginTop = marginTop
     options.area.marginLeft = marginLeft
-    options.area.marginRight = Number.parseInt(styles.marginRight, 10)
-    options.area.marginBottom = Number.parseInt(styles.marginBottom, 10)
+    options.area.marginRight = parseInt(styles.marginRight, 10)
+    options.area.marginBottom = parseInt(styles.marginBottom, 10)
     options.area.x = x
     options.area.y = y
     options.area.width = width
