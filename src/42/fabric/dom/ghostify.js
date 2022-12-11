@@ -1,18 +1,18 @@
 import applyStyleDeclaration from "./applyStyleDeclaration.js"
 
 const { parseInt } = Number
-// const { round } = Math
+const { round } = Math
 
-export function area(el /* , options */) {
-  const { x, y, width, height } = el.getBoundingClientRect()
+export function area(el, options) {
+  let { x, y, width, height } = el.getBoundingClientRect()
   const styles = getComputedStyle(el)
 
-  // if (options?.subpixel !== true) {
-  //   x = round(x)
-  //   y = round(y)
-  //   width = round(width)
-  //   height = round(height)
-  // }
+  if (options?.subpixel !== true) {
+    x = round(x)
+    y = round(y)
+    // width = round(width)
+    // height = round(height)
+  }
 
   const area = {}
   area.marginTop = parseInt(styles.marginTop, 10)
@@ -27,18 +27,18 @@ export function area(el /* , options */) {
 }
 
 export function ghostify(el, options) {
-  const { x, y, width, height } = el.getBoundingClientRect()
+  let { x, y, width, height } = el.getBoundingClientRect()
   const clone = el.cloneNode(true)
   clone.id = `${el.id}--ghost`
   clone.classList.add("ghost")
   const styles = getComputedStyle(el)
 
-  // if (options?.subpixel !== true) {
-  //   x = round(x)
-  //   y = round(y)
-  //   width = round(width)
-  //   height = round(height)
-  // }
+  if (options?.subpixel !== true) {
+    x = round(x)
+    y = round(y)
+    // width = round(width)
+    // height = round(height)
+  }
 
   const marginTop = parseInt(styles.marginTop, 10)
   const marginLeft = parseInt(styles.marginLeft, 10)
