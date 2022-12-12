@@ -11,8 +11,8 @@ const DEFAULTS = {
   orientation: undefined,
   freeAxis: undefined,
   effects: ["copy", "move", "link"],
-  silentEffectCheck: false,
-  fileSystemHandle: false,
+  // silentEffectCheck: false,
+  // fileSystemHandle: false,
   // driver: "dragEvent",
   driver: "pointerEvent",
   hint: "slide",
@@ -31,8 +31,16 @@ class Transferable extends Trait {
 
     this.config = configure(options)
 
+    if (typeof this.config.driver === "string") {
+      this.config.driver = { type: this.config.driver }
+    }
+
+    if (typeof this.config.hint === "string") {
+      this.config.hint = { type: this.config.hint }
+    }
+
     this.effects = this.list
-      ? options.effects ?? ["copy", "move"]
+      ? options?.effects ?? ["copy", "move"]
       : this.config.effects
 
     this.dropzone = this.config.dropzone
@@ -114,13 +122,8 @@ class Transferable extends Trait {
       }
     }
 
-    if (this.config.driver === "pointerEvent") {
-      import("./transferable/pointerEventDriver.js") //
-        .then((m) => m.default(this))
-    } else if (this.config.driver === "dragEvent") {
-      import("./transferable/dragEventDriver.js") //
-        .then((m) => m.default(this))
-    }
+    import(`./transferable/${this.config.driver.type}Driver.js`) //
+      .then((m) => m.default(this, this.config.driver))
   }
 }
 

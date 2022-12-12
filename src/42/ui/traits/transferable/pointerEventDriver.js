@@ -11,6 +11,7 @@ let hint
 let originHint
 let iframeRect
 let outsideIframe
+let currentDropzone
 let dropEffect = "none"
 
 function cleanup() {
@@ -27,20 +28,85 @@ function cleanup() {
   hint = undefined
   iframeRect = undefined
   outsideIframe = undefined
+  currentDropzone = undefined
   dropEffect = "none"
 }
 
 const dropzones = new Set()
 
 if (ipc.inTop) {
+  ipc.on("42_DRAGGER_START", (res, meta) => {
+    if (iframeRect) return
+    Dragger.isDragging = true
+
+    iframeRect = meta.iframe.getBoundingClientRect()
+    data = res.data
+
+    if (res?.origin) {
+      const { origin } = res
+      origin.ghost = sanitize(origin.ghostHTML)
+      hint = new SlideHint({ origin })
+      hint.keepGhost = false
+      hint.id = origin.id
+
+      hint.ghost.style.opacity = 0
+      document.documentElement.append(hint.ghost)
+    }
+  })
+
+  ipc.on("42_DRAGGER_OUTSIDE", (point) => {
+    point = { ...point }
+    outsideIframe = true
+
+    if (point.insideIframeDropzone) {
+      hint.ghost.style.opacity = 0
+      return
+    }
+
+    point.x += iframeRect.left
+    point.y += iframeRect.top
+
+    if (hint) {
+      hint.ghost.style.opacity = 1
+      hint.move(point.x, point.y)
+    }
+
+    const target = document.elementFromPoint(point.x, point.y)
+
+    if (currentDropzone) {
+      if (currentDropzone.dropzone.contains(target)) {
+        hint?.dragoverDropzone?.(point.x, point.y)
+      } else {
+        currentDropzone.events.pointerleave()
+        currentDropzone = undefined
+      }
+    } else {
+      for (const { dropzone, events } of dropzones) {
+        if (dropzone.contains(target)) {
+          currentDropzone = { dropzone, events }
+          outsideIframe = false
+          events.pointerenter(point)
+          outsideIframe = true
+          hint?.dragoverDropzone?.(point.x, point.y)
+          break
+        }
+      }
+    }
+  })
+
+  ipc.on("42_DRAGGER_INSIDE", () => {
+    outsideIframe = false
+    hint.ghost.style.opacity = 0
+  })
+
   ipc.on("42_DRAGGER_STOP", ({ x, y }) => {
     if (outsideIframe) {
       x += iframeRect.left
       y += iframeRect.top
       const target = document.elementFromPoint(x, y)
-      for (const { dropzone, pointerup } of dropzones) {
+      for (const { dropzone, events } of dropzones) {
         if (dropzone.contains(target)) {
-          pointerup({ target, x, y })
+          events.pointerup({ target, x, y })
         } else hint?.destroy()
       }
     } else {
@@ -91,7 +157,7 @@ export function pointerEventDriver(trait) {
           } else {
             originHint = hint
             originHint.keepGhost = true
-            hint = new SlideHint(trait, { origin: originHint })
+            hint = new SlideHint({ trait, origin: originHint })
             hint.move(x, y)
           }
         }
@@ -138,71 +204,9 @@ export function pointerEventDriver(trait) {
 
   /* drag from iframe
   =================== */
-  const instance = { dropzone, pointerup: events.pointerup }
+  const instance = { dropzone, events }
   dropzones.add(instance)
   signal.addEventListener("abort", () => dropzones.delete(instance))
-
-  if (ipc.inTop) {
-    let insideTopDropzone
-
-    ipc.on("42_DRAGGER_START", { signal }, (res, meta) => {
-      if (iframeRect) return
-      Dragger.isDragging = true
-
-      iframeRect = meta.iframe.getBoundingClientRect()
-      data = res.data
-
-      if (res?.origin && trait.config.hint === "slide") {
-        const { origin } = res
-        origin.ghost = sanitize(origin.ghostHTML)
-        hint = new SlideHint(trait, { origin })
-        hint.keepGhost = false
-        hint.id = origin.id
-
-        hint.ghost.style.opacity = 0
-        document.documentElement.append(hint.ghost)
-      }
-    })
-
-    ipc.on("42_DRAGGER_OUTSIDE", { signal }, (point) => {
-      point = { ...point }
-      outsideIframe = true
-
-      if (point.insideIframeDropzone) {
-        hint.ghost.style.opacity = 0
-        return
-      }
-
-      point.x += iframeRect.left
-      point.y += iframeRect.top
-
-      if (hint) {
-        hint.ghost.style.opacity = 1
-        hint.move(point.x, point.y)
-      }
-
-      const target = document.elementFromPoint(point.x, point.y)
-
-      if (dropzone.contains(target)) {
-        if (!insideTopDropzone) {
-          insideTopDropzone = true
-          outsideIframe = false
-          events.pointerenter(point)
-          outsideIframe = true
-        }
-
-        hint?.dragoverDropzone?.(point.x, point.y)
-      } else if (insideTopDropzone) {
-        insideTopDropzone = false
-        events.pointerleave()
-      }
-    })
-
-    ipc.on("42_DRAGGER_INSIDE", { signal }, () => {
-      outsideIframe = false
-      hint.ghost.style.opacity = 0
-    })
-  }
 
   if (!trait.selector) return
 
@@ -222,8 +226,8 @@ export function pointerEventDriver(trait) {
     trait.isSorting = false
     const index = getIndex(target)
     data = trait.export({ index, target })
-    if (trait.config.hint === "slide") {
-      hint = new SlideHint(trait, { x, y, target, index })
+    if (trait.config.hint.type === "slide") {
+      hint = new SlideHint({ trait, x, y, target, index })
     }
 
     if (ipc.inIframe) {
