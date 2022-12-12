@@ -1,6 +1,8 @@
 import listen from "../../../fabric/event/listen.js"
 import Dragger from "../../classes/Dragger.js"
-import SlideHint, { getIndex, getNewIndex } from "./SlideHint.js"
+import { getIndex, getNewIndex } from "./getIndex.js"
+import SlideHint from "./SlideHint.js"
+import FloatHint from "./FloatHint.js"
 import { inRect } from "../../../fabric/geometry/point.js"
 import unproxy from "../../../fabric/type/object/unproxy.js"
 import sanitize from "../../../fabric/dom/sanitize.js"
@@ -32,6 +34,12 @@ function cleanup() {
   dropEffect = "none"
 }
 
+function makeHint(type, options) {
+  return type === "float" //
+    ? new FloatHint(options)
+    : new SlideHint(options)
+}
+
 const dropzones = new Set()
 
 if (ipc.inTop) {
@@ -45,7 +53,8 @@ if (ipc.inTop) {
     if (res?.origin) {
       const { origin } = res
       origin.ghost = sanitize(origin.ghostHTML)
-      hint = new SlideHint({ origin })
+      hint = makeHint("slide", { origin })
+      hint.keepGhost = false
       hint.id = origin.id
 
       hint.ghost.style.opacity = 0
@@ -124,6 +133,8 @@ export function pointerEventDriver(trait) {
   const { /* effects, */ dropzone } = trait
   const { id } = dropzone
 
+  const hintType = trait.config.hint.type
+
   const { signal } = trait.cancel
 
   /* dropzone
@@ -155,7 +166,7 @@ export function pointerEventDriver(trait) {
             hint.enterDropzone?.()
           } else {
             originHint = hint
-            hint = new SlideHint({ trait, origin: originHint })
+            hint = makeHint(hintType, { trait, origin: originHint })
             hint.move(x, y)
           }
         }
@@ -224,9 +235,7 @@ export function pointerEventDriver(trait) {
     const index = getIndex(target)
     data = trait.export({ index, target })
 
-    if (trait.config.hint.type === "slide") {
-      hint = new SlideHint({ trait, x, y, target, index })
-    }
+    hint = makeHint(hintType, { trait, x, y, target, index })
 
     if (ipc.inIframe) {
       docRect = document.documentElement.getBoundingClientRect()
@@ -242,7 +251,7 @@ export function pointerEventDriver(trait) {
 
       let origin
       if (hint) {
-        origin = SlideHint.cloneHint(hint)
+        origin = hint.clone()
         origin.ghostHTML = hint.ghost.outerHTML
         origin.id = id
         delete origin.ghost
