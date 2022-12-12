@@ -1,6 +1,5 @@
 import ghostify from "../../../fabric/dom/ghostify.js"
 import animate from "../../../fabric/dom/animate.js"
-import uid from "../../../core/uid.js"
 import paintThrottle from "../../../fabric/type/function/paintThrottle.js"
 import indexOfElement from "../../../fabric/dom/indexOfElement.js"
 
@@ -55,15 +54,60 @@ export class SlideHint {
     return obj
   }
 
-  constructor(trait, { x, y, index, target, ghost, origin }) {
+  constructor(options) {
+    if (options?.origin) {
+      SlideHint.cloneHint(options.origin, this)
+      this.keepGhost = true
+    }
+
+    if (options?.trait) {
+      this.addDropzone(options)
+    }
+
+    this.dragoverDropzone = paintThrottle((x, y) => {
+      if (x === this.lastX && y === this.lastY) return
+
+      let X
+      let Y
+
+      if (this.orientation === "vertical") {
+        X = x
+        Y = y === this.lastY ? y : y - this.targetOffsetY
+        if (y >= this.lastY) Y += this.blankHalfSize
+        else Y -= this.blankHalfSize
+      } else {
+        X = x === this.lastX ? x : x - this.targetOffsetX
+        Y = y
+        if (x >= this.lastX) X += this.blankHalfSize
+        else X -= this.blankHalfSize
+      }
+
+      this.lastX = x
+      this.lastY = y
+
+      const target = document.elementFromPoint(X, Y)
+      const item = target?.closest(this.selector)
+
+      if (item) {
+        this.index = getNewIndex(X, Y, item, this.orientation)
+        this.dynamicStyle.textContent = `
+          ${this.hideCurrent}
+          ${this.selector}:nth-child(n+${this.index + 1}) {
+            translate: ${this.blank};
+          }`
+      }
+    })
+  }
+
+  addDropzone({ trait, x, y, index, target, ghost, origin }) {
     this.trait = trait
     this.onabort = () => this.destroy()
     this.trait.cancel.signal.addEventListener("abort", this.onabort)
-
     this.id = trait.dropzone?.id
     this.selector = trait.selector
     this.orientation = trait.orientation
     this.freeAxis = trait.freeAxis
+
     this.insideDropzone = false
 
     this.dynamicStyle = document.createElement("style")
@@ -79,19 +123,15 @@ export class SlideHint {
     const dzPR = parseInt(dzStyles.paddingRight, 10)
     const dzPB = parseInt(dzStyles.paddingBottom, 10)
     let dzColGap = parseInt(dzStyles.columnGap, 10)
-    if (isNaN(dzColGap)) dzColGap = 0
     let dzRowGap = parseInt(dzStyles.rowGap, 10)
+    if (isNaN(dzColGap)) dzColGap = 0
     if (isNaN(dzRowGap)) dzRowGap = 0
 
     let area
 
-    let dzId = trait.dropzone?.id
+    const dzId = trait.dropzone?.id
 
-    if (origin) {
-      SlideHint.cloneHint(origin, this)
-      dzId = uid()
-      this.keepGhost = true
-    } else {
+    if (!origin) {
       this.index = index
       this.targetIndex = index
 
@@ -131,24 +171,31 @@ export class SlideHint {
       dzStyles.display === "grid" || dzStyles.display === "inline-grid"
 
     if (this.orientation === "vertical") {
-      if (!isGrid) dzStyle = `padding-bottom: ${this.targetHeight + dzPB}px`
+      if (!isGrid) {
+        dzStyle = `padding-bottom: ${this.targetHeight + dzPB}px`
+      }
+
       this.blankHalfSize = this.targetHeight / 2
       this.blank = `0 ${this.targetHeight}px`
     } else {
-      if (!isGrid) dzStyle = `padding-right: ${this.targetWidth + dzPR}px`
+      if (!isGrid) {
+        dzStyle = `padding-right: ${this.targetWidth + dzPR}px`
+      }
+
       this.blankHalfSize = this.targetWidth / 2
       this.blank = `${this.targetWidth}px`
     }
 
     this.hideCurrent = `${this.selector}:nth-child(${index + 1}) {
-      display: none !important;
-    }`
+        display: none !important;
+      }`
 
-    dzStyle = `#${dzId} {
-      ${dzStyle} !important;
-      width: ${dzRect.width}px !important;
-      height: ${dzRect.height}px !important;
-    }`
+    dzStyle = `
+      #${dzId} {
+        ${dzStyle} !important;
+        width: ${dzRect.width}px !important;
+        height: ${dzRect.height}px !important;
+      }`
 
     this.dynamicStyle.textContent = `
       ${this.hideCurrent}
@@ -162,40 +209,6 @@ export class SlideHint {
           transition: translate 120ms ease-in-out !important;
           outline: none !important;
         }`
-    })
-
-    this.dragoverDropzone = paintThrottle((x, y) => {
-      if (x === this.lastX && y === this.lastY) return
-
-      let X
-      let Y
-
-      if (this.orientation === "vertical") {
-        X = x
-        Y = y === this.lastY ? y : y - this.targetOffsetY
-        if (y >= this.lastY) Y += this.blankHalfSize
-        else Y -= this.blankHalfSize
-      } else {
-        X = x === this.lastX ? x : x - this.targetOffsetX
-        Y = y
-        if (x >= this.lastX) X += this.blankHalfSize
-        else X -= this.blankHalfSize
-      }
-
-      this.lastX = x
-      this.lastY = y
-
-      const target = document.elementFromPoint(X, Y)
-      const item = target?.closest(this.selector)
-
-      if (item) {
-        this.index = getNewIndex(X, Y, item, this.orientation)
-        this.dynamicStyle.textContent = `
-          ${this.hideCurrent}
-          ${this.selector}:nth-child(n+${this.index + 1}) {
-            translate: ${this.blank};
-          }`
-      }
     })
   }
 
@@ -284,12 +297,15 @@ export class SlideHint {
 
   destroy() {
     if (this.stopped) return
-    this.trait.cancel.signal.removeEventListener("abort", this.onabort)
+
+    if (this.trait) {
+      this.trait.cancel.signal.removeEventListener("abort", this.onabort)
+    }
 
     if (this.keepGhost !== true) this.ghost.remove()
 
-    this.dynamicStyle.remove()
-    this.itemsStyle.remove()
+    this.dynamicStyle?.remove()
+    this.itemsStyle?.remove()
   }
 }
 
