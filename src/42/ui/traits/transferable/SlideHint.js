@@ -60,53 +60,26 @@ export class SlideHint {
       this.keepGhost = true
     }
 
-    if (options?.trait) {
-      this.addDropzone(options)
-    }
-
-    this.dragoverDropzone = paintThrottle((x, y) => {
-      if (x === this.lastX && y === this.lastY) return
-
-      let X
-      let Y
-
-      if (this.orientation === "vertical") {
-        X = x
-        Y = y === this.lastY ? y : y - this.targetOffsetY
-        if (y >= this.lastY) Y += this.blankHalfSize
-        else Y -= this.blankHalfSize
-      } else {
-        X = x === this.lastX ? x : x - this.targetOffsetX
-        Y = y
-        if (x >= this.lastX) X += this.blankHalfSize
-        else X -= this.blankHalfSize
-      }
-
-      this.lastX = x
-      this.lastY = y
-
-      const target = document.elementFromPoint(X, Y)
-      const item = target?.closest(this.selector)
-
-      if (item) {
-        this.index = getNewIndex(X, Y, item, this.orientation)
-        this.dynamicStyle.textContent = `
-          ${this.hideCurrent}
-          ${this.selector}:nth-child(n+${this.index + 1}) {
-            translate: ${this.blank};
-          }`
-      }
-    })
+    if (options?.trait?.dropzone) this.addDropzone(options)
   }
 
   addDropzone({ trait, x, y, index, target, ghost, origin }) {
     this.trait = trait
     this.onabort = () => this.destroy()
     this.trait.cancel.signal.addEventListener("abort", this.onabort)
+
     this.id = trait.dropzone?.id
     this.selector = trait.selector
-    this.orientation = trait.orientation
-    this.freeAxis = trait.freeAxis
+    this.speed = trait.config.hint.speed ?? 120
+    this.freeAxis = trait.config.hint.freeAxis
+    this.orientation =
+      trait.config.hint.orientation ??
+      trait.dropzone?.getAttribute("aria-orientation")
+
+    if (!this.orientation) {
+      this.orientation = "horizontal"
+      this.freeAxis ??= true
+    }
 
     this.insideDropzone = false
 
@@ -206,20 +179,53 @@ export class SlideHint {
       this.itemsStyle.textContent = `
         ${dzStyle}
         ${this.selector} {
-          transition: translate 120ms ease-in-out !important;
+          transition: translate ${this.speed}ms ease-in-out !important;
           outline: none !important;
         }`
     })
-  }
 
-  enterDropzone() {
-    this.insideDropzone = true
-  }
+    this.dragoverDropzone = paintThrottle((x, y) => {
+      if (x === this.lastX && y === this.lastY) return
 
-  leaveDropzone() {
-    this.dragoverDropzone.clear()
-    this.insideDropzone = false
-    this.dynamicStyle.textContent = `${this.hideCurrent}`
+      let X
+      let Y
+
+      if (this.orientation === "vertical") {
+        X = x
+        Y = y === this.lastY ? y : y - this.targetOffsetY
+        if (y >= this.lastY) Y += this.blankHalfSize
+        else Y -= this.blankHalfSize
+      } else {
+        X = x === this.lastX ? x : x - this.targetOffsetX
+        Y = y
+        if (x >= this.lastX) X += this.blankHalfSize
+        else X -= this.blankHalfSize
+      }
+
+      this.lastX = x
+      this.lastY = y
+
+      const target = document.elementFromPoint(X, Y)
+      const item = target?.closest(this.selector)
+
+      if (item) {
+        this.index = getNewIndex(X, Y, item, this.orientation)
+        this.dynamicStyle.textContent = `
+          ${this.hideCurrent}
+          ${this.selector}:nth-child(n+${this.index + 1}) {
+            translate: ${this.blank};
+          }`
+      }
+    })
+    this.enterDropzone = () => {
+      this.insideDropzone = true
+    }
+
+    this.leaveDropzone = () => {
+      this.dragoverDropzone.clear()
+      this.insideDropzone = false
+      this.dynamicStyle.textContent = `${this.hideCurrent}`
+    }
   }
 
   move(x, y) {
@@ -269,7 +275,7 @@ export class SlideHint {
         }
 
         const translate = `${x}px ${y}px`
-        await animate.to(this.ghost, { translate }, 120).then(() => {
+        await animate.to(this.ghost, { translate }, this.speed).then(() => {
           item.style.opacity = opacity
           this.stopped = false
           this.keepGhost = false

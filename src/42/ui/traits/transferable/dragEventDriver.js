@@ -9,7 +9,7 @@ if (/Firefox\/\d+[\d.]*/.test(navigator.userAgent)) {
 let hint
 let originHint
 
-export function dragEventDriver(trait) {
+export function dragEventDriver(trait, config) {
   let counter = 0
   let justStarted = false
   let hasLeavedDropzone = false
@@ -26,12 +26,12 @@ export function dragEventDriver(trait) {
     prevent: true,
 
     dragover(e) {
-      dt.effects.handleEffect(e, trait.config)
-      hint?.layout?.(e.x, e.y)
+      dt.effects.handleEffect(e, config)
+      hint?.dragoverDropzone?.(e.x, e.y)
     },
 
     dragenter(e) {
-      dt.effects.handleEffect(e, trait.config)
+      dt.effects.handleEffect(e, config)
       if (counter++ === 0) {
         dropzone.classList.add("dragover")
 
@@ -48,8 +48,8 @@ export function dragEventDriver(trait) {
           } else {
             originHint = hint
             originHint.keepGhost = true
-            hint = new SlideHint(trait, { origin: originHint })
-            hint.update(e.x, e.y)
+            hint = new SlideHint({ trait, origin: originHint })
+            hint.move(e.x, e.y)
           }
         }
       }
@@ -76,7 +76,7 @@ export function dragEventDriver(trait) {
       counter = 0
       dropzone.classList.remove("dragover")
 
-      const res = dt.import(e, trait.config)
+      const res = dt.import(e, config)
 
       if (hint) {
         const { index } = hint
@@ -113,8 +113,8 @@ export function dragEventDriver(trait) {
       const index = getIndex(target)
       dt.export(e, { effects, data: trait.export({ index, target }) })
 
-      if (trait.config.hint === "slide") {
-        hint = new SlideHint(trait, { x: e.x, y: e.y, target, index })
+      if (trait.config.hint.type === "slide") {
+        hint = new SlideHint({ trait, x: e.x, y: e.y, target, index })
       }
     },
 
@@ -128,7 +128,7 @@ export function dragEventDriver(trait) {
         justStarted = false
       }
 
-      hint?.update?.(e.x, e.y)
+      hint?.move?.(e.x, e.y)
     },
 
     dragend(e, target) {

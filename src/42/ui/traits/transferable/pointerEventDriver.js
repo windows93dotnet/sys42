@@ -46,7 +46,6 @@ if (ipc.inTop) {
       const { origin } = res
       origin.ghost = sanitize(origin.ghostHTML)
       hint = new SlideHint({ origin })
-      hint.keepGhost = false
       hint.id = origin.id
 
       hint.ghost.style.opacity = 0
@@ -156,7 +155,6 @@ export function pointerEventDriver(trait) {
             hint.enterDropzone?.()
           } else {
             originHint = hint
-            originHint.keepGhost = true
             hint = new SlideHint({ trait, origin: originHint })
             hint.move(x, y)
           }
@@ -171,7 +169,6 @@ export function pointerEventDriver(trait) {
 
         if (originHint) {
           hint.destroy()
-          originHint.keepGhost = false
           hint = originHint
           originHint = undefined
         }
@@ -226,6 +223,7 @@ export function pointerEventDriver(trait) {
     trait.isSorting = false
     const index = getIndex(target)
     data = trait.export({ index, target })
+
     if (trait.config.hint.type === "slide") {
       hint = new SlideHint({ trait, x, y, target, index })
     }
