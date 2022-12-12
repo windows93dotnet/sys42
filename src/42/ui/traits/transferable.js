@@ -8,11 +8,7 @@ import ensureScopeSelector from "../../fabric/event/ensureScopeSelector.js"
 const DEFAULTS = {
   selector: ":scope > *",
   dropzone: undefined,
-  orientation: undefined,
-  freeAxis: undefined,
   effects: ["copy", "move", "link"],
-  // silentEffectCheck: false,
-  // fileSystemHandle: false,
   // driver: "dragEvent",
   driver: "pointerEvent",
   hint: "slide",
@@ -51,16 +47,6 @@ class Transferable extends Trait {
     const { id } = this.dropzone
 
     this.isSorting = false
-
-    this.freeAxis = this.config.freeAxis
-
-    this.orientation =
-      this.config.orientation ?? this.dropzone.getAttribute("aria-orientation")
-
-    if (!this.orientation) {
-      this.orientation = "horizontal"
-      this.freeAxis ??= true
-    }
 
     this.selector = ensureScopeSelector(this.config.selector, this.dropzone)
 
