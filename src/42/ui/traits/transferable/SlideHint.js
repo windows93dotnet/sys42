@@ -1,31 +1,10 @@
 import ghostify from "../../../fabric/dom/ghostify.js"
 import animate from "../../../fabric/dom/animate.js"
 import paintThrottle from "../../../fabric/type/function/paintThrottle.js"
-import indexOfElement from "../../../fabric/dom/indexOfElement.js"
+import { getNewIndex } from "./getIndex.js"
 
 const { parseInt, isNaN } = Number
 const { round } = Math
-
-export function getIndex(item) {
-  const index = item.style.getPropertyValue("--index")
-  return index ? Number(index) : indexOfElement(item)
-}
-
-export function getNewIndex(X, Y, item, orientation) {
-  if (item) {
-    const index = getIndex(item)
-
-    if (orientation === "horizontal") {
-      const { x, width } = item.getBoundingClientRect()
-      if (X > x + width / 2) return index + 1
-    } else {
-      const { y, height } = item.getBoundingClientRect()
-      if (Y > y + height / 2) return index + 1
-    }
-
-    return index
-  }
-}
 
 let raf1
 
@@ -61,6 +40,10 @@ export class SlideHint {
     }
 
     if (options?.trait?.dropzone) this.addDropzone(options)
+  }
+
+  clone() {
+    return SlideHint.cloneHint(this)
   }
 
   addDropzone({ trait, x, y, index, target, ghost, origin }) {

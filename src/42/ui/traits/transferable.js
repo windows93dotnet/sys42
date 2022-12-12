@@ -11,7 +11,8 @@ const DEFAULTS = {
   effects: ["copy", "move", "link"],
   // driver: "dragEvent",
   driver: "pointerEvent",
-  hint: "slide",
+  // hint: "slide",
+  hint: { type: "float" },
 }
 
 const configure = settings("ui.trait.transferable", DEFAULTS)
