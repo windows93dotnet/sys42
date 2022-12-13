@@ -1,9 +1,12 @@
 import uid from "../../core/uid.js"
 
-export function ensureScopeSelector(selector, parent) {
+export function ensureScopeSelector(selector, parent, options) {
+  parent.id ||= uid()
+
   if (selector?.includes(":scope")) {
-    parent.id ||= uid()
-    selector = selector.replaceAll(":scope", "#" + parent.id)
+    selector = selector.replaceAll(":scope", `#${parent.id}`)
+  } else if (options?.allowOutOfScope !== true) {
+    selector = `#${parent.id} ${selector}`
   }
 
   return selector

@@ -1,5 +1,5 @@
 ui-grid {
-  flex: 1 0 auto;
+  flex-grow: 1;
   overflow-y: auto;
   display: block;
   /* scrollbar-gutter: stable both-edges; */

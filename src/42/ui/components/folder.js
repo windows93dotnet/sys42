@@ -5,7 +5,7 @@ import io from "../../io.js"
 import normalizeDirname from "../../core/fs/normalizeDirname.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
 import contextmenu from "../invocables/contextmenu.js"
-import dt from "../../core/dt.js"
+// import dt from "../../core/dt.js"
 
 const _forgetWatch = Symbol("Folder.forgetWatch")
 const _updatePath = Symbol("Folder.updatePath")
@@ -63,12 +63,13 @@ export class Folder extends Component {
       {
         selector: "ui-icon",
         pointerdown(e, target) {
-          if (e.button === 2) this.el.autoSelect(target.path)
+          if (e.button === 2) this.el.ensureSelected(target.path)
+          // this.el.ensureSelected(target.path)
         },
-        dragstart(e, target) {
-          this.el.autoSelect(target.path)
-          dt.export(e, { paths: this.el.selection })
-        },
+        // dragstart(e, target) {
+        //   this.el.ensureSelected(target.path)
+        //   dt.export(e, { paths: this.el.selection })
+        // },
         //   // drag(e) {
         //   //   console.log(e.x, e.y)
         //   // },
@@ -109,6 +110,11 @@ export class Folder extends Component {
         path: "{{.}}",
       },
       content: "{{getItems(path)}}",
+      transferable: {
+        selector: ':scope > div[role="row"] > ui-icon',
+        hint: "float",
+        // dropzone: ':scope > div[role="row"]',
+      },
     },
   };
 
@@ -181,7 +187,7 @@ export class Folder extends Component {
     this.grid.selectable.selectAll()
   }
 
-  autoSelect(path) {
+  ensureSelected(path) {
     if (this.selection.length === 0) {
       this.selection.push(path)
     } else if (!this.selection.includes(path)) {

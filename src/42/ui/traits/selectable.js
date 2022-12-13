@@ -81,14 +81,14 @@ class Selectable extends Trait {
 
     this.config = configure(options)
 
-    this.config.selector = ensureScopeSelector(this.config.selector, this.el)
-
     if (
       options?.selector === undefined &&
       this.el.getAttribute("role") === "grid"
     ) {
       this.config.selector = ':scope > [role="row"] > *'
     }
+
+    this.config.selector = ensureScopeSelector(this.config.selector, this.el)
 
     if (
       options?.multiselectable === undefined &&
