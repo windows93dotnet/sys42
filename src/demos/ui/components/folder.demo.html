@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>ui-folder</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/style.css" id="theme" />
+
+<script type="module">
+  import trap from "../../../42/fabric/type/error/trap.js"
+  trap()
+</script>
+
+<script type="module">
+  import ui from "../../../42/ui.js"
+
+  const app = await ui({
+    tag: "body.box-center.gap.pa.desktop",
+    content: [
+      {
+        tag: "ui-folder.scroll-auto.inset.paper", //
+        style: { width: "300px", height: "208px" },
+        path: "/tests/fixtures/formats/",
+      },
+      {
+        tag: "ui-folder.scroll-auto.inset.paper", //
+        style: { width: "300px", height: "208px" },
+        path: "/tests/fixtures/json/",
+      },
+    ],
+  })
+
+  globalThis.app = app
+</script>
