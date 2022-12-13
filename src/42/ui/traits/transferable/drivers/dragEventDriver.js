@@ -1,9 +1,10 @@
-import listen from "../../../fabric/event/listen.js"
-import dt from "../../../core/dt.js"
-import SlideHint, { getIndex, getNewIndex } from "./SlideHint.js"
+import listen from "../../../../fabric/event/listen.js"
+import dt from "../../../../core/dt.js"
+import { getIndex, getNewIndex } from "../getIndex.js"
+import SlideHint from "../hints/SlideHint.js"
 
 if (/Firefox\/\d+[\d.]*/.test(navigator.userAgent)) {
-  await import("../../../core/env/polyfills/DragEvent.prototype.clientX.js")
+  await import("../../../../core/env/polyfills/DragEvent.prototype.clientX.js")
 }
 
 let hint

@@ -1,7 +1,7 @@
-import ghostify from "../../../fabric/dom/ghostify.js"
-import animate from "../../../fabric/dom/animate.js"
-import paintThrottle from "../../../fabric/type/function/paintThrottle.js"
-import { getNewIndex } from "./getIndex.js"
+import ghostify from "../../../../fabric/dom/ghostify.js"
+import animate from "../../../../fabric/dom/animate.js"
+import paintThrottle from "../../../../fabric/type/function/paintThrottle.js"
+import { getNewIndex } from "../getIndex.js"
 
 const { parseInt, isNaN } = Number
 const { round } = Math

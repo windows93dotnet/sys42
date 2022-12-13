@@ -109,7 +109,7 @@ class Transferable extends Trait {
       }
     }
 
-    import(`./transferable/${this.config.driver.type}Driver.js`) //
+    import(`./transferable/drivers/${this.config.driver.type}Driver.js`) //
       .then((m) => m.default(this, this.config.driver))
   }
 }
