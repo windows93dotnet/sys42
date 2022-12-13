@@ -47,6 +47,7 @@ export function ghostify(el, options) {
 
   clone.style.transition = "none"
   clone.style.position = "fixed"
+  clone.style.zIndex = options?.zIndex ?? 1e5
   clone.style.pointerEvents = "none"
   clone.style.minWidth = "0"
   clone.style.minHeight = "0"
