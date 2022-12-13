@@ -17,12 +17,12 @@
     align-content: center;
     justify-content: center;
     gap: 0.5rem;
-    width: 300px;
-    height: 300px;
+    width: 256px;
+    height: 256px;
   }
   .demo span {
     display: inline-block;
-    padding: 3.2rem;
+    padding: 2rem;
     border: 1px solid;
   }
   .demo span.selected {
@@ -32,22 +32,37 @@
 </style>
 
 <body class="box-center desktop">
-  <div>
-    <h2>Drag to select</h2>
-    <div class="demo inset paper">
-      <span>a</span>
-      <span>b</span>
-      <span>c</span>
-      <span>d</span>
-      <span><em>e</em></span>
-    </div>
+  <h2>Drag to select</h2>
+  <div class="demo demo-1 inset paper">
+    <span>a</span>
+    <span>b</span>
+    <span>c</span>
+    <span>d</span>
+    <span><em>e</em></span>
+  </div>
+
+  <br />
+
+  <h3>multiselectable: false</h3>
+  <div class="demo demo-2 inset paper">
+    <span>a</span>
+    <span>b</span>
+    <span>c</span>
+    <span>d</span>
+    <span><em>e</em></span>
   </div>
 </body>
 
 <script type="module">
   import selectable from "../../../42/ui/traits/selectable.js"
 
-  selectable(".demo", {
+  selectable(".demo-1", {
+    add: (item) => item.classList.add("selected"),
+    remove: (item) => item.classList.remove("selected"),
+  })
+
+  selectable(".demo-2", {
+    multiselectable: false,
     add: (item) => item.classList.add("selected"),
     remove: (item) => item.classList.remove("selected"),
   })

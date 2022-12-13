@@ -111,6 +111,8 @@ export function normalizeListen(args, config) {
   let current = { el: undefined, selector: undefined, listeners: [] }
 
   for (let arg of args.flat()) {
+    if (!arg) continue
+
     let selector
     if (typeof arg === "string") {
       selector = arg
