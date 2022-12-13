@@ -14,13 +14,10 @@ export class Grid extends Component {
 
     traits: {
       selectable: {
-        items: ":scope ui-icon",
-        dragger: { ignore: "ui-icon" },
+        draggerIgnoreItems: true,
+        key: "path",
         init() {
           return this.selection
-        },
-        key({ path }) {
-          return path
         },
       },
     },
