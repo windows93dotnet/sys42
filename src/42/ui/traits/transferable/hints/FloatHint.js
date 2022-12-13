@@ -1,8 +1,8 @@
-import ghostify from "../../../fabric/dom/ghostify.js"
-import setTemp from "../../../fabric/dom/setTemp.js"
-import setAttributes from "../../../fabric/dom/setAttributes.js"
-import configure from "../../../core/configure.js"
-import animate from "../../../fabric/dom/animate.js"
+import ghostify from "../../../../fabric/dom/ghostify.js"
+import setTemp from "../../../../fabric/dom/setTemp.js"
+import setAttributes from "../../../../fabric/dom/setAttributes.js"
+import configure from "../../../../core/configure.js"
+import animate from "../../../../fabric/dom/animate.js"
 
 const DEFAULT = {
   ghostAttrs: { style: { opacity: 1 } },

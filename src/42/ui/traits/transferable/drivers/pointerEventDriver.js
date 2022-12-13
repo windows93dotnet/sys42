@@ -1,12 +1,12 @@
-import listen from "../../../fabric/event/listen.js"
-import Dragger from "../../classes/Dragger.js"
-import { getIndex, getNewIndex } from "./getIndex.js"
-import SlideHint from "./SlideHint.js"
-import FloatHint from "./FloatHint.js"
-import { inRect } from "../../../fabric/geometry/point.js"
-import unproxy from "../../../fabric/type/object/unproxy.js"
-import sanitize from "../../../fabric/dom/sanitize.js"
-import ipc from "../../../core/ipc.js"
+import listen from "../../../../fabric/event/listen.js"
+import Dragger from "../../../classes/Dragger.js"
+import { getIndex, getNewIndex } from "../getIndex.js"
+import SlideHint from "../hints/SlideHint.js"
+import FloatHint from "../hints/FloatHint.js"
+import { inRect } from "../../../../fabric/geometry/point.js"
+import unproxy from "../../../../fabric/type/object/unproxy.js"
+import sanitize from "../../../../fabric/dom/sanitize.js"
+import ipc from "../../../../core/ipc.js"
 
 let data
 let hint
