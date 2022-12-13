@@ -10,15 +10,19 @@
 </script>
 
 <style>
+  div {
+    width: 450px;
+  }
   div > span {
     width: 64px;
+    flex-shrink: 0;
   }
 </style>
 
 <body class="box-center desktop">
-  <h2>Slide</h2>
-  <h3>Drag to sort (flexbox)</h3>
-  <div class="demo-flexbox d-inline-flex pa gap inset paper">
+  <h2>Drag to sort (Slide)</h2>
+  <h3>flexbox</h3>
+  <div class="demo scroll-x d-inline-flex pa gap inset paper">
     <span class="bd pa ratio-square">a</span>
     <span class="bd pa ratio-square">b</span>
     <span class="bd pa ratio-square">c</span>
@@ -30,33 +34,18 @@
 
   <br />
 
-  <h3>Drag to sort (grid)</h3>
-  <div class="demo-grid box-grid pa gap inset paper" style="--cols: 7">
-    <span class="bd pa ratio-square">A</span>
-    <span class="bd pa ratio-square">B</span>
-    <span class="bd pa ratio-square">C</span>
-    <span class="bd pa ratio-square">D</span>
-    <span class="bd pa ratio-square">E</span>
-    <span class="bd pa ratio-square">F</span>
-    <span class="bd pa ratio-square">G</span>
+  <div class="demo scroll-x d-inline-flex pa gap inset paper">
+    <span class="bd pa ratio-square">1</span>
+    <span class="bd pa ratio-square">2</span>
+    <span class="bd pa ratio-square">3</span>
+    <span class="bd pa ratio-square">4</span>
+    <span class="bd pa ratio-square">5</span>
   </div>
 
-  <!-- <h2>Slide</h2>
-  <h3>Drag to sort (flexbox)</h3>
-  <div class="demo-flexbox d-inline-flex pa gap inset paper">
-    <span class="bd pa ratio-square">a</span>
-    <span class="bd pa ratio-square">b</span>
-    <span class="bd pa ratio-square">c</span>
-    <span class="bd pa ratio-square">d</span>
-    <span class="bd pa ratio-square">e</span>
-    <span class="bd pa ratio-square">f</span>
-    <span class="bd pa ratio-square">g</span>
-  </div>
+  <!-- <br />
 
-  <br />
-
-  <h3>Drag to sort (grid)</h3>
-  <div class="demo-grid box-grid pa gap inset paper" style="--cols: 7">
+  <h3>grid (not quite ready)</h3>
+  <div class="demo scroll-x box-grid pa gap inset paper" style="--cols: 7">
     <span class="bd pa ratio-square">A</span>
     <span class="bd pa ratio-square">B</span>
     <span class="bd pa ratio-square">C</span>
@@ -70,6 +59,7 @@
 <script type="module">
   import transferable from "../../../42/ui/traits/transferable.js"
 
-  transferable(".demo-flexbox")
-  transferable(".demo-grid")
+  for (const item of document.querySelectorAll(".demo")) {
+    transferable(item)
+  }
 </script>

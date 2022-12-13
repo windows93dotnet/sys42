@@ -5,17 +5,17 @@ import configure from "../../../../core/configure.js"
 import animate from "../../../../fabric/dom/animate.js"
 
 const DEFAULT = {
-  ghostAttrs: { style: { opacity: 1 } },
-  targetAttrs: { style: { opacity: 0.7 } },
+  ghostAttrs: {},
+  targetAttrs: {},
   speed: 120,
 }
 
 export class FloatHint {
   constructor(options) {
-    if (options?.origin) {
-      this.offsetX = options.origin.offsetX
-      this.offsetY = options.origin.offsetY
-      this.ghost = options.origin.ghost
+    if (options?.previous) {
+      this.offsetX = options.previous.offsetX
+      this.offsetY = options.previous.offsetY
+      this.ghost = options.previous.ghost
       this.keepGhost = true
       return
     }
@@ -29,11 +29,13 @@ export class FloatHint {
     setAttributes(this.ghost, this.config.ghostAttrs)
     this.restoreTarget = setTemp(options.target, this.config.targetAttrs)
 
+    const { x, y } = options
+
     this.targetX = area.x
     this.targetY = area.y
 
-    this.offsetX = options.x - area.x
-    this.offsetY = options.y - area.y
+    this.offsetX = x - area.x
+    this.offsetY = y - area.y
   }
 
   clone() {

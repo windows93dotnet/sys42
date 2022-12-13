@@ -9,33 +9,33 @@ const { round } = Math
 let raf1
 
 export class SlideHint {
-  static cloneHint(origin, obj = {}) {
-    obj.ghost = origin.ghost
+  static cloneHint(source, target = {}) {
+    target.ghost = source.ghost
 
-    obj.index = origin.index
-    obj.targetIndex = origin.index
+    target.index = source.index
+    target.targetIndex = source.index
 
-    obj.offsetX = origin.offsetX
-    obj.offsetY = origin.offsetY
-    obj.lastX = origin.lastX
-    obj.lastY = origin.lastY
-    obj.targetY = origin.targetY
-    obj.targetX = origin.targetX
-    obj.targetOffsetX = origin.targetOffsetX
-    obj.targetOffsetY = origin.targetOffsetY
-    obj.targetHeight = origin.targetHeight
-    obj.targetWidth = origin.targetWidth
+    target.offsetX = source.offsetX
+    target.offsetY = source.offsetY
+    target.lastX = source.lastX
+    target.lastY = source.lastY
+    target.targetY = source.targetY
+    target.targetX = source.targetX
+    target.targetOffsetX = source.targetOffsetX
+    target.targetOffsetY = source.targetOffsetY
+    target.targetHeight = source.targetHeight
+    target.targetWidth = source.targetWidth
 
-    obj.targetMR = origin.targetMR
-    obj.targetML = origin.targetML
-    obj.targetMT = origin.targetMT
-    obj.targetMB = origin.targetMB
-    return obj
+    target.targetMR = source.targetMR
+    target.targetML = source.targetML
+    target.targetMT = source.targetMT
+    target.targetMB = source.targetMB
+    return target
   }
 
   constructor(options) {
-    if (options?.origin) {
-      SlideHint.cloneHint(options.origin, this)
+    if (options?.previous) {
+      SlideHint.cloneHint(options.previous, this)
       this.keepGhost = true
     }
 
@@ -46,7 +46,7 @@ export class SlideHint {
     return SlideHint.cloneHint(this)
   }
 
-  addDropzone({ trait, x, y, index, target, ghost, origin }) {
+  addDropzone({ trait, x, y, index, target, ghost, previous }) {
     this.trait = trait
     this.onabort = () => this.destroy()
     this.trait.cancel.signal.addEventListener("abort", this.onabort)
@@ -87,7 +87,7 @@ export class SlideHint {
 
     const dzId = trait.dropzone?.id
 
-    if (!origin) {
+    if (!previous) {
       this.index = index
       this.targetIndex = index
 
@@ -127,17 +127,11 @@ export class SlideHint {
       dzStyles.display === "grid" || dzStyles.display === "inline-grid"
 
     if (this.orientation === "vertical") {
-      if (!isGrid) {
-        dzStyle = `padding-bottom: ${this.targetHeight + dzPB}px`
-      }
-
+      if (!isGrid) dzStyle = `padding-bottom: ${this.targetHeight + dzPB}px`
       this.blankHalfSize = this.targetHeight / 2
       this.blank = `0 ${this.targetHeight}px`
     } else {
-      if (!isGrid) {
-        dzStyle = `padding-right: ${this.targetWidth + dzPR}px`
-      }
-
+      if (!isGrid) dzStyle = `padding-right: ${this.targetWidth + dzPR}px`
       this.blankHalfSize = this.targetWidth / 2
       this.blank = `${this.targetWidth}px`
     }
