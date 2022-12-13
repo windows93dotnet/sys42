@@ -10,10 +10,11 @@ import ipc from "../../../../core/ipc.js"
 
 let data
 let hint
-let originHint
+let previousHint
 let iframeRect
 let outsideIframe
 let currentDropzone
+let isDragging = false
 let dropEffect = "none"
 
 function cleanup() {
@@ -21,9 +22,9 @@ function cleanup() {
     item.classList.remove("dragover")
   }
 
-  if (originHint) {
-    originHint.destroy()
-    originHint = undefined
+  if (previousHint) {
+    previousHint.destroy()
+    previousHint = undefined
   }
 
   data = undefined
@@ -31,6 +32,7 @@ function cleanup() {
   iframeRect = undefined
   outsideIframe = undefined
   currentDropzone = undefined
+  isDragging = false
   dropEffect = "none"
 }
 
@@ -45,17 +47,17 @@ const dropzones = new Set()
 if (ipc.inTop) {
   ipc.on("42_DRAGGER_START", (res, meta) => {
     if (iframeRect) return
-    Dragger.isDragging = true
+    isDragging = true
 
     iframeRect = meta.iframe.getBoundingClientRect()
     data = res.data
 
-    if (res?.origin) {
-      const { origin } = res
-      origin.ghost = sanitize(origin.ghostHTML)
-      hint = makeHint("slide", { origin })
+    if (res?.previous) {
+      const { previous } = res
+      previous.ghost = sanitize(previous.ghostHTML)
+      hint = makeHint("slide", { previous })
       hint.keepGhost = false
-      hint.id = origin.id
+      hint.id = previous.id
 
       hint.ghost.style.opacity = 0
       document.documentElement.append(hint.ghost)
@@ -121,7 +123,7 @@ if (ipc.inTop) {
       hint?.destroy()
     }
 
-    Dragger.isDragging = false
+    isDragging = false
 
     const res = dropEffect
     cleanup()
@@ -144,7 +146,7 @@ export function pointerEventDriver(trait) {
     signal,
 
     pointermove({ x, y }) {
-      if (Dragger.isDragging) {
+      if (isDragging) {
         hint?.dragoverDropzone?.(x, y)
       }
     },
@@ -152,7 +154,7 @@ export function pointerEventDriver(trait) {
     pointerenter({ x, y }) {
       if (outsideIframe) return
 
-      if (Dragger.isDragging) {
+      if (isDragging) {
         dropzone.classList.add("dragover")
         dropEffect = "move"
 
@@ -165,8 +167,8 @@ export function pointerEventDriver(trait) {
           if (hint.id === id) {
             hint.enterDropzone?.()
           } else {
-            originHint = hint
-            hint = makeHint(hintType, { trait, origin: originHint })
+            previousHint = hint
+            hint = makeHint(hintType, { trait, previous: previousHint })
             hint.move(x, y)
           }
         }
@@ -174,14 +176,14 @@ export function pointerEventDriver(trait) {
     },
 
     pointerleave() {
-      if (Dragger.isDragging) {
+      if (isDragging) {
         dropzone.classList.remove("dragover")
         dropEffect = "none"
 
-        if (originHint) {
+        if (previousHint) {
           hint.destroy()
-          hint = originHint
-          originHint = undefined
+          hint = previousHint
+          previousHint = undefined
         }
 
         hint?.leaveDropzone?.()
@@ -189,7 +191,7 @@ export function pointerEventDriver(trait) {
     },
 
     pointerup(e) {
-      if (Dragger.isDragging) {
+      if (isDragging) {
         dropzone.classList.remove("dragover")
         dropEffect = "move"
 
@@ -230,6 +232,7 @@ export function pointerEventDriver(trait) {
   })
 
   dragger.start = (x, y, e, target) => {
+    isDragging = true
     dropEffect = "none"
     trait.isSorting = false
     const index = getIndex(target)
@@ -249,15 +252,15 @@ export function pointerEventDriver(trait) {
         }
       }
 
-      let origin
+      let previous
       if (hint) {
-        origin = hint.clone()
-        origin.ghostHTML = hint.ghost.outerHTML
-        origin.id = id
-        delete origin.ghost
+        previous = hint.clone()
+        previous.ghostHTML = hint.ghost.outerHTML
+        previous.id = id
+        delete previous.ghost
       }
 
-      ipc.emit("42_DRAGGER_START", { origin, data: unproxy(data) })
+      ipc.emit("42_DRAGGER_START", { previous, data: unproxy(data) })
     }
 
     if (dropzone.contains(target)) {
@@ -285,6 +288,7 @@ export function pointerEventDriver(trait) {
   }
 
   dragger.stop = async (x, y, e, target) => {
+    isDragging = false
     if (ipc.inIframe) {
       isOutsideIframe = false
       dropEffect = await ipc.send("42_DRAGGER_STOP", { x, y })
