@@ -36,7 +36,6 @@ export class SlideHint {
   constructor(options) {
     if (options?.previous) {
       SlideHint.cloneHint(options.previous, this)
-      this.keepGhost = true
     }
 
     if (options?.trait?.dropzone) this.addDropzone(options)
@@ -53,7 +52,8 @@ export class SlideHint {
 
     this.id = trait.dropzone?.id
     this.selector = trait.selector
-    this.speed = trait.config.hint.speed ?? 120
+    // this.speed = trait.config.hint.speed ?? 120
+    this.speed = trait.config.hint.speed ?? 180
     this.freeAxis = trait.config.hint.freeAxis
     this.orientation =
       trait.config.hint.orientation ??
@@ -94,7 +94,6 @@ export class SlideHint {
       if (ghost) {
         area = ghostify.area(ghost)
         this.ghost = ghost
-        this.keepGhost = true
       } else {
         area = {}
         this.ghost = ghostify(target, { area })
@@ -255,12 +254,10 @@ export class SlideHint {
         await animate.to(this.ghost, { translate }, this.speed).then(() => {
           item.style.opacity = opacity
           this.stopped = false
-          this.keepGhost = false
           this.destroy()
         })
       } else {
         this.stopped = false
-        this.keepGhost = false
         this.destroy()
       }
     })
@@ -278,14 +275,14 @@ export class SlideHint {
     this.stop()
   }
 
-  destroy() {
+  destroy(options) {
     if (this.stopped) return
 
     if (this.trait) {
       this.trait.cancel.signal.removeEventListener("abort", this.onabort)
     }
 
-    if (this.keepGhost !== true) this.ghost.remove()
+    if (options?.keepGhost !== true) this.ghost.remove()
 
     this.dynamicStyle?.remove()
     this.itemsStyle?.remove()
