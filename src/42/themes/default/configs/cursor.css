@@ -1,0 +1,85 @@
+:root {
+  --cursor-auto: auto;
+  --cursor-default: default;
+  --cursor-none: none;
+  --cursor-context-menu: context-menu;
+  --cursor-help: help;
+  --cursor-pointer: pointer;
+  --cursor-progress: progress;
+  --cursor-wait: wait;
+  --cursor-cell: cell;
+  --cursor-crosshair: crosshair;
+  --cursor-text: text;
+  --cursor-vertical-text: vertical-text;
+  --cursor-alias: alias;
+  --cursor-copy: copy;
+  --cursor-move: move;
+  --cursor-no-drop: no-drop;
+  --cursor-not-allowed: not-allowed;
+  --cursor-grab: grab;
+  --cursor-grabbing: grabbing;
+  --cursor-all-scroll: all-scroll;
+  --cursor-col-resize: col-resize;
+  --cursor-row-resize: row-resize;
+  --cursor-n-resize: n-resize;
+  --cursor-e-resize: e-resize;
+  --cursor-s-resize: s-resize;
+  --cursor-w-resize: w-resize;
+  --cursor-ne-resize: ne-resize;
+  --cursor-nw-resize: nw-resize;
+  --cursor-se-resize: se-resize;
+  --cursor-sw-resize: sw-resize;
+  --cursor-ew-resize: ew-resize;
+  --cursor-ns-resize: ns-resize;
+  --cursor-nesw-resize: nesw-resize;
+  --cursor-nwse-resize: nwse-resize;
+  --cursor-zoom-in: zoom-in;
+  --cursor-zoom-out: zoom-out;
+}
+
+.cursor-auto, :root.cursor-auto * { cursor: var(--cursor-auto); }
+.cursor-default, :root.cursor-default * { cursor: var(--cursor-default); }
+.cursor-none, :root.cursor-none * { cursor: var(--cursor-none); }
+
+/* Links & status */
+.cursor-context-menu, :root.cursor-context-menu * { cursor: var(--cursor-context-menu); }
+.cursor-help, :root.cursor-help * { cursor: var(--cursor-help); }
+.cursor-pointer, :root.cursor-pointer * { cursor: var(--cursor-pointer); }
+.cursor-progress, :root.cursor-progress * { cursor: var(--cursor-progress); }
+.cursor-wait, :root.cursor-wait * { cursor: var(--cursor-wait); }
+
+/* Selection */
+.cursor-cell, :root.cursor-cell * { cursor: var(--cursor-cell); }
+.cursor-crosshair, :root.cursor-crosshair * { cursor: var(--cursor-crosshair); }
+.cursor-text, :root.cursor-text * { cursor: var(--cursor-text); }
+.cursor-vertical-text, :root.cursor-vertical-text * { cursor: var(--cursor-vertical-text); }
+
+/* Drag & drop */
+.cursor-alias, :root.cursor-alias * { cursor: var(--cursor-alias); }
+.cursor-copy, :root.cursor-copy * { cursor: var(--cursor-copy); }
+.cursor-move, :root.cursor-move * { cursor: var(--cursor-move); }
+.cursor-no-drop, :root.cursor-no-drop * { cursor: var(--cursor-no-drop); }
+.cursor-not-allowed, :root.cursor-not-allowed * { cursor: var(--cursor-not-allowed); }
+.cursor-grab, :root.cursor-grab * { cursor: var(--cursor-grab); }
+.cursor-grabbing, :root.cursor-grabbing * { cursor: var(--cursor-grabbing); }
+
+/* Resizing & scrolling */
+.cursor-all-scroll, :root.cursor-all-scroll * { cursor: var(--cursor-all-scroll); }
+.cursor-col-resize, :root.cursor-col-resize * { cursor: var(--cursor-col-resize); }
+.cursor-row-resize, :root.cursor-row-resize * { cursor: var(--cursor-row-resize); }
+.cursor-n-resize, :root.cursor-n-resize * { cursor: var(--cursor-n-resize); }
+.cursor-e-resize, :root.cursor-e-resize * { cursor: var(--cursor-e-resize); }
+.cursor-s-resize, :root.cursor-s-resize * { cursor: var(--cursor-s-resize); }
+.cursor-w-resize, :root.cursor-w-resize * { cursor: var(--cursor-w-resize); }
+.cursor-ne-resize, :root.cursor-ne-resize * { cursor: var(--cursor-ne-resize); }
+.cursor-nw-resize, :root.cursor-nw-resize * { cursor: var(--cursor-nw-resize); }
+.cursor-se-resize, :root.cursor-se-resize * { cursor: var(--cursor-se-resize); }
+.cursor-sw-resize, :root.cursor-sw-resize * { cursor: var(--cursor-sw-resize); }
+.cursor-ew-resize, :root.cursor-ew-resize * { cursor: var(--cursor-ew-resize); }
+.cursor-ns-resize, :root.cursor-ns-resize * { cursor: var(--cursor-ns-resize); }
+.cursor-nesw-resize, :root.cursor-nesw-resize * { cursor: var(--cursor-nesw-resize); }
+.cursor-nwse-resize, :root.cursor-nwse-resize * { cursor: var(--cursor-nwse-resize); }
+
+/* Zooming */
+.cursor-zoom-in, :root.cursor-zoom-in * { cursor: var(--cursor-zoom-in); }
+.cursor-zoom-out, :root.cursor-zoom-out * { cursor: var(--cursor-zoom-out); }

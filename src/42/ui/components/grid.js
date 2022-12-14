@@ -15,6 +15,7 @@ export class Grid extends Component {
     traits: {
       selectable: {
         draggerIgnoreItems: true,
+        class: false,
         key: "path",
         init() {
           return this.selection
