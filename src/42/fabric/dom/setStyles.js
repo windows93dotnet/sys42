@@ -1,4 +1,4 @@
-import cssPrefix from "./cssPrefix.js"
+import cssPrefix from "../cssom/cssPrefix.js"
 
 export function setStyle(el, key, val) {
   if (key.startsWith("--")) el.style.setProperty(key, val)

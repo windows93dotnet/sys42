@@ -1,4 +1,4 @@
-import cssPrefix from "./cssPrefix.js"
+import cssPrefix from "../cssom/cssPrefix.js"
 import setStyles from "./setStyles.js"
 import setClasses from "./setClasses.js"
 
