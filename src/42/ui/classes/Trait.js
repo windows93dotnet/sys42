@@ -45,7 +45,7 @@ export default class Trait {
   }
 
   destroy() {
-    this.cancel(`${this.constructor.name} destroyed`)
+    this.cancel(`${this.name} destroyed`)
 
     if (_EVENTS in this) {
       this.emit("destroy", this)

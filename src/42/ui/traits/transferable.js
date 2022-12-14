@@ -15,6 +15,8 @@ const DEFAULTS = {
   // hint: { type: "float" },
 }
 
+let isSorting = false
+
 const configure = settings("ui.trait.transferable", DEFAULTS)
 
 class Transferable extends Trait {
@@ -47,13 +49,16 @@ class Transferable extends Trait {
     this.dropzone.id ||= uid()
     const { id } = this.dropzone
 
-    this.isSorting = false
-
-    this.selector = ensureScopeSelector(this.config.selector, this.dropzone)
+    this.selector = ensureScopeSelector(this.config.selector, this.el)
 
     this.indexChange = this.config.indexChange ?? noop
 
-    this.import = function ({ data, effect }, { index, dropzone, x, y }) {
+    this.import = (obj) => {
+      if (obj.data?.id === id) isSorting = true
+      if (this.config.import) return this.config.import(obj)
+
+      let { data, effect, index, dropzone, x, y } = obj
+
       if (data?.type === "layout") {
         if (this.list) {
           if (index === undefined) {
@@ -61,9 +66,7 @@ class Transferable extends Trait {
           }
 
           if (data.id === id) {
-            this.isSorting = true
             if (data.index === index) return
-
             const [removed] = this.list.splice(data.index, 1)
             if (index > data.index) index--
             this.list.splice(index, 0, removed)
@@ -81,7 +84,7 @@ class Transferable extends Trait {
           })
         }
       } else if (data?.type === "element") {
-        let el = document.querySelector(`#${data.id}`)
+        let el = document.querySelector(data.selector)
         if (el) {
           if (effect === "copy") {
             el = el.cloneNode(true)
@@ -93,20 +96,27 @@ class Transferable extends Trait {
       }
     }
 
-    this.export = function ({ index, target }) {
+    this.export = (obj) => {
+      isSorting = false
+      if (this.config.export) return this.config.export(obj)
+
+      const { index, target } = obj
       if (this.list) {
         const state = this.list.at(index)
-        return { type: "layout", id, index, state }
+        return { id, type: "layout", index, state }
       }
 
       target.id ||= uid()
-      return { type: "element", id: target.id }
+      return { id, type: "element", selector: `#${target.id}` }
     }
 
-    this.removeItem = (index) => {
-      if (this.list) {
-        this.list.splice(index, 1)
-      }
+    this.removeItem = (obj) => {
+      if (isSorting) return
+      if (this.config.removeItem) return this.config.removeItem(obj)
+
+      const { index, target } = obj
+      if (this.list) this.list.splice(index, 1)
+      else target.remove()
     }
 
     import(`./transferable/drivers/${this.config.driver.type}Driver.js`) //

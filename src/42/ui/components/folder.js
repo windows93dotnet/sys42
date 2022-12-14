@@ -113,7 +113,9 @@ export class Folder extends Component {
       transferable: {
         selector: ':scope > div[role="row"] > ui-icon',
         hint: "float",
-        // dropzone: ':scope > div[role="row"]',
+        import({ data, effect, index }) {
+          console.log(data, effect, index)
+        },
       },
     },
   };
