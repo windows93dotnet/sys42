@@ -1,4 +1,4 @@
-import applyStyleDeclaration from "./applyStyleDeclaration.js"
+// import applyStyleDeclaration from "./applyStyleDeclaration.js"
 
 const { parseInt } = Number
 const { round } = Math
@@ -43,7 +43,7 @@ export function ghostify(el, options) {
   const marginTop = parseInt(styles.marginTop, 10)
   const marginLeft = parseInt(styles.marginLeft, 10)
 
-  if (options?.cloneStyles !== false) applyStyleDeclaration(clone, styles)
+  // if (options?.cloneStyles !== false) applyStyleDeclaration(clone, styles)
 
   clone.style.transition = "none"
   clone.style.position = "fixed"

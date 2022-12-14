@@ -23,7 +23,7 @@ function cleanup() {
   }
 
   if (previousHint) {
-    previousHint.destroy()
+    previousHint.destroy({ keepGhost: true })
     previousHint = undefined
   }
 
@@ -56,7 +56,6 @@ if (ipc.inTop) {
       const { previous } = res
       previous.ghost = sanitize(previous.ghostHTML)
       hint = makeHint("slide", { previous })
-      hint.keepGhost = false
       hint.id = previous.id
 
       hint.ghost.style.opacity = 0
@@ -181,7 +180,7 @@ export function pointerEventDriver(trait) {
         effect = "none"
 
         if (previousHint) {
-          hint.destroy()
+          hint.destroy({ keepGhost: true })
           hint = previousHint
           previousHint = undefined
         }

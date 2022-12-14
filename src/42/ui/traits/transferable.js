@@ -15,7 +15,7 @@ const DEFAULTS = {
   // hint: { type: "float" },
 }
 
-let isSorting = false
+let preventRemove = false
 
 const configure = settings("ui.trait.transferable", DEFAULTS)
 
@@ -54,10 +54,10 @@ class Transferable extends Trait {
     this.indexChange = this.config.indexChange ?? noop
 
     this.import = (obj) => {
-      if (obj.data?.id === id) isSorting = true
+      if (obj.data?.id === id) preventRemove = true
       if (this.config.import) return this.config.import(obj)
 
-      let { data, effect, index, dropzone, x, y } = obj
+      let { data, effect, index, dropzone } = obj
 
       if (data?.type === "layout") {
         if (this.list) {
@@ -75,29 +75,26 @@ class Transferable extends Trait {
           }
 
           this.indexChange(index)
-        } else {
-          import("../components/dialog.js").then(({ dialog }) => {
-            const { state } = data
-            state.x = x - 64
-            state.y = y - 16
-            dialog(state)
-          })
+        } else if (this.config.importLayout) {
+          this.config.importLayout(data.state, obj)
         }
       } else if (data?.type === "element") {
         let el = document.querySelector(data.selector)
         if (el) {
+          preventRemove = true
           if (effect === "copy") {
             el = el.cloneNode(true)
             el.id += "-copy"
           }
 
-          dropzone.insertBefore(el, dropzone.children[index])
+          if (this.config.importElement) this.config.importElement(el, obj)
+          else dropzone.insertBefore(el, dropzone.children[index])
         }
       }
     }
 
     this.export = (obj) => {
-      isSorting = false
+      preventRemove = false
       if (this.config.export) return this.config.export(obj)
 
       const { index, target } = obj
@@ -111,7 +108,7 @@ class Transferable extends Trait {
     }
 
     this.removeItem = (obj) => {
-      if (isSorting) return
+      if (preventRemove) return
       if (this.config.removeItem) return this.config.removeItem(obj)
 
       const { index, target } = obj

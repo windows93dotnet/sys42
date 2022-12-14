@@ -53,20 +53,18 @@ export class FloatHint {
   }
 
   stop() {
-    this.keepGhost = false
     this.destroy()
   }
 
   revert() {
     const translate = `${this.targetX}px ${this.targetY}px`
     animate.to(this.ghost, { translate }, this.config.speed).then(() => {
-      this.keepGhost = false
       this.destroy()
     })
   }
 
-  destroy() {
-    if (this.keepGhost !== true) this.ghost.remove()
+  destroy(options) {
+    if (options?.keepGhost !== true) this.ghost.remove()
     this.restoreTarget?.()
   }
 }
