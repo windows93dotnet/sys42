@@ -1,7 +1,7 @@
 import listen from "../../fabric/event/listen.js"
 import ensureElement from "../../fabric/dom/ensureElement.js"
 // import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
-// import appendStyle from "../../fabric/cssom/appendStyle.js"
+// import appendStyle from "../../fabric/dom/appendStyle.js"
 import configure from "../../core/configure.js"
 import setTemp from "../../fabric/dom/setTemp.js"
 import Canceller from "../../fabric/classes/Canceller.js"
