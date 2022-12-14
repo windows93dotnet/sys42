@@ -123,7 +123,6 @@ export default class Dragger {
     }
 
     const stop = (e, target) => {
-      console.log("stop")
       drag.clear?.()
 
       distX = 0
@@ -167,6 +166,9 @@ export default class Dragger {
         drag.clear?.()
         this.isDragging = false
         Dragger.isDragging = false
+
+        if (this.config.beforestart?.(e, target) === false) return
+
         target = this.config.selector ? target : this.el
         if (this.config.ignore && e.target.closest(this.config.ignore)) return
 
