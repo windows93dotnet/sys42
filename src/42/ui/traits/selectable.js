@@ -80,6 +80,11 @@ class Selectable extends Trait {
   constructor(el, options) {
     super(el, options)
 
+    if (options?.selection) {
+      this.selection = options?.selection
+      delete options.selection
+    } else this.selection = []
+
     this.config = configure(options)
 
     if (
@@ -102,9 +107,6 @@ class Selectable extends Trait {
       this.config.dragger.ignore = this.config.selector
     }
 
-    this.init = this.config.init ?? (() => [])
-    this.selection = this.config.selection ?? this.init.call(this.el)
-
     if (this.config.class && !this.config.add && !this.config.remove) {
       this.add = (el) => el.classList.add(this.config.class)
       this.remove = (el) => el.classList.remove(this.config.class)
@@ -115,7 +117,10 @@ class Selectable extends Trait {
 
     this.key = this.config.key ?? ((item) => item)
     if (typeof this.key === "string") {
-      this.key = (item) => item[this.config.key]
+      this.key = (item) =>
+        this.config.key in item
+          ? item[this.config.key]
+          : item.getAttribute(this.config.key)
     }
 
     const tmp = {}
