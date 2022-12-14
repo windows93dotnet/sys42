@@ -17,9 +17,7 @@ export class Grid extends Component {
         draggerIgnoreItems: true,
         class: false,
         key: "path",
-        init() {
-          return this.selection
-        },
+        selection: "{{selection}}",
       },
     },
 

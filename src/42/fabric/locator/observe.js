@@ -28,7 +28,11 @@ export default function observe(root, options = {}) {
         const val = Reflect.get(target, key, receiver)
 
         if (val === undefined) {
-          if (typeof key !== "string") return
+          if (typeof key !== "string") {
+            if (key === Symbol.for("isProxy")) return true
+            return
+          }
+
           return Reflect.has(target, key, receiver)
             ? undefined
             : options.get?.(scope + key, { key, chain, parent, root })

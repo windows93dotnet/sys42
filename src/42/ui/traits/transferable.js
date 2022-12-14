@@ -13,6 +13,7 @@ const DEFAULTS = {
   driver: "pointerEvent",
   hint: "slide",
   // hint: { type: "float" },
+  ignoreSelectable: false,
 }
 
 let preventRemove = false
@@ -59,12 +60,10 @@ class Transferable extends Trait {
 
       let { data, effect, index, dropzone } = obj
 
-      if (data?.type === "layout") {
+      if (data?.type === "selection") {
+        console.log(data.selection)
+      } else if (data?.type === "layout") {
         if (this.list) {
-          if (index === undefined) {
-            index = this.list.length
-          }
-
           if (data.id === id) {
             if (data.index === index) return
             const [removed] = this.list.splice(data.index, 1)
@@ -96,6 +95,13 @@ class Transferable extends Trait {
     this.export = (obj) => {
       preventRemove = false
       if (this.config.export) return this.config.export(obj)
+
+      if (this.config.ignoreSelectable !== true) {
+        const selectable = this.dropzone[Trait.INSTANCES]?.selectable
+        if (selectable) {
+          return { id, type: "selection", selection: selectable.selection }
+        }
+      }
 
       const { index, target } = obj
       if (this.list) {

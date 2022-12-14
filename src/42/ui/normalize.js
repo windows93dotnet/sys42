@@ -12,6 +12,7 @@ import expr from "../core/expr.js"
 import Canceller from "../fabric/classes/Canceller.js"
 import Undones from "../fabric/classes/Undones.js"
 import filters from "../core/filters.js"
+import traverse from "../fabric/type/object/traverse.js"
 import dispatch from "../fabric/event/dispatch.js"
 import isEmptyObject from "../fabric/type/any/is/isEmptyObject.js"
 import noop from "../fabric/type/function/noop.js"
@@ -514,14 +515,31 @@ export function normalizeTraits(def, ctx) {
   return async (el) => {
     await ctx.preload
     await el.ready
-    for (const { module, name, val } of list) {
-      const fn = (val) => {
-        if (val === false) el[_INSTANCES]?.[name]?.destroy()
-        else module(el, { signal: ctx.signal, ...val })
-      }
 
-      if (val.scopes) register(ctx, val, fn)
-      else fn(val)
+    for (const { module, name, val } of list) {
+      const undones = []
+      traverse(val, (key, val, obj) => {
+        if (typeof val === "string") {
+          const fn = normalizeString(val, ctx)
+          if (typeof fn === "function") {
+            undones.push(
+              fn(ctx.reactive.state).then((res) => {
+                obj[key] = res
+              })
+            )
+          }
+        }
+      })
+
+      Promise.all(undones).then(() => {
+        const fn = (val) => {
+          if (val === false) el[_INSTANCES]?.[name]?.destroy()
+          else module(el, { signal: ctx.signal, ...val })
+        }
+
+        if (val.scopes) register(ctx, val, fn)
+        else fn(val)
+      })
     }
   }
 }
