@@ -3,7 +3,7 @@ import settings from "../../core/settings.js"
 import ensureElement from "../../fabric/dom/ensureElement.js"
 import uid from "../../core/uid.js"
 import noop from "../../fabric/type/function/noop.js"
-import ensureScopeSelector from "../../fabric/event/ensureScopeSelector.js"
+import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
 
 const DEFAULTS = {
   selector: ":scope > *",
