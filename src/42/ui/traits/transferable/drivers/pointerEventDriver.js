@@ -55,6 +55,10 @@ if (ipc.inTop) {
     if (res?.previous) {
       const { previous } = res
       previous.ghost = sanitize(previous.ghostHTML)
+      if (data.type === "element") {
+        data.el = sanitize(previous.targetHTML)
+      }
+
       hint = makeHint("slide", { previous })
       hint.id = previous.id
 
@@ -113,11 +117,9 @@ if (ipc.inTop) {
       x += iframeRect.left
       y += iframeRect.top
       const target = document.elementFromPoint(x, y)
-      for (const { dropzone, events } of dropzones) {
-        if (dropzone.contains(target)) {
-          events.pointerup({ target, x, y })
-        } else hint?.destroy()
-      }
+      if (currentDropzone?.dropzone.contains(target)) {
+        currentDropzone.events.pointerup({ target, x, y })
+      } else hint?.destroy()
     } else {
       hint?.destroy()
     }
@@ -253,9 +255,13 @@ export function pointerEventDriver(trait) {
       let previous
       if (hint) {
         previous = hint.clone()
-        previous.ghostHTML = hint.ghost.outerHTML
         previous.id = id
+        previous.ghostHTML = hint.ghost.outerHTML
         delete previous.ghost
+
+        if (data.type === "element") {
+          previous.targetHTML = target.outerHTML
+        }
       }
 
       ipc.emit("42_DRAGGER_START", { previous, data: unproxy(data) })
@@ -296,7 +302,7 @@ export function pointerEventDriver(trait) {
     if (effect === "move") {
       hint?.destroy?.()
       const index = getIndex(target)
-      trait.removeItem({ x, y, index, target })
+      trait.remove({ x, y, index, target })
     } else hint?.revert?.()
 
     cleanup()

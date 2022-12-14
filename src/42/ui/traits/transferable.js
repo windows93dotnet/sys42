@@ -79,7 +79,7 @@ class Transferable extends Trait {
           this.config.importLayout(data.state, obj)
         }
       } else if (data?.type === "element") {
-        let el = document.querySelector(data.selector)
+        let el = data.el ?? document.querySelector(data.selector)
         if (el) {
           preventRemove = true
           if (effect === "copy") {
@@ -107,9 +107,9 @@ class Transferable extends Trait {
       return { id, type: "element", selector: `#${target.id}` }
     }
 
-    this.removeItem = (obj) => {
+    this.remove = (obj) => {
       if (preventRemove) return
-      if (this.config.removeItem) return this.config.removeItem(obj)
+      if (this.config.remove) return this.config.remove(obj)
 
       const { index, target } = obj
       if (this.list) this.list.splice(index, 1)

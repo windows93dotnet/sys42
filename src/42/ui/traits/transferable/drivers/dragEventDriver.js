@@ -150,7 +150,7 @@ export function dragEventDriver(trait, config) {
       if (dropEffect === "move") {
         hint?.destroy?.()
         const index = getIndex(target)
-        trait.removeItem(index)
+        trait.remove({ x: e.x, y: e.y, index, target })
       } else hint?.revert?.()
 
       hint = undefined
