@@ -163,6 +163,13 @@ class Selectable extends Trait {
 
     this.dragger = new Dragger(this.el, {
       ...this.config.dragger,
+      beforestart: this.config.dragger.ignore
+        ? undefined
+        : () => {
+            this.dragger.config.ignore ??=
+              this.el[Trait.INSTANCES]?.transferable?.selector ??
+              this.dragger.config.ignore
+          },
       start: () => {
         items = this.el.querySelectorAll(this.config.selector)
         document.body.append(this.svg)
