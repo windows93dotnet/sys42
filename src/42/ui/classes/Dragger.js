@@ -1,10 +1,14 @@
 import listen from "../../fabric/event/listen.js"
+import ensureElement from "../../fabric/dom/ensureElement.js"
+// import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
+// import appendStyle from "../../fabric/cssom/appendStyle.js"
 import configure from "../../core/configure.js"
 import setTemp from "../../fabric/dom/setTemp.js"
 import Canceller from "../../fabric/classes/Canceller.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
 import noop from "../../fabric/type/function/noop.js"
+import inFirefox from "../../core/env/browser/inFirefox.js"
 
 const DEFAULTS = {
   distance: 0,
@@ -20,7 +24,8 @@ const DEFAULTS = {
 export default class Dragger {
   #isStarted = false
   constructor(el, options) {
-    this.el = el
+    this.el = ensureElement(el)
+
     this.config = configure(DEFAULTS, options)
 
     this.start = this.config.start ?? noop
@@ -29,6 +34,11 @@ export default class Dragger {
 
     this.cancel = new Canceller(options?.signal)
     const { signal } = this.cancel
+
+    // if (this.config.selector) {
+    //   this.config.selector = ensureScopeSelector(this.config.selector, this.el)
+    //   appendStyle(`${this.config.selector} { touch-action: none; }`, { signal })
+    // } else setTemp(this.el, { signal, style: { "touch-action": "none" } })
 
     let distX = 0
     let distY = 0
@@ -113,6 +123,7 @@ export default class Dragger {
     }
 
     const stop = (e, target) => {
+      console.log("stop")
       drag.clear?.()
 
       distX = 0
@@ -146,7 +157,13 @@ export default class Dragger {
     listen(this.el, {
       signal,
       selector: this.config.selector,
+      touchstart: false,
       pointerdown: (e, target) => {
+        if (inFirefox) e.preventDefault() // needed to dispatch pointerenter in firefox
+        if (e.target.hasPointerCapture(e.pointerId)) {
+          e.target.releasePointerCapture(e.pointerId) // https://stackoverflow.com/a/70976018
+        }
+
         drag.clear?.()
         this.isDragging = false
         Dragger.isDragging = false
