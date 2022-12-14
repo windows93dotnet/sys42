@@ -37,49 +37,49 @@
   --cursor-zoom-out: zoom-out;
 }
 
-.cursor-auto, :root.cursor-auto * { cursor: var(--cursor-auto); }
-.cursor-default, :root.cursor-default * { cursor: var(--cursor-default); }
-.cursor-none, :root.cursor-none * { cursor: var(--cursor-none); }
+.cursor-auto, :root.cursor-auto * { cursor: var(--cursor-auto) !important; }
+.cursor-default, :root.cursor-default * { cursor: var(--cursor-default) !important; }
+.cursor-none, :root.cursor-none * { cursor: var(--cursor-none) !important; }
 
 /* Links & status */
-.cursor-context-menu, :root.cursor-context-menu * { cursor: var(--cursor-context-menu); }
-.cursor-help, :root.cursor-help * { cursor: var(--cursor-help); }
-.cursor-pointer, :root.cursor-pointer * { cursor: var(--cursor-pointer); }
-.cursor-progress, :root.cursor-progress * { cursor: var(--cursor-progress); }
-.cursor-wait, :root.cursor-wait * { cursor: var(--cursor-wait); }
+.cursor-context-menu, :root.cursor-context-menu * { cursor: var(--cursor-context-menu) !important; }
+.cursor-help, :root.cursor-help * { cursor: var(--cursor-help) !important; }
+.cursor-pointer, :root.cursor-pointer * { cursor: var(--cursor-pointer) !important; }
+.cursor-progress, :root.cursor-progress * { cursor: var(--cursor-progress) !important; }
+.cursor-wait, :root.cursor-wait * { cursor: var(--cursor-wait) !important; }
 
 /* Selection */
-.cursor-cell, :root.cursor-cell * { cursor: var(--cursor-cell); }
-.cursor-crosshair, :root.cursor-crosshair * { cursor: var(--cursor-crosshair); }
-.cursor-text, :root.cursor-text * { cursor: var(--cursor-text); }
-.cursor-vertical-text, :root.cursor-vertical-text * { cursor: var(--cursor-vertical-text); }
+.cursor-cell, :root.cursor-cell * { cursor: var(--cursor-cell) !important; }
+.cursor-crosshair, :root.cursor-crosshair * { cursor: var(--cursor-crosshair) !important; }
+.cursor-text, :root.cursor-text * { cursor: var(--cursor-text) !important; }
+.cursor-vertical-text, :root.cursor-vertical-text * { cursor: var(--cursor-vertical-text) !important; }
 
 /* Drag & drop */
-.cursor-alias, :root.cursor-alias * { cursor: var(--cursor-alias); }
-.cursor-copy, :root.cursor-copy * { cursor: var(--cursor-copy); }
-.cursor-move, :root.cursor-move * { cursor: var(--cursor-move); }
-.cursor-no-drop, :root.cursor-no-drop * { cursor: var(--cursor-no-drop); }
-.cursor-not-allowed, :root.cursor-not-allowed * { cursor: var(--cursor-not-allowed); }
-.cursor-grab, :root.cursor-grab * { cursor: var(--cursor-grab); }
-.cursor-grabbing, :root.cursor-grabbing * { cursor: var(--cursor-grabbing); }
+.cursor-alias, :root.cursor-alias * { cursor: var(--cursor-alias) !important; }
+.cursor-copy, :root.cursor-copy * { cursor: var(--cursor-copy) !important; }
+.cursor-move, :root.cursor-move * { cursor: var(--cursor-move) !important; }
+.cursor-no-drop, :root.cursor-no-drop * { cursor: var(--cursor-no-drop) !important; }
+.cursor-not-allowed, :root.cursor-not-allowed * { cursor: var(--cursor-not-allowed) !important; }
+.cursor-grab, :root.cursor-grab * { cursor: var(--cursor-grab) !important; }
+.cursor-grabbing, :root.cursor-grabbing * { cursor: var(--cursor-grabbing) !important; }
 
 /* Resizing & scrolling */
-.cursor-all-scroll, :root.cursor-all-scroll * { cursor: var(--cursor-all-scroll); }
-.cursor-col-resize, :root.cursor-col-resize * { cursor: var(--cursor-col-resize); }
-.cursor-row-resize, :root.cursor-row-resize * { cursor: var(--cursor-row-resize); }
-.cursor-n-resize, :root.cursor-n-resize * { cursor: var(--cursor-n-resize); }
-.cursor-e-resize, :root.cursor-e-resize * { cursor: var(--cursor-e-resize); }
-.cursor-s-resize, :root.cursor-s-resize * { cursor: var(--cursor-s-resize); }
-.cursor-w-resize, :root.cursor-w-resize * { cursor: var(--cursor-w-resize); }
-.cursor-ne-resize, :root.cursor-ne-resize * { cursor: var(--cursor-ne-resize); }
-.cursor-nw-resize, :root.cursor-nw-resize * { cursor: var(--cursor-nw-resize); }
-.cursor-se-resize, :root.cursor-se-resize * { cursor: var(--cursor-se-resize); }
-.cursor-sw-resize, :root.cursor-sw-resize * { cursor: var(--cursor-sw-resize); }
-.cursor-ew-resize, :root.cursor-ew-resize * { cursor: var(--cursor-ew-resize); }
-.cursor-ns-resize, :root.cursor-ns-resize * { cursor: var(--cursor-ns-resize); }
-.cursor-nesw-resize, :root.cursor-nesw-resize * { cursor: var(--cursor-nesw-resize); }
-.cursor-nwse-resize, :root.cursor-nwse-resize * { cursor: var(--cursor-nwse-resize); }
+.cursor-all-scroll, :root.cursor-all-scroll * { cursor: var(--cursor-all-scroll) !important; }
+.cursor-col-resize, :root.cursor-col-resize * { cursor: var(--cursor-col-resize) !important; }
+.cursor-row-resize, :root.cursor-row-resize * { cursor: var(--cursor-row-resize) !important; }
+.cursor-n-resize, :root.cursor-n-resize * { cursor: var(--cursor-n-resize) !important; }
+.cursor-e-resize, :root.cursor-e-resize * { cursor: var(--cursor-e-resize) !important; }
+.cursor-s-resize, :root.cursor-s-resize * { cursor: var(--cursor-s-resize) !important; }
+.cursor-w-resize, :root.cursor-w-resize * { cursor: var(--cursor-w-resize) !important; }
+.cursor-ne-resize, :root.cursor-ne-resize * { cursor: var(--cursor-ne-resize) !important; }
+.cursor-nw-resize, :root.cursor-nw-resize * { cursor: var(--cursor-nw-resize) !important; }
+.cursor-se-resize, :root.cursor-se-resize * { cursor: var(--cursor-se-resize) !important; }
+.cursor-sw-resize, :root.cursor-sw-resize * { cursor: var(--cursor-sw-resize) !important; }
+.cursor-ew-resize, :root.cursor-ew-resize * { cursor: var(--cursor-ew-resize) !important; }
+.cursor-ns-resize, :root.cursor-ns-resize * { cursor: var(--cursor-ns-resize) !important; }
+.cursor-nesw-resize, :root.cursor-nesw-resize * { cursor: var(--cursor-nesw-resize) !important; }
+.cursor-nwse-resize, :root.cursor-nwse-resize * { cursor: var(--cursor-nwse-resize) !important; }
 
 /* Zooming */
-.cursor-zoom-in, :root.cursor-zoom-in * { cursor: var(--cursor-zoom-in); }
-.cursor-zoom-out, :root.cursor-zoom-out * { cursor: var(--cursor-zoom-out); }
+.cursor-zoom-in, :root.cursor-zoom-in * { cursor: var(--cursor-zoom-in) !important; }
+.cursor-zoom-out, :root.cursor-zoom-out * { cursor: var(--cursor-zoom-out) !important; }

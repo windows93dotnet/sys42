@@ -4,6 +4,7 @@ import { getIndex, getNewIndex } from "../getIndex.js"
 import SlideHint from "../hints/SlideHint.js"
 import FloatHint from "../hints/FloatHint.js"
 import { inRect } from "../../../../fabric/geometry/point.js"
+import setCursor from "../../../../fabric/dom/setCursor.js"
 import unproxy from "../../../../fabric/type/object/unproxy.js"
 import sanitize from "../../../../fabric/dom/sanitize.js"
 import ipc from "../../../../core/ipc.js"
@@ -16,6 +17,18 @@ let outsideIframe
 let currentDropzone
 let isDragging = false
 let effect = "none"
+
+const effectToCursor = {
+  none: "no-drop",
+  move: "grabbing",
+  copy: "copy",
+  link: "alias",
+}
+
+function setEffect(name) {
+  effect = name
+  setCursor(effectToCursor[name])
+}
 
 function cleanup() {
   for (const item of document.querySelectorAll(".dragover")) {
@@ -34,6 +47,7 @@ function cleanup() {
   currentDropzone = undefined
   isDragging = false
   effect = "none"
+  setCursor()
 }
 
 function makeHint(type, options) {
@@ -143,6 +157,16 @@ export function pointerEventDriver(trait) {
   /* dropzone
   =========== */
 
+  listen({
+    signal,
+    keydown({ key }) {
+      if (key === "Control") setEffect("copy")
+    },
+    keyup({ key }) {
+      if (key === "Control") setEffect("none")
+    },
+  })
+
   const events = {
     signal,
 
@@ -157,7 +181,7 @@ export function pointerEventDriver(trait) {
 
       if (isDragging) {
         dropzone.classList.add("dragover")
-        effect = "move"
+        setEffect("move")
 
         if (hint) {
           // force index to end of the list if no item is hovered before drop
@@ -179,7 +203,7 @@ export function pointerEventDriver(trait) {
     pointerleave() {
       if (isDragging) {
         dropzone.classList.remove("dragover")
-        effect = "none"
+        setEffect("none")
 
         if (previousHint) {
           hint.destroy({ keepGhost: true })
@@ -194,7 +218,7 @@ export function pointerEventDriver(trait) {
     pointerup({ x, y }, target) {
       if (isDragging) {
         dropzone.classList.remove("dragover")
-        effect = "move"
+        setEffect("move")
 
         if (hint) {
           const { index } = hint
@@ -234,7 +258,7 @@ export function pointerEventDriver(trait) {
 
   dragger.start = (x, y, e, target) => {
     isDragging = true
-    effect = "none"
+
     const index = getIndex(target)
     data = trait.export({ x, y, index, target })
 
@@ -270,6 +294,9 @@ export function pointerEventDriver(trait) {
     if (dropzone.contains(target)) {
       dropzone.classList.add("dragover")
       hint?.enterDropzone?.()
+      setEffect("move")
+    } else {
+      setEffect("none")
     }
   }
 
