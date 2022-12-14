@@ -2,7 +2,7 @@ import stopEvent from "./stopEvent.js"
 import distribute from "../type/object/distribute.js"
 import ensureElement from "../dom/ensureElement.js"
 import Canceller from "../classes/Canceller.js"
-import ensureScopeSelector from "./ensureScopeSelector.js"
+import ensureScopeSelector from "../dom/ensureScopeSelector.js"
 
 export const SPLIT_REGEX = /\s*\|\|\s*/
 
