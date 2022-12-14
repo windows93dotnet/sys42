@@ -15,7 +15,7 @@ let iframeRect
 let outsideIframe
 let currentDropzone
 let isDragging = false
-let dropEffect = "none"
+let effect = "none"
 
 function cleanup() {
   for (const item of document.querySelectorAll(".dragover")) {
@@ -33,7 +33,7 @@ function cleanup() {
   outsideIframe = undefined
   currentDropzone = undefined
   isDragging = false
-  dropEffect = "none"
+  effect = "none"
 }
 
 function makeHint(type, options) {
@@ -125,7 +125,7 @@ if (ipc.inTop) {
 
     isDragging = false
 
-    const res = dropEffect
+    const res = effect
     cleanup()
     return res
   })
@@ -156,7 +156,7 @@ export function pointerEventDriver(trait) {
 
       if (isDragging) {
         dropzone.classList.add("dragover")
-        dropEffect = "move"
+        effect = "move"
 
         if (hint) {
           // force index to end of the list if no item is hovered before drop
@@ -178,7 +178,7 @@ export function pointerEventDriver(trait) {
     pointerleave() {
       if (isDragging) {
         dropzone.classList.remove("dragover")
-        dropEffect = "none"
+        effect = "none"
 
         if (previousHint) {
           hint.destroy()
@@ -190,21 +190,21 @@ export function pointerEventDriver(trait) {
       }
     },
 
-    pointerup(e) {
+    pointerup({ x, y }, target) {
       if (isDragging) {
         dropzone.classList.remove("dragover")
-        dropEffect = "move"
+        effect = "move"
 
         if (hint) {
           const { index } = hint
-          trait.import({ data }, { index, dropzone, x: e.x, y: e.y })
+          trait.import({ data, effect, index, dropzone, x, y })
           hint?.stop?.()
           hint = undefined
           data = undefined
         } else {
-          const item = e.target.closest(trait.selector)
-          const index = getNewIndex(e.x, e.y, item, trait.orientation)
-          trait.import({ data }, { index, dropzone, x: e.x, y: e.y })
+          const item = target.closest(trait.selector)
+          const index = getNewIndex(x, y, item, trait.orientation)
+          trait.import({ data, effect, index, dropzone, x, y })
         }
       }
     },
@@ -233,10 +233,9 @@ export function pointerEventDriver(trait) {
 
   dragger.start = (x, y, e, target) => {
     isDragging = true
-    dropEffect = "none"
-    trait.isSorting = false
+    effect = "none"
     const index = getIndex(target)
-    data = trait.export({ index, target })
+    data = trait.export({ x, y, index, target })
 
     hint = makeHint(hintType, { trait, x, y, target, index })
 
@@ -289,20 +288,17 @@ export function pointerEventDriver(trait) {
 
   dragger.stop = async (x, y, e, target) => {
     isDragging = false
+
     if (ipc.inIframe) {
       isOutsideIframe = false
-      dropEffect = await ipc.send("42_DRAGGER_STOP", { x, y })
+      effect = await ipc.send("42_DRAGGER_STOP", { x, y })
     }
 
-    if (dropEffect === "move") hint?.destroy?.()
-    else hint?.revert?.()
-
-    if (trait.isSorting) {
-      trait.isSorting = false
-    } else if (dropEffect === "move") {
+    if (effect === "move") {
+      hint?.destroy?.()
       const index = getIndex(target)
-      trait.removeItem(index)
-    }
+      trait.removeItem({ x, y, index, target })
+    } else hint?.revert?.()
 
     cleanup()
   }
