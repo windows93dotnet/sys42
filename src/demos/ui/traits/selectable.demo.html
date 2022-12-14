@@ -25,10 +25,6 @@
     padding: 2rem;
     border: 1px solid;
   }
-  .demo span.selected {
-    color: var(--highlight-fg);
-    background-color: var(--highlight-bg);
-  }
 </style>
 
 <body class="box-center desktop">
@@ -56,10 +52,7 @@
 <script type="module">
   import selectable from "../../../42/ui/traits/selectable.js"
 
-  selectable(".demo-1", {
-    add: (item) => item.classList.add("selected"),
-    remove: (item) => item.classList.remove("selected"),
-  })
+  selectable(".demo-1")
 
   selectable(".demo-2", {
     multiselectable: false,

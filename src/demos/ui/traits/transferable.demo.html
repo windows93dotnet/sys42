@@ -24,16 +24,12 @@
     <span class="bd pa-xl bg-opacity-50 bg-green-200">4</span>
     <span class="bd pa-xl bg-opacity-50 bg-green-200">5</span>
     <span class="bd pa-xl bg-opacity-50 bg-green-200">6</span>
-    <span class="bd pa-xl bg-opacity-50 bg-green-200">6</span>
-    <span class="bd pa-xl bg-opacity-50 bg-green-200">6</span>
-    <span class="bd pa-xl bg-opacity-50 bg-green-200">6</span>
-    <span class="bd pa-xl bg-opacity-50 bg-green-200">6</span>
-    <span class="bd pa-xl bg-opacity-50 bg-green-200">6</span>
   </div>
 
   <br />
 
-  <div class="demo scroll-x d-inline-flex pa gap inset paper">
+  <h3>selectable</h3>
+  <div class="demo selectable scroll-x d-inline-flex pa gap inset paper">
     <span class="bd pa-xl bg-opacity-50 bg-yellow-200">1</span>
     <span class="bd pa-xl bg-opacity-50 bg-yellow-200">2</span>
     <span class="bd pa-xl bg-opacity-50 bg-yellow-200">3</span>
@@ -79,8 +75,11 @@
 
 <script type="module">
   import transferable from "../../../42/ui/traits/transferable.js"
+  import selectable from "../../../42/ui/traits/selectable.js"
 
   for (const item of document.querySelectorAll(".demo")) {
     transferable(item)
   }
+
+  selectable(".selectable")
 </script>

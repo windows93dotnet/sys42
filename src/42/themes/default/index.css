@@ -5,6 +5,8 @@
 =========== */
 @import "./configs/variables.css";
 @import "./configs/ansi.css";
+@import "./configs/colors.css";
+@import "./configs/cursor.css";
 
 /* Reset
 ======== */
@@ -40,8 +42,6 @@
 ============ */
 @import "./utils/utils.css";
 @import "./utils/box.css";
-@import "./utils/colors.css";
-@import "./utils/cursor.css";
 @import "./utils/spacing.css";
 @import "./utils/txt.css";
 @import "./utils/tail.css";

@@ -13,6 +13,7 @@ import noop from "../../fabric/type/function/noop.js"
 const DEFAULTS = {
   selector: ":scope > *",
   check: "colliding",
+  class: "selected",
   dragger: { distance: 5 },
   multiselectable: true,
   draggerIgnoreItems: false,
@@ -103,8 +104,15 @@ class Selectable extends Trait {
 
     this.init = this.config.init ?? (() => [])
     this.selection = this.config.selection ?? this.init.call(this.el)
-    this.add = this.config.add ?? noop
-    this.remove = this.config.remove ?? noop
+
+    if (this.config.class && !this.config.add && !this.config.remove) {
+      this.add = (el) => el.classList.add(this.config.class)
+      this.remove = (el) => el.classList.remove(this.config.class)
+    } else {
+      this.add = this.config.add ?? noop
+      this.remove = this.config.remove ?? noop
+    }
+
     this.key = this.config.key ?? ((item) => item)
     if (typeof this.key === "string") {
       this.key = (item) => item[this.config.key]
