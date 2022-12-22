@@ -25,6 +25,14 @@
     <span class="bd pa-xl bg-opacity-50 bg-green-200">5</span>
     <span class="bd pa-xl bg-opacity-50 bg-green-200">6</span>
   </div>
+  <div class="demo scroll-x d-inline-flex pa gap inset paper">
+    <span class="bd pa-xl bg-opacity-50 bg-green-400">1</span>
+    <span class="bd pa-xl bg-opacity-50 bg-green-400">2</span>
+    <span class="bd pa-xl bg-opacity-50 bg-green-400">3</span>
+    <span class="bd pa-xl bg-opacity-50 bg-green-400">4</span>
+    <span class="bd pa-xl bg-opacity-50 bg-green-400">5</span>
+    <span class="bd pa-xl bg-opacity-50 bg-green-400">6</span>
+  </div>
 
   <br />
 
@@ -36,6 +44,14 @@
     <span class="bd pa-xl bg-opacity-50 bg-yellow-200">4</span>
     <span class="bd pa-xl bg-opacity-50 bg-yellow-200">5</span>
     <span class="bd pa-xl bg-opacity-50 bg-yellow-200">6</span>
+  </div>
+  <div class="demo selectable scroll-x d-inline-flex pa gap inset paper">
+    <span class="bd pa-xl bg-opacity-50 bg-yellow-400">1</span>
+    <span class="bd pa-xl bg-opacity-50 bg-yellow-400">2</span>
+    <span class="bd pa-xl bg-opacity-50 bg-yellow-400">3</span>
+    <span class="bd pa-xl bg-opacity-50 bg-yellow-400">4</span>
+    <span class="bd pa-xl bg-opacity-50 bg-yellow-400">5</span>
+    <span class="bd pa-xl bg-opacity-50 bg-yellow-400">6</span>
   </div>
 
   <br />
@@ -81,5 +97,8 @@
     transferable(item)
   }
 
-  selectable(".selectable")
+  for (const item of document.querySelectorAll(".selectable")) {
+    // selectable(item, { key: "textContent" })
+    selectable(item)
+  }
 </script>

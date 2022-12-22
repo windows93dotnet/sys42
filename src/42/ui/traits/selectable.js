@@ -20,6 +20,7 @@ const DEFAULTS = {
   shortcuts: {
     selectOne: "click || Space",
     toggleSelect: "Ctrl+click || Ctrl+Space",
+    rangeSelect: "Shift+click || Shift+Space",
     selectAll: "Ctrl+a",
   },
 }
@@ -29,52 +30,102 @@ const configure = settings("ui.trait.selectable", DEFAULTS)
 const ns = "http://www.w3.org/2000/svg"
 
 class Selectable extends Trait {
-  #toggle(item) {
-    const val = this.key(item)
+  #toggle(el) {
+    const val = this.key(el)
     if (this.selection.includes(val)) {
       removeItem(this.selection, val)
-      this.remove(item, val)
+      this.remove(el, val)
     } else {
       this.selection.push(val)
-      this.add(item, val)
+      this.add(el, val)
     }
   }
 
-  #add(item) {
-    const val = this.key(item)
+  #add(el) {
+    const val = this.key(el)
     if (!this.selection.includes(val)) {
       this.selection.push(val)
-      this.add(item, val)
+      this.add(el, val)
     }
   }
 
-  #remove(item) {
-    const val = this.key(item)
+  #remove(el) {
+    const val = this.key(el)
     if (this.selection.includes(val)) {
       removeItem(this.selection, val)
-      this.remove(item, val)
+      this.remove(el, val)
     }
   }
 
-  toggleSelect(e, target) {
-    if (this.dragger.isDragging) return
-    const item = target.closest(this.config.selector)
-    if (item) this.#toggle(item)
+  ensureSelected(target) {
+    target = target.closest(this.config.selector)
+    if (!target) return
+
+    const val = this.key(target)
+    if (this.selection.length === 0) {
+      this.selection.push(val)
+      this.add(target, val)
+    } else if (!this.selection.includes(val)) {
+      for (const el of this.el.querySelectorAll(this.config.selector)) {
+        removeItem(this.selection, val)
+        this.remove(el, val)
+      }
+
+      this.selection.push(val)
+      this.add(target, val)
+    }
   }
 
-  selectOne(e, target) {
+  toggleSelect(target) {
     if (this.dragger.isDragging) return
-    const items = this.el.querySelectorAll(this.config.selector)
-    for (const item of items) {
-      if (item.contains(target)) this.#add(item)
-      else this.#remove(item)
+    const el = target.closest(this.config.selector)
+    if (el) this.#toggle(el)
+  }
+
+  rangeSelect(target) {
+    if (this.dragger.isDragging) return
+    if (this.selection.length === 0) this.selectOne(target)
+    else {
+      let lastFound
+      const range = []
+      for (const el of this.el.querySelectorAll(this.config.selector)) {
+        const val = this.key(target)
+
+        if (el.contains(target)) {
+          range.push(el)
+          break
+        }
+
+        if (this.selection.includes(val)) {
+          lastFound = true
+          range.length = 0
+          continue
+        }
+
+        if (lastFound) range.push(el)
+      }
+
+      for (const item of range) {
+        this.#add(item)
+      }
+
+      console.log(range)
+    }
+  }
+
+  selectOne(target) {
+    if (this.dragger.isDragging) return
+    for (const el of this.el.querySelectorAll(this.config.selector)) {
+      if (el.contains(target)) this.#add(el)
+      else this.#remove(el)
     }
   }
 
   selectAll() {
     if (this.dragger.isDragging) return
-    const items = this.el.querySelectorAll(this.config.selector)
-    for (const item of items) this.#add(item)
+    for (const el of this.el.querySelectorAll(this.config.selector)) {
+      this.#add(el)
+    }
   }
 
   constructor(el, options) {
@@ -128,23 +179,26 @@ class Selectable extends Trait {
       tmp.tabIndex = -1
     }
 
+    const { shortcuts } = this.config
+    const { signal } = this.cancel
+
     setTemp(this.el, {
-      signal: this.cancel.signal,
+      signal,
       class: { "selection-0": true },
       ...tmp,
     })
 
-    const sc = this.config.shortcuts
     on(
       this.el,
-      { signal: this.cancel.signal },
+      { signal },
       {
-        [sc.selectOne]: (e, target) => this.selectOne(e, target),
+        [shortcuts.selectOne]: (e, target) => this.selectOne(target),
       },
       this.config.multiselectable && {
         disrupt: true,
-        [sc.toggleSelect]: (e, target) => this.toggleSelect(e, target),
-        [sc.selectAll]: (e, target) => this.selectAll(e, target),
+        [shortcuts.toggleSelect]: (e, target) => this.toggleSelect(target),
+        [shortcuts.rangeSelect]: (e, target) => this.rangeSelect(target),
+        [shortcuts.selectAll]: () => this.selectAll(),
       }
     )
 
