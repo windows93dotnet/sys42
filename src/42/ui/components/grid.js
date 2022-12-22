@@ -89,8 +89,6 @@ export class Grid extends Component {
     }
   }
 
-  items
-
   setup() {
     this.items = this.children[0].children
     this.iconsPerLine = 0

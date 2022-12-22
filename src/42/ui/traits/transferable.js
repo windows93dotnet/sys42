@@ -61,6 +61,7 @@ class Transferable extends Trait {
       let { data, effect, index, dropzone } = obj
 
       if (data?.type === "selection") {
+        // console.log(dropzone)
         console.log(data.selection)
       } else if (data?.type === "layout") {
         if (this.list) {

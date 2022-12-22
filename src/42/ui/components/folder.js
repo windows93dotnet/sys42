@@ -60,23 +60,23 @@ export class Folder extends Component {
       //     }
       //   },
       // },
-      {
-        selector: "ui-icon",
-        pointerdown(e, target) {
-          if (e.button === 2) this.el.ensureSelected(target.path)
-          // this.el.ensureSelected(target.path)
-        },
-        // dragstart(e, target) {
-        //   this.el.ensureSelected(target.path)
-        //   dt.export(e, { paths: this.el.selection })
-        // },
-        //   // drag(e) {
-        //   //   console.log(e.x, e.y)
-        //   // },
-        //   // async dragend(e) {
-        //   //   console.log("dragend", e.dataTransfer.dropEffect)
-        //   // },
-      },
+      // {
+      //   selector: "ui-icon",
+      //   pointerdown(e, target) {
+      //     if (e.button === 2) this.el.ensureSelected(target.path)
+      //     // this.el.ensureSelected(target.path)
+      //   },
+      //   // dragstart(e, target) {
+      //   //   this.el.ensureSelected(target.path)
+      //   //   dt.export(e, { paths: this.el.selection })
+      //   // },
+      //   //   // drag(e) {
+      //   //   //   console.log(e.x, e.y)
+      //   //   // },
+      //   //   // async dragend(e) {
+      //   //   //   console.log("dragend", e.dataTransfer.dropEffect)
+      //   //   // },
+      // },
 
       // icon actions
       // ============
@@ -189,14 +189,14 @@ export class Folder extends Component {
     this.grid.selectable.selectAll()
   }
 
-  ensureSelected(path) {
-    if (this.selection.length === 0) {
-      this.selection.push(path)
-    } else if (!this.selection.includes(path)) {
-      this.selection.length = 0
-      this.selection.push(path)
-    }
-  }
+  // ensureSelected(path) {
+  //   if (this.selection.length === 0) {
+  //     this.selection.push(path)
+  //   } else if (!this.selection.includes(path)) {
+  //     this.selection.length = 0
+  //     this.selection.push(path)
+  //   }
+  // }
 
   getItems(path) {
     let dir
