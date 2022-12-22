@@ -32,47 +32,43 @@ const ns = "http://www.w3.org/2000/svg"
 class Selectable extends Trait {
   #toggle(el) {
     const val = this.key(el)
-    if (this.selection.includes(val)) {
+    if (this.elements.includes(el)) {
       removeItem(this.selection, val)
+      removeItem(this.elements, el)
       this.remove(el, val)
     } else {
       this.selection.push(val)
+      this.elements.push(el)
       this.add(el, val)
     }
   }
 
   #add(el) {
     const val = this.key(el)
-    if (!this.selection.includes(val)) {
+    if (!this.elements.includes(el)) {
       this.selection.push(val)
+      this.elements.push(el)
       this.add(el, val)
     }
   }
 
   #remove(el) {
     const val = this.key(el)
-    if (this.selection.includes(val)) {
+    if (this.elements.includes(el)) {
       removeItem(this.selection, val)
+      removeItem(this.elements, el)
       this.remove(el, val)
     }
   }
 
   ensureSelected(target) {
-    target = target.closest(this.config.selector)
-    if (!target) return
+    const el = target.closest(this.config.selector)
+    if (!el) return
 
-    const val = this.key(target)
-    if (this.selection.length === 0) {
-      this.selection.push(val)
-      this.add(target, val)
-    } else if (!this.selection.includes(val)) {
-      for (const el of this.el.querySelectorAll(this.config.selector)) {
-        removeItem(this.selection, val)
-        this.remove(el, val)
-      }
-
-      this.selection.push(val)
-      this.add(target, val)
+    if (this.elements.length === 0) {
+      this.#add(el)
+    } else if (!this.elements.includes(el)) {
+      this.selectOne(el)
     }
   }
 
@@ -84,47 +80,72 @@ class Selectable extends Trait {
 
   rangeSelect(target) {
     if (this.dragger.isDragging) return
-    if (this.selection.length === 0) this.selectOne(target)
-    else {
-      let lastFound
-      const range = []
-      for (const el of this.el.querySelectorAll(this.config.selector)) {
-        const val = this.key(target)
+    const el = target.closest(this.config.selector)
+    const all = [...this.el.querySelectorAll(this.config.selector)]
+    const a = all.indexOf(el)
+    const b = all.indexOf(this.elements.at(-1))
+    const min = Math.min(a, b)
+    const max = Math.max(a, b)
+    for (const item of all.slice(min, max)) this.#add(item)
+    this.#add(el)
+  }
 
-        if (el.contains(target)) {
-          range.push(el)
-          break
-        }
-
-        if (this.selection.includes(val)) {
-          lastFound = true
-          range.length = 0
-          continue
-        }
-
-        if (lastFound) range.push(el)
-      }
-
-      for (const item of range) {
-        this.#add(item)
-      }
-
-      console.log(range)
+  clear() {
+    while (this.elements.length > 0) {
+      const el = this.elements.shift()
+      const val = this.selection.shift()
+      this.remove(el, val)
     }
   }
 
   selectOne(target) {
     if (this.dragger.isDragging) return
-    for (const el of this.el.querySelectorAll(this.config.selector)) {
-      if (el.contains(target)) this.#add(el)
-      else this.#remove(el)
+
+    const el = target.closest(this.config.selector)
+
+    const remove = []
+    for (const item of this.elements) {
+      if (item !== el) remove.push(item)
     }
+
+    for (const item of remove) this.#remove(item)
+
+    if (el) this.#add(el)
   }
 
   selectAll() {
     if (this.dragger.isDragging) return
     for (const el of this.el.querySelectorAll(this.config.selector)) {
       this.#add(el)
+    }
+  }
+
+  sync() {
+    if (this.selection.length !== this.elements.length) {
+      this.elements.length = 0
+      if (typeof this.config.key === "string") {
+        const { key } = this.config
+        let fail
+        for (const val of this.selection) {
+          const el = this.el.querySelector(
+            `${this.config.selector}[${key}="${val}"]`
+          )
+          if (el) this.elements.push(el)
+          else {
+            fail = true
+            break
+          }
+        }
+
+        if (fail !== true) return
+        this.elements.length = 0
+      }
+
+      for (const el of this.el.querySelectorAll(this.config.selector)) {
+        const val = this.key(el)
+        const i = this.selection.indexOf(val)
+        if (i > -1) this.elements[i] = el
+      }
     }
   }
 
@@ -135,6 +156,11 @@ class Selectable extends Trait {
       this.selection = options?.selection
       delete options.selection
     } else this.selection = []
+
+    if (options?.elements) {
+      this.elements = options?.elements
+      delete options.elements
+    } else this.elements = []
 
     this.config = configure(options)
 
@@ -173,6 +199,8 @@ class Selectable extends Trait {
           ? item[this.config.key]
           : item.getAttribute(this.config.key)
     }
+
+    this.sync()
 
     const tmp = {}
     if (this.el.getAttribute("tabindex") === null && this.el.tabIndex === -1) {
