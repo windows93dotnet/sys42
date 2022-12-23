@@ -16,6 +16,7 @@ let iframeRect
 let outsideIframe
 let currentDropzone
 let isDragging = false
+let forgetKeyEvents
 let effect = "none"
 
 const effectToCursor = {
@@ -47,6 +48,7 @@ function cleanup() {
   currentDropzone = undefined
   isDragging = false
   effect = "none"
+  forgetKeyEvents?.()
   setCursor()
 }
 
@@ -146,8 +148,15 @@ if (ipc.inTop) {
   })
 }
 
+function handleEffect(effects, { ctrlKey, shiftKey } = {}) {
+  if (ctrlKey && effects.includes("copy")) setEffect("copy")
+  else if (shiftKey && effects.includes("link")) setEffect("link")
+  else if (effects.includes("move")) setEffect("move")
+  else setEffect("none")
+}
+
 export function pointerEventDriver(trait) {
-  const { /* effects, */ dropzone } = trait
+  const { effects, dropzone } = trait
   const { id } = dropzone
 
   const hintType = trait.config.hint.type
@@ -156,16 +165,6 @@ export function pointerEventDriver(trait) {
 
   /* dropzone
   =========== */
-
-  listen({
-    signal,
-    keydown({ key }) {
-      if (key === "Control") setEffect("copy")
-    },
-    keyup({ key }) {
-      if (key === "Control") setEffect("none")
-    },
-  })
 
   const events = {
     signal,
@@ -176,12 +175,18 @@ export function pointerEventDriver(trait) {
       }
     },
 
-    pointerenter({ x, y }) {
+    pointerenter({ x, y, ctrlKey, shiftKey }) {
       if (outsideIframe) return
 
       if (isDragging) {
         dropzone.classList.add("dragover")
-        setEffect("move")
+        handleEffect(effects, { ctrlKey, shiftKey })
+
+        forgetKeyEvents = listen({
+          signal,
+          keydown: (e) => handleEffect(effects, e),
+          keyup: () => handleEffect(effects),
+        })
 
         if (hint) {
           // force index to end of the list if no item is hovered before drop
@@ -201,6 +206,7 @@ export function pointerEventDriver(trait) {
     },
 
     pointerleave() {
+      forgetKeyEvents?.()
       if (isDragging) {
         dropzone.classList.remove("dragover")
         setEffect("none")
@@ -218,7 +224,6 @@ export function pointerEventDriver(trait) {
     pointerup({ x, y }, target) {
       if (isDragging) {
         dropzone.classList.remove("dragover")
-        setEffect("move")
 
         if (hint) {
           const { index } = hint
@@ -291,13 +296,16 @@ export function pointerEventDriver(trait) {
       ipc.emit("42_DRAGGER_START", { previous, data: unproxy(data) })
     }
 
-    if (dropzone.contains(target)) {
-      dropzone.classList.add("dragover")
-      hint?.enterDropzone?.()
-      setEffect("move")
-    } else {
-      setEffect("none")
+    let foundDropzone
+    for (const { dropzone, events } of dropzones) {
+      if (dropzone.contains(target)) {
+        foundDropzone = true
+        events.pointerenter(e)
+        break
+      }
     }
+
+    if (!foundDropzone) setEffect("none")
   }
 
   dragger.drag = (x, y) => {
