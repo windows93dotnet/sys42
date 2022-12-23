@@ -60,10 +60,7 @@ class Transferable extends Trait {
 
       let { data, effect, index, dropzone } = obj
 
-      if (data?.type === "selection") {
-        // console.log(dropzone)
-        console.log(data.selection)
-      } else if (data?.type === "layout") {
+      if (data?.type === "layout") {
         if (this.list) {
           if (data.id === id) {
             if (data.index === index) return
@@ -78,6 +75,22 @@ class Transferable extends Trait {
         } else if (this.config.importLayout) {
           this.config.importLayout(data.state, obj)
         }
+      } else if (data?.type === "selection") {
+        preventRemove = true
+        const frag = document.createDocumentFragment()
+        for (let el of data.elements) {
+          if (effect === "copy") {
+            el = el.cloneNode(true)
+            el.id += "-copy"
+          }
+
+          el.classList.remove("selected")
+
+          frag.append(el)
+        }
+
+        if (this.config.importElement) this.config.importElement(frag, obj)
+        else dropzone.insertBefore(frag, dropzone.children[index])
       } else if (data?.type === "element") {
         let el = data.el ?? document.querySelector(data.selector)
         if (el) {
@@ -100,7 +113,12 @@ class Transferable extends Trait {
       if (this.config.ignoreSelectable !== true) {
         const selectable = this.dropzone[Trait.INSTANCES]?.selectable
         if (selectable) {
-          return { id, type: "selection", selection: selectable.selection }
+          return {
+            id,
+            type: "selection",
+            selection: selectable.selection,
+            elements: selectable.elements,
+          }
         }
       }
 
