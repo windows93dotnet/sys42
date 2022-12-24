@@ -267,9 +267,17 @@ export function pointerEventDriver(trait) {
     const index = getIndex(target)
     data = trait.export({ x, y, index, target })
 
+    const insideDropzone = dropzone?.contains(target)
+
+    if (insideDropzone) events.pointerenter(e)
+    else setEffect("none")
+
     hint = makeHint(hintType, { trait, x, y, target, index })
 
+    if (insideDropzone) hint.enterDropzone?.()
+
     if (ipc.inIframe) {
+      let previous
       docRect = document.documentElement.getBoundingClientRect()
 
       if (hint) {
@@ -279,10 +287,7 @@ export function pointerEventDriver(trait) {
           left: docRect.left + hint.targetWidth,
           right: docRect.right - hint.targetWidth,
         }
-      }
 
-      let previous
-      if (hint) {
         previous = hint.clone()
         previous.id = id
         previous.ghostHTML = hint.ghost.outerHTML
@@ -295,17 +300,6 @@ export function pointerEventDriver(trait) {
 
       ipc.emit("42_DRAGGER_START", { previous, data: unproxy(data) })
     }
-
-    let foundDropzone
-    for (const { dropzone, events } of dropzones) {
-      if (dropzone.contains(target)) {
-        foundDropzone = true
-        events.pointerenter(e)
-        break
-      }
-    }
-
-    if (!foundDropzone) setEffect("none")
   }
 
   dragger.drag = (x, y) => {

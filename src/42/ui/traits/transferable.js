@@ -110,26 +110,24 @@ class Transferable extends Trait {
       preventRemove = false
       if (this.config.export) return this.config.export(obj)
 
+      const { index, target } = obj
+
       if (this.config.ignoreSelectable !== true) {
         const selectable = this.dropzone[Trait.INSTANCES]?.selectable
         if (selectable) {
-          return {
-            id,
-            type: "selection",
-            selection: selectable.selection,
-            elements: selectable.elements,
-          }
+          selectable.ensureSelected(target)
+          const { selection, elements } = selectable
+          return { type: "selection", id, index, selection, elements }
         }
       }
 
-      const { index, target } = obj
       if (this.list) {
         const state = this.list.at(index)
-        return { id, type: "layout", index, state }
+        return { type: "layout", id, index, state }
       }
 
       target.id ||= uid()
-      return { id, type: "element", selector: `#${target.id}` }
+      return { type: "element", id, selector: `#${target.id}` }
     }
 
     this.remove = (obj) => {

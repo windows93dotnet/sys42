@@ -278,7 +278,8 @@ States
   outline-offset: -1px;
 }
 
-:focus:not(:focus-visible, [aria-pressed]),
+/* :focus:not(:focus-visible, [aria-pressed]), */
+:focus:not(:focus-visible),
 [tabindex="-1"]:focus,
 [tabindex="-1"].focus {
   outline: none;
