@@ -97,6 +97,7 @@ export class SlideHint {
       } else {
         area = {}
         this.ghost = ghostify(target, { area })
+        this.ghost.classList.remove("selected")
         document.documentElement.append(this.ghost)
       }
 
@@ -212,7 +213,7 @@ export class SlideHint {
         this.orientation === "vertical"
           ? `${this.targetX}px ${y - this.offsetY}px`
           : `${x - this.offsetX}px ${this.targetY}px`
-    } else if (x && y) {
+    } else {
       this.ghost.style.translate = `
         ${x - this.offsetX}px
         ${y - this.offsetY}px`

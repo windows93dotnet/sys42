@@ -7,7 +7,8 @@
   mix-blend-mode: difference;
 }
 
-.dragover {
+.dragover,
+.dragover:focus {
   outline: 1px dashed;
 }
 

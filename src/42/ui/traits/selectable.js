@@ -16,6 +16,7 @@ const DEFAULTS = {
   class: "selected",
   dragger: { distance: 5 },
   multiselectable: true,
+  contextmenuSelection: true,
   draggerIgnoreItems: false,
   shortcuts: {
     selectOne: "click || Space",
@@ -221,6 +222,12 @@ class Selectable extends Trait {
       { signal },
       {
         [shortcuts.selectOne]: (e, target) => this.selectOne(target),
+      },
+      this.config.contextmenuSelection && {
+        contextmenu: (e, target) => this.ensureSelected(target),
+        pointerdown: (e, target) => {
+          if (e.button === 2) this.ensureSelected(target)
+        },
       },
       this.config.multiselectable && {
         disrupt: true,
