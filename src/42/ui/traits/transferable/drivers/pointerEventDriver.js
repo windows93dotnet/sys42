@@ -291,10 +291,10 @@ export function pointerEventDriver(trait) {
         previous.id = id
         previous.ghostHTML = hint.ghost.outerHTML
         delete previous.ghost
+      }
 
-        if (data.type === "element") {
-          previous.targetHTML = target.outerHTML
-        }
+      if (data.type === "element") {
+        previous.targetHTML = target.outerHTML
       }
 
       ipc.emit("42_DRAGGER_START", { previous, data: unproxy(data) })
