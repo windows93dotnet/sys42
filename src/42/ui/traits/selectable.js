@@ -62,41 +62,10 @@ class Selectable extends Trait {
     }
   }
 
-  ensureSelected(target) {
-    const el = target.closest(this.config.selector)
-    if (!el) return
-
-    if (this.elements.length === 0) {
-      this.#add(el)
-    } else if (!this.elements.includes(el)) {
-      this.selectOne(el)
-    }
-  }
-
   toggleSelect(target) {
     if (this.dragger.isDragging) return
     const el = target.closest(this.config.selector)
     if (el) this.#toggle(el)
-  }
-
-  rangeSelect(target) {
-    if (this.dragger.isDragging) return
-    const el = target.closest(this.config.selector)
-    const all = [...this.el.querySelectorAll(this.config.selector)]
-    const a = all.indexOf(el)
-    const b = all.indexOf(this.elements.at(-1))
-    const min = Math.min(a, b)
-    const max = Math.max(a, b)
-    for (const item of all.slice(min, max)) this.#add(item)
-    this.#add(el)
-  }
-
-  clear() {
-    while (this.elements.length > 0) {
-      const el = this.elements.shift()
-      const val = this.selection.shift()
-      this.remove(el, val)
-    }
   }
 
   selectOne(target) {
@@ -121,8 +90,51 @@ class Selectable extends Trait {
     }
   }
 
+  ensureSelected(target) {
+    const el = target.closest(this.config.selector)
+    if (!el) return
+
+    if (this.elements.length === 0) {
+      this.#add(el)
+    } else if (!this.elements.includes(el)) {
+      this.selectOne(el)
+    }
+  }
+
+  rangeSelect(target) {
+    if (this.dragger.isDragging) return
+    const el = target.closest(this.config.selector)
+    const all = [...this.el.querySelectorAll(this.config.selector)]
+    const a = all.indexOf(el)
+    const b = all.indexOf(this.elements.at(-1))
+    const min = Math.min(a, b)
+    const max = Math.max(a, b)
+    for (const item of all.slice(min, max)) this.#add(item)
+    this.#add(el)
+  }
+
+  clear() {
+    while (this.elements.length > 0) {
+      const el = this.elements.shift()
+      const val = this.selection.shift()
+      this.remove(el, val)
+    }
+  }
+
+  selectionFrom(arr) {
+    this.clear()
+    this.selection.push(...arr)
+    this.sync()
+  }
+
+  elementsFrom(arr) {
+    this.clear()
+    this.elements.push(...arr)
+    this.sync()
+  }
+
   sync() {
-    if (this.selection.length !== this.elements.length) {
+    if (this.selection.length > this.elements.length) {
       this.elements.length = 0
       if (typeof this.config.key === "string") {
         const { key } = this.config
@@ -147,6 +159,9 @@ class Selectable extends Trait {
         const i = this.selection.indexOf(val)
         if (i > -1) this.elements[i] = el
       }
+    } else if (this.selection.length < this.elements.length) {
+      this.selection.length = 0
+      for (const el of this.elements) this.selection.push(this.key(el))
     }
   }
 
