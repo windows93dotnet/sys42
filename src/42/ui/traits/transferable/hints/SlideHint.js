@@ -136,7 +136,7 @@ export class SlideHint {
       this.blank = `${this.targetWidth}px`
     }
 
-    this.hideCurrent = `${this.selector}:nth-child(${index + 1}) {
+    this.hideCurrent = `${this.selector}:nth-of-type(${index + 1}) {
         display: none !important;
       }`
 
@@ -150,7 +150,9 @@ export class SlideHint {
     this.dynamicStyle.textContent = `
       ${this.hideCurrent}
       ${dzStyle}
-      ${this.selector}:nth-child(n+${index + 2}) { translate: ${this.blank}; }`
+      ${this.selector}:nth-of-type(n+${index + 2}) {
+        translate: ${this.blank};
+      }`
 
     raf1 = requestAnimationFrame(() => {
       this.itemsStyle.textContent = `
@@ -189,7 +191,7 @@ export class SlideHint {
         this.index = getNewIndex(X, Y, item, this.orientation)
         this.dynamicStyle.textContent = `
           ${this.hideCurrent}
-          ${this.selector}:nth-child(n+${this.index + 1}) {
+          ${this.selector}:nth-of-type(n+${this.index + 1}) {
             translate: ${this.blank};
           }`
       }
@@ -233,7 +235,7 @@ export class SlideHint {
     requestAnimationFrame(async () => {
       const dir = this.index > this.targetIndex ? 0 : 1
       const item = document.querySelector(
-        `${this.selector}:nth-child(${this.index + dir})`
+        `${this.selector}:nth-of-type(${this.index + dir})`
       )
 
       if (item) {
@@ -246,7 +248,7 @@ export class SlideHint {
         if (this.reverted) {
           this.dynamicStyle.textContent = `
             ${this.hideCurrent}
-            ${this.selector}:nth-child(n+${this.index + 1}) {
+            ${this.selector}:nth-of-type(n+${this.index + 1}) {
               translate: ${this.blank};
             }`
         }
@@ -270,7 +272,7 @@ export class SlideHint {
     this.index = this.targetIndex
     this.dynamicStyle.textContent = `
       ${this.hideCurrent}
-      ${this.selector}:nth-child(n+${this.index + 1}) {
+      ${this.selector}:nth-of-type(n+${this.index + 1}) {
         translate: ${this.blank};
       }`
     this.stop()

@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prefer-modern-dom-apis */
 import Trait from "../classes/Trait.js"
 import settings from "../../core/settings.js"
 import ensureElement from "../../fabric/dom/ensureElement.js"
@@ -19,6 +20,12 @@ const DEFAULTS = {
 let preventRemove = false
 
 const configure = settings("ui.trait.transferable", DEFAULTS)
+
+function copyElement(el) {
+  const copy = el.cloneNode(true)
+  copy.id += "-copy"
+  return copy
+}
 
 class Transferable extends Trait {
   constructor(el, options) {
@@ -77,31 +84,29 @@ class Transferable extends Trait {
         }
       } else if (data?.type === "selection") {
         preventRemove = true
+        let indexedElement = dropzone.querySelector(
+          `${this.selector}:nth-of-type(${index + 1})`
+        )
         const frag = document.createDocumentFragment()
         for (let el of data.elements) {
-          if (effect === "copy") {
-            el = el.cloneNode(true)
-            el.id += "-copy"
-          }
-
-          el.classList.remove("selected")
-
+          if (indexedElement === el) indexedElement = null
+          if (effect === "copy") el = copyElement(el)
+          // el.classList.remove("selected")
           frag.append(el)
         }
 
         if (this.config.importElement) this.config.importElement(frag, obj)
-        else dropzone.insertBefore(frag, dropzone.children[index])
+        else dropzone.insertBefore(frag, indexedElement)
       } else if (data?.type === "element") {
         let el = data.el ?? document.querySelector(data.selector)
         if (el) {
           preventRemove = true
-          if (effect === "copy") {
-            el = el.cloneNode(true)
-            el.id += "-copy"
-          }
-
+          const indexedElement = dropzone.querySelector(
+            `${this.selector}:nth-of-type(${index + 1})`
+          )
+          if (effect === "copy") el = copyElement(el)
           if (this.config.importElement) this.config.importElement(el, obj)
-          else dropzone.insertBefore(el, dropzone.children[index])
+          else dropzone.insertBefore(el, indexedElement)
         }
       }
     }
@@ -127,7 +132,7 @@ class Transferable extends Trait {
       }
 
       target.id ||= uid()
-      return { type: "element", id, selector: `#${target.id}` }
+      return { type: "element", id, index, selector: `#${target.id}` }
     }
 
     this.remove = (obj) => {
