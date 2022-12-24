@@ -1,4 +1,3 @@
-/* eslint-disable max-params */
 import Trait from "../classes/Trait.js"
 import settings from "../../core/settings.js"
 import Dragger from "../classes/Dragger.js"
@@ -283,7 +282,8 @@ class Selectable extends Trait {
         items = this.el.querySelectorAll(this.config.selector)
         document.body.append(this.svg)
       },
-      drag: (x, y, fromX, fromY, { ctrlKey }) => {
+      drag: (x, y, { ctrlKey }) => {
+        const { fromX, fromY } = this.dragger
         const points = `${fromX},${fromY} ${x},${fromY} ${x},${y} ${fromX},${y}`
         this.polygon.setAttribute("points", points)
 

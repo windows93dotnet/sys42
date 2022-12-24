@@ -43,9 +43,6 @@ export default class Dragger {
     let distX = 0
     let distY = 0
 
-    let fromX = 0
-    let fromY = 0
-
     let offsetX = 0
     let offsetY = 0
 
@@ -99,8 +96,8 @@ export default class Dragger {
     const start = (e, target) => {
       const { x, y } = e
 
-      fromX = round(x)
-      fromY = round(y)
+      this.fromX = round(x)
+      this.fromY = round(y)
 
       if (this.config.targetRelative) {
         const rect = this.el.getBoundingClientRect()
@@ -124,10 +121,10 @@ export default class Dragger {
     const stop = (e, target) => {
       drag.clear?.()
 
+      this.fromX = 0
+      this.fromY = 0
       distX = 0
       distY = 0
-      fromX = 0
-      fromY = 0
       offsetX = 0
       offsetY = 0
       forget?.()
@@ -145,7 +142,7 @@ export default class Dragger {
 
     let drag = (e, target) => {
       if (this.#isStarted) {
-        this.drag(getX(e.x), getY(e.y), fromX, fromY, e, target)
+        this.drag(getX(e.x), getY(e.y), e, target)
       } else if (checkDistance(e) && start(e, target) === false) stop(e, target)
     }
 

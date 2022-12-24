@@ -83,42 +83,43 @@ if (ipc.inTop) {
     }
   })
 
-  ipc.on("42_DRAGGER_OUTSIDE", (point) => {
-    point = { ...point }
+  ipc.on("42_DRAGGER_OUTSIDE", (e) => {
+    e = { ...e }
     outsideIframe = true
 
-    if (point.insideIframeDropzone) {
+    if (e.insideIframeDropzone) {
       hint.ghost.style.opacity = 0
       return
     }
 
-    point.x += iframeRect.left
-    point.y += iframeRect.top
+    e.x += iframeRect.left
+    e.y += iframeRect.top
 
     if (hint) {
       hint.ghost.style.opacity = 1
-      hint.move(point.x, point.y)
+      hint.move(e.x, e.y)
     }
 
-    const target = document.elementFromPoint(point.x, point.y)
+    const target = document.elementFromPoint(e.x, e.y)
 
     if (currentDropzone) {
       if (currentDropzone.dropzone.contains(target)) {
-        hint?.dragoverDropzone?.(point.x, point.y)
-      } else {
-        currentDropzone.events.pointerleave()
-        currentDropzone = undefined
+        hint?.dragoverDropzone?.(e.x, e.y)
+        return
       }
-    } else {
-      for (const { dropzone, events } of dropzones) {
-        if (dropzone.contains(target)) {
-          currentDropzone = { dropzone, events }
-          outsideIframe = false
-          events.pointerenter(point)
-          outsideIframe = true
-          hint?.dragoverDropzone?.(point.x, point.y)
-          break
-        }
+
+      currentDropzone.events.pointerleave()
+      currentDropzone = undefined
+    }
+
+    for (const { dropzone, events } of dropzones) {
+      if (dropzone.contains(target)) {
+        currentDropzone = { dropzone, events }
+        outsideIframe = false
+        events.pointerenter(e)
+        outsideIframe = true
+        hint?.dragoverDropzone?.(e.x, e.y)
+        break
       }
     }
   })
@@ -139,8 +140,6 @@ if (ipc.inTop) {
     } else {
       hint?.destroy()
     }
-
-    isDragging = false
 
     const res = effect
     cleanup()
@@ -302,9 +301,9 @@ export function pointerEventDriver(trait) {
     }
   }
 
-  dragger.drag = (x, y) => {
+  dragger.drag = (x, y, { ctrlKey, shiftKey }) => {
     if (ipc.inIframe) {
-      const point = { x, y }
+      const point = { x, y, ctrlKey, shiftKey }
       if (inRect(point, docRect)) {
         if (isOutsideIframe) {
           ipc.emit("42_DRAGGER_INSIDE")

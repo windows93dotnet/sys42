@@ -1,4 +1,3 @@
-/* eslint-disable max-params */
 import Trait from "../classes/Trait.js"
 import settings from "../../core/settings.js"
 import Dragger from "../classes/Dragger.js"
@@ -72,7 +71,7 @@ class Movable extends Trait {
       }
     }
 
-    this.dragger.drag = (x, y, fromX, fromY, e, target) => {
+    this.dragger.drag = (x, y, e, target) => {
       if (isComponent) {
         target.x = x
         target.y = y
