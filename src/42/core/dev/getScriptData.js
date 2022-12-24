@@ -1,6 +1,5 @@
-export default function getScriptData(arg) {
-  const url = typeof arg === "object" && "url" in arg ? arg.url : arg
-  const { pathname } = new URL(url, location.origin)
+export default function getScriptData(url) {
+  const { pathname } = new URL(url, document.URL)
   const selector = `script[src$="${pathname}"]`
   const script = document.querySelector(selector)
 

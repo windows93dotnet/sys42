@@ -4,7 +4,7 @@ import system from "./system.js"
 import log from "./core/log.js"
 
 import getScriptData from "./core/dev/getScriptData.js"
-const { config } = getScriptData(import.meta)
+const { config } = getScriptData(import.meta.url)
 
 // config.verbose = 2
 log.verbose = config.verbose
