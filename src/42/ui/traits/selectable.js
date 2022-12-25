@@ -1,6 +1,7 @@
 import Trait from "../classes/Trait.js"
 import settings from "../../core/settings.js"
 import Dragger from "../classes/Dragger.js"
+import ensureElement from "../../fabric/dom/ensureElement.js"
 import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
 import rect from "../../fabric/geometry/rect.js"
 import on from "../../fabric/event/on.js"
@@ -14,13 +15,13 @@ const DEFAULTS = {
   check: "colliding",
   class: "selected",
   dragger: { distance: 5 },
+  zone: undefined,
   multiselectable: true,
-  contextmenuSelection: true,
   draggerIgnoreItems: false,
   shortcuts: {
-    selectOne: "click || Space",
-    toggleSelect: "Ctrl+click || Ctrl+Space",
-    rangeSelect: "Shift+click || Shift+Space",
+    selectOne: "pointerdown || Space",
+    toggleSelect: "Ctrl+pointerdown || Ctrl+Space",
+    rangeSelect: "Shift+pointerdown || Shift+Space",
     selectAll: "Ctrl+a",
   },
 }
@@ -179,6 +180,10 @@ class Selectable extends Trait {
 
     this.config = configure(options)
 
+    this.config.zone = this.config.zone
+      ? ensureElement(this.config.zone)
+      : this.el
+
     if (
       options?.selector === undefined &&
       this.el.getAttribute("role") === "grid"
@@ -232,19 +237,15 @@ class Selectable extends Trait {
     })
 
     on(
-      this.el,
+      this.config.zone,
       { signal },
       {
+        Space: false,
         [shortcuts.selectOne]: (e, target) => this.selectOne(target),
       },
-      this.config.contextmenuSelection && {
-        contextmenu: (e, target) => this.ensureSelected(target),
-        pointerdown: (e, target) => {
-          if (e.button === 2) this.ensureSelected(target)
-        },
-      },
       this.config.multiselectable && {
-        disrupt: true,
+        // disrupt: true,
+        prevent: true,
         [shortcuts.toggleSelect]: (e, target) => this.toggleSelect(target),
         [shortcuts.rangeSelect]: (e, target) => this.rangeSelect(target),
         [shortcuts.selectAll]: () => this.selectAll(),
@@ -275,7 +276,7 @@ class Selectable extends Trait {
         ? undefined
         : () => {
             this.dragger.config.ignore ??=
-              this.el[Trait.INSTANCES]?.transferable?.selector ??
+              this.el[Trait.INSTANCES]?.transferable?.config.selector ??
               this.dragger.config.ignore
           },
       start: () => {

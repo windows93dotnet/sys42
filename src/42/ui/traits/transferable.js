@@ -57,7 +57,8 @@ class Transferable extends Trait {
     this.dropzone.id ||= uid()
     const { id } = this.dropzone
 
-    this.selector = ensureScopeSelector(this.config.selector, this.el)
+    this.config.selector = ensureScopeSelector(this.config.selector, this.el)
+    this.selector = this.config.selector
 
     this.indexChange = this.config.indexChange ?? noop
 
