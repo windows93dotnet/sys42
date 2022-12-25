@@ -2,7 +2,7 @@
 
 const SPLIT_REGEX = /\s*\|\|\s*/
 
-const _EVENTS = Symbol.for("_EVENTS")
+const _EVENTS = Symbol.for("Emitter.EVENTS")
 
 export default class Emitter {
   static EVENTS = _EVENTS
