@@ -57,7 +57,9 @@ function searchIcon(themePath, obj, val) {
 
   if (ext && "ext" in obj) {
     for (const k in obj.ext) {
-      if (k.startsWith(`${ext}.`)) return `${themePath}/ext/${k}`
+      if (k.includes(`${ext}.`) || k.includes(`${ext}_`)) {
+        return `${themePath}/ext/${k}`
+      }
     }
   }
 
@@ -65,7 +67,8 @@ function searchIcon(themePath, obj, val) {
     if (mime.subtype && "subtype" in obj) {
       for (const k in obj.subtype) {
         if (
-          k.startsWith(`${mime.subtype}.`) ||
+          k.includes(`${mime.subtype}.`) ||
+          k.includes(`${mime.subtype}_`) ||
           (mime.suffix && k.startsWith(`${mime.suffix}.`))
         ) {
           return `${themePath}/subtype/${k}`
@@ -75,7 +78,9 @@ function searchIcon(themePath, obj, val) {
 
     if (mime.type && "type" in obj) {
       for (const k in obj.type) {
-        if (k.startsWith(`${mime.type}.`)) return `${themePath}/type/${k}`
+        if (k.includes(`${mime.type}.`) || k.includes(`${mime.type}_`)) {
+          return `${themePath}/type/${k}`
+        }
       }
     }
   }

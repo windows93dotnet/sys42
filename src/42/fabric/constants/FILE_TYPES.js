@@ -44,6 +44,12 @@ export const mimetypes = {
     "x-chrome-extension": "crx",
     "x-opera-extension": "oex",
     "x-xpinstall": "xpi",
+
+    // Archives
+    "gzip": "tgz gz",
+    "x-rar": "rar",
+    "x-tar": "tar",
+    "zip": "zip",
   },
 
   // Web fonts
@@ -57,11 +63,12 @@ export const mimetypes = {
 
   // Media files
   audio: {
-    aac: "aac",
-    flac: "flac",
-    mp4: "f4a f4b m4a",
-    mpeg: "mp3",
-    ogg: "oga ogg opus",
+    "aac": "aac",
+    "flac": "flac",
+    "mp4": "f4a f4b m4a",
+    "mpeg": "mp3",
+    "ogg": "oga ogg opus",
+    "x-wav": "wav",
   },
   video: {
     "3gpp": "3gp",
