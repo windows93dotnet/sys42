@@ -79,7 +79,7 @@ export class Dialog extends Component {
   };
 
   [_axis]() {
-    this.style.transform = `translate(${this.x}px, ${this.y}px)`
+    this.style.translate = `${this.x}px ${this.y}px`
   }
 
   async close(ok = false) {

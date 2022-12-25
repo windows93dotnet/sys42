@@ -204,7 +204,7 @@ class Positionable extends Trait {
       signal: this.cancel.signal,
       style: {
         position: this.config.position,
-        transform: "translate(-200vw, -200vh)",
+        translate: "-200vw -200vh",
         top: 0,
         left: 0,
       },
@@ -437,7 +437,7 @@ class Positionable extends Trait {
   coords(x, y) {
     const { round } = this
     this.motion.cancel()
-    this.el.style.transform = `translate(${round(x)}px, ${round(y)}px)`
+    this.el.style.translate = `${round(x)}px ${round(y)}px`
     this.motion.restore()
   }
 }
