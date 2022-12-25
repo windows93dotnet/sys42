@@ -67,9 +67,10 @@ class Movable extends Trait {
         if (hasCoordProps) {
           target.x = x
           target.y = y
-        } else style.transform = `translate(${x}px, ${y}px)`
+        } else style.translate = `${x}px ${y}px`
 
-        this.targets.set(target, setTemp(target, tempStyle, { style }))
+        const restore = setTemp(target, tempStyle, { style })
+        this.targets.set(target, { x: rect.x, y: rect.y, restore })
       }
     }
 
@@ -77,7 +78,7 @@ class Movable extends Trait {
       if (hasCoordProps) {
         target.x = x
         target.y = y
-      } else target.style.transform = `translate(${x}px, ${y}px)`
+      } else target.style.translate = `${x}px ${y}px`
     }
   }
 }
