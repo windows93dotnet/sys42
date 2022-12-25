@@ -57,7 +57,7 @@ export default class Component extends HTMLElement {
   [_isComponent] = true
 
   static isComponent(val) {
-    return val?.[_isComponent]
+    return Boolean(val?.[_isComponent])
   }
 
   static define(Class) {

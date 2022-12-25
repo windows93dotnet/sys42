@@ -12,7 +12,7 @@ export default class Trait {
   [_isTrait] = true
 
   static isTrait(val) {
-    return val?.[_isTrait]
+    return Boolean(val?.[_isTrait])
   }
 
   static INSTANCES = _INSTANCES
