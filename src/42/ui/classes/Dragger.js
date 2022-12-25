@@ -17,7 +17,7 @@ const DEFAULTS = {
   subpixel: false,
   selector: undefined,
   ignore: undefined,
-  targetRelative: false,
+  targetOffset: false,
   signal: undefined,
 }
 
@@ -48,13 +48,13 @@ export default class Dragger {
 
     const round = this.config.subpixel ? (val) => val : Math.round
 
-    let getX = this.config.targetRelative
+    let getX = this.config.targetOffset
       ? this.config.subpixel
         ? (x) => x - offsetX
         : (x) => round(x - offsetX)
       : round
 
-    let getY = this.config.targetRelative
+    let getY = this.config.targetOffset
       ? this.config.subpixel
         ? (y) => y - offsetY
         : (y) => round(y - offsetY)
@@ -96,17 +96,17 @@ export default class Dragger {
     const start = (e, target) => {
       const { x, y } = e
 
+      this.#isStarted = true
+      this.isDragging = true
       this.fromX = round(x)
       this.fromY = round(y)
 
-      if (this.config.targetRelative) {
-        const rect = this.el.getBoundingClientRect()
+      if (this.config.targetOffset) {
+        const rect = target.getBoundingClientRect()
         offsetX = round(e.x - rect.left)
         offsetY = round(e.y - rect.top)
       }
 
-      this.#isStarted = true
-      this.isDragging = true
       restore = setTemp(document.documentElement, {
         signal,
         class: {
@@ -115,6 +115,7 @@ export default class Dragger {
           "transition-0": true,
         },
       })
+
       return this.start(getX(x), getY(y), e, target)
     }
 

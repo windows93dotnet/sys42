@@ -16,7 +16,7 @@ const _axis = Symbol("axis")
 
 const rootSelector = ":is(:root, ui-workspace[active])"
 
-const zIndexSector = `${rootSelector} > :is(ui-dialog, ui-menu)`
+const zIndexSelector = `${rootSelector} > :is(ui-dialog, ui-menu)`
 
 function getHeaderOffset(el) {
   const styles = getComputedStyle(el)
@@ -42,7 +42,7 @@ export class Dialog extends Component {
       emittable: true,
       movable: {
         handler: ".ui-dialog__title",
-        maxZIndex: zIndexSector,
+        zIndexSelector,
       },
     },
 
@@ -137,7 +137,7 @@ export class Dialog extends Component {
 
   activate() {
     for (const item of document.querySelectorAll(
-      `${rootSelector} > ui-dialog:not(${this.id})`
+      `${rootSelector} > ui-dialog:not(#${this.id})`
     )) {
       item.active = false
     }
@@ -145,7 +145,7 @@ export class Dialog extends Component {
     if (this.active) return
 
     this.active = true
-    this.style.zIndex = maxZIndex(zIndexSector) + 1
+    this.style.zIndex = maxZIndex(zIndexSelector) + 1
 
     if (!this.contains(document.activeElement)) {
       postrenderAutofocus(this) ||
@@ -183,8 +183,7 @@ export class Dialog extends Component {
     }
 
     this.activate()
-
-    this.emit("open", this)
+    queueMicrotask(() => this.emit("open", this))
     dispatch(this, "uidialogopen")
   }
 }
