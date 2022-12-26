@@ -9,6 +9,7 @@ import removeItem from "../../fabric/type/array/removeItem.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 import setTemp from "../../fabric/dom/setTemp.js"
 import noop from "../../fabric/type/function/noop.js"
+import getRects from "../../fabric/dom/getRects.js"
 
 const DEFAULTS = {
   selector: ":scope > *",
@@ -68,8 +69,13 @@ class Selectable extends Trait {
     if (el) this.#toggle(el)
   }
 
-  selectOne(target) {
+  selectOne(target, e) {
     if (this.dragger.isDragging) return
+
+    // TODO: add ignoreScrollbar option in listen
+    if (e.offsetX > e.target.clientWidth || e.offsetY > e.target.clientHeight) {
+      return
+    }
 
     const el = target.closest(this.config.selector)
 
@@ -233,6 +239,7 @@ class Selectable extends Trait {
     setTemp(this.el, {
       signal,
       class: { "selection-0": true },
+      style: { position: "relative" },
       ...tmp,
     })
 
@@ -241,10 +248,9 @@ class Selectable extends Trait {
       { signal },
       {
         Space: false,
-        [shortcuts.selectOne]: (e, target) => this.selectOne(target),
+        [shortcuts.selectOne]: (e, target) => this.selectOne(target, e),
       },
       this.config.multiselectable && {
-        // disrupt: true,
         prevent: true,
         [shortcuts.toggleSelect]: (e, target) => this.toggleSelect(target),
         [shortcuts.rangeSelect]: (e, target) => this.rangeSelect(target),
@@ -259,14 +265,19 @@ class Selectable extends Trait {
   initRubberband() {
     this.config.dragger.signal = this.cancel.signal
 
-    let items
+    let rectsPromise
+    let rects
+    let elRect
     const check = rect[this.config.check]
 
-    const handleBoxSelection = paintThrottle((B, ctrlKey) => {
-      for (const item of items) {
-        const A = item.getBoundingClientRect()
-        if (check(A, B)) this.#add(item)
-        else if (ctrlKey === false) this.#remove(item)
+    let fromX
+    let fromY
+
+    const handleBoxSelection = paintThrottle(async (B, ctrlKey) => {
+      rects ??= await rectsPromise
+      for (const A of rects) {
+        if (check(A, B)) this.#add(A.target)
+        else if (ctrlKey === false) this.#remove(A.target)
       }
     })
 
@@ -280,11 +291,21 @@ class Selectable extends Trait {
               this.dragger.config.ignore
           },
       start: () => {
-        items = this.el.querySelectorAll(this.config.selector)
-        document.body.append(this.svg)
+        elRect = this.el.getBoundingClientRect()
+        fromX = this.dragger.fromX - elRect.x + this.el.scrollLeft
+        fromY = this.dragger.fromY - elRect.y + this.el.scrollTop
+
+        rectsPromise = getRects(this.config.selector, this.el, {
+          relative: true,
+        })
+
+        this.svg.style.height = this.el.scrollHeight + "px"
+        this.svg.style.width = this.el.scrollWidth + "px"
+        this.el.append(this.svg)
       },
       drag: (x, y, { ctrlKey }) => {
-        const { fromX, fromY } = this.dragger
+        x -= elRect.x - this.el.scrollLeft
+        y -= elRect.y - this.el.scrollTop
         const points = `${fromX},${fromY} ${x},${fromY} ${x},${y} ${fromX},${y}`
         this.polygon.setAttribute("points", points)
 
@@ -322,10 +343,8 @@ class Selectable extends Trait {
     this.polygon.setAttribute("points", points)
     this.svg.style = `
       pointer-events: none;
-      position: fixed;
+      position: absolute;
       inset: 0;
-      width: 100%;
-      height: 100%;
       z-index: 10000;`
 
     this.svg.append(this.polygon)

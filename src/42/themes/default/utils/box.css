@@ -256,8 +256,13 @@ textarea.box-fit {
 /* align
 ======== */
 
-.items-center { align-items: center; justify-content: center; justify-items: center; }
-.items-y-center { align-items: center; }
+.items-center {
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+  justify-items: center;
+}
+.items-y-center { align-content: center; align-items: center; }
 .items-x-center { justify-content: center; justify-items: center; }
 
 .items-start { align-items: flex-start; justify-content: flex-start; justify-items: flex-start; }

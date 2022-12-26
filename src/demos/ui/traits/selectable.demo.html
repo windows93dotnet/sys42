@@ -10,54 +10,108 @@
 </script>
 
 <style>
-  .demo {
-    padding: 2rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-content: center;
-    justify-content: center;
-    gap: 0.5rem;
+  .demo-simple,
+  .demo-v-scroll {
     width: 256px;
     height: 256px;
   }
+
+  .demo-not-multi,
+  .demo-h-scroll {
+    width: 256px;
+  }
+
   .demo span {
     display: inline-block;
     padding: 2rem;
     border: 1px solid;
   }
+
+  .demo-v-scroll span {
+    display: block;
+    width: 100%;
+  }
+  .demo-v-scroll span {
+    padding: 0.4rem 0.5rem;
+  }
 </style>
 
 <body class="box-center desktop">
   <h2>Drag to select</h2>
-  <div class="demo demo-1 inset paper">
-    <span>a</span>
-    <span>b</span>
-    <span>c</span>
-    <span>d</span>
-    <span><em>e</em></span>
-    <span>f</span>
-    <span>g</span>
-    <span>h</span>
+
+  <div
+    class="demo demo-simple d-flex items-wrap items-center pa-xxl gap inset paper">
+    <span tabindex="0">a</span>
+    <span tabindex="0">b</span>
+    <span tabindex="0">c</span>
+    <span tabindex="0">d</span>
+    <span tabindex="0"><em>e</em></span>
+    <span tabindex="0">f</span>
+    <span tabindex="0">g</span>
+    <span tabindex="0">h</span>
+  </div>
+
+  <br />
+
+  <div class="demo demo-h-scroll scroll-x flex-h pa gap inset paper">
+    <span tabindex="0">1</span>
+    <span tabindex="0">2</span>
+    <span tabindex="0">3</span>
+    <span tabindex="0">4</span>
+    <span tabindex="0">5</span>
+    <span tabindex="0">6</span>
+    <span tabindex="0">7</span>
+    <span tabindex="0">8</span>
+    <span tabindex="0">9</span>
+    <span tabindex="0">10</span>
+    <span tabindex="0">11</span>
+    <span tabindex="0">12</span>
+    <span tabindex="0">13</span>
+    <span tabindex="0">14</span>
+    <span tabindex="0">15</span>
+    <span tabindex="0">16</span>
+  </div>
+
+  <br />
+
+  <div class="demo demo-v-scroll scroll-y flex-v pa gap inset paper">
+    <span tabindex="0">1</span>
+    <span tabindex="0">2</span>
+    <span tabindex="0">3</span>
+    <span tabindex="0">4</span>
+    <span tabindex="0">5</span>
+    <span tabindex="0">6</span>
+    <span tabindex="0">7</span>
+    <span tabindex="0">8</span>
+    <span tabindex="0">9</span>
+    <span tabindex="0">10</span>
+    <span tabindex="0">11</span>
+    <span tabindex="0">12</span>
+    <span tabindex="0">13</span>
+    <span tabindex="0">14</span>
+    <span tabindex="0">15</span>
+    <span tabindex="0">16</span>
   </div>
 
   <br />
 
   <h3>multiselectable: false</h3>
-  <div class="demo demo-2 inset paper">
-    <span>a</span>
-    <span>b</span>
-    <span>c</span>
-    <span>d</span>
-    <span><em>e</em></span>
+  <div class="demo demo-not-multi flex-h items-x-center pa gap inset paper">
+    <span tabindex="0">a</span>
+    <span tabindex="0">b</span>
+    <span tabindex="0">c</span>
   </div>
 </body>
 
 <script type="module">
   import selectable from "../../../42/ui/traits/selectable.js"
 
-  selectable(".demo-1")
+  selectable(".demo-simple")
 
-  selectable(".demo-2", {
+  selectable(".demo-h-scroll")
+  selectable(".demo-v-scroll")
+
+  selectable(".demo-not-multi", {
     multiselectable: false,
     add: (item) => item.classList.add("bg-red-300"),
     remove: (item) => item.classList.remove("bg-red-300"),
