@@ -17,9 +17,12 @@ const DEFAULTS = {
   subpixel: false,
   selector: undefined,
   ignore: undefined,
+  autoScroll: false,
   targetOffset: false,
   signal: undefined,
 }
+
+const INTERVAL = 1000 / 60
 
 export default class Dragger {
   #isStarted = false
@@ -93,8 +96,21 @@ export default class Dragger {
     let forget
     let restore
 
+    let hasHorizontalScrollbar
+    let hasVerticalScrollbar
+    let rect
+    const threshold = 20
+
     const start = (e, target) => {
       const { x, y } = e
+
+      if (this.config.autoScroll) {
+        hasHorizontalScrollbar = this.el.scrollWidth > this.el.clientWidth
+        hasVerticalScrollbar = this.el.scrollHeight > this.el.clientHeight
+        if (hasVerticalScrollbar || hasHorizontalScrollbar) {
+          rect = this.el.getBoundingClientRect()
+        }
+      }
 
       this.#isStarted = true
       this.isDragging = true
@@ -130,6 +146,10 @@ export default class Dragger {
       offsetY = 0
       forget?.()
       restore?.()
+      clearInterval(this.scrollXIntervalId)
+      clearInterval(this.scrollYIntervalId)
+      hasHorizontalScrollbar = undefined
+      hasVerticalScrollbar = undefined
 
       if (this.#isStarted) {
         window.getSelection().empty()
@@ -144,6 +164,36 @@ export default class Dragger {
     let drag = (e, target) => {
       if (this.#isStarted) {
         this.drag(getX(e.x), getY(e.y), e, target)
+
+        if (hasVerticalScrollbar) {
+          const start = rect.y + threshold
+          const end = rect.y + this.el.clientHeight - threshold
+          clearInterval(this.scrollYIntervalId)
+          if (e.y < start) {
+            this.scrollYIntervalId = setInterval(() => {
+              this.el.scrollTop -= start - e.y
+            }, INTERVAL)
+          } else if (e.y > end) {
+            this.scrollYIntervalId = setInterval(() => {
+              this.el.scrollTop += e.y - end
+            }, INTERVAL)
+          }
+        }
+
+        if (hasHorizontalScrollbar) {
+          const start = rect.x + threshold
+          const end = rect.x + this.el.clientWidth - threshold
+          clearInterval(this.scrollXIntervalId)
+          if (e.x < start) {
+            this.scrollXIntervalId = setInterval(() => {
+              this.el.scrollLeft -= start - e.x
+            }, INTERVAL)
+          } else if (e.x > end) {
+            this.scrollXIntervalId = setInterval(() => {
+              this.el.scrollLeft += e.x - end
+            }, INTERVAL)
+          }
+        }
       } else if (checkDistance(e) && start(e, target) === false) stop(e, target)
     }
 
@@ -177,6 +227,8 @@ export default class Dragger {
   }
 
   destroy() {
+    clearInterval(this.scrollXIntervalId)
+    clearInterval(this.scrollYIntervalId)
     this.cancel()
   }
 }
