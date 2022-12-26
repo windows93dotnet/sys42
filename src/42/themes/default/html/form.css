@@ -275,7 +275,7 @@ States
 :focus,
 .focus {
   outline: var(--ctrl-o);
-  outline-offset: -1px;
+  outline-offset: var(--ctrl-oo);
 }
 
 /* :focus:not(:focus-visible, [aria-pressed]), */

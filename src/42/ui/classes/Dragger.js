@@ -114,8 +114,6 @@ export default class Dragger {
 
       this.#isStarted = true
       this.isDragging = true
-      this.fromX = round(x)
-      this.fromY = round(y)
 
       if (this.config.targetOffset) {
         const rect = target.getBoundingClientRect()
@@ -216,6 +214,9 @@ export default class Dragger {
 
         target = this.config.selector ? target : this.el
         if (this.config.ignore && e.target.closest(this.config.ignore)) return
+
+        this.fromX = round(e.x)
+        this.fromY = round(e.y)
 
         forget = listen({
           signal,
