@@ -106,6 +106,19 @@
 <script type="module">
   import selectable from "../../../42/ui/traits/selectable.js"
 
+  const demoScrollH = document.querySelector(".demo-h-scroll")
+  const demoScrollV = document.querySelector(".demo-v-scroll")
+
+  let i = 16
+  // eslint-disable-next-line no-unused-vars
+  for (const _ of new Array(100)) {
+    const span = document.createElement("span")
+    span.tabIndex = 0
+    span.textContent = ++i
+    demoScrollH.append(span)
+    demoScrollV.append(span.cloneNode(true))
+  }
+
   selectable(".demo-simple")
 
   selectable(".demo-h-scroll")

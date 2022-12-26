@@ -9,17 +9,18 @@ export default class Loop extends Player {
     super()
     this.update = update
     this.speed = speed
-    this.fps = fps ?? 60
-    this.step = 1000 / this.fps
+    this.fps = fps
+    this.step = 1000 / (this.fps ?? 60)
 
-    let timerId
-
-    this.loop = fps
+    this.loop = this.fps
       ? () => {
-          timerId = setTimeout(() => this.tick(performance.now()), this.step)
+          this.timerId = setTimeout(
+            () => this.tick(performance.now()),
+            this.step
+          )
         }
       : () => {
-          timerId = requestAnimationFrame((time) => this.tick(time))
+          this.timerId = requestAnimationFrame((time) => this.tick(time))
         }
 
     this.on("play", () => {
@@ -30,9 +31,17 @@ export default class Loop extends Player {
     })
 
     this.on(
-      "pause || stop",
-      fps ? () => clearTimeout(timerId) : () => cancelAnimationFrame(timerId)
+      "pause || stop || destroy",
+      this.fps
+        ? () => clearTimeout(this.timerId)
+        : () => cancelAnimationFrame(this.timerId)
     )
+  }
+
+  clear() {
+    this.fps //
+      ? clearTimeout(this.timerId)
+      : cancelAnimationFrame(this.timerId)
   }
 
   tick(time) {
