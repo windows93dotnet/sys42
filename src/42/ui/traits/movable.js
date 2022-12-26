@@ -3,6 +3,7 @@ import settings from "../../core/settings.js"
 import Dragger from "../classes/Dragger.js"
 import setTemp from "../../fabric/dom/setTemp.js"
 import maxZIndex from "../../fabric/dom/maxZIndex.js"
+import pick from "../../fabric/type/object/pick.js"
 
 const DEFAULTS = {
   distance: 0,
@@ -10,9 +11,11 @@ const DEFAULTS = {
   throttle: true,
   subpixel: false,
   selector: undefined,
+  ignore: "input,button,textarea,[contenteditable],[contenteditable] *",
+  autoScroll: false,
+  targetOffset: true,
   zIndexSelector: undefined,
   handler: undefined,
-  ignore: "input,button,textarea,[contenteditable],[contenteditable] *",
   style: {
     position: "fixed",
     margin: 0,
@@ -34,15 +37,22 @@ class Movable extends Trait {
     let hasCoordProps
 
     this.config = configure(options)
-    this.config.signal = this.cancel.signal
-
     this.targets = new WeakMap()
-
-    const tempStyle = { signal: this.cancel.signal, style: this.config.style }
+    const { signal } = this.cancel
+    const tempStyle = { signal, style: this.config.style }
 
     this.dragger = new Dragger(this.el, {
-      ...this.config,
-      targetOffset: true,
+      signal,
+      ...pick(this.config, [
+        "distance",
+        "grid",
+        "throttle",
+        "subpixel",
+        "selector",
+        "ignore",
+        "autoScroll",
+        "targetOffset",
+      ]),
     })
 
     this.dragger.start = (x, y, e, target) => {
