@@ -20,9 +20,9 @@ const DEFAULTS = {
   multiselectable: true,
   draggerIgnoreItems: false,
   shortcuts: {
-    selectOne: "pointerdown || Space",
-    toggleSelect: "Ctrl+pointerdown || Ctrl+Space",
-    rangeSelect: "Shift+pointerdown || Shift+Space",
+    selectOne: "click || Space",
+    toggleSelect: "Ctrl+click || Ctrl+Space",
+    rangeSelect: "Shift+click || Shift+Space",
     selectAll: "Ctrl+a",
   },
 }
@@ -69,13 +69,8 @@ class Selectable extends Trait {
     if (el) this.#toggle(el)
   }
 
-  selectOne(target, e) {
+  selectOne(target) {
     if (this.dragger.isDragging) return
-
-    // TODO: add ignoreScrollbar option in listen
-    if (e.offsetX > e.target.clientWidth || e.offsetY > e.target.clientHeight) {
-      return
-    }
 
     const el = target.closest(this.config.selector)
 

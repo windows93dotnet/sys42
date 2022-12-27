@@ -8,7 +8,7 @@ import Canceller from "../../fabric/classes/Canceller.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
 import noop from "../../fabric/type/function/noop.js"
-import inFirefox from "../../core/env/browser/inFirefox.js"
+// import inFirefox from "../../core/env/browser/inFirefox.js"
 
 const DEFAULTS = {
   distance: 0,
@@ -97,18 +97,30 @@ export default class Dragger {
     let forget
     let restore
 
-    let hasHorizontalScrollbar
-    let hasVerticalScrollbar
-    let rect
+    const scrolling = {
+      hasScrollbars: false,
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+    }
 
     const start = (e, target) => {
       const { x, y } = e
 
       if (this.config.autoScroll) {
-        hasHorizontalScrollbar = this.el.scrollWidth > this.el.clientWidth
-        hasVerticalScrollbar = this.el.scrollHeight > this.el.clientHeight
-        if (hasVerticalScrollbar || hasHorizontalScrollbar) {
-          rect = this.el.getBoundingClientRect()
+        const { scrollThreshold } = this.config
+
+        scrolling.hasScrollbars =
+          this.el.scrollHeight > this.el.clientHeight ||
+          this.el.scrollWidth > this.el.clientWidth
+
+        if (scrolling.hasScrollbars) {
+          const rect = this.el.getBoundingClientRect()
+          scrolling.top = rect.y + scrollThreshold
+          scrolling.left = rect.x + scrollThreshold
+          scrolling.bottom = rect.y + this.el.clientHeight - scrollThreshold
+          scrolling.right = rect.x + this.el.clientWidth - scrollThreshold
         }
       }
 
@@ -145,8 +157,6 @@ export default class Dragger {
       forget?.()
       restore?.()
 
-      hasHorizontalScrollbar = undefined
-      hasVerticalScrollbar = undefined
       cancelAnimationFrame(this.scrollLoopId)
 
       if (this.#isStarted) {
@@ -164,20 +174,18 @@ export default class Dragger {
         const x = getX(e.x)
         const y = getX(e.y)
         this.drag(x, y, e, target)
-        if (this.config.autoScroll) autoScroll(e, x, y, target)
+        if (this.config.autoScroll && scrolling.hasScrollbars) {
+          autoScroll(e, x, y, target)
+        }
       } else if (checkDistance(e) && start(e, target) === false) stop(e, target)
     }
 
     if (this.config.throttle) drag = paintThrottle(drag)
 
     const autoScroll = (e, x, y, target) => {
-      const top = rect.y + this.config.scrollThreshold
-      const bottom = rect.y + this.el.clientHeight - this.config.scrollThreshold
-
-      const left = rect.x + this.config.scrollThreshold
-      const right = rect.x + this.el.clientWidth - this.config.scrollThreshold
-
       cancelAnimationFrame(this.scrollLoopId)
+
+      const { top, bottom, left, right } = scrolling
 
       const loop = () => {
         this.scrollLoopId = requestAnimationFrame(() => {
@@ -206,7 +214,8 @@ export default class Dragger {
       selector: this.config.selector,
       touchstart: false,
       pointerdown: (e, target) => {
-        if (inFirefox) e.preventDefault() // needed to dispatch pointerenter in firefox
+        // if (inFirefox) e.preventDefault() // needed to dispatch pointerenter in firefox
+
         if (e.target.hasPointerCapture(e.pointerId)) {
           e.target.releasePointerCapture(e.pointerId) // https://stackoverflow.com/a/70976018
         }

@@ -16,6 +16,7 @@ const DEFAULTS = {
   targetOffset: true,
   zIndexSelector: undefined,
   handler: undefined,
+  useSelection: true,
   style: {
     position: "fixed",
     margin: 0,
@@ -60,27 +61,40 @@ class Movable extends Trait {
         return false
       }
 
-      hasCoordProps =
-        target.constructor.definition?.props?.x &&
-        target.constructor.definition?.props?.y
+      let targets
 
-      if (this.targets.has(target)) {
-        target.style.zIndex = maxZIndex(this.config.zIndexSelector) + 1
-      } else {
-        const rect = target.getBoundingClientRect()
-        const style = {
-          zIndex: maxZIndex(this.config.zIndexSelector) + 1,
-          width: rect.width + "px",
-          height: rect.height + "px",
+      if (this.config.useSelection) {
+        const selectable = this.el[Trait.INSTANCES]?.selectable
+        if (selectable) {
+          selectable.ensureSelected(target)
+          const { elements } = selectable
+          targets = elements
+        } else targets = [target]
+      } else targets = [target]
+
+      for (const target of targets) {
+        hasCoordProps =
+          target.constructor.definition?.props?.x &&
+          target.constructor.definition?.props?.y
+
+        if (this.targets.has(target)) {
+          target.style.zIndex = maxZIndex(this.config.zIndexSelector) + 1
+        } else {
+          const rect = target.getBoundingClientRect()
+          const style = {
+            zIndex: maxZIndex(this.config.zIndexSelector) + 1,
+            width: rect.width + "px",
+            height: rect.height + "px",
+          }
+
+          if (hasCoordProps) {
+            target.x = x
+            target.y = y
+          } else style.translate = `${x}px ${y}px`
+
+          const restore = setTemp(target, tempStyle, { style })
+          this.targets.set(target, { x: rect.x, y: rect.y, restore })
         }
-
-        if (hasCoordProps) {
-          target.x = x
-          target.y = y
-        } else style.translate = `${x}px ${y}px`
-
-        const restore = setTemp(target, tempStyle, { style })
-        this.targets.set(target, { x: rect.x, y: rect.y, restore })
       }
     }
 
