@@ -1,7 +1,5 @@
-const keys = ["x", "y", "width", "height", "top", "right", "bottom", "left"]
-
 export async function getRects(elements, options) {
-  const root = options?.root ?? document.documentElement
+  const root = options?.root ?? document
 
   if (typeof elements === "string") {
     elements = root.querySelectorAll(elements)
@@ -22,12 +20,8 @@ export async function getRects(elements, options) {
           const rootY = rootBounds.y - paddingTop - root.scrollTop
 
           for (const { target, boundingClientRect } of entries) {
-            const rect = Object.create(null)
+            const rect = boundingClientRect.toJSON()
             rect.target = target
-            rects.push(rect)
-            for (const key of keys) {
-              rect[key] = boundingClientRect[key]
-            }
 
             rect.left -= rootX
             rect.top -= rootY
@@ -36,15 +30,14 @@ export async function getRects(elements, options) {
 
             rect.x = rect.left
             rect.y = rect.top
+
+            rects.push(rect)
           }
         } else {
           for (const { target, boundingClientRect } of entries) {
-            const rect = Object.create(null)
+            const rect = boundingClientRect.toJSON()
             rect.target = target
             rects.push(rect)
-            for (const key of keys) {
-              rect[key] = boundingClientRect[key]
-            }
           }
         }
 

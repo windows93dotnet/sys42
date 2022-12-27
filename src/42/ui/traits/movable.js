@@ -3,6 +3,8 @@ import settings from "../../core/settings.js"
 import Dragger from "../classes/Dragger.js"
 import setTemp from "../../fabric/dom/setTemp.js"
 import maxZIndex from "../../fabric/dom/maxZIndex.js"
+import getRects from "../../fabric/dom/getRects.js"
+import removeItem from "../../fabric/type/array/removeItem.js"
 import pick from "../../fabric/type/object/pick.js"
 
 const DEFAULTS = {
@@ -35,10 +37,9 @@ class Movable extends Trait {
   constructor(el, options) {
     super(el, options)
 
-    let hasCoordProps
-
     this.config = configure(options)
     this.targets = new WeakMap()
+    this.draggeds = []
     const { signal } = this.cancel
     const tempStyle = { signal, style: this.config.style }
 
@@ -72,19 +73,25 @@ class Movable extends Trait {
         } else targets = [target]
       } else targets = [target]
 
-      for (const target of targets) {
-        hasCoordProps =
-          target.constructor.definition?.props?.x &&
-          target.constructor.definition?.props?.y
+      this.draggeds.length = 0
 
-        if (this.targets.has(target)) {
-          target.style.zIndex = maxZIndex(this.config.zIndexSelector) + 1
-        } else {
-          const rect = target.getBoundingClientRect()
+      getRects(targets).then((items) => {
+        for (const item of items) {
+          const { target } = item
+          if (this.targets.has(target)) {
+            this.draggeds.push(this.targets.get(target))
+            target.style.zIndex = maxZIndex(this.config.zIndexSelector) + 1
+            continue
+          }
+
+          const hasCoordProps =
+            target.constructor.definition?.props?.x &&
+            target.constructor.definition?.props?.y
+
           const style = {
             zIndex: maxZIndex(this.config.zIndexSelector) + 1,
-            width: rect.width + "px",
-            height: rect.height + "px",
+            width: item.width + "px",
+            height: item.height + "px",
           }
 
           if (hasCoordProps) {
@@ -92,17 +99,28 @@ class Movable extends Trait {
             target.y = y
           } else style.translate = `${x}px ${y}px`
 
-          const restore = setTemp(target, tempStyle, { style })
-          this.targets.set(target, { x: rect.x, y: rect.y, restore })
+          const restoreStyles = setTemp(target, tempStyle, { style })
+
+          item.restore = () => {
+            restoreStyles()
+            removeItem(this.draggeds, item)
+            this.targets.delete(target)
+          }
+
+          item.hasCoordProps = hasCoordProps
+          this.targets.set(target, item)
+          this.draggeds.push(item)
         }
-      }
+      })
     }
 
-    this.dragger.drag = (x, y, e, target) => {
-      if (hasCoordProps) {
-        target.x = x
-        target.y = y
-      } else target.style.translate = `${x}px ${y}px`
+    this.dragger.drag = (x, y) => {
+      for (const { target, hasCoordProps } of this.draggeds) {
+        if (hasCoordProps) {
+          target.x = x
+          target.y = y
+        } else target.style.translate = `${x}px ${y}px`
+      }
     }
   }
 }
