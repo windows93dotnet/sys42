@@ -267,7 +267,7 @@ class Selectable extends Trait {
 
     let rectsPromise
     let rects
-    let elRect
+    let zoneRect
     const check = rect[this.config.check]
 
     let fromX
@@ -275,6 +275,8 @@ class Selectable extends Trait {
 
     const handleBoxSelection = paintThrottle(async (B, ctrlKey) => {
       rects ??= await rectsPromise
+      rectsPromise = undefined
+      if (!rects) return
       for (const A of rects) {
         if (check(A, B)) this.#add(A.target)
         else if (ctrlKey === false) this.#remove(A.target)
@@ -291,11 +293,16 @@ class Selectable extends Trait {
               this.dragger.config.ignore
           },
       start: () => {
-        elRect = this.el.getBoundingClientRect()
-        fromX = this.dragger.fromX - elRect.x + this.el.scrollLeft
-        fromY = this.dragger.fromY - elRect.y + this.el.scrollTop
+        zoneRect = this.el.getBoundingClientRect()
+        const { borderLeftWidth, borderTopWidth } = getComputedStyle(this.el)
+        zoneRect.x += Number.parseInt(borderLeftWidth, 10)
+        zoneRect.y += Number.parseInt(borderTopWidth, 10)
 
-        rectsPromise = getRects(this.config.selector, this.el, {
+        fromX = this.dragger.fromX - zoneRect.x + this.el.scrollLeft
+        fromY = this.dragger.fromY - zoneRect.y + this.el.scrollTop
+
+        rectsPromise = getRects(this.config.selector, {
+          root: this.el,
           relative: true,
         })
 
@@ -304,8 +311,8 @@ class Selectable extends Trait {
         this.el.append(this.svg)
       },
       drag: (x, y, { ctrlKey }) => {
-        x -= elRect.x - this.el.scrollLeft
-        y -= elRect.y - this.el.scrollTop
+        x -= zoneRect.x - this.el.scrollLeft
+        y -= zoneRect.y - this.el.scrollTop
         const points = `${fromX},${fromY} ${x},${fromY} ${x},${y} ${fromX},${y}`
         this.polygon.setAttribute("points", points)
 
@@ -330,6 +337,7 @@ class Selectable extends Trait {
         handleBoxSelection(B, ctrlKey)
       },
       stop: () => {
+        rects = undefined
         this.polygon.setAttribute("points", points)
         this.svg.remove()
       },
@@ -345,7 +353,7 @@ class Selectable extends Trait {
       pointer-events: none;
       position: absolute;
       inset: 0;
-      z-index: 10000;`
+      z-index: 1e5;`
 
     this.svg.append(this.polygon)
   }
