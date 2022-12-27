@@ -47,21 +47,18 @@ export default class Dragger {
     let distX = 0
     let distY = 0
 
-    let offsetX = 0
-    let offsetY = 0
-
     const round = this.config.subpixel ? (val) => val : Math.round
 
     let getX = this.config.targetOffset
       ? this.config.subpixel
-        ? (x) => x - offsetX
-        : (x) => round(x - offsetX)
+        ? (x) => x - this.offsetX
+        : (x) => round(x - this.offsetX)
       : round
 
     let getY = this.config.targetOffset
       ? this.config.subpixel
-        ? (y) => y - offsetY
-        : (y) => round(y - offsetY)
+        ? (y) => y - this.offsetY
+        : (y) => round(y - this.offsetY)
       : round
 
     const { grid } = this.config
@@ -129,8 +126,8 @@ export default class Dragger {
 
       if (this.config.targetOffset) {
         const rect = target.getBoundingClientRect()
-        offsetX = round(e.x - rect.left)
-        offsetY = round(e.y - rect.top)
+        this.offsetX = round(e.x - rect.x)
+        this.offsetY = round(e.y - rect.y)
       }
 
       restore = setTemp(document.documentElement, {
@@ -150,10 +147,10 @@ export default class Dragger {
 
       this.fromX = 0
       this.fromY = 0
+      this.offsetX = 0
+      this.offsetY = 0
       distX = 0
       distY = 0
-      offsetX = 0
-      offsetY = 0
       forget?.()
       restore?.()
 
@@ -172,7 +169,7 @@ export default class Dragger {
     let drag = (e, target) => {
       if (this.#isStarted) {
         const x = getX(e.x)
-        const y = getX(e.y)
+        const y = getY(e.y)
         this.drag(x, y, e, target)
         if (this.config.autoScroll && scrolling.hasScrollbars) {
           autoScroll(e, x, y, target)

@@ -31,17 +31,17 @@ class Transferable extends Trait {
       autoScroll: true,
     })
 
-    this.movable.dragger.stop = (_x, _y, e, target) => {
-      const { x, y, restore } = this.movable.targets.get(target)
-      this.movable.targets.delete(target)
-
-      if (this.config.revert) {
-        animateTo(
-          target,
-          { translate: `${x}px ${y}px` },
-          this.config.revert
-        ).then(() => restore())
-      } else restore()
+    this.movable.dragger.stop = () => {
+      const { draggeds } = this.movable
+      for (const { x, y, target, restore } of draggeds) {
+        if (this.config.revert) {
+          animateTo(
+            target,
+            { translate: `${x}px ${y}px` },
+            this.config.revert
+          ).then(() => restore())
+        } else restore()
+      }
     }
   }
 }
