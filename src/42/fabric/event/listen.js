@@ -23,7 +23,17 @@ const ITEM_DEFAULTS = {
   preventDefault: false,
   stopPropagation: false,
   stopImmediatePropagation: false,
+  // ignoreScrollbar: false,
 }
+
+// if (item.ignoreScrollbar) {
+//   if (
+//     e.offsetX > e.target.clientWidth ||
+//     e.offsetY > e.target.clientHeight
+//   ) {
+//     return
+//   }
+// }
 
 const DEFAULTS_KEYS = Object.keys(EVENT_DEFAULTS)
 const ITEM_KEYS = Object.keys(ITEM_DEFAULTS)
