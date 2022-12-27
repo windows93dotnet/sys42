@@ -147,7 +147,7 @@ export default class Dragger {
 
       hasHorizontalScrollbar = undefined
       hasVerticalScrollbar = undefined
-      cancelAnimationFrame(this.updateScrollId)
+      cancelAnimationFrame(this.scrollLoopId)
 
       if (this.#isStarted) {
         window.getSelection().empty()
@@ -164,43 +164,42 @@ export default class Dragger {
         const x = getX(e.x)
         const y = getX(e.y)
         this.drag(x, y, e, target)
-
-        if (hasVerticalScrollbar || hasHorizontalScrollbar) {
-          const top = rect.y + this.config.scrollThreshold
-          const bottom =
-            rect.y + this.el.clientHeight - this.config.scrollThreshold
-
-          const left = rect.x + this.config.scrollThreshold
-          const right =
-            rect.x + this.el.clientWidth - this.config.scrollThreshold
-
-          cancelAnimationFrame(this.updateScrollId)
-
-          this.updateScroll = () => {
-            this.updateScrollId = requestAnimationFrame(() => {
-              if (e.y < top) {
-                this.el.scrollTop -= exponential(top - e.y)
-              } else if (e.y > bottom) {
-                this.el.scrollTop += exponential(e.y - bottom)
-              }
-
-              if (e.x < left) {
-                this.el.scrollLeft -= exponential(left - e.x)
-              } else if (e.x > right) {
-                this.el.scrollLeft += exponential(e.x - right)
-              }
-
-              this.drag(x, y, e, target)
-              this.updateScroll()
-            })
-          }
-
-          this.updateScroll()
-        }
+        if (this.config.autoScroll) autoScroll(e, x, y, target)
       } else if (checkDistance(e) && start(e, target) === false) stop(e, target)
     }
 
     if (this.config.throttle) drag = paintThrottle(drag)
+
+    const autoScroll = (e, x, y, target) => {
+      const top = rect.y + this.config.scrollThreshold
+      const bottom = rect.y + this.el.clientHeight - this.config.scrollThreshold
+
+      const left = rect.x + this.config.scrollThreshold
+      const right = rect.x + this.el.clientWidth - this.config.scrollThreshold
+
+      cancelAnimationFrame(this.scrollLoopId)
+
+      const loop = () => {
+        this.scrollLoopId = requestAnimationFrame(() => {
+          if (e.y < top) {
+            this.el.scrollTop -= exponential(top - e.y)
+          } else if (e.y > bottom) {
+            this.el.scrollTop += exponential(e.y - bottom)
+          }
+
+          if (e.x < left) {
+            this.el.scrollLeft -= exponential(left - e.x)
+          } else if (e.x > right) {
+            this.el.scrollLeft += exponential(e.x - right)
+          }
+
+          this.drag(x, y, e, target)
+          loop()
+        })
+      }
+
+      loop()
+    }
 
     listen(this.el, {
       signal,
@@ -233,7 +232,7 @@ export default class Dragger {
   }
 
   destroy() {
-    cancelAnimationFrame(this.updateScrollId)
+    cancelAnimationFrame(this.scrollLoopId)
     this.cancel()
   }
 }

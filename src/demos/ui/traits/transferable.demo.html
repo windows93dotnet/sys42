@@ -18,7 +18,7 @@
 <body class="box-center panel pa-xl">
   <div>
     <h2>Drag to sort (Slide)</h2>
-    <div class="demo scroll-x d-inline-flex pa gap inset paper">
+    <div class="demo scroll-x d-flex pa-xl gap-xl inset paper">
       <span class="bd pa-xl bg-opacity-50 bg-green-200">1</span>
       <span class="bd pa-xl bg-opacity-50 bg-green-200">2</span>
       <span class="bd pa-xl bg-opacity-50 bg-green-200">3</span>
@@ -36,7 +36,7 @@
       <span class="bd pa-xl bg-opacity-50 bg-green-200">15</span>
       <span class="bd pa-xl bg-opacity-50 bg-green-200">16</span>
     </div>
-    <div class="demo scroll-x d-inline-flex pa gap inset paper">
+    <div class="demo scroll-x d-flex pa-xl gap-xl inset paper">
       <span class="bd pa-xl bg-opacity-50 bg-green-400">1</span>
       <span class="bd pa-xl bg-opacity-50 bg-green-400">2</span>
       <span class="bd pa-xl bg-opacity-50 bg-green-400">3</span>
@@ -48,7 +48,7 @@
     <br />
 
     <h3>selectable</h3>
-    <div class="demo selectable scroll-x d-inline-flex pa gap inset paper">
+    <div class="demo demo-selectable scroll-x d-flex pa-xl gap-xl inset paper">
       <span class="bd pa-xl bg-opacity-50 bg-yellow-200">1</span>
       <span class="bd pa-xl bg-opacity-50 bg-yellow-200">2</span>
       <span class="bd pa-xl bg-opacity-50 bg-yellow-200">3</span>
@@ -66,7 +66,7 @@
       <span class="bd pa-xl bg-opacity-50 bg-yellow-200">15</span>
       <span class="bd pa-xl bg-opacity-50 bg-yellow-200">16</span>
     </div>
-    <div class="demo selectable scroll-x d-inline-flex pa gap inset paper">
+    <div class="demo demo-selectable scroll-x d-flex pa-xl gap-xl inset paper">
       <span class="bd pa-xl bg-opacity-50 bg-yellow-400">1</span>
       <span class="bd pa-xl bg-opacity-50 bg-yellow-400">2</span>
       <span class="bd pa-xl bg-opacity-50 bg-yellow-400">3</span>
@@ -79,7 +79,7 @@
   <!-- <br />
 
   <h3>grid (not quite ready)</h3>
-  <div class="demo scroll-x box-grid pa gap inset paper" style="--cols: 7">
+  <div class="demo scroll-x box-grid pa-xl gap-xl inset paper" style="--cols: 7">
     <span class="bd pa-xl">A</span>
     <span class="bd pa-xl">B</span>
     <span class="bd pa-xl">C</span>
@@ -90,7 +90,7 @@
   </div> -->
 </body>
 
-<script type="module">
+<!-- <script type="module">
   if (window.top === window.self) {
     const iframe = document.createElement("iframe")
     iframe.className = "inset paper size-full"
@@ -106,7 +106,7 @@
     document.body.classList.add("box-fit")
     // document.body.classList.remove("box-center")
   }
-</script>
+</script> -->
 
 <script type="module">
   import transferable from "../../../42/ui/traits/transferable2.js"
@@ -116,8 +116,7 @@
     transferable(item)
   }
 
-  for (const item of document.querySelectorAll(".selectable")) {
-    // selectable(item, { key: "textContent" })
+  for (const item of document.querySelectorAll(".demo-selectable")) {
     selectable(item)
   }
 </script>
