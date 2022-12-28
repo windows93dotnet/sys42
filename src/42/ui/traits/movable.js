@@ -6,6 +6,7 @@ import maxZIndex from "../../fabric/dom/maxZIndex.js"
 import getRects from "../../fabric/dom/getRects.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
 import pick from "../../fabric/type/object/pick.js"
+import noop from "../../fabric/type/function/noop.js"
 
 const DEFAULTS = {
   distance: 0,
@@ -38,6 +39,11 @@ class Movable extends Trait {
     super(el, options)
 
     this.config = configure(options)
+
+    this.start = this.config.start ?? noop
+    this.move = this.config.move ?? noop
+    this.stop = this.config.stop ?? noop
+
     this.targets = new WeakMap()
     this.draggeds = []
     const { signal } = this.cancel
@@ -75,7 +81,9 @@ class Movable extends Trait {
 
       this.draggeds.length = 0
 
-      getRects(targets, { relative: true }).then((items) => {
+      getRects(targets).then((items) => {
+        if (this.start(x, y, items) === false) return
+
         for (const item of items) {
           const { target } = item
           if (this.targets.has(target)) {
@@ -100,7 +108,6 @@ class Movable extends Trait {
           } else style.translate = `${x}px ${y}px`
 
           const restoreStyles = setTemp(target, tempStyle, { style })
-
           item.restore = () => {
             restoreStyles()
             removeItem(this.draggeds, item)
@@ -115,12 +122,20 @@ class Movable extends Trait {
     }
 
     this.dragger.drag = (x, y) => {
-      for (const { target, hasCoordProps } of this.draggeds) {
+      const items = this.draggeds
+
+      if (this.move(x, y, items) === false) return
+
+      for (const { target, hasCoordProps } of items) {
         if (hasCoordProps) {
           target.x = x
           target.y = y
         } else target.style.translate = `${x}px ${y}px`
       }
+    }
+
+    this.dragger.stop = (x, y) => {
+      this.stop(x, y, this.draggeds)
     }
   }
 }

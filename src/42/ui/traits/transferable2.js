@@ -2,7 +2,8 @@ import Trait from "../classes/Trait.js"
 import movable from "./movable.js"
 import settings from "../../core/settings.js"
 import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
-import { animateTo } from "../../fabric/dom/animate.js"
+import ghostify from "../../fabric/dom/ghostify.js"
+import { animateTo, animateFrom } from "../../fabric/dom/animate.js"
 
 const DEFAULTS = {
   selector: ":scope > *",
@@ -29,20 +30,32 @@ class Transferable extends Trait {
     this.movable = movable(this.el, {
       selector,
       autoScroll: true,
+      start: (x, y, draggeds) => {
+        for (const item of draggeds) {
+          item.target = ghostify(item.target)
+          item.target.classList.remove("selected")
+          document.documentElement.append(item.target)
+          if (draggeds.length > 1) {
+            animateFrom(
+              item.target,
+              { translate: `${item.x}px ${item.y}px` },
+              this.config.revert
+            )
+          }
+        }
+      },
+      stop: (x, y, draggeds) => {
+        for (const { x, y, target } of draggeds) {
+          if (this.config.revert) {
+            animateTo(
+              target,
+              { translate: `${x}px ${y}px` },
+              this.config.revert
+            ).then(() => target.remove())
+          }
+        }
+      },
     })
-
-    this.movable.dragger.stop = () => {
-      const { draggeds } = this.movable
-      for (const { x, y, target, restore } of draggeds) {
-        if (this.config.revert) {
-          animateTo(
-            target,
-            { translate: `${x}px ${y}px` },
-            this.config.revert
-          ).then(() => restore())
-        } else restore()
-      }
-    }
   }
 }
 

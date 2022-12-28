@@ -128,6 +128,7 @@ export default class Dragger {
 
       this.#isStarted = true
       this.isDragging = true
+      Dragger.isDragging = true
 
       if (this.config.useTargetOffset) {
         const rect = target.getBoundingClientRect()
@@ -167,6 +168,7 @@ export default class Dragger {
         this.stop(getX(e.x), getY(e.y), e, target)
         queueTask(() => {
           this.isDragging = false
+          Dragger.isDragging = false
         })
       }
     }
@@ -233,6 +235,7 @@ export default class Dragger {
 
         drag.clear?.()
         this.isDragging = false
+        Dragger.isDragging = false
 
         if (this.config.beforestart?.(e, target) === false) return
 

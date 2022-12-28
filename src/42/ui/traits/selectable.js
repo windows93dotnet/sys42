@@ -64,13 +64,13 @@ class Selectable extends Trait {
   }
 
   toggleSelect(target) {
-    if (this.dragger.isDragging) return
+    if (Dragger.isDragging) return
     const el = target.closest(this.config.selector)
     if (el) this.#toggle(el)
   }
 
   selectOne(target) {
-    if (this.dragger.isDragging) return
+    if (Dragger.isDragging) return
 
     const el = target.closest(this.config.selector)
 
@@ -85,7 +85,7 @@ class Selectable extends Trait {
   }
 
   selectAll() {
-    if (this.dragger.isDragging) return
+    if (Dragger.isDragging) return
     for (const el of this.el.querySelectorAll(this.config.selector)) {
       this.#add(el)
     }
@@ -103,7 +103,7 @@ class Selectable extends Trait {
   }
 
   rangeSelect(target) {
-    if (this.dragger.isDragging) return
+    if (Dragger.isDragging) return
     const el = target.closest(this.config.selector)
     const all = [...this.el.querySelectorAll(this.config.selector)]
     const a = all.indexOf(el)

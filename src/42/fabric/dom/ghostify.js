@@ -29,7 +29,7 @@ export function area(el, options) {
 export function ghostify(el, options) {
   let { x, y, width, height } = el.getBoundingClientRect()
   const clone = el.cloneNode(true)
-  clone.id = `${el.id}--ghost`
+  if (el.id) clone.id = `${el.id}--ghost`
   clone.classList.add("ghost")
   const styles = getComputedStyle(el)
 
