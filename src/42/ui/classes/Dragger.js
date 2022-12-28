@@ -11,16 +11,16 @@ import noop from "../../fabric/type/function/noop.js"
 // import inFirefox from "../../core/env/browser/inFirefox.js"
 
 const DEFAULTS = {
+  signal: undefined,
   distance: 0,
   grid: false,
   throttle: true,
   subpixel: false,
   selector: undefined,
   ignore: undefined,
+  useTargetOffset: false,
   autoScroll: false,
   scrollThreshold: 40,
-  targetOffset: false,
-  signal: undefined,
 }
 
 const exponential = (val) => (val / 8) ** 1.5
@@ -49,13 +49,13 @@ export default class Dragger {
 
     const round = this.config.subpixel ? (val) => val : Math.round
 
-    let getX = this.config.targetOffset
+    let getX = this.config.useTargetOffset
       ? this.config.subpixel
         ? (x) => x - this.offsetX
         : (x) => round(x - this.offsetX)
       : round
 
-    let getY = this.config.targetOffset
+    let getY = this.config.useTargetOffset
       ? this.config.subpixel
         ? (y) => y - this.offsetY
         : (y) => round(y - this.offsetY)
@@ -113,18 +113,23 @@ export default class Dragger {
           this.el.scrollWidth > this.el.clientWidth
 
         if (scrolling.hasScrollbars) {
-          const rect = this.el.getBoundingClientRect()
-          scrolling.top = rect.y + scrollThreshold
-          scrolling.left = rect.x + scrollThreshold
-          scrolling.bottom = rect.y + this.el.clientHeight - scrollThreshold
-          scrolling.right = rect.x + this.el.clientWidth - scrollThreshold
+          const { x, y } = this.el.getBoundingClientRect()
+          scrolling.top = y
+          scrolling.left = x
+          scrolling.bottom = y + this.el.clientHeight
+          scrolling.right = x + this.el.clientWidth
+
+          scrolling.threshTop = scrolling.top + scrollThreshold
+          scrolling.threshLeft = scrolling.left + scrollThreshold
+          scrolling.threshBottom = scrolling.bottom - scrollThreshold
+          scrolling.threshRight = scrolling.right - scrollThreshold
         }
       }
 
       this.#isStarted = true
       this.isDragging = true
 
-      if (this.config.targetOffset) {
+      if (this.config.useTargetOffset) {
         const rect = target.getBoundingClientRect()
         this.offsetX = round(e.x - rect.x)
         this.offsetY = round(e.y - rect.y)
@@ -182,20 +187,29 @@ export default class Dragger {
     const autoScroll = (e, x, y, target) => {
       cancelAnimationFrame(this.scrollLoopId)
 
-      const { top, bottom, left, right } = scrolling
+      const {
+        top,
+        left,
+        bottom,
+        right,
+        threshTop,
+        trashBottom,
+        threshLeft,
+        threshRight,
+      } = scrolling
 
       const loop = () => {
         this.scrollLoopId = requestAnimationFrame(() => {
-          if (e.y < top) {
-            this.el.scrollTop -= exponential(top - e.y)
-          } else if (e.y > bottom) {
-            this.el.scrollTop += exponential(e.y - bottom)
+          if (e.y > top && e.y < threshTop) {
+            this.el.scrollTop -= exponential(threshTop - e.y)
+          } else if (e.y < bottom && e.y > trashBottom) {
+            this.el.scrollTop += exponential(e.y - trashBottom)
           }
 
-          if (e.x < left) {
-            this.el.scrollLeft -= exponential(left - e.x)
-          } else if (e.x > right) {
-            this.el.scrollLeft += exponential(e.x - right)
+          if (e.x > left && e.x < threshLeft) {
+            this.el.scrollLeft -= exponential(threshLeft - e.x)
+          } else if (e.x < right && e.x > threshRight) {
+            this.el.scrollLeft += exponential(e.x - threshRight)
           }
 
           this.drag(x, y, e, target)

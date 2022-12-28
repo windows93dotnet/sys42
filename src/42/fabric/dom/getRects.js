@@ -1,5 +1,5 @@
 export async function getRects(elements, options) {
-  const root = options?.root ?? document
+  const root = options?.root ?? document.scrollingElement
 
   if (typeof elements === "string") {
     elements = root.querySelectorAll(elements)
@@ -44,7 +44,7 @@ export async function getRects(elements, options) {
         resolve(rects)
         observer.disconnect()
       },
-      { root }
+      options?.root ? { root } : undefined
     )
 
     for (const el of elements) observer.observe(el)
