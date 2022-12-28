@@ -15,7 +15,7 @@ const DEFAULTS = {
   selector: undefined,
   ignore: "input,button,textarea,[contenteditable],[contenteditable] *",
   autoScroll: false,
-  targetOffset: true,
+  useTargetOffset: true,
   zIndexSelector: undefined,
   handler: undefined,
   useSelection: true,
@@ -53,7 +53,7 @@ class Movable extends Trait {
         "selector",
         "ignore",
         "autoScroll",
-        "targetOffset",
+        "useTargetOffset",
       ]),
     })
 
@@ -75,7 +75,7 @@ class Movable extends Trait {
 
       this.draggeds.length = 0
 
-      getRects(targets).then((items) => {
+      getRects(targets, { relative: true }).then((items) => {
         for (const item of items) {
           const { target } = item
           if (this.targets.has(target)) {
