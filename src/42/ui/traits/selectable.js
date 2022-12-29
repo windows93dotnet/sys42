@@ -46,8 +46,8 @@ class Selectable extends Trait {
   }
 
   #add(el) {
-    const val = this.key(el)
     if (!this.elements.includes(el)) {
+      const val = this.key(el)
       this.selection.push(val)
       this.elements.push(el)
       this.add(el, val)
@@ -55,8 +55,8 @@ class Selectable extends Trait {
   }
 
   #remove(el) {
-    const val = this.key(el)
     if (this.elements.includes(el)) {
+      const val = this.key(el)
       removeItem(this.selection, val)
       removeItem(this.elements, el)
       this.remove(el, val)
@@ -95,11 +95,10 @@ class Selectable extends Trait {
     const el = target.closest(this.config.selector)
     if (!el) return
 
-    if (this.elements.length === 0) {
-      this.#add(el)
-    } else if (!this.elements.includes(el)) {
-      this.selectOne(el)
-    }
+    if (this.elements.includes(el)) return
+
+    this.clear()
+    this.#add(el)
   }
 
   rangeSelect(target) {
@@ -122,13 +121,27 @@ class Selectable extends Trait {
     }
   }
 
-  selectionFrom(arr) {
+  clearElements() {
+    while (this.elements.length > 0) {
+      const el = this.elements.shift()
+      this.remove(el)
+    }
+  }
+
+  clearSelection() {
+    while (this.selection.length > 0) {
+      const val = this.selection.shift()
+      this.remove(undefined, val)
+    }
+  }
+
+  setSelection(arr) {
     this.clear()
     this.selection.push(...arr)
     this.sync()
   }
 
-  elementsFrom(arr) {
+  setElements(arr) {
     this.clear()
     this.elements.push(...arr)
     this.sync()
@@ -136,7 +149,7 @@ class Selectable extends Trait {
 
   sync() {
     if (this.selection.length > this.elements.length) {
-      this.elements.length = 0
+      this.clearElements()
       if (typeof this.config.key === "string") {
         const { key } = this.config
         let fail
@@ -152,17 +165,24 @@ class Selectable extends Trait {
         }
 
         if (fail !== true) return
-        this.elements.length = 0
+        this.clearElements()
       }
 
       for (const el of this.el.querySelectorAll(this.config.selector)) {
         const val = this.key(el)
         const i = this.selection.indexOf(val)
-        if (i > -1) this.elements[i] = el
+        if (i > -1) {
+          this.elements[i] = el
+          this.add(el)
+        }
       }
     } else if (this.selection.length < this.elements.length) {
-      this.selection.length = 0
-      for (const el of this.elements) this.selection.push(this.key(el))
+      this.clearSelection()
+      for (const el of this.elements) {
+        const val = this.key(el)
+        this.selection.push(val)
+        this.add(undefined, val)
+      }
     }
   }
 

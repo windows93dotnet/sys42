@@ -6,7 +6,13 @@ export class StackItemsHint {
     this.config = { ...options }
   }
 
+  place(el, x, y, i) {
+    const offset = i * 5
+    el.style.translate = `${x + offset}px ${y + offset}px`
+  }
+
   start(x, y, items) {
+    let i
     for (const item of items) {
       if (!item.ghost) {
         item.ghost = ghostify(item.target, { rect: item })
@@ -14,9 +20,10 @@ export class StackItemsHint {
       }
 
       document.documentElement.append(item.ghost)
-      item.ghost.style.translate = `${x}px ${y}px`
 
-      if (items.length > 1) {
+      this.place(item.ghost, x, y, i++)
+
+      if (this.config.animateFromSpeed && items.length > 1) {
         animateFrom(
           item.ghost,
           { translate: `${item.x}px ${item.y}px` },
@@ -26,10 +33,9 @@ export class StackItemsHint {
     }
   }
 
-  move(x, y, items) {
-    for (const { ghost } of items) {
-      ghost.style.translate = `${x}px ${y}px`
-    }
+  drag(x, y, items) {
+    let i = 0
+    for (const { ghost } of items) this.place(ghost, x, y, i++)
   }
 
   stop(x, y, items) {
