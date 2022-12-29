@@ -1,4 +1,4 @@
-export default function hashmap(obj) {
+export function hashmap(obj) {
   return obj ? Object.assign(Object.create(null), obj) : Object.create(null)
 }
 
@@ -7,3 +7,5 @@ hashmap.fromEntries = (entries) => {
   for (const [key, val] of entries) out[key] = val
   return out
 }
+
+export default hashmap

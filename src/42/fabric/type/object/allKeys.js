@@ -17,7 +17,7 @@ const IGNORE_INHERITED = new Set([
   "arguments",
 ])
 
-export default function allKeys(obj, inherited) {
+export function allKeys(obj, inherited) {
   const keys = Reflect.ownKeys(obj)
   let lastIndex = 0
 
@@ -44,3 +44,5 @@ export default function allKeys(obj, inherited) {
 
   return keys
 }
+
+export default allKeys

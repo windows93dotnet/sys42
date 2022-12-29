@@ -1,4 +1,4 @@
-export default function flatten(obj, delimiter = ".", prefix = "") {
+export function flatten(obj, delimiter = ".", prefix = "") {
   const out = {}
 
   for (const [key, val] of Object.entries(obj)) {
@@ -54,3 +54,5 @@ flatten.keys = (obj, delimiter = ".", prefix = "") => {
 
   return out
 }
+
+export default flatten

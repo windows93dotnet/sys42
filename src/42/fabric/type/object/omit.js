@@ -1,4 +1,4 @@
-export default function omit(obj, arr, out) {
+export function omit(obj, arr, out) {
   if (!obj) return
   out ??= {}
 
@@ -10,3 +10,5 @@ export default function omit(obj, arr, out) {
 
   return out
 }
+
+export default omit
