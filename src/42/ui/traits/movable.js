@@ -18,7 +18,7 @@ const DEFAULTS = {
   autoScroll: false,
   useTargetOffset: true,
   zIndexSelector: undefined,
-  handler: undefined,
+  handlerSelector: undefined,
   useSelection: true,
   style: {
     position: "fixed",
@@ -41,11 +41,11 @@ class Movable extends Trait {
     this.config = configure(options)
 
     this.start = this.config.start ?? noop
-    this.move = this.config.move ?? noop
+    this.drag = this.config.drag ?? noop
     this.stop = this.config.stop ?? noop
 
     this.targets = new WeakMap()
-    this.draggeds = []
+    this.items = []
     const { signal } = this.cancel
     const tempStyle = { signal, style: this.config.style }
 
@@ -64,7 +64,10 @@ class Movable extends Trait {
     })
 
     this.dragger.start = (x, y, e, target) => {
-      if (this.config.handler && !e.target.closest(this.config.handler)) {
+      if (
+        this.config.handlerSelector &&
+        !e.target.closest(this.config.handlerSelector)
+      ) {
         return false
       }
 
@@ -79,24 +82,23 @@ class Movable extends Trait {
         } else targets = [target]
       } else targets = [target]
 
-      this.draggeds.length = 0
+      this.items.length = 0
 
       getRects(targets).then((items) => {
         if (this.start(x, y, items) === false) return
 
         for (const item of items) {
-          item.ghost ??= item.target
-          const { ghost } = item
+          const { target } = item
 
-          if (this.targets.has(ghost)) {
-            this.draggeds.push(this.targets.get(ghost))
-            ghost.style.zIndex = maxZIndex(this.config.zIndexSelector) + 1
+          if (this.targets.has(target)) {
+            this.items.push(this.targets.get(target))
+            target.style.zIndex = maxZIndex(this.config.zIndexSelector) + 1
             continue
           }
 
           const hasCoordProps =
-            ghost.constructor.definition?.props?.x &&
-            ghost.constructor.definition?.props?.y
+            target.constructor.definition?.props?.x &&
+            target.constructor.definition?.props?.y
 
           const style = {
             zIndex: maxZIndex(this.config.zIndexSelector) + 1,
@@ -105,40 +107,38 @@ class Movable extends Trait {
           }
 
           if (hasCoordProps) {
-            ghost.x = x
-            ghost.y = y
+            target.x = x
+            target.y = y
           } else style.translate = `${x}px ${y}px`
 
-          const restoreStyles = setTemp(ghost, tempStyle, { style })
+          const restoreStyles = setTemp(target, tempStyle, { style })
           item.restore = () => {
             restoreStyles()
-            removeItem(this.draggeds, item)
-            this.targets.delete(ghost)
+            removeItem(this.items, item)
+            this.targets.delete(target)
           }
 
           item.hasCoordProps = hasCoordProps
 
-          this.targets.set(ghost, item)
-          this.draggeds.push(item)
+          this.targets.set(target, item)
+          this.items.push(item)
         }
       })
     }
 
     this.dragger.drag = (x, y) => {
-      const items = this.draggeds
+      if (this.drag(x, y, this.items) === false) return
 
-      if (this.move(x, y, items) === false) return
-
-      for (const { ghost, hasCoordProps } of items) {
+      for (const { target, hasCoordProps } of this.items) {
         if (hasCoordProps) {
-          ghost.x = x
-          ghost.y = y
-        } else ghost.style.translate = `${x}px ${y}px`
+          target.x = x
+          target.y = y
+        } else target.style.translate = `${x}px ${y}px`
       }
     }
 
     this.dragger.stop = (x, y) => {
-      this.stop(x, y, this.draggeds)
+      this.stop(x, y, this.items)
     }
   }
 }

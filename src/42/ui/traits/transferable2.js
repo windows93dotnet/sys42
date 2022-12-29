@@ -1,5 +1,7 @@
 import Trait from "../classes/Trait.js"
-import movable from "./movable.js"
+import Dragger from "../classes/Dragger.js"
+import getRects from "../../fabric/dom/getRects.js"
+import pick from "../../fabric/type/object/pick.js"
 import settings from "../../core/settings.js"
 import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
 import inIframe from "../../core/env/realm/inIframe.js"
@@ -9,6 +11,10 @@ import IPCItemsHint from "./transferable2/IPCItemsHint.js"
 
 const DEFAULTS = {
   selector: ":scope > *",
+  handlerSelector: undefined,
+  autoScroll: true,
+  useSelection: true,
+  useTargetOffset: true,
   hints: {
     items: {
       name: "stack",
@@ -31,24 +37,55 @@ class Transferable extends Trait {
       this.config.hints.items = { name: this.config.hints.items }
     }
 
-    const { selector } = this.config
+    this.items = []
+    const { signal } = this.cancel
 
     const itemsHint = inIframe
       ? new IPCItemsHint(this.config.hints.items)
       : new StackItemsHint(this.config.hints.items)
 
-    this.movable = movable(this.el, {
-      selector,
-      autoScroll: true,
-      start(x, y, draggeds) {
-        return itemsHint.start?.(x, y, draggeds)
+    this.dragger = new Dragger(this.el, {
+      signal,
+      ...pick(this.config, [
+        "selector",
+        "autoScroll",
+        "useSelection",
+        "useTargetOffset",
+      ]),
+
+      start: (x, y, e, target) => {
+        if (
+          this.config.handlerSelector &&
+          !e.target.closest(this.config.handlerSelector)
+        ) {
+          return false
+        }
+
+        let targets
+
+        if (this.config.useSelection) {
+          const selectable = this.el[Trait.INSTANCES]?.selectable
+          if (selectable) {
+            selectable.ensureSelected(target)
+            const { elements } = selectable
+            targets = elements
+          } else targets = [target]
+        } else targets = [target]
+
+        this.items.length = 0
+
+        getRects(targets).then((items) => {
+          this.items.push(...items)
+          itemsHint.start?.(x, y, this.items)
+        })
       },
-      move(x, y, draggeds) {
-        itemsHint.move?.(x, y, draggeds)
-        return false
+
+      drag: (x, y) => {
+        itemsHint.drag?.(x, y, this.items)
       },
-      stop(x, y, draggeds) {
-        return itemsHint.stop?.(x, y, draggeds)
+
+      stop: (x, y) => {
+        itemsHint.stop?.(x, y, this.items)
       },
     })
   }

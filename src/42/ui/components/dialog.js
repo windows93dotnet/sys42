@@ -41,7 +41,7 @@ export class Dialog extends Component {
     traits: {
       emittable: true,
       movable: {
-        handler: ".ui-dialog__title",
+        handlerSelector: ".ui-dialog__title",
         zIndexSelector,
       },
     },

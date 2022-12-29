@@ -26,12 +26,12 @@ ipc
 
     context.items = items
     context.itemsHint.start(x, y, items)
-    context.itemsHint.move(x, y, context.items)
+    context.itemsHint.drag(x, y, context.items)
   })
-  .on("42_TRANSFER_MOVE", ({ x, y }) => {
+  .on("42_TRANSFER_DRAG", ({ x, y }) => {
     x += context.iframeRect.x
     y += context.iframeRect.y
-    context.itemsHint?.move(x, y, context.items)
+    context.itemsHint?.drag(x, y, context.items)
   })
   .on("42_TRANSFER_STOP", ({ x, y }) => {
     x += context.iframeRect.x
@@ -64,8 +64,8 @@ export class IPCItemsHint {
     return false
   }
 
-  move(x, y) {
-    ipc.emit("42_TRANSFER_MOVE", { x, y })
+  drag(x, y) {
+    ipc.emit("42_TRANSFER_DRAG", { x, y })
   }
 
   stop(x, y) {
