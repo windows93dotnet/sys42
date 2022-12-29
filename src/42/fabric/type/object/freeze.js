@@ -17,6 +17,8 @@ function walk(obj, visiteds) {
   return Object.freeze(obj)
 }
 
-export default function freeze(obj) {
+export function freeze(obj) {
   return walk(obj, new WeakSet())
 }
+
+export default freeze

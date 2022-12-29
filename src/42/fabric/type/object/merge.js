@@ -1,6 +1,6 @@
 import isHashmapLike from "../any/is/isHashmapLike.js"
 
-export default function merge(target, source, memory = new WeakMap()) {
+export function merge(target, source, memory = new WeakMap()) {
   for (const [key, val] of Object.entries(source)) {
     if (memory.has(val)) {
       target[key] = memory.get(val)
@@ -22,3 +22,5 @@ export default function merge(target, source, memory = new WeakMap()) {
 
   return target
 }
+
+export default merge

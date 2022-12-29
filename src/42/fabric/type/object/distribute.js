@@ -1,4 +1,4 @@
-export default function distribute(obj, ...keyLists) {
+export function distribute(obj, ...keyLists) {
   const out = Array.from({ length: keyLists.length + 1 }, () => ({}))
 
   main: for (const [key, val] of Object.entries(obj)) {
@@ -15,3 +15,5 @@ export default function distribute(obj, ...keyLists) {
 
   return out
 }
+
+export default distribute

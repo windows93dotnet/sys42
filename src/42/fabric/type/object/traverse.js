@@ -1,6 +1,6 @@
 import isHashmapLike from "../any/is/isHashmapLike.js"
 
-export default function traverse(obj, cb, parentKey, memory = new WeakSet()) {
+export function traverse(obj, cb, parentKey, memory = new WeakSet()) {
   if (parentKey === undefined && !(obj && typeof obj === "object")) return obj
 
   memory.add(obj)
@@ -14,3 +14,5 @@ export default function traverse(obj, cb, parentKey, memory = new WeakSet()) {
 
   return obj
 }
+
+export default traverse
