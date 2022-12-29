@@ -2,19 +2,20 @@ import Trait from "../classes/Trait.js"
 import movable from "./movable.js"
 import settings from "../../core/settings.js"
 import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
-import ghostify from "../../fabric/dom/ghostify.js"
-import { animateTo, animateFrom } from "../../fabric/dom/animate.js"
+import inIframe from "../../core/env/realm/inIframe.js"
+
+import StackItemsHint from "./transferable2/StackItemsHint.js"
+import IPCItemsHint from "./transferable2/IPCItemsHint.js"
 
 const DEFAULTS = {
   selector: ":scope > *",
-  revert: 180,
-  // dropzone: undefined,
-  // effects: ["copy", "move", "link"],
-  // // driver: "dragEvent",
-  // driver: "pointerEvent",
-  // hint: "slide",
-  // // hint: { type: "float" },
-  // ignoreSelectable: false,
+  hints: {
+    items: {
+      name: "stack",
+      animateFromSpeed: 180,
+      animateToSpeed: 180,
+    },
+  },
 }
 
 const configure = settings("ui.trait.transferable", DEFAULTS)
@@ -25,35 +26,29 @@ class Transferable extends Trait {
 
     this.config = configure(options)
     this.config.selector = ensureScopeSelector(this.config.selector, this.el)
+
+    if (typeof this.config.hints.items === "string") {
+      this.config.hints.items = { name: this.config.hints.items }
+    }
+
     const { selector } = this.config
+
+    const itemsHint = inIframe
+      ? new IPCItemsHint(this.config.hints.items)
+      : new StackItemsHint(this.config.hints.items)
 
     this.movable = movable(this.el, {
       selector,
       autoScroll: true,
-      start: (x, y, draggeds) => {
-        for (const item of draggeds) {
-          item.target = ghostify(item.target)
-          item.target.classList.remove("selected")
-          document.documentElement.append(item.target)
-          if (draggeds.length > 1) {
-            animateFrom(
-              item.target,
-              { translate: `${item.x}px ${item.y}px` },
-              this.config.revert
-            )
-          }
-        }
+      start(x, y, draggeds) {
+        return itemsHint.start?.(x, y, draggeds)
       },
-      stop: (x, y, draggeds) => {
-        for (const { x, y, target } of draggeds) {
-          if (this.config.revert) {
-            animateTo(
-              target,
-              { translate: `${x}px ${y}px` },
-              this.config.revert
-            ).then(() => target.remove())
-          }
-        }
+      move(x, y, draggeds) {
+        itemsHint.move?.(x, y, draggeds)
+        return false
+      },
+      stop(x, y, draggeds) {
+        return itemsHint.stop?.(x, y, draggeds)
       },
     })
   }

@@ -4,7 +4,7 @@ const { parseInt } = Number
 const { round } = Math
 
 export function area(el, options) {
-  let { x, y, width, height } = el.getBoundingClientRect()
+  let { x, y, width, height } = options?.rect ?? el.getBoundingClientRect()
   const styles = getComputedStyle(el)
 
   if (options?.subpixel !== true) {
@@ -27,7 +27,7 @@ export function area(el, options) {
 }
 
 export function ghostify(el, options) {
-  let { x, y, width, height } = el.getBoundingClientRect()
+  let { x, y, width, height } = options?.rect ?? el.getBoundingClientRect()
   const clone = el.cloneNode(true)
   if (el.id) clone.id = `${el.id}--ghost`
   clone.classList.add("ghost")

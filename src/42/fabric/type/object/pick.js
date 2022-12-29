@@ -1,4 +1,4 @@
-export default function pick(obj, arr, out) {
+export function pick(obj, arr, out) {
   if (!obj) return
   out ??= {}
 
@@ -8,3 +8,5 @@ export default function pick(obj, arr, out) {
 
   return out
 }
+
+export default pick

@@ -85,16 +85,18 @@ class Movable extends Trait {
         if (this.start(x, y, items) === false) return
 
         for (const item of items) {
-          const { target } = item
-          if (this.targets.has(target)) {
-            this.draggeds.push(this.targets.get(target))
-            target.style.zIndex = maxZIndex(this.config.zIndexSelector) + 1
+          item.ghost ??= item.target
+          const { ghost } = item
+
+          if (this.targets.has(ghost)) {
+            this.draggeds.push(this.targets.get(ghost))
+            ghost.style.zIndex = maxZIndex(this.config.zIndexSelector) + 1
             continue
           }
 
           const hasCoordProps =
-            target.constructor.definition?.props?.x &&
-            target.constructor.definition?.props?.y
+            ghost.constructor.definition?.props?.x &&
+            ghost.constructor.definition?.props?.y
 
           const style = {
             zIndex: maxZIndex(this.config.zIndexSelector) + 1,
@@ -103,19 +105,20 @@ class Movable extends Trait {
           }
 
           if (hasCoordProps) {
-            target.x = x
-            target.y = y
+            ghost.x = x
+            ghost.y = y
           } else style.translate = `${x}px ${y}px`
 
-          const restoreStyles = setTemp(target, tempStyle, { style })
+          const restoreStyles = setTemp(ghost, tempStyle, { style })
           item.restore = () => {
             restoreStyles()
             removeItem(this.draggeds, item)
-            this.targets.delete(target)
+            this.targets.delete(ghost)
           }
 
           item.hasCoordProps = hasCoordProps
-          this.targets.set(target, item)
+
+          this.targets.set(ghost, item)
           this.draggeds.push(item)
         }
       })
@@ -126,11 +129,11 @@ class Movable extends Trait {
 
       if (this.move(x, y, items) === false) return
 
-      for (const { target, hasCoordProps } of items) {
+      for (const { ghost, hasCoordProps } of items) {
         if (hasCoordProps) {
-          target.x = x
-          target.y = y
-        } else target.style.translate = `${x}px ${y}px`
+          ghost.x = x
+          ghost.y = y
+        } else ghost.style.translate = `${x}px ${y}px`
       }
     }
 
