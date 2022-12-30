@@ -1,15 +1,35 @@
 import inIframe from "../../../core/env/realm/inIframe.js"
 
 export async function makeHints(hints) {
-  const out = Object.create(null)
-
-  if (hints.items.name) {
-    const moduleName = inIframe ? "ipc" : hints.items.name
-    out.items = await import(`./${moduleName}ItemsHint.js`) //
-      .then((m) => m.default(hints.items))
+  if (typeof hints.items === "string") {
+    hints.items = { name: hints.items }
   }
 
-  return out
+  if (typeof hints.dropzone === "string") {
+    hints.dropzone = { name: hints.dropzone }
+  }
+
+  const undones = []
+
+  if (hints.items) {
+    const itemsModuleName = inIframe ? "ipc" : hints.items.name
+    undones.push(
+      import(`./${itemsModuleName}ItemsHint.js`) //
+        .then((m) => m.default(hints.items))
+    )
+  }
+
+  if (hints.dropzone) {
+    const dropzoneModuleName = hints.dropzone.name
+    undones.push(
+      import(`./${dropzoneModuleName}DropzoneHint.js`) //
+        .then((m) => m.default(hints.dropzone))
+    )
+  }
+
+  const [items, dropzone] = await Promise.all(undones)
+
+  return { items, dropzone }
 }
 
 export default makeHints

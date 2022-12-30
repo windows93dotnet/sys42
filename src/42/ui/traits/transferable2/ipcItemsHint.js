@@ -32,12 +32,12 @@ ipc
   .on("42_TRANSFER_DRAG", ({ x, y }) => {
     x += context.iframeRect.x
     y += context.iframeRect.y
-    context.hints.items?.drag(x, y, context.items)
+    context.hints?.items?.drag(x, y, context.items)
   })
   .on("42_TRANSFER_STOP", ({ x, y }) => {
     x += context.iframeRect.x
     y += context.iframeRect.y
-    context.hints.items?.stop(x, y, context.items)
+    context.hints?.items?.stop(x, y, context.items)
     clear(context)
   })
 

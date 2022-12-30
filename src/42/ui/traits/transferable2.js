@@ -9,15 +9,18 @@ import "./transferable2/ipcItemsHint.js"
 
 const DEFAULTS = {
   selector: ":scope > *",
-  handlerSelector: undefined,
   autoScroll: true,
   useSelection: true,
   useTargetOffset: true,
+  handlerSelector: undefined,
   hints: {
     items: {
       name: "stack",
       animateFromSpeed: 180,
       animateToSpeed: 180,
+    },
+    dropzone: {
+      name: "slide",
     },
   },
 }
@@ -31,12 +34,7 @@ class Transferable extends Trait {
     this.config = configure(options)
     this.config.selector = ensureScopeSelector(this.config.selector, this.el)
 
-    if (typeof this.config.hints.items === "string") {
-      this.config.hints.items = { name: this.config.hints.items }
-    }
-
     this.items = []
-
     this.init()
   }
 
