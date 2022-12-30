@@ -51,4 +51,8 @@ export class StackItemsHint {
   }
 }
 
-export default StackItemsHint
+export function stackItemsHint(options) {
+  return new StackItemsHint(options)
+}
+
+export default stackItemsHint

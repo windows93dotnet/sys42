@@ -4,10 +4,8 @@ import getRects from "../../fabric/dom/getRects.js"
 import pick from "../../fabric/type/object/pick.js"
 import settings from "../../core/settings.js"
 import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
-import inIframe from "../../core/env/realm/inIframe.js"
-
-import StackItemsHint from "./transferable2/StackItemsHint.js"
-import IPCItemsHint from "./transferable2/IPCItemsHint.js"
+import makeHints from "./transferable2/makeHints.js"
+import "./transferable2/ipcItemsHint.js"
 
 const DEFAULTS = {
   selector: ":scope > *",
@@ -38,14 +36,18 @@ class Transferable extends Trait {
     }
 
     this.items = []
+
+    this.init()
+  }
+
+  async init() {
     const { signal } = this.cancel
 
-    const itemsHint = inIframe
-      ? new IPCItemsHint(this.config.hints.items)
-      : new StackItemsHint(this.config.hints.items)
+    this.hints = await makeHints(this.config.hints)
 
     this.dragger = new Dragger(this.el, {
       signal,
+
       ...pick(this.config, [
         "selector",
         "autoScroll",
@@ -76,16 +78,16 @@ class Transferable extends Trait {
 
         getRects(targets).then((items) => {
           this.items.push(...items)
-          itemsHint.start?.(x, y, this.items)
+          this.hints.items.start?.(x, y, this.items)
         })
       },
 
       drag: (x, y) => {
-        itemsHint.drag?.(x, y, this.items)
+        this.hints.items.drag?.(x, y, this.items)
       },
 
       stop: (x, y) => {
-        itemsHint.stop?.(x, y, this.items)
+        this.hints.items.stop?.(x, y, this.items)
       },
     })
   }
