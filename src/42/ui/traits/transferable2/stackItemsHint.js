@@ -1,9 +1,18 @@
+import system from "../../../system.js"
 import ghostify from "../../../fabric/dom/ghostify.js"
+import getRects from "../../../fabric/dom/getRects.js"
 import { animateTo, animateFrom } from "../../../fabric/dom/animate.js"
 
 export class StackItemsHint {
   constructor(options) {
     this.config = { ...options }
+  }
+
+  startAnimation() {
+    return this.config.startAnimation
+  }
+  stopAnimation() {
+    return this.config.stopAnimation
   }
 
   place(el, x, y, i) {
@@ -12,6 +21,13 @@ export class StackItemsHint {
   }
 
   start(x, y, items) {
+    getRects([
+      ...system.transfer.dropzones.keys(),
+      ...document.querySelectorAll("iframe"),
+    ]).then((rects) => {
+      console.log(rects)
+    })
+
     let i
     for (const item of items) {
       if (!item.ghost) {
@@ -23,12 +39,11 @@ export class StackItemsHint {
 
       this.place(item.ghost, x, y, i++)
 
-      if (this.config.animateFromSpeed && items.length > 1) {
-        animateFrom(
-          item.ghost,
-          { translate: `${item.x}px ${item.y}px` },
-          this.config.animateFromSpeed
-        )
+      if (this.config.startAnimation && items.length > 1) {
+        animateFrom(item.ghost, {
+          translate: `${item.x}px ${item.y}px`,
+          ...this.startAnimation(item),
+        })
       }
     }
   }
@@ -39,14 +54,13 @@ export class StackItemsHint {
   }
 
   stop(x, y, items) {
-    for (const { x, y, ghost } of items) {
-      if (this.config.animateToSpeed) {
-        animateTo(
-          ghost,
-          { translate: `${x}px ${y}px` },
-          this.config.animateToSpeed
-        ).then(() => ghost.remove())
-      } else ghost.remove()
+    for (const item of items) {
+      if (this.config.stopAnimation) {
+        animateTo(item.ghost, {
+          translate: `${item.x}px ${item.y}px`,
+          ...this.stopAnimation(item),
+        }).then(() => item.ghost.remove())
+      } else item.ghost.remove()
     }
   }
 }

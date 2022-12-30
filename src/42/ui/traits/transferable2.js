@@ -1,3 +1,4 @@
+import system from "../../system.js"
 import Trait from "../classes/Trait.js"
 import Dragger from "../classes/Dragger.js"
 import getRects from "../../fabric/dom/getRects.js"
@@ -16,8 +17,8 @@ const DEFAULTS = {
   hints: {
     items: {
       name: "stack",
-      animateFromSpeed: 180,
-      animateToSpeed: 180,
+      startAnimation: { ms: 180 },
+      stopAnimation: { ms: 180 },
     },
     dropzone: {
       name: "slide",
@@ -26,6 +27,10 @@ const DEFAULTS = {
 }
 
 const configure = settings("ui.trait.transferable", DEFAULTS)
+
+system.transfer = {
+  dropzones: new Map(),
+}
 
 class Transferable extends Trait {
   constructor(el, options) {
@@ -42,6 +47,8 @@ class Transferable extends Trait {
     const { signal } = this.cancel
 
     this.hints = await makeHints(this.config.hints)
+
+    system.transfer.dropzones.set(this.el, this.hints.dropzone)
 
     this.dragger = new Dragger(this.el, {
       signal,

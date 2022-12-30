@@ -3,16 +3,20 @@ export class SlideDropzoneHint {
     this.config = { ...options }
   }
 
-  start() {
-    console.log(111)
+  enter() {
+    console.log("enter")
   }
 
-  drag() {
-    console.log(112)
+  leave() {
+    console.log("leave")
   }
 
-  stop() {
-    console.log(113)
+  dragover() {
+    console.log("dragover")
+  }
+
+  drop() {
+    console.log("drop")
   }
 }
 
