@@ -6,13 +6,13 @@ import pick from "../../fabric/type/object/pick.js"
 import settings from "../../core/settings.js"
 import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
 import makeHints from "./transferable2/makeHints.js"
+import removeItem from "../../fabric/type/array/removeItem.js"
 import "./transferable2/ipcItemsHint.js"
 
 const DEFAULTS = {
   selector: ":scope > *",
   autoScroll: true,
   useSelection: true,
-  useTargetOffset: true,
   handlerSelector: undefined,
   hints: {
     items: {
@@ -52,13 +52,8 @@ class Transferable extends Trait {
 
     this.dragger = new Dragger(this.el, {
       signal,
-
-      ...pick(this.config, [
-        "selector",
-        "autoScroll",
-        "useSelection",
-        "useTargetOffset",
-      ]),
+      useTargetOffset: false,
+      ...pick(this.config, ["selector", "autoScroll", "useSelection"]),
 
       start: (x, y, e, target) => {
         if (
@@ -75,14 +70,21 @@ class Transferable extends Trait {
           if (selectable) {
             selectable.ensureSelected(target)
             const { elements } = selectable
-            targets = elements
+            targets = [...elements]
+            removeItem(targets, target)
+            targets.unshift(target)
           } else targets = [target]
         } else targets = [target]
 
         this.items.length = 0
 
         getRects(targets).then((items) => {
-          this.items.push(...items)
+          for (const item of items) {
+            item.offsetX = x - item.x
+            item.offsetY = y - item.y
+            this.items.push(item)
+          }
+
           this.hints.items.start?.(x, y, this.items)
         })
       },
