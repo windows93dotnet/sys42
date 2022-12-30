@@ -1,9 +1,9 @@
-/* eslint-disable max-params */
 import ghostify from "../../../fabric/dom/ghostify.js"
 import { animateTo, animateFrom } from "../../../fabric/dom/animate.js"
 
-export class StackItemsHint {
+export class StackItemsHint extends Array {
   constructor(options) {
+    super()
     this.config = { ...options }
   }
 
@@ -14,25 +14,25 @@ export class StackItemsHint {
     return this.config.stopAnimation
   }
 
-  place(item, x, y, i, items) {
+  place(item, x, y, i) {
     if (i === 0) {
-      item.ghost.style.zIndex = items.length
+      item.ghost.style.zIndex = this.length
       item.ghost.style.translate = `
       ${x - item.offsetX}px
       ${y - item.offsetY}px`
     } else {
       const offset = i * 5
-      const [first] = items
-      item.ghost.style.zIndex = items.length - i
+      const [first] = this
+      item.ghost.style.zIndex = this.length - i
       item.ghost.style.translate = `
         ${x - first.offsetX + offset}px
         ${y - first.offsetY + offset}px`
     }
   }
 
-  start(x, y, items) {
+  start(x, y) {
     let i
-    for (const item of items) {
+    for (const item of this) {
       if (!item.ghost) {
         item.ghost = ghostify(item.target, { rect: item })
         item.ghost.classList.remove("selected")
@@ -40,9 +40,9 @@ export class StackItemsHint {
 
       document.documentElement.append(item.ghost)
 
-      this.place(item, x, y, i++, items)
+      this.place(item, x, y, i++)
 
-      if (this.config.startAnimation && items.length > 1) {
+      if (this.config.startAnimation && this.length > 1) {
         animateFrom(item.ghost, {
           translate: `${item.x}px ${item.y}px`,
           ...this.startAnimation(item),
@@ -51,13 +51,13 @@ export class StackItemsHint {
     }
   }
 
-  drag(x, y, items) {
+  drag(x, y) {
     let i = 0
-    for (const item of items) this.place(item, x, y, i++, items)
+    for (const item of this) this.place(item, x, y, i++, this)
   }
 
-  stop(x, y, items) {
-    for (const item of items) {
+  stop() {
+    for (const item of this) {
       if (this.config.stopAnimation) {
         animateTo(item.ghost, {
           translate: `${item.x}px ${item.y}px`,

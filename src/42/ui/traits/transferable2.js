@@ -5,11 +5,15 @@ import getRects from "../../fabric/dom/getRects.js"
 import pick from "../../fabric/type/object/pick.js"
 import settings from "../../core/settings.js"
 import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
-import makeHints from "./transferable2/makeHints.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
-import { inRect } from "../../fabric/geometry/point.js"
+import {
+  findTransferZones,
+  setCurrentZone,
+  makeHints,
+} from "./transferable2/utils.js"
 import "./transferable2/ipcItemsHint.js"
-import IPCDropzoneHint from "./transferable2/ipcDropzoneHint.js"
+
+system.transfer = { dropzones: new Map() }
 
 const DEFAULTS = {
   selector: ":scope > *",
@@ -29,51 +33,6 @@ const DEFAULTS = {
 }
 
 const configure = settings("ui.trait.transferable", DEFAULTS)
-
-system.transfer = {
-  dropzones: new Map(),
-}
-
-function findTransferZones() {
-  getRects([
-    ...system.transfer.dropzones.keys(),
-    ...document.querySelectorAll("iframe"),
-  ]).then((rects) => {
-    system.transfer.zones = rects
-    for (const rect of rects) {
-      rect.hint =
-        rect.target.localName === "iframe"
-          ? new IPCDropzoneHint(rect.target)
-          : system.transfer.dropzones.get(rect.target)
-    }
-  })
-}
-
-function setCurrentZone(x, y) {
-  const { zones } = system.transfer
-
-  if (!zones) return
-  const point = { x, y }
-
-  if (system.transfer.currentZone) {
-    if (inRect(point, system.transfer.currentZone)) {
-      system.transfer.currentZone.hint.dragover()
-      return
-    }
-
-    system.transfer.currentZone.hint.leave()
-    system.transfer.currentZone = undefined
-  }
-
-  for (const dropzone of zones) {
-    if (inRect(point, dropzone)) {
-      system.transfer.currentZone = dropzone
-      system.transfer.currentZone.hint.enter()
-      system.transfer.currentZone.hint.dragover()
-      break
-    }
-  }
-}
 
 class Transferable extends Trait {
   constructor(el, options) {
@@ -106,6 +65,8 @@ class Transferable extends Trait {
           return false
         }
 
+        system.transfer.items = this.hints.items
+        system.transfer.items.length = 0
         findTransferZones()
 
         let targets
@@ -121,26 +82,24 @@ class Transferable extends Trait {
           } else targets = [target]
         } else targets = [target]
 
-        this.items.length = 0
-
         getRects(targets).then((items) => {
           for (const item of items) {
             item.offsetX = x - item.x
             item.offsetY = y - item.y
-            this.items.push(item)
+            system.transfer.items.push(item)
           }
 
-          this.hints.items.start?.(x, y, this.items)
+          this.hints.items.start?.(x, y)
         })
       },
 
       drag: (x, y) => {
-        this.hints.items.drag?.(x, y, this.items)
+        this.hints.items.drag?.(x, y)
         setCurrentZone(x, y)
       },
 
       stop: (x, y) => {
-        this.hints.items.stop?.(x, y, this.items)
+        this.hints.items.stop?.(x, y)
       },
     })
   }

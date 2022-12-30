@@ -1,4 +1,5 @@
-import makeHints from "./makeHints.js"
+// import system from "../../../system.js"
+import { findTransferZones, setCurrentZone, makeHints } from "./utils.js"
 import ghostify from "../../../fabric/dom/ghostify.js"
 import ipc from "../../../core/ipc.js"
 import sanitize from "../../../fabric/dom/sanitize.js"
@@ -16,8 +17,12 @@ ipc
     x += context.iframeRect.x
     y += context.iframeRect.y
 
-    context.items = items
+    // context.items = items
     context.hints = await makeHints(hints)
+    context.hints.items.length = 0
+    context.hints.items.push(...items)
+
+    findTransferZones()
 
     for (const item of items) {
       item.target = sanitize(item.target)
@@ -27,30 +32,32 @@ ipc
     }
 
     context.hints.items.start(x, y, items)
-    context.hints.items.drag(x, y, context.items)
+    context.hints.items.drag(x, y)
   })
   .on("42_TRANSFER_DRAG", ({ x, y }) => {
     x += context.iframeRect.x
     y += context.iframeRect.y
-    context.hints?.items?.drag(x, y, context.items)
+    context.hints?.items?.drag(x, y)
+    setCurrentZone(x, y)
   })
   .on("42_TRANSFER_STOP", ({ x, y }) => {
     x += context.iframeRect.x
     y += context.iframeRect.y
-    context.hints?.items?.stop(x, y, context.items)
+    context.hints?.items?.stop(x, y)
     clear(context)
   })
 
-export class IPCItemsHint {
+export class IPCItemsHint extends Array {
   constructor(options) {
+    super()
     this.config = { ...options }
   }
 
-  start(x, y, originalItems) {
+  start(x, y) {
     const items = []
     const hints = { items: this.config }
 
-    for (const item of originalItems) {
+    for (const item of this) {
       const exported = { ...item }
       delete exported.restore
       const ghost = ghostify(exported.target, { rect: item })
