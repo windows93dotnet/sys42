@@ -7,7 +7,9 @@ import settings from "../../core/settings.js"
 import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
 import makeHints from "./transferable2/makeHints.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
+import { inRect } from "../../fabric/geometry/point.js"
 import "./transferable2/ipcItemsHint.js"
+import IPCDropzoneHint from "./transferable2/ipcDropzoneHint.js"
 
 const DEFAULTS = {
   selector: ":scope > *",
@@ -30,6 +32,47 @@ const configure = settings("ui.trait.transferable", DEFAULTS)
 
 system.transfer = {
   dropzones: new Map(),
+}
+
+function findTransferZones() {
+  getRects([
+    ...system.transfer.dropzones.keys(),
+    ...document.querySelectorAll("iframe"),
+  ]).then((rects) => {
+    system.transfer.zones = rects
+    for (const rect of rects) {
+      rect.hint =
+        rect.target.localName === "iframe"
+          ? new IPCDropzoneHint(rect.target)
+          : system.transfer.dropzones.get(rect.target)
+    }
+  })
+}
+
+function setCurrentZone(x, y) {
+  const { zones } = system.transfer
+
+  if (!zones) return
+  const point = { x, y }
+
+  if (system.transfer.currentZone) {
+    if (inRect(point, system.transfer.currentZone)) {
+      system.transfer.currentZone.hint.dragover()
+      return
+    }
+
+    system.transfer.currentZone.hint.leave()
+    system.transfer.currentZone = undefined
+  }
+
+  for (const dropzone of zones) {
+    if (inRect(point, dropzone)) {
+      system.transfer.currentZone = dropzone
+      system.transfer.currentZone.hint.enter()
+      system.transfer.currentZone.hint.dragover()
+      break
+    }
+  }
 }
 
 class Transferable extends Trait {
@@ -63,6 +106,8 @@ class Transferable extends Trait {
           return false
         }
 
+        findTransferZones()
+
         let targets
 
         if (this.config.useSelection) {
@@ -91,6 +136,7 @@ class Transferable extends Trait {
 
       drag: (x, y) => {
         this.hints.items.drag?.(x, y, this.items)
+        setCurrentZone(x, y)
       },
 
       stop: (x, y) => {
