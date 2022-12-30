@@ -46,7 +46,7 @@ class Transferable extends Trait {
   async init() {
     const { signal } = this.cancel
 
-    this.hints = await makeHints(this.config.hints)
+    this.hints = await makeHints(this.config.hints, this.el)
 
     system.transfer.dropzones.set(this.el, this.hints.dropzone)
 

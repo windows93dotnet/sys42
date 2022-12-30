@@ -4,6 +4,7 @@ import ghostify from "../../../fabric/dom/ghostify.js"
 import getRects from "../../../fabric/dom/getRects.js"
 import { inRect } from "../../../fabric/geometry/point.js"
 import { animateTo, animateFrom } from "../../../fabric/dom/animate.js"
+import IPCDropzoneHint from "./ipcDropzoneHint.js"
 
 export class StackItemsHint {
   constructor(options) {
@@ -40,7 +41,10 @@ export class StackItemsHint {
     ]).then((rects) => {
       this.zones = rects
       for (const rect of rects) {
-        rect.dropzone = system.transfer.dropzones.get(rect.target)
+        rect.dropzone =
+          rect.target.localName === "iframe"
+            ? new IPCDropzoneHint(rect.target)
+            : system.transfer.dropzones.get(rect.target)
       }
     })
 

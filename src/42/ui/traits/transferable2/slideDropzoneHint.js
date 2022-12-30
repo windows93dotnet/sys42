@@ -1,14 +1,15 @@
 export class SlideDropzoneHint {
-  constructor(options) {
+  constructor(el, options) {
+    this.el = el
     this.config = { ...options }
   }
 
   enter() {
-    console.log("enter")
+    this.el.classList.add("dragover")
   }
 
   leave() {
-    console.log("leave")
+    this.el.classList.remove("dragover")
   }
 
   dragover() {

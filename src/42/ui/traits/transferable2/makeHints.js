@@ -1,6 +1,6 @@
 import inIframe from "../../../core/env/realm/inIframe.js"
 
-export async function makeHints(hints) {
+export async function makeHints(hints, el) {
   if (typeof hints.items === "string") {
     hints.items = { name: hints.items }
   }
@@ -23,7 +23,7 @@ export async function makeHints(hints) {
     const dropzoneModuleName = hints.dropzone.name
     undones.push(
       import(`./${dropzoneModuleName}DropzoneHint.js`) //
-        .then((m) => m.default(hints.dropzone))
+        .then((m) => m.default(el, hints.dropzone))
     )
   }
 
