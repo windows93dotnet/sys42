@@ -9,6 +9,7 @@ import removeItem from "../../fabric/type/array/removeItem.js"
 import {
   findTransferZones,
   setCurrentZone,
+  forgetCurrentZone,
   makeHints,
 } from "./transferable2/utils.js"
 import "./transferable2/ipcItemsHint.js"
@@ -41,7 +42,6 @@ class Transferable extends Trait {
     this.config = configure(options)
     this.config.selector = ensureScopeSelector(this.config.selector, this.el)
 
-    this.items = []
     this.init()
   }
 
@@ -50,7 +50,9 @@ class Transferable extends Trait {
 
     this.hints = await makeHints(this.config.hints, this.el)
 
-    system.transfer.dropzones.set(this.el, this.hints.dropzone)
+    if (this.hints.dropzone) {
+      system.transfer.dropzones.set(this.el, this.hints.dropzone)
+    }
 
     this.dragger = new Dragger(this.el, {
       signal,
@@ -89,17 +91,18 @@ class Transferable extends Trait {
             system.transfer.items.push(item)
           }
 
-          this.hints.items.start?.(x, y)
+          system.transfer.items.start?.(x, y)
         })
       },
 
-      drag: (x, y) => {
-        this.hints.items.drag?.(x, y)
-        setCurrentZone(x, y)
+      drag(x, y) {
+        const res = setCurrentZone(x, y)
+        if (res === false) return
+        system.transfer.items.drag?.(x, y)
       },
 
-      stop: (x, y) => {
-        this.hints.items.stop?.(x, y)
+      stop(x, y) {
+        forgetCurrentZone(x, y)
       },
     })
   }
