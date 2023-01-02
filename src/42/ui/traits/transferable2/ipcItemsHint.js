@@ -17,7 +17,6 @@ ipc
     x += context.iframeRect.x
     y += context.iframeRect.y
 
-    // context.items = items
     context.hints = await makeHints(hints)
     context.hints.items.length = 0
     context.hints.items.push(...items)
@@ -40,10 +39,10 @@ ipc
     context.hints?.items?.drag(x, y)
     setCurrentZone(x, y)
   })
-  .on("42_TRANSFER_STOP", ({ x, y }) => {
+  .on("42_TRANSFER_REVERT", ({ x, y }) => {
     x += context.iframeRect.x
     y += context.iframeRect.y
-    context.hints?.items?.stop(x, y)
+    context.hints?.items?.revert(x, y)
     clear(context)
   })
 
@@ -74,8 +73,8 @@ export class IPCItemsHint extends Array {
     ipc.emit("42_TRANSFER_DRAG", { x, y })
   }
 
-  stop(x, y) {
-    ipc.emit("42_TRANSFER_STOP", { x, y })
+  revert(x, y) {
+    ipc.emit("42_TRANSFER_REVERT", { x, y })
   }
 }
 

@@ -1,3 +1,5 @@
+import { animateTo } from "../../../fabric/dom/animate.js"
+
 export class SlideDropzoneHint {
   constructor(el, options) {
     this.el = el
@@ -13,11 +15,26 @@ export class SlideDropzoneHint {
   }
 
   dragover() {
-    console.log("dragover")
+    // console.log(items)
   }
 
-  drop() {
-    console.log("drop")
+  drop(items) {
+    this.el.classList.remove("dragover")
+    for (const item of items) {
+      this.el.append(item.target)
+
+      item.target.classList.remove("hide")
+      const { x, y } = item.target.getBoundingClientRect()
+      item.target.classList.add("hide")
+
+      animateTo(item.ghost, {
+        translate: `${x}px ${y}px`,
+        ...items.stopAnimation(item),
+      }).then(() => {
+        item.ghost.remove()
+        item.target.classList.remove("hide")
+      })
+    }
   }
 }
 

@@ -32,9 +32,6 @@ export async function makeHints(hints, el) {
   }
 
   const [items, dropzone] = await Promise.all(undones)
-
-  items.list ??= []
-
   return { items, dropzone }
 }
 
@@ -58,15 +55,14 @@ export function findTransferZones() {
 //
 
 export function setCurrentZone(x, y) {
-  const { zones } = system.transfer
+  const { zones, items } = system.transfer
 
   if (!zones) return
   const point = { x, y }
 
   if (system.transfer.currentZone) {
     if (inRect(point, system.transfer.currentZone)) {
-      system.transfer.currentZone.hint.dragover()
-      return
+      return system.transfer.currentZone.hint.dragover(items, x, y)
     }
 
     system.transfer.currentZone.hint.leave()
@@ -77,8 +73,20 @@ export function setCurrentZone(x, y) {
     if (inRect(point, dropzone)) {
       system.transfer.currentZone = dropzone
       system.transfer.currentZone.hint.enter()
-      system.transfer.currentZone.hint.dragover()
-      break
+      return system.transfer.currentZone.hint.dragover(items, x, y)
     }
   }
+}
+
+//
+
+export function forgetCurrentZone(x, y) {
+  if (system.transfer.currentZone) {
+    system.transfer.currentZone?.hint.drop(system.transfer.items, x, y)
+    system.transfer.currentZone = undefined
+  } else {
+    system.transfer.items.revert?.(x, y)
+  }
+
+  system.transfer.items.length = 0
 }

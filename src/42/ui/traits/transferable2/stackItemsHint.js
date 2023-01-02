@@ -14,33 +14,16 @@ export class StackItemsHint extends Array {
     return this.config.stopAnimation
   }
 
-  place(item, x, y, i) {
-    if (i === 0) {
-      item.ghost.style.zIndex = this.length
-      item.ghost.style.translate = `
-      ${x - item.offsetX}px
-      ${y - item.offsetY}px`
-    } else {
-      const offset = i * 5
-      const [first] = this
-      item.ghost.style.zIndex = this.length - i
-      item.ghost.style.translate = `
-        ${x - first.offsetX + offset}px
-        ${y - first.offsetY + offset}px`
-    }
-  }
-
   start(x, y) {
-    let i
     for (const item of this) {
       if (!item.ghost) {
         item.ghost = ghostify(item.target, { rect: item })
         item.ghost.classList.remove("selected")
+        item.originalDisplay = item.target.style.display
+        item.target.classList.add("hide")
       }
 
       document.documentElement.append(item.ghost)
-
-      this.place(item, x, y, i++)
 
       if (this.config.startAnimation && this.length > 1) {
         animateFrom(item.ghost, {
@@ -49,21 +32,43 @@ export class StackItemsHint extends Array {
         })
       }
     }
+
+    this.drag(x, y)
   }
 
   drag(x, y) {
-    let i = 0
-    for (const item of this) this.place(item, x, y, i++, this)
+    for (let i = 0, l = this.length; i < l; i++) {
+      const item = this[i]
+      if (i === 0) {
+        item.ghost.style.zIndex = this.length
+        item.ghost.style.translate = `
+          ${x - item.offsetX}px
+          ${y - item.offsetY}px`
+      } else {
+        const offset = i * 3
+        const [first] = this
+        item.ghost.style.zIndex = this.length - i
+        item.ghost.style.translate = `
+          ${x - first.offsetX + offset}px
+          ${y - first.offsetY + offset}px`
+      }
+    }
   }
 
-  stop() {
+  revert() {
     for (const item of this) {
       if (this.config.stopAnimation) {
         animateTo(item.ghost, {
           translate: `${item.x}px ${item.y}px`,
           ...this.stopAnimation(item),
-        }).then(() => item.ghost.remove())
-      } else item.ghost.remove()
+        }).then(() => {
+          item.target.classList.remove("hide")
+          item.ghost.remove()
+        })
+      } else {
+        item.target.classList.remove("hide")
+        item.ghost.remove()
+      }
     }
   }
 }
