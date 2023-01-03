@@ -16,7 +16,7 @@ export class IPCDropzoneHint {
   }
 
   drop() {
-    // console.log("ipc drop")
+    console.log("ipc drop")
   }
 }
 
