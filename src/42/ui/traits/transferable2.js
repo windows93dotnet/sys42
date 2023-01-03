@@ -99,19 +99,9 @@ class Transferable extends Trait {
         system.transfer.items.drag?.(x, y)
       },
 
-      stop: async (x, y) => {
-        const dropzone = system.transfer.currentZone?.target
+      async stop(x, y) {
         await startReady
         forgetCurrentZone(x, y)
-        if (this.config.useSelection && dropzone) {
-          const selectable = dropzone[Trait.INSTANCES]?.selectable
-          if (selectable) {
-            selectable.setElements(
-              system.transfer.items.map(({ target }) => target)
-            )
-          }
-        }
-
         system.transfer.items.length = 0
       },
     })

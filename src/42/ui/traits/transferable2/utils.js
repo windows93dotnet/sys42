@@ -85,8 +85,8 @@ export function forgetCurrentZone(x, y) {
     const { items } = system.transfer
     system.transfer.currentZone.hint.drop(items, x, y)
     system.transfer.currentZone = undefined
+  } else {
+    system.transfer.items.revert?.(x, y)
+    system.transfer.items.length = 0
   }
-
-  system.transfer.items.revert?.(x, y)
-  system.transfer.items.length = 0
 }

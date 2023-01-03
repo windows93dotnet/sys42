@@ -22,24 +22,29 @@ export class SlideDropzoneHint {
   drop(items) {
     this.el.classList.remove("dragover")
     const selectable = this.el[Trait.INSTANCES]?.selectable
-    if (selectable) selectable.clear()
+    selectable?.clear()
 
     for (const item of items) {
       // if (!this.el.contains(item.target)) this.el.append(item.target)
       this.el.append(item.target)
+      selectable?.add(item.target)
 
       item.target.classList.remove("hide")
       const { x, y } = item.target.getBoundingClientRect()
       item.target.classList.add("hide")
 
-      animateTo(item.ghost, {
-        translate: `${x}px ${y}px`,
-        ...items.dropAnimation(item),
-      }).then(() => {
+      if (items.config.dropAnimation) {
+        animateTo(item.ghost, {
+          translate: `${x}px ${y}px`,
+          ...items.dropAnimation(item),
+        }).then(() => {
+          item.ghost.remove()
+          item.target.classList.remove("hide")
+        })
+      } else {
         item.ghost.remove()
         item.target.classList.remove("hide")
-        // selectable?.add(item.target)
-      })
+      }
     }
   }
 }
