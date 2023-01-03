@@ -1,152 +1,292 @@
-/* eslint-disable unicorn/prefer-modern-dom-apis */
+import system from "../../system.js"
 import Trait from "../classes/Trait.js"
+import Dragger from "../classes/Dragger.js"
+import inIframe from "../../core/env/realm/inIframe.js"
+import getRects from "../../fabric/dom/getRects.js"
+import { inRect } from "../../fabric/geometry/point.js"
+import pick from "../../fabric/type/object/pick.js"
 import settings from "../../core/settings.js"
-import ensureElement from "../../fabric/dom/ensureElement.js"
-import uid from "../../core/uid.js"
-import noop from "../../fabric/type/function/noop.js"
 import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
+import removeItem from "../../fabric/type/array/removeItem.js"
+
+import ipc from "../../core/ipc.js"
+import sanitize from "../../fabric/dom/sanitize.js"
+import clear from "../../fabric/type/object/clear.js"
+
+const context = Object.create(null)
+
+export class IPCDropzoneHint {
+  constructor(options) {
+    this.config = { ...options }
+  }
+
+  enter() {
+    // console.log("ipc enter")
+  }
+
+  leave() {
+    // console.log("ipc leave")
+  }
+
+  dragover() {
+    // console.log("ipc dragover")
+  }
+
+  drop() {
+    console.log("ipc drop")
+  }
+}
+
+ipc
+  .on("42_TRANSFER_START", async ({ x, y, items, config }, { iframe }) => {
+    context.iframeRect = iframe.getBoundingClientRect()
+    const { borderTopWidth, borderLeftWidth } = getComputedStyle(iframe)
+    context.iframeRect.x += Number.parseInt(borderLeftWidth, 10)
+    context.iframeRect.y += Number.parseInt(borderTopWidth, 10)
+
+    x += context.iframeRect.x
+    y += context.iframeRect.y
+
+    context.hints = await system.transfer.makeHints({ items: config })
+    system.transfer.items = context.hints.items
+    system.transfer.items.push(...items)
+
+    system.transfer.findTransferZones(x, y)
+
+    for (const item of items) {
+      item.target = sanitize(item.target)
+      item.ghost = sanitize(item.ghost)
+      item.x += context.iframeRect.x
+      item.y += context.iframeRect.y
+    }
+
+    system.transfer.items.start(x, y, items)
+    system.transfer.items.drag(x, y)
+  })
+  .on("42_TRANSFER_DRAG", ({ x, y }) => {
+    if (context.iframeRect) {
+      x += context.iframeRect.x
+      y += context.iframeRect.y
+      system.transfer.setCurrentZone(x, y)
+      system.transfer.items.drag?.(x, y)
+    }
+  })
+  .on("42_TRANSFER_STOP", ({ x, y }) => {
+    if (context.iframeRect) {
+      x += context.iframeRect.x
+      y += context.iframeRect.y
+      system.transfer.unsetCurrentZone(x, y)
+      clear(context)
+    }
+  })
 
 const DEFAULTS = {
   selector: ":scope > *",
-  dropzone: undefined,
-  effects: ["copy", "move", "link"],
-  // driver: "dragEvent",
-  driver: "pointerEvent",
-  hint: "slide",
-  // hint: { type: "float" },
-  ignoreSelectable: false,
+  autoScroll: true,
+  useSelection: true,
+  handlerSelector: undefined,
+  hints: {
+    items: {
+      name: "stack",
+      startAnimation: { ms: 180 },
+      revertAnimation: { ms: 180 },
+      dropAnimation: { ms: 180 },
+    },
+    dropzone: {
+      name: "slide",
+    },
+  },
 }
-
-let preventRemove = false
 
 const configure = settings("ui.trait.transferable", DEFAULTS)
 
-function copyElement(el) {
-  const copy = el.cloneNode(true)
-  copy.id += "-copy"
-  return copy
+system.transfer = {
+  dropzones: new Map(),
+
+  async makeHints(hints, el) {
+    if (typeof hints.items === "string") {
+      hints.items = { name: hints.items }
+    }
+
+    if (typeof hints.dropzone === "string") {
+      hints.dropzone = { name: hints.dropzone }
+    }
+
+    const undones = []
+
+    if (hints.items) {
+      const itemsModuleName = hints.items.name
+      undones.push(
+        import(`./transferable/${itemsModuleName}ItemsHint.js`) //
+          .then((m) => m.default(hints.items))
+      )
+    }
+
+    if (hints.dropzone) {
+      const dropzoneModuleName = hints.dropzone.name
+      undones.push(
+        import(`./transferable/${dropzoneModuleName}DropzoneHint.js`) //
+          .then((m) => m.default(el, hints.dropzone))
+      )
+    }
+
+    const [items, dropzone] = await Promise.all(undones)
+    return { items, dropzone }
+  },
+
+  async findTransferZones(x, y) {
+    return getRects([
+      ...system.transfer.dropzones.keys(),
+      ...document.querySelectorAll("iframe"),
+    ]).then((rects) => {
+      system.transfer.zones = rects
+      for (const rect of rects) {
+        rect.hint =
+          rect.target.localName === "iframe"
+            ? new IPCDropzoneHint(rect.target)
+            : system.transfer.dropzones.get(rect.target)
+      }
+
+      system.transfer.setCurrentZone(x, y)
+    })
+  },
+
+  setCurrentZone(x, y) {
+    const { zones, items } = system.transfer
+
+    if (zones?.length > 0 === false) return
+    const point = { x, y }
+
+    if (system.transfer.currentZone) {
+      if (inRect(point, system.transfer.currentZone)) {
+        return system.transfer.currentZone.hint.dragover(items, x, y)
+      }
+
+      system.transfer.currentZone.hint.leave()
+      system.transfer.currentZone = undefined
+    }
+
+    for (const dropzone of zones) {
+      if (inRect(point, dropzone)) {
+        system.transfer.currentZone = dropzone
+        system.transfer.currentZone.hint.enter()
+        return system.transfer.currentZone.hint.dragover(items, x, y)
+      }
+    }
+  },
+
+  unsetCurrentZone(x, y) {
+    if (system.transfer.currentZone) {
+      const { items } = system.transfer
+      system.transfer.currentZone.hint.drop(items, x, y)
+      system.transfer.currentZone = undefined
+    } else {
+      system.transfer.items.revert?.(x, y)
+    }
+  },
 }
 
 class Transferable extends Trait {
   constructor(el, options) {
     super(el, options)
 
-    if (options?.list) {
-      this.list = options?.list
-      delete options?.list
-    }
-
     this.config = configure(options)
-
-    if (typeof this.config.driver === "string") {
-      this.config.driver = { type: this.config.driver }
-    }
-
-    if (typeof this.config.hint === "string") {
-      this.config.hint = { type: this.config.hint }
-    }
-
-    this.effects = this.list
-      ? options?.effects ?? ["copy", "move"]
-      : this.config.effects
-
-    this.dropzone = this.config.dropzone
-      ? ensureElement(this.config.dropzone, this.el)
-      : this.el
-
-    this.dropzone.id ||= uid()
-    const { id } = this.dropzone
-
     this.config.selector = ensureScopeSelector(this.config.selector, this.el)
-    this.selector = this.config.selector
 
-    this.indexChange = this.config.indexChange ?? noop
+    this.init()
+  }
 
-    this.import = (obj) => {
-      if (obj.data?.id === id) preventRemove = true
-      if (this.config.import) return this.config.import(obj)
+  async init() {
+    const { signal } = this.cancel
 
-      let { data, effect, index, dropzone } = obj
+    this.hints = await system.transfer.makeHints(this.config.hints, this.el)
 
-      if (data?.type === "layout") {
-        if (this.list) {
-          if (data.id === id) {
-            if (data.index === index) return
-            const [removed] = this.list.splice(data.index, 1)
-            if (index > data.index) index--
-            this.list.splice(index, 0, removed)
-          } else {
-            this.list.splice(index, 0, data.state)
-          }
-
-          this.indexChange(index)
-        } else if (this.config.importLayout) {
-          this.config.importLayout(data.state, obj)
-        }
-      } else if (data?.type === "selection") {
-        preventRemove = true
-        let indexedElement = dropzone.querySelector(
-          `${this.selector}:nth-of-type(${index + 1})`
-        )
-        const frag = document.createDocumentFragment()
-        for (let el of data.elements) {
-          if (indexedElement === el) indexedElement = null
-          if (effect === "copy") el = copyElement(el)
-          // el.classList.remove("selected")
-          frag.append(el)
-        }
-
-        if (this.config.importElement) this.config.importElement(frag, obj)
-        else dropzone.insertBefore(frag, indexedElement)
-      } else if (data?.type === "element") {
-        let el = data.el ?? document.querySelector(data.selector)
-        if (el) {
-          preventRemove = true
-          const indexedElement = dropzone.querySelector(
-            `${this.selector}:nth-of-type(${index + 1})`
-          )
-          if (effect === "copy") el = copyElement(el)
-          if (this.config.importElement) this.config.importElement(el, obj)
-          else dropzone.insertBefore(el, indexedElement)
-        }
-      }
+    if (this.hints.dropzone) {
+      system.transfer.dropzones.set(this.el, this.hints.dropzone)
     }
 
-    this.export = (obj) => {
-      preventRemove = false
-      if (this.config.export) return this.config.export(obj)
+    let startReady
 
-      const { index, target } = obj
+    this.dragger = new Dragger(this.el, {
+      signal,
+      useTargetOffset: false,
+      ...pick(this.config, ["selector", "autoScroll", "useSelection"]),
 
-      if (this.config.ignoreSelectable !== true) {
-        const selectable = this.dropzone[Trait.INSTANCES]?.selectable
+      start: (x, y, e, target) => {
+        if (
+          this.config.handlerSelector &&
+          !e.target.closest(this.config.handlerSelector)
+        ) {
+          return false
+        }
+
+        let targets
+
+        if (this.config.useSelection) {
+          const selectable = this.el[Trait.INSTANCES]?.selectable
+          if (selectable) {
+            selectable.ensureSelected(target)
+            const { elements } = selectable
+            targets = [...elements]
+            removeItem(targets, target)
+            targets.unshift(target)
+            selectable.clear()
+          } else targets = [target]
+        } else targets = [target]
+
+        system.transfer.items = this.hints.items
+
+        startReady = Promise.all([
+          system.transfer.findTransferZones(x, y),
+          getRects(targets).then((rects) => {
+            system.transfer.items.start?.(x, y, rects)
+            if (inIframe) {
+              const items = []
+              const config = this.config.hints.items
+
+              for (const item of system.transfer.items) {
+                const exportedItem = { ...item }
+                exportedItem.ghost = exportedItem.ghost.outerHTML
+                exportedItem.target = exportedItem.target.outerHTML
+                item.ghost.classList.add("hide")
+                items.push(exportedItem)
+              }
+
+              ipc.emit("42_TRANSFER_START", { x, y, items, config })
+            }
+          }),
+        ])
+      },
+
+      drag(x, y) {
+        system.transfer.setCurrentZone(x, y)
+        system.transfer.items.drag?.(x, y)
+        if (inIframe) {
+          ipc.emit("42_TRANSFER_DRAG", { x, y })
+        }
+      },
+
+      stop: async (x, y) => {
+        if (inIframe) {
+          ipc.emit("42_TRANSFER_STOP", { x, y })
+          return
+        }
+
+        await startReady
+        const dropzone = system.transfer.currentZone?.target ?? this.el
+        system.transfer.unsetCurrentZone(x, y)
+
+        const selectable = dropzone[Trait.INSTANCES]?.selectable
         if (selectable) {
-          selectable.ensureSelected(target)
-          const { selection, elements } = selectable
-          return { type: "selection", id, index, selection, elements }
+          selectable.clear()
+          for (const item of system.transfer.items) {
+            selectable?.add(item.target)
+          }
         }
-      }
 
-      if (this.list) {
-        const state = this.list.at(index)
-        return { type: "layout", id, index, state }
-      }
-
-      target.id ||= uid()
-      return { type: "element", id, index, selector: `#${target.id}` }
-    }
-
-    this.remove = (obj) => {
-      if (preventRemove) return
-      if (this.config.remove) return this.config.remove(obj)
-
-      const { index, target } = obj
-      if (this.list) this.list.splice(index, 1)
-      else target.remove()
-    }
-
-    import(`./transferable/drivers/${this.config.driver.type}Driver.js`) //
-      .then((m) => m.default(this, this.config.driver))
+        system.transfer.items.length = 0
+      },
+    })
   }
 }
 
