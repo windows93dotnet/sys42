@@ -81,6 +81,7 @@ class Transferable extends Trait {
             targets = [...elements]
             removeItem(targets, target)
             targets.unshift(target)
+            selectable.clear()
           } else targets = [target]
         } else targets = [target]
 
@@ -101,8 +102,19 @@ class Transferable extends Trait {
         system.transfer.items.drag?.(x, y)
       },
 
-      stop(x, y) {
+      stop: (x, y) => {
+        const dropzone = system.transfer.currentZone?.target
         forgetCurrentZone(x, y)
+        if (this.config.useSelection && dropzone) {
+          const selectable = dropzone[Trait.INSTANCES]?.selectable
+          if (selectable) {
+            selectable.setElements(
+              system.transfer.items.map(({ target }) => target)
+            )
+          }
+        }
+
+        system.transfer.items.length = 0
       },
     })
   }

@@ -57,7 +57,7 @@ export function findTransferZones() {
 export function setCurrentZone(x, y) {
   const { zones, items } = system.transfer
 
-  if (!zones) return
+  if (zones?.length > 0 === false) return
   const point = { x, y }
 
   if (system.transfer.currentZone) {
@@ -82,11 +82,12 @@ export function setCurrentZone(x, y) {
 
 export function forgetCurrentZone(x, y) {
   if (system.transfer.currentZone) {
-    system.transfer.currentZone?.hint.drop(system.transfer.items, x, y)
+    const { items } = system.transfer
+    const res = system.transfer.currentZone.hint.drop(items, x, y)
     system.transfer.currentZone = undefined
-  } else {
-    system.transfer.items.revert?.(x, y)
+    return res
   }
 
+  system.transfer.items.revert?.(x, y)
   system.transfer.items.length = 0
 }
