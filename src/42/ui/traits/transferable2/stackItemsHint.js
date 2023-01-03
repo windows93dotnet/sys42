@@ -18,8 +18,6 @@ export class StackItemsHint extends Array {
     for (const item of this) {
       if (!item.ghost) {
         item.ghost = ghostify(item.target, { rect: item })
-        item.ghost.classList.remove("selected")
-        item.originalDisplay = item.target.style.display
         item.target.classList.add("hide")
       }
 

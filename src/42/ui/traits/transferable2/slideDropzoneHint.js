@@ -18,8 +18,9 @@ export class SlideDropzoneHint {
     // console.log(items)
   }
 
-  drop(items) {
+  async drop(items) {
     this.el.classList.remove("dragover")
+    const undones = []
     for (const item of items) {
       this.el.append(item.target)
 
@@ -27,14 +28,18 @@ export class SlideDropzoneHint {
       const { x, y } = item.target.getBoundingClientRect()
       item.target.classList.add("hide")
 
-      animateTo(item.ghost, {
-        translate: `${x}px ${y}px`,
-        ...items.stopAnimation(item),
-      }).then(() => {
-        item.ghost.remove()
-        item.target.classList.remove("hide")
-      })
+      undones.push(
+        animateTo(item.ghost, {
+          translate: `${x}px ${y}px`,
+          ...items.stopAnimation(item),
+        }).then(() => {
+          item.ghost.remove()
+          item.target.classList.remove("hide")
+        })
+      )
     }
+
+    await Promise.all(undones)
   }
 }
 

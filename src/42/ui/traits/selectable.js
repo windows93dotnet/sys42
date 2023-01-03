@@ -165,7 +165,7 @@ class Selectable extends Trait {
         }
 
         if (fail !== true) return
-        this.clearElements()
+        this.elements.length = 0
       }
 
       for (const el of this.el.querySelectorAll(this.config.selector)) {
@@ -173,7 +173,7 @@ class Selectable extends Trait {
         const i = this.selection.indexOf(val)
         if (i > -1) {
           this.elements[i] = el
-          this.add(el)
+          this.add(el, val)
         }
       }
     } else if (this.selection.length < this.elements.length) {
@@ -181,7 +181,7 @@ class Selectable extends Trait {
       for (const el of this.elements) {
         const val = this.key(el)
         this.selection.push(val)
-        this.add(undefined, val)
+        this.add(el, val)
       }
     }
   }
