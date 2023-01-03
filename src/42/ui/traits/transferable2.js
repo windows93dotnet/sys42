@@ -9,7 +9,55 @@ import settings from "../../core/settings.js"
 import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
 import IPCDropzoneHint from "./transferable2/ipcDropzoneHint.js"
-import "./transferable2/ipcItemsHint.js"
+
+import ipc from "../../core/ipc.js"
+import sanitize from "../../fabric/dom/sanitize.js"
+import clear from "../../fabric/type/object/clear.js"
+
+const context = Object.create(null)
+
+ipc
+  .on("42_TRANSFER_START", async ({ x, y, items, config }, { iframe }) => {
+    context.iframeRect = iframe.getBoundingClientRect()
+    const { borderTopWidth, borderLeftWidth } = getComputedStyle(iframe)
+    context.iframeRect.x += Number.parseInt(borderLeftWidth, 10)
+    context.iframeRect.y += Number.parseInt(borderTopWidth, 10)
+
+    x += context.iframeRect.x
+    y += context.iframeRect.y
+
+    context.hints = await system.transfer.makeHints({ items: config })
+    system.transfer.items = context.hints.items
+    system.transfer.items.push(...items)
+
+    system.transfer.findTransferZones(x, y)
+
+    for (const item of items) {
+      item.target = sanitize(item.target)
+      item.ghost = sanitize(item.ghost)
+      item.x += context.iframeRect.x
+      item.y += context.iframeRect.y
+    }
+
+    system.transfer.items.start(x, y, items)
+    system.transfer.items.drag(x, y)
+  })
+  .on("42_TRANSFER_DRAG", ({ x, y }) => {
+    if (context.iframeRect) {
+      x += context.iframeRect.x
+      y += context.iframeRect.y
+      system.transfer.setCurrentZone(x, y)
+      system.transfer.items.drag?.(x, y)
+    }
+  })
+  .on("42_TRANSFER_STOP", ({ x, y }) => {
+    if (context.iframeRect) {
+      x += context.iframeRect.x
+      y += context.iframeRect.y
+      system.transfer.unsetCurrentZone(x, y)
+      clear(context)
+    }
+  })
 
 const DEFAULTS = {
   selector: ":scope > *",
@@ -46,7 +94,7 @@ system.transfer = {
     const undones = []
 
     if (hints.items) {
-      const itemsModuleName = inIframe ? "ipc" : hints.items.name
+      const itemsModuleName = hints.items.name
       undones.push(
         import(`./transferable2/${itemsModuleName}ItemsHint.js`) //
           .then((m) => m.default(hints.items))
@@ -169,8 +217,22 @@ class Transferable extends Trait {
 
         startReady = Promise.all([
           system.transfer.findTransferZones(x, y),
-          getRects(targets).then((items) => {
-            system.transfer.items.start?.(x, y, items)
+          getRects(targets).then((rects) => {
+            system.transfer.items.start?.(x, y, rects)
+            if (inIframe) {
+              const items = []
+              const config = this.config.hints.items
+
+              for (const item of system.transfer.items) {
+                const exportedItem = { ...item }
+                exportedItem.ghost = exportedItem.ghost.outerHTML
+                exportedItem.target = exportedItem.target.outerHTML
+                item.ghost.classList.add("hide")
+                items.push(exportedItem)
+              }
+
+              ipc.emit("42_TRANSFER_START", { x, y, items, config })
+            }
           }),
         ])
       },
@@ -178,9 +240,17 @@ class Transferable extends Trait {
       drag(x, y) {
         system.transfer.setCurrentZone(x, y)
         system.transfer.items.drag?.(x, y)
+        if (inIframe) {
+          ipc.emit("42_TRANSFER_DRAG", { x, y })
+        }
       },
 
       stop: async (x, y) => {
+        if (inIframe) {
+          ipc.emit("42_TRANSFER_STOP", { x, y })
+          return
+        }
+
         await startReady
         const dropzone = system.transfer.currentZone?.target ?? this.el
         system.transfer.unsetCurrentZone(x, y)

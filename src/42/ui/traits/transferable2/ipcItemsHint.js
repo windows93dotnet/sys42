@@ -33,16 +33,20 @@ ipc
     system.transfer.items.drag(x, y)
   })
   .on("42_TRANSFER_DRAG", ({ x, y }) => {
-    x += context.iframeRect.x
-    y += context.iframeRect.y
-    system.transfer.setCurrentZone(x, y)
-    system.transfer.items.drag?.(x, y)
+    if (context.iframeRect) {
+      x += context.iframeRect.x
+      y += context.iframeRect.y
+      system.transfer.setCurrentZone(x, y)
+      system.transfer.items.drag?.(x, y)
+    }
   })
-  .on("42_TRANSFER_REVERT", ({ x, y }) => {
-    x += context.iframeRect.x
-    y += context.iframeRect.y
-    context.hints?.items?.revert(x, y)
-    clear(context)
+  .on("42_TRANSFER_STOP", ({ x, y }) => {
+    if (context.iframeRect) {
+      x += context.iframeRect.x
+      y += context.iframeRect.y
+      system.transfer.unsetCurrentZone(x, y)
+      clear(context)
+    }
   })
 
 export class IPCItemsHint extends Array {
@@ -57,7 +61,9 @@ export class IPCItemsHint extends Array {
     for (const item of items) {
       const ghost = ghostify(item.target, { rect: item })
       item.ghost = ghost.outerHTML
+      const { target } = item
       item.target = item.target.outerHTML
+      target.classList.add("hide")
     }
 
     ipc.emit("42_TRANSFER_START", { x, y, hints, items })
@@ -67,8 +73,9 @@ export class IPCItemsHint extends Array {
     ipc.emit("42_TRANSFER_DRAG", { x, y })
   }
 
-  revert(x, y) {
-    ipc.emit("42_TRANSFER_REVERT", { x, y })
+  stop(x, y) {
+    ipc.emit("42_TRANSFER_STOP", { x, y })
+    return false
   }
 }
 

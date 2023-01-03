@@ -45,16 +45,16 @@ export class StackItemsHint extends Array {
   }
 
   drag(x, y) {
-    for (let i = 0, l = this.length; i < l; i++) {
-      const item = this[i]
-      if (i === 0) {
-        item.ghost.style.zIndex = this.length
-        item.ghost.style.translate = `
-          ${x - item.offsetX}px
-          ${y - item.offsetY}px`
-      } else {
+    const [first] = this
+    if (first) {
+      first.ghost.style.zIndex = this.length
+      first.ghost.style.translate = `
+        ${x - first.offsetX}px
+        ${y - first.offsetY}px`
+
+      for (let i = 1, l = this.length; i < l; i++) {
+        const item = this[i]
         const offset = i * 3
-        const [first] = this
         item.ghost.style.zIndex = this.length - i
         item.ghost.style.translate = `
           ${x - first.offsetX + offset}px
