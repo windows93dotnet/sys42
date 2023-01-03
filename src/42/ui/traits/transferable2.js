@@ -1,20 +1,15 @@
 import system from "../../system.js"
 import Trait from "../classes/Trait.js"
 import Dragger from "../classes/Dragger.js"
+import inIframe from "../../core/env/realm/inIframe.js"
 import getRects from "../../fabric/dom/getRects.js"
+import { inRect } from "../../fabric/geometry/point.js"
 import pick from "../../fabric/type/object/pick.js"
 import settings from "../../core/settings.js"
 import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
-import {
-  findTransferZones,
-  setCurrentZone,
-  unsetCurrentZone,
-  makeHints,
-} from "./transferable2/utils.js"
+import IPCDropzoneHint from "./transferable2/ipcDropzoneHint.js"
 import "./transferable2/ipcItemsHint.js"
-
-system.transfer = { dropzones: new Map() }
 
 const DEFAULTS = {
   selector: ":scope > *",
@@ -36,6 +31,92 @@ const DEFAULTS = {
 
 const configure = settings("ui.trait.transferable", DEFAULTS)
 
+system.transfer = {
+  dropzones: new Map(),
+
+  async makeHints(hints, el) {
+    if (typeof hints.items === "string") {
+      hints.items = { name: hints.items }
+    }
+
+    if (typeof hints.dropzone === "string") {
+      hints.dropzone = { name: hints.dropzone }
+    }
+
+    const undones = []
+
+    if (hints.items) {
+      const itemsModuleName = inIframe ? "ipc" : hints.items.name
+      undones.push(
+        import(`./transferable2/${itemsModuleName}ItemsHint.js`) //
+          .then((m) => m.default(hints.items))
+      )
+    }
+
+    if (hints.dropzone) {
+      const dropzoneModuleName = hints.dropzone.name
+      undones.push(
+        import(`./transferable2/${dropzoneModuleName}DropzoneHint.js`) //
+          .then((m) => m.default(el, hints.dropzone))
+      )
+    }
+
+    const [items, dropzone] = await Promise.all(undones)
+    return { items, dropzone }
+  },
+
+  async findTransferZones(x, y) {
+    return getRects([
+      ...system.transfer.dropzones.keys(),
+      ...document.querySelectorAll("iframe"),
+    ]).then((rects) => {
+      system.transfer.zones = rects
+      for (const rect of rects) {
+        rect.hint =
+          rect.target.localName === "iframe"
+            ? new IPCDropzoneHint(rect.target)
+            : system.transfer.dropzones.get(rect.target)
+      }
+
+      system.transfer.setCurrentZone(x, y)
+    })
+  },
+
+  setCurrentZone(x, y) {
+    const { zones, items } = system.transfer
+
+    if (zones?.length > 0 === false) return
+    const point = { x, y }
+
+    if (system.transfer.currentZone) {
+      if (inRect(point, system.transfer.currentZone)) {
+        return system.transfer.currentZone.hint.dragover(items, x, y)
+      }
+
+      system.transfer.currentZone.hint.leave()
+      system.transfer.currentZone = undefined
+    }
+
+    for (const dropzone of zones) {
+      if (inRect(point, dropzone)) {
+        system.transfer.currentZone = dropzone
+        system.transfer.currentZone.hint.enter()
+        return system.transfer.currentZone.hint.dragover(items, x, y)
+      }
+    }
+  },
+
+  unsetCurrentZone(x, y) {
+    if (system.transfer.currentZone) {
+      const { items } = system.transfer
+      system.transfer.currentZone.hint.drop(items, x, y)
+      system.transfer.currentZone = undefined
+    } else {
+      system.transfer.items.revert?.(x, y)
+    }
+  },
+}
+
 class Transferable extends Trait {
   constructor(el, options) {
     super(el, options)
@@ -49,7 +130,7 @@ class Transferable extends Trait {
   async init() {
     const { signal } = this.cancel
 
-    this.hints = await makeHints(this.config.hints, this.el)
+    this.hints = await system.transfer.makeHints(this.config.hints, this.el)
 
     if (this.hints.dropzone) {
       system.transfer.dropzones.set(this.el, this.hints.dropzone)
@@ -70,10 +151,6 @@ class Transferable extends Trait {
           return false
         }
 
-        system.transfer.items = this.hints.items
-        findTransferZones()
-        setCurrentZone(x, y)
-
         let targets
 
         if (this.config.useSelection) {
@@ -88,21 +165,25 @@ class Transferable extends Trait {
           } else targets = [target]
         } else targets = [target]
 
-        startReady = getRects(targets).then((items) => {
-          system.transfer.items.start?.(x, y, items)
-        })
+        system.transfer.items = this.hints.items
+
+        startReady = Promise.all([
+          system.transfer.findTransferZones(x, y),
+          getRects(targets).then((items) => {
+            system.transfer.items.start?.(x, y, items)
+          }),
+        ])
       },
 
       drag(x, y) {
-        const res = setCurrentZone(x, y)
-        if (res === false) return
+        system.transfer.setCurrentZone(x, y)
         system.transfer.items.drag?.(x, y)
       },
 
       stop: async (x, y) => {
         await startReady
         const dropzone = system.transfer.currentZone?.target ?? this.el
-        unsetCurrentZone(x, y)
+        system.transfer.unsetCurrentZone(x, y)
 
         const selectable = dropzone[Trait.INSTANCES]?.selectable
         if (selectable) {

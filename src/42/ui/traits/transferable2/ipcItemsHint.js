@@ -1,5 +1,4 @@
-// import system from "../../../system.js"
-import { findTransferZones, setCurrentZone, makeHints } from "./utils.js"
+import system from "../../../system.js"
 import ghostify from "../../../fabric/dom/ghostify.js"
 import ipc from "../../../core/ipc.js"
 import sanitize from "../../../fabric/dom/sanitize.js"
@@ -17,11 +16,11 @@ ipc
     x += context.iframeRect.x
     y += context.iframeRect.y
 
-    context.hints = await makeHints(hints)
-    context.hints.items.length = 0
-    context.hints.items.push(...items)
+    context.hints = await system.transfer.makeHints(hints)
+    system.transfer.items = context.hints.items
+    system.transfer.items.push(...items)
 
-    findTransferZones()
+    system.transfer.findTransferZones(x, y)
 
     for (const item of items) {
       item.target = sanitize(item.target)
@@ -30,14 +29,14 @@ ipc
       item.y += context.iframeRect.y
     }
 
-    context.hints.items.start(x, y, items)
-    context.hints.items.drag(x, y)
+    system.transfer.items.start(x, y, items)
+    system.transfer.items.drag(x, y)
   })
   .on("42_TRANSFER_DRAG", ({ x, y }) => {
     x += context.iframeRect.x
     y += context.iframeRect.y
-    context.hints?.items?.drag(x, y)
-    setCurrentZone(x, y)
+    system.transfer.setCurrentZone(x, y)
+    system.transfer.items.drag?.(x, y)
   })
   .on("42_TRANSFER_REVERT", ({ x, y }) => {
     x += context.iframeRect.x
@@ -52,18 +51,13 @@ export class IPCItemsHint extends Array {
     this.config = { ...options }
   }
 
-  start(x, y) {
-    const items = []
+  start(x, y, items) {
     const hints = { items: this.config }
 
-    for (const item of this) {
-      const exported = { ...item }
-      delete exported.restore
-      const ghost = ghostify(exported.target, { rect: item })
-      ghost.classList.remove("selected")
-      exported.ghost = ghost.outerHTML
-      exported.target = exported.target.outerHTML
-      items.push(exported)
+    for (const item of items) {
+      const ghost = ghostify(item.target, { rect: item })
+      item.ghost = ghost.outerHTML
+      item.target = item.target.outerHTML
     }
 
     ipc.emit("42_TRANSFER_START", { x, y, hints, items })

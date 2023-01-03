@@ -36,6 +36,8 @@
   --highlight-fg: var(--bg);
   --highlight-tsh: none;
 
+  --selected-bsh: 0 0 0 2px var(--selected-bshc, var(--highlight-bg));
+
   --inset-bdw: var(--fld-bdw);
   --inset-bds: var(--fld-bds);
   --inset-bdc: var(--fld-bdc);
@@ -144,13 +146,14 @@
   text-shadow: var(--info-tsh, none);
 }
 
-.selected,
 ::selection {
-  --bg: var(--highlight-bg);
-  --fg: var(--highlight-fg);
-  background: var(--bg);
-  color: var(--fg);
+  background: var(--highlight-bg);
+  color: var(--highlight-fg);
   text-shadow: var(--highlight-tsh, none);
+}
+
+.selected {
+  box-shadow: var(--selected-bsh);
 }
 
 .selected::selection {
