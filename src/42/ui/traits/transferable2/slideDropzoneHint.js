@@ -1,3 +1,4 @@
+import Trait from "../../classes/Trait.js"
 import { animateTo } from "../../../fabric/dom/animate.js"
 
 export class SlideDropzoneHint {
@@ -18,9 +19,11 @@ export class SlideDropzoneHint {
     // console.log(items)
   }
 
-  async drop(items) {
+  drop(items) {
     this.el.classList.remove("dragover")
-    const undones = []
+    const selectable = this.el[Trait.INSTANCES]?.selectable
+    if (selectable) selectable.clear()
+
     for (const item of items) {
       // if (!this.el.contains(item.target)) this.el.append(item.target)
       this.el.append(item.target)
@@ -29,18 +32,15 @@ export class SlideDropzoneHint {
       const { x, y } = item.target.getBoundingClientRect()
       item.target.classList.add("hide")
 
-      undones.push(
-        animateTo(item.ghost, {
-          translate: `${x}px ${y}px`,
-          ...items.dropAnimation(item),
-        }).then(() => {
-          item.ghost.remove()
-          item.target.classList.remove("hide")
-        })
-      )
+      animateTo(item.ghost, {
+        translate: `${x}px ${y}px`,
+        ...items.dropAnimation(item),
+      }).then(() => {
+        item.ghost.remove()
+        item.target.classList.remove("hide")
+        // selectable?.add(item.target)
+      })
     }
-
-    await Promise.all(undones)
   }
 }
 

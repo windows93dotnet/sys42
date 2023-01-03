@@ -14,11 +14,16 @@ export class StackItemsHint extends Array {
     return this.config.revertAnimation
   }
   dropAnimation() {
-    return this.config.dropAnimation ?? this.config.revertAnimation
+    return this.config.dropAnimation
   }
 
-  start(x, y) {
-    for (const item of this) {
+  start(x, y, items) {
+    for (const item of items) {
+      this.push(item)
+
+      item.offsetX = x - item.x
+      item.offsetY = y - item.y
+
       if (!item.ghost) {
         item.ghost = ghostify(item.target, { rect: item })
         item.target.classList.add("hide")
@@ -28,7 +33,7 @@ export class StackItemsHint extends Array {
         document.documentElement.append(item.ghost)
       }
 
-      if (this.config.startAnimation && this.length > 1) {
+      if (this.config.startAnimation && items.length > 1) {
         animateFrom(item.ghost, {
           translate: `${item.x}px ${item.y}px`,
           ...this.startAnimation(item),

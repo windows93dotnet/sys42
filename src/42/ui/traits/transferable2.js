@@ -24,9 +24,9 @@ const DEFAULTS = {
   hints: {
     items: {
       name: "stack",
-      startAnimation: { ms: 180 },
-      revertAnimation: { ms: 180 },
-      dropAnimation: { ms: 180 },
+      startAnimation: { ms: 1800 },
+      revertAnimation: { ms: 1800 },
+      dropAnimation: { ms: 1800 },
     },
     dropzone: {
       name: "slide",
@@ -54,6 +54,8 @@ class Transferable extends Trait {
     if (this.hints.dropzone) {
       system.transfer.dropzones.set(this.el, this.hints.dropzone)
     }
+
+    let startReady
 
     this.dragger = new Dragger(this.el, {
       signal,
@@ -86,14 +88,8 @@ class Transferable extends Trait {
           } else targets = [target]
         } else targets = [target]
 
-        getRects(targets).then((items) => {
-          for (const item of items) {
-            item.offsetX = x - item.x
-            item.offsetY = y - item.y
-            system.transfer.items.push(item)
-          }
-
-          system.transfer.items.start?.(x, y)
+        startReady = getRects(targets).then((items) => {
+          system.transfer.items.start?.(x, y, items)
         })
       },
 
@@ -105,7 +101,8 @@ class Transferable extends Trait {
 
       stop: async (x, y) => {
         const dropzone = system.transfer.currentZone?.target
-        await forgetCurrentZone(x, y)
+        await startReady
+        forgetCurrentZone(x, y)
         if (this.config.useSelection && dropzone) {
           const selectable = dropzone[Trait.INSTANCES]?.selectable
           if (selectable) {
