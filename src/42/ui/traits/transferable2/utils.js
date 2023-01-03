@@ -80,13 +80,12 @@ export function setCurrentZone(x, y) {
 
 //
 
-export function forgetCurrentZone(x, y) {
+export function unsetCurrentZone(x, y) {
   if (system.transfer.currentZone) {
     const { items } = system.transfer
     system.transfer.currentZone.hint.drop(items, x, y)
     system.transfer.currentZone = undefined
   } else {
     system.transfer.items.revert?.(x, y)
-    system.transfer.items.length = 0
   }
 }
