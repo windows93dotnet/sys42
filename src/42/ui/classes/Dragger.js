@@ -195,7 +195,7 @@ export default class Dragger {
         bottom,
         right,
         threshTop,
-        trashBottom,
+        threshBottom,
         threshLeft,
         threshRight,
       } = scrolling
@@ -204,8 +204,8 @@ export default class Dragger {
         this.scrollLoopId = requestAnimationFrame(() => {
           if (e.y > top && e.y < threshTop) {
             this.el.scrollTop -= exponential(threshTop - e.y)
-          } else if (e.y < bottom && e.y > trashBottom) {
-            this.el.scrollTop += exponential(e.y - trashBottom)
+          } else if (e.y < bottom && e.y > threshBottom) {
+            this.el.scrollTop += exponential(e.y - threshBottom)
           }
 
           if (e.x > left && e.x < threshLeft) {
