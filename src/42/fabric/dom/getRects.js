@@ -13,16 +13,16 @@ export async function getRects(elements, options) {
         if (options?.relative) {
           const rootRect = root.getBoundingClientRect()
           const { borderLeftWidth, borderTopWidth } = getComputedStyle(root)
-          rootRect.x += Number.parseInt(borderLeftWidth, 10)
-          rootRect.y += Number.parseInt(borderTopWidth, 10)
+          rootRect.x += Number.parseInt(borderLeftWidth, 10) - root.scrollLeft
+          rootRect.y += Number.parseInt(borderTopWidth, 10) - root.scrollTop
 
           for (const { target, boundingClientRect } of entries) {
             const rect = boundingClientRect.toJSON()
             rect.target = target
 
             rect.left -= rootRect.x
-            rect.top -= rootRect.y
             rect.right -= rootRect.x
+            rect.top -= rootRect.y
             rect.bottom -= rootRect.y
 
             rect.x = rect.left
