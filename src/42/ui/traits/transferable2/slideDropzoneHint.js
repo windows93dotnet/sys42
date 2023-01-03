@@ -1,4 +1,3 @@
-import Trait from "../../classes/Trait.js"
 import { animateTo } from "../../../fabric/dom/animate.js"
 
 export class SlideDropzoneHint {
@@ -21,13 +20,10 @@ export class SlideDropzoneHint {
 
   drop(items) {
     this.el.classList.remove("dragover")
-    const selectable = this.el[Trait.INSTANCES]?.selectable
-    selectable?.clear()
 
     for (const item of items) {
       // if (!this.el.contains(item.target)) this.el.append(item.target)
       this.el.append(item.target)
-      selectable?.add(item.target)
 
       item.target.classList.remove("hide")
       const { x, y } = item.target.getBoundingClientRect()

@@ -9,7 +9,7 @@ import removeItem from "../../fabric/type/array/removeItem.js"
 import {
   findTransferZones,
   setCurrentZone,
-  forgetCurrentZone,
+  unsetCurrentZone,
   makeHints,
 } from "./transferable2/utils.js"
 import "./transferable2/ipcItemsHint.js"
@@ -24,9 +24,9 @@ const DEFAULTS = {
   hints: {
     items: {
       name: "stack",
-      startAnimation: { ms: 1800 },
-      revertAnimation: { ms: 1800 },
-      dropAnimation: { ms: 1800 },
+      startAnimation: { ms: 180 },
+      revertAnimation: { ms: 180 },
+      dropAnimation: { ms: 180 },
     },
     dropzone: {
       name: "slide",
@@ -71,8 +71,8 @@ class Transferable extends Trait {
         }
 
         system.transfer.items = this.hints.items
-        system.transfer.items.length = 0
         findTransferZones()
+        setCurrentZone(x, y)
 
         let targets
 
@@ -99,9 +99,19 @@ class Transferable extends Trait {
         system.transfer.items.drag?.(x, y)
       },
 
-      async stop(x, y) {
+      stop: async (x, y) => {
         await startReady
-        forgetCurrentZone(x, y)
+        const dropzone = system.transfer.currentZone?.target ?? this.el
+        unsetCurrentZone(x, y)
+
+        const selectable = dropzone[Trait.INSTANCES]?.selectable
+        if (selectable) {
+          selectable.clear()
+          for (const item of system.transfer.items) {
+            selectable?.add(item.target)
+          }
+        }
+
         system.transfer.items.length = 0
       },
     })
