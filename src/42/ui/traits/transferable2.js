@@ -25,7 +25,8 @@ const DEFAULTS = {
     items: {
       name: "stack",
       startAnimation: { ms: 180 },
-      stopAnimation: { ms: 180 },
+      revertAnimation: { ms: 180 },
+      dropAnimation: { ms: 180 },
     },
     dropzone: {
       name: "slide",
@@ -102,9 +103,9 @@ class Transferable extends Trait {
         system.transfer.items.drag?.(x, y)
       },
 
-      stop: (x, y) => {
+      stop: async (x, y) => {
         const dropzone = system.transfer.currentZone?.target
-        forgetCurrentZone(x, y)
+        await forgetCurrentZone(x, y)
         if (this.config.useSelection && dropzone) {
           const selectable = dropzone[Trait.INSTANCES]?.selectable
           if (selectable) {

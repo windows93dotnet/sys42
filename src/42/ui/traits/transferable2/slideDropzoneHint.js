@@ -22,6 +22,7 @@ export class SlideDropzoneHint {
     this.el.classList.remove("dragover")
     const undones = []
     for (const item of items) {
+      // if (!this.el.contains(item.target)) this.el.append(item.target)
       this.el.append(item.target)
 
       item.target.classList.remove("hide")
@@ -31,7 +32,7 @@ export class SlideDropzoneHint {
       undones.push(
         animateTo(item.ghost, {
           translate: `${x}px ${y}px`,
-          ...items.stopAnimation(item),
+          ...items.dropAnimation(item),
         }).then(() => {
           item.ghost.remove()
           item.target.classList.remove("hide")

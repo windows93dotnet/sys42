@@ -1,24 +1,34 @@
 // @src https://youtu.be/9-6CKCz58A8
 
-function configure(options = {}) {
-  if (typeof options === "number") return { duration: options }
-  if ("ms" in options) options.duration = options.ms
-  return options
+import distribute from "../type/object/distribute.js"
+
+const OPTIONS_KEYWORDS = ["ms", "duration", "easing", "delay", "endDelay"]
+
+const prm = window.matchMedia(`(prefers-reduced-motion: reduce)`)
+let prefersReducedMotion = prm.matches
+prm.onchange = (e) => (prefersReducedMotion = e.matches)
+
+/**
+ * @param {HTMLElement} el
+ */
+export async function cancelAnimations(el) {
+  for (const anim of el.getAnimations()) anim.cancel()
 }
 
 /**
  * @param {HTMLElement} el
- * @param {PropertyIndexedKeyframes} from
- * @param {KeyframeAnimationOptions} options
+ * @param {object} options
+ * @param {number} [duration]
  * @returns {Promise<Animation>}
  */
-export async function animateFrom(el, from, options) {
-  const config = configure(options)
+export async function animateFrom(el, options, duration = 240) {
+  const [from, config] = distribute(options, OPTIONS_KEYWORDS)
+  if (prefersReducedMotion) config.duration = 1
+  else config.duration ??= config.ms ?? duration
   const anim = el.animate(
     { ...from, offset: 0 },
     {
       easing: "ease-in-out",
-      duration: 240,
       ...config,
       fill: "backwards",
     }
@@ -29,17 +39,18 @@ export async function animateFrom(el, from, options) {
 
 /**
  * @param {HTMLElement} el
- * @param {Keyframe[] | PropertyIndexedKeyframes} to
- * @param {KeyframeAnimationOptions} options
+ * @param {object} options
+ * @param {number} [duration]
  * @returns {Promise<Animation>}
  */
-export async function animateTo(el, to, options) {
-  const config = configure(options)
+export async function animateTo(el, options, duration = 240) {
+  const [to, config] = distribute(options, OPTIONS_KEYWORDS)
+  if (prefersReducedMotion) config.duration = 1
+  else config.duration ??= config.ms ?? duration
   const anim = el.animate(
     to, //
     {
       easing: "ease-in-out",
-      duration: 240,
       ...config,
       fill: "both",
     }
@@ -51,6 +62,7 @@ export async function animateTo(el, to, options) {
 }
 
 export default {
+  cancelAnimations,
   to: animateTo,
   from: animateFrom,
 }
