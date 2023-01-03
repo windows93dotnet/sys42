@@ -10,8 +10,11 @@ export class StackItemsHint extends Array {
   startAnimation() {
     return this.config.startAnimation
   }
-  stopAnimation() {
-    return this.config.stopAnimation
+  revertAnimation() {
+    return this.config.revertAnimation
+  }
+  dropAnimation() {
+    return this.config.dropAnimation ?? this.config.revertAnimation
   }
 
   start(x, y) {
@@ -21,7 +24,9 @@ export class StackItemsHint extends Array {
         item.target.classList.add("hide")
       }
 
-      document.documentElement.append(item.ghost)
+      if (!item.ghost.isConnected) {
+        document.documentElement.append(item.ghost)
+      }
 
       if (this.config.startAnimation && this.length > 1) {
         animateFrom(item.ghost, {
@@ -55,10 +60,10 @@ export class StackItemsHint extends Array {
 
   revert() {
     for (const item of this) {
-      if (this.config.stopAnimation) {
+      if (this.config.revertAnimation) {
         animateTo(item.ghost, {
           translate: `${item.x}px ${item.y}px`,
-          ...this.stopAnimation(item),
+          ...this.revertAnimation(item),
         }).then(() => {
           item.target.classList.remove("hide")
           item.ghost.remove()
