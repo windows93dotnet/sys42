@@ -4,19 +4,19 @@ export class IPCDropzoneHint {
   }
 
   enter() {
-    console.log("ipc enter")
+    // console.log("ipc enter")
   }
 
   leave() {
-    console.log("ipc leave")
+    // console.log("ipc leave")
   }
 
   dragover() {
-    console.log("ipc dragover")
+    // console.log("ipc dragover")
   }
 
   drop() {
-    console.log("ipc drop")
+    // console.log("ipc drop")
   }
 }
 
