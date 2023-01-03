@@ -32,106 +32,106 @@ const configure = settings("ui.trait.selectable", DEFAULTS)
 const ns = "http://www.w3.org/2000/svg"
 
 class Selectable extends Trait {
-  #toggle(el) {
+  toggle(el) {
     const val = this.key(el)
     if (this.elements.includes(el)) {
       removeItem(this.selection, val)
       removeItem(this.elements, el)
-      this.remove(el, val)
+      this.config.remove(el, val)
     } else {
       this.selection.push(val)
       this.elements.push(el)
-      this.add(el, val)
+      this.config.add(el, val)
     }
   }
 
-  #add(el) {
+  add(el) {
     if (!this.elements.includes(el)) {
       const val = this.key(el)
       this.selection.push(val)
       this.elements.push(el)
-      this.add(el, val)
+      this.config.add(el, val)
     }
   }
 
-  #remove(el) {
+  remove(el) {
     if (this.elements.includes(el)) {
       const val = this.key(el)
       removeItem(this.selection, val)
       removeItem(this.elements, el)
-      this.remove(el, val)
+      this.config.remove(el, val)
     }
   }
 
-  toggleSelect(target) {
+  toggleSelect(el) {
     if (Dragger.isDragging) return
-    const el = target.closest(this.config.selector)
-    if (el) this.#toggle(el)
+    el = el.closest(this.config.selector)
+    if (el) this.toggle(el)
   }
 
-  selectOne(target) {
+  selectOne(el) {
     if (Dragger.isDragging) return
 
-    const el = target.closest(this.config.selector)
+    el = el.closest(this.config.selector)
 
     const remove = []
     for (const item of this.elements) {
       if (item !== el) remove.push(item)
     }
 
-    for (const item of remove) this.#remove(item)
+    for (const item of remove) this.remove(item)
 
-    if (el) this.#add(el)
+    if (el) this.add(el)
   }
 
   selectAll() {
     if (Dragger.isDragging) return
     for (const el of this.el.querySelectorAll(this.config.selector)) {
-      this.#add(el)
+      this.add(el)
     }
   }
 
-  ensureSelected(target) {
-    const el = target.closest(this.config.selector)
+  ensureSelected(el) {
+    el = el.closest(this.config.selector)
     if (!el) return
 
     if (this.elements.includes(el)) return
 
     this.clear()
-    this.#add(el)
+    this.add(el)
   }
 
-  rangeSelect(target) {
+  rangeSelect(el) {
     if (Dragger.isDragging) return
-    const el = target.closest(this.config.selector)
+    el = el.closest(this.config.selector)
     const all = [...this.el.querySelectorAll(this.config.selector)]
     const a = all.indexOf(el)
     const b = all.indexOf(this.elements.at(-1))
     const min = Math.min(a, b)
     const max = Math.max(a, b)
-    for (const item of all.slice(min, max)) this.#add(item)
-    this.#add(el)
+    for (const item of all.slice(min, max)) this.add(item)
+    this.add(el)
   }
 
   clear() {
     while (this.elements.length > 0) {
       const el = this.elements.shift()
       const val = this.selection.shift()
-      this.remove(el, val)
+      this.config.remove(el, val)
     }
   }
 
   clearElements() {
     while (this.elements.length > 0) {
       const el = this.elements.shift()
-      this.remove(el)
+      this.config.remove(el)
     }
   }
 
   clearSelection() {
     while (this.selection.length > 0) {
       const val = this.selection.shift()
-      this.remove(undefined, val)
+      this.config.remove(undefined, val)
     }
   }
 
@@ -173,7 +173,7 @@ class Selectable extends Trait {
         const i = this.selection.indexOf(val)
         if (i > -1) {
           this.elements[i] = el
-          this.add(el, val)
+          this.config.add(el, val)
         }
       }
     } else if (this.selection.length < this.elements.length) {
@@ -181,7 +181,7 @@ class Selectable extends Trait {
       for (const el of this.elements) {
         const val = this.key(el)
         this.selection.push(val)
-        this.add(el, val)
+        this.config.add(el, val)
       }
     }
   }
@@ -226,11 +226,11 @@ class Selectable extends Trait {
     }
 
     if (this.config.class && !this.config.add && !this.config.remove) {
-      this.add = (el) => el.classList.add(this.config.class)
-      this.remove = (el) => el.classList.remove(this.config.class)
+      this.config.add = (el) => el.classList.add(this.config.class)
+      this.config.remove = (el) => el.classList.remove(this.config.class)
     } else {
-      this.add = this.config.add ?? noop
-      this.remove = this.config.remove ?? noop
+      this.config.add ??= noop
+      this.config.remove ??= noop
     }
 
     this.key = this.config.key ?? ((item) => item)
@@ -293,20 +293,21 @@ class Selectable extends Trait {
       rectsPromise = undefined
       if (!rects) return
       for (const A of rects) {
-        if (check(A, B)) this.#add(A.target)
-        else if (ctrlKey === false) this.#remove(A.target)
+        if (check(A, B)) this.add(A.target)
+        else if (ctrlKey === false) this.remove(A.target)
       }
     })
 
     this.dragger = new Dragger(this.el, {
       ...this.config.dragger,
+
       beforestart: this.config.dragger.ignore
         ? undefined
         : () => {
             this.dragger.config.ignore ??=
-              this.el[Trait.INSTANCES]?.transferable?.config.selector ??
-              this.dragger.config.ignore
+              this.el[Trait.INSTANCES]?.transferable?.config.selector
           },
+
       start: () => {
         zoneRect = this.el.getBoundingClientRect()
         const { borderLeftWidth, borderTopWidth } = getComputedStyle(this.el)
@@ -325,6 +326,7 @@ class Selectable extends Trait {
         this.svg.style.width = this.el.scrollWidth + "px"
         this.el.append(this.svg)
       },
+
       drag: (x, y, { ctrlKey }) => {
         x -= zoneRect.x - this.el.scrollLeft
         y -= zoneRect.y - this.el.scrollTop
@@ -351,6 +353,7 @@ class Selectable extends Trait {
 
         handleBoxSelection(B, ctrlKey)
       },
+
       stop: () => {
         rects = undefined
         this.polygon.setAttribute("points", points)
