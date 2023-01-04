@@ -1,4 +1,5 @@
 export async function getRects(elements, options) {
+  if (options?.nodeType === Node.ELEMENT_NODE) options = { root: options }
   const root = options?.root ?? document.scrollingElement
 
   if (typeof elements === "string") {
@@ -16,8 +17,13 @@ export async function getRects(elements, options) {
           rootRect.x += Number.parseInt(borderLeftWidth, 10) - root.scrollLeft
           rootRect.y += Number.parseInt(borderTopWidth, 10) - root.scrollTop
 
-          for (const { target, boundingClientRect } of entries) {
+          for (const {
+            target,
+            boundingClientRect,
+            isIntersecting,
+          } of entries) {
             const rect = boundingClientRect.toJSON()
+            rect.isIntersecting = isIntersecting
             rect.target = target
 
             rect.left -= rootRect.x
@@ -31,8 +37,13 @@ export async function getRects(elements, options) {
             rects.push(rect)
           }
         } else {
-          for (const { target, boundingClientRect } of entries) {
+          for (const {
+            target,
+            boundingClientRect,
+            isIntersecting,
+          } of entries) {
             const rect = boundingClientRect.toJSON()
+            rect.isIntersecting = isIntersecting
             rect.target = target
             rects.push(rect)
           }
