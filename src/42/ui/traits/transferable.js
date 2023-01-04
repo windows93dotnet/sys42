@@ -39,21 +39,51 @@ import clear from "../../fabric/type/object/clear.js"
 
 const context = Object.create(null)
 
-export class IPCDropzoneHint {
-  constructor(options) {
-    this.config = { ...options }
+function serializeItems(obj, options) {
+  const items = []
+
+  for (const item of system.transfer.items) {
+    const exportedItem = { ...item }
+    exportedItem.ghost = exportedItem.ghost.outerHTML
+    exportedItem.target = exportedItem.target.outerHTML
+    if (options?.hideGhost) item.ghost.classList.add("hide")
+    items.push(exportedItem)
   }
 
-  enter() {
-    // console.log("ipc enter")
+  const { dropzoneId } = system.transfer.items
+
+  return { ...obj, items, dropzoneId }
+}
+
+function deserializeItems(items, parentX, parentY) {
+  for (const item of items) {
+    item.target = sanitize(item.target)
+    item.ghost = sanitize(item.ghost)
+    item.x += parentX
+    item.y += parentY
+  }
+}
+
+export class IframeDropzoneHint {
+  constructor(iframe) {
+    this.iframe = iframe
+    this.bus = ipc.to(iframe)
+  }
+
+  enter(items, x, y) {
+    const { x: parentX, y: parentY } = this.iframe.getBoundingClientRect()
+    this.bus.emit(
+      "42_TRANSFER_ENTER",
+      serializeItems({ x, y, parentX, parentY })
+    )
   }
 
   leave() {
-    // console.log("ipc leave")
+    this.bus.emit("42_TRANSFER_LEAVE")
   }
 
-  dragover() {
-    // console.log("ipc dragover")
+  dragover(items, x, y) {
+    this.bus.emit("42_TRANSFER_DRAGOVER", { x, y })
   }
 
   drop() {
@@ -61,50 +91,69 @@ export class IPCDropzoneHint {
   }
 }
 
-ipc
-  .on("42_TRANSFER_START", async ({ x, y, items, config }, { iframe }) => {
-    context.iframeRect = iframe.getBoundingClientRect()
-    const { borderTopWidth, borderLeftWidth } = getComputedStyle(iframe)
-    context.iframeRect.x += Number.parseInt(borderLeftWidth, 10)
-    context.iframeRect.y += Number.parseInt(borderTopWidth, 10)
-
-    x += context.iframeRect.x
-    y += context.iframeRect.y
-
-    context.hints = await system.transfer.makeHints({ items: config })
-    system.transfer.items = context.hints.items
-    system.transfer.items.push(...items)
-
-    system.transfer.findTransferZones(x, y)
-
-    for (const item of items) {
-      item.target = sanitize(item.target)
-      item.ghost = sanitize(item.ghost)
-      item.x += context.iframeRect.x
-      item.y += context.iframeRect.y
-    }
-
-    system.transfer.items.start(x, y, items)
-    system.transfer.items.drag(x, y)
-  })
-  .on("42_TRANSFER_DRAG", ({ x, y }) => {
-    if (context.iframeRect) {
-      x += context.iframeRect.x
-      y += context.iframeRect.y
+if (inIframe) {
+  ipc
+    .on("42_TRANSFER_ENTER", async ({ x, y, items, parentX, parentY }) => {
+      console.log(items)
+      context.parentX = parentX
+      context.parentY = parentY
+      x -= context.parentX
+      y -= context.parentY
+      system.transfer.items = []
+      system.transfer.findTransferZones(x, y)
+    })
+    .on("42_TRANSFER_DRAGOVER", async ({ x, y }) => {
+      x -= context.parentX
+      y -= context.parentY
       system.transfer.setCurrentZone(x, y)
-      system.transfer.items.drag?.(x, y)
-    }
-  })
-  .on("42_TRANSFER_STOP", async ({ x, y }) => {
-    if (context.iframeRect) {
-      x += context.iframeRect.x
-      y += context.iframeRect.y
-      clear(context)
-      const res = system.transfer.unsetCurrentZone(x, y)
+    })
+    .on("42_TRANSFER_LEAVE", async () => {
       system.transfer.cleanup()
-      return res
-    }
-  })
+    })
+} else {
+  ipc
+    .on("42_TRANSFER_START", async ({ x, y, items, config }, { iframe }) => {
+      const iframeRect = iframe.getBoundingClientRect()
+      // const { borderTopWidth, borderLeftWidth } = getComputedStyle(iframe)
+      // context.parentX = iframeRect.x + Number.parseInt(borderLeftWidth, 10)
+      // context.parentY = iframeRect.y + Number.parseInt(borderTopWidth, 10)
+
+      context.parentX = iframeRect.x
+      context.parentY = iframeRect.y
+
+      x += context.parentX
+      y += context.parentY
+
+      context.hints = await system.transfer.makeHints({ items: config })
+      system.transfer.items = context.hints.items
+      system.transfer.items.push(...items)
+
+      system.transfer.findTransferZones(x, y)
+
+      deserializeItems(items, context.parentX, context.parentY)
+
+      system.transfer.items.start(x, y, items)
+      system.transfer.items.drag(x, y)
+    })
+    .on("42_TRANSFER_DRAG", ({ x, y }) => {
+      if (context.parentX) {
+        x += context.parentX
+        y += context.parentY
+        system.transfer.setCurrentZone(x, y)
+        system.transfer.items.drag?.(x, y)
+      }
+    })
+    .on("42_TRANSFER_STOP", async ({ x, y }) => {
+      if (context.parentX) {
+        x += context.parentX
+        y += context.parentY
+        clear(context)
+        const res = system.transfer.unsetCurrentZone(x, y)
+        system.transfer.cleanup()
+        return { action: await res }
+      }
+    })
+}
 
 /* system
 ========= */
@@ -132,7 +181,7 @@ system.transfer = {
     }
 
     const [items, dropzone] = await Promise.all(undones)
-    if (dropzone) items.originDropzone = dropzone
+    if (dropzone) items.dropzoneId = dropzone.el.id
     return { items, dropzone }
   },
 
@@ -145,11 +194,11 @@ system.transfer = {
       for (const rect of rects) {
         rect.hint =
           rect.target.localName === "iframe"
-            ? new IPCDropzoneHint(rect.target)
+            ? new IframeDropzoneHint(rect.target)
             : system.transfer.dropzones.get(rect.target)
         rect.hoverScroll = new HoverScroll(
           rect.target,
-          rect.hint.config.hoverScroll
+          rect.hint.config?.hoverScroll
         )
       }
 
@@ -166,7 +215,7 @@ system.transfer = {
     if (system.transfer.currentZone) {
       if (inRect(point, system.transfer.currentZone)) {
         system.transfer.currentZone.hoverScroll.update({ x, y }, () => {
-          system.transfer.currentZone.hint.dragover(items, x, y)
+          system.transfer.currentZone?.hint.dragover(items, x, y)
         })
         return system.transfer.currentZone.hint.dragover(items, x, y)
       }
@@ -181,7 +230,7 @@ system.transfer = {
         system.transfer.currentZone = dropzone
         system.transfer.currentZone.hint.enter(items, x, y)
         system.transfer.currentZone.hoverScroll.update({ x, y }, () => {
-          system.transfer.currentZone.hint.dragover(items, x, y)
+          system.transfer.currentZone?.hint.dragover(items, x, y)
         })
         return system.transfer.currentZone.hint.dragover(items, x, y)
       }
@@ -199,7 +248,12 @@ system.transfer = {
     } else {
       res = "revert"
       finished = system.transfer.items.revert?.(x, y)
-      system.transfer.items.originDropzone.revert?.(items, finished)
+      const { dropzoneId } = system.transfer.items
+      const dropzoneTarget = document.querySelector(`#${dropzoneId}`)
+      if (dropzoneTarget) {
+        const dropzone = system.transfer.dropzones.get(dropzoneTarget)
+        dropzone?.revert?.(items, finished)
+      }
     }
 
     await finished
@@ -290,18 +344,11 @@ class Transferable extends Trait {
           getRects(targets).then((rects) => {
             system.transfer.items.start?.(x, y, rects)
             if (inIframe) {
-              const items = []
               const config = this.config.hints.items
-
-              for (const item of system.transfer.items) {
-                const exportedItem = { ...item }
-                exportedItem.ghost = exportedItem.ghost.outerHTML
-                exportedItem.target = exportedItem.target.outerHTML
-                item.ghost.classList.add("hide")
-                items.push(exportedItem)
-              }
-
-              ipc.emit("42_TRANSFER_START", { x, y, items, config })
+              ipc.emit(
+                "42_TRANSFER_START",
+                serializeItems({ x, y, config }, { hideGhost: true })
+              )
             }
           }),
         ])
@@ -320,13 +367,13 @@ class Transferable extends Trait {
         await startReady
 
         if (inIframe) {
-          const res = await ipc.send("42_TRANSFER_STOP", { x, y })
+          const { action } = await ipc.send("42_TRANSFER_STOP", { x, y })
 
-          if (res === "drop") {
+          if (action === "drop") {
             for (const item of system.transfer.items) {
               item.target.remove()
             }
-          } else if (res === "revert") {
+          } else if (action === "revert") {
             for (const item of system.transfer.items) {
               item.target.classList.remove("hide")
             }
