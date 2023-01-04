@@ -11,7 +11,7 @@ import removeItem from "../../fabric/type/array/removeItem.js"
 
 const DEFAULTS = {
   selector: ":scope > *",
-  autoScroll: true,
+  hoverScroll: true,
   useSelection: true,
   handlerSelector: undefined,
   hints: {
@@ -243,7 +243,7 @@ class Transferable extends Trait {
     this.dragger = new Dragger(this.el, {
       signal,
       useTargetOffset: false,
-      ...pick(this.config, ["selector", "autoScroll", "useSelection"]),
+      ...pick(this.config, ["selector", "hoverScroll", "useSelection"]),
 
       start: (x, y, e, target) => {
         if (

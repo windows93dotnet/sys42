@@ -15,7 +15,7 @@ const DEFAULTS = {
   subpixel: false,
   selector: undefined,
   ignore: "input,button,textarea,[contenteditable],[contenteditable] *",
-  autoScroll: false,
+  hoverScroll: false,
   useTargetOffset: true,
   zIndexSelector: undefined,
   handlerSelector: undefined,
@@ -58,7 +58,7 @@ class Movable extends Trait {
         "subpixel",
         "selector",
         "ignore",
-        "autoScroll",
+        "hoverScroll",
         "useTargetOffset",
       ]),
     })
