@@ -87,11 +87,15 @@
       <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-400">15</span>
       <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-400">16</span>
     </div>
-    <div class="demo demo-selectable scroll-x d-flex pa-xl gap-xl inset paper">
+    <div
+      id="demo-small"
+      class="demo demo-selectable scroll-x d-flex pa-xl gap-xl inset paper">
       <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-600">1</span>
       <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-600">2</span>
       <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-600">3</span>
       <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-600">4</span>
+      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-600">5</span>
+      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-600">6</span>
     </div>
   </div>
 
@@ -137,4 +141,10 @@
   for (const item of document.querySelectorAll(".demo-selectable")) {
     selectable(item)
   }
+
+  const demoSmall = document.querySelector("#demo-small")
+  const selectableInstance = demoSmall[Symbol.for("Trait.INSTANCES")].selectable
+  selectableInstance.add(demoSmall.querySelector(":scope > :nth-child(1)"))
+  // selectableInstance.add(demoSmall.querySelector(":scope > :nth-child(3)"))
+  // selectableInstance.add(demoSmall.querySelector(":scope > :nth-child(5)"))
 </script>

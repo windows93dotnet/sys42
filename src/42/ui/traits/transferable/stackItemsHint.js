@@ -26,10 +26,8 @@ export class StackItemsHint extends Array {
 
       if (!item.ghost) {
         item.ghost = ghostify(item.target, { rect: item })
-        item.target.classList.add("hide")
-      }
-
-      if (!item.ghost.isConnected) {
+        document.documentElement.append(item.ghost)
+      } else if (!item.ghost.isConnected) {
         document.documentElement.append(item.ghost)
       }
 
