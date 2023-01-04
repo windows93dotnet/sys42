@@ -1,5 +1,6 @@
 /* @read https://css-tricks.com/responsive-layouts-fewer-media-queries/ */
 /* @read @read https://doc.qt.io/qt-6/layout.html */
+/* @read https://medium.com/@js_tut/css-grid-tutorial-filling-in-the-gaps-c596c9534611 */
 
 /* fit
 ====== */
@@ -19,10 +20,18 @@ textarea.box-fit {
   height: 100%;
 }
 
-/* grid
+/* flex
 ======= */
 
-/* https://medium.com/@js_tut/css-grid-tutorial-filling-in-the-gaps-c596c9534611 */
+.box-flex {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  align-content: flex-start;
+}
+
+/* grid
+======= */
 
 .box-grid,
 .box-grid-auto {

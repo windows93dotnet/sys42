@@ -112,14 +112,6 @@ system.transfer = {
   dropzones: new Map(),
 
   async makeHints(hints, el) {
-    if (typeof hints.items === "string") {
-      hints.items = { name: hints.items }
-    }
-
-    if (typeof hints.dropzone === "string") {
-      hints.dropzone = { name: hints.dropzone }
-    }
-
     const undones = []
 
     if (hints.items) {
@@ -223,6 +215,16 @@ class Transferable extends Trait {
 
     this.config = configure(options)
     this.config.selector = ensureScopeSelector(this.config.selector, this.el)
+
+    if (typeof this.config.hints.items === "string") {
+      this.config.hints.items = { name: this.config.hints.items }
+    }
+
+    if (typeof this.config.hints.dropzone === "string") {
+      this.config.hints.dropzone = { name: this.config.hints.dropzone }
+    }
+
+    this.config.hints.dropzone.selector ??= this.config.selector
 
     this.init()
   }

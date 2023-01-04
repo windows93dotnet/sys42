@@ -1,4 +1,3 @@
-// import inIframe from "../../../core/env/realm/inIframe.js"
 import ghostify from "../../../fabric/dom/ghostify.js"
 import { animateTo, animateFrom } from "../../../fabric/dom/animate.js"
 

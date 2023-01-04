@@ -1,21 +1,29 @@
 import { animateTo } from "../../../fabric/dom/animate.js"
+import getRects from "../../../fabric/dom/getRects.js"
 
 export class SlideDropzoneHint {
   constructor(el, options) {
     this.el = el
     this.config = { ...options }
+    this.rects = []
   }
 
   enter() {
     this.el.classList.add("dragover")
+    getRects(this.config.selector, this.el).then((rects) => {
+      this.rects.push(...rects)
+    })
   }
 
   leave() {
     this.el.classList.remove("dragover")
+    this.rects.length = 0
   }
 
-  dragover() {
-    // console.log(items)
+  dragover(/* [first] */) {
+    // if (first) {
+    //   console.log(this.el.contains(first.target))
+    // }
   }
 
   async drop(items) {
@@ -51,8 +59,8 @@ export class SlideDropzoneHint {
   }
 }
 
-export function slideDropzoneHint(options) {
-  return new SlideDropzoneHint(options)
+export function slideDropzoneHint(el, options) {
+  return new SlideDropzoneHint(el, options)
 }
 
 export default slideDropzoneHint
