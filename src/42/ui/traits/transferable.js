@@ -132,6 +132,7 @@ system.transfer = {
     }
 
     const [items, dropzone] = await Promise.all(undones)
+    if (dropzone) items.originDropzone = dropzone
     return { items, dropzone }
   },
 
@@ -190,14 +191,15 @@ system.transfer = {
   async unsetCurrentZone(x, y) {
     let res
     let finished
+    const { items } = system.transfer
 
     if (system.transfer.currentZone) {
       res = "drop"
-      const { items } = system.transfer
       finished = system.transfer.currentZone.hint.drop(items, x, y)
     } else {
       res = "revert"
       finished = system.transfer.items.revert?.(x, y)
+      system.transfer.items.originDropzone.revert?.(items, finished)
     }
 
     await finished
@@ -330,7 +332,7 @@ class Transferable extends Trait {
             }
           }
         } else {
-          system.transfer.unsetCurrentZone(x, y)
+          await system.transfer.unsetCurrentZone(x, y)
         }
 
         system.transfer.cleanup(this.el)
