@@ -9,6 +9,29 @@ import settings from "../../core/settings.js"
 import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
 
+const DEFAULTS = {
+  selector: ":scope > *",
+  autoScroll: true,
+  useSelection: true,
+  handlerSelector: undefined,
+  hints: {
+    items: {
+      name: "stack",
+      startAnimation: { ms: 180 },
+      revertAnimation: { ms: 180 },
+      dropAnimation: { ms: 180 },
+    },
+    dropzone: {
+      name: "slide",
+    },
+  },
+}
+
+const configure = settings("ui.trait.transferable", DEFAULTS)
+
+/* ipc
+====== */
+
 import ipc from "../../core/ipc.js"
 import sanitize from "../../fabric/dom/sanitize.js"
 import clear from "../../fabric/type/object/clear.js"
@@ -71,34 +94,19 @@ ipc
       system.transfer.items.drag?.(x, y)
     }
   })
-  .on("42_TRANSFER_STOP", ({ x, y }) => {
+  .on("42_TRANSFER_STOP", async ({ x, y }) => {
     if (context.iframeRect) {
       x += context.iframeRect.x
       y += context.iframeRect.y
-      system.transfer.unsetCurrentZone(x, y)
       clear(context)
+      const res = system.transfer.unsetCurrentZone(x, y)
+      system.transfer.cleanup()
+      return res
     }
   })
 
-const DEFAULTS = {
-  selector: ":scope > *",
-  autoScroll: true,
-  useSelection: true,
-  handlerSelector: undefined,
-  hints: {
-    items: {
-      name: "stack",
-      startAnimation: { ms: 180 },
-      revertAnimation: { ms: 180 },
-      dropAnimation: { ms: 180 },
-    },
-    dropzone: {
-      name: "slide",
-    },
-  },
-}
-
-const configure = settings("ui.trait.transferable", DEFAULTS)
+/* system
+========= */
 
 system.transfer = {
   dropzones: new Map(),
@@ -147,7 +155,7 @@ system.transfer = {
             : system.transfer.dropzones.get(rect.target)
       }
 
-      system.transfer.setCurrentZone(x, y)
+      if (!inIframe) system.transfer.setCurrentZone(x, y)
     })
   },
 
@@ -175,14 +183,37 @@ system.transfer = {
     }
   },
 
-  unsetCurrentZone(x, y) {
+  async unsetCurrentZone(x, y) {
+    let res
+    let finished
+
     if (system.transfer.currentZone) {
+      res = "drop"
       const { items } = system.transfer
-      system.transfer.currentZone.hint.drop(items, x, y)
-      system.transfer.currentZone = undefined
+      finished = system.transfer.currentZone.hint.drop(items, x, y)
     } else {
-      system.transfer.items.revert?.(x, y)
+      res = "revert"
+      finished = system.transfer.items.revert?.(x, y)
     }
+
+    await finished
+    return res
+  },
+
+  cleanup(originalDropzone) {
+    const dropzone = system.transfer.currentZone?.target ?? originalDropzone
+
+    if (dropzone) {
+      const selectable = dropzone[Trait.INSTANCES]?.selectable
+      if (selectable) {
+        selectable.clear()
+        for (const item of system.transfer.items) {
+          selectable?.add(item.target)
+        }
+      }
+    }
+
+    system.transfer.items.length = 0
   },
 }
 
@@ -259,32 +290,34 @@ class Transferable extends Trait {
       },
 
       drag(x, y) {
-        system.transfer.setCurrentZone(x, y)
-        system.transfer.items.drag?.(x, y)
         if (inIframe) {
           ipc.emit("42_TRANSFER_DRAG", { x, y })
+        } else {
+          system.transfer.setCurrentZone(x, y)
+          system.transfer.items.drag?.(x, y)
         }
       },
 
       stop: async (x, y) => {
-        if (inIframe) {
-          ipc.emit("42_TRANSFER_STOP", { x, y })
-          return
-        }
-
         await startReady
-        const dropzone = system.transfer.currentZone?.target ?? this.el
-        system.transfer.unsetCurrentZone(x, y)
 
-        const selectable = dropzone[Trait.INSTANCES]?.selectable
-        if (selectable) {
-          selectable.clear()
-          for (const item of system.transfer.items) {
-            selectable?.add(item.target)
+        if (inIframe) {
+          const res = await ipc.send("42_TRANSFER_STOP", { x, y })
+
+          if (res === "drop") {
+            for (const item of system.transfer.items) {
+              item.target.remove()
+            }
+          } else if (res === "revert") {
+            for (const item of system.transfer.items) {
+              item.target.classList.remove("hide")
+            }
           }
+        } else {
+          system.transfer.unsetCurrentZone(x, y)
         }
 
-        system.transfer.items.length = 0
+        system.transfer.cleanup(this.el)
       },
     })
   }

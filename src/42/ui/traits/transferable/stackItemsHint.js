@@ -1,3 +1,4 @@
+// import inIframe from "../../../core/env/realm/inIframe.js"
 import ghostify from "../../../fabric/dom/ghostify.js"
 import { animateTo, animateFrom } from "../../../fabric/dom/animate.js"
 
@@ -63,21 +64,26 @@ export class StackItemsHint extends Array {
     }
   }
 
-  revert() {
+  async revert() {
+    const undones = []
     for (const item of this) {
       if (this.config.revertAnimation) {
-        animateTo(item.ghost, {
-          translate: `${item.x}px ${item.y}px`,
-          ...this.revertAnimation(item),
-        }).then(() => {
-          item.target.classList.remove("hide")
-          item.ghost.remove()
-        })
+        undones.push(
+          animateTo(item.ghost, {
+            translate: `${item.x}px ${item.y}px`,
+            ...this.revertAnimation(item),
+          }).then(() => {
+            item.target.classList.remove("hide")
+            item.ghost.remove()
+          })
+        )
       } else {
         item.target.classList.remove("hide")
         item.ghost.remove()
       }
     }
+
+    await Promise.all(undones)
   }
 }
 

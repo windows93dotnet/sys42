@@ -1,4 +1,5 @@
 // TODO: write driver when firefox support File System Access API
+// @read https://developer.chrome.com/articles/file-system-access/#accessing-files-optimized-for-performance-from-the-origin-private-file-system
 
 export async function isNotAllowed(handle, mode = "read") {
   const opts = { mode }
