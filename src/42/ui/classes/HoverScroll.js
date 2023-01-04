@@ -4,7 +4,7 @@ import { inRect } from "../../fabric/geometry/point.js"
 
 const DEFAULTS = {
   threshold: 40,
-  delay: 200,
+  delay: 100,
 }
 
 const exponential = (val) => (val / 8) ** 1.5
@@ -13,10 +13,10 @@ export class HoverScroll {
   constructor(el, options) {
     this.el = ensureElement(el)
     this.config = configure(DEFAULTS, options)
-    this.start()
+    this.init()
   }
 
-  start() {
+  init() {
     this.hasScrollbars =
       this.el.scrollHeight > this.el.clientHeight ||
       this.el.scrollWidth > this.el.clientWidth
@@ -74,10 +74,16 @@ export class HoverScroll {
     else this.delayId = setTimeout(() => loop(), this.config.delay)
   }
 
-  stop() {
+  clear() {
     clearTimeout(this.delayId)
     cancelAnimationFrame(this.loopId)
     this.loopId = undefined
+  }
+
+  destroy() {
+    this.clear()
+    this.el = undefined
+    this.config = undefined
   }
 }
 

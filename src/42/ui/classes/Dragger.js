@@ -37,6 +37,10 @@ export default class Dragger {
     this.cancel = new Canceller(options?.signal)
     const { signal } = this.cancel
 
+    if (this.config.hoverScroll) {
+      this.hoverScroll = new HoverScroll(this.el, this.config.hoverScroll)
+    }
+
     // if (this.config.selector) {
     //   this.config.selector = ensureScopeSelector(this.config.selector, this.el)
     //   appendStyle(`${this.config.selector} { touch-action: none; }`, { signal })
@@ -91,18 +95,15 @@ export default class Dragger {
 
     let forget
     let restore
-    if (this.config.hoverScroll) {
-      this.hoverScroll = new HoverScroll(this.el, this.config.hoverScroll)
-    }
 
     const start = (e, target) => {
       const { x, y } = e
 
-      this.hoverScroll?.start()
-
       this.#isStarted = true
       this.isDragging = true
       Dragger.isDragging = true
+
+      this.hoverScroll?.init()
 
       if (this.config.useTargetOffset) {
         const rect = target.getBoundingClientRect()
@@ -133,7 +134,7 @@ export default class Dragger {
       distY = 0
       forget?.()
       restore?.()
-      this.hoverScroll?.stop()
+      this.hoverScroll?.clear()
 
       if (this.#isStarted) {
         window.getSelection().empty()
@@ -192,7 +193,7 @@ export default class Dragger {
   }
 
   destroy() {
-    this.hoverScroll?.stop()
+    this.hoverScroll?.destroy()
     this.cancel()
   }
 }

@@ -8,6 +8,7 @@ import pick from "../../fabric/type/object/pick.js"
 import settings from "../../core/settings.js"
 import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
+import HoverScroll from "../classes/HoverScroll.js"
 
 const DEFAULTS = {
   selector: ":scope > *",
@@ -145,6 +146,10 @@ system.transfer = {
           rect.target.localName === "iframe"
             ? new IPCDropzoneHint(rect.target)
             : system.transfer.dropzones.get(rect.target)
+        rect.hoverScroll = new HoverScroll(
+          rect.target,
+          rect.hint.config.hoverScroll
+        )
       }
 
       if (!inIframe) system.transfer.setCurrentZone(x, y)
@@ -159,9 +164,11 @@ system.transfer = {
 
     if (system.transfer.currentZone) {
       if (inRect(point, system.transfer.currentZone)) {
+        system.transfer.currentZone.hoverScroll.update({ x, y })
         return system.transfer.currentZone.hint.dragover(items, x, y)
       }
 
+      system.transfer.currentZone.hoverScroll.clear()
       system.transfer.currentZone.hint.leave()
       system.transfer.currentZone = undefined
     }
@@ -170,6 +177,7 @@ system.transfer = {
       if (inRect(point, dropzone)) {
         system.transfer.currentZone = dropzone
         system.transfer.currentZone.hint.enter()
+        system.transfer.currentZone.hoverScroll.update({ x, y })
         return system.transfer.currentZone.hint.dragover(items, x, y)
       }
     }
@@ -225,6 +233,7 @@ class Transferable extends Trait {
     }
 
     this.config.hints.dropzone.selector ??= this.config.selector
+    this.config.hints.dropzone.hoverScroll ??= this.config.hoverScroll
 
     this.init()
   }
