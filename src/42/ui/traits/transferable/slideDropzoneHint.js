@@ -1,5 +1,6 @@
 import { animateTo } from "../../../fabric/dom/animate.js"
 import getRects from "../../../fabric/dom/getRects.js"
+import appendStyle from "../../../fabric/dom/appendStyle.js"
 
 export class SlideDropzoneHint {
   constructor(el, options) {
@@ -8,16 +9,35 @@ export class SlideDropzoneHint {
     this.rects = []
   }
 
-  enter() {
+  enter(items) {
     this.el.classList.add("dragover")
+
+    // for (const item of items) item.target.classList.remove("hide")
+
+    // this.styles = {
+    //   enter: appendStyle(`${this.config.selector} {opacity: 0.5}`),
+    // }
+
+    // requestAnimationFrame(() => {
     getRects(this.config.selector, this.el).then((rects) => {
+      // for (const item of items) item.target.classList.add("hide")
+
+      // console.log(items.length, rects.length)
+      // for (const item of items) {
+      //   console.log(item.target.className)
+      // }
+
+      // console.table(rects)
+
       this.rects.push(...rects)
     })
+    // })
   }
 
   leave() {
     this.el.classList.remove("dragover")
     this.rects.length = 0
+    this.styles?.enter.destroy()
   }
 
   dragover(/* [first] */) {
@@ -27,7 +47,8 @@ export class SlideDropzoneHint {
   }
 
   async drop(items) {
-    this.el.classList.remove("dragover")
+    // this.el.classList.remove("dragover")
+    this.leave()
 
     const undones = []
 

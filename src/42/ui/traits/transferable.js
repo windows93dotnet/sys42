@@ -164,20 +164,24 @@ system.transfer = {
 
     if (system.transfer.currentZone) {
       if (inRect(point, system.transfer.currentZone)) {
-        system.transfer.currentZone.hoverScroll.update({ x, y })
+        system.transfer.currentZone.hoverScroll.update({ x, y }, () => {
+          system.transfer.currentZone.hint.dragover(items, x, y)
+        })
         return system.transfer.currentZone.hint.dragover(items, x, y)
       }
 
       system.transfer.currentZone.hoverScroll.clear()
-      system.transfer.currentZone.hint.leave()
+      system.transfer.currentZone.hint.leave(items, x, y)
       system.transfer.currentZone = undefined
     }
 
     for (const dropzone of zones) {
       if (inRect(point, dropzone)) {
         system.transfer.currentZone = dropzone
-        system.transfer.currentZone.hint.enter()
-        system.transfer.currentZone.hoverScroll.update({ x, y })
+        system.transfer.currentZone.hint.enter(items, x, y)
+        system.transfer.currentZone.hoverScroll.update({ x, y }, () => {
+          system.transfer.currentZone.hint.dragover(items, x, y)
+        })
         return system.transfer.currentZone.hint.dragover(items, x, y)
       }
     }
@@ -213,6 +217,7 @@ system.transfer = {
       }
     }
 
+    system.transfer.currentZone = undefined
     system.transfer.items.length = 0
   },
 }
