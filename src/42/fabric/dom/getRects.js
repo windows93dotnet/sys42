@@ -22,6 +22,8 @@ export async function getRects(elements, options) {
             boundingClientRect,
             isIntersecting,
           } of entries) {
+            if (options?.intersecting === true && !isIntersecting) continue
+            if (options?.intersecting === false && isIntersecting) continue
             const rect = boundingClientRect.toJSON()
             rect.isIntersecting = isIntersecting
             rect.target = target
@@ -42,6 +44,8 @@ export async function getRects(elements, options) {
             boundingClientRect,
             isIntersecting,
           } of entries) {
+            if (options?.intersecting === true && !isIntersecting) continue
+            if (options?.intersecting === false && isIntersecting) continue
             const rect = boundingClientRect.toJSON()
             rect.isIntersecting = isIntersecting
             rect.target = target

@@ -2,42 +2,70 @@ import { animateTo } from "../../../fabric/dom/animate.js"
 import getRects from "../../../fabric/dom/getRects.js"
 import appendStyle from "../../../fabric/dom/appendStyle.js"
 
+const { parseInt, isNaN } = Number
+
 export class SlideDropzoneHint {
   constructor(el, options) {
     this.el = el
     this.config = { ...options }
+    this.speed = 180
     this.rects = []
+
+    this.css = {}
+
+    this.styles = getComputedStyle(this.el)
+    this.colGap = parseInt(this.styles.columnGap, 10)
+    this.rowGap = parseInt(this.styles.rowGap, 10)
+    if (isNaN(this.colGap)) this.colGap = 0
+    if (isNaN(this.rowGap)) this.rowGap = 0
+  }
+
+  async updateRects(cb) {
+    this.rects.length = 0
+    await getRects(this.config.selector, {
+      root: this.el,
+      intersecting: true,
+    }).then((rects) => {
+      let i = 0
+      for (const item of rects) {
+        this.rects.push(item)
+        cb?.(item, i++)
+      }
+    })
   }
 
   enter(items) {
     this.el.classList.add("dragover")
 
-    // for (const item of items) item.target.classList.remove("hide")
-
-    // this.styles = {
-    //   enter: appendStyle(`${this.config.selector} {opacity: 0.5}`),
-    // }
-
-    // requestAnimationFrame(() => {
-    getRects(this.config.selector, this.el).then((rects) => {
-      // for (const item of items) item.target.classList.add("hide")
-
-      // console.log(items.length, rects.length)
-      // for (const item of items) {
-      //   console.log(item.target.className)
-      // }
-
-      // console.table(rects)
-
-      this.rects.push(...rects)
+    let enterCss = ""
+    let offset = 0
+    this.updateRects((rect, i) => {
+      for (const item of items) {
+        if (
+          item.target === rect.target &&
+          !item.target.classList.contains("hide")
+        ) {
+          offset += item.width + this.colGap
+          enterCss += `${this.config.selector}:nth-of-type(n+${i + 1}) {
+            translate: ${offset}px 0;
+          }\n`
+          item.target.classList.add("hide")
+        }
+      }
+    }).then(() => {
+      this.css.enter = appendStyle(enterCss)
+      requestAnimationFrame(() => {
+        this.css.transition = appendStyle(`${this.config.selector} {
+          transition: translate ${this.speed}ms ease-in-out !important;
+        }`)
+      })
     })
-    // })
   }
 
   leave() {
     this.el.classList.remove("dragover")
     this.rects.length = 0
-    this.styles?.enter.destroy()
+    this.css.enter.destroy()
   }
 
   dragover(/* [first] */) {
@@ -46,9 +74,18 @@ export class SlideDropzoneHint {
     // }
   }
 
+  async revert(items, finished) {
+    this.css.enter?.append()
+    await finished
+    this.css.transition?.destroy()
+    this.css.enter?.destroy()
+    for (const item of items) item.target.classList.remove("hide")
+  }
+
   async drop(items) {
-    // this.el.classList.remove("dragover")
     this.leave()
+    this.css.transition?.destroy()
+    this.css.enter?.destroy()
 
     const undones = []
 

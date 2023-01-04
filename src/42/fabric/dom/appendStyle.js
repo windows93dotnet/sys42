@@ -10,6 +10,7 @@ export function appendStyle(cssText, options) {
     style,
     update: (cssText) => (style.textContent = cssText),
     destroy: () => style.remove(),
+    append: () => document.head.append(style),
   }
 }
 

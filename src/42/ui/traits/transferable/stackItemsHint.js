@@ -70,12 +70,10 @@ export class StackItemsHint extends Array {
             translate: `${item.x}px ${item.y}px`,
             ...this.revertAnimation(item),
           }).then(() => {
-            item.target.classList.remove("hide")
             item.ghost.remove()
           })
         )
       } else {
-        item.target.classList.remove("hide")
         item.ghost.remove()
       }
     }
