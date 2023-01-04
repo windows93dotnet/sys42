@@ -39,8 +39,10 @@ export default function configure(...options) {
     if (isHashmapLike(opt)) {
       memory.set(opt, config)
       merge(config, opt, memory)
-    } else if (opt != null) {
-      throw new TypeError(`Arguments must be objects or nullish: ${typeof opt}`)
+    } else if (!(opt == null || typeof opt === "boolean")) {
+      throw new TypeError(
+        `Arguments must be objects, boolean or nullish: ${typeof opt}`
+      )
     }
   }
 

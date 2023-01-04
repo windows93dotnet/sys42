@@ -15,7 +15,7 @@ const DEFAULTS = {
   selector: ":scope > *",
   check: "colliding",
   class: "selected",
-  dragger: { distance: 5, autoScroll: true },
+  dragger: { distance: 5, hoverScroll: true },
   zone: undefined,
   multiselectable: true,
   draggerIgnoreItems: false,

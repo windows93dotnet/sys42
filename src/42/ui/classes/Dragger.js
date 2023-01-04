@@ -8,6 +8,7 @@ import Canceller from "../../fabric/classes/Canceller.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
 import noop from "../../fabric/type/function/noop.js"
+import HoverScroll from "./HoverScroll.js"
 // import inFirefox from "../../core/env/browser/inFirefox.js"
 
 const DEFAULTS = {
@@ -19,11 +20,8 @@ const DEFAULTS = {
   selector: undefined,
   ignore: undefined,
   useTargetOffset: false,
-  autoScroll: false,
-  scrollThreshold: 40,
+  hoverScroll: false,
 }
-
-const exponential = (val) => (val / 8) ** 1.5
 
 export default class Dragger {
   #isStarted = false
@@ -93,38 +91,14 @@ export default class Dragger {
 
     let forget
     let restore
-
-    const scrolling = {
-      hasScrollbars: false,
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
+    if (this.config.hoverScroll) {
+      this.hoverScroll = new HoverScroll(this.el, this.config.hoverScroll)
     }
 
     const start = (e, target) => {
       const { x, y } = e
 
-      if (this.config.autoScroll) {
-        const { scrollThreshold } = this.config
-
-        scrolling.hasScrollbars =
-          this.el.scrollHeight > this.el.clientHeight ||
-          this.el.scrollWidth > this.el.clientWidth
-
-        if (scrolling.hasScrollbars) {
-          const { x, y } = this.el.getBoundingClientRect()
-          scrolling.top = y
-          scrolling.left = x
-          scrolling.bottom = y + this.el.clientHeight
-          scrolling.right = x + this.el.clientWidth
-
-          scrolling.threshTop = scrolling.top + scrollThreshold
-          scrolling.threshLeft = scrolling.left + scrollThreshold
-          scrolling.threshBottom = scrolling.bottom - scrollThreshold
-          scrolling.threshRight = scrolling.right - scrollThreshold
-        }
-      }
+      this.hoverScroll?.start()
 
       this.#isStarted = true
       this.isDragging = true
@@ -159,8 +133,7 @@ export default class Dragger {
       distY = 0
       forget?.()
       restore?.()
-
-      cancelAnimationFrame(this.scrollLoopId)
+      this.hoverScroll?.stop()
 
       if (this.#isStarted) {
         window.getSelection().empty()
@@ -178,49 +151,13 @@ export default class Dragger {
         const x = getX(e.x)
         const y = getY(e.y)
         this.drag(x, y, e, target)
-        if (this.config.autoScroll && scrolling.hasScrollbars) {
-          autoScroll(e, x, y, target)
+        if (this.config.hoverScroll) {
+          this.hoverScroll.update(e, () => this.drag(x, y, e, target))
         }
       } else if (checkDistance(e) && start(e, target) === false) stop(e, target)
     }
 
     if (this.config.throttle) drag = paintThrottle(drag)
-
-    const autoScroll = (e, x, y, target) => {
-      cancelAnimationFrame(this.scrollLoopId)
-
-      const {
-        top,
-        left,
-        bottom,
-        right,
-        threshTop,
-        threshBottom,
-        threshLeft,
-        threshRight,
-      } = scrolling
-
-      const loop = () => {
-        this.scrollLoopId = requestAnimationFrame(() => {
-          if (e.y > top && e.y < threshTop) {
-            this.el.scrollTop -= exponential(threshTop - e.y)
-          } else if (e.y < bottom && e.y > threshBottom) {
-            this.el.scrollTop += exponential(e.y - threshBottom)
-          }
-
-          if (e.x > left && e.x < threshLeft) {
-            this.el.scrollLeft -= exponential(threshLeft - e.x)
-          } else if (e.x < right && e.x > threshRight) {
-            this.el.scrollLeft += exponential(e.x - threshRight)
-          }
-
-          this.drag(x, y, e, target)
-          loop()
-        })
-      }
-
-      loop()
-    }
 
     listen(this.el, {
       signal,
@@ -255,7 +192,7 @@ export default class Dragger {
   }
 
   destroy() {
-    cancelAnimationFrame(this.scrollLoopId)
+    this.hoverScroll?.stop()
     this.cancel()
   }
 }
