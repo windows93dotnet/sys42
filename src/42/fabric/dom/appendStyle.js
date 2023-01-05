@@ -1,6 +1,6 @@
 export function appendStyle(cssText, options) {
   const style = document.createElement("style")
-  style.id = options?.id
+  if (options?.id) style.id = options.id
   style.textContent = cssText
   document.head.append(style)
 

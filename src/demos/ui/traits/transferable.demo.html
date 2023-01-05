@@ -119,6 +119,7 @@
     iframe.className = "inset paper size-full"
 
     iframe.srcdoc = document.documentElement.outerHTML
+      .replaceAll('id="', 'id="iframe-')
       .replaceAll("green", "blue")
       .replaceAll("yellow", "red")
       .replaceAll("box-center panel", "box-center ground")
@@ -133,6 +134,7 @@
 <script type="module">
   import transferable from "../../../42/ui/traits/transferable.js"
   import selectable from "../../../42/ui/traits/selectable.js"
+  import inIframe from "../../../42/core/env/realm/inIframe.js"
 
   for (const item of document.querySelectorAll(".demo")) {
     transferable(item)
@@ -142,7 +144,9 @@
     selectable(item)
   }
 
-  const demoSmall = document.querySelector("#demo-small")
+  const demoSmall = document.querySelector(
+    inIframe ? "#iframe-demo-small" : "#demo-small"
+  )
   const selectableInstance = demoSmall[Symbol.for("Trait.INSTANCES")].selectable
   selectableInstance.add(demoSmall.querySelector(":scope > :nth-child(1)"))
   selectableInstance.add(demoSmall.querySelector(":scope > :nth-child(3)"))
