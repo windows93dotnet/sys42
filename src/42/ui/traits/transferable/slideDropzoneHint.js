@@ -26,10 +26,9 @@ export class SlideDropzoneHint {
       root: this.el,
       intersecting: true,
     }).then((rects) => {
-      let i = 0
       for (const item of rects) {
         this.rects.push(item)
-        cb?.(item, i++)
+        cb?.(item)
       }
     })
   }
@@ -39,14 +38,15 @@ export class SlideDropzoneHint {
 
     let enterCss = ""
     let offset = 0
-    this.updateRects((rect, i) => {
+    this.updateRects((rect) => {
       for (const item of items) {
         if (
           item.target === rect.target &&
           !item.target.classList.contains("hide")
         ) {
           offset += item.width + this.colGap
-          enterCss += `${this.config.selector}:nth-of-type(n+${i + 1}) {
+          const i = rect.index + 1
+          enterCss += `${this.config.selector}:nth-of-type(n+${i}) {
             translate: ${offset}px 0;
           }\n`
           item.target.classList.add("hide")
