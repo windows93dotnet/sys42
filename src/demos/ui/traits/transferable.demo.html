@@ -142,9 +142,9 @@
     selectable(item)
   }
 
-  // const demoSmall = document.querySelector("#demo-small")
-  // const selectableInstance = demoSmall[Symbol.for("Trait.INSTANCES")].selectable
-  // selectableInstance.add(demoSmall.querySelector(":scope > :nth-child(1)"))
-  // selectableInstance.add(demoSmall.querySelector(":scope > :nth-child(3)"))
-  // selectableInstance.add(demoSmall.querySelector(":scope > :nth-child(5)"))
+  const demoSmall = document.querySelector("#demo-small")
+  const selectableInstance = demoSmall[Symbol.for("Trait.INSTANCES")].selectable
+  selectableInstance.add(demoSmall.querySelector(":scope > :nth-child(1)"))
+  selectableInstance.add(demoSmall.querySelector(":scope > :nth-child(3)"))
+  selectableInstance.add(demoSmall.querySelector(":scope > :nth-child(5)"))
 </script>
