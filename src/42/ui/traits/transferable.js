@@ -90,7 +90,6 @@ class IframeDropzoneHint {
   }
 
   async drop(items, x, y) {
-    // this.dropped = true
     const res = await this.bus.send("42_TF_v_DROP", { x, y })
 
     if (res === "revert") {
@@ -106,7 +105,7 @@ class IframeDropzoneHint {
   }
 
   async destroy() {
-    // if (!this.dropped) await this.bus.send("42_TF_v_CLEANUP")
+    // TODO: debug ipc Sender.destroy
     // this.bus.destroy()
   }
 }
@@ -151,13 +150,7 @@ if (inIframe) {
       y -= context.parentY
       system.transfer.setCurrentZone(x, y)
     })
-    // .on("42_TF_v_CLEANUP", async () => {
-    //   console.log("42_TF_v_CLEANUP")
-    //   clear(context)
-    //   system.transfer.handleSelection()
-    // })
     .on("42_TF_v_DROP", async ({ x, y }) => {
-      console.log("42_TF_v_DROP")
       if (!context.ready) return
 
       x -= context.parentX
@@ -238,6 +231,8 @@ if (inIframe) {
 
 system.transfer = {
   dropzones: new Map(),
+
+  effect: "none",
 
   async makeHints({ itemsHintConfig, dropzoneHintConfig }, el) {
     const undones = []
