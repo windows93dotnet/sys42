@@ -42,8 +42,6 @@ const context = Object.create(null)
 function serializeItems(obj, options) {
   const items = []
 
-  console.log(system.transfer.items)
-
   for (const item of system.transfer.items) {
     const exportedItem = { ...item }
     exportedItem.ghost = exportedItem.ghost.outerHTML
@@ -95,15 +93,17 @@ export class IframeDropzoneHint {
 
 if (inIframe) {
   ipc
-    .on("42_TRANSFER_ENTER", async ({ x, y, items, parentX, parentY }) => {
-      console.log(items)
-      context.parentX = parentX
-      context.parentY = parentY
-      x -= context.parentX
-      y -= context.parentY
-      system.transfer.items = []
-      system.transfer.findTransferZones(x, y)
-    })
+    .on(
+      "42_TRANSFER_ENTER",
+      async ({ x, y, /* items, */ parentX, parentY }) => {
+        context.parentX = parentX
+        context.parentY = parentY
+        x -= context.parentX
+        y -= context.parentY
+        system.transfer.items = []
+        system.transfer.findTransferZones(x, y)
+      }
+    )
     .on("42_TRANSFER_DRAGOVER", async ({ x, y }) => {
       x -= context.parentX
       y -= context.parentY
@@ -347,7 +347,7 @@ class Transferable extends Trait {
         system.transfer.items = itemsHint
 
         startReady = Promise.all([
-          // system.transfer.findTransferZones(x, y),
+          system.transfer.findTransferZones(x, y),
           getRects(targets).then((rects) => {
             system.transfer.items.start?.(x, y, rects)
             if (inIframe) {
@@ -381,7 +381,6 @@ class Transferable extends Trait {
               item.target.remove()
             }
           } else if (action === "revert") {
-            console.log(system.transfer.items)
             for (const item of system.transfer.items) {
               item.target.classList.remove("hide")
             }

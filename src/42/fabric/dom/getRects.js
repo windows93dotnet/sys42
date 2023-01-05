@@ -17,14 +17,12 @@ export async function getRects(elements, options) {
           rootRect.x += Number.parseInt(borderLeftWidth, 10) - root.scrollLeft
           rootRect.y += Number.parseInt(borderTopWidth, 10) - root.scrollTop
 
-          for (const {
-            target,
-            boundingClientRect,
-            isIntersecting,
-          } of entries) {
+          for (let i = 0, l = entries.length; i < l; i++) {
+            const { target, boundingClientRect, isIntersecting } = entries[i]
             if (options?.intersecting === true && !isIntersecting) continue
             if (options?.intersecting === false && isIntersecting) continue
             const rect = boundingClientRect.toJSON()
+            rect.index = i
             rect.isIntersecting = isIntersecting
             rect.target = target
 
@@ -39,14 +37,12 @@ export async function getRects(elements, options) {
             rects.push(rect)
           }
         } else {
-          for (const {
-            target,
-            boundingClientRect,
-            isIntersecting,
-          } of entries) {
+          for (let i = 0, l = entries.length; i < l; i++) {
+            const { target, boundingClientRect, isIntersecting } = entries[i]
             if (options?.intersecting === true && !isIntersecting) continue
             if (options?.intersecting === false && isIntersecting) continue
             const rect = boundingClientRect.toJSON()
+            rect.index = i
             rect.isIntersecting = isIntersecting
             rect.target = target
             rects.push(rect)
