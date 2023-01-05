@@ -1,6 +1,6 @@
 import { animateTo } from "../../../fabric/dom/animate.js"
 import getRects from "../../../fabric/dom/getRects.js"
-import appendStyle from "../../../fabric/dom/appendStyle.js"
+import appendCSS from "../../../fabric/dom/appendCSS.js"
 
 const { parseInt, isNaN } = Number
 
@@ -11,7 +11,12 @@ export class SlideDropzoneHint {
     this.speed = 180
     this.rects = []
 
-    this.css = {}
+    const { signal } = this.config
+
+    this.css = {
+      enter: appendCSS({ signal }),
+      transition: appendCSS({ signal }),
+    }
 
     this.styles = getComputedStyle(this.el)
     this.colGap = parseInt(this.styles.columnGap, 10)
@@ -39,7 +44,7 @@ export class SlideDropzoneHint {
     let enterCss = ""
     let offset = 0
 
-    this.css.transition?.destroy()
+    this.css.transition.disable()
 
     this.updateRects((rect) => {
       for (const item of items) {
@@ -56,10 +61,10 @@ export class SlideDropzoneHint {
         }
       }
     }).then(() => {
-      this.css.enter = appendStyle(enterCss)
+      this.css.enter.update(enterCss)
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          this.css.transition = appendStyle(`${this.config.selector} {
+          this.css.transition.update(`${this.config.selector} {
             transition: translate ${this.speed}ms ease-in-out !important;
           }`)
         })
@@ -70,23 +75,23 @@ export class SlideDropzoneHint {
   leave() {
     this.el.classList.remove("dragover")
     this.rects.length = 0
-    this.css.enter.destroy()
+    this.css.enter.disable()
   }
 
   dragover() {}
 
   async revert(items, finished) {
-    this.css.enter?.append()
+    this.css.enter.enable()
     await finished
-    this.css.transition?.destroy()
-    this.css.enter?.destroy()
+    this.css.transition.disable()
+    this.css.enter.disable()
     for (const item of items) item.target.classList.remove("hide")
   }
 
   async drop(items) {
     this.leave()
-    this.css.transition?.destroy()
-    this.css.enter?.destroy()
+    this.css.transition.disable()
+    this.css.enter.disable()
 
     const undones = []
 

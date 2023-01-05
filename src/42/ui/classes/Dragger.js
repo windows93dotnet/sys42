@@ -1,7 +1,7 @@
 import listen from "../../fabric/event/listen.js"
 import ensureElement from "../../fabric/dom/ensureElement.js"
 // import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
-// import appendStyle from "../../fabric/dom/appendStyle.js"
+// import appendCSS from "../../fabric/dom/appendCSS.js"
 import configure from "../../core/configure.js"
 import setTemp from "../../fabric/dom/setTemp.js"
 import Canceller from "../../fabric/classes/Canceller.js"
@@ -43,7 +43,7 @@ export default class Dragger {
 
     // if (this.config.selector) {
     //   this.config.selector = ensureScopeSelector(this.config.selector, this.el)
-    //   appendStyle(`${this.config.selector} { touch-action: none; }`, { signal })
+    //   appendCSS(`${this.config.selector} { touch-action: none; }`, { signal })
     // } else setTemp(this.el, { signal, style: { "touch-action": "none" } })
 
     let distX = 0
