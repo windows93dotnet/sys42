@@ -41,15 +41,15 @@ export class SlideDropzoneHint {
     this.updateRects((rect) => {
       for (const item of items) {
         if (
-          item.target === rect.target &&
-          !item.target.classList.contains("hide")
+          item.target.id === rect.target.id &&
+          !rect.target.classList.contains("hide")
         ) {
           offset += item.width + this.colGap
           const i = rect.index + 1
           enterCss += `${this.config.selector}:nth-of-type(n+${i}) {
             translate: ${offset}px 0;
-          }\n`
-          item.target.classList.add("hide")
+          }`
+          rect.target.classList.add("hide")
         }
       }
     }).then(() => {
