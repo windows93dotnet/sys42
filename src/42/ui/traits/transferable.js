@@ -88,10 +88,13 @@ export class IframeDropzoneHint {
 
   async drop(items, x, y) {
     const res = await this.bus.send("42_TRANSFER_DROP")
+
     if (res === "revert") {
       system.transfer.currentZone = undefined
       await system.transfer.unsetCurrentZone(x, y)
     }
+
+    return res
   }
 
   revert() {
@@ -190,9 +193,14 @@ if (inIframe) {
         x += context.parentX
         y += context.parentY
         clear(context)
-        const res = system.transfer.unsetCurrentZone(x, y)
-        system.transfer.cleanup()
-        return { action: await res }
+        const action = await system.transfer
+          .unsetCurrentZone(x, y)
+          .then((res) => {
+            system.transfer.cleanup()
+            return res
+          })
+
+        return { action }
       }
     })
 }
@@ -283,8 +291,8 @@ system.transfer = {
     const { items } = system.transfer
 
     if (system.transfer.currentZone) {
-      res = "drop"
-      finished = system.transfer.currentZone.hint.drop(items, x, y)
+      res = await system.transfer.currentZone.hint.drop(items, x, y)
+      res ??= "drop"
     } else {
       res = "revert"
       finished = system.transfer.items.revert?.(x, y)
@@ -294,9 +302,10 @@ system.transfer = {
         const dropzone = system.transfer.dropzones.get(dropzoneTarget)
         dropzone?.revert?.(items, finished)
       }
+
+      await finished
     }
 
-    await finished
     return res
   },
 
@@ -305,12 +314,15 @@ system.transfer = {
       system.transfer.currentZone?.target ??
       document.querySelector(`#${system.transfer.items.dropzoneId}`)
 
+    console.log(111, dropzoneTarget)
+
     if (dropzoneTarget) {
       const selectable = dropzoneTarget[Trait.INSTANCES]?.selectable
       if (selectable) {
         selectable.clear()
         for (const item of system.transfer.items) {
-          selectable?.add(item.target)
+          const target = document.querySelector(`#${item.target.id}`)
+          if (target) selectable?.add(target)
         }
       }
     }
