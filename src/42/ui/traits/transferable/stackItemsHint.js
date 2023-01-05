@@ -1,3 +1,4 @@
+import uid from "../../../core/uid.js"
 import ghostify from "../../../fabric/dom/ghostify.js"
 import { animateTo, animateFrom } from "../../../fabric/dom/animate.js"
 
@@ -18,16 +19,17 @@ export class StackItemsHint extends Array {
   }
 
   start(x, y, items) {
+    this.length = 0
     for (const item of items) {
       this.push(item)
 
       item.offsetX = x - item.x
       item.offsetY = y - item.y
 
+      item.target.id ||= uid()
+
       if (!item.ghost) {
         item.ghost = ghostify(item.target, { rect: item })
-        document.documentElement.append(item.ghost)
-      } else if (!item.ghost.isConnected) {
         document.documentElement.append(item.ghost)
       }
 

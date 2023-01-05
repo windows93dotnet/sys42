@@ -51,8 +51,8 @@ function serializeItems(obj, options) {
   }
 
   const { dropzoneId } = system.transfer.items
-
-  return { ...obj, items, dropzoneId }
+  const { itemsHintConfig } = system.transfer
+  return { ...obj, items, dropzoneId, itemsHintConfig }
 }
 
 function deserializeItems(items, parentX, parentY) {
@@ -87,7 +87,11 @@ export class IframeDropzoneHint {
   }
 
   drop() {
-    console.log("ipc drop")
+    this.bus.emit("42_TRANSFER_DROP")
+  }
+
+  revert() {
+    this.bus.emit("42_TRANSFER_REVERT")
   }
 }
 
@@ -95,22 +99,42 @@ if (inIframe) {
   ipc
     .on(
       "42_TRANSFER_ENTER",
-      async ({ x, y, /* items, */ parentX, parentY }) => {
+      async ({ x, y, items, itemsHintConfig, parentX, parentY }) => {
         context.parentX = parentX
         context.parentY = parentY
+
         x -= context.parentX
         y -= context.parentY
-        system.transfer.items = []
+        deserializeItems(items, context.parentX * -1, context.parentY * -1)
+
+        const { itemsHint } = await system.transfer.makeHints({
+          itemsHintConfig,
+        })
+
+        system.transfer.items = itemsHint
         system.transfer.findTransferZones(x, y)
+        system.transfer.items.start(x, y, items)
       }
     )
     .on("42_TRANSFER_DRAGOVER", async ({ x, y }) => {
-      x -= context.parentX
-      y -= context.parentY
-      system.transfer.setCurrentZone(x, y)
+      if (context.parentX && system.transfer.items) {
+        x -= context.parentX
+        y -= context.parentY
+        system.transfer.setCurrentZone(x, y)
+      }
     })
     .on("42_TRANSFER_LEAVE", async () => {
+      console.log("42_TRANSFER_LEAVE")
       // system.transfer.cleanup()
+      clear(context)
+    })
+    .on("42_TRANSFER_REVERT", async () => {
+      console.log("42_TRANSFER_REVERT")
+      clear(context)
+    })
+    .on("42_TRANSFER_DROP", async () => {
+      console.log("42_TRANSFER_DROP")
+      clear(context)
     })
 } else {
   ipc
@@ -118,12 +142,9 @@ if (inIframe) {
       "42_TRANSFER_START",
       async ({ x, y, items, itemsHintConfig }, { iframe }) => {
         const iframeRect = iframe.getBoundingClientRect()
-        // const { borderTopWidth, borderLeftWidth } = getComputedStyle(iframe)
-        // context.parentX = iframeRect.x + Number.parseInt(borderLeftWidth, 10)
-        // context.parentY = iframeRect.y + Number.parseInt(borderTopWidth, 10)
-
-        context.parentX = iframeRect.x
-        context.parentY = iframeRect.y
+        const { borderTopWidth, borderLeftWidth } = getComputedStyle(iframe)
+        context.parentX = iframeRect.x + Number.parseInt(borderLeftWidth, 10)
+        context.parentY = iframeRect.y + Number.parseInt(borderTopWidth, 10)
 
         x += context.parentX
         y += context.parentY
@@ -133,8 +154,14 @@ if (inIframe) {
           itemsHintConfig,
         })
         system.transfer.items = itemsHint
+        system.transfer.itemsHintConfig = itemsHintConfig
         system.transfer.findTransferZones(x, y)
+
         system.transfer.items.start(x, y, items)
+        for (const item of system.transfer.items) {
+          document.documentElement.append(item.ghost)
+        }
+
         system.transfer.items.drag(x, y)
       }
     )
@@ -306,8 +333,10 @@ class Transferable extends Trait {
   async init() {
     const { signal } = this.cancel
 
+    const { itemsHintConfig, dropzoneHintConfig } = this.config
+
     const { itemsHint, dropzoneHint } = await system.transfer.makeHints(
-      this.config,
+      { itemsHintConfig, dropzoneHintConfig },
       this.el
     )
 
@@ -332,6 +361,9 @@ class Transferable extends Trait {
 
         let targets
 
+        system.transfer.items = itemsHint
+        system.transfer.itemsHintConfig = itemsHintConfig
+
         if (this.config.useSelection) {
           const selectable = this.el[Trait.INSTANCES]?.selectable
           if (selectable) {
@@ -344,17 +376,14 @@ class Transferable extends Trait {
           } else targets = [target]
         } else targets = [target]
 
-        system.transfer.items = itemsHint
-
         startReady = Promise.all([
           system.transfer.findTransferZones(x, y),
           getRects(targets).then((rects) => {
             system.transfer.items.start?.(x, y, rects)
             if (inIframe) {
-              const { itemsHintConfig } = this.config
               ipc.emit(
                 "42_TRANSFER_START",
-                serializeItems({ x, y, itemsHintConfig }, { hideGhost: true })
+                serializeItems({ x, y }, { hideGhost: true })
               )
             }
           }),
@@ -378,11 +407,13 @@ class Transferable extends Trait {
 
           if (action === "drop") {
             for (const item of system.transfer.items) {
-              item.target.remove()
+              const target = document.querySelector(`#${item.target.id}`)
+              target?.remove()
             }
           } else if (action === "revert") {
             for (const item of system.transfer.items) {
-              item.target.classList.remove("hide")
+              const target = document.querySelector(`#${item.target.id}`)
+              target?.classList.remove("hide")
             }
           }
         } else {
