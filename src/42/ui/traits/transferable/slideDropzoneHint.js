@@ -38,6 +38,9 @@ export class SlideDropzoneHint {
 
     let enterCss = ""
     let offset = 0
+
+    this.css.transition?.destroy()
+
     this.updateRects((rect) => {
       for (const item of items) {
         if (
@@ -55,9 +58,11 @@ export class SlideDropzoneHint {
     }).then(() => {
       this.css.enter = appendStyle(enterCss)
       requestAnimationFrame(() => {
-        this.css.transition = appendStyle(`${this.config.selector} {
-          transition: translate ${this.speed}ms ease-in-out !important;
-        }`)
+        requestAnimationFrame(() => {
+          this.css.transition = appendStyle(`${this.config.selector} {
+            transition: translate ${this.speed}ms ease-in-out !important;
+          }`)
+        })
       })
     })
   }
@@ -68,11 +73,7 @@ export class SlideDropzoneHint {
     this.css.enter.destroy()
   }
 
-  dragover(/* [first] */) {
-    // if (first) {
-    //   console.log(this.el.contains(first.target))
-    // }
-  }
+  dragover() {}
 
   async revert(items, finished) {
     this.css.enter?.append()
@@ -90,7 +91,6 @@ export class SlideDropzoneHint {
     const undones = []
 
     for (const item of items) {
-      // if (!this.el.contains(item.target)) this.el.append(item.target)
       this.el.append(item.target)
 
       item.target.classList.remove("hide")

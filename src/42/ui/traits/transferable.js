@@ -87,18 +87,18 @@ export class IframeDropzoneHint {
   }
 
   async drop(items, x, y) {
-    const res = await this.bus.send("42_TRANSFER_DROP")
+    const res = await this.bus.send("42_TRANSFER_DROP", { x, y })
 
     if (res === "revert") {
       system.transfer.currentZone = undefined
       await system.transfer.unsetCurrentZone(x, y)
+    } else if (res === "drop") {
+      for (const item of system.transfer.items) {
+        item.ghost.remove()
+      }
     }
 
     return res
-  }
-
-  revert() {
-    this.bus.emit("42_TRANSFER_REVERT")
   }
 }
 
@@ -130,6 +130,7 @@ if (inIframe) {
         system.transfer.itemsHintConfig = itemsHintConfig
         system.transfer.items.dropzoneId = dropzoneId
         system.transfer.findTransferZones(x, y)
+
         system.transfer.items.start(x, y, items)
       }
     )
@@ -141,24 +142,25 @@ if (inIframe) {
       }
     })
     .on("42_TRANSFER_LEAVE", async () => {
-      console.log("42_TRANSFER_LEAVE")
-      // system.transfer.cleanup()
       clear(context)
     })
-    .on("42_TRANSFER_REVERT", async () => {
-      console.log("42_TRANSFER_REVERT")
-      clear(context)
-    })
-    .on("42_TRANSFER_DROP", async () => {
-      clear(context)
+    .on("42_TRANSFER_DROP", async ({ x, y }) => {
+      x -= context.parentX
+      y -= context.parentY
       let res
       if (system.transfer.currentZone) {
-        console.log(system.transfer.currentZone)
         res = "drop"
+        for (const item of system.transfer.items) {
+          document.documentElement.append(item.ghost)
+        }
+
+        system.transfer.items.drag(x, y)
       } else {
         res = "revert"
       }
 
+      system.transfer.unsetCurrentZone(x, y)
+      clear(context)
       return res
     })
 } else {

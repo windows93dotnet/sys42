@@ -23,8 +23,8 @@ export class StackItemsHint extends Array {
     for (const item of items) {
       this.push(item)
 
-      item.offsetX = x - item.x
-      item.offsetY = y - item.y
+      item.offsetX ??= x - item.x
+      item.offsetY ??= y - item.y
 
       item.target.id ||= uid()
 
