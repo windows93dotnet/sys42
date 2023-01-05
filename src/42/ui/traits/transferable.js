@@ -106,7 +106,15 @@ if (inIframe) {
   ipc
     .on(
       "42_TRANSFER_ENTER",
-      async ({ x, y, items, itemsHintConfig, parentX, parentY }) => {
+      async ({
+        x,
+        y,
+        items,
+        itemsHintConfig,
+        dropzoneId,
+        parentX,
+        parentY,
+      }) => {
         context.parentX = parentX
         context.parentY = parentY
 
@@ -119,6 +127,8 @@ if (inIframe) {
         })
 
         system.transfer.items = itemsHint
+        system.transfer.itemsHintConfig = itemsHintConfig
+        system.transfer.items.dropzoneId = dropzoneId
         system.transfer.findTransferZones(x, y)
         system.transfer.items.start(x, y, items)
       }
@@ -155,7 +165,7 @@ if (inIframe) {
   ipc
     .on(
       "42_TRANSFER_START",
-      async ({ x, y, items, itemsHintConfig }, { iframe }) => {
+      async ({ x, y, items, dropzoneId, itemsHintConfig }, { iframe }) => {
         const iframeRect = iframe.getBoundingClientRect()
         const { borderTopWidth, borderLeftWidth } = getComputedStyle(iframe)
         context.parentX = iframeRect.x + Number.parseInt(borderLeftWidth, 10)
@@ -170,9 +180,10 @@ if (inIframe) {
         })
         system.transfer.items = itemsHint
         system.transfer.itemsHintConfig = itemsHintConfig
+        system.transfer.items.dropzoneId = dropzoneId
         system.transfer.findTransferZones(x, y)
-
         system.transfer.items.start(x, y, items)
+
         for (const item of system.transfer.items) {
           document.documentElement.append(item.ghost)
         }
@@ -311,10 +322,9 @@ system.transfer = {
 
   cleanup() {
     const dropzoneTarget =
-      system.transfer.currentZone?.target ??
-      document.querySelector(`#${system.transfer.items.dropzoneId}`)
-
-    console.log(111, dropzoneTarget)
+      system.transfer.currentZone?.target ?? system.transfer.items.dropzoneId
+        ? document.querySelector(`#${system.transfer.items.dropzoneId}`)
+        : undefined
 
     if (dropzoneTarget) {
       const selectable = dropzoneTarget[Trait.INSTANCES]?.selectable
