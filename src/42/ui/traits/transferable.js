@@ -86,8 +86,12 @@ export class IframeDropzoneHint {
     this.bus.emit("42_TRANSFER_DRAGOVER", { x, y })
   }
 
-  drop() {
-    this.bus.emit("42_TRANSFER_DROP")
+  async drop(items, x, y) {
+    const res = await this.bus.send("42_TRANSFER_DROP")
+    if (res === "revert") {
+      system.transfer.currentZone = undefined
+      await system.transfer.unsetCurrentZone(x, y)
+    }
   }
 
   revert() {
@@ -133,8 +137,16 @@ if (inIframe) {
       clear(context)
     })
     .on("42_TRANSFER_DROP", async () => {
-      console.log("42_TRANSFER_DROP")
       clear(context)
+      let res
+      if (system.transfer.currentZone) {
+        console.log(system.transfer.currentZone)
+        res = "drop"
+      } else {
+        res = "revert"
+      }
+
+      return res
     })
 } else {
   ipc
