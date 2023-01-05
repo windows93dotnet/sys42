@@ -37,6 +37,7 @@ import ipc from "../../core/ipc.js"
 import sanitize from "../../fabric/dom/sanitize.js"
 import clear from "../../fabric/type/object/clear.js"
 
+const iframeDropzones = []
 const context = Object.create(null)
 
 function serializeItems(obj, options) {
@@ -64,30 +65,33 @@ function deserializeItems(items, parentX, parentY) {
   }
 }
 
+function cleanHints() {
+  if (system.transfer.items) system.transfer.items.length = 0
+  system.transfer.items = undefined
+  system.transfer.currentZone = undefined
+}
+
 class IframeDropzoneHint {
   constructor(iframe) {
     this.iframe = iframe
     this.bus = ipc.to(iframe)
+    iframeDropzones.push(this)
   }
 
   enter(items, x, y) {
     const { x: parentX, y: parentY } = this.iframe.getBoundingClientRect()
-    this.bus.emit(
-      "42_TRANSFER_ENTER",
-      serializeItems({ x, y, parentX, parentY })
-    )
+    this.bus.emit("42_TF_v_ENTER", serializeItems({ x, y, parentX, parentY }))
   }
 
-  leave() {
-    this.bus.emit("42_TRANSFER_LEAVE")
-  }
+  leave() {}
 
   dragover(items, x, y) {
-    this.bus.emit("42_TRANSFER_DRAGOVER", { x, y })
+    this.bus.emit("42_TF_v_DRAGOVER", { x, y })
   }
 
   async drop(items, x, y) {
-    const res = await this.bus.send("42_TRANSFER_DROP", { x, y })
+    // this.dropped = true
+    const res = await this.bus.send("42_TF_v_DROP", { x, y })
 
     if (res === "revert") {
       system.transfer.currentZone = undefined
@@ -100,12 +104,17 @@ class IframeDropzoneHint {
 
     return res
   }
+
+  async destroy() {
+    // if (!this.dropped) await this.bus.send("42_TF_v_CLEANUP")
+    // this.bus.destroy()
+  }
 }
 
 if (inIframe) {
   ipc
     .on(
-      "42_TRANSFER_ENTER",
+      "42_TF_v_ENTER",
       async ({
         x,
         y,
@@ -126,6 +135,8 @@ if (inIframe) {
           itemsHintConfig,
         })
 
+        context.ready = true
+
         system.transfer.items = itemsHint
         system.transfer.itemsHintConfig = itemsHintConfig
         system.transfer.items.dropzoneId = dropzoneId
@@ -134,19 +145,24 @@ if (inIframe) {
         system.transfer.items.start(x, y, items)
       }
     )
-    .on("42_TRANSFER_DRAGOVER", async ({ x, y }) => {
-      if (context.parentX && system.transfer.items) {
-        x -= context.parentX
-        y -= context.parentY
-        system.transfer.setCurrentZone(x, y)
-      }
-    })
-    .on("42_TRANSFER_LEAVE", async () => {
-      clear(context)
-    })
-    .on("42_TRANSFER_DROP", async ({ x, y }) => {
+    .on("42_TF_v_DRAGOVER", async ({ x, y }) => {
+      if (!context.ready) return
       x -= context.parentX
       y -= context.parentY
+      system.transfer.setCurrentZone(x, y)
+    })
+    // .on("42_TF_v_CLEANUP", async () => {
+    //   console.log("42_TF_v_CLEANUP")
+    //   clear(context)
+    //   system.transfer.handleSelection()
+    // })
+    .on("42_TF_v_DROP", async ({ x, y }) => {
+      console.log("42_TF_v_DROP")
+      if (!context.ready) return
+
+      x -= context.parentX
+      y -= context.parentY
+
       let res
       if (system.transfer.currentZone) {
         res = "drop"
@@ -159,14 +175,17 @@ if (inIframe) {
         res = "revert"
       }
 
-      system.transfer.unsetCurrentZone(x, y)
+      system.transfer
+        .unsetCurrentZone(x, y)
+        .then(() => system.transfer.handleSelection())
+
       clear(context)
       return res
     })
 } else {
   ipc
     .on(
-      "42_TRANSFER_START",
+      "42_TF_^_START",
       async ({ x, y, items, dropzoneId, itemsHintConfig }, { iframe }) => {
         const iframeRect = iframe.getBoundingClientRect()
         const { borderTopWidth, borderLeftWidth } = getComputedStyle(iframe)
@@ -176,6 +195,7 @@ if (inIframe) {
         x += context.parentX
         y += context.parentY
         deserializeItems(items, context.parentX, context.parentY)
+        cleanHints()
 
         const { itemsHint } = await system.transfer.makeHints({
           itemsHintConfig,
@@ -193,7 +213,7 @@ if (inIframe) {
         system.transfer.items.drag(x, y)
       }
     )
-    .on("42_TRANSFER_DRAG", ({ x, y }) => {
+    .on("42_TF_^_DRAG", ({ x, y }) => {
       if (context.parentX && system.transfer.items) {
         x += context.parentX
         y += context.parentY
@@ -201,19 +221,14 @@ if (inIframe) {
         system.transfer.items.drag?.(x, y)
       }
     })
-    .on("42_TRANSFER_STOP", async ({ x, y }) => {
+    .on("42_TF_^_STOP", ({ x, y }) => {
       if (context.parentX && system.transfer.items) {
         x += context.parentX
         y += context.parentY
         clear(context)
-        const action = await system.transfer
+        system.transfer
           .unsetCurrentZone(x, y)
-          .then((res) => {
-            system.transfer.cleanup()
-            return res
-          })
-
-        return { action }
+          .then(() => system.transfer.handleSelection())
       }
     })
 }
@@ -322,10 +337,15 @@ system.transfer = {
     return res
   },
 
-  cleanup() {
+  handleSelection() {
+    if (!system.transfer.items) {
+      cleanHints()
+      return
+    }
+
     const dropzoneTarget =
       system.transfer.currentZone?.target ??
-      (system.transfer.items.dropzoneId
+      (system.transfer.items?.dropzoneId
         ? document.querySelector(`#${system.transfer.items.dropzoneId}`)
         : undefined)
 
@@ -340,9 +360,7 @@ system.transfer = {
       }
     }
 
-    system.transfer.items.length = 0
-    system.transfer.items = undefined
-    system.transfer.currentZone = undefined
+    cleanHints()
   },
 }
 
@@ -399,6 +417,7 @@ class Transferable extends Trait {
 
         let targets
 
+        cleanHints()
         system.transfer.items = itemsHint
         system.transfer.itemsHintConfig = itemsHintConfig
 
@@ -420,7 +439,7 @@ class Transferable extends Trait {
             system.transfer.items.start?.(x, y, rects)
             if (inIframe) {
               ipc.emit(
-                "42_TRANSFER_START",
+                "42_TF_^_START",
                 serializeItems({ x, y }, { hideGhost: true })
               )
             }
@@ -430,7 +449,7 @@ class Transferable extends Trait {
 
       drag(x, y) {
         if (inIframe) {
-          ipc.emit("42_TRANSFER_DRAG", { x, y })
+          ipc.emit("42_TF_^_DRAG", { x, y })
         } else {
           system.transfer.setCurrentZone(x, y)
           system.transfer.items.drag?.(x, y)
@@ -441,24 +460,18 @@ class Transferable extends Trait {
         await startReady
 
         if (inIframe) {
-          const { action } = await ipc.send("42_TRANSFER_STOP", { x, y })
-
-          if (action === "drop") {
-            for (const item of system.transfer.items) {
-              const target = document.querySelector(`#${item.target.id}`)
-              target?.remove()
-            }
-          } else if (action === "revert") {
-            for (const item of system.transfer.items) {
-              const target = document.querySelector(`#${item.target.id}`)
-              target?.classList.remove("hide")
-            }
+          ipc.emit("42_TF_^_STOP", { x, y })
+          for (const item of system.transfer.items) {
+            const target = document.querySelector(`#${item.target.id}`)
+            item.target = target
           }
-        } else {
-          await system.transfer.unsetCurrentZone(x, y)
         }
 
-        system.transfer.cleanup()
+        await system.transfer.unsetCurrentZone(x, y)
+        system.transfer.handleSelection()
+
+        for (const iframeDz of iframeDropzones) iframeDz.destroy()
+        iframeDropzones.length = 0
       },
     })
   }
