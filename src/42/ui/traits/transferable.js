@@ -64,7 +64,7 @@ function deserializeItems(items, parentX, parentY) {
   }
 }
 
-export class IframeDropzoneHint {
+class IframeDropzoneHint {
   constructor(iframe) {
     this.iframe = iframe
     this.bus = ipc.to(iframe)
@@ -324,9 +324,10 @@ system.transfer = {
 
   cleanup() {
     const dropzoneTarget =
-      system.transfer.currentZone?.target ?? system.transfer.items.dropzoneId
+      system.transfer.currentZone?.target ??
+      (system.transfer.items.dropzoneId
         ? document.querySelector(`#${system.transfer.items.dropzoneId}`)
-        : undefined
+        : undefined)
 
     if (dropzoneTarget) {
       const selectable = dropzoneTarget[Trait.INSTANCES]?.selectable
@@ -360,6 +361,7 @@ class Transferable extends Trait {
       this.config.dropzoneHintConfig = { name: this.config.dropzoneHintConfig }
     }
 
+    this.config.dropzoneHintConfig.signal ??= this.cancel.signal
     this.config.dropzoneHintConfig.selector ??= this.config.selector
     this.config.dropzoneHintConfig.hoverScroll ??= this.config.hoverScroll
 
