@@ -27,7 +27,7 @@ export class SlideDropzoneHint {
 
   async updateRects(cb) {
     this.rects.length = 0
-    await getRects(this.config.selector, {
+    return getRects(this.config.selector, {
       root: this.el,
       intersecting: true,
     }).then((rects) => {
@@ -35,37 +35,70 @@ export class SlideDropzoneHint {
         this.rects.push(item)
         cb?.(item)
       }
+
+      return rects
     })
   }
 
   enter(items) {
     this.el.classList.add("dragover")
 
-    let enterCss = ""
+    let enterCss = []
     let offset = 0
 
     this.css.transition.disable()
+    const { selector } = this.config
+
+    let previousY
 
     this.updateRects((rect) => {
       for (const item of items) {
+        if (previousY !== rect.y) {
+          if (enterCss.length > 0) {
+            enterCss = enterCss.map((css) =>
+              css.replace(":is(*)", `:nth-of-type(-n+${rect.index})`)
+            )
+            enterCss.push(
+              `${selector}:nth-child(${rect.index}) {
+                /* rotate: 10deg !important; */
+                margin-right: ${offset}px;
+              }`
+            )
+          }
+
+          offset = 0
+        }
+
+        previousY = rect.y
+
         if (
           item.target.id === rect.target.id &&
           !rect.target.classList.contains("hide")
         ) {
           offset += item.width + this.colGap
           const i = rect.index + 1
-          enterCss += `${this.config.selector}:nth-of-type(n+${i}) {
-            translate: ${offset}px 0;
-          }`
+          enterCss.push(
+            `${selector}:nth-of-type(n+${i}):is(*) {
+              translate: ${offset}px 0;
+            }`
+          )
           rect.target.classList.add("hide")
         }
       }
-    }).then(() => {
-      this.css.enter.update(enterCss)
+    }).then((rects) => {
+      enterCss.push(
+        `${selector}:nth-child(${rects.length}) {
+          /* rotate: 10deg !important; */
+          margin-right: ${offset}px;
+        }`
+      )
+      this.css.enter.update(enterCss.join("\n"))
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           this.css.transition.update(`${this.config.selector} {
-            transition: translate ${this.speed}ms ease-in-out !important;
+            transition:
+              margin-right ${this.speed}ms ease-in-out,
+              translate ${this.speed}ms ease-in-out !important;
           }`)
         })
       })
