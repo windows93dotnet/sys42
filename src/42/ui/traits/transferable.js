@@ -109,6 +109,7 @@ class IframeDropzoneHint {
   }
 
   async destroy() {
+    await this.bus.send("42_TF_v_CLEANUP")
     // TODO: debug ipc Sender.destroy
     // this.bus.destroy()
   }
@@ -184,12 +185,19 @@ if (inIframe) {
     })
     .on("42_TF_v_REQUEST_EFFECT", async (keys) => {
       context.keys = keys
-      await setEffect()
+      await setEffect({ bypassIframeIgnore: true })
       delete context.keys
       return system.transfer.effect
     })
+    .on("42_TF_v_CLEANUP", async () => {
+      cleanHints()
+    })
 } else {
   ipc
+    .on("42_TF_^_REQUEST_EFFECT", (keys) => {
+      context.keys = keys
+      setEffect()
+    })
     .on(
       "42_TF_^_START",
       async ({ x, y, items, dropzoneId, itemsHintConfig }, { iframe }) => {
@@ -266,27 +274,27 @@ const effectToCursor = {
 }
 
 function applyEffect(name) {
-  // if (system.transfer.effect === name) return
-
   system.transfer.effect = name
 
   if (context.fromIframe) {
     context.originIframeDropzone?.bus.emit("42_TF_v_EFFECT", name)
-  } else {
-    setCursor(effectToCursor[name])
   }
+
+  setCursor(effectToCursor[name])
 }
 
-async function setEffect() {
+async function setEffect(options) {
+  if (inIframe && options?.bypassIframeIgnore !== true) return
+
   if (system.transfer.currentZone) {
+    const keys = context.keys ?? keyboard.keys
     if (system.transfer.currentZone.isIframe) {
       const effect = await system.transfer.currentZone.hint.bus.send(
         "42_TF_v_REQUEST_EFFECT",
-        keyboard.keys
+        keys
       )
       applyEffect(effect)
     } else {
-      const keys = context.keys ?? keyboard.keys
       for (const [key, effect] of keyToEffect) {
         if (key in keys) return applyEffect(effect)
       }
@@ -494,12 +502,12 @@ class Transferable extends Trait {
         let targets
 
         forgetKeyevents = listen({
-          "keydown || keyup"() {
-            // if (inIframe) {
-            //   console.log("keyboard in iframe")
-            // } else {
-            // }
-            setEffect()
+          async "keydown || keyup"() {
+            if (inIframe) {
+              ipc.emit("42_TF_^_REQUEST_EFFECT", keyboard.keys)
+            } else {
+              setEffect()
+            }
           },
         })
 
