@@ -72,17 +72,18 @@ function cleanHints() {
   if (system.transfer.items) system.transfer.items.length = 0
   system.transfer.items = undefined
   system.transfer.currentZone = undefined
+  removeEffect()
 }
 
 class IframeDropzoneHint {
   constructor(iframe) {
-    this.iframe = iframe
+    this.el = iframe
     this.bus = ipc.to(iframe)
     iframeDropzones.push(this)
   }
 
   enter(items, x, y) {
-    const { x: parentX, y: parentY } = this.iframe.getBoundingClientRect()
+    const { x: parentX, y: parentY } = this.el.getBoundingClientRect()
     this.bus.emit("42_TF_v_ENTER", serializeItems({ x, y, parentX, parentY }))
   }
 
@@ -178,15 +179,16 @@ if (inIframe) {
       clear(context)
       return res
     })
-  // .on("42_TF_v_EFFECT", (effect) => {
-  //   console.log(123, effect)
-  //   applyEffect(effect)
-  // })
+    .on("42_TF_v_EFFECT", (effect) => {
+      applyEffect(effect)
+    })
 } else {
   ipc
     .on(
       "42_TF_^_START",
       async ({ x, y, items, dropzoneId, itemsHintConfig }, { iframe }) => {
+        context.fromIframe = true
+
         const iframeRect = iframe.getBoundingClientRect()
         const { borderTopWidth, borderLeftWidth } = getComputedStyle(iframe)
         context.parentX = iframeRect.x + Number.parseInt(borderLeftWidth, 10)
@@ -203,7 +205,7 @@ if (inIframe) {
         system.transfer.items = itemsHint
         system.transfer.itemsHintConfig = itemsHintConfig
         system.transfer.items.dropzoneId = dropzoneId
-        system.transfer.findTransferZones(x, y)
+        const zoneReady = system.transfer.findTransferZones(x, y)
         system.transfer.items.start(x, y, items)
 
         for (const item of system.transfer.items) {
@@ -211,6 +213,15 @@ if (inIframe) {
         }
 
         system.transfer.items.drag(x, y)
+
+        zoneReady.then(() => {
+          for (const iframeDz of iframeDropzones) {
+            if (iframeDz.el === iframe) {
+              context.originIframeDropzone = iframeDz
+              break
+            }
+          }
+        })
       }
     )
     .on("42_TF_^_DRAG", ({ x, y }) => {
@@ -231,9 +242,9 @@ if (inIframe) {
           .then(() => system.transfer.handleSelection())
       }
     })
-    .on("42_TF_^_EFFECT", (effect) => {
-      applyEffect(effect)
-    })
+  // .on("42_TF_^_EFFECT", (effect) => {
+  //   applyEffect(effect)
+  // })
 }
 
 /* effect
@@ -252,45 +263,35 @@ const effectToCursor = {
 }
 
 function applyEffect(name) {
-  // if (system.transfer.effect === name) return
-  system.transfer.effect = name
-  setCursor(effectToCursor[name])
-  // if (inIframe) ipc.emit("42_TF_^_EFFECT", name)
+  if (system.transfer.effect === name) return
 
-  // if (inIframe) return
-  // if (system.transfer.effect === name) return
-  // system.transfer.effect = name
-  // setCursor(effectToCursor[name])
-  // /* if (inIframe) ipc.emit("42_TF_^_EFFECT", name)
-  // else */ if (
-  //   system.transfer.currentZone &&
-  //   system.transfer.currentZone.isIframe
-  // ) {
-  //   console.log(system.transfer.currentZone.hint.bus)
-  //   system.transfer.currentZone.hint.bus.emit("42_TF_v_EFFECT", name)
-  // }
+  system.transfer.effect = name
+
+  if (context.fromIframe) {
+    context.originIframeDropzone?.bus.emit("42_TF_v_EFFECT", name)
+  } else {
+    setCursor(effectToCursor[name])
+  }
 }
 
 function setEffect() {
-  for (const [key, effect] of keyToEffect) {
-    if (key in keyboard.keys) return applyEffect(effect)
+  if (system.transfer.currentZone) {
+    if (system.transfer.currentZone.isIframe) {
+      console.log("in iframe")
+    } else {
+      for (const [key, effect] of keyToEffect) {
+        if (key in keyboard.keys) return applyEffect(effect)
+      }
+
+      applyEffect("move")
+    }
+  } else {
+    applyEffect("none")
   }
-
-  applyEffect("move")
-
-  // if (system.transfer.currentZone && !system.transfer.currentZone.isIframe) {
-  //   for (const [key, effect] of keyToEffect) {
-  //     if (key in keyboard.keys) return applyEffect(effect)
-  //   }
-
-  //   applyEffect("move")
-  // } else {
-  //   applyEffect("none")
-  // }
 }
 
 function removeEffect() {
-  system.transfer.effect = "none"
+  system.transfer.effect = undefined
   setCursor()
 }
 
@@ -300,7 +301,7 @@ function removeEffect() {
 system.transfer = {
   dropzones: new Map(),
 
-  effect: "none",
+  effect: undefined,
 
   async makeHints({ itemsHintConfig, dropzoneHintConfig }, el) {
     const undones = []
