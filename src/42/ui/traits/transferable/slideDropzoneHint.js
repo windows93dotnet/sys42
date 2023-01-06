@@ -1,6 +1,7 @@
 import { animateTo } from "../../../fabric/dom/animate.js"
 import getRects from "../../../fabric/dom/getRects.js"
 import appendCSS from "../../../fabric/dom/appendCSS.js"
+import defer from "../../../fabric/type/promise/defer.js"
 
 const { parseInt, isNaN } = Number
 
@@ -45,6 +46,8 @@ export class SlideDropzoneHint {
 
     let enterCss = []
     let offset = 0
+
+    this.enterReady = defer()
 
     this.css.transition.disable()
     const { selector } = this.config
@@ -100,13 +103,15 @@ export class SlideDropzoneHint {
               margin-right ${this.speed}ms ease-in-out,
               translate ${this.speed}ms ease-in-out !important;
           }`)
+          this.enterReady.resolve()
         })
       })
     })
   }
 
-  leave() {
+  async leave() {
     this.el.classList.remove("dragover")
+    await this.enterReady
     this.rects.length = 0
     this.css.enter.disable()
   }
