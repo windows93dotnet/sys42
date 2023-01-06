@@ -9,7 +9,7 @@ export class SlideDropzoneHint {
   constructor(el, options) {
     this.el = el
     this.config = { ...options }
-    this.speed = 180
+    this.speed = this.config.animationSpeed
     this.rects = []
 
     const { signal } = this.config
