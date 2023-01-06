@@ -9,6 +9,8 @@ import settings from "../../core/settings.js"
 import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
 import HoverScroll from "../classes/HoverScroll.js"
+import setCursor from "../../fabric/dom/setCursor.js"
+import keyboard from "../../core/devices/keyboard.js"
 
 const DEFAULTS = {
   selector: ":scope > *",
@@ -226,6 +228,43 @@ if (inIframe) {
     })
 }
 
+/* effect
+========= */
+
+const keyToEffect = [
+  ["Control", "copy"],
+  ["Shift", "link"],
+]
+
+const effectToCursor = {
+  none: "no-drop",
+  move: "grabbing",
+  copy: "copy",
+  link: "alias",
+}
+
+function applyEffect(name) {
+  system.transfer.effect = name
+  setCursor(effectToCursor[name])
+}
+
+function setEffect() {
+  if (system.transfer.currentZone && !system.transfer.currentZone.isIframe) {
+    for (const [key, effect] of keyToEffect) {
+      if (key in keyboard.keys) return applyEffect(effect)
+    }
+
+    applyEffect("move")
+  } else {
+    applyEffect("none")
+  }
+}
+
+function removeEffect() {
+  system.transfer.effect = "none"
+  setCursor()
+}
+
 /* system
 ========= */
 
@@ -263,14 +302,16 @@ system.transfer = {
     ]).then((rects) => {
       system.transfer.zones = rects
       for (const rect of rects) {
-        rect.hint =
-          rect.target.localName === "iframe"
-            ? new IframeDropzoneHint(rect.target)
-            : system.transfer.dropzones.get(rect.target)
-        rect.hoverScroll = new HoverScroll(
-          rect.target,
-          rect.hint.config?.hoverScroll
-        )
+        if (rect.target.localName === "iframe") {
+          rect.hint = new IframeDropzoneHint(rect.target)
+          rect.isIframe = true
+        } else {
+          rect.hint = system.transfer.dropzones.get(rect.target)
+          rect.hoverScroll = new HoverScroll(
+            rect.target,
+            rect.hint.config?.hoverScroll
+          )
+        }
       }
 
       if (!inIframe) system.transfer.setCurrentZone(x, y)
@@ -278,6 +319,7 @@ system.transfer = {
   },
 
   setCurrentZone(x, y) {
+    setEffect()
     const { zones, items } = system.transfer
 
     if (zones?.length > 0 === false) return
@@ -285,13 +327,13 @@ system.transfer = {
 
     if (system.transfer.currentZone) {
       if (inRect(point, system.transfer.currentZone)) {
-        system.transfer.currentZone.hoverScroll.update({ x, y }, () => {
+        system.transfer.currentZone.hoverScroll?.update({ x, y }, () => {
           system.transfer.currentZone?.hint.dragover(items, x, y)
         })
         return system.transfer.currentZone.hint.dragover(items, x, y)
       }
 
-      system.transfer.currentZone.hoverScroll.clear()
+      system.transfer.currentZone.hoverScroll?.clear()
       system.transfer.currentZone.hint.leave(items, x, y)
       system.transfer.currentZone = undefined
     }
@@ -300,7 +342,7 @@ system.transfer = {
       if (inRect(point, dropzone)) {
         system.transfer.currentZone = dropzone
         system.transfer.currentZone.hint.enter(items, x, y)
-        system.transfer.currentZone.hoverScroll.update({ x, y }, () => {
+        system.transfer.currentZone.hoverScroll?.update({ x, y }, () => {
           system.transfer.currentZone?.hint.dragover(items, x, y)
         })
         return system.transfer.currentZone.hint.dragover(items, x, y)
@@ -452,6 +494,7 @@ class Transferable extends Trait {
       },
 
       async stop(x, y) {
+        removeEffect()
         await startReady
 
         if (inIframe) {
