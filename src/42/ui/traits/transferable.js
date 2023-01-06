@@ -11,6 +11,7 @@ import removeItem from "../../fabric/type/array/removeItem.js"
 import HoverScroll from "../classes/HoverScroll.js"
 import setCursor from "../../fabric/dom/setCursor.js"
 import keyboard from "../../core/devices/keyboard.js"
+import listen from "../../fabric/event/listen.js"
 
 const DEFAULTS = {
   selector: ":scope > *",
@@ -177,6 +178,10 @@ if (inIframe) {
       clear(context)
       return res
     })
+  // .on("42_TF_v_EFFECT", (effect) => {
+  //   console.log(123, effect)
+  //   applyEffect(effect)
+  // })
 } else {
   ipc
     .on(
@@ -226,6 +231,9 @@ if (inIframe) {
           .then(() => system.transfer.handleSelection())
       }
     })
+    .on("42_TF_^_EFFECT", (effect) => {
+      applyEffect(effect)
+    })
 }
 
 /* effect
@@ -244,20 +252,41 @@ const effectToCursor = {
 }
 
 function applyEffect(name) {
+  // if (system.transfer.effect === name) return
   system.transfer.effect = name
   setCursor(effectToCursor[name])
+  // if (inIframe) ipc.emit("42_TF_^_EFFECT", name)
+
+  // if (inIframe) return
+  // if (system.transfer.effect === name) return
+  // system.transfer.effect = name
+  // setCursor(effectToCursor[name])
+  // /* if (inIframe) ipc.emit("42_TF_^_EFFECT", name)
+  // else */ if (
+  //   system.transfer.currentZone &&
+  //   system.transfer.currentZone.isIframe
+  // ) {
+  //   console.log(system.transfer.currentZone.hint.bus)
+  //   system.transfer.currentZone.hint.bus.emit("42_TF_v_EFFECT", name)
+  // }
 }
 
 function setEffect() {
-  if (system.transfer.currentZone && !system.transfer.currentZone.isIframe) {
-    for (const [key, effect] of keyToEffect) {
-      if (key in keyboard.keys) return applyEffect(effect)
-    }
-
-    applyEffect("move")
-  } else {
-    applyEffect("none")
+  for (const [key, effect] of keyToEffect) {
+    if (key in keyboard.keys) return applyEffect(effect)
   }
+
+  applyEffect("move")
+
+  // if (system.transfer.currentZone && !system.transfer.currentZone.isIframe) {
+  //   for (const [key, effect] of keyToEffect) {
+  //     if (key in keyboard.keys) return applyEffect(effect)
+  //   }
+
+  //   applyEffect("move")
+  // } else {
+  //   applyEffect("none")
+  // }
 }
 
 function removeEffect() {
@@ -438,6 +467,7 @@ class Transferable extends Trait {
     }
 
     let startReady
+    let forgetKeyevents
 
     this.dragger = new Dragger(this.el, {
       signal,
@@ -453,6 +483,12 @@ class Transferable extends Trait {
         }
 
         let targets
+
+        forgetKeyevents = listen({
+          "keydown || keyup"() {
+            setEffect()
+          },
+        })
 
         cleanHints()
         system.transfer.items = itemsHint
@@ -495,6 +531,7 @@ class Transferable extends Trait {
 
       async stop(x, y) {
         removeEffect()
+        forgetKeyevents()
         await startReady
 
         if (inIframe) {
