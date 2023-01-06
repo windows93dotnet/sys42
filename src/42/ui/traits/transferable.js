@@ -182,6 +182,12 @@ if (inIframe) {
     .on("42_TF_v_EFFECT", (effect) => {
       applyEffect(effect)
     })
+    .on("42_TF_v_REQUEST_EFFECT", async (keys) => {
+      context.keys = keys
+      await setEffect()
+      delete context.keys
+      return system.transfer.effect
+    })
 } else {
   ipc
     .on(
@@ -242,9 +248,6 @@ if (inIframe) {
           .then(() => system.transfer.handleSelection())
       }
     })
-  // .on("42_TF_^_EFFECT", (effect) => {
-  //   applyEffect(effect)
-  // })
 }
 
 /* effect
@@ -263,7 +266,7 @@ const effectToCursor = {
 }
 
 function applyEffect(name) {
-  if (system.transfer.effect === name) return
+  // if (system.transfer.effect === name) return
 
   system.transfer.effect = name
 
@@ -274,13 +277,18 @@ function applyEffect(name) {
   }
 }
 
-function setEffect() {
+async function setEffect() {
   if (system.transfer.currentZone) {
     if (system.transfer.currentZone.isIframe) {
-      console.log("in iframe")
+      const effect = await system.transfer.currentZone.hint.bus.send(
+        "42_TF_v_REQUEST_EFFECT",
+        keyboard.keys
+      )
+      applyEffect(effect)
     } else {
+      const keys = context.keys ?? keyboard.keys
       for (const [key, effect] of keyToEffect) {
-        if (key in keyboard.keys) return applyEffect(effect)
+        if (key in keys) return applyEffect(effect)
       }
 
       applyEffect("move")
@@ -487,6 +495,10 @@ class Transferable extends Trait {
 
         forgetKeyevents = listen({
           "keydown || keyup"() {
+            // if (inIframe) {
+            //   console.log("keyboard in iframe")
+            // } else {
+            // }
             setEffect()
           },
         })
