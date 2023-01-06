@@ -28,6 +28,7 @@ const DEFAULTS = {
 
   dropzoneHintConfig: {
     name: "slide",
+    animationSpeed: 180,
   },
 }
 
@@ -341,7 +342,7 @@ system.transfer = {
     return { itemsHint, dropzoneHint }
   },
 
-  async findTransferZones(x, y) {
+  async findTransferZones(/* x, y */) {
     return getRects([
       ...system.transfer.dropzones.keys(),
       ...document.querySelectorAll("iframe"),
@@ -360,7 +361,7 @@ system.transfer = {
         }
       }
 
-      if (!inIframe) system.transfer.setCurrentZone(x, y)
+      // system.transfer.setCurrentZone(x, y)
     })
   },
 
@@ -483,6 +484,7 @@ class Transferable extends Trait {
       system.transfer.dropzones.set(this.el, dropzoneHint)
     }
 
+    let startPromise
     let startReady
     let forgetKeyevents
 
@@ -500,6 +502,7 @@ class Transferable extends Trait {
         }
 
         let targets
+        startReady = false
 
         forgetKeyevents = listen({
           async "keydown || keyup"() {
@@ -527,7 +530,7 @@ class Transferable extends Trait {
           } else targets = [target]
         } else targets = [target]
 
-        startReady = Promise.all([
+        startPromise = Promise.all([
           system.transfer.findTransferZones(x, y),
           getRects(targets).then((rects) => {
             system.transfer.items.start?.(x, y, rects)
@@ -538,10 +541,15 @@ class Transferable extends Trait {
               )
             }
           }),
-        ])
+        ]).then(() => {
+          startReady = true
+          system.transfer.setCurrentZone(x, y)
+          system.transfer.items.drag?.(x, y)
+        })
       },
 
       drag(x, y) {
+        if (!startReady) return
         if (inIframe) {
           ipc.emit("42_TF_^_DRAG", { x, y })
         } else {
@@ -551,9 +559,10 @@ class Transferable extends Trait {
       },
 
       async stop(x, y) {
+        startReady = false
         removeEffect()
         forgetKeyevents()
-        await startReady
+        await startPromise
 
         if (inIframe) {
           ipc.emit("42_TF_^_STOP", { x, y })
