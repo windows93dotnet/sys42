@@ -49,21 +49,22 @@ export class SlideDropzoneHint {
     })
   }
 
-  async enter(items) {
+  async enter(items, x, y) {
     this.el.classList.add("dragover")
+    this.css.transition.disable()
 
-    let enterCss = []
-    let offset = 0
+    // Temporary disable dragover
+    // --------------------------
+    this.dragover = noop
 
     this.enterReady = defer()
-
-    this.css.transition.disable()
-    const { selector } = this.config
-
-    let previousY
-
     this.inOriginalDropzone = items.dropzoneId === this.el.id
     this.newIndex = this.inOriginalDropzone ? items[0]?.index : undefined
+
+    const { selector } = this.config
+    let enterCss = []
+    let offset = 0
+    let previousY
 
     // Get all visible items bounding rects and save css with empty holes
     // ------------------------------------------------------------------
@@ -129,6 +130,7 @@ export class SlideDropzoneHint {
     // Enable dragover
     // ---------------
     this.dragover = (items, x, y) => {
+      this.newIndex = undefined
       const point = { x, y }
       for (const rect of this.rects) {
         if (inRect(point, rect)) {
@@ -143,11 +145,17 @@ export class SlideDropzoneHint {
         }
       }
 
-      this.css.dragover.update(`
-        ${this.config.selector}:nth-child(n+${this.newIndex + 1}) {
-          translate: ${items[0].width + this.colGap}px 0;
-        }`)
+      if (this.newIndex === undefined) {
+        this.css.dragover.disable()
+      } else {
+        this.css.dragover.update(`
+          ${this.config.selector}:nth-child(n+${this.newIndex + 1}) {
+            translate: ${items[0].width + this.colGap}px 0;
+          }`)
+      }
     }
+
+    this.dragover(items, x, y)
 
     this.enterReady.resolve()
   }
@@ -180,6 +188,7 @@ export class SlideDropzoneHint {
       if (!(this.inOriginalDropzone && this.newIndex === item.index)) {
         if (this.newIndex === undefined) this.el.append(item.target)
         else {
+          console.log("bip")
           const indexedElement = this.el.querySelector(
             `${this.config.selector}:nth-child(${this.newIndex + 1})`
           )
@@ -189,23 +198,26 @@ export class SlideDropzoneHint {
 
       requestAnimationFrame(() => {
         item.target.classList.remove("hide")
-        const { x, y } = item.target.getBoundingClientRect()
-        item.target.classList.add("invisible")
+        requestAnimationFrame(() => {
+          const { x, y } = item.target.getBoundingClientRect()
+          console.log(x, y)
+          item.target.classList.add("invisible")
 
-        if (items.config.dropAnimation) {
-          undones.push(
-            animateTo(item.ghost, {
-              translate: `${x}px ${y}px`,
-              ...items.dropAnimation(item),
-            }).then(() => {
-              item.ghost.remove()
-              item.target.classList.remove("invisible")
-            })
-          )
-        } else {
-          item.ghost.remove()
-          item.target.classList.remove("invisible")
-        }
+          if (items.config.dropAnimation) {
+            undones.push(
+              animateTo(item.ghost, {
+                translate: `${x}px ${y}px`,
+                ...items.dropAnimation(item),
+              }).then(() => {
+                item.ghost.remove()
+                item.target.classList.remove("invisible")
+              })
+            )
+          } else {
+            item.ghost.remove()
+            item.target.classList.remove("invisible")
+          }
+        })
       })
     }
 
