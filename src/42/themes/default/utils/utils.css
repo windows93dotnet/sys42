@@ -17,8 +17,11 @@
 .reveal:not(:hover,:active,:focus,:focus-within) { opacity: 0; }
 *:is(:hover,:active,:focus,:focus-within) > .reveal { opacity: 1; }
 
-/* [hidden], */
 .hide { display: none !important; }
+.invisible { visibility: hidden !important; }
+
+.opacity-1 { opacity: 1 !important; }
+.opacity-0 { opacity: 0 !important; }
 
 .motionless, :is(:root,body).motionless *,
 .animation-0, :is(:root,body).animation-0 * {
