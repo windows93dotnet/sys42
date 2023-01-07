@@ -374,7 +374,8 @@ system.transfer = {
 
     if (system.transfer.currentZone) {
       if (inRect(point, system.transfer.currentZone)) {
-        system.transfer.currentZone.hoverScroll?.update({ x, y }, () => {
+        system.transfer.currentZone.hoverScroll?.update({ x, y }, async () => {
+          await system.transfer.currentZone?.hint.updateRects()
           system.transfer.currentZone?.hint.dragover(items, x, y)
         })
         return system.transfer.currentZone.hint.dragover(items, x, y)
@@ -389,7 +390,8 @@ system.transfer = {
       if (inRect(point, dropzone)) {
         system.transfer.currentZone = dropzone
         system.transfer.currentZone.hint.enter(items, x, y)
-        system.transfer.currentZone.hoverScroll?.update({ x, y }, () => {
+        system.transfer.currentZone.hoverScroll?.update({ x, y }, async () => {
+          await system.transfer.currentZone?.hint.updateRects()
           system.transfer.currentZone?.hint.dragover(items, x, y)
         })
         return system.transfer.currentZone.hint.dragover(items, x, y)
@@ -400,7 +402,7 @@ system.transfer = {
   async unsetCurrentZone(x, y) {
     let res
     let finished
-    const { items } = system.transfer
+    const { items, zones } = system.transfer
 
     if (system.transfer.currentZone) {
       res = await system.transfer.currentZone.hint.drop(items, x, y)
@@ -417,6 +419,8 @@ system.transfer = {
 
       await finished
     }
+
+    for (const dropzone of zones) dropzone.hoverScroll?.clear()
 
     return res
   },
