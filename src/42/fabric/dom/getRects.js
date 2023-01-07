@@ -1,9 +1,19 @@
+const { indexOf } = Array.prototype
+
 export async function getRects(elements, options) {
   if (options?.nodeType === Node.ELEMENT_NODE) options = { root: options }
   const root = options?.root ?? document.scrollingElement
 
   if (typeof elements === "string") {
     elements = root.querySelectorAll(elements)
+  }
+
+  let all
+  if (options?.all) {
+    all =
+      typeof options.all === "string"
+        ? root.querySelectorAll(options.all)
+        : options.all
   }
 
   return new Promise((resolve) => {
@@ -21,8 +31,9 @@ export async function getRects(elements, options) {
             const { target, boundingClientRect, isIntersecting } = entries[i]
             if (options?.intersecting === true && !isIntersecting) continue
             if (options?.intersecting === false && isIntersecting) continue
+
             const rect = boundingClientRect.toJSON()
-            rect.index = i
+            rect.index = all ? indexOf.call(all, target) : i
             rect.isIntersecting = isIntersecting
             rect.target = target
 
@@ -30,7 +41,6 @@ export async function getRects(elements, options) {
             rect.right -= rootRect.x
             rect.top -= rootRect.y
             rect.bottom -= rootRect.y
-
             rect.x = rect.left
             rect.y = rect.top
 
@@ -41,10 +51,12 @@ export async function getRects(elements, options) {
             const { target, boundingClientRect, isIntersecting } = entries[i]
             if (options?.intersecting === true && !isIntersecting) continue
             if (options?.intersecting === false && isIntersecting) continue
+
             const rect = boundingClientRect.toJSON()
-            rect.index = i
+            rect.index = all ? indexOf.call(all, target) : i
             rect.isIntersecting = isIntersecting
             rect.target = target
+
             rects.push(rect)
           }
         }

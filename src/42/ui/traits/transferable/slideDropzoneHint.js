@@ -59,7 +59,7 @@ export class SlideDropzoneHint {
         if (previousY !== rect.y) {
           if (enterCss.length > 0) {
             enterCss = enterCss.map((css) =>
-              css.replace(":is(*)", `:nth-of-type(-n+${rect.index})`)
+              css.replace(":is(*)", `:nth-child(-n+${rect.index})`)
             )
             enterCss.push(
               `${selector}:nth-child(${rect.index}) {
@@ -81,7 +81,7 @@ export class SlideDropzoneHint {
           offset += item.width + this.colGap
           const i = rect.index + 1
           enterCss.push(
-            `${selector}:nth-of-type(n+${i}):is(*) {
+            `${selector}:nth-child(n+${i}):is(*) {
               translate: ${offset}px 0;
             }`
           )
@@ -135,7 +135,6 @@ export class SlideDropzoneHint {
 
     for (const item of items) {
       this.el.append(item.target)
-
       item.target.classList.remove("hide")
       const { x, y } = item.target.getBoundingClientRect()
       item.target.classList.add("hide")

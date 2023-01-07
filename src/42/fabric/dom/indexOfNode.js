@@ -10,4 +10,10 @@ export function indexOfNode(node, parent = node?.parentElement) {
   return -1
 }
 
+export function getNodeIndex(node) {
+  let i = 0
+  while ((node = node.previousSibling)) i++
+  return i
+}
+
 export default indexOfNode

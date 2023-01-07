@@ -452,6 +452,11 @@ class Transferable extends Trait {
   constructor(el, options) {
     super(el, options)
 
+    if (options?.list) {
+      this.list = options?.list
+      delete options.list
+    }
+
     this.config = configure(options)
     this.config.selector = ensureScopeSelector(this.config.selector, this.el)
 
@@ -466,6 +471,7 @@ class Transferable extends Trait {
     this.config.dropzoneHintConfig.signal ??= this.cancel.signal
     this.config.dropzoneHintConfig.selector ??= this.config.selector
     this.config.dropzoneHintConfig.hoverScroll ??= this.config.hoverScroll
+    this.config.dropzoneHintConfig.list = this.list
 
     this.init()
   }
@@ -506,11 +512,8 @@ class Transferable extends Trait {
 
         forgetKeyevents = listen({
           async "keydown || keyup"() {
-            if (inIframe) {
-              ipc.emit("42_TF_^_REQUEST_EFFECT", keyboard.keys)
-            } else {
-              setEffect()
-            }
+            if (inIframe) ipc.emit("42_TF_^_REQUEST_EFFECT", keyboard.keys)
+            else setEffect()
           },
         })
 
@@ -532,7 +535,13 @@ class Transferable extends Trait {
 
         startPromise = Promise.all([
           system.transfer.findTransferZones(x, y),
-          getRects(targets).then((rects) => {
+          getRects(targets, { all: this.config.selector }).then((rects) => {
+            if (this.list) {
+              for (const item of rects) {
+                item.data = this.list[item.index]
+              }
+            }
+
             system.transfer.items.start?.(x, y, rects)
             if (inIframe) {
               ipc.emit(
