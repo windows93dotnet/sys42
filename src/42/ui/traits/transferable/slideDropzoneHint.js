@@ -34,22 +34,36 @@ export class SlideDropzoneHint {
     this.dragover = noop
   }
 
-  async updateRects(cb) {
+  async updateRects(cb, options) {
     this.rects.length = 0
     return getRects(this.config.selector, {
       root: this.el,
       intersecting: true,
     }).then((rects) => {
-      for (const item of rects) {
-        this.rects.push(item)
-        cb?.(item)
+      if (options?.offsetX) {
+        for (let i = 0, l = rects.length; i < l; i++) {
+          const item = rects[i]
+          if (options.fromIndex >= i) {
+            item.left -= options.offsetX
+            item.right -= options.offsetX
+            item.x = item.left
+          }
+
+          this.rects.push(item)
+          cb?.(item)
+        }
+      } else {
+        for (const item of rects) {
+          this.rects.push(item)
+          cb?.(item)
+        }
       }
 
       return rects
     })
   }
 
-  async enter(items, x, y) {
+  async enter(items) {
     this.el.classList.add("dragover")
     this.css.transition.disable()
 
@@ -58,8 +72,8 @@ export class SlideDropzoneHint {
     this.dragover = noop
 
     this.enterReady = defer()
-    this.inOriginalDropzone = items.dropzoneId === this.el.id
-    this.newIndex = this.inOriginalDropzone ? items[0]?.index : undefined
+    this.inOriginalDropzone ??= items.dropzoneId === this.el.id
+    this.newIndex = undefined
 
     const { selector } = this.config
     let enterCss = []
@@ -111,12 +125,24 @@ export class SlideDropzoneHint {
       }`
     )
 
+    // Add empty hole before bounding rects update
+    // if item is from dropzone to prevent flickering
+    // ----------------------------------------------
+    let updateRectOptions
+    if (this.inOriginalDropzone && items[0]) {
+      const offsetX = items[0].width + this.colGap
+      updateRectOptions = { fromIndex: items[0].index, offsetX }
+      this.css.dragover.update(`
+        ${this.config.selector}:nth-child(n+${items[0].index + 1}) {
+          translate: ${offsetX}px 0;
+        }`)
+    }
+
     // Update bounding rects without dragged items
     // -------------------------------------------
-    await this.updateRects()
+    await this.updateRects(undefined, updateRectOptions)
 
     // Animate empty holes
-    // -------------------
     this.css.enter.update(enterCss.join("\n"))
     await paint()
     this.css.transition.update(`
@@ -130,14 +156,13 @@ export class SlideDropzoneHint {
     // Enable dragover
     // ---------------
     this.dragover = (items, x, y) => {
-      this.newIndex = undefined
       const point = { x, y }
       for (const rect of this.rects) {
         if (inRect(point, rect)) {
           this.newIndex = (
-            this.orientation === "horizontal"
-              ? point.x > rect.x + rect.width / 2
-              : point.y > rect.y + rect.height / 2
+            this.orientation === "vertical"
+              ? point.y > rect.y + rect.height / 2
+              : point.x > rect.x + rect.width / 2
           )
             ? rect.index + 1
             : rect.index
@@ -145,9 +170,7 @@ export class SlideDropzoneHint {
         }
       }
 
-      if (this.newIndex === undefined) {
-        this.css.dragover.disable()
-      } else {
+      if (this.newIndex !== undefined) {
         this.css.dragover.update(`
           ${this.config.selector}:nth-child(n+${this.newIndex + 1}) {
             translate: ${items[0].width + this.colGap}px 0;
@@ -155,12 +178,13 @@ export class SlideDropzoneHint {
       }
     }
 
-    this.dragover(items, x, y)
+    // this.dragover(items, x, y)
 
     this.enterReady.resolve()
   }
 
   async leave() {
+    this.inOriginalDropzone = false
     this.el.classList.remove("dragover")
     await this.enterReady
     this.rects.length = 0
@@ -169,6 +193,7 @@ export class SlideDropzoneHint {
   }
 
   async revert(items, finished) {
+    this.inOriginalDropzone = undefined
     this.css.enter.enable()
     await finished
     this.css.transition.disable()
@@ -178,6 +203,7 @@ export class SlideDropzoneHint {
 
   async drop(items) {
     this.leave()
+    this.inOriginalDropzone = undefined
     this.css.transition.disable()
     this.css.enter.disable()
     this.css.dragover.disable()
@@ -187,6 +213,13 @@ export class SlideDropzoneHint {
     const droppeds = []
     const frag = document.createDocumentFragment()
 
+    const indexedElement =
+      this.newIndex === undefined
+        ? undefined
+        : this.el.querySelector(
+            `${this.config.selector}:nth-child(${this.newIndex + 1})`
+          )
+
     for (const item of items) {
       item.target.classList.remove("hide")
       item.target.classList.add("invisible")
@@ -194,13 +227,8 @@ export class SlideDropzoneHint {
       frag.append(item.target)
     }
 
-    if (this.newIndex === undefined) this.el.append(frag)
-    else {
-      const indexedElement = this.el.querySelector(
-        `${this.config.selector}:nth-child(${this.newIndex + 1})`
-      )
-      this.el.insertBefore(frag, indexedElement)
-    }
+    if (indexedElement) this.el.insertBefore(frag, indexedElement)
+    else this.el.append(frag)
 
     await paint()
     const rects = await getRects(droppeds, {
