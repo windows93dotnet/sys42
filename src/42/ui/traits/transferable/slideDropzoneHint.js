@@ -3,6 +3,8 @@ import getRects from "../../../fabric/dom/getRects.js"
 import { inRect } from "../../../fabric/geometry/point.js"
 import appendCSS from "../../../fabric/dom/appendCSS.js"
 import defer from "../../../fabric/type/promise/defer.js"
+import noop from "../../../fabric/type/function/noop.js"
+import paint from "../../../fabric/type/promise/paint.js"
 
 const { parseInt, isNaN } = Number
 
@@ -19,6 +21,7 @@ export class SlideDropzoneHint {
 
     this.css = {
       enter: appendCSS({ signal }),
+      dragover: appendCSS({ signal }),
       transition: appendCSS({ signal }),
     }
 
@@ -27,6 +30,8 @@ export class SlideDropzoneHint {
     this.rowGap = parseInt(this.styles.rowGap, 10)
     if (isNaN(this.colGap)) this.colGap = 0
     if (isNaN(this.rowGap)) this.rowGap = 0
+
+    this.dragover = noop
   }
 
   async updateRects(cb) {
@@ -44,7 +49,7 @@ export class SlideDropzoneHint {
     })
   }
 
-  enter(items) {
+  async enter(items) {
     this.el.classList.add("dragover")
 
     let enterCss = []
@@ -60,7 +65,9 @@ export class SlideDropzoneHint {
     this.inOriginalDropzone = items.dropzoneId === this.el.id
     this.newIndex = this.inOriginalDropzone ? items[0]?.index : undefined
 
-    this.updateRects((rect) => {
+    // Get all visible items bounding rects and save css with empty holes
+    // ------------------------------------------------------------------
+    const rects = await this.updateRects((rect) => {
       for (const item of items) {
         if (previousY !== rect.y) {
           if (enterCss.length > 0) {
@@ -94,25 +101,55 @@ export class SlideDropzoneHint {
           rect.target.classList.add("hide")
         }
       }
-    }).then((rects) => {
-      enterCss.push(
-        `${selector}:nth-child(${rects.length}) {
-          /* rotate: 10deg !important; */
-          margin-right: ${offset}px;
-        }`
-      )
-      this.css.enter.update(enterCss.join("\n"))
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          this.css.transition.update(`${this.config.selector} {
-            transition:
-              margin-right ${this.speed}ms ease-in-out,
-              translate ${this.speed}ms ease-in-out !important;
-          }`)
-          this.enterReady.resolve()
-        })
-      })
     })
+
+    enterCss.push(
+      `${selector}:nth-child(${rects.length}) {
+        /* rotate: 10deg !important; */
+        margin-right: ${offset}px;
+      }`
+    )
+
+    // Update bounding rects without dragged items
+    // -------------------------------------------
+    await this.updateRects()
+
+    // Animate empty holes
+    // -------------------
+    this.css.enter.update(enterCss.join("\n"))
+    await paint()
+    this.css.transition.update(`
+      ${this.config.selector} {
+        transition:
+          margin-right ${this.speed}ms ease-in-out,
+          translate ${this.speed}ms ease-in-out !important;
+      }`)
+    this.css.enter.disable()
+
+    // Enable dragover
+    // ---------------
+    this.dragover = (items, x, y) => {
+      const point = { x, y }
+      for (const rect of this.rects) {
+        if (inRect(point, rect)) {
+          this.newIndex = (
+            this.orientation === "horizontal"
+              ? point.x > rect.x + rect.width / 2
+              : point.y > rect.y + rect.height / 2
+          )
+            ? rect.index + 1
+            : rect.index
+          break
+        }
+      }
+
+      this.css.dragover.update(`
+        ${this.config.selector}:nth-child(n+${this.newIndex + 1}) {
+          translate: ${items[0].width + this.colGap}px 0;
+        }`)
+    }
+
+    this.enterReady.resolve()
   }
 
   async leave() {
@@ -120,22 +157,7 @@ export class SlideDropzoneHint {
     await this.enterReady
     this.rects.length = 0
     this.css.enter.disable()
-  }
-
-  dragover(items, x, y) {
-    const point = { x, y }
-    for (const rect of this.rects) {
-      if (inRect(point, rect)) {
-        this.newIndex = (
-          this.orientation === "horizontal"
-            ? point.x > rect.x + rect.width / 2
-            : point.y > rect.y + rect.height / 2
-        )
-          ? rect.index + 1
-          : rect.index
-        break
-      }
-    }
+    this.css.dragover.disable()
   }
 
   async revert(items, finished) {
@@ -150,6 +172,7 @@ export class SlideDropzoneHint {
     this.leave()
     this.css.transition.disable()
     this.css.enter.disable()
+    this.css.dragover.disable()
 
     const undones = []
 

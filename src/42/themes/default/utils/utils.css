@@ -21,6 +21,7 @@
 .invisible { visibility: hidden !important; }
 
 .opacity-1 { opacity: 1 !important; }
+.opacity-half { opacity: 0.5 !important; }
 .opacity-0 { opacity: 0 !important; }
 
 .motionless, :is(:root,body).motionless *,
