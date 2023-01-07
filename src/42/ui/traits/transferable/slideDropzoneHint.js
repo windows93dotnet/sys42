@@ -184,41 +184,46 @@ export class SlideDropzoneHint {
 
     const undones = []
 
+    const droppeds = []
+    const frag = document.createDocumentFragment()
+
     for (const item of items) {
-      if (!(this.inOriginalDropzone && this.newIndex === item.index)) {
-        if (this.newIndex === undefined) this.el.append(item.target)
-        else {
-          console.log("bip")
-          const indexedElement = this.el.querySelector(
-            `${this.config.selector}:nth-child(${this.newIndex + 1})`
-          )
-          this.el.insertBefore(item.target, indexedElement)
-        }
-      }
+      item.target.classList.remove("hide")
+      item.target.classList.add("invisible")
+      droppeds.push(item.target)
+      frag.append(item.target)
+    }
 
-      requestAnimationFrame(() => {
-        item.target.classList.remove("hide")
-        requestAnimationFrame(() => {
-          const { x, y } = item.target.getBoundingClientRect()
-          console.log(x, y)
-          item.target.classList.add("invisible")
+    if (this.newIndex === undefined) this.el.append(frag)
+    else {
+      const indexedElement = this.el.querySelector(
+        `${this.config.selector}:nth-child(${this.newIndex + 1})`
+      )
+      this.el.insertBefore(frag, indexedElement)
+    }
 
-          if (items.config.dropAnimation) {
-            undones.push(
-              animateTo(item.ghost, {
-                translate: `${x}px ${y}px`,
-                ...items.dropAnimation(item),
-              }).then(() => {
-                item.ghost.remove()
-                item.target.classList.remove("invisible")
-              })
-            )
-          } else {
+    await paint()
+    const rects = await getRects(droppeds, {
+      root: this.el,
+      intersecting: true,
+    })
+
+    for (let i = 0, l = items.length; i < l; i++) {
+      const item = items[i]
+      if (rects[i] && items.config.dropAnimation) {
+        undones.push(
+          animateTo(item.ghost, {
+            translate: `${rects[i].x}px ${rects[i].y}px`,
+            ...items.dropAnimation(item),
+          }).then(() => {
             item.ghost.remove()
             item.target.classList.remove("invisible")
-          }
-        })
-      })
+          })
+        )
+      } else {
+        item.ghost.remove()
+        item.target.classList.remove("invisible")
+      }
     }
 
     await Promise.all(undones)
