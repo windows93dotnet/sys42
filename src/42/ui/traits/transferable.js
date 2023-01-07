@@ -21,14 +21,14 @@ const DEFAULTS = {
 
   itemsHintConfig: {
     name: "stack",
-    startAnimation: { ms: 180 },
-    revertAnimation: { ms: 180 },
-    dropAnimation: { ms: 180 },
+    startAnimation: { ms: 180 * 2 },
+    revertAnimation: { ms: 180 * 2 },
+    dropAnimation: { ms: 180 * 2 },
   },
 
   dropzoneHintConfig: {
     name: "slide",
-    animationSpeed: 180,
+    animationSpeed: 180 * 2,
   },
 }
 

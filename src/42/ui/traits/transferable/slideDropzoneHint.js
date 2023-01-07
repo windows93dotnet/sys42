@@ -1,5 +1,6 @@
 import { animateTo } from "../../../fabric/dom/animate.js"
 import getRects from "../../../fabric/dom/getRects.js"
+import { inRect } from "../../../fabric/geometry/point.js"
 import appendCSS from "../../../fabric/dom/appendCSS.js"
 import defer from "../../../fabric/type/promise/defer.js"
 
@@ -11,6 +12,8 @@ export class SlideDropzoneHint {
     this.config = { ...options }
     this.speed = this.config.animationSpeed
     this.rects = []
+
+    this.orientation = "horizontal"
 
     const { signal } = this.config
 
@@ -53,6 +56,9 @@ export class SlideDropzoneHint {
     const { selector } = this.config
 
     let previousY
+
+    this.inOriginalDropzone = items.dropzoneId === this.el.id
+    this.newIndex = this.inOriginalDropzone ? items[0]?.index : undefined
 
     this.updateRects((rect) => {
       for (const item of items) {
@@ -116,7 +122,21 @@ export class SlideDropzoneHint {
     this.css.enter.disable()
   }
 
-  dragover() {}
+  dragover(items, x, y) {
+    const point = { x, y }
+    for (const rect of this.rects) {
+      if (inRect(point, rect)) {
+        this.newIndex = (
+          this.orientation === "horizontal"
+            ? point.x > rect.x + rect.width / 2
+            : point.y > rect.y + rect.height / 2
+        )
+          ? rect.index + 1
+          : rect.index
+        break
+      }
+    }
+  }
 
   async revert(items, finished) {
     this.css.enter.enable()
@@ -134,25 +154,36 @@ export class SlideDropzoneHint {
     const undones = []
 
     for (const item of items) {
-      this.el.append(item.target)
-      item.target.classList.remove("hide")
-      const { x, y } = item.target.getBoundingClientRect()
-      item.target.classList.add("hide")
-
-      if (items.config.dropAnimation) {
-        undones.push(
-          animateTo(item.ghost, {
-            translate: `${x}px ${y}px`,
-            ...items.dropAnimation(item),
-          }).then(() => {
-            item.ghost.remove()
-            item.target.classList.remove("hide")
-          })
-        )
-      } else {
-        item.ghost.remove()
-        item.target.classList.remove("hide")
+      if (!(this.inOriginalDropzone && this.newIndex === item.index)) {
+        if (this.newIndex === undefined) this.el.append(item.target)
+        else {
+          const indexedElement = this.el.querySelector(
+            `${this.config.selector}:nth-child(${this.newIndex + 1})`
+          )
+          this.el.insertBefore(item.target, indexedElement)
+        }
       }
+
+      requestAnimationFrame(() => {
+        item.target.classList.remove("hide")
+        const { x, y } = item.target.getBoundingClientRect()
+        item.target.classList.add("invisible")
+
+        if (items.config.dropAnimation) {
+          undones.push(
+            animateTo(item.ghost, {
+              translate: `${x}px ${y}px`,
+              ...items.dropAnimation(item),
+            }).then(() => {
+              item.ghost.remove()
+              item.target.classList.remove("invisible")
+            })
+          )
+        } else {
+          item.ghost.remove()
+          item.target.classList.remove("invisible")
+        }
+      })
     }
 
     await Promise.all(undones)
