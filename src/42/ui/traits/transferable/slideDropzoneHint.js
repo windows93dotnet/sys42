@@ -43,32 +43,23 @@ export class SlideDropzoneHint {
     this.dragover = noop
   }
 
-  async updateRects(cb, options) {
+  async updateRects(items, cb) {
     this.rects.length = 0
     return getRects(this.config.selector, {
       root: this.el,
       intersecting: true,
     }).then((rects) => {
-      if (options?.offsetX) {
-        for (let i = 0, l = rects.length; i < l; i++) {
-          const item = rects[i]
-          if (options.fromIndex >= i) {
-            item.left -= options.offsetX
-            item.right -= options.offsetX
-            item.x = item.left
-          }
-
-          this.rects.push(item)
-          cb?.(item)
+      if (items && cb) {
+        for (const rect of rects) {
+          for (const item of items) if (item.target === rect.target) continue
+          this.rects.push(rect)
+          cb(rect)
         }
       } else {
-        for (const item of rects) {
-          this.rects.push(item)
-          cb?.(item)
-        }
+        this.rects.push(...rects)
       }
 
-      return rects
+      return this.rects
     })
   }
 
@@ -92,7 +83,7 @@ export class SlideDropzoneHint {
 
       // Get all visible items bounding rects and save css with empty holes
       // ------------------------------------------------------------------
-      const rects = await this.updateRects((rect) => {
+      const rects = await this.updateRects(items, (rect) => {
         for (const item of items) {
           if (previousY !== rect.y) {
             if (enterCss.length > 0) {
@@ -135,28 +126,24 @@ export class SlideDropzoneHint {
         }`
       )
 
-      // Add empty hole before bounding rects update
-      // if item is from dropzone to prevent flickering
-      // ----------------------------------------------
-      let updateRectOptions
-      if (this.inOriginalDropzone && items[0]) {
-        const offsetX = items[0].width + this.colGap
-        updateRectOptions = { fromIndex: items[0].index, offsetX }
-        this.css.dragover.update(`
-          ${this.config.selector}:nth-child(n+${items[0].index + 1}) {
-            translate: ${offsetX}px 0;
-          }`)
+      // Update bounding rects without dragged items
+      // Use getBoundingClientRect to prevent flickering
+      // -----------------------------------------------
+      for (const item of this.rects) {
+        Object.assign(item, item.target.getBoundingClientRect().toJSON())
       }
 
-      // Update bounding rects without dragged items
-      // -------------------------------------------
-      await this.updateRects(undefined, updateRectOptions)
-
       // Animate empty holes
+      // -------------------
       this.css.enter.update(enterCss.join("\n"))
       await paint()
-      this.css.transition.enable()
       this.css.enter.disable()
+      this.css.dragover.update(`
+        ${this.config.selector}:nth-child(n+${items[0].index + 1}) {
+          translate: ${items[0].width + this.colGap}px 0;
+        }`)
+
+      this.css.transition.enable()
     } else {
       await this.updateRects()
       this.css.transition.enable()

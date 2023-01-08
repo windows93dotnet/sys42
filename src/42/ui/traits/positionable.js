@@ -425,9 +425,7 @@ class Positionable extends Trait {
 
   update(e = this.of) {
     if (e.nodeType === ELEMENT_NODE) {
-      const rect = e.getBoundingClientRect()
-      const x = rect.left
-      const y = rect.top
+      const { x, y } = e.getBoundingClientRect()
       this.place(x, y)
     } else {
       this.place(e.x, e.y) // DOMRect or MouseEvent
