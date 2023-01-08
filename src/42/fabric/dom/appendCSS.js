@@ -9,9 +9,7 @@ export function appendCSS(cssText, options) {
   el.textContent = cssText
   document.head.append(el)
 
-  options?.signal?.addEventlistener?.("abort", () => el.remove())
-
-  return {
+  const out = {
     el,
     update(val) {
       cssText = val
@@ -23,8 +21,15 @@ export function appendCSS(cssText, options) {
     disable() {
       el.textContent = ""
     },
-    destroy: () => el.remove(),
+    destroy() {
+      el.remove()
+      options?.signal?.removeEventlistener?.("abort", out.destroy)
+    },
   }
+
+  options?.signal?.addEventlistener?.("abort", out.destroy)
+
+  return out
 }
 
 export default appendCSS
