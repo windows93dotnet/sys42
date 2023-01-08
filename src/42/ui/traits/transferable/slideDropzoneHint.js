@@ -18,12 +18,21 @@ export class SlideDropzoneHint {
     this.orientation = "horizontal"
 
     const { signal } = this.config
+    const cssOptions = { signal }
 
     this.css = {
-      enter: appendCSS({ signal }),
-      dragover: appendCSS({ signal }),
-      transition: appendCSS({ signal }),
+      enter: appendCSS(cssOptions),
+      dragover: appendCSS(cssOptions),
+      transition: appendCSS(cssOptions),
     }
+
+    this.css.transition.update(`
+      ${this.config.selector} {
+        transition:
+          margin-right ${this.speed}ms ease-in-out,
+          translate ${this.speed}ms ease-in-out !important;
+      }`)
+    this.css.transition.disable()
 
     this.styles = getComputedStyle(this.el)
     this.colGap = parseInt(this.styles.columnGap, 10)
@@ -75,83 +84,83 @@ export class SlideDropzoneHint {
     this.inOriginalDropzone ??= items.dropzoneId === this.el.id
     this.newIndex = undefined
 
-    const { selector } = this.config
-    let enterCss = []
-    let offset = 0
-    let previousY
+    if (this.inOriginalDropzone) {
+      const { selector } = this.config
+      let enterCss = []
+      let offset = 0
+      let previousY
 
-    // Get all visible items bounding rects and save css with empty holes
-    // ------------------------------------------------------------------
-    const rects = await this.updateRects((rect) => {
-      for (const item of items) {
-        if (previousY !== rect.y) {
-          if (enterCss.length > 0) {
-            enterCss = enterCss.map((css) =>
-              css.replace(":is(*)", `:nth-child(-n+${rect.index})`)
-            )
-            enterCss.push(
-              `${selector}:nth-child(${rect.index}) {
-                /* rotate: 10deg !important; */
-                margin-right: ${offset}px;
-              }`
-            )
+      // Get all visible items bounding rects and save css with empty holes
+      // ------------------------------------------------------------------
+      const rects = await this.updateRects((rect) => {
+        for (const item of items) {
+          if (previousY !== rect.y) {
+            if (enterCss.length > 0) {
+              enterCss = enterCss.map((css) =>
+                css.replace(":is(*)", `:nth-child(-n+${rect.index})`)
+              )
+              enterCss.push(
+                `${selector}:nth-child(${rect.index}) {
+                  /* rotate: 10deg !important; */
+                  margin-right: ${offset}px;
+                }`
+              )
+            }
+
+            offset = 0
           }
 
-          offset = 0
-        }
+          previousY = rect.y
 
-        previousY = rect.y
-
-        if (
-          item.target.id === rect.target.id &&
-          !rect.target.classList.contains("hide")
-        ) {
-          offset += item.width + this.colGap
-          const i = rect.index + 1
-          enterCss.push(
-            `${selector}:nth-child(n+${i}):is(*) {
-              translate: ${offset}px 0;
-            }`
-          )
-          rect.target.classList.add("hide")
+          if (
+            item.target.id === rect.target.id &&
+            !rect.target.classList.contains("hide")
+          ) {
+            offset += item.width + this.colGap
+            const i = rect.index + 1
+            enterCss.push(
+              `${selector}:nth-child(n+${i}):is(*) {
+                translate: ${offset}px 0;
+              }`
+            )
+            rect.target.classList.add("hide")
+          }
         }
+      })
+
+      enterCss.push(
+        `${selector}:nth-child(${rects.length}) {
+          /* rotate: 10deg !important; */
+          margin-right: ${offset}px;
+        }`
+      )
+
+      // Add empty hole before bounding rects update
+      // if item is from dropzone to prevent flickering
+      // ----------------------------------------------
+      let updateRectOptions
+      if (this.inOriginalDropzone && items[0]) {
+        const offsetX = items[0].width + this.colGap
+        updateRectOptions = { fromIndex: items[0].index, offsetX }
+        this.css.dragover.update(`
+          ${this.config.selector}:nth-child(n+${items[0].index + 1}) {
+            translate: ${offsetX}px 0;
+          }`)
       }
-    })
 
-    enterCss.push(
-      `${selector}:nth-child(${rects.length}) {
-        /* rotate: 10deg !important; */
-        margin-right: ${offset}px;
-      }`
-    )
+      // Update bounding rects without dragged items
+      // -------------------------------------------
+      await this.updateRects(undefined, updateRectOptions)
 
-    // Add empty hole before bounding rects update
-    // if item is from dropzone to prevent flickering
-    // ----------------------------------------------
-    let updateRectOptions
-    if (this.inOriginalDropzone && items[0]) {
-      const offsetX = items[0].width + this.colGap
-      updateRectOptions = { fromIndex: items[0].index, offsetX }
-      this.css.dragover.update(`
-        ${this.config.selector}:nth-child(n+${items[0].index + 1}) {
-          translate: ${offsetX}px 0;
-        }`)
+      // Animate empty holes
+      this.css.enter.update(enterCss.join("\n"))
+      await paint()
+      this.css.transition.enable()
+      this.css.enter.disable()
+    } else {
+      await this.updateRects()
+      this.css.transition.enable()
     }
-
-    // Update bounding rects without dragged items
-    // -------------------------------------------
-    await this.updateRects(undefined, updateRectOptions)
-
-    // Animate empty holes
-    this.css.enter.update(enterCss.join("\n"))
-    await paint()
-    this.css.transition.update(`
-      ${this.config.selector} {
-        transition:
-          margin-right ${this.speed}ms ease-in-out,
-          translate ${this.speed}ms ease-in-out !important;
-      }`)
-    this.css.enter.disable()
 
     // Enable dragover
     // ---------------
@@ -178,12 +187,11 @@ export class SlideDropzoneHint {
       }
     }
 
-    // this.dragover(items, x, y)
-
     this.enterReady.resolve()
   }
 
   async leave() {
+    this.dragover = noop
     this.inOriginalDropzone = false
     this.el.classList.remove("dragover")
     await this.enterReady
@@ -193,7 +201,9 @@ export class SlideDropzoneHint {
   }
 
   async revert(items, finished) {
+    this.dragover = noop
     this.inOriginalDropzone = undefined
+    this.css.dragover.disable()
     this.css.enter.enable()
     await finished
     this.css.transition.disable()
@@ -202,11 +212,10 @@ export class SlideDropzoneHint {
   }
 
   async drop(items) {
-    this.leave()
+    this.dragover = noop
+    await this.leave()
     this.inOriginalDropzone = undefined
     this.css.transition.disable()
-    this.css.enter.disable()
-    this.css.dragover.disable()
 
     const undones = []
 
