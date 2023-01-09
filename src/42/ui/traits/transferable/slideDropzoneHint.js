@@ -15,7 +15,7 @@ export class SlideDropzoneHint {
     this.speed = this.config.animationSpeed
     this.rects = []
 
-    this.orientation = "horizontal"
+    // this.orientation = "horizontal"
 
     const { signal } = this.config
     const cssOptions = { signal }
@@ -138,10 +138,6 @@ export class SlideDropzoneHint {
       this.css.enter.update(enterCss.join("\n"))
       await paint()
       this.css.enter.disable()
-      // this.css.dragover.update(`
-      //   ${this.config.selector}:nth-child(n+${items[0].index + 1}) {
-      //     translate: ${items[0].width + this.colGap}px 0;
-      //   }`)
 
       this.css.transition.enable()
     } else {
@@ -153,23 +149,41 @@ export class SlideDropzoneHint {
     // ---------------
     this.dragover = (items, x, y) => {
       const [first] = items
-      // console.log(first)
 
-      x -= first.offsetX
-      y -= first.offsetY
+      if (this.orientation === "horizontal") {
+        x -= first.offsetX - first.width / 2
 
-      const point = { x, y }
+        const halfGap = this.colGap / 2
 
-      for (const rect of this.rects) {
-        if (inRect(point, rect)) {
-          this.newIndex = (
-            this.orientation === "vertical"
-              ? point.y > rect.y + rect.height / 2
-              : point.x > rect.x + rect.width / 2
-          )
-            ? rect.index + 1
-            : rect.index
-          break
+        for (let i = 0, l = this.rects.length; i < l; i++) {
+          const rect = this.rects[i]
+          if (x >= rect.left - halfGap) {
+            if (x <= rect.right + halfGap) {
+              this.newIndex = rect.index
+              break
+            } else if (x > rect.right + halfGap && i === l - 1) {
+              this.newIndex = rect.index + 1
+            }
+          }
+        }
+      } else {
+        x -= first.offsetX - first.width / 2
+        y -= first.offsetY - first.height / 2
+
+        const point = { x, y }
+
+        for (const rect of this.rects) {
+          if (inRect(point, rect)) {
+            this.newIndex = rect.index
+            // this.newIndex = (
+            //   this.orientation === "vertical"
+            //     ? point.y > rect.y + rect.height / 2
+            //     : point.x > rect.x + rect.width / 2
+            // )
+            //   ? rect.index + 1
+            //   : rect.index
+            break
+          }
         }
       }
 
