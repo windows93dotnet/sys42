@@ -63,7 +63,7 @@ export class SlideDropzoneHint {
     })
   }
 
-  async enter(items) {
+  async enter(items, x, y) {
     this.el.classList.add("dragover")
     this.css.transition.disable()
 
@@ -138,10 +138,10 @@ export class SlideDropzoneHint {
       this.css.enter.update(enterCss.join("\n"))
       await paint()
       this.css.enter.disable()
-      this.css.dragover.update(`
-        ${this.config.selector}:nth-child(n+${items[0].index + 1}) {
-          translate: ${items[0].width + this.colGap}px 0;
-        }`)
+      // this.css.dragover.update(`
+      //   ${this.config.selector}:nth-child(n+${items[0].index + 1}) {
+      //     translate: ${items[0].width + this.colGap}px 0;
+      //   }`)
 
       this.css.transition.enable()
     } else {
@@ -152,7 +152,14 @@ export class SlideDropzoneHint {
     // Enable dragover
     // ---------------
     this.dragover = (items, x, y) => {
+      const [first] = items
+      // console.log(first)
+
+      x -= first.offsetX
+      y -= first.offsetY
+
       const point = { x, y }
+
       for (const rect of this.rects) {
         if (inRect(point, rect)) {
           this.newIndex = (
@@ -173,6 +180,8 @@ export class SlideDropzoneHint {
           }`)
       }
     }
+
+    this.dragover(items, x, y)
 
     this.enterReady.resolve()
   }
@@ -223,8 +232,9 @@ export class SlideDropzoneHint {
       frag.append(item.target)
     }
 
-    if (indexedElement) this.el.insertBefore(frag, indexedElement)
-    else this.el.append(frag)
+    if (indexedElement && !droppeds.includes(indexedElement)) {
+      this.el.insertBefore(frag, indexedElement)
+    } else this.el.append(frag)
 
     await paint()
     const rects = await getRects(droppeds, {
