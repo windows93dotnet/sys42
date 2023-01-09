@@ -63,6 +63,10 @@ export class SlideDropzoneHint {
     })
   }
 
+  init() {
+    this.inOriginalDropzone = undefined
+  }
+
   async enter(items, x, y) {
     this.el.classList.add("dragover")
     this.css.transition.disable()
@@ -104,8 +108,8 @@ export class SlideDropzoneHint {
           previousY = rect.y
 
           if (
-            item.target.id === rect.target.id &&
-            !rect.target.classList.contains("hide")
+            item.target.id === rect.target.id /* &&
+            !rect.target.classList.contains("hide") */
           ) {
             offset += item.width + this.colGap
             const i = rect.index + 1
