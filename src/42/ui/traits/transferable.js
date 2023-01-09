@@ -342,7 +342,7 @@ system.transfer = {
     return { itemsHint, dropzoneHint }
   },
 
-  async findTransferZones(/* x, y */) {
+  async findTransferZones() {
     return getRects([
       ...system.transfer.dropzones.keys(),
       ...document.querySelectorAll("iframe"),
@@ -359,9 +359,9 @@ system.transfer = {
             rect.hint.config?.hoverScroll
           )
         }
-      }
 
-      // system.transfer.setCurrentZone(x, y)
+        rect.hint.init?.()
+      }
     })
   },
 
