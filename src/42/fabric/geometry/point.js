@@ -11,7 +11,16 @@ export function inTriangle(point, a, b, c) {
   return s > 0 && t > 0 && (s + t) < 2 * A * sign;
 }
 
-export function inRect(point, rect) {
+export function inRect(point, rect, margin) {
+  if (margin) {
+    return (
+      point.x >= rect.left + margin.left &&
+      point.x <= rect.right + margin.right &&
+      point.y >= rect.top + margin.top &&
+      point.y <= rect.bottom + margin.bottom
+    )
+  }
+
   return (
     point.x >= rect.left &&
     point.x <= rect.right &&

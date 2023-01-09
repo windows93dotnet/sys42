@@ -150,40 +150,26 @@ export class SlideDropzoneHint {
     this.dragover = (items, x, y) => {
       const [first] = items
 
-      if (this.orientation === "horizontal") {
-        x -= first.offsetX - first.width / 2
+      x -= first.offsetX - first.width / 2
+      y -= first.offsetY - first.height / 2
 
-        const halfGap = this.colGap / 2
+      const point = { x, y }
+      const halfColGap = this.colGap / 2
+      const halfRowGap = this.rowGap / 2
+      const margins = {
+        top: -halfRowGap,
+        bottom: halfRowGap,
+        left: -halfColGap,
+        right: halfColGap,
+      }
 
-        for (let i = 0, l = this.rects.length; i < l; i++) {
-          const rect = this.rects[i]
-          if (x >= rect.left - halfGap) {
-            if (x <= rect.right + halfGap) {
-              this.newIndex = rect.index
-              break
-            } else if (x > rect.right + halfGap && i === l - 1) {
-              this.newIndex = rect.index + 1
-            }
-          }
-        }
-      } else {
-        x -= first.offsetX - first.width / 2
-        y -= first.offsetY - first.height / 2
-
-        const point = { x, y }
-
-        for (const rect of this.rects) {
-          if (inRect(point, rect)) {
-            this.newIndex = rect.index
-            // this.newIndex = (
-            //   this.orientation === "vertical"
-            //     ? point.y > rect.y + rect.height / 2
-            //     : point.x > rect.x + rect.width / 2
-            // )
-            //   ? rect.index + 1
-            //   : rect.index
-            break
-          }
+      for (let i = 0, l = this.rects.length; i < l; i++) {
+        const rect = this.rects[i]
+        if (inRect(point, rect, margins)) {
+          this.newIndex = rect.index
+          break
+        } else if (x > rect.right + halfColGap && i === l - 1) {
+          this.newIndex = rect.index + 1
         }
       }
 
