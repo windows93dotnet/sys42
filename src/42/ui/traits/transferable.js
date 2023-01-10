@@ -420,7 +420,10 @@ system.transfer = {
       await finished
     }
 
-    for (const dropzone of zones) dropzone.hoverScroll?.clear()
+    for (const dropzone of zones) {
+      dropzone.hint.cleanup?.()
+      dropzone.hoverScroll?.clear()
+    }
 
     return res
   },
