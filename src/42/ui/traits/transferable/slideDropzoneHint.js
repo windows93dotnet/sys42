@@ -237,6 +237,7 @@ export class SlideDropzoneHint {
       }
 
       this.config.list.splice(this.newIndex, 0, ...add)
+      this.config.indexChange?.(this.newIndex)
       await paint()
 
       const start = this.newIndex + 1

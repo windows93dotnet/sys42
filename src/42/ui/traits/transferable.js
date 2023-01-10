@@ -476,6 +476,7 @@ class Transferable extends Trait {
 
     this.config.dropzoneHintConfig.signal ??= this.cancel.signal
     this.config.dropzoneHintConfig.selector ??= this.config.selector
+    this.config.dropzoneHintConfig.indexChange ??= this.config.indexChange
     this.config.dropzoneHintConfig.list = this.list
 
     this.init()
