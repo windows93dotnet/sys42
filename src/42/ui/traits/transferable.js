@@ -5,6 +5,7 @@ import inIframe from "../../core/env/realm/inIframe.js"
 import getRects from "../../fabric/dom/getRects.js"
 import { inRect } from "../../fabric/geometry/point.js"
 import pick from "../../fabric/type/object/pick.js"
+import unproxy from "../../fabric/type/object/unproxy.js"
 import settings from "../../core/settings.js"
 import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
@@ -50,6 +51,7 @@ function serializeItems(obj, options) {
     const exportedItem = { ...item }
     exportedItem.ghost = exportedItem.ghost.outerHTML
     exportedItem.target = exportedItem.target.outerHTML
+    if (exportedItem.data) exportedItem.data = unproxy(exportedItem.data)
     if (options?.hideGhost) item.ghost.classList.add("hide")
     items.push(exportedItem)
   }
@@ -541,15 +543,12 @@ class Transferable extends Trait {
 
         startPromise = Promise.all([
           system.transfer.findTransferZones(x, y),
-
           getRects(targets, {
             all: this.config.selector,
             includeMargins: true,
           }).then((rects) => {
             if (this.list) {
-              for (const item of rects) {
-                item.data = this.list[item.index]
-              }
+              for (const item of rects) item.data = this.list[item.index]
             }
 
             system.transfer.items.start?.(x, y, rects)
