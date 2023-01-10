@@ -1,3 +1,4 @@
+/* eslint-disable max-depth */
 import { animateTo } from "../../../fabric/dom/animate.js"
 import getRects from "../../../fabric/dom/getRects.js"
 import { inRect } from "../../../fabric/geometry/point.js"
@@ -223,10 +224,14 @@ export class SlideDropzoneHint {
     if (this.config.list) {
       const add = []
       if (this.inOriginalDropzone) {
+        const removed = []
         for (const item of items) {
           item.target.classList.remove("hide")
-          this.config.list.splice(item.index, 1)
-          if (this.newIndex > item.index) this.newIndex--
+          let { index } = item
+          for (const remIndex of removed) if (index > remIndex) index--
+          this.config.list.splice(index, 1)
+          if (this.newIndex > index) this.newIndex--
+          removed.push(index)
           add.push(item.data)
         }
       } else {
