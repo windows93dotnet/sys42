@@ -46,25 +46,34 @@ export class StackItemsHint extends Array {
   }
 
   drag(x, y) {
-    if (system.transfer.currentZone) {
-      const { config, inOriginalDropzone } = system.transfer.currentZone.hint
-      console.log(inOriginalDropzone, config.orientation, config.freeAxis)
-    }
-
     const [first] = this
     if (first) {
       first.ghost.style.zIndex = 1e5 + this.length
-      first.ghost.style.translate = `
-        ${x - first.offsetX}px
-        ${y - first.offsetY}px`
+
+      let translate
+
+      if (
+        system.transfer.currentZone &&
+        system.transfer.currentZone.hint.inOriginalDropzone &&
+        system.transfer.currentZone.hint.config.freeAxis !== true
+      ) {
+        translate =
+          system.transfer.currentZone.hint.config.orientation === "vertical"
+            ? { x: first.x, y: y - first.offsetY }
+            : { x: x - first.offsetX, y: first.y }
+      } else {
+        translate = { x: x - first.offsetX, y: y - first.offsetY }
+      }
+
+      first.ghost.style.translate = `${translate.x}px ${translate.y}px`
 
       for (let i = 1, l = this.length; i < l; i++) {
         const item = this[i]
         const offset = i * 3
         item.ghost.style.zIndex = 1e5 + this.length - i
         item.ghost.style.translate = `
-          ${x - first.offsetX + offset}px
-          ${y - first.offsetY + offset}px`
+          ${translate.x + offset}px
+          ${translate.y + offset}px`
       }
     }
   }
