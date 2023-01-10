@@ -67,7 +67,8 @@ export async function getRects(elements, options) {
       options?.root ? { root } : undefined
     )
 
-    for (const el of elements) observer.observe(el)
+    if (elements.length > 0) for (const el of elements) observer.observe(el)
+    else resolve(rects)
   })
 }
 
