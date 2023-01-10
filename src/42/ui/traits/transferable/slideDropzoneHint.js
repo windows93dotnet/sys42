@@ -11,34 +11,33 @@ const { parseInt, isNaN } = Number
 export class SlideDropzoneHint {
   constructor(el, options) {
     this.el = el
-    this.config = { ...options }
-    this.speed = this.config.animationSpeed
     this.rects = []
 
-    // this.orientation = "horizontal"
+    this.config = { ...options }
+    this.speed = this.config.animationSpeed
+    this.freeAxis = this.config.freeAxis
+    this.orientation =
+      this.config.orientation ?? this.el.getAttribute("aria-orientation")
 
-    const { signal } = this.config
-    const cssOptions = { signal }
-
-    this.css = {
-      enter: appendCSS(cssOptions),
-      dragover: appendCSS(cssOptions),
-      transition: appendCSS(cssOptions),
+    if (!this.orientation) {
+      this.orientation = "horizontal"
+      this.freeAxis ??= true
     }
-
-    this.css.transition.update(`
-      ${this.config.selector} {
-        transition:
-          margin-right ${this.speed}ms ease-in-out,
-          translate ${this.speed}ms ease-in-out !important;
-      }`)
-    this.css.transition.disable()
 
     this.styles = getComputedStyle(this.el)
     this.colGap = parseInt(this.styles.columnGap, 10)
     this.rowGap = parseInt(this.styles.rowGap, 10)
     if (isNaN(this.colGap)) this.colGap = 0
     if (isNaN(this.rowGap)) this.rowGap = 0
+
+    const halfColGap = this.colGap / 2
+    const halfRowGap = this.rowGap / 2
+    this.gaps = {
+      top: -halfRowGap,
+      bottom: halfRowGap,
+      left: -halfColGap,
+      right: halfColGap,
+    }
 
     this.dragover = noop
   }
@@ -65,6 +64,31 @@ export class SlideDropzoneHint {
 
   init() {
     this.inOriginalDropzone = undefined
+
+    const { signal } = this.config
+    const cssOptions = { signal }
+
+    this.css = {
+      global: appendCSS(cssOptions),
+      enter: appendCSS(cssOptions),
+      dragover: appendCSS(cssOptions),
+      transition: appendCSS(cssOptions),
+    }
+
+    this.css.transition.update(`
+      ${this.config.selector} {
+        transition:
+          margin-right ${this.speed}ms ease-in-out,
+          translate ${this.speed}ms ease-in-out !important;
+      }`)
+    this.css.transition.disable()
+  }
+
+  cleanup() {
+    this.css.global.destroy()
+    this.css.enter.destroy()
+    this.css.dragover.destroy()
+    this.css.transition.destroy()
   }
 
   async enter(items, x, y) {
@@ -80,6 +104,14 @@ export class SlideDropzoneHint {
     this.newIndex = undefined
 
     if (this.inOriginalDropzone) {
+      const rect = this.el.getBoundingClientRect()
+      this.css.global.update(`
+        #${this.el.id} {
+          height: ${rect.height}px !important;
+          width: ${rect.width}px !important;
+        }
+      `)
+
       const { selector } = this.config
       let enterCss = []
       let offset = 0
@@ -158,21 +190,13 @@ export class SlideDropzoneHint {
       y -= first.offsetY - first.height / 2
 
       const point = { x, y }
-      const halfColGap = this.colGap / 2
-      const halfRowGap = this.rowGap / 2
-      const margins = {
-        top: -halfRowGap,
-        bottom: halfRowGap,
-        left: -halfColGap,
-        right: halfColGap,
-      }
 
       for (let i = 0, l = this.rects.length; i < l; i++) {
         const rect = this.rects[i]
-        if (inRect(point, rect, margins)) {
+        if (inRect(point, rect, this.gaps)) {
           this.newIndex = rect.index
           break
-        } else if (x > rect.right + halfColGap && i === l - 1) {
+        } else if (x > rect.right + this.gaps.right && i === l - 1) {
           this.newIndex = rect.index + 1
         }
       }

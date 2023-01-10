@@ -149,12 +149,29 @@
 
 <script type="module">
   import ui from "../../../42/ui.js"
+  import planets from "../../../tests/fixtures/data/planets.js"
+
+  const state = {
+    planets: [],
+  }
+  for (const item of planets) {
+    state.planets.push({
+      label: item.name,
+      description: item.description,
+      content: {
+        tag: "textarea.size-full",
+        bind: "description",
+        compact: true,
+        autofocus: true,
+      },
+    })
+  }
 
   const arr1 = Array.from({ length: 4 }).map((_, i) => i + 1)
   const arr2 = Array.from({ length: 4 }).map((_, i) => i + 11)
 
   ui(".demos", {
-    state: { arr1, arr2 },
+    state: { arr1, arr2, ...state },
     content: [
       { tag: "h3", content: "list" },
       {
@@ -178,6 +195,14 @@
           tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-gray-200",
           content: "{{.}}",
         },
+      },
+      { tag: "h3", content: "layout" },
+      {
+        tag: "ui-tabs",
+        id: "tabs1",
+        style: { height: "100px" },
+        // balanced: true,
+        content: "{{planets}}",
       },
     ],
   })
