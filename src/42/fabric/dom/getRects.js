@@ -1,4 +1,20 @@
 const { indexOf } = Array.prototype
+const { parseInt, isNaN } = Number
+
+function addMargins(target, rect) {
+  const { marginTop, marginBottom, marginLeft, marginRight } =
+    getComputedStyle(target)
+
+  rect.marginTop = parseInt(marginTop, 10)
+  rect.marginBottom = parseInt(marginBottom, 10)
+  rect.marginLeft = parseInt(marginLeft, 10)
+  rect.marginRight = parseInt(marginRight, 10)
+
+  if (isNaN(marginTop)) rect.marginTop = 0
+  if (isNaN(marginBottom)) rect.marginBottom = 0
+  if (isNaN(marginLeft)) rect.marginLeft = 0
+  if (isNaN(marginRight)) rect.marginRight = 0
+}
 
 export async function getRects(elements, options) {
   if (options?.nodeType === Node.ELEMENT_NODE) options = { root: options }
@@ -24,8 +40,9 @@ export async function getRects(elements, options) {
         if (options?.relative) {
           const rootRect = root.getBoundingClientRect()
           const { borderLeftWidth, borderTopWidth } = getComputedStyle(root)
-          rootRect.x += Number.parseInt(borderLeftWidth, 10) - root.scrollLeft
-          rootRect.y += Number.parseInt(borderTopWidth, 10) - root.scrollTop
+
+          rootRect.x += parseInt(borderLeftWidth, 10) - root.scrollLeft
+          rootRect.y += parseInt(borderTopWidth, 10) - root.scrollTop
 
           for (let i = 0, l = entries.length; i < l; i++) {
             const { target, boundingClientRect, isIntersecting } = entries[i]
@@ -33,6 +50,9 @@ export async function getRects(elements, options) {
             if (options?.intersecting === false && isIntersecting) continue
 
             const rect = boundingClientRect.toJSON()
+
+            if (options?.includeMargins) addMargins(target, rect)
+
             rect.index = all ? indexOf.call(all, target) : i
             rect.isIntersecting = isIntersecting
             rect.target = target
@@ -53,6 +73,9 @@ export async function getRects(elements, options) {
             if (options?.intersecting === false && isIntersecting) continue
 
             const rect = boundingClientRect.toJSON()
+
+            if (options?.includeMargins) addMargins(target, rect)
+
             rect.index = all ? indexOf.call(all, target) : i
             rect.isIntersecting = isIntersecting
             rect.target = target

@@ -540,7 +540,11 @@ class Transferable extends Trait {
 
         startPromise = Promise.all([
           system.transfer.findTransferZones(x, y),
-          getRects(targets, { all: this.config.selector }).then((rects) => {
+
+          getRects(targets, {
+            all: this.config.selector,
+            includeMargins: true,
+          }).then((rects) => {
             if (this.list) {
               for (const item of rects) {
                 item.data = this.list[item.index]
