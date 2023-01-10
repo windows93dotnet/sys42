@@ -5,6 +5,7 @@ import appendCSS from "../../../fabric/dom/appendCSS.js"
 import defer from "../../../fabric/type/promise/defer.js"
 import noop from "../../../fabric/type/function/noop.js"
 import paint from "../../../fabric/type/promise/paint.js"
+import uid from "../../../core/uid.js"
 
 const { parseInt, isNaN } = Number
 
@@ -14,14 +15,11 @@ export class SlideDropzoneHint {
     this.rects = []
 
     this.config = { ...options }
-    this.speed = this.config.speed
-    this.freeAxis = this.config.freeAxis
-    this.orientation =
-      this.config.orientation ?? this.el.getAttribute("aria-orientation")
+    this.config.orientation ??= this.el.getAttribute("aria-orientation")
 
-    if (!this.orientation) {
-      this.orientation = "horizontal"
-      this.freeAxis ??= true
+    if (!this.config.orientation) {
+      this.config.orientation = "horizontal"
+      this.config.freeAxis ??= true
     }
 
     this.styles = getComputedStyle(this.el)
@@ -77,8 +75,8 @@ export class SlideDropzoneHint {
     this.css.transition.update(`
       ${this.config.selector} {
         transition:
-          margin-right ${this.speed}ms ease-in-out,
-          translate ${this.speed}ms ease-in-out !important;
+          margin-right ${this.config.speed}ms ease-in-out,
+          translate ${this.config.speed}ms ease-in-out !important;
       }`)
     this.css.transition.disable()
   }
@@ -108,8 +106,7 @@ export class SlideDropzoneHint {
         #${this.el.id} {
           height: ${rect.height}px !important;
           width: ${rect.width}px !important;
-        }
-      `)
+        }`)
 
       const { selector } = this.config
       const enterCss = []
@@ -126,11 +123,10 @@ export class SlideDropzoneHint {
           if (item.target.id === rect.target.id) {
             offset += item.width + this.colGap
             const i = rect.index + 1
-            enterCss.push(
-              `${selector}:nth-child(n+${i}) {
+            enterCss.push(`
+              ${selector}:nth-child(n+${i}) {
                 translate: ${offset}px 0;
-              }`
-            )
+              }`)
             rect.target.classList.add("hide")
             return false
           }
@@ -216,34 +212,70 @@ export class SlideDropzoneHint {
     this.inOriginalDropzone = undefined
     this.css.transition.disable()
 
+    const { selector } = this.config
     const undones = []
+    let droppeds = []
 
-    const droppeds = []
-    const frag = document.createDocumentFragment()
+    if (this.config.list) {
+      const add = []
+      if (items.dropzoneId === this.el.id) {
+        for (const item of items) {
+          item.target.classList.remove("hide")
+          this.config.list.splice(item.index, 1)
+          if (this.newIndex > item.index) this.newIndex--
+          add.push(item.data)
+        }
+      } else {
+        for (const item of items) {
+          item.target.classList.remove("hide")
+          add.push(item.data)
+        }
+      }
 
-    const indexedElement =
-      this.newIndex === undefined
-        ? undefined
-        : this.el.querySelector(
-            `${this.config.selector}:nth-child(${this.newIndex + 1})`
-          )
+      this.config.list.splice(this.newIndex, 0, ...add)
+      await paint()
 
-    for (const item of items) {
-      item.target.classList.remove("hide")
-      item.target.classList.add("invisible")
-      droppeds.push(item.target)
-      frag.append(item.target)
+      const start = this.newIndex + 1
+      const end = this.newIndex + add.length
+
+      droppeds = document.querySelectorAll(
+        `${selector}:nth-child(n+${start}):nth-child(-n+${end})`
+      )
+
+      for (let i = 0, l = droppeds.length; i < l; i++) {
+        droppeds[i].classList.add("invisible")
+        droppeds[i].id ||= uid()
+        items[i].target = droppeds[i]
+      }
+    } else {
+      const frag = document.createDocumentFragment()
+
+      const indexedElement =
+        this.newIndex === undefined
+          ? undefined
+          : this.el.querySelector(
+              `${this.config.selector}:nth-child(${this.newIndex + 1})`
+            )
+
+      for (const item of items) {
+        item.target.classList.remove("hide")
+        item.target.classList.add("invisible")
+        droppeds.push(item.target)
+        frag.append(item.target)
+      }
+
+      if (indexedElement && !droppeds.includes(indexedElement)) {
+        this.el.insertBefore(frag, indexedElement)
+      } else this.el.append(frag)
     }
-
-    if (indexedElement && !droppeds.includes(indexedElement)) {
-      this.el.insertBefore(frag, indexedElement)
-    } else this.el.append(frag)
 
     await paint()
     const rects = await getRects(droppeds, {
       root: this.el,
       intersecting: true,
     })
+
+    console.log("rects", rects)
 
     for (let i = 0, l = items.length; i < l; i++) {
       const item = items[i]
@@ -254,7 +286,7 @@ export class SlideDropzoneHint {
             ...items.dropAnimation(item),
           }).then(() => {
             item.ghost.remove()
-            item.target.classList.remove("invisible")
+            rects[i].target.classList.remove("invisible")
           })
         )
       } else {

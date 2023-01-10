@@ -167,7 +167,7 @@
     })
   }
 
-  const arr1 = Array.from({ length: 4 }).map((_, i) => i + 1)
+  const arr1 = Array.from({ length: 6 }).map((_, i) => i + 1)
   const arr2 = Array.from({ length: 4 }).map((_, i) => i + 11)
 
   ui(".demos", {
@@ -177,6 +177,7 @@
       {
         scope: "arr1",
         tag: ".demo.demo-small.demo-selectable.scroll-x.d-flex.pa-xl._gap-xl.inset paper",
+        selectable: true,
         transferable: {
           list: "{{/arr1}}",
         },
