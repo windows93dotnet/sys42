@@ -60,7 +60,7 @@ export class SlideDropzoneHint {
   }
 
   init() {
-    this.inOriginalDropzone = undefined
+    this.firstEnterDone = false
 
     const { signal } = this.config
     const cssOptions = { signal }
@@ -97,10 +97,19 @@ export class SlideDropzoneHint {
     this.dragover = noop
 
     this.enterReady = defer()
-    this.inOriginalDropzone ??= items.dropzoneId === this.el.id
+    this.inOriginalDropzone = items.dropzoneId === this.el.id
     this.newIndex = undefined
 
-    if (this.inOriginalDropzone) {
+    const [first] = items
+    this.blankWidth = `${
+      first.width + first.marginLeft + first.marginRight + this.colGap
+    }px 0`
+
+    if (this.firstEnterDone || !this.inOriginalDropzone) {
+      await this.updateRects()
+      this.css.transition.enable()
+    } else {
+      this.firstEnterDone = true
       const rect = this.el.getBoundingClientRect()
       this.css.global.update(`
         #${this.el.id} {
@@ -121,7 +130,8 @@ export class SlideDropzoneHint {
 
         for (const item of items) {
           if (item.target.id === rect.target.id) {
-            offset += item.width + this.colGap
+            offset +=
+              item.width + item.marginLeft + item.marginRight + this.colGap
             const i = rect.index + 1
             enterCss.push(`
               ${selector}:nth-child(n+${i}) {
@@ -146,9 +156,6 @@ export class SlideDropzoneHint {
       await paint()
       this.css.enter.disable()
 
-      this.css.transition.enable()
-    } else {
-      await this.updateRects()
       this.css.transition.enable()
     }
 
@@ -175,7 +182,7 @@ export class SlideDropzoneHint {
       if (this.newIndex !== undefined) {
         this.css.dragover.update(`
           ${this.config.selector}:nth-child(n+${this.newIndex + 1}) {
-            translate: ${items[0].width + this.colGap}px 0;
+            translate: ${this.blankWidth};
           }`)
       }
     }
@@ -187,7 +194,6 @@ export class SlideDropzoneHint {
 
   async leave() {
     this.dragover = noop
-    this.inOriginalDropzone = false
     this.el.classList.remove("dragover")
     await this.enterReady
     this.rects.length = 0
@@ -197,7 +203,6 @@ export class SlideDropzoneHint {
 
   async revert(items, finished) {
     this.dragover = noop
-    this.inOriginalDropzone = undefined
     this.css.dragover.disable()
     this.css.enter.enable()
     await finished
@@ -209,7 +214,6 @@ export class SlideDropzoneHint {
   async drop(items) {
     this.dragover = noop
     await this.leave()
-    this.inOriginalDropzone = undefined
     this.css.transition.disable()
 
     const { selector } = this.config
@@ -218,7 +222,7 @@ export class SlideDropzoneHint {
 
     if (this.config.list) {
       const add = []
-      if (items.dropzoneId === this.el.id) {
+      if (this.inOriginalDropzone) {
         for (const item of items) {
           item.target.classList.remove("hide")
           this.config.list.splice(item.index, 1)
@@ -274,8 +278,6 @@ export class SlideDropzoneHint {
       root: this.el,
       intersecting: true,
     })
-
-    console.log("rects", rects)
 
     for (let i = 0, l = items.length; i < l; i++) {
       const item = items[i]

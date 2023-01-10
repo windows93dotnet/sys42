@@ -1,3 +1,4 @@
+import system from "../../../system.js"
 import uid from "../../../core/uid.js"
 import ghostify from "../../../fabric/dom/ghostify.js"
 import { animateTo, animateFrom } from "../../../fabric/dom/animate.js"
@@ -45,6 +46,11 @@ export class StackItemsHint extends Array {
   }
 
   drag(x, y) {
+    if (system.transfer.currentZone) {
+      const { config, inOriginalDropzone } = system.transfer.currentZone.hint
+      console.log(inOriginalDropzone, config.orientation, config.freeAxis)
+    }
+
     const [first] = this
     if (first) {
       first.ghost.style.zIndex = 1e5 + this.length
