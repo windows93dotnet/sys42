@@ -14,7 +14,7 @@ export class SlideDropzoneHint {
     this.rects = []
 
     this.config = { ...options }
-    this.speed = this.config.animationSpeed
+    this.speed = this.config.speed
     this.freeAxis = this.config.freeAxis
     this.orientation =
       this.config.orientation ?? this.el.getAttribute("aria-orientation")
@@ -51,8 +51,7 @@ export class SlideDropzoneHint {
       if (items && cb) {
         for (const rect of rects) {
           for (const item of items) if (item.target === rect.target) continue
-          this.rects.push(rect)
-          cb(rect)
+          if (cb(rect) !== false) this.rects.push(rect)
         }
       } else {
         this.rects.push(...rects)
@@ -113,54 +112,30 @@ export class SlideDropzoneHint {
       `)
 
       const { selector } = this.config
-      let enterCss = []
+      const enterCss = []
       let offset = 0
       let previousY
 
       // Get all visible items bounding rects and save css with empty holes
       // ------------------------------------------------------------------
-      const rects = await this.updateRects(items, (rect) => {
+      await this.updateRects(items, (rect) => {
+        if (previousY !== rect.y) offset = 0
+        previousY = rect.y
+
         for (const item of items) {
-          if (previousY !== rect.y) {
-            if (enterCss.length > 0) {
-              enterCss = enterCss.map((css) =>
-                css.replace(":is(*)", `:nth-child(-n+${rect.index})`)
-              )
-              enterCss.push(
-                `${selector}:nth-child(${rect.index}) {
-                  /* rotate: 10deg !important; */
-                  margin-right: ${offset}px;
-                }`
-              )
-            }
-
-            offset = 0
-          }
-
-          previousY = rect.y
-
-          if (
-            item.target.id === rect.target.id /* &&
-            !rect.target.classList.contains("hide") */
-          ) {
+          if (item.target.id === rect.target.id) {
             offset += item.width + this.colGap
             const i = rect.index + 1
             enterCss.push(
-              `${selector}:nth-child(n+${i}):is(*) {
+              `${selector}:nth-child(n+${i}) {
                 translate: ${offset}px 0;
               }`
             )
             rect.target.classList.add("hide")
+            return false
           }
         }
       })
-
-      enterCss.push(
-        `${selector}:nth-child(${rects.length}) {
-          /* rotate: 10deg !important; */
-          margin-right: ${offset}px;
-        }`
-      )
 
       // Update bounding rects without dragged items
       // Use getBoundingClientRect to prevent flickering

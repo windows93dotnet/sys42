@@ -15,7 +15,6 @@ import listen from "../../fabric/event/listen.js"
 
 const DEFAULTS = {
   selector: ":scope > *",
-  hoverScroll: true,
   useSelection: true,
   handlerSelector: undefined,
 
@@ -28,7 +27,7 @@ const DEFAULTS = {
 
   dropzoneHintConfig: {
     name: "slide",
-    animationSpeed: 180,
+    speed: 180,
   },
 }
 
@@ -477,7 +476,6 @@ class Transferable extends Trait {
 
     this.config.dropzoneHintConfig.signal ??= this.cancel.signal
     this.config.dropzoneHintConfig.selector ??= this.config.selector
-    this.config.dropzoneHintConfig.hoverScroll ??= this.config.hoverScroll
     this.config.dropzoneHintConfig.list = this.list
 
     this.init()
@@ -504,7 +502,7 @@ class Transferable extends Trait {
     this.dragger = new Dragger(this.el, {
       signal,
       useTargetOffset: false,
-      ...pick(this.config, ["selector", "hoverScroll", "useSelection"]),
+      ...pick(this.config, ["selector", "useSelection"]),
 
       start: (x, y, e, target) => {
         if (
