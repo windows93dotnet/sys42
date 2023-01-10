@@ -9,7 +9,6 @@ import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
 import noop from "../../fabric/type/function/noop.js"
 import HoverScroll from "./HoverScroll.js"
-// import inFirefox from "../../core/env/browser/inFirefox.js"
 
 const DEFAULTS = {
   signal: undefined,
@@ -165,8 +164,6 @@ export default class Dragger {
       selector: this.config.selector,
       touchstart: false,
       pointerdown: (e, target) => {
-        // if (inFirefox) e.preventDefault() // needed to dispatch pointerenter in firefox
-
         if (e.target.hasPointerCapture(e.pointerId)) {
           e.target.releasePointerCapture(e.pointerId) // https://stackoverflow.com/a/70976018
         }
