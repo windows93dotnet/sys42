@@ -255,12 +255,12 @@ textarea.box-fit {
 
 .box-main,
 .scroll-y-auto, .scroll-auto { overflow-x: hidden; overflow-y: auto; }
-.scroll-y,.scroll { overflow-x: hidden; overflow-y: scroll; }
+.scroll-y, .scroll { overflow-x: hidden; overflow-y: scroll; }
 .scroll-x { overflow-x: scroll; overflow-y: hidden; }
-.scroll-x-auto { overflow-x: scroll; overflow-y: auto; }
+.scroll-x-auto { overflow-x: auto; overflow-y: hidden; }
 .scroll-xy { overflow: scroll; }
 .scroll-xy-auto, .scroll-1 { overflow: auto; }
-.scroll-0 { overflow: hidden; }
+.noscroll, .scroll-0 { overflow: hidden; }
 
 /* align
 ======== */
@@ -287,8 +287,8 @@ textarea.box-fit {
   justify-content: space-between;
 }
 
-.items-wrap { flex-wrap: wrap; }
-.items-wrap-0 { flex-wrap: nowrap; }
+.items-wrap, .items-wrap-1 { flex-wrap: wrap; }
+.items-nowrap, .items-wrap-0 { flex-wrap: nowrap; }
 
 /* item
 ======= */
