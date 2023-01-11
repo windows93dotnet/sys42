@@ -84,17 +84,12 @@ export class Tabs extends Component {
               id: `tab-${id}-{{@index}}`,
               style: { "--index": "{{@index}}" },
               tabIndex: "{{../../current === @index ? 0 : -1}}",
-              // animate: {
-              //   clipPath: "inset(0 0 100% 0)",
-              //   translate: "0 100%",
-              //   ms: 300,
-              // },
               content: {
                 tag: "span.ui-tabs__container",
                 content: [
                   { tag: "span.ui-tabs__label", content: "{{render(label)}}" },
                   {
-                    tag: "button.ui-tabs__close._pa-0._btn-clear",
+                    tag: "button.ui-tabs__close",
                     tabIndex: "{{../../current === @index ? 0 : -1}}",
                     picto: "close",
                     on: {

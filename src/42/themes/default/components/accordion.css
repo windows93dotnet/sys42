@@ -1,0 +1,68 @@
+:root {
+  --accordion__label-fg: var(--btn-fg);
+  --accordion__label-bg: var(--btn-bg);
+  --accordion__label-pa: var(--btn-pa);
+  --accordion__label-bdw: var(--btn-bdw);
+  --accordion__label-bds: var(--btn-bds);
+  --accordion__label-bdc: var(--btn-bdc);
+  --accordion__label-bdi: var(--btn-bdi);
+  --accordion__label-br: var(--btn-br);
+  --accordion__label-tsh: var(--btn-tsh);
+  --accordion__label-bsh: var(--btn-bsh);
+  --accordion__label-gap: var(--unit);
+}
+
+ui-accordion {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  max-width: 100%;
+}
+
+.ui-accordion__label {
+  font: inherit;
+  margin: var(--ctrl-group-gap);
+  margin-bottom: 0;
+  flex: 0 1 0%;
+  display: flex;
+  gap: var(--accordion__label-gap);
+
+  --fg: var(--accordion__label-fg);
+  --bg: var(--accordion__label-bg);
+  color: var(--fg);
+  background: var(--bg);
+  padding: var(--accordion__label-pa);
+  border-width: var(--accordion__label-bdw);
+  border-style: var(--accordion__label-bds, solid);
+  border-color: var(--accordion__label-bdc);
+  border-image: var(--accordion__label-bdi);
+  border-radius: var(--accordion__label-br);
+  text-shadow: var(--accordion__label-tsh, none);
+  box-shadow: var(--accordion__label-bsh);
+}
+
+.ui-accordion__label:last-of-type {
+  margin-bottom: var(--ctrl-group-gap);
+}
+
+button.ui-accordion__button {
+  all: unset;
+  display: flex;
+  width: 100%;
+  text-align: left;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-accordion__panel {
+  flex-basis: 100%;
+  max-height: 100%;
+  min-height: 0;
+  display: flex;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+  will-change: flex-basis;
+}
