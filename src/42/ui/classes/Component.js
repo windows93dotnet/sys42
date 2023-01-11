@@ -13,6 +13,7 @@ import render from "../render.js"
 import isEmptyObject from "../../fabric/type/any/is/isEmptyObject.js"
 import dispatch from "../../fabric/event/dispatch.js"
 import hash from "../../fabric/type/any/hash.js"
+import uid from "../../core/uid.js"
 import {
   addEntry,
   ensureDef,
@@ -265,6 +266,8 @@ export default class Component extends HTMLElement {
     let attrs = normalizeAttrs(def, this.ctx, definition.defaults)
     for (const attr of Object.keys(attrs)) delete def[attr]
     if (attrs) renderAttributes(this, this.ctx, attrs)
+
+    if (definition.id === true) this.id ||= uid()
 
     /* handle def
     ------------- */

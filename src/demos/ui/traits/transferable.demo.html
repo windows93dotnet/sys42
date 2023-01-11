@@ -160,10 +160,11 @@
       label: item.name,
       description: item.description,
       content: {
-        tag: "textarea.size-full",
+        tag: "textarea.w-full",
         bind: "description",
         compact: true,
         autofocus: true,
+        rows: 3,
       },
     })
   }
@@ -203,8 +204,7 @@
       {
         tag: "ui-tabs",
         id: "tabs1",
-        style: { height: "100px" },
-        // balanced: true,
+        // style: { height: "100px" },
         content: "{{planets}}",
       },
     ],
