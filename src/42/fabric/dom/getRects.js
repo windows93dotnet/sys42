@@ -1,5 +1,6 @@
 const { indexOf } = Array.prototype
 const { parseInt, isNaN } = Number
+const { round } = Math
 
 function addMargins(target, rect) {
   const { marginTop, marginBottom, marginLeft, marginRight } =
@@ -10,10 +11,17 @@ function addMargins(target, rect) {
   rect.marginLeft = parseInt(marginLeft, 10)
   rect.marginRight = parseInt(marginRight, 10)
 
-  if (isNaN(marginTop)) rect.marginTop = 0
-  if (isNaN(marginBottom)) rect.marginBottom = 0
-  if (isNaN(marginLeft)) rect.marginLeft = 0
-  if (isNaN(marginRight)) rect.marginRight = 0
+  if (isNaN(rect.marginTop)) rect.marginTop = 0
+  if (isNaN(rect.marginBottom)) rect.marginBottom = 0
+  if (isNaN(rect.marginLeft)) rect.marginLeft = 0
+  if (isNaN(rect.marginRight)) rect.marginRight = 0
+}
+
+function roundSubpixels(rect) {
+  rect.left = round(rect.left)
+  rect.top = round(rect.top)
+  rect.x = rect.left
+  rect.y = rect.top
 }
 
 export async function getRects(elements, options) {
@@ -52,6 +60,7 @@ export async function getRects(elements, options) {
             const rect = boundingClientRect.toJSON()
 
             if (options?.includeMargins) addMargins(target, rect)
+            if (options?.subpixel !== true) roundSubpixels(rect)
 
             rect.index = all ? indexOf.call(all, target) : i
             rect.isIntersecting = isIntersecting
@@ -75,6 +84,7 @@ export async function getRects(elements, options) {
             const rect = boundingClientRect.toJSON()
 
             if (options?.includeMargins) addMargins(target, rect)
+            if (options?.subpixel !== true) roundSubpixels(rect)
 
             rect.index = all ? indexOf.call(all, target) : i
             rect.isIntersecting = isIntersecting
