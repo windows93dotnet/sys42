@@ -6,7 +6,6 @@ import dispatch from "../../fabric/event/dispatch.js"
 import maxZIndex from "../../fabric/dom/maxZIndex.js"
 import { objectifyDef, forkDef, normalizePlugins } from "../normalize.js"
 import forceOpener from "../forceOpener.js"
-import uid from "../../core/uid.js"
 import { autofocus } from "../../fabric/dom/focus.js"
 import nextCycle from "../../fabric/type/promise/nextCycle.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
@@ -34,9 +33,8 @@ function activateIfFocused() {
 export class Dialog extends Component {
   static definition = {
     tag: "ui-dialog",
-
-    id: true,
     role: "dialog",
+    id: true,
 
     traits: {
       emittable: true,
@@ -107,7 +105,7 @@ export class Dialog extends Component {
       },
     ]
 
-    const id = uid()
+    const id = this.id + "-title"
     this.setAttribute("aria-labelledby", id)
 
     const def = [

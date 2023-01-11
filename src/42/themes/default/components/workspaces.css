@@ -1,9 +1,0 @@
-ui-workspaces {
-  display: block;
-  /* border: 5px solid red; */
-  pointer-events: none;
-}
-
-ui-workspaces > * {
-  pointer-events: auto;
-}

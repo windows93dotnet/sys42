@@ -1,12 +1,12 @@
 import Component from "../classes/Component.js"
 import isFocusable from "../../fabric/dom/isFocusable.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
-import hash from "../../fabric/type/any/hash.js"
 
 export class Tabs extends Component {
   static definition = {
     tag: "ui-tabs",
     role: "none",
+    id: true,
 
     props: {
       side: {
@@ -34,15 +34,15 @@ export class Tabs extends Component {
     },
   }
 
-  addTab(data) {
+  addPanel(data) {
     this.content.push(data)
   }
 
-  removeTab(index) {
+  removePanel(index) {
     this.content.splice(index, 1)
   }
 
-  selectTab(index, options) {
+  selectPanel(index, options) {
     const max = this.content.length - 1
     if (index > max) index = max
     else if (index < 0) index = 0
@@ -58,9 +58,8 @@ export class Tabs extends Component {
   }
 
   render() {
-    this.id ||= hash(this.ctx.steps)
     const { id } = this
-
+    console.log(id)
     return [
       {
         scope: "content",
@@ -76,7 +75,7 @@ export class Tabs extends Component {
             transferable: {
               selector: ":scope > .ui-tabs__tab",
               list: this.content,
-              indexChange: (index) => this.selectTab(index),
+              indexChange: (index) => this.selectPanel(index),
             },
 
             each: {
@@ -100,17 +99,17 @@ export class Tabs extends Component {
                     picto: "close",
                     on: {
                       stop: true,
-                      click: "{{removeTab(@index)}}",
+                      click: "{{removePanel(@index)}}",
                     },
                   },
                 ],
               },
               aria: {
                 selected: "{{../../current === @index}}",
-                controls: `panel-${id}-{{@index}}`,
+                controls: `${id}-panel-{{@index}}`,
               },
               on: {
-                "pointerdown || Space || Enter": "{{selectTab(@index)}}",
+                "pointerdown || Space || Enter": "{{selectPanel(@index)}}",
               },
             },
           },
@@ -120,7 +119,7 @@ export class Tabs extends Component {
               if: "{{../../current === @index}}",
               tag: ".ui-tabs__panel",
               role: "tabpanel",
-              id: `panel-${id}-{{@index}}`,
+              id: `${id}-panel-{{@index}}`,
               content: "{{render(content)}}",
               tabIndex: 0,
               // hidden: "{{../../current !== @index}}",
