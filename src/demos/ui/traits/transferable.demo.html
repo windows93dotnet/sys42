@@ -42,7 +42,7 @@
 
     <br /> -->
 
-    <h3>selectable</h3>
+    <!-- <h3>selectable</h3>
     <div
       class="demo demo-selectable demo-xy box-flex scroll-y pa-xl gap-xl inset paper">
       <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-200">1</span>
@@ -89,7 +89,7 @@
       <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-600">5</span>
       <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-600">6</span>
     </div>
-    <br />
+    <br /> -->
 
     <!-- <h3>grid (not quite ready)</h3>
     <div
@@ -129,7 +129,7 @@
   }
 </script> -->
 
-<script type="module">
+<!-- <script type="module">
   import transferable from "../../../42/ui/traits/transferable.js"
   import selectable from "../../../42/ui/traits/selectable.js"
   for (const item of document.querySelectorAll(".demo")) {
@@ -145,10 +145,11 @@
   selectableInstance.add(demoSmall.querySelector(":scope > :nth-child(1)"))
   selectableInstance.add(demoSmall.querySelector(":scope > :nth-child(3)"))
   selectableInstance.add(demoSmall.querySelector(":scope > :nth-child(5)"))
-</script>
+</script> -->
 
 <script type="module">
   import ui from "../../../42/ui.js"
+  import "../../../42/ui/components/tabs.js"
   import planets from "../../../tests/fixtures/data/planets.js"
 
   const state = {
@@ -176,7 +177,7 @@
       { tag: "h3", content: "list" },
       {
         scope: "arr1",
-        tag: ".demo.demo-small.demo-selectable.scroll-x.d-flex.pa-xl._gap-xl.inset paper",
+        tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl._gap-xl.inset paper",
         aria: { orientation: "horizontal" },
         selectable: true,
         transferable: {
@@ -189,7 +190,7 @@
       },
       {
         scope: "arr2",
-        tag: ".demo.demo-small.demo-selectable.scroll-x.d-flex.pa-xl.gap-xl.inset paper",
+        tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl.gap-xl.inset paper",
         transferable: {
           list: "{{/arr2}}",
         },

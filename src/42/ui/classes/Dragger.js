@@ -113,7 +113,7 @@ export default class Dragger {
       restore = setTemp(document.documentElement, {
         signal,
         class: {
-          "pointer-iframes-0": true,
+          "pointerless-iframes": true,
           "selection-0": true,
           "transition-0": true,
         },

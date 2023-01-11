@@ -30,7 +30,7 @@ listen(
   {
     "dragstart || dragover"() {
       restore ??= setTemp(document.documentElement, {
-        class: { "pointer-iframes-0": true },
+        class: { "pointerless-iframes": true },
       })
     },
     "dragend"() {
