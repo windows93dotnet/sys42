@@ -43,17 +43,28 @@ export class Accordion extends Component {
         scope: "content",
         each: [
           {
-            tag: "h2.ui-accordion__label",
-            content: {
-              tag: "button.ui-accordion__button",
-              picto: "puzzle",
-              aria: {
-                controls: `${id}-panel-{{@index}}`,
-                expanded: "{{includes(../../../expanded, @index)}}",
+            tag: "h2.ui-accordion__label._button",
+            content: [
+              {
+                tag: "button.ui-accordion__button",
+                picto:
+                  "{{includes(../../../expanded, @index) ? 'down' : 'right'}}",
+                aria: {
+                  controls: `${id}-panel-{{@index}}`,
+                  expanded: "{{includes(../../../expanded, @index)}}",
+                },
+                content: {
+                  tag: "span.ui-accordion__button__text",
+                  content: "{{render(label)}}",
+                },
+                click: "{{selectPanel(@index)}}",
               },
-              content: "{{render(label)}}",
-              click: "{{selectPanel(@index)}}",
-            },
+              {
+                if: "{{postlabel}}",
+                tag: "span",
+                content: "{{render(postlabel)}}",
+              },
+            ],
           },
           {
             tag: "section.ui-accordion__panel",

@@ -1,7 +1,8 @@
 :root {
+  --accordion__label-pa: 1px;
   --accordion__label-fg: var(--btn-fg);
   --accordion__label-bg: var(--btn-bg);
-  --accordion__label-pa: var(--btn-pa);
+  --accordion__label-base-pa: var(--btn-pa);
   --accordion__label-bdw: var(--btn-bdw);
   --accordion__label-bds: var(--btn-bds);
   --accordion__label-bdc: var(--btn-bdc);
@@ -9,7 +10,7 @@
   --accordion__label-br: var(--btn-br);
   --accordion__label-tsh: var(--btn-tsh);
   --accordion__label-bsh: var(--btn-bsh);
-  --accordion__label-gap: var(--unit);
+  --accordion__label-gap: var(--unit-sm);
 }
 
 ui-accordion {
@@ -25,13 +26,13 @@ ui-accordion {
   margin-bottom: 0;
   flex: 0 1 0%;
   display: flex;
+  align-items: center;
   gap: var(--accordion__label-gap);
 
   --fg: var(--accordion__label-fg);
   --bg: var(--accordion__label-bg);
   color: var(--fg);
   background: var(--bg);
-  padding: var(--accordion__label-pa);
   border-width: var(--accordion__label-bdw);
   border-style: var(--accordion__label-bds, solid);
   border-color: var(--accordion__label-bdc);
@@ -39,6 +40,17 @@ ui-accordion {
   border-radius: var(--accordion__label-br);
   text-shadow: var(--accordion__label-tsh, none);
   box-shadow: var(--accordion__label-bsh);
+  padding: var(--accordion__label-pa);
+}
+
+.ui-accordion__label::after {
+  content: "";
+  height: var(--picto-size);
+  margin-left: calc(-1 * var(--accordion__label-gap));
+}
+
+.ui-accordion__button__text {
+  padding: calc(var(--accordion__label-pa) - var(--accordion__label-base-pa));
 }
 
 .ui-accordion__label:last-of-type {
@@ -48,12 +60,14 @@ ui-accordion {
 button.ui-accordion__button {
   all: unset;
   display: flex;
+  align-items: center;
   width: 100%;
   text-align: left;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  gap: var(--unit-xs);
 }
 
 .ui-accordion__panel {

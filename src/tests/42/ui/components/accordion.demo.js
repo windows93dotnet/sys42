@@ -9,14 +9,13 @@ const content = [
   {
     label:
       "Laudantium molestiae nihil pariatur enim nemo minus nostrum nobis eaque, quam mollitia magni iusto",
+    postlabel: { tag: "button._btn-clear", content: "more" },
     content:
       "Laudantium molestiae nihil pariatur enim nemo minus nostrum nobis eaque, quam mollitia magni iusto, illum iure dolor quod vel laborum nesciunt minima!",
   },
   {
-    label: [
-      "Quam mollitia magni",
-      { tag: "button._btn-clear", content: "more" },
-    ],
+    label: "Quam mollitia magni",
+    postlabel: { tag: "button._btn-clear", content: "more" },
     content:
       "Quam mollitia magni iusto, illum iure dolor quod vel laborum nesciunt minima! Quam mollitia magni iusto, illum iure dolor quod vel laborum nesciunt minima! Quam mollitia magni iusto, illum iure dolor quod vel laborum nesciunt minima!",
   },
