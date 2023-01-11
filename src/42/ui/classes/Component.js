@@ -220,6 +220,7 @@ export default class Component extends HTMLElement {
       preload: undefined,
       components: undefined,
       postrender: undefined,
+      traitsReady: undefined,
       cancel: ctx?.detached ? undefined : ctx?.cancel?.fork(),
       steps: ctx?.steps ?? this.localName,
     })

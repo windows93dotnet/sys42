@@ -1,5 +1,5 @@
 export function dispatch(el, name, options) {
-  el = el.isConnected ? el : globalThis
+  el = el?.isConnected ? el : globalThis
 
   if (name instanceof Error) {
     const error = name

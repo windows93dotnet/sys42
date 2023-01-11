@@ -7,6 +7,7 @@ import configure from "../../core/configure.js"
 import ipc from "../../core/ipc.js"
 import arrify from "../type/any/arrify.js"
 import listen from "../event/listen.js"
+import dispatch from "../event/dispatch.js"
 import isIframable from "../url/isIframable.js"
 
 const DEFAULTS = {
@@ -165,19 +166,14 @@ export default class Resource {
     this.bus = ipc.from(this.el)
     this.bus
       .on("42_IFRAME_ERROR", async (err) => {
-        const [dispatch, deserializeError] = await Promise.all([
-          import("../event/dispatch.js") //
-            .then(({ dispatch }) => dispatch),
+        const [deserializeError] = await Promise.all([
           import("../type/error/deserializeError.js") //
             .then((m) => m.default),
         ])
         dispatch(this.el, deserializeError(err))
       })
       .on("42_IFRAME_BLUR", () => {
-        import("../event/dispatch.js") //
-          .then(({ dispatch }) =>
-            dispatch(this.el, "uiiframeblur", { bubbles: true })
-          )
+        dispatch(this.el, "uiiframeblur", { bubbles: true })
       })
   }
 

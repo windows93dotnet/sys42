@@ -183,7 +183,7 @@ export class Dialog extends Component {
     }
 
     this.activate()
-    queueMicrotask(() => this.emit("open", this))
+    this.emit("open", this)
     dispatch(this, "uidialogopen")
   }
 }
@@ -202,11 +202,11 @@ export const dialog = rpc(
 
     const el = new Dialog(def, ctx)
     const { opener } = el
+
     await el.ready
+    await el.ctx.traitsReady
 
     document.documentElement.append(el)
-
-    await nextCycle()
 
     return el.once("close").then((res) => ({ res, opener }))
   },
