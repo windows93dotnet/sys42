@@ -172,6 +172,10 @@ textarea.box-fit {
   width: auto;
 }
 
+:where(.box-v > :is(h1,h2,h3,h4,h5,h6)) {
+  flex: 0 0 auto;
+}
+
 :where(.box-v > textarea) {
   width: auto;
 }

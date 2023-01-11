@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8" />
-<title>pictos</title>
+<title>theme</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" href="/style.css" id="theme" />
 <script type="module" src="../../42/ui/head.js"></script>
@@ -264,30 +264,59 @@
     ]
   }
 
-  ui({
-    tag: "._box-fit._desktop",
-    content: [
-      {
-        content: {
-          tag: ".box-h.pa.gap",
-          content: [
-            {
-              tag: "div > fieldset",
-              label: ["Enabled", { tag: "button", picto: "plus" }],
-              content: makeDemo(),
-            },
-            {
-              tag: "div > fieldset",
-              label: [
-                "Disabled",
-                { tag: "button", picto: "plus", disabled: true },
-              ],
-              disabled: true,
-              content: makeDemo("disabled"),
-            },
-          ],
-        },
+  ui([
+    {
+      content: {
+        tag: ".box-h.pa.gap",
+        content: [
+          {
+            tag: "div > fieldset",
+            label: ["Enabled", { tag: "button", picto: "plus" }],
+            content: makeDemo(),
+          },
+          {
+            tag: "div > fieldset",
+            label: [
+              "Disabled",
+              { tag: "button", picto: "plus", disabled: true },
+            ],
+            disabled: true,
+            content: makeDemo("disabled"),
+          },
+        ],
       },
-    ],
-  })
+    },
+    {
+      tag: ".box-h.ma.pa.gap._checkboard.inset",
+      content: [
+        {
+          tag: ".flex-v.gap",
+          content: [
+            ".message.error",
+            ".message.warning",
+            ".message.success",
+            ".message.info",
+            ".pill",
+          ].map((x) => ({
+            tag: `${x}.pa`,
+            content: x,
+          })),
+        },
+        {
+          tag: ".flex-v.gap",
+          content: [
+            ".desktop", //
+            ".ground",
+            ".code",
+            ".paper",
+            ".document",
+            ".panel",
+          ].map((x) => ({
+            tag: `${x}.pa`,
+            content: x,
+          })),
+        },
+      ],
+    },
+  ])
 </script>
