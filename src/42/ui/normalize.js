@@ -517,13 +517,15 @@ export function normalizeTraits(def, ctx) {
     await ctx.preload
     await el.ready
 
+    const undones = []
+
     for (const { module, name, val } of list) {
-      const undones = []
+      const traitReady = []
       traverse(val, (key, val, obj) => {
         if (typeof val === "string") {
           const fn = normalizeString(val, ctx)
           if (typeof fn === "function") {
-            undones.push(
+            traitReady.push(
               fn(ctx.reactive.state).then((res) => {
                 obj[key] = res
               })
@@ -532,16 +534,20 @@ export function normalizeTraits(def, ctx) {
         }
       })
 
-      Promise.all(undones).then(() => {
-        const fn = (val) => {
-          if (val === false) el[_INSTANCES]?.[name]?.destroy()
-          else module(el, { signal: ctx.signal, ...val })
-        }
+      undones.push(
+        Promise.all(traitReady).then(() => {
+          const fn = (val) => {
+            if (val === false) el[_INSTANCES]?.[name]?.destroy()
+            else module(el, { signal: ctx.signal, ...val })
+          }
 
-        if (val.scopes) register(ctx, val, fn)
-        else fn(val)
-      })
+          if (val.scopes) register(ctx, val, fn)
+          else fn(val)
+        })
+      )
     }
+
+    await Promise.all(undones)
   }
 }
 
@@ -817,6 +823,7 @@ export function normalizeCtx(ctx = {}) {
   ctx.components ??= new Undones()
   ctx.undones ??= new Undones()
   ctx.postrender ??= new Undones()
+  ctx.traitsReady ??= new Undones()
 
   ctx.cancel ??= new Canceller()
   ctx.signal = ctx.cancel.signal

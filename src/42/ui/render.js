@@ -169,7 +169,7 @@ export default function render(def, ctx, options) {
     )
   }
 
-  def.traits?.(ctx.el)
+  if (def.traits) ctx.traitsReady.push(def.traits(ctx.el))
 
   if (def.on) renderOn(ctx.el, def, ctx)
 
