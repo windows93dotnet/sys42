@@ -27,6 +27,7 @@
 /* Components
 ============= */
 @import "./ui/ui.css";
+@import "./components/accordion.css";
 @import "./components/dialog.css";
 @import "./components/folder.css";
 @import "./components/grid.css";
