@@ -25,6 +25,7 @@ window.app = await ui({
   style: { padding: "90px" },
   // plugins: ["persist"],
   content: [
+    { tag: "h2._item-shrink", content: "ui-tabs" },
     {
       tag: ".box-h",
       content: [
