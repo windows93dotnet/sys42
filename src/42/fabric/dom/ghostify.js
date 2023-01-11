@@ -1,30 +1,7 @@
-// import applyStyleDeclaration from "./applyStyleDeclaration.js"
+import applyStyleDeclaration from "./applyStyleDeclaration.js"
 
 const { parseInt } = Number
 const { round } = Math
-
-export function area(el, options) {
-  let { x, y, width, height } = options?.rect ?? el.getBoundingClientRect()
-  const styles = getComputedStyle(el)
-
-  if (options?.subpixel !== true) {
-    x = round(x)
-    y = round(y)
-    // width = round(width)
-    // height = round(height)
-  }
-
-  const area = {}
-  area.marginTop = parseInt(styles.marginTop, 10)
-  area.marginLeft = parseInt(styles.marginLeft, 10)
-  area.marginRight = parseInt(styles.marginRight, 10)
-  area.marginBottom = parseInt(styles.marginBottom, 10)
-  area.x = x
-  area.y = y
-  area.width = width
-  area.height = height
-  return area
-}
 
 export function ghostify(el, options) {
   let { x, y, width, height } = options?.rect ?? el.getBoundingClientRect()
@@ -43,7 +20,7 @@ export function ghostify(el, options) {
   const marginTop = parseInt(styles.marginTop, 10)
   const marginLeft = parseInt(styles.marginLeft, 10)
 
-  // if (options?.cloneStyles !== false) applyStyleDeclaration(clone, styles)
+  if (options?.cloneStyles !== false) applyStyleDeclaration(clone, styles)
 
   clone.style.transition = "none"
   clone.style.position = "fixed"
@@ -54,7 +31,7 @@ export function ghostify(el, options) {
   clone.style.maxWidth = "none"
   clone.style.maxHeight = "none"
 
-  if (clone.style.display === "inline") clone.style.display = "inline-block"
+  if (styles.display === "inline") clone.style.display = "inline-block"
 
   clone.style.width = `${width}px`
   clone.style.height = `${height}px`
@@ -65,20 +42,7 @@ export function ghostify(el, options) {
   clone.style.left = 0
   clone.style.translate = `${x}px ${y}px`
 
-  if (options?.area) {
-    options.area.marginTop = marginTop
-    options.area.marginLeft = marginLeft
-    options.area.marginRight = parseInt(styles.marginRight, 10)
-    options.area.marginBottom = parseInt(styles.marginBottom, 10)
-    options.area.x = x
-    options.area.y = y
-    options.area.width = width
-    options.area.height = height
-  }
-
   return clone
 }
-
-ghostify.area = area
 
 export default ghostify
