@@ -17,3 +17,12 @@
   transition: none !important;
   pointer-events: none !important;
 }
+
+button.btn-small,
+.ui-dialog__header button,
+.ui-accordion__label button {
+  height: var(--picto-size);
+  min-width: var(--picto-size);
+  padding: 2px;
+  /* margin: 2px 0; */
+}

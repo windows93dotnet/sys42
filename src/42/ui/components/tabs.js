@@ -89,6 +89,11 @@ export class Tabs extends Component {
                 content: [
                   { tag: "span.ui-tabs__label", content: "{{render(label)}}" },
                   {
+                    if: "{{postlabel}}",
+                    tag: "span",
+                    content: "{{render(postlabel)}}",
+                  },
+                  {
                     tag: "button.ui-tabs__close",
                     tabIndex: "{{../../current === @index ? 0 : -1}}",
                     picto: "close",

@@ -494,13 +494,6 @@ legend button.has-picto > ui-picto,
   margin-inline-start: 2px;
 }
 
-.ui-dialog__header button {
-  height: var(--picto-size);
-  min-width: var(--picto-size);
-  padding: 2px;
-  margin: 2px 0;
-}
-
 legend button:active,
 .ui-dialog__header button:active {
   padding: 2px 1px 1px 2px;
