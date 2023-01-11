@@ -17,6 +17,7 @@ import dispatch from "../fabric/event/dispatch.js"
 import isEmptyObject from "../fabric/type/any/is/isEmptyObject.js"
 import noop from "../fabric/type/function/noop.js"
 import arrify from "../fabric/type/any/arrify.js"
+import merge from "../fabric/type/object/merge.js"
 import hash from "../fabric/type/any/hash.js"
 import getType from "../fabric/type/any/getType.js"
 import inTop from "../core/env/realm/inTop.js"
@@ -670,7 +671,7 @@ export function forkDef(def, ctx) {
     if (ctx.scopeChain) def.scopeChain = structuredClone(ctx.scopeChain)
     if (ctx.plugins) def.plugins = Object.keys(ctx.plugins)
     const actions = ctx.actions.value
-    if (!isEmptyObject(actions)) def.actions = structuredClone(actions)
+    if (!isEmptyObject(actions)) def.actions = merge({}, actions)
   }
 
   return def
