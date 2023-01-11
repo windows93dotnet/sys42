@@ -5,7 +5,6 @@
 /* fit
 ====== */
 
-.box-main,
 .box-fit {
   position: absolute;
   inset: 0;
@@ -69,23 +68,23 @@ textarea.box-fit {
 /* center
 ========= */
 
-.box-main, .box-center {
+.box-center {
   display: grid;
+  justify-content: center;
+  align-content: safe center;
   align-items: center;
-  align-content: center;
-  justify-content: center;
-}
-
-.box-center-x {
-  display: grid;
-  align-content: start;
-  justify-content: center;
 }
 
 .box-center-y {
   display: grid;
+  align-content: safe center;
   align-items: center;
-  align-content: center;
+}
+
+.box-center-x {
+  display: grid;
+  justify-content: center;
+  align-content: start;
 }
 
 /* stack
@@ -257,7 +256,6 @@ textarea.box-fit {
 /* scroll
 ========= */
 
-.box-main,
 .scroll-y-auto, .scroll-auto { overflow-x: hidden; overflow-y: auto; }
 .scroll-y, .scroll { overflow-x: hidden; overflow-y: scroll; }
 .scroll-x { overflow-x: scroll; overflow-y: hidden; }
