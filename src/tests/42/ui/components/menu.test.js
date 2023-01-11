@@ -194,13 +194,13 @@ const makeDemo = ({ content } = {}) => {
 
     actions: {
       open() {
-        console.log("open", inTop)
+        console.log("open", { inTop })
       },
       save() {
-        console.log("save", inTop)
+        console.log("save", { inTop })
       },
       log(str) {
-        console.log(str, inTop, this)
+        console.log(str, { inTop }, this)
       },
       incr(n) {
         // console.log("incr", inTop, this)
@@ -300,7 +300,7 @@ if (inTop) {
             content: [
               makeDemo(),
               {
-                tag: "ui-sandbox.panel",
+                tag: "ui-sandbox.inset.ground",
                 permissions: "trusted",
                 path: href,
               },

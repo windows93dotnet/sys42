@@ -123,7 +123,7 @@ export const popup = rpc(
     await ctx.preload.done()
     const el = render(...normalized, { skipNormalize: true })
     el.style.position = "fixed"
-    el.style.transform = "translate(-200vw, -200vh)"
+    el.style.translate = "-200vw -200vh"
     el.style.zIndex = maxZIndex(zIndexSector) + 1
 
     document.documentElement.append(el)

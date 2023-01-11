@@ -53,7 +53,6 @@ export class Dialog extends Component {
       active: {
         type: "boolean",
         reflect: true,
-        default: true,
       },
       x: {
         type: "number",
