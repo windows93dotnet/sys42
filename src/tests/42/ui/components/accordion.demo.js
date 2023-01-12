@@ -30,6 +30,10 @@ ui({
       content: [
         {
           tag: "ui-accordion.inset",
+          style: {
+            "--picto-open": "places/folder-open",
+            "--picto-close": "places/folder",
+          },
           content,
         },
       ],

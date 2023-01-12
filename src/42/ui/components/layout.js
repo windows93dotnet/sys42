@@ -17,7 +17,6 @@ function displayLayout(items, dir = "h") {
     } else if (typeof item === "string") {
       out.push({ tag: dir === "h" ? "span" : "div", content: item })
     } else {
-      item.class = `box-${dir}`
       out.push(item)
     }
   }

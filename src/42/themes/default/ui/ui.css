@@ -20,16 +20,24 @@
 
 button.btn-small,
 .ui-dialog__header button,
+.ui-tabs__container > span > button,
 .ui-accordion__label button {
   height: var(--picto-size);
   min-width: var(--picto-size);
   padding: 2px;
-  /* margin: 2px 0; */
+}
+
+ui-picto {
+  display: inline-block;
+  flex: 0 0 var(--picto-size);
+  width: var(--picto-size);
+  height: var(--picto-size);
 }
 
 ui-layout {
   display: flex;
-  flex-grow: 1;
-  width: 100%;
-  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
 }
+
+:where(ui-layout) { flex-grow: 1; }

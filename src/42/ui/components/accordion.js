@@ -8,14 +8,10 @@ export class Accordion extends Component {
     id: true,
 
     props: {
-      expanded: {
-        type: "array",
-        default: [0, 1],
-      },
-      content: {
-        type: "array",
-        default: [],
-      },
+      multiple: true,
+      collapsible: true,
+      expanded: [0],
+      content: [],
     },
   }
 
@@ -38,6 +34,11 @@ export class Accordion extends Component {
 
   render() {
     const { id } = this
+
+    const styles = getComputedStyle(this)
+    const pictoOpen = styles.getPropertyValue("--picto-open") || "down"
+    const pictoClose = styles.getPropertyValue("--picto-close") || "right"
+
     return [
       {
         scope: "content",
@@ -46,9 +47,16 @@ export class Accordion extends Component {
             tag: "h2.ui-accordion__label._button",
             content: [
               {
+                tag: "ui-picto",
+                value: `{{includes(../../../expanded, @index) ? '${pictoOpen}' : '${pictoClose}'}}`,
+              },
+              {
+                if: "{{prelabel}}",
+                tag: "span.prelabel",
+                content: "{{render(prelabel)}}",
+              },
+              {
                 tag: "button.ui-accordion__button",
-                picto:
-                  "{{includes(../../../expanded, @index) ? 'down' : 'right'}}",
                 aria: {
                   controls: `${id}-panel-{{@index}}`,
                   expanded: "{{includes(../../../expanded, @index)}}",
@@ -61,7 +69,7 @@ export class Accordion extends Component {
               },
               {
                 if: "{{postlabel}}",
-                tag: "span",
+                tag: "span.postlabel",
                 content: "{{render(postlabel)}}",
               },
             ],
