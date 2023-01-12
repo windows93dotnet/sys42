@@ -115,14 +115,14 @@ textarea.box-fit {
   position: relative;
 }
 
-.box-v {
+.box-v, ui-layout {
   display: flex;
   flex-direction: column;
   max-height: 100%;
 }
-:where(.box-v) { flex-wrap: wrap; min-height: 0; }
+:where(.box-v, ui-layout) { flex-wrap: wrap; min-height: 0; }
 
-:where(.box-v > *) {
+:where(:is(.box-v, ui-layout) > *) {
   flex: 1 1 0%;
   min-height: 0; /* [1] */
   position: relative;
@@ -150,7 +150,7 @@ textarea.box-fit {
 }
 
 :where(
-.box-v > :is(
+:is(.box-v, ui-layout) > :is(
   span,
   nav,
   footer,
@@ -171,31 +171,31 @@ textarea.box-fit {
   width: auto;
 }
 
-:where(.box-v > :is(h1,h2,h3,h4,h5,h6)) {
+:where(:is(.box-v, ui-layout) > :is(h1,h2,h3,h4,h5,h6)) {
   flex: 0 0 auto;
 }
 
-:where(.box-v > textarea) {
+:where(:is(.box-v, ui-layout) > textarea) {
   width: auto;
 }
 
-:is(.box-v,.box-h) > :not(:only-child,:first-child,:last-child),
-.ctrl-group:is(.box-v,.box-h) > :not(:only-child,:first-child,:last-child) > :is(
+:is(.box-v, .box-h, ui-layout) > :not(:only-child,:first-child,:last-child),
+.ctrl-group:is(.box-v, .box-h, ui-layout) > :not(:only-child,:first-child,:last-child) > :is(
   textarea,select,button,.button,input:not([type="radio"],[type="checkbox"])
 ) {
   border-radius: 0;
 }
 
-.box-v > :first-child:not(:only-child),
-.ctrl-group.box-v > :first-child:not(:only-child) > :is(
+:is(.box-v, ui-layout) > :first-child:not(:only-child),
+.ctrl-group:is(.box-v, ui-layout) > :first-child:not(:only-child) > :is(
   textarea,select,button,.button,input:not([type="radio"],[type="checkbox"])
 ) {
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
 
-.box-v > :last-child:not(:only-child),
-.ctrl-group.box-v > :last-child:not(:only-child) > :is(
+:is(.box-v, ui-layout) > :last-child:not(:only-child),
+.ctrl-group:is(.box-v, ui-layout) > :last-child:not(:only-child) > :is(
   textarea,select,button,.button,input:not([type="radio"],[type="checkbox"])
 ) {
   border-top-right-radius: 0;
