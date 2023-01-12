@@ -5,6 +5,7 @@ import register from "../register.js"
 import { normalizeComputed } from "../normalize.js"
 import toKebabCase from "../../fabric/type/string/case/toKebabCase.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
+import getType from "../../fabric/type/any/getType.js"
 
 const BOOLEAN_TRUE = new Set(["", "on", "true"])
 const BOOLEAN_FALSE = new Set(["none", "off", "false"])
@@ -96,7 +97,7 @@ export default async function renderProps(el, props, def) {
   const updates = {}
 
   for (let [key, item] of Object.entries(props)) {
-    const type = typeof item
+    const type = getType(item)
 
     if (type !== "object") item = { type, default: item }
     item.type ??= "default" in item ? typeof item.default : "string"

@@ -6,7 +6,7 @@
  * @returns {string}
  */
 export default function getType(val) {
-  if (val === null) return "null"
   if (Array.isArray(val)) return "array"
+  if (val === null) return "null"
   return typeof val
 }

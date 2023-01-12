@@ -3,7 +3,7 @@ import create from "../create.js"
 import render from "../render.js"
 import loadSVG from "../../core/load/loadSVG.js"
 
-const inlineds = new Set([])
+const inlineds = new Set()
 const sprites = create("svg#picto-sprites", {
   style: { display: "none" },
   aria: { hidden: true },

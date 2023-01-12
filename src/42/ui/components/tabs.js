@@ -9,18 +9,11 @@ export class Tabs extends Component {
     id: true,
 
     props: {
-      side: {
-        type: "string",
-        reflect: true,
-      },
-      balanced: {
-        type: "boolean",
-        reflect: true,
-      },
-      current: {
-        type: "number",
-        default: 0,
-      },
+      side: { type: "string", reflect: true },
+      balanced: { type: "boolean", reflect: true },
+      closable: false,
+      transferable: false,
+      current: 0,
       content: {
         type: "array",
         default: [],
@@ -57,9 +50,9 @@ export class Tabs extends Component {
     })
   }
 
-  render() {
+  render({ transferable, sortable, closable }) {
     const { id } = this
-    console.log(id)
+
     return [
       {
         scope: "content",
@@ -69,14 +62,20 @@ export class Tabs extends Component {
             role: "tablist",
             aria: {
               orientation:
-                '{{ includes(["left", "right"], ../side) ? "vertical" : "horizontal" }}',
+                '{{includes(["left", "right"], ../side) ? "vertical" : "horizontal"}}',
             },
 
-            transferable: {
-              selector: ":scope > .ui-tabs__tab",
-              list: this.content,
-              indexChange: (index) => this.selectPanel(index),
-            },
+            ...(transferable || sortable
+              ? {
+                  transferable: {
+                    selector: ":scope > .ui-tabs__tab",
+                    list: this.content,
+                    indexChange: (index) => this.selectPanel(index),
+                    sortable,
+                    ...transferable,
+                  },
+                }
+              : undefined),
 
             each: {
               tag: ".ui-tabs__tab",
@@ -87,13 +86,18 @@ export class Tabs extends Component {
               content: {
                 tag: "span.ui-tabs__container",
                 content: [
+                  {
+                    if: "{{prelabel}}",
+                    tag: "span.prelabel",
+                    content: "{{render(prelabel)}}",
+                  },
                   { tag: "span.ui-tabs__label", content: "{{render(label)}}" },
                   {
                     if: "{{postlabel}}",
-                    tag: "span",
+                    tag: "span.postlabel",
                     content: "{{render(postlabel)}}",
                   },
-                  {
+                  closable && {
                     tag: "button.ui-tabs__close",
                     tabIndex: "{{../../current === @index ? 0 : -1}}",
                     picto: "close",
