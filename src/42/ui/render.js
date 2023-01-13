@@ -74,7 +74,10 @@ function renderTag(tag, def, ctx) {
 
 export default function render(def, ctx, options) {
   if (ctx?.pluginHandlers) {
-    for (const handle of ctx.pluginHandlers) handle(def, ctx, options)
+    for (const pluginHandle of ctx.pluginHandlers) {
+      const res = pluginHandle(def, ctx, options)
+      if (res !== undefined) def = res
+    }
   }
 
   if (def?.tag?.startsWith("ui-")) {
@@ -103,6 +106,7 @@ export default function render(def, ctx, options) {
     case "array": {
       const fragment = document.createDocumentFragment()
       for (let step = 0, l = def.length; step < l; step++) {
+        ctx.type = typeof def[step]
         fragment.append(render(def[step], ctx, { step }))
       }
 

@@ -22,32 +22,45 @@ const content = [
 ]
 
 ui({
-  tag: "body.box-fit.box-center._desktop",
+  plugins: ["markdown"],
+  tag: "body.box-fit.box-center",
   content: [
+    "### Custom picto",
     {
       tag: ".box-v",
       style: { height: "256px", width: "256px" },
-      content: [
-        {
-          tag: "ui-accordion.inset",
-          style: {
-            "--picto-open": "places/folder-open",
-            "--picto-close": "places/folder",
-          },
-          content,
+      content: {
+        tag: "ui-accordion.inset",
+        expanded: [0],
+        style: {
+          "--picto-open": "places/folder-open",
+          "--picto-close": "places/folder",
         },
-      ],
+        content,
+      },
     },
-    // {
-    //   // tag: ".flex-v",
-    //   style: { height: "256px", width: "256px" },
-    //   content: [
-    //     {
-    //       tag: "ui-accordion.inset",
-    //       content,
-    //     },
-    //     "hello",
-    //   ],
-    // },
+    "### multiple: false",
+    {
+      tag: ".box-v",
+      style: { height: "256px", width: "256px" },
+      content: {
+        tag: "ui-accordion.inset",
+        expanded: [0, 1, 2],
+        multiple: false,
+        content,
+      },
+    },
+    "### multiple: false, collapsible: true",
+    {
+      tag: ".box-v",
+      style: { height: "256px", width: "256px" },
+      content: {
+        tag: "ui-accordion.inset",
+        expanded: [0, 1, 2],
+        collapsible: true,
+        multiple: false,
+        content,
+      },
+    },
   ],
 })
