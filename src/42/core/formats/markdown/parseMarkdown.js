@@ -1,20 +1,5 @@
 // TODO: write real Markdown parser
 
-// function parseMarkdown(markdownText) {
-//   const htmlText = markdownText
-//     .replace(/^### (.*$)/gim, "<h3>$1</h3>")
-//     .replace(/^## (.*$)/gim, "<h2>$1</h2>")
-//     .replace(/^# (.*$)/gim, "<h1>$1</h1>")
-//     .replace(/^> (.*$)/gim, "<blockquote>$1</blockquote>")
-//     .replace(/\*\*(.*)\*\*/gim, "<strong>$1</strong>")
-//     .replace(/\*(.*)\*/gim, "<em>$1</em>")
-//     .replace(/!\[(.*?)]\((.*?)\)/gim, "<img alt='$1' src='$2' />")
-//     .replace(/\[(.*?)]\((.*?)\)/gim, "<a href='$2'>$1</a>")
-//     .replace(/\n$/gim, "<br />")
-
-//   return htmlText
-// }
-
 export default function parseMarkdown(text) {
   const tokens = []
 
@@ -29,8 +14,15 @@ export default function parseMarkdown(text) {
   }
 
   text
+    .replace(/^### (.*$)/gim, makeTokenizer("h3"))
+    .replace(/^## (.*$)/gim, makeTokenizer("h2"))
+    .replace(/^# (.*$)/gim, makeTokenizer("h1"))
+    .replace(/^> (.*$)/gim, makeTokenizer("blockquote"))
     .replace(/\*\*(.*?)\*\*/gim, makeTokenizer("strong"))
     .replace(/\*(.*?)\*/gim, makeTokenizer("em"))
+  // .replace(/!\[(.*?)]\((.*?)\)/gim, "<img alt='$1' src='$2' />")
+  // .replace(/\[(.*?)]\((.*?)\)/gim, "<a href='$2'>$1</a>")
+  // .replace(/\n$/gim, "<br />")
 
   if (cursor < text.length) tokens.push(text.slice(cursor))
 

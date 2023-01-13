@@ -9,7 +9,7 @@ export class Accordion extends Component {
 
     props: {
       multiple: true,
-      collapsible: true,
+      collapsible: false,
       expanded: [0],
       content: [],
     },
@@ -23,13 +23,23 @@ export class Accordion extends Component {
     this.content.splice(index, 1)
   }
 
-  selectPanel(index) {
+  selectPanel(index, previous) {
+    if (index < 0 || index > this.content.length - 1) return
+
     if (this.expanded.includes(index)) {
-      removeItem(this.expanded, index)
+      if (this.collapsible !== true && this.expanded.length === 1) {
+        if (index === this.content.length - 1) {
+          this.selectPanel(index - 1, index)
+        } else this.selectPanel(index + 1, index)
+      } else {
+        removeItem(this.expanded, index)
+      }
     } else {
-      // this.expanded.length = 0
+      if (this.multiple !== true) this.expanded.length = 0
       this.expanded.push(index)
     }
+
+    if (previous !== undefined) removeItem(this.expanded, previous)
   }
 
   render() {
@@ -38,6 +48,8 @@ export class Accordion extends Component {
     const styles = getComputedStyle(this)
     const pictoOpen = styles.getPropertyValue("--picto-open") || "down"
     const pictoClose = styles.getPropertyValue("--picto-close") || "right"
+
+    if (this.multiple !== true) this.expanded.length = 1
 
     return [
       {
