@@ -3,7 +3,14 @@
 import ensureElement from "./ensureElement.js"
 import distribute from "../type/object/distribute.js"
 
-const OPTIONS_KEYWORDS = ["ms", "duration", "easing", "delay", "endDelay"]
+const OPTIONS_KEYWORDS = [
+  "ms",
+  "duration",
+  "easing",
+  "delay",
+  "endDelay",
+  "autoHideScrollbars",
+]
 const FORCE_DISPLAY = "display: block !important;"
 
 const prm = window.matchMedia(`(prefers-reduced-motion: reduce)`)
@@ -17,6 +24,14 @@ export async function cancelAnimations(el) {
   for (const anim of el.getAnimations()) anim.cancel()
 }
 
+function autoHideScrollbars(el) {
+  if (el.classList.contains("scrollbar-invisible")) return false
+  if (!(el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth)) {
+    el.classList.add("scrollbar-invisible")
+    return true
+  }
+}
+
 /**
  * @param {HTMLElement} el
  * @param {object} options
@@ -26,6 +41,8 @@ export async function cancelAnimations(el) {
 export async function animateTo(el, options, duration = 240) {
   el = ensureElement(el)
   const [to, config] = distribute(options, OPTIONS_KEYWORDS)
+
+  const restoreScrollbars = autoHideScrollbars(el)
 
   if (prefersReducedMotion) config.duration = 1
   else config.duration ??= config.ms ?? duration
@@ -39,6 +56,8 @@ export async function animateTo(el, options, duration = 240) {
     }
   )
   await anim.finished
+
+  if (restoreScrollbars) el.classList.remove("scrollbar-invisible")
 
   // force rendered element
   const { display } = el.style
@@ -67,6 +86,8 @@ export async function animateFrom(el, options, duration = 240) {
   el = ensureElement(el)
   const [from, config] = distribute(options, OPTIONS_KEYWORDS)
 
+  const restoreScrollbars = autoHideScrollbars(el)
+
   if (prefersReducedMotion) config.duration = 1
   else config.duration ??= config.ms ?? duration
 
@@ -79,6 +100,9 @@ export async function animateFrom(el, options, duration = 240) {
     }
   )
   await anim.finished
+
+  if (restoreScrollbars) el.classList.remove("scrollbar-invisible")
+
   return anim
 }
 

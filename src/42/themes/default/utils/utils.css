@@ -58,16 +58,32 @@
   --scrollbar-thumb-bg: transparent;
 }
 
-.scrollbar-invisible::-webkit-scrollbar-track {
+.scrollbar-invisible::-webkit-scrollbar {
+  background: transparent !important;
   box-shadow: none !important;
   border-color: transparent !important;
+  border-image: var(--EMPTY_IMAGE) !important;
+}
+
+.scrollbar-invisible::-webkit-scrollbar-track {
   background: transparent !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+  border-image: var(--EMPTY_IMAGE) !important;
+}
+
+.scrollbar-invisible::-webkit-scrollbar-button {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+  border-image: var(--EMPTY_IMAGE) !important;
 }
 
 .scrollbar-invisible::-webkit-scrollbar-thumb {
+  background: transparent !important;
   box-shadow: none !important;
   border-color: transparent !important;
-  background: transparent !important;
+  border-image: var(--EMPTY_IMAGE) !important;
 }
 
 .pixelated, :is(:root,body).pixelated * {
