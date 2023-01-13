@@ -19,7 +19,7 @@ test("html", async (t) => {
     },
   })
 
-  t.eq(Object.keys(app.ctx.renderers), [
+  t.eq(Object.keys(app.stage.renderers), [
     "/$ui/icon/root/path",
     "/$ui/icon/root/small",
     "/$ui/icon/root/label",
@@ -243,7 +243,7 @@ test("each", async (t) => {
     },
   })
 
-  t.eq(Object.keys(app.ctx.renderers).slice(0, 8), [
+  t.eq(Object.keys(app.stage.renderers).slice(0, 8), [
     "/arr",
     "/arr/0/x",
     "/$ui/icon/root,[0]/small",
@@ -292,7 +292,7 @@ test("each", 2, async (t) => {
     },
   })
 
-  t.eq(Object.keys(app.ctx.renderers).slice(0, 8), [
+  t.eq(Object.keys(app.stage.renderers).slice(0, 8), [
     "/arr",
     "/arr/0",
     "/$ui/icon/root,[0]/small",

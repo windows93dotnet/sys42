@@ -126,11 +126,11 @@ export class Folder extends Component {
     if (!initial) this.selection.length = 0
 
     const path = normalizeDirname(this.path)
-    const { signal } = this.ctx
+    const { signal } = this.stage
 
     this[_forgetWatch]?.()
     this[_forgetWatch] = disk.watchDir(path, { signal }, (changed, type) => {
-      if (!this.ctx) return
+      if (!this.stage) return
 
       if (type === "delete") {
         if (this.selection.includes(changed)) {
@@ -144,8 +144,8 @@ export class Folder extends Component {
         }
       }
 
-      this.ctx.reactive.now(() => {
-        this.ctx.reactive.refresh(this.ctx.scope + "/path")
+      this.stage.reactive.now(() => {
+        this.stage.reactive.refresh(this.stage.scope + "/path")
         const el = document.activeElement
         if (el.localName === "ui-icon") {
           // force redraw focusring
@@ -173,7 +173,7 @@ export class Folder extends Component {
         menu = hasFiles ? io.fileContextMenu : io.folderContextMenu
       } else menu = io.fileContextMenu
 
-      contextmenu(icon, e, menu, this.ctx)
+      contextmenu(icon, e, menu, this.stage)
     } else {
       const menu = [
         { ...io.createFolder.meta, click: "{{io.createFolder(path)}}" },
@@ -181,7 +181,7 @@ export class Folder extends Component {
         "---",
         { label: "Select all", click: "{{selectAll()}}" }, //
       ]
-      contextmenu(this, e, menu, this.ctx)
+      contextmenu(this, e, menu, this.stage)
     }
   }
 

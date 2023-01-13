@@ -38,60 +38,60 @@ if (debug) {
 }
 /* </DEV> */
 
-export default async function ipcPlugin(ctx) {
-  // const options = { signal: ctx.signal }
+export default async function ipcPlugin(stage) {
+  // const options = { signal: stage.signal }
   const options = {}
   if (inTop) {
-    ctx.reactive.on("update", options, (changes, deleteds, source) => {
-      const data = ctx.reactive.export(changes, deleteds)
+    stage.reactive.on("update", options, (changes, deleteds, source) => {
+      const data = stage.reactive.export(changes, deleteds)
       for (const { iframe, emit } of ipc.iframes.values()) {
         if (iframe !== source) {
           // Parent Top --> Iframe
-          emit(`42-ui-ipc-${ctx.id}`, data)
+          emit(`42-ui-ipc-${stage.id}`, data)
           // Top --> Parent Iframe
-          if (ctx.initiator) emit(`42-ui-ipc-${ctx.initiator}`, data)
+          if (stage.initiator) emit(`42-ui-ipc-${stage.initiator}`, data)
         }
       }
     })
 
     // Parent Top <-- Iframe
-    ipc.on(`42-ui-ipc-${ctx.id}`, options, (data, { iframe }) => {
-      ctx.reactive.import(data, iframe)
+    ipc.on(`42-ui-ipc-${stage.id}`, options, (data, { iframe }) => {
+      stage.reactive.import(data, iframe)
       debug?.("Parent Top <-- Iframe")
     })
 
-    if (ctx.initiator) {
+    if (stage.initiator) {
       // Top <-- Parent Iframe
-      ipc.on(`42-ui-ipc-${ctx.initiator}`, options, (data, { iframe }) => {
-        ctx.reactive.import(data, iframe)
+      ipc.on(`42-ui-ipc-${stage.initiator}`, options, (data, { iframe }) => {
+        stage.reactive.import(data, iframe)
         debug?.("Top <-- Parent Iframe")
       })
     }
   }
 
   if (inIframe) {
-    ctx.reactive.on("update", options, (changes, deleteds, source) => {
-      const data = ctx.reactive.export(changes, deleteds)
+    stage.reactive.on("update", options, (changes, deleteds, source) => {
+      const data = stage.reactive.export(changes, deleteds)
 
       // Parent Iframe --> Top
-      ipc.emit(`42-ui-ipc-${ctx.id}`, data)
+      ipc.emit(`42-ui-ipc-${stage.id}`, data)
 
       // Iframe --> Parent Top
-      if (source !== "parent" && ctx.initiator) {
-        ipc.emit(`42-ui-ipc-${ctx.initiator}`, data)
+      if (source !== "parent" && stage.initiator) {
+        ipc.emit(`42-ui-ipc-${stage.initiator}`, data)
       }
     })
 
     // Parent Iframe <-- Top
-    ipc.on(`42-ui-ipc-${ctx.id}`, options, (data) => {
-      ctx.reactive.import(data)
+    ipc.on(`42-ui-ipc-${stage.id}`, options, (data) => {
+      stage.reactive.import(data)
       debug?.("Parent Iframe <-- Top")
     })
 
-    if (ctx.initiator) {
+    if (stage.initiator) {
       // Iframe <-- Parent Top
-      ipc.on(`42-ui-ipc-${ctx.initiator}`, options, (data) => {
-        ctx.reactive.import(data, "parent")
+      ipc.on(`42-ui-ipc-${stage.initiator}`, options, (data) => {
+        stage.reactive.import(data, "parent")
         debug?.("Iframe <-- Parent Top")
       })
     }

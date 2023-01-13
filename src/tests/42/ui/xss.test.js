@@ -62,9 +62,9 @@ test.tasks(
     // }),
 
     task({
-      title: "ctx.trusted attack",
+      title: "stage.trusted attack",
       description:
-        "XSS Fail because ctx.trusted is not transferred to top realm",
+        "XSS Fail because stage.trusted is not transferred to top realm",
       plan: [
         {
           // dummy dialog to force top ipc response
@@ -114,7 +114,7 @@ dialog(
       skip: !importmapSupport,
       title: "importmap attack on ui-sandbox",
       description:
-        "XSS Fail because top level rpc delete ctx.trusted from sandboxed iframes",
+        "XSS Fail because top level rpc delete stage.trusted from sandboxed iframes",
       plan: [
         {
           tag: "ui-dialog",

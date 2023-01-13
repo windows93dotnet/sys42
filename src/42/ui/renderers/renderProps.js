@@ -72,16 +72,16 @@ const CONVERTERS = {
 CONVERTERS.array = CONVERTERS.object
 
 export default async function renderProps(el, props, plan) {
-  const { ctx } = el
+  const { stage } = el
 
   const observed = {}
   let data
 
-  if (ctx.reactive.has(ctx.scope)) {
-    data = ctx.reactive.get(ctx.scope) ?? {} // TODO: check why ui-picto has undefined state
+  if (stage.reactive.has(stage.scope)) {
+    data = stage.reactive.get(stage.scope) ?? {} // TODO: check why ui-picto has undefined state
   } else {
     data = {}
-    ctx.reactive.set(ctx.scope, data, { silent: true })
+    stage.reactive.set(stage.scope, data, { silent: true })
   }
 
   let queue
@@ -104,8 +104,8 @@ export default async function renderProps(el, props, plan) {
 
     const scope =
       item.storeInRootState === true //
-        ? resolveScope(ctx.scopeChain.at(0)?.scope ?? ctx.scope, key, ctx)
-        : resolveScope(ctx.scope, key, ctx)
+        ? resolveScope(stage.scopeChain.at(0)?.scope ?? stage.scope, key, stage)
+        : resolveScope(stage.scope, key, stage)
 
     const attribute = item.attribute ?? toKebabCase(key)
     const converter = item.converter ?? CONVERTERS[item.type]
@@ -154,22 +154,22 @@ export default async function renderProps(el, props, plan) {
     }
 
     const write = (value, options) => {
-      if (ctx.cancel.signal.aborted === true) return
+      if (stage.cancel.signal.aborted === true) return
       if (item.storeInState === false) {
         val = value
         return
       }
 
-      // ctx.reactive.now(() => {
+      // stage.reactive.now(() => {
       const silent = options?.silent ?? false
       fromWrite = true
-      ctx.reactive.set(scope, ref ?? value, { silent })
+      stage.reactive.set(scope, ref ?? value, { silent })
       if (silent) fromWrite = false
       // })
     }
 
     const render = (val) => {
-      if (ctx.cancel.signal.aborted === true) return
+      if (stage.cancel.signal.aborted === true) return
 
       if (!el.ready.isPending && update?.(false) !== false && queue) {
         queue.add(key)
@@ -218,7 +218,7 @@ export default async function renderProps(el, props, plan) {
         get: () => computed,
       })
 
-      normalizeComputed(scope, item.computed, ctx, (val) => {
+      normalizeComputed(scope, item.computed, stage, (val) => {
         computed = val
         render(val)
       })
@@ -229,15 +229,15 @@ export default async function renderProps(el, props, plan) {
     if (typeof val === "function") {
       const fn = val
       ref = fn.ref ? { $ref: fn.ref } : undefined
-      if (fn.ref) ctx.refs[scope] = fn.ref
+      if (fn.ref) stage.refs[scope] = fn.ref
 
-      register(ctx, fn, (val, changed) => {
+      register(stage, fn, (val, changed) => {
         if (changed !== scope) write(val)
         render(val)
       })
     } else {
       write(val, { silent: true })
-      register(ctx, scope, (val, changed) => {
+      register(stage, scope, (val, changed) => {
         if (changed !== undefined && changed !== scope) write(val)
         else if (fromWrite) {
           fromWrite = false
@@ -257,8 +257,8 @@ export default async function renderProps(el, props, plan) {
               render(value)
             }
           : (val) => {
-              // if (ref) ctx.reactive.now(() => ctx.reactive.set(ref.$ref, val))
-              if (ref) ctx.reactive.set(ref.$ref, val)
+              // if (ref) stage.reactive.now(() => stage.reactive.set(ref.$ref, val))
+              if (ref) stage.reactive.set(ref.$ref, val)
               else {
                 write(val)
                 render(val)
@@ -267,11 +267,11 @@ export default async function renderProps(el, props, plan) {
       get:
         item.storeInState === false
           ? () => val
-          : () => ctx.reactive.get(ref ? ref.$ref : scope),
+          : () => stage.reactive.get(ref ? ref.$ref : scope),
     })
   }
 
-  await ctx.undones.done()
+  await stage.undones.done()
 
   el.ready.then(() => {
     for (const key of Reflect.ownKeys(updates)) updates[key](true)

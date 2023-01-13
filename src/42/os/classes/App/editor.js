@@ -115,7 +115,7 @@ editor.init = (app) => {
   //   FileAgent.recycle(state.$files, 0, "/style.css")
   // }, 100)
 
-  app.ctx.actions.assign("/editor", {
+  app.stage.actions.assign("/editor", {
     newFile() {
       FileAgent.recycle(state.$files, 0, { path: undefined, dirty: false })
     },

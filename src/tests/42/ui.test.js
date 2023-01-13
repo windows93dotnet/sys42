@@ -210,7 +210,7 @@ test("reactive data", "nested", async (t) => {
     })
   )
 
-  t.eq(Object.keys(app.ctx.renderers), ["/foo/bar"])
+  t.eq(Object.keys(app.stage.renderers), ["/foo/bar"])
   t.isProxy(app.state.foo)
   t.is(app.el.innerHTML, "<em>hi</em>")
 
@@ -219,8 +219,8 @@ test("reactive data", "nested", async (t) => {
 
   t.is(app.el.innerHTML, "<em>bye</em>")
 
-  app.ctx.cancel()
-  t.eq(Object.keys(app.ctx.renderers), [])
+  app.stage.cancel()
+  t.eq(Object.keys(app.stage.renderers), [])
 })
 
 test("reactive data", "styles", async (t) => {
@@ -453,7 +453,7 @@ test("scope", async (t) => {
     })
   )
 
-  t.eq(Object.keys(app.ctx.renderers), ["/foo/bar"])
+  t.eq(Object.keys(app.stage.renderers), ["/foo/bar"])
   t.isProxy(app.state.foo)
   t.is(app.el.innerHTML, "<em>hi</em>")
 
@@ -496,7 +496,7 @@ test("scope", "relative scopes", async (t) => {
   )
 
   t.eq(
-    Object.entries(app.ctx.renderers).map(([key, val]) => [key, val.size]),
+    Object.entries(app.stage.renderers).map(([key, val]) => [key, val.size]),
     [
       ["/a/b/c/d", 2],
       ["/a/b/foo", 1],
@@ -565,7 +565,7 @@ test("scope", "relative template keys", async (t) => {
   )
 
   t.eq(
-    Object.entries(app.ctx.renderers).map(([key, val]) => [key, val.size]),
+    Object.entries(app.stage.renderers).map(([key, val]) => [key, val.size]),
     [
       ["/a/b/c/d", 2],
       ["/a/b/foo", 1],
@@ -1042,7 +1042,7 @@ test("if", "manage renderers", async (t) => {
   )
 
   t.is(app.el.textContent, "")
-  t.eq(Object.keys(app.ctx.renderers), [
+  t.eq(Object.keys(app.stage.renderers), [
     "/a/b", //
   ])
 
@@ -1050,7 +1050,7 @@ test("if", "manage renderers", async (t) => {
   await app
 
   t.is(app.el.textContent, "y")
-  t.eq(Object.keys(app.ctx.renderers), [
+  t.eq(Object.keys(app.stage.renderers), [
     "/a/b", //
     "/x", //
   ])
@@ -1059,7 +1059,7 @@ test("if", "manage renderers", async (t) => {
   await app
 
   t.is(app.el.textContent, "")
-  t.eq(Object.keys(app.ctx.renderers), [
+  t.eq(Object.keys(app.stage.renderers), [
     "/a/b", //
   ])
 })
@@ -1235,7 +1235,7 @@ test("if", "bug using reactive.update", async (t) => {
 
   t.is(app.el.textContent, "true")
 
-  app.ctx.reactive.update("/a")
+  app.stage.reactive.update("/a")
   await app
 
   t.is(app.el.textContent, "true")
@@ -1349,7 +1349,7 @@ test("each", "manage renderers", async (t) => {
   )
 
   t.is(app.el.textContent, "abcd")
-  t.eq(Object.keys(app.ctx.renderers), [
+  t.eq(Object.keys(app.stage.renderers), [
     "/arr", //
     "/arr/0",
     "/arr/1",
@@ -1361,7 +1361,7 @@ test("each", "manage renderers", async (t) => {
   await app
 
   t.is(app.el.textContent, "abd")
-  t.eq(Object.keys(app.ctx.renderers), [
+  t.eq(Object.keys(app.stage.renderers), [
     "/arr", //
     "/arr/0",
     "/arr/1",
@@ -1372,7 +1372,7 @@ test("each", "manage renderers", async (t) => {
   await app
 
   t.is(app.el.textContent, "a")
-  t.eq(Object.keys(app.ctx.renderers), [
+  t.eq(Object.keys(app.stage.renderers), [
     "/arr", //
     "/arr/0",
   ])
@@ -1381,7 +1381,7 @@ test("each", "manage renderers", async (t) => {
   await app
 
   t.is(app.el.textContent, "ax")
-  t.eq(Object.keys(app.ctx.renderers), [
+  t.eq(Object.keys(app.stage.renderers), [
     "/arr", //
     "/arr/0",
     "/arr/1",
@@ -1391,7 +1391,7 @@ test("each", "manage renderers", async (t) => {
   await app
 
   t.is(app.el.textContent, "")
-  t.eq(Object.keys(app.ctx.renderers), [
+  t.eq(Object.keys(app.stage.renderers), [
     "/arr", //
   ])
 })

@@ -10,58 +10,58 @@ export default class UI {
     if (args[0] instanceof Element || typeof args[0] === "string") {
       this.el = ensureElement(args[0])
       this.plan = args[1]
-      this.ctx = args[2] ?? {}
+      this.stage = args[2] ?? {}
     } else {
       this.el = document.body
       this.plan = args[0]
-      this.ctx = args[1] ?? {}
+      this.stage = args[1] ?? {}
     }
 
-    this.ctx.el = this.el
-    this.ctx.steps = "root"
+    this.stage.el = this.el
+    this.stage.steps = "root"
 
-    const [plan, ctx] = normalize(this.plan, this.ctx)
+    const [plan, stage] = normalize(this.plan, this.stage)
     this.plan = plan
-    this.ctx = ctx
+    this.stage = stage
 
-    this.ctx.postrender.push(() => {
+    this.stage.postrender.push(() => {
       postrenderAutofocus(this.el)
     })
 
     asyncable(this, async () => {
-      if (!this.ctx) return
+      if (!this.stage) return
 
-      if (this.ctx.reactive.firstUpdateDone !== true) {
-        if (this.ctx.preload.length > 0) await this.ctx.preload.done()
-        this.content = render(this.plan, this.ctx, { skipNormalize: true })
+      if (this.stage.reactive.firstUpdateDone !== true) {
+        if (this.stage.preload.length > 0) await this.stage.preload.done()
+        this.content = render(this.plan, this.stage, { skipNormalize: true })
         this.el.append(this.content)
       }
 
-      await this.ctx.reactive.done()
+      await this.stage.reactive.done()
     })
   }
 
   get reactive() {
-    return this.ctx.reactive
+    return this.stage.reactive
   }
   get data() {
-    return this.ctx.reactive.data
+    return this.stage.reactive.data
   }
   get state() {
-    return this.ctx.reactive.state
+    return this.stage.reactive.state
   }
   get run() {
-    return this.ctx.actions.value
+    return this.stage.actions.value
   }
 
   destroy() {
-    this.ctx?.cancel("ui destroyed")
-    this.ctx?.preload.clear()
-    this.ctx?.components.clear()
-    this.ctx?.undones.clear()
-    this.ctx?.postrender.clear()
+    this.stage?.cancel("ui destroyed")
+    this.stage?.preload.clear()
+    this.stage?.components.clear()
+    this.stage?.undones.clear()
+    this.stage?.postrender.clear()
     this.content?.remove?.()
-    delete this.ctx
+    delete this.stage
     delete this.plan
     delete this.el
   }

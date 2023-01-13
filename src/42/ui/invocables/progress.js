@@ -57,9 +57,9 @@ export function progress(total, options) {
   const forget = listen({
     uidialogopen(e, target) {
       if (target.id === config.dialog.id) {
-        // state = target.ctx.reactive.get(target.ctx.scope)
-        state = target.ctx.state
-        signal = target.ctx.signal
+        // state = target.stage.reactive.get(target.stage.scope)
+        state = target.stage.state
+        signal = target.stage.signal
         running = true
         el = target
         deferred.resolve(state)

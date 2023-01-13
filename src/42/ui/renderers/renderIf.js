@@ -11,7 +11,7 @@ import expr from "../../core/expr.js"
 const PLACEHOLDER = "[if]"
 const { DOCUMENT_FRAGMENT_NODE } = Node
 
-export default function renderIf(plan, ctx) {
+export default function renderIf(plan, stage) {
   const el = document.createDocumentFragment()
 
   let lastChild
@@ -22,7 +22,7 @@ export default function renderIf(plan, ctx) {
   el.append(placeholder)
 
   const tokens = expr.parse(plan.if)
-  const { scopes, actions } = normalizeTokens(tokens, ctx)
+  const { scopes, actions } = normalizeTokens(tokens, stage)
   const check = expr.compile(tokens, {
     boolean: true,
     async: true,
@@ -30,7 +30,7 @@ export default function renderIf(plan, ctx) {
     actions,
   })
 
-  const defIf = normalizeDef(omit(plan, ["if"]), ctx)
+  const defIf = normalizeDef(omit(plan, ["if"]), stage)
   const typeIf = getType(defIf)
   let defElse
   let typeElse
@@ -41,12 +41,12 @@ export default function renderIf(plan, ctx) {
       if ("animate" in defIf) plan.else.animate ??= defIf.animate
     }
 
-    defElse = plan.else ? normalizeDef(plan.else, ctx) : undefined
+    defElse = plan.else ? normalizeDef(plan.else, stage) : undefined
     typeElse = getType(defElse)
   }
 
-  register(ctx, scopes, async () => {
-    const res = await check(ctx.reactive.state)
+  register(stage, scopes, async () => {
+    const res = await check(stage.reactive.state)
     if (res === lastRes) return
 
     const [plan, type] = res ? [defIf, typeIf] : [defElse, typeElse]
@@ -56,7 +56,7 @@ export default function renderIf(plan, ctx) {
       cancel = undefined
       const range = new NodesRange(placeholder, lastChild)
       removeRange(
-        ctx,
+        stage,
         range,
         lastRes === false &&
           typeElse === "object" &&
@@ -70,11 +70,11 @@ export default function renderIf(plan, ctx) {
     lastRes = res
     if (!plan) return
 
-    cancel = new Canceller(ctx.signal)
+    cancel = new Canceller(stage.signal)
     const el = render(
       plan,
       {
-        ...ctx,
+        ...stage,
         type,
         cancel,
         signal: cancel.signal,

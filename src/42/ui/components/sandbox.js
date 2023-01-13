@@ -129,13 +129,13 @@ export class Sandbox extends Component {
   [_setResource](init) {
     if (init) return
     const { permissions } = this
-    // const { signal } = this.ctx
+    // const { signal } = this.stage
     // this.resource = new Resource({ permissions, signal })
     this.resource = new Resource({ permissions })
 
     const { sandbox } = this.resource.el
     if (
-      this.ctx.trusted !== true &&
+      this.stage.trusted !== true &&
       permissions !== "web" &&
       sandbox.contains("allow-scripts") &&
       sandbox.contains("allow-same-origin")
@@ -163,7 +163,7 @@ export class Sandbox extends Component {
         if (key === "popup") undones.push(import("../popup.js"))
       })
       await Promise.all(undones)
-      const content = forkDef(this.content, this.ctx)
+      const content = forkDef(this.content, this.stage)
       content.plugins = ["ipc"]
       const script = `
 import ipc from "${ipcUrl}"
@@ -182,7 +182,7 @@ ${this.script ?? ""}
     this.toggleAttribute("loading", true)
     this.message("loading...")
 
-    this.#cancel = this.ctx.cancel.fork()
+    this.#cancel = this.stage.cancel.fork()
     const { signal } = this.#cancel
 
     this.resource.config.checkIframable = this.check

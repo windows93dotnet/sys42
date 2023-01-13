@@ -3,31 +3,31 @@ import resolveScope from "./resolveScope.js"
 import getDirname from "../core/path/core/getDirname.js"
 import segmentize from "../fabric/type/string/segmentize.js"
 
-export default function findScope(ctx, loc) {
+export default function findScope(stage, loc) {
   if (loc == null) throw new Error("Undefined path")
   loc = String(loc)
 
   // TODO: debug "===" loc in ../../tests/42/ui/components/layout.test.js
 
-  let { scope } = ctx
+  let { scope } = stage
 
-  if (!ctx.actions.has(loc)) {
-    const baseLoc = getDirname(resolveScope(scope, loc, ctx))
-    if (baseLoc === ctx.scope) {
-      if (ctx.computeds[ctx.scope]) return [scope, loc]
-    } else if (ctx.reactive.has("$computed" + baseLoc)) {
+  if (!stage.actions.has(loc)) {
+    const baseLoc = getDirname(resolveScope(scope, loc, stage))
+    if (baseLoc === stage.scope) {
+      if (stage.computeds[stage.scope]) return [scope, loc]
+    } else if (stage.reactive.has("$computed" + baseLoc)) {
       return [scope, loc]
     }
   }
 
-  if (ctx.scopeChain.length > 0) {
+  if (stage.scopeChain.length > 0) {
     if (loc.startsWith("/")) {
-      return [ctx.scopeChain.at(0).scope, loc]
+      return [stage.scopeChain.at(0).scope, loc]
     }
 
     if (loc.startsWith("../")) {
       const n = occurrences(loc, "../")
-      const previous = ctx.scopeChain.at(-n)
+      const previous = stage.scopeChain.at(-n)
       const newLoc = loc.slice(n * 3)
       if (
         previous &&
@@ -36,24 +36,24 @@ export default function findScope(ctx, loc) {
         return [previous.scope, newLoc]
       }
 
-      return [ctx.scopeChain.at(0).scope, loc]
+      return [stage.scopeChain.at(0).scope, loc]
     }
 
-    let i = ctx.scopeChain.length
+    let i = stage.scopeChain.length
     const prop = segmentize(loc, [".", "/"])[0]
 
-    if (ctx.scopeChain.at(-1).props !== undefined) {
+    if (stage.scopeChain.at(-1).props !== undefined) {
       while (i--) {
-        const item = ctx.scopeChain[i]
+        const item = stage.scopeChain[i]
         if (item.props?.includes(prop)) return [scope, loc]
         scope = item.scope
       }
     }
   }
 
-  // console.group("findScope", ctx.scope)
+  // console.group("findScope", stage.scope)
   // console.log({ scope, loc })
-  // // console.log(ctx.reactive.data)
+  // // console.log(stage.reactive.data)
   // console.groupEnd()
 
   return [scope, loc]

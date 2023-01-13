@@ -32,11 +32,11 @@ const BUTTON_TYPES = new Set([
 
 const ATTRIBUTES_ORDER = ["type", "id", "class"]
 
-export default function create(ctx, tag, ...args) {
-  if (typeof ctx === "string") {
+export default function create(stage, tag, ...args) {
+  if (typeof stage === "string") {
     if (tag) args.unshift(tag)
-    tag = ctx
-    ctx = undefined
+    tag = stage
+    stage = undefined
   }
 
   const content = []
@@ -50,7 +50,7 @@ export default function create(ctx, tag, ...args) {
     }
   }
 
-  const inBody = ctx?.el?.localName === "body"
+  const inBody = stage?.el?.localName === "body"
 
   const parsed = parseTagSelector(tag, attrs)
   tag = parsed.tag
@@ -81,9 +81,9 @@ export default function create(ctx, tag, ...args) {
   attrs = Object.assign(tmp, attrs)
 
   renderAttributes(
-    tag === "body" ? (inBody ? ctx.el : document.body) : el,
-    ctx,
-    ctx === undefined ? attrs : normalizeAttrs(attrs, ctx)
+    tag === "body" ? (inBody ? stage.el : document.body) : el,
+    stage,
+    stage === undefined ? attrs : normalizeAttrs(attrs, stage)
   )
 
   el.append(...content)

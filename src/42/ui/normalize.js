@@ -125,7 +125,7 @@ const findAction = (obj, segments) => {
   return [thisArg, current]
 }
 
-function findComponentAction(ctx, cpn, value) {
+function findComponentAction(stage, cpn, value) {
   let loc = value
   if (loc.startsWith("/")) return
   if (loc.startsWith("./")) loc = loc.slice(2)
@@ -148,12 +148,12 @@ function findComponentAction(ctx, cpn, value) {
 
   if (levels.length > 0) {
     if (cpnCnt === levels.length) {
-      const fn = locate.run(ctx.actions.value, segments)
-      if (fn) return [ctx, fn]
+      const fn = locate.run(stage.actions.value, segments)
+      if (fn) return [stage, fn]
     }
 
     dispatch(
-      ctx.el,
+      stage.el,
       new Error(
         `Action path is going above root by ${
           levels.length - cpnCnt
@@ -172,10 +172,10 @@ export function addEntry(obj, entry, el) {
   }
 }
 
-export function normalizeTokens(tokens, ctx, options) {
+export function normalizeTokens(tokens, stage, options) {
   let hasFilter = false
   const scopes = []
-  const actions = options?.actions ?? { ...ctx.actions.value }
+  const actions = options?.actions ?? { ...stage.actions.value }
 
   for (const token of tokens) {
     if (token.value === undefined) continue
@@ -185,10 +185,10 @@ export function normalizeTokens(tokens, ctx, options) {
     if (options?.specials) {
       const segment = segmentize(token.value, [".", "/"])[0]
       loc = options.specials.includes(segment)
-        ? resolveScope(ctx.scope, token.value)
-        : resolveScope(...findScope(ctx, token.value), ctx)
+        ? resolveScope(stage.scope, token.value)
+        : resolveScope(...findScope(stage, token.value), stage)
     } else {
-      loc = resolveScope(...findScope(ctx, token.value), ctx)
+      loc = resolveScope(...findScope(stage, token.value), stage)
     }
 
     if (token.type === "key") {
@@ -200,38 +200,38 @@ export function normalizeTokens(tokens, ctx, options) {
       let action
       let thisArg
 
-      if (ctx.component) {
-        const res = findComponentAction(ctx, ctx.component, token.value)
+      if (stage.component) {
+        const res = findComponentAction(stage, stage.component, token.value)
         if (res) {
           thisArg = res[0]
           action = res[1]
         }
       }
 
-      const scope = ctx.scope === "/" ? "" : ctx.scope
-      if (!action && ctx.actions.has(scope + loc)) {
-        thisArg = ctx
-        action = ctx.actions.get(scope + loc)
+      const scope = stage.scope === "/" ? "" : stage.scope
+      if (!action && stage.actions.has(scope + loc)) {
+        thisArg = stage
+        action = stage.actions.get(scope + loc)
       }
 
-      if (!action && ctx.actions.has(loc)) {
-        thisArg = ctx
-        action = ctx.actions.get(loc)
+      if (!action && stage.actions.has(loc)) {
+        thisArg = stage
+        action = stage.actions.get(loc)
       }
 
       let fn
 
       if (typeof action === "function") {
-        fn = makeActionFn(action, thisArg, ctx.el)
+        fn = makeActionFn(action, thisArg, stage.el)
       } else {
-        const thisArg = ctx
+        const thisArg = stage
         const { value } = token
         const err = new TypeError(
           `Template filter is not a function: "${value}"`
         )
         fn = filters(value).then((filter) => {
-          if (typeof filter !== "function") return void dispatch(ctx.el, err)
-          return makeActionFn(filter, thisArg, ctx.el)
+          if (typeof filter !== "function") return void dispatch(stage.el, err)
+          return makeActionFn(filter, thisArg, stage.el)
         })
       }
 
@@ -246,34 +246,34 @@ export function normalizeTokens(tokens, ctx, options) {
   // queueMicrotask(() => {
   //   if (locals.this) return
   //   // TODO: check possible xss vector attack
-  //   locals.this = ctx.el
+  //   locals.this = stage.el
   // })
 
   // locals.this = {
   //   get value() {
-  //     return ctx.el.value
+  //     return stage.el.value
   //   },
   //   get textContent() {
-  //     return ctx.el.textContent
+  //     return stage.el.textContent
   //   },
   //   get rect() {
-  //     return ctx.el.getBoundingCLientRect()
+  //     return stage.el.getBoundingCLientRect()
   //   },
   // }
 
   return { hasFilter, scopes, actions, locals }
 }
 
-export function normalizeString(item, ctx) {
+export function normalizeString(item, stage) {
   const parsed = template.parse(item)
 
   if (parsed.substitutions.length > 0) {
-    const actions = { ...ctx.actions.value }
+    const actions = { ...stage.actions.value }
     const scopes = []
     let hasFilter = false
     const locals = {}
     for (const tokens of parsed.substitutions) {
-      const res = normalizeTokens(tokens, ctx, { actions, locals })
+      const res = normalizeTokens(tokens, stage, { actions, locals })
       hasFilter ||= res.hasFilter
       scopes.push(...res.scopes)
     }
@@ -295,11 +295,11 @@ export function normalizeString(item, ctx) {
   return item
 }
 
-function normalizeObject(item, ctx) {
+function normalizeObject(item, stage) {
   const out = {}
 
   for (const [key, val] of Object.entries(item)) {
-    out[key] = typeof val === "string" ? normalizeString(val, ctx) : val
+    out[key] = typeof val === "string" ? normalizeString(val, stage) : val
   }
 
   return out
@@ -312,7 +312,7 @@ function supportsAttribute(item, attribute) {
 
 const OBJECT_ATTRIBUTES = new Set(["dataset", "aria", "style"])
 
-export function normalizeAttrs(item, ctx, ignore) {
+export function normalizeAttrs(item, stage, ignore) {
   const attrs = {}
 
   for (const [key, val] of Object.entries(item)) {
@@ -323,25 +323,25 @@ export function normalizeAttrs(item, ctx, ignore) {
       !(ignore && key in ignore) &&
       (ATTRIBUTES.has(key.toLowerCase()) ||
         ATTRIBUTES_WITHDASH.has(key) ||
-        (ctx?.trusted && supportsAttribute(item, key)))
+        (stage?.trusted && supportsAttribute(item, key)))
     ) {
       const type = typeof val
 
       if (val && type === "object") {
         if (key === "class") {
           attrs[key] = Array.isArray(val)
-            ? normalizeString(val.join(" "), ctx)
-            : normalizeObject(val, ctx)
+            ? normalizeString(val.join(" "), stage)
+            : normalizeObject(val, stage)
         } else if (
           !OBJECT_ATTRIBUTES.has(key) &&
           Object.getPrototypeOf(val).toString !== Object.prototype.toString
         ) {
           attrs[key] = val.toString()
         } else {
-          attrs[key] = normalizeObject(val, ctx)
+          attrs[key] = normalizeObject(val, stage)
         }
       } else {
-        attrs[key] = type === "string" ? normalizeString(val, ctx) : val
+        attrs[key] = type === "string" ? normalizeString(val, stage) : val
       }
     }
   }
@@ -349,7 +349,7 @@ export function normalizeAttrs(item, ctx, ignore) {
   return attrs
 }
 
-export function extractAttrs(item, ctx, ignore) {
+export function extractAttrs(item, stage, ignore) {
   const attrs = Object.create(null)
 
   for (const [key, val] of Object.entries(item)) {
@@ -359,7 +359,7 @@ export function extractAttrs(item, ctx, ignore) {
       !(ignore && key in ignore) &&
       (ATTRIBUTES.has(key.toLowerCase()) ||
         ATTRIBUTES_WITHDASH.has(key) ||
-        (ctx?.trusted && supportsAttribute(item, key)))
+        (stage?.trusted && supportsAttribute(item, key)))
     ) {
       attrs[key] = val
     }
@@ -380,49 +380,49 @@ export function normalizeStartEnd(obj) {
     : obj
 }
 
-export function normalizeComputeds(computeds, ctx) {
+export function normalizeComputeds(computeds, stage) {
   for (const [key, val] of Object.entries(computeds)) {
-    normalizeComputed(resolveScope(...findScope(ctx, key), ctx), val, ctx)
+    normalizeComputed(resolveScope(...findScope(stage, key), stage), val, stage)
   }
 }
 
-export function normalizeComputed(scope, val, ctx, cb = noop) {
-  ctx.computeds[scope] = true
-  const fn = typeof val === "string" ? normalizeString(val, ctx) : val
+export function normalizeComputed(scope, val, stage, cb = noop) {
+  stage.computeds[scope] = true
+  const fn = typeof val === "string" ? normalizeString(val, stage) : val
   if (fn.scopes) {
-    ctx.reactive.set(`$computed${scope}`, undefined, { silent: true })
-    register(ctx, fn, (val, changed) => {
-      ctx.reactive.set(`$computed${scope}`, val, { silent: true })
-      if (changed !== scope) ctx.reactive.updateNow(scope, val)
+    stage.reactive.set(`$computed${scope}`, undefined, { silent: true })
+    register(stage, fn, (val, changed) => {
+      stage.reactive.set(`$computed${scope}`, val, { silent: true })
+      if (changed !== scope) stage.reactive.updateNow(scope, val)
       cb(val)
     })
   }
 }
 
 const SPLIT_REGEX = /\s*\|\|\s*/
-export function normalizeWatchs(watch, ctx) {
+export function normalizeWatchs(watch, stage) {
   for (const [key, val] of Object.entries(watch)) {
     for (const item of key.split(SPLIT_REGEX)) {
-      normalizeWatch(resolveScope(...findScope(ctx, item), ctx), val, ctx)
+      normalizeWatch(resolveScope(...findScope(stage, item), stage), val, stage)
     }
   }
 }
 
-export function normalizeWatch(scope, fn, ctx) {
+export function normalizeWatch(scope, fn, stage) {
   if (typeof fn === "string") {
     const locals = {}
     const tokens = expr.parse(fn)
-    const { actions } = normalizeTokens(tokens, ctx, { locals })
+    const { actions } = normalizeTokens(tokens, stage, { locals })
     fn = expr.compile(tokens, {
       assignment: true,
       async: true,
       delimiter: "/",
       actions,
     })
-    register(ctx, scope, async (changed) => {
+    register(stage, scope, async (changed) => {
       if (!changed) return
       await 0
-      await fn(ctx.reactive.state, locals)
+      await fn(stage.reactive.state, locals)
     })
   } else {
     // If the value is a function
@@ -434,15 +434,15 @@ export function normalizeWatch(scope, fn, ctx) {
     // e.g.
     // ":foo": "{{bar = foo + 1}}"
     // ":foo": (state) => { state.bar = state.foo + 1 }
-    register(ctx, scope, async (changed) => {
+    register(stage, scope, async (changed) => {
       if (!changed) return
       await 0
-      await fn(ctx.reactive.get(ctx.scope), ctx)
+      await fn(stage.reactive.get(stage.scope), stage)
     })
   }
 }
 
-export function normalizePlugins(ctx, plugins, options) {
+export function normalizePlugins(stage, plugins, options) {
   const undones = []
 
   for (const plugin of plugins) {
@@ -467,21 +467,21 @@ export function normalizePlugins(ctx, plugins, options) {
     }
 
     if (key) {
-      if (ctx.plugins[key]) continue
-      ctx.plugins[key] = true
+      if (stage.plugins[key]) continue
+      stage.plugins[key] = true
     }
 
     const promise = fn
-      ? fn(ctx, config)
+      ? fn(stage, config)
       : import(`./plugins/${plugin}.plugin.js`) //
-          .then((m) => m.default(ctx, config))
+          .then((m) => m.default(stage, config))
 
     if (options?.now) undones.push(promise)
     else {
-      ctx.preload.push(
+      stage.preload.push(
         (async () => {
           const res = await promise
-          if (typeof res === "function") ctx.pluginHandlers.push(res)
+          if (typeof res === "function") stage.pluginHandlers.push(res)
         })()
       )
     }
@@ -490,17 +490,17 @@ export function normalizePlugins(ctx, plugins, options) {
   if (options?.now) return Promise.all(undones)
 }
 
-export function normalizeTraits(plan, ctx) {
+export function normalizeTraits(plan, stage) {
   const list = []
   const traits = plan.traits ?? {}
 
   for (const key of TRAIT_KEYWORDS) if (key in plan) traits[key] = plan[key]
 
   for (const [name, raw] of Object.entries(traits)) {
-    const val = typeof raw === "string" ? normalizeString(raw, ctx) : raw
+    const val = typeof raw === "string" ? normalizeString(raw, stage) : raw
     const trait = { name, val }
     list.push(trait)
-    ctx.preload.push(
+    stage.preload.push(
       import(
         name === "emittable"
           ? "../fabric/traits/emittable.js"
@@ -514,7 +514,7 @@ export function normalizeTraits(plan, ctx) {
   if (list.length === 0) return
 
   return async (el) => {
-    await ctx.preload
+    await stage.preload
     await el.ready
 
     const undones = []
@@ -523,10 +523,10 @@ export function normalizeTraits(plan, ctx) {
       const traitReady = []
       traverse(val, (key, val, obj) => {
         if (typeof val === "string") {
-          const fn = normalizeString(val, ctx)
+          const fn = normalizeString(val, stage)
           if (typeof fn === "function") {
             traitReady.push(
-              fn(ctx.reactive.state).then((res) => {
+              fn(stage.reactive.state).then((res) => {
                 obj[key] = res
               })
             )
@@ -538,10 +538,10 @@ export function normalizeTraits(plan, ctx) {
         Promise.all(traitReady).then(() => {
           const fn = (val) => {
             if (val === false) el[_INSTANCES]?.[name]?.destroy()
-            else module(el, { signal: ctx.signal, ...val })
+            else module(el, { signal: stage.signal, ...val })
           }
 
-          if (val.scopes) register(ctx, val, fn)
+          if (val.scopes) register(stage, val, fn)
           else fn(val)
         })
       )
@@ -666,35 +666,35 @@ export function objectifyDef(plan) {
   return {}
 }
 
-export function forkDef(plan, ctx) {
+export function forkDef(plan, stage) {
   if (plan?.content === undefined || plan?.scope) plan = { content: plan }
 
   plan = { ...plan }
 
-  if (ctx) {
-    const data = ctx.reactive?.data
+  if (stage) {
+    const data = stage.reactive?.data
     if (!isEmptyObject(data)) plan.state = structuredClone(data)
-    if (ctx.id) plan.initiator = ctx.id
-    if (ctx.scope) plan.scope = ctx.scope
-    if (ctx.scopeChain) plan.scopeChain = structuredClone(ctx.scopeChain)
-    if (ctx.plugins) plan.plugins = Object.keys(ctx.plugins)
-    const actions = ctx.actions.value
+    if (stage.id) plan.initiator = stage.id
+    if (stage.scope) plan.scope = stage.scope
+    if (stage.scopeChain) plan.scopeChain = structuredClone(stage.scopeChain)
+    if (stage.plugins) plan.plugins = Object.keys(stage.plugins)
+    const actions = stage.actions.value
     if (!isEmptyObject(actions)) plan.actions = merge({}, actions)
   }
 
   return plan
 }
 
-export function ensureDef(plan = {}, ctx) {
+export function ensureDef(plan = {}, stage) {
   plan = { ...plan }
 
   if (plan.initiator) {
-    ctx.initiator = plan.initiator
+    stage.initiator = plan.initiator
     delete plan.initiator
   }
 
   if (plan.scopeChain) {
-    ctx.scopeChain = plan.scopeChain
+    stage.scopeChain = plan.scopeChain
     delete plan.scopeChain
   }
 
@@ -708,87 +708,87 @@ export function normalizeDefNoCtx(plan = {}) {
   return plan
 }
 
-export function normalizeData(plan, ctx, cb) {
+export function normalizeData(plan, stage, cb) {
   if (typeof plan === "function") {
-    const { scope } = ctx
-    ctx.undones.push(
+    const { scope } = stage
+    stage.undones.push(
       (async () => {
         const res = await plan()
         cb(res, scope)
       })()
     )
   } else {
-    cb(plan, ctx.scope, { silent: true })
+    cb(plan, stage.scope, { silent: true })
   }
 }
 
-export function normalizeState(plan, ctx, initiator) {
+export function normalizeState(plan, stage, initiator) {
   if (plan.state) {
-    normalizeData(plan.state, ctx, (res, scope, options) => {
-      if (ctx.scopeChain.length > 0 && !initiator) {
-        ctx.scopeChain.push({ scope, props: Object.keys(plan.state) })
+    normalizeData(plan.state, stage, (res, scope, options) => {
+      if (stage.scopeChain.length > 0 && !initiator) {
+        stage.scopeChain.push({ scope, props: Object.keys(plan.state) })
       }
 
-      ctx.reactive.merge(scope, res, options)
+      stage.reactive.merge(scope, res, options)
     })
   }
 }
 
-export function normalizeScope(plan, ctx) {
+export function normalizeScope(plan, stage) {
   if (plan?.scope) {
-    if (ctx.scopeChain.length > 0) {
-      ctx.scopeChain.push({
-        scope: ctx.scope,
-        props: ctx.scopeChain.at(-1).props,
+    if (stage.scopeChain.length > 0) {
+      stage.scopeChain.push({
+        scope: stage.scope,
+        props: stage.scopeChain.at(-1).props,
       })
     }
 
-    ctx.scope = resolveScope(ctx.scope, plan.scope, ctx)
+    stage.scope = resolveScope(stage.scope, plan.scope, stage)
   }
 }
 
-export function normalizeDef(plan = {}, ctx, options) {
-  ctx.id ??= plan.id ?? hash(plan)
-  ctx.type = getType(plan)
+export function normalizeDef(plan = {}, stage, options) {
+  stage.id ??= plan.id ?? hash(plan)
+  stage.type = getType(plan)
 
-  if (ctx.type === "string") {
-    const fn = normalizeString(plan, ctx)
-    ctx.type = typeof fn
-    if (ctx.type === "function") plan = fn
-  } else if (ctx.type === "object") {
+  if (stage.type === "string") {
+    const fn = normalizeString(plan, stage)
+    stage.type = typeof fn
+    if (stage.type === "function") plan = fn
+  } else if (stage.type === "object") {
     const { initiator } = plan
-    plan = ensureDef(plan, ctx)
+    plan = ensureDef(plan, stage)
 
     const keyOrder = Object.keys(plan)
 
     if (keyOrder.indexOf("scope") < keyOrder.indexOf("state")) {
-      normalizeScope(plan, ctx)
-      normalizeState(plan, ctx, initiator)
+      normalizeScope(plan, stage)
+      normalizeState(plan, stage, initiator)
     } else {
-      normalizeState(plan, ctx, initiator)
-      normalizeScope(plan, ctx)
+      normalizeState(plan, stage, initiator)
+      normalizeScope(plan, stage)
     }
 
-    const traits = normalizeTraits(plan, ctx)
+    const traits = normalizeTraits(plan, stage)
     if (traits) plan.traits = traits
 
     if (options?.skipNoCtx !== true) normalizeDefNoCtx(plan)
 
-    if (plan.computed) normalizeComputeds(plan.computed, ctx)
-    if (plan.watch) normalizeWatchs(plan.watch, ctx)
+    if (plan.computed) normalizeComputeds(plan.computed, stage)
+    if (plan.watch) normalizeWatchs(plan.watch, stage)
 
     if (options?.skipAttrs !== true) {
-      const attrs = extractAttrs(plan, ctx)
+      const attrs = extractAttrs(plan, stage)
       if (!isEmptyObject(attrs)) plan.attrs = attrs
     }
 
     if (plan.actions) {
-      normalizeData(plan.actions, ctx, (res, scope) => {
-        ctx.actions.merge(scope, res)
+      normalizeData(plan.actions, stage, (res, scope) => {
+        stage.actions.merge(scope, res)
       })
     }
 
-    if (!inTop && ctx.initiator) {
+    if (!inTop && stage.initiator) {
       plan.plugins ??= []
       if (!plan.plugins.includes("ipc")) plan.plugins.push("ipc")
     }
@@ -796,8 +796,8 @@ export function normalizeDef(plan = {}, ctx, options) {
     if (plan.picto) plan.picto = normalizeStartEnd(plan.picto)
 
     if (plan.plugins) {
-      normalizeData(plan.plugins, ctx, (res) => {
-        normalizePlugins(ctx, res)
+      normalizeData(plan.plugins, stage, (res) => {
+        normalizePlugins(stage, res)
       })
     }
   }
@@ -805,37 +805,37 @@ export function normalizeDef(plan = {}, ctx, options) {
   return plan
 }
 
-/* ctx
+/* stage
 ====== */
 
-export function normalizeCtx(ctx = {}) {
-  // TODO: write protect ctx.trusted
-  ctx = { ...ctx }
-  ctx.scope ??= "/"
-  ctx.steps ??= "?"
-  ctx.renderers ??= Object.create(null)
-  ctx.plugins ??= Object.create(null)
-  ctx.computeds ??= Object.create(null)
-  ctx.refs ??= Object.create(null)
-  ctx.scopeChain ??= []
-  ctx.pluginHandlers ??= []
-  ctx.actions ??= new Locator(Object.create(null), { delimiter: "/" })
+export function normalizeCtx(stage = {}) {
+  // TODO: write protect stage.trusted
+  stage = { ...stage }
+  stage.scope ??= "/"
+  stage.steps ??= "?"
+  stage.renderers ??= Object.create(null)
+  stage.plugins ??= Object.create(null)
+  stage.computeds ??= Object.create(null)
+  stage.refs ??= Object.create(null)
+  stage.scopeChain ??= []
+  stage.pluginHandlers ??= []
+  stage.actions ??= new Locator(Object.create(null), { delimiter: "/" })
 
-  ctx.preload ??= new Undones()
-  ctx.components ??= new Undones()
-  ctx.undones ??= new Undones()
-  ctx.postrender ??= new Undones()
-  ctx.traitsReady ??= new Undones()
+  stage.preload ??= new Undones()
+  stage.components ??= new Undones()
+  stage.undones ??= new Undones()
+  stage.postrender ??= new Undones()
+  stage.traitsReady ??= new Undones()
 
-  ctx.cancel ??= new Canceller()
-  ctx.signal = ctx.cancel.signal
-  ctx.reactive ??= new Reactive(ctx)
+  stage.cancel ??= new Canceller()
+  stage.signal = stage.cancel.signal
+  stage.reactive ??= new Reactive(stage)
 
-  return ctx
+  return stage
 }
 
-export default function normalize(plan, ctx = {}) {
-  ctx = normalizeCtx(ctx)
-  plan = normalizeDef(plan, ctx)
-  return [plan, ctx]
+export default function normalize(plan, stage = {}) {
+  stage = normalizeCtx(stage)
+  plan = normalizeDef(plan, stage)
+  return [plan, stage]
 }

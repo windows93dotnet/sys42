@@ -28,15 +28,15 @@ const PRELOAD = new Set(["link", "script"])
 const NOT_CONTROLS = new Set(["label", "legend", "output", "option"])
 const HAS_OPTIONS = new Set(["select", "selectmenu", "optgroup", "datalist"])
 
-function renderTag(tag, plan, ctx) {
-  let el = create(ctx, tag, plan.attrs)
+function renderTag(tag, plan, stage) {
+  let el = create(stage, tag, plan.attrs)
 
   const { localName } = el
-  if (localName) ctx.el = el
+  if (localName) stage.el = el
 
   if (
     localName &&
-    ctx.trusted !== true &&
+    stage.trusted !== true &&
     !ALLOWED_HTML_TAGS.includes(localName) &&
     !ALLOWED_SVG_TAGS.includes(localName)
   ) {
@@ -44,19 +44,20 @@ function renderTag(tag, plan, ctx) {
   }
 
   if (plan.entry) {
-    addEntry(ctx.component, plan.entry, el)
+    addEntry(stage.component, plan.entry, el)
     delete plan.entry
   }
 
-  if (HAS_OPTIONS.has(localName)) renderOptions(el, ctx, plan)
+  if (HAS_OPTIONS.has(localName)) renderOptions(el, stage, plan)
 
   if (localName === "button") {
     plan.content ??= plan.label
   } else if (localName === "fieldset") {
-    if (plan.label)
-      el.append(render({ tag: "legend", content: plan.label }, ctx))
+    if (plan.label) {
+      el.append(render({ tag: "legend", content: plan.label }, stage))
+    }
   } else if (el.form !== undefined && !NOT_CONTROLS.has(localName)) {
-    el = renderControl(el, ctx, plan)
+    el = renderControl(el, stage, plan)
   }
 
   if (plan.picto) {
@@ -67,16 +68,16 @@ function renderTag(tag, plan, ctx) {
   }
 
   if (PRELOAD.has(localName)) {
-    ctx.preload.push(preload(el.src ?? el.href))
+    stage.preload.push(preload(el.src ?? el.href))
   }
 
   return el
 }
 
-export default function render(plan, ctx, options) {
-  if (ctx?.pluginHandlers) {
-    for (const pluginHandle of ctx.pluginHandlers) {
-      const res = pluginHandle(plan, ctx, options)
+export default function render(plan, stage, options) {
+  if (stage?.pluginHandlers) {
+    for (const pluginHandle of stage.pluginHandlers) {
+      const res = pluginHandle(plan, stage, options)
       if (res !== undefined) plan = res
     }
   }
@@ -85,30 +86,30 @@ export default function render(plan, ctx, options) {
     // TODO: fix tags like "div > ui-foo"
     delete plan.attrs
     if (options?.step !== undefined) {
-      ctx = { ...ctx }
-      ctx.steps += "," + options.step
+      stage = { ...stage }
+      stage.steps += "," + options.step
     }
 
-    return renderComponent(create(plan.tag), plan, ctx, options)
+    return renderComponent(create(plan.tag), plan, stage, options)
   }
 
   if (!options?.skipNormalize) {
-    const normalized = normalize(plan, ctx, options)
+    const normalized = normalize(plan, stage, options)
     plan = normalized[0]
-    ctx = normalized[1]
+    stage = normalized[1]
   }
 
-  if (options?.step !== undefined) ctx.steps += "," + options.step
+  if (options?.step !== undefined) stage.steps += "," + options.step
 
-  switch (ctx.type) {
+  switch (stage.type) {
     case "string":
       return SPECIAL_STRINGS[plan]?.() ?? document.createTextNode(plan)
 
     case "array": {
       const fragment = document.createDocumentFragment()
       for (let step = 0, l = plan.length; step < l; step++) {
-        ctx.type = typeof plan[step]
-        fragment.append(render(plan[step], ctx, { step }))
+        stage.type = typeof plan[step]
+        fragment.append(render(plan[step], stage, { step }))
       }
 
       return fragment
@@ -116,7 +117,7 @@ export default function render(plan, ctx, options) {
 
     case "function": {
       const el = document.createTextNode("")
-      register(ctx, plan, (val) => {
+      register(stage, plan, (val) => {
         el.textContent = val
       })
       return el
@@ -125,8 +126,8 @@ export default function render(plan, ctx, options) {
     default:
   }
 
-  if (plan.if) return renderIf(plan, ctx)
-  if (plan.each) return renderEach(plan, ctx)
+  if (plan.if) return renderIf(plan, stage)
+  if (plan.each) return renderEach(plan, stage)
 
   let el
   let container
@@ -136,13 +137,13 @@ export default function render(plan, ctx, options) {
       const nesteds = plan.tag.split(/\s*>\s*/)
       for (let i = 0, l = nesteds.length; i < l; i++) {
         const tag = nesteds[i]
-        const cur = i === l - 1 ? renderTag(tag, plan, ctx) : create(tag)
+        const cur = i === l - 1 ? renderTag(tag, plan, stage) : create(tag)
         if (el) el.append(cur)
         else container = cur
         el = cur
       }
     } else {
-      el = renderTag(plan.tag, plan, ctx)
+      el = renderTag(plan.tag, plan, stage)
     }
   } else {
     el = document.createDocumentFragment()
@@ -150,7 +151,7 @@ export default function render(plan, ctx, options) {
 
   if (plan.picto?.start) {
     el.append(
-      renderComponent(create("ui-picto"), { value: plan.picto.start }, ctx)
+      renderComponent(create("ui-picto"), { value: plan.picto.start }, stage)
     )
   }
 
@@ -158,7 +159,7 @@ export default function render(plan, ctx, options) {
     if (plan.content instanceof Node) el.append(plan.content)
     else {
       el.append(
-        render(plan.content, ctx, {
+        render(plan.content, stage, {
           step:
             el.nodeType === ELEMENT_NODE
               ? el.localName + (el.id ? `#${el.id}` : "")
@@ -170,16 +171,17 @@ export default function render(plan, ctx, options) {
 
   if (plan.picto?.end) {
     el.append(
-      renderComponent(create("ui-picto"), { value: plan.picto.end }, ctx)
+      renderComponent(create("ui-picto"), { value: plan.picto.end }, stage)
     )
   }
 
-  if (plan.traits) ctx.traitsReady.push(plan.traits(ctx.el))
+  if (plan.traits) stage.traitsReady.push(plan.traits(stage.el))
 
-  if (plan.on) renderOn(ctx.el, plan, ctx)
+  if (plan.on) renderOn(stage.el, plan, stage)
 
-  if (plan.animate?.from)
-    renderAnimation(ctx, ctx.el, "from", plan.animate.from)
+  if (plan.animate?.from) {
+    renderAnimation(stage, stage.el, "from", plan.animate.from)
+  }
 
   return container ?? el
 }

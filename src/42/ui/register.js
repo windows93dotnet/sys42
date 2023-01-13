@@ -1,35 +1,37 @@
 import arrify from "../fabric/type/any/arrify.js"
 
-export function registerRenderer(ctx, scope, renderer) {
-  ctx.renderers[scope] ??= new Set()
-  ctx.renderers[scope].add(renderer)
-  ctx.cancel.signal.addEventListener("abort", () => {
-    if (ctx.renderers[scope]) {
-      ctx.renderers[scope].delete(renderer)
-      if (ctx.renderers[scope].size === 0) delete ctx.renderers[scope]
+export function registerRenderer(stage, scope, renderer) {
+  stage.renderers[scope] ??= new Set()
+  stage.renderers[scope].add(renderer)
+  stage.cancel.signal.addEventListener("abort", () => {
+    if (stage.renderers[scope]) {
+      stage.renderers[scope].delete(renderer)
+      if (stage.renderers[scope].size === 0) delete stage.renderers[scope]
     }
   })
 }
 
-export default function register(ctx, loc, fn) {
+export default function register(stage, loc, fn) {
   let scopes
   let renderer // TODO: check renderer garbage collection
 
   if (typeof loc === "function") {
     scopes = loc.scopes
     renderer = async (changed) => {
-      ctx.undones.push(loc(ctx.reactive.state).then((val) => fn(val, changed)))
+      stage.undones.push(
+        loc(stage.reactive.state).then((val) => fn(val, changed))
+      )
     }
   } else {
     scopes = arrify(loc)
     renderer = async (changed) => {
-      const res = fn(ctx.reactive.get(scopes[0]), changed)
-      if (res !== undefined) ctx.undones.push(res)
+      const res = fn(stage.reactive.get(scopes[0]), changed)
+      if (res !== undefined) stage.undones.push(res)
     }
   }
 
   for (const scope of scopes) {
-    registerRenderer(ctx, scope, renderer)
+    registerRenderer(stage, scope, renderer)
   }
 
   renderer()

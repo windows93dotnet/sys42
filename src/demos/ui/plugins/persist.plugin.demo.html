@@ -93,7 +93,7 @@
     { id: "persist-test" }
   )
 
-  if (app.ctx.plugins.persist.initial) {
+  if (app.stage.plugins.persist.initial) {
     document.querySelector("#incr")?.click()
     document.querySelector("#dialog-left")?.click()
     document.querySelector("#dialog-right")?.click()
