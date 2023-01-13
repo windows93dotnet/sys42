@@ -2,7 +2,7 @@ import Component from "../classes/Component.js"
 import Resource from "../../fabric/classes/Resource.js"
 import create from "../create.js"
 import traverse from "../../fabric/type/object/traverse.js"
-import { forkDef } from "../normalize.js"
+import { forkPlan } from "../normalize.js"
 import setTemp from "../../fabric/dom/setTemp.js"
 import listen from "../../fabric/event/listen.js"
 import ipc from "../../core/ipc.js"
@@ -163,7 +163,7 @@ export class Sandbox extends Component {
         if (key === "popup") undones.push(import("../popup.js"))
       })
       await Promise.all(undones)
-      const content = forkDef(this.content, this.stage)
+      const content = forkPlan(this.content, this.stage)
       content.plugins = ["ipc"]
       const script = `
 import ipc from "${ipcUrl}"

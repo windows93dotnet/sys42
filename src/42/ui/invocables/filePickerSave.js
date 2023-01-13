@@ -1,7 +1,7 @@
 import explorer from "../components/explorer.js"
 import isHashmapLike from "../../fabric/type/any/is/isHashmapLike.js"
 import nextCycle from "../../fabric/type/promise/nextCycle.js"
-import { objectifyDef } from "../normalize.js"
+import { objectifyPlan } from "../normalize.js"
 
 const DEFAULT = {
   agree: "Save",
@@ -49,12 +49,12 @@ export async function filePickerSave(path, options) {
         {
           tag: "button.ui-dialog__agree.btn-default",
           click: "{{ok()}}",
-          ...objectifyDef(config.agree),
+          ...objectifyPlan(config.agree),
         },
         {
           tag: "button.ui-dialog__decline",
           click: "{{close()}}",
-          ...objectifyDef(config.decline),
+          ...objectifyPlan(config.decline),
         },
       ],
     },

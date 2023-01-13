@@ -17,9 +17,9 @@ import uid from "../../core/uid.js"
 import {
   addEntry,
   ensureDef,
-  objectifyDef,
-  normalizeCtx,
-  normalizeDef,
+  objectifyPlan,
+  normalizeStage,
+  normalizePlan,
   normalizeString,
   normalizeComputeds,
   normalizeScope,
@@ -213,7 +213,7 @@ export default class Component extends HTMLElement {
 
     /* handle stage
     ------------- */
-    this.stage = normalizeCtx({
+    this.stage = normalizeStage({
       ...stage,
       el: this,
       component: this,
@@ -230,7 +230,7 @@ export default class Component extends HTMLElement {
 
     plan = ensureDef(plan, this.stage)
     normalizeScope(plan, this.stage)
-    plan = objectifyDef(plan)
+    plan = objectifyPlan(plan)
 
     this.stage.id ??= plan.id ?? hash(plan)
 
@@ -316,10 +316,10 @@ export default class Component extends HTMLElement {
         })
       }
 
-      Object.assign(plan, objectifyDef(await this.render(renderConfig)))
+      Object.assign(plan, objectifyPlan(await this.render(renderConfig)))
     }
 
-    plan = normalizeDef(plan, this.stage, { skipAttrs: true })
+    plan = normalizePlan(plan, this.stage, { skipAttrs: true })
 
     this.#animateTo = plan.animate?.to
 

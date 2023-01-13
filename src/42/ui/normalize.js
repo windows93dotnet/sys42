@@ -618,7 +618,7 @@ function normalizeOn(plan) {
         popup: {
           tag: "ui-menu",
           closeEvents: "pointerdown || ArrowLeft",
-          ...objectifyDef(plan.menu),
+          ...objectifyPlan(plan.menu),
         },
       },
     })
@@ -633,7 +633,7 @@ function normalizeOn(plan) {
         popup: {
           tag: "ui-menu",
           closeEvents: "pointerdown",
-          ...objectifyDef(plan.contextmenu),
+          ...objectifyPlan(plan.contextmenu),
         },
       },
     })
@@ -657,7 +657,7 @@ function normalizeOn(plan) {
 /* plan
 ====== */
 
-export function objectifyDef(plan) {
+export function objectifyPlan(plan) {
   if (plan != null) {
     if (typeof plan === "object" && !Array.isArray(plan)) return plan
     return { content: plan }
@@ -666,7 +666,7 @@ export function objectifyDef(plan) {
   return {}
 }
 
-export function forkDef(plan, stage) {
+export function forkPlan(plan, stage) {
   if (plan?.content === undefined || plan?.scope) plan = { content: plan }
 
   plan = { ...plan }
@@ -701,7 +701,7 @@ export function ensureDef(plan = {}, stage) {
   return plan
 }
 
-export function normalizeDefNoCtx(plan = {}) {
+export function normalizePlanWithoutStage(plan = {}) {
   if (plan.animate) plan.animate = normalizeFromTo(plan.animate)
   if (plan.bind) plan.bind = normalizeFromTo(plan.bind)
   normalizeOn(plan)
@@ -747,7 +747,7 @@ export function normalizeScope(plan, stage) {
   }
 }
 
-export function normalizeDef(plan = {}, stage, options) {
+export function normalizePlan(plan = {}, stage, options) {
   stage.id ??= plan.id ?? hash(plan)
   stage.type = getType(plan)
 
@@ -772,7 +772,7 @@ export function normalizeDef(plan = {}, stage, options) {
     const traits = normalizeTraits(plan, stage)
     if (traits) plan.traits = traits
 
-    if (options?.skipNoCtx !== true) normalizeDefNoCtx(plan)
+    if (options?.skipNoStage !== true) normalizePlanWithoutStage(plan)
 
     if (plan.computed) normalizeComputeds(plan.computed, stage)
     if (plan.watch) normalizeWatchs(plan.watch, stage)
@@ -808,7 +808,7 @@ export function normalizeDef(plan = {}, stage, options) {
 /* stage
 ====== */
 
-export function normalizeCtx(stage = {}) {
+export function normalizeStage(stage = {}) {
   // TODO: write protect stage.trusted
   stage = { ...stage }
   stage.scope ??= "/"
@@ -835,7 +835,7 @@ export function normalizeCtx(stage = {}) {
 }
 
 export default function normalize(plan, stage = {}) {
-  stage = normalizeCtx(stage)
-  plan = normalizeDef(plan, stage)
+  stage = normalizeStage(stage)
+  plan = normalizePlan(plan, stage)
   return [plan, stage]
 }
