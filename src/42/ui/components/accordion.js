@@ -23,14 +23,14 @@ export class Accordion extends Component {
     this.content.splice(index, 1)
   }
 
-  selectPanel(index, previous) {
+  togglePanel(index, previous) {
     if (index < 0 || index > this.content.length - 1) return
 
     if (this.expanded.includes(index)) {
       if (this.collapsible !== true && this.expanded.length === 1) {
         if (index === this.content.length - 1) {
-          this.selectPanel(index - 1, index)
-        } else this.selectPanel(index + 1, index)
+          this.togglePanel(index - 1, index)
+        } else this.togglePanel(index + 1, index)
       } else {
         removeItem(this.expanded, index)
       }
@@ -77,7 +77,7 @@ export class Accordion extends Component {
                   tag: "span.ui-accordion__button__text",
                   content: "{{render(label)}}",
                 },
-                click: "{{selectPanel(@index)}}",
+                click: "{{togglePanel(@index)}}",
               },
               {
                 if: "{{postlabel}}",
@@ -91,8 +91,8 @@ export class Accordion extends Component {
             if: "{{includes(../../../expanded, @index)}}",
             animate: {
               flexBasis: "0%",
-              ms: 300,
-              start: { overflow: "hidden" },
+              initial: false,
+              autoHideScrollbars: true,
             },
             id: `${id}-panel-{{@index}}`,
             content: {
