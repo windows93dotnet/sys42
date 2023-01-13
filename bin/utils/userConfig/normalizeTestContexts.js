@@ -70,9 +70,12 @@ export default function normalizeTestContexts(test) {
     if (typeof contextType !== "object") contextType = {}
     const ctxVal = test.ctx && key in test.ctx ? test.ctx[key] : {}
     test[key].icon = TEST_CTX_ALIASES[key][0]
-    const def = normalizeConfig(contextType, test)
-    test[key] = normalizeConfig(configure(contextType, test[key], ctxVal), def)
-    for (const pattern of def.glob) {
+    const config = normalizeConfig(contextType, test)
+    test[key] = normalizeConfig(
+      configure(contextType, test[key], ctxVal),
+      config
+    )
+    for (const pattern of config.glob) {
       if (!test[key].glob.includes(pattern)) test[key].glob.push(pattern)
     }
   }

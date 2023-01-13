@@ -11,7 +11,7 @@ import expr from "../../core/expr.js"
 const PLACEHOLDER = "[if]"
 const { DOCUMENT_FRAGMENT_NODE } = Node
 
-export default function renderIf(def, ctx) {
+export default function renderIf(plan, ctx) {
   const el = document.createDocumentFragment()
 
   let lastChild
@@ -21,7 +21,7 @@ export default function renderIf(def, ctx) {
   const placeholder = document.createComment(PLACEHOLDER)
   el.append(placeholder)
 
-  const tokens = expr.parse(def.if)
+  const tokens = expr.parse(plan.if)
   const { scopes, actions } = normalizeTokens(tokens, ctx)
   const check = expr.compile(tokens, {
     boolean: true,
@@ -30,18 +30,18 @@ export default function renderIf(def, ctx) {
     actions,
   })
 
-  const defIf = normalizeDef(omit(def, ["if"]), ctx)
+  const defIf = normalizeDef(omit(plan, ["if"]), ctx)
   const typeIf = getType(defIf)
   let defElse
   let typeElse
-  if (def.else) {
+  if (plan.else) {
     if (typeIf === "object") {
-      if ("to" in defIf) def.else.to ??= defIf.to
-      if ("from" in defIf) def.else.from ??= defIf.from
-      if ("animate" in defIf) def.else.animate ??= defIf.animate
+      if ("to" in defIf) plan.else.to ??= defIf.to
+      if ("from" in defIf) plan.else.from ??= defIf.from
+      if ("animate" in defIf) plan.else.animate ??= defIf.animate
     }
 
-    defElse = def.else ? normalizeDef(def.else, ctx) : undefined
+    defElse = plan.else ? normalizeDef(plan.else, ctx) : undefined
     typeElse = getType(defElse)
   }
 
@@ -49,7 +49,7 @@ export default function renderIf(def, ctx) {
     const res = await check(ctx.reactive.state)
     if (res === lastRes) return
 
-    const [def, type] = res ? [defIf, typeIf] : [defElse, typeElse]
+    const [plan, type] = res ? [defIf, typeIf] : [defElse, typeElse]
 
     if (lastChild) {
       cancel?.("renderIf removed")
@@ -68,11 +68,11 @@ export default function renderIf(def, ctx) {
     }
 
     lastRes = res
-    if (!def) return
+    if (!plan) return
 
     cancel = new Canceller(ctx.signal)
     const el = render(
-      def,
+      plan,
       {
         ...ctx,
         type,

@@ -33,7 +33,7 @@ test.tasks(
         static definition = { tag: "ui-t-basic" }
       },
       html: "<ui-t-basic></ui-t-basic>",
-      def: { tag: "ui-t-basic" },
+      plan: { tag: "ui-t-basic" },
       expected: "<ui-t-basic><!--[rendered]--></ui-t-basic>",
     }),
 
@@ -45,7 +45,7 @@ test.tasks(
         }
       },
       html: "<ui-t-string></ui-t-string>",
-      def: { tag: "ui-t-string" },
+      plan: { tag: "ui-t-string" },
       expected: "<ui-t-string><!--[rendered]-->hello</ui-t-string>",
     }),
 
@@ -56,7 +56,7 @@ test.tasks(
           return "hello"
         }
       },
-      def: { tag: "ui-t-attr" },
+      plan: { tag: "ui-t-attr" },
       expected: '<ui-t-attr class="derp"><!--[rendered]-->hello</ui-t-attr>',
     }),
 
@@ -65,7 +65,7 @@ test.tasks(
         tag: "ui-t-data",
         content: "foo: {{foo}}",
       },
-      def: {
+      plan: {
         content: { tag: "ui-t-data" },
         state: { foo: 1 },
       },
@@ -82,7 +82,7 @@ test.tasks(
         },
         content: "x:{{x}}",
       },
-      def: {
+      plan: {
         content: {
           tag: "ui-t-dynamic",
           x: "{{foo}}",
@@ -124,7 +124,7 @@ test.tasks(
           }
         }
       },
-      def: {
+      plan: {
         content: { tag: "ui-t-signal" },
       },
       async check(t, app) {
@@ -161,7 +161,7 @@ test.tasks(
     }),
 
     task({
-      def: {
+      plan: {
         content: { tag: "ui-t-props", bar: 0 },
         state: { foo: 1 },
       },
@@ -170,7 +170,7 @@ test.tasks(
     }),
 
     task({
-      def: {
+      plan: {
         content: { tag: "ui-t-props" },
         state: { foo: 1 },
       },
@@ -220,7 +220,7 @@ test.tasks(
         },
         content: "foo: {{foo}}, bar: {{bar}}",
       },
-      def: {
+      plan: {
         content: { tag: "ui-t-props-state" },
         state: { foo: 1 },
       },
@@ -283,7 +283,7 @@ test.tasks(
           }
         }
       },
-      def: {
+      plan: {
         content: { tag: "ui-t-filter" },
         state: { foo: 1 },
       },
@@ -296,7 +296,7 @@ test.tasks(
         tag: "ui-t-ready",
         content: "ext: {{/foo |> getExtname(^^)}}",
       },
-      def: {
+      plan: {
         content: { tag: "ui-t-ready" },
         state: { foo: "/42/index.html" },
       },
@@ -314,7 +314,7 @@ test.tasks(
           },
         },
       },
-      def: {
+      plan: {
         content: { tag: "ui-t-noprops" },
       },
       expected: "<ui-t-noprops><!--[rendered]-->foo: </ui-t-noprops>",
@@ -330,7 +330,7 @@ test.tasks(
           },
         },
       },
-      def: {
+      plan: {
         content: { tag: "ui-t-css" /* , foo: "red" */ },
       },
       expected: "<ui-t-css><!--[rendered]--></ui-t-css>",
@@ -381,7 +381,7 @@ test.tasks(
           },
         },
       },
-      def: {
+      plan: {
         content: { tag: "ui-t-css-state" /* , foo: "red" */ },
       },
       expected: "<ui-t-css-state><!--[rendered]--></ui-t-css-state>",
@@ -443,7 +443,7 @@ test.tasks(
           }
         }
       },
-      def: {
+      plan: {
         content: { tag: "ui-t-throttle", path: "world" },
       },
       expected:
@@ -453,9 +453,9 @@ test.tasks(
 
   (
     test,
-    { title, defer, connect, component, args, html, def, check, expected }
+    { title, defer, connect, component, args, html, plan, check, expected }
   ) => {
-    test(title ?? expected ?? def, async (t) => {
+    test(title ?? expected ?? plan, async (t) => {
       t.timeout(1000)
 
       if (component) {
@@ -466,7 +466,7 @@ test.tasks(
         } else await checkDefine(component, t, args, expected)
       }
 
-      const app = await t.utils.decay(ui(t.utils.dest({ connect }), def))
+      const app = await t.utils.decay(ui(t.utils.dest({ connect }), plan))
 
       if (expected) t.is(app.el.innerHTML, expected, "ui declaration error")
       if (check) await check(t, app)
@@ -2264,10 +2264,10 @@ test("actions", "above root path", async (t) => {
 
 /* --------- */
 
-async function makeSuite(name, def) {
+async function makeSuite(name, plan) {
   Component.define(
     class extends Component {
-      static definition = { tag: `ui-t-${name}`, ...def }
+      static definition = { tag: `ui-t-${name}`, ...plan }
 
       x(...args) {
         this.ctx.state.from = ["x", `ui-t-${name}`]
@@ -2301,7 +2301,7 @@ async function makeSuite(name, def) {
 
   Component.define(
     class extends Component {
-      static definition = { tag: `ui-t-${name}-child`, ...def }
+      static definition = { tag: `ui-t-${name}-child`, ...plan }
 
       x(...args) {
         this.ctx.state.from = ["x", `ui-t-${name}-child`]
@@ -2319,7 +2319,7 @@ async function makeSuite(name, def) {
 
   Component.define(
     class extends Component {
-      static definition = { tag: `ui-t-${name}-child-child`, ...def }
+      static definition = { tag: `ui-t-${name}-child-child`, ...plan }
 
       x(...args) {
         this.ctx.state.from = ["x", `ui-t-${name}-child-child`]

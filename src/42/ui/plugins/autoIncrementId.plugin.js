@@ -1,14 +1,14 @@
 const uniqueIdentifiers = new Map()
 
 export default async function autoIncrementIdPlugin() {
-  return (def) => {
-    if (def?.id) {
-      if (uniqueIdentifiers.has(def.id)) {
-        const cnt = uniqueIdentifiers.get(def.id) + 1
-        uniqueIdentifiers.set(def.id, cnt)
-        def.id += cnt
+  return (plan) => {
+    if (plan?.id) {
+      if (uniqueIdentifiers.has(plan.id)) {
+        const cnt = uniqueIdentifiers.get(plan.id) + 1
+        uniqueIdentifiers.set(plan.id, cnt)
+        plan.id += cnt
       } else {
-        uniqueIdentifiers.set(def.id, 1)
+        uniqueIdentifiers.set(plan.id, 1)
       }
     }
   }

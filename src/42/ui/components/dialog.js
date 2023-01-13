@@ -108,7 +108,7 @@ export class Dialog extends Component {
     const id = this.id + "-title"
     this.setAttribute("aria-labelledby", id)
 
-    const def = [
+    const plan = [
       {
         tag: "header.ui-dialog__header",
         content: [
@@ -123,13 +123,13 @@ export class Dialog extends Component {
     ]
 
     if (footer) {
-      def.push({
+      plan.push({
         tag: "footer.ui-dialog__footer",
         content: footer,
       })
     }
 
-    return def
+    return plan
   }
 
   activate() {
@@ -190,14 +190,14 @@ Component.define(Dialog)
 const tracker = new Map()
 
 export const dialog = rpc(
-  async function dialog(def, ctx) {
+  async function dialog(plan, ctx) {
     const { steps } = ctx
     let n = tracker.has(steps) ? tracker.get(steps) : 0
     ctx = { ...ctx }
     ctx.steps += ",dialog°" + n++
     tracker.set(steps, n)
 
-    const el = new Dialog(def, ctx)
+    const el = new Dialog(plan, ctx)
     const { opener } = el
 
     await el.ready
@@ -210,19 +210,19 @@ export const dialog = rpc(
   {
     module: import.meta.url,
 
-    async marshalling(def = {}, ctx) {
-      def = objectifyDef(def)
+    async marshalling(plan = {}, ctx) {
+      plan = objectifyDef(plan)
 
-      forceOpener(def)
+      forceOpener(plan)
 
       if (rpc.inTop) {
         ctx = { ...ctx, detached: true }
-        return [def, ctx]
+        return [plan, ctx]
       }
 
       if (ctx?.plugins) await normalizePlugins(ctx, ["ipc"], { now: true })
 
-      return [forkDef(def, ctx), {}]
+      return [forkDef(plan, ctx), {}]
     },
 
     unmarshalling({ res, opener }) {

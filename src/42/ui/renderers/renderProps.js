@@ -71,7 +71,7 @@ const CONVERTERS = {
 
 CONVERTERS.array = CONVERTERS.object
 
-export default async function renderProps(el, props, def) {
+export default async function renderProps(el, props, plan) {
   const { ctx } = el
 
   const observed = {}
@@ -136,8 +136,8 @@ export default async function renderProps(el, props, def) {
       val = el[key]
     } else if (fromView && el.hasAttribute(attribute)) {
       val = fromView(el.getAttribute(attribute), attribute, el, item)
-    } else if (key in def) {
-      val = def[key]
+    } else if (key in plan) {
+      val = plan[key]
     } else if ("default" in item) {
       val = item.default
     }

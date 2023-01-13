@@ -28,8 +28,8 @@ const PRELOAD = new Set(["link", "script"])
 const NOT_CONTROLS = new Set(["label", "legend", "output", "option"])
 const HAS_OPTIONS = new Set(["select", "selectmenu", "optgroup", "datalist"])
 
-function renderTag(tag, def, ctx) {
-  let el = create(ctx, tag, def.attrs)
+function renderTag(tag, plan, ctx) {
+  let el = create(ctx, tag, plan.attrs)
 
   const { localName } = el
   if (localName) ctx.el = el
@@ -43,26 +43,27 @@ function renderTag(tag, def, ctx) {
     throw new DOMException(`Disallowed tag: ${localName}`, "SecurityError")
   }
 
-  if (def.entry) {
-    addEntry(ctx.component, def.entry, el)
-    delete def.entry
+  if (plan.entry) {
+    addEntry(ctx.component, plan.entry, el)
+    delete plan.entry
   }
 
-  if (HAS_OPTIONS.has(localName)) renderOptions(el, ctx, def)
+  if (HAS_OPTIONS.has(localName)) renderOptions(el, ctx, plan)
 
   if (localName === "button") {
-    def.content ??= def.label
+    plan.content ??= plan.label
   } else if (localName === "fieldset") {
-    if (def.label) el.append(render({ tag: "legend", content: def.label }, ctx))
+    if (plan.label)
+      el.append(render({ tag: "legend", content: plan.label }, ctx))
   } else if (el.form !== undefined && !NOT_CONTROLS.has(localName)) {
-    el = renderControl(el, ctx, def)
+    el = renderControl(el, ctx, plan)
   }
 
-  if (def.picto) {
+  if (plan.picto) {
     el.classList.add("has-picto")
-    if (!def.content) el.classList.add("has-picto--only-child")
-    if (def.picto.start) el.classList.add("has-picto--start")
-    if (def.picto.end) el.classList.add("has-picto--end")
+    if (!plan.content) el.classList.add("has-picto--only-child")
+    if (plan.picto.start) el.classList.add("has-picto--start")
+    if (plan.picto.end) el.classList.add("has-picto--end")
   }
 
   if (PRELOAD.has(localName)) {
@@ -72,28 +73,28 @@ function renderTag(tag, def, ctx) {
   return el
 }
 
-export default function render(def, ctx, options) {
+export default function render(plan, ctx, options) {
   if (ctx?.pluginHandlers) {
     for (const pluginHandle of ctx.pluginHandlers) {
-      const res = pluginHandle(def, ctx, options)
-      if (res !== undefined) def = res
+      const res = pluginHandle(plan, ctx, options)
+      if (res !== undefined) plan = res
     }
   }
 
-  if (def?.tag?.startsWith("ui-")) {
+  if (plan?.tag?.startsWith("ui-")) {
     // TODO: fix tags like "div > ui-foo"
-    delete def.attrs
+    delete plan.attrs
     if (options?.step !== undefined) {
       ctx = { ...ctx }
       ctx.steps += "," + options.step
     }
 
-    return renderComponent(create(def.tag), def, ctx, options)
+    return renderComponent(create(plan.tag), plan, ctx, options)
   }
 
   if (!options?.skipNormalize) {
-    const normalized = normalize(def, ctx, options)
-    def = normalized[0]
+    const normalized = normalize(plan, ctx, options)
+    plan = normalized[0]
     ctx = normalized[1]
   }
 
@@ -101,13 +102,13 @@ export default function render(def, ctx, options) {
 
   switch (ctx.type) {
     case "string":
-      return SPECIAL_STRINGS[def]?.() ?? document.createTextNode(def)
+      return SPECIAL_STRINGS[plan]?.() ?? document.createTextNode(plan)
 
     case "array": {
       const fragment = document.createDocumentFragment()
-      for (let step = 0, l = def.length; step < l; step++) {
-        ctx.type = typeof def[step]
-        fragment.append(render(def[step], ctx, { step }))
+      for (let step = 0, l = plan.length; step < l; step++) {
+        ctx.type = typeof plan[step]
+        fragment.append(render(plan[step], ctx, { step }))
       }
 
       return fragment
@@ -115,7 +116,7 @@ export default function render(def, ctx, options) {
 
     case "function": {
       const el = document.createTextNode("")
-      register(ctx, def, (val) => {
+      register(ctx, plan, (val) => {
         el.textContent = val
       })
       return el
@@ -124,40 +125,40 @@ export default function render(def, ctx, options) {
     default:
   }
 
-  if (def.if) return renderIf(def, ctx)
-  if (def.each) return renderEach(def, ctx)
+  if (plan.if) return renderIf(plan, ctx)
+  if (plan.each) return renderEach(plan, ctx)
 
   let el
   let container
 
-  if (def.tag || def.attrs) {
-    if (def.tag) {
-      const nesteds = def.tag.split(/\s*>\s*/)
+  if (plan.tag || plan.attrs) {
+    if (plan.tag) {
+      const nesteds = plan.tag.split(/\s*>\s*/)
       for (let i = 0, l = nesteds.length; i < l; i++) {
         const tag = nesteds[i]
-        const cur = i === l - 1 ? renderTag(tag, def, ctx) : create(tag)
+        const cur = i === l - 1 ? renderTag(tag, plan, ctx) : create(tag)
         if (el) el.append(cur)
         else container = cur
         el = cur
       }
     } else {
-      el = renderTag(def.tag, def, ctx)
+      el = renderTag(plan.tag, plan, ctx)
     }
   } else {
     el = document.createDocumentFragment()
   }
 
-  if (def.picto?.start) {
+  if (plan.picto?.start) {
     el.append(
-      renderComponent(create("ui-picto"), { value: def.picto.start }, ctx)
+      renderComponent(create("ui-picto"), { value: plan.picto.start }, ctx)
     )
   }
 
-  if (def.content) {
-    if (def.content instanceof Node) el.append(def.content)
+  if (plan.content) {
+    if (plan.content instanceof Node) el.append(plan.content)
     else {
       el.append(
-        render(def.content, ctx, {
+        render(plan.content, ctx, {
           step:
             el.nodeType === ELEMENT_NODE
               ? el.localName + (el.id ? `#${el.id}` : "")
@@ -167,17 +168,18 @@ export default function render(def, ctx, options) {
     }
   }
 
-  if (def.picto?.end) {
+  if (plan.picto?.end) {
     el.append(
-      renderComponent(create("ui-picto"), { value: def.picto.end }, ctx)
+      renderComponent(create("ui-picto"), { value: plan.picto.end }, ctx)
     )
   }
 
-  if (def.traits) ctx.traitsReady.push(def.traits(ctx.el))
+  if (plan.traits) ctx.traitsReady.push(plan.traits(ctx.el))
 
-  if (def.on) renderOn(ctx.el, def, ctx)
+  if (plan.on) renderOn(ctx.el, plan, ctx)
 
-  if (def.animate?.from) renderAnimation(ctx, ctx.el, "from", def.animate.from)
+  if (plan.animate?.from)
+    renderAnimation(ctx, ctx.el, "from", plan.animate.from)
 
   return container ?? el
 }

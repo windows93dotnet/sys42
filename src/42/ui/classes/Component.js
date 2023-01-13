@@ -189,7 +189,7 @@ export default class Component extends HTMLElement {
     )
   }
 
-  async #init(def, ctx, options) {
+  async #init(plan, ctx, options) {
     if (ctx?.cancel?.signal.aborted) return
 
     this.removeAttribute("data-no-init")
@@ -199,16 +199,16 @@ export default class Component extends HTMLElement {
 
     if (ctx?.component) this.parent = ctx.component
 
-    const entry = def?.entry ?? definition?.entry
+    const entry = plan?.entry ?? definition?.entry
     if (entry) {
       addEntry(ctx.component, entry, this)
-      delete def.entry
+      delete plan.entry
     }
 
-    const parentEntry = def?.parentEntry ?? definition?.parentEntry
+    const parentEntry = plan?.parentEntry ?? definition?.parentEntry
     if (parentEntry) {
       if (this.parent) addEntry(this, parentEntry, this.parent)
-      delete def.parentEntry
+      delete plan.parentEntry
     }
 
     /* handle ctx
@@ -228,17 +228,17 @@ export default class Component extends HTMLElement {
     this.detached = this.ctx.detached
     delete this.ctx.detached
 
-    def = ensureDef(def, this.ctx)
-    normalizeScope(def, this.ctx)
-    def = objectifyDef(def)
+    plan = ensureDef(plan, this.ctx)
+    normalizeScope(plan, this.ctx)
+    plan = objectifyDef(plan)
 
-    this.ctx.id ??= def.id ?? hash(def)
+    this.ctx.id ??= plan.id ?? hash(plan)
 
     const params = {}
 
     /* handle props
     --------------- */
-    const configProps = configure(definition.props, def?.props)
+    const configProps = configure(definition.props, plan?.props)
     const filteredPropsKeys = filterPropsKeys(configProps)
 
     const props = {}
@@ -246,8 +246,8 @@ export default class Component extends HTMLElement {
 
     if (propsKeys.length > 0) {
       const configKeys = Object.keys(definition.defaults ?? {})
-      const entries = Object.entries(def)
-      def = {}
+      const entries = Object.entries(plan)
+      plan = {}
       for (const [key, val] of entries) {
         if (propsKeys.includes(key)) {
           props[key] =
@@ -256,29 +256,29 @@ export default class Component extends HTMLElement {
               : val
         } else if (configKeys.includes(key)) {
           params[key] = val
-        } else def[key] = val
+        } else plan[key] = val
       }
     }
 
-    /* handle def attrs
+    /* handle plan attrs
     ------------------- */
     // TODO: remove this
-    let attrs = normalizeAttrs(def, this.ctx, definition.defaults)
-    for (const attr of Object.keys(attrs)) delete def[attr]
+    let attrs = normalizeAttrs(plan, this.ctx, definition.defaults)
+    for (const attr of Object.keys(attrs)) delete plan[attr]
     if (attrs) renderAttributes(this, this.ctx, attrs)
 
     if (definition.id === true) this.id ||= uid()
 
-    /* handle def
+    /* handle plan
     ------------- */
-    def = configure(definition, def)
-    const { computed, state } = def
+    plan = configure(definition, plan)
+    const { computed, state } = plan
 
-    delete def.computed
-    delete def.state
-    delete def.scope
-    delete def.props
-    delete def.tag
+    delete plan.computed
+    delete plan.state
+    delete plan.scope
+    delete plan.props
+    delete plan.tag
 
     /* apply props
     -------------- */
@@ -307,21 +307,21 @@ export default class Component extends HTMLElement {
         Object.defineProperty(renderConfig, key, { get: () => this[key] })
       }
 
-      for (const [key, val] of Object.entries(def)) {
+      for (const [key, val] of Object.entries(plan)) {
         Object.defineProperty(renderConfig, key, {
           get() {
-            delete def[key] // not needed anymore if used in render
+            delete plan[key] // not needed anymore if used in render
             return val
           },
         })
       }
 
-      Object.assign(def, objectifyDef(await this.render(renderConfig)))
+      Object.assign(plan, objectifyDef(await this.render(renderConfig)))
     }
 
-    def = normalizeDef(def, this.ctx, { skipAttrs: true })
+    plan = normalizeDef(plan, this.ctx, { skipAttrs: true })
 
-    this.#animateTo = def.animate?.to
+    this.#animateTo = plan.animate?.to
 
     /* apply
     -------- */
@@ -340,18 +340,18 @@ export default class Component extends HTMLElement {
 
     /* handle all attrs
     ------------------- */
-    if (def.tag) {
-      def.attrs = normalizeAttrs(def, this.ctx)
+    if (plan.tag) {
+      plan.attrs = normalizeAttrs(plan, this.ctx)
     } else {
-      attrs = normalizeAttrs(def, this.ctx, definition.defaults)
-      for (const attr of Object.keys(attrs)) delete def[attr]
+      attrs = normalizeAttrs(plan, this.ctx, definition.defaults)
+      for (const attr of Object.keys(attrs)) delete plan[attr]
       if (attrs) renderAttributes(this, this.ctx, attrs)
     }
 
     await this.ctx.preload.done()
 
     this.replaceChildren(
-      render(def, this.ctx, {
+      render(plan, this.ctx, {
         skipNormalize: true,
         step: this.localName,
       })

@@ -695,21 +695,21 @@ test("class", "object", async (t) => {
 test.tasks(
   [
     test.task({
-      def: { tag: "span#foo.bar" },
+      plan: { tag: "span#foo.bar" },
       expected: '<span id="foo" class="bar"></span>',
     }),
     test.task({
-      def: { tag: "span#foo.bar", id: "x" },
+      plan: { tag: "span#foo.bar", id: "x" },
       expected: '<span id="x" class="bar"></span>',
     }),
     test.task({
-      def: { tag: "span#foo.bar", class: "baz" },
+      plan: { tag: "span#foo.bar", class: "baz" },
       expected: '<span id="foo" class="baz bar"></span>',
     }),
   ],
-  (test, { def, expected }) => {
-    test("abbr", "expand", def, async (t) => {
-      const app = await t.utils.decay(ui(t.utils.dest(), def))
+  (test, { plan, expected }) => {
+    test("abbr", "expand", plan, async (t) => {
+      const app = await t.utils.decay(ui(t.utils.dest(), plan))
       t.is(app.el.innerHTML, expected)
     })
   }
@@ -1396,7 +1396,7 @@ test("each", "manage renderers", async (t) => {
   ])
 })
 
-test("each", "def", async (t) => {
+test("each", "plan", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {

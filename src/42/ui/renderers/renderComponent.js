@@ -1,6 +1,6 @@
 import defer from "../../fabric/type/promise/defer.js"
 
-export default function renderComponent(el, def, ctx, options) {
+export default function renderComponent(el, plan, ctx, options) {
   const deferred = defer()
   ctx?.components.push(deferred)
   const tag = el.localName
@@ -18,10 +18,10 @@ export default function renderComponent(el, def, ctx, options) {
 
     customElements.whenDefined(tag).then(() => {
       customElements.upgrade(el)
-      el.init(def, ctx, options).then(deferred.resolve, deferred.reject)
+      el.init(plan, ctx, options).then(deferred.resolve, deferred.reject)
     })
   } else {
-    el.init(def, ctx, options).then(deferred.resolve, deferred.reject)
+    el.init(plan, ctx, options).then(deferred.resolve, deferred.reject)
   }
 
   return el

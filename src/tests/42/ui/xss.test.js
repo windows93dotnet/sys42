@@ -33,7 +33,7 @@ test.tasks(
     // task({
     //   title: "XSS example",
     //   description: "XSS Work because hardcoded localStorage.SECRET",
-    //   def: {
+    //   plan: {
     //     tag: "ui-sandbox",
     //     permissions: "app",
     //     script: `ipc.emit('xss', "hello secret")`,
@@ -43,7 +43,7 @@ test.tasks(
     // task({
     //   title: "Protected example",
     //   description: "XSS Fail because code know it hasn't found localStorage.SECRET",
-    //   def: {
+    //   plan: {
     //     tag: "ui-sandbox",
     //     permissions: "app",
     //     script: `ipc.emit('xss', new Error("Secret not found"))`,
@@ -54,7 +54,7 @@ test.tasks(
     //   title: "Timeout example",
     //   description: "XSS Fail because nothing happen until timeout",
     //   timeout: 100,
-    //   def: {
+    //   plan: {
     //     tag: "ui-sandbox",
     //     permissions: "app",
     //     script: `void 0`,
@@ -65,7 +65,7 @@ test.tasks(
       title: "ctx.trusted attack",
       description:
         "XSS Fail because ctx.trusted is not transferred to top realm",
-      def: [
+      plan: [
         {
           // dummy dialog to force top ipc response
           tag: "ui-dialog",
@@ -98,7 +98,7 @@ dialog(
       trusted: true,
       title: "importmap attack on iframe",
       description: "XSS Work because iframe is not sandboxed",
-      def: [
+      plan: [
         {
           tag: "ui-dialog",
           label: "dummy dialog",
@@ -115,7 +115,7 @@ dialog(
       title: "importmap attack on ui-sandbox",
       description:
         "XSS Fail because top level rpc delete ctx.trusted from sandboxed iframes",
-      def: [
+      plan: [
         {
           tag: "ui-dialog",
           label: "dummy dialog",
@@ -129,12 +129,12 @@ dialog(
     }),
   ],
 
-  (test, { title, def, timeout: ms, working, trusted, description }) => {
+  (test, { title, plan, timeout: ms, working, trusted, description }) => {
     ms ??= 2000
     test.ui("sandbox", title, async (t, { decay, dest }) => {
       t.timeout(ms + 100)
 
-      const app = decay(ui(dest({ connect: true }), def, { trusted }))
+      const app = decay(ui(dest({ connect: true }), plan, { trusted }))
 
       let res
 
@@ -182,7 +182,7 @@ test.tasks(
   [
     task({
       title: "target.innerHTML",
-      def: {
+      plan: {
         on: {
           render: "{{target.innerHTML = '<img/src/onerror=attack()>'}}",
         },
@@ -191,7 +191,7 @@ test.tasks(
 
     task({
       title: "target.outerHTML",
-      def: {
+      plan: {
         on: {
           render: "{{target.outerHTML = '<img/src/onerror=attack()>'}}",
         },
@@ -200,7 +200,7 @@ test.tasks(
 
     task({
       title: "entry innerHTML",
-      def: {
+      plan: {
         tag: "ui-tabs",
         content: [
           {
@@ -220,7 +220,7 @@ test.tasks(
     }),
   ],
 
-  (test, { title, def, timeout: ms, trusted }) => {
+  (test, { title, plan, timeout: ms, trusted }) => {
     ms ??= 2000
     test.ui("xss", title, async (t, { decay, dest }) => {
       t.timeout(ms + 100)
@@ -229,7 +229,7 @@ test.tasks(
         t.fail("attack was called")
       }
 
-      await decay(ui(dest({ connect: true }), def, { trusted }))
+      await decay(ui(dest({ connect: true }), plan, { trusted }))
 
       await t.sleep(30)
 
