@@ -26,7 +26,7 @@ function normalizeOptions(list) {
   })
 }
 
-export function renderOptions(el, stage, plan) {
+export function renderOptions(el, plan, stage) {
   if (Array.isArray(plan.content)) {
     plan.content = normalizeOptions(plan.content)
   }

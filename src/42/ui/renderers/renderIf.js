@@ -54,16 +54,14 @@ export default function renderIf(plan, stage) {
     if (lastChild) {
       cancel?.("renderIf removed")
       cancel = undefined
-      const range = new NodesRange(placeholder, lastChild)
-      removeRange(
-        stage,
-        range,
+      const plan =
         lastRes === false &&
-          elseType === "object" &&
-          ("to" in elsePlan || "animate" in elsePlan)
+        elseType === "object" &&
+        ("to" in elsePlan || "animate" in elsePlan)
           ? elsePlan
           : ifPlan
-      )
+      const range = new NodesRange(placeholder, lastChild)
+      removeRange(range, plan, stage)
       lastChild = undefined
     }
 

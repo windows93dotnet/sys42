@@ -69,7 +69,7 @@ export default function renderEach(plan, stage) {
         cancels.length = 0
 
         const range = new NodesRange(placeholder, lastItem, container)
-        removeRange(stage, range, eachPlan)
+        removeRange(range, eachPlan, stage)
         lastItem = undefined
       }
 

@@ -1,7 +1,6 @@
 // @see https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/Recommended_drag_types
 // @see https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/Multiple_items
 
-import "./preventUnwantedDrop.js"
 import arrify from "../../fabric/type/any/arrify.js"
 import { fromOptions } from "./dataTransferEffects.js"
 
