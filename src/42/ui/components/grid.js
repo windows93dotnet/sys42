@@ -94,7 +94,7 @@ export class Grid extends Component {
     this.iconsPerLine = 0
     const ro = new ResizeObserver(debounce(() => this.#refreshIconPerLine()))
     ro.observe(this)
-    this.ctx.signal.addEventListener("abort", () => ro.disconnect())
+    this.stage.signal.addEventListener("abort", () => ro.disconnect())
   }
 
   render({ itemTemplate }) {

@@ -145,7 +145,7 @@ test.tasks(
         el.click()
         t.is(stub.count, 2)
 
-        await el.init({}, app.ctx)
+        await el.init({}, app.stage)
         app.el.append(el)
         await el.ready
         el.click()
@@ -864,7 +864,7 @@ test("state", "dynamic", "push", async (t) => {
     })
   )
 
-  t.eq(Object.keys(app.ctx.renderers), [
+  t.eq(Object.keys(app.stage.renderers), [
     "/$ui/t-nested-dynamic/root/list",
     "/$ui/t-nested-dynamic/root/list/0/foo",
   ])
@@ -885,7 +885,7 @@ test("state", "dynamic", "push", async (t) => {
   el.list.push({ foo: "b" })
   await app
 
-  t.eq(Object.keys(app.ctx.renderers), [
+  t.eq(Object.keys(app.stage.renderers), [
     "/$ui/t-nested-dynamic/root/list",
     "/$ui/t-nested-dynamic/root/list/0/foo",
     "/$ui/t-nested-dynamic/root/list/1/foo",
@@ -919,7 +919,7 @@ test("state", "dynamic", "pop", async (t) => {
     })
   )
 
-  t.eq(Object.keys(app.ctx.renderers), [
+  t.eq(Object.keys(app.stage.renderers), [
     "/$ui/t-nested-dynamic/root/list",
     "/$ui/t-nested-dynamic/root/list/0/foo",
     "/$ui/t-nested-dynamic/root/list/1/foo",
@@ -944,7 +944,7 @@ test("state", "dynamic", "pop", async (t) => {
   el.list.pop()
   await app
 
-  t.eq(Object.keys(app.ctx.renderers), [
+  t.eq(Object.keys(app.stage.renderers), [
     "/$ui/t-nested-dynamic/root/list",
     "/$ui/t-nested-dynamic/root/list/0/foo",
   ])
@@ -1028,7 +1028,7 @@ test("props", 1, async (t) => {
     $ui: { a: { root: { bar: "-" } } },
   })
 
-  t.eq(Object.keys(app.ctx.renderers), [
+  t.eq(Object.keys(app.stage.renderers), [
     "/$ui/a/root/bar", //
     "/foo",
   ])
@@ -1466,7 +1466,7 @@ test("array", 1, async (t) => {
     },
   })
 
-  t.eq(Object.keys(app.ctx.renderers), [
+  t.eq(Object.keys(app.stage.renderers), [
     "/arr",
     "/arr/0",
     "/arr/1",
@@ -1492,7 +1492,7 @@ test("array", 1, async (t) => {
     $ui: { a: { "root,[0],1": { bar: { $ref: "/arr/0" } } } },
   })
 
-  t.eq(Object.keys(app.ctx.renderers), [
+  t.eq(Object.keys(app.stage.renderers), [
     "/arr", //
     "/arr/0",
     "/arr/0/foo",
@@ -1833,7 +1833,7 @@ test("computed", async (t) => {
     })
   )
 
-  t.eq(Object.keys(app.ctx.renderers), [
+  t.eq(Object.keys(app.stage.renderers), [
     "/$ui/t-computed/root/formated",
     "/$ui/t-computed/root/parsed/0",
     "/$ui/t-computed/root/parsed/1",
@@ -1917,7 +1917,7 @@ test("computed", "from prop with state:true", async (t) => {
     })
   )
 
-  t.eq(Object.keys(app.ctx.renderers), [
+  t.eq(Object.keys(app.stage.renderers), [
     "/formated",
     "/$ui/t-compu-sta/root/parsed/0",
     "/$ui/t-compu-sta/root/parsed/1",
@@ -1996,7 +1996,7 @@ test("computed", "computed prop", async (t) => {
 
   const el = app.el.querySelector("ui-t-compu-prop")
 
-  t.eq(Object.keys(app.ctx.renderers), [
+  t.eq(Object.keys(app.stage.renderers), [
     "/$ui/t-compu-prop/root/formated",
     "/$ui/t-compu-prop/root/parsed/0",
     "/$ui/t-compu-prop/root/parsed/1",
@@ -2076,7 +2076,7 @@ test("obj", async (t) => {
   )
 
   t.is(app.el.textContent, "1 - 2")
-  t.eq(Object.keys(app.ctx.renderers), [
+  t.eq(Object.keys(app.stage.renderers), [
     "/$ui/t-obj-prop/root/obj",
     "/$ui/t-obj-prop/root/obj/a",
     "/$ui/t-obj-prop/root/obj/b",
@@ -2270,30 +2270,30 @@ async function makeSuite(name, plan) {
       static definition = { tag: `ui-t-${name}`, ...plan }
 
       x(...args) {
-        this.ctx.state.from = ["x", `ui-t-${name}`]
-        this.ctx.state.args = args
+        this.stage.state.from = ["x", `ui-t-${name}`]
+        this.stage.state.args = args
       }
       y(...args) {
-        this.ctx.state.from = ["y", `ui-t-${name}`]
-        this.ctx.state.args = args
+        this.stage.state.from = ["y", `ui-t-${name}`]
+        this.stage.state.args = args
       }
       z(...args) {
-        this.ctx.state.from = ["z", `ui-t-${name}`]
-        this.ctx.state.args = args
+        this.stage.state.from = ["z", `ui-t-${name}`]
+        this.stage.state.args = args
       }
 
       a = {
         b(...args) {
-          this.ctx.state.from = ["a.b", `ui-t-${name}`]
-          this.ctx.state.args = args
+          this.stage.state.from = ["a.b", `ui-t-${name}`]
+          this.stage.state.args = args
         },
         c(...args) {
-          this.ctx.state.from = ["a.c", `ui-t-${name}`]
-          this.ctx.state.args = args
+          this.stage.state.from = ["a.c", `ui-t-${name}`]
+          this.stage.state.args = args
         },
         d(...args) {
-          this.ctx.state.from = ["a.d", `ui-t-${name}`]
-          this.ctx.state.args = args
+          this.stage.state.from = ["a.d", `ui-t-${name}`]
+          this.stage.state.args = args
         },
       }
     }
@@ -2304,14 +2304,14 @@ async function makeSuite(name, plan) {
       static definition = { tag: `ui-t-${name}-child`, ...plan }
 
       x(...args) {
-        this.ctx.state.from = ["x", `ui-t-${name}-child`]
-        this.ctx.state.args = args
+        this.stage.state.from = ["x", `ui-t-${name}-child`]
+        this.stage.state.args = args
       }
 
       a = {
         b(...args) {
-          this.ctx.state.from = ["a.b", `ui-t-${name}-child`]
-          this.ctx.state.args = args
+          this.stage.state.from = ["a.b", `ui-t-${name}-child`]
+          this.stage.state.args = args
         },
       }
     }
@@ -2322,14 +2322,14 @@ async function makeSuite(name, plan) {
       static definition = { tag: `ui-t-${name}-child-child`, ...plan }
 
       x(...args) {
-        this.ctx.state.from = ["x", `ui-t-${name}-child-child`]
-        this.ctx.state.args = args
+        this.stage.state.from = ["x", `ui-t-${name}-child-child`]
+        this.stage.state.args = args
       }
 
       a = {
         b(...args) {
-          this.ctx.state.from = ["a.b", `ui-t-${name}-child-child`]
-          this.ctx.state.args = args
+          this.stage.state.from = ["a.b", `ui-t-${name}-child-child`]
+          this.stage.state.args = args
         },
       }
     }

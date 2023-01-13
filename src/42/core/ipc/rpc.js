@@ -48,7 +48,7 @@ if (inTop) {
         meta.iframe.hasAttribute("sandbox") &&
         !meta.iframe.sandbox.contains("allow-same-origin")
       ) {
-        // ctx.trusted is not allowed from sandboxed iframes
+        // stage.trusted is not allowed from sandboxed iframes
         delete args[1].trusted
       }
 

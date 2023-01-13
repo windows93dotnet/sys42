@@ -172,36 +172,36 @@ export default class Component extends HTMLElement {
 
     this[_lifecycle] = SETUP
     await this.update?.()
-    await this.setup?.(this.ctx)
+    await this.setup?.(this.stage)
   }
 
   #setNewScope(props) {
     this.#hasNewScope = true
-    this.ctx.scopeChain = structuredClone(this.ctx.scopeChain)
-    this.ctx.scopeChain.push({ scope: this.ctx.scope, props })
+    this.stage.scopeChain = structuredClone(this.stage.scopeChain)
+    this.stage.scopeChain.push({ scope: this.stage.scope, props })
     const i = this.localName.indexOf("-")
     let prefix = this.localName.slice(0, i)
     const suffix = this.localName.slice(i + 1)
     if (prefix === "ui") prefix = "$" + prefix
-    this.ctx.scope = resolveScope(
+    this.stage.scope = resolveScope(
       `${prefix}/${suffix}`,
-      stepsToHash(this.ctx.steps)
+      stepsToHash(this.stage.steps)
     )
   }
 
-  async #init(plan, ctx, options) {
-    if (ctx?.cancel?.signal.aborted) return
+  async #init(plan, stage, options) {
+    if (stage?.cancel?.signal.aborted) return
 
     this.removeAttribute("data-no-init")
     this[_lifecycle] = INIT
 
     const { definition } = this.constructor
 
-    if (ctx?.component) this.parent = ctx.component
+    if (stage?.component) this.parent = stage.component
 
     const entry = plan?.entry ?? definition?.entry
     if (entry) {
-      addEntry(ctx.component, entry, this)
+      addEntry(stage.component, entry, this)
       delete plan.entry
     }
 
@@ -211,10 +211,10 @@ export default class Component extends HTMLElement {
       delete plan.parentEntry
     }
 
-    /* handle ctx
+    /* handle stage
     ------------- */
-    this.ctx = normalizeCtx({
-      ...ctx,
+    this.stage = normalizeCtx({
+      ...stage,
       el: this,
       component: this,
       refs: undefined,
@@ -222,17 +222,17 @@ export default class Component extends HTMLElement {
       components: undefined,
       postrender: undefined,
       traitsReady: undefined,
-      cancel: ctx?.detached ? undefined : ctx?.cancel?.fork(),
-      steps: ctx?.steps ?? this.localName,
+      cancel: stage?.detached ? undefined : stage?.cancel?.fork(),
+      steps: stage?.steps ?? this.localName,
     })
-    this.detached = this.ctx.detached
-    delete this.ctx.detached
+    this.detached = this.stage.detached
+    delete this.stage.detached
 
-    plan = ensureDef(plan, this.ctx)
-    normalizeScope(plan, this.ctx)
+    plan = ensureDef(plan, this.stage)
+    normalizeScope(plan, this.stage)
     plan = objectifyDef(plan)
 
-    this.ctx.id ??= plan.id ?? hash(plan)
+    this.stage.id ??= plan.id ?? hash(plan)
 
     const params = {}
 
@@ -252,7 +252,7 @@ export default class Component extends HTMLElement {
         if (propsKeys.includes(key)) {
           props[key] =
             typeof val === "string" //
-              ? normalizeString(val, this.ctx)
+              ? normalizeString(val, this.stage)
               : val
         } else if (configKeys.includes(key)) {
           params[key] = val
@@ -263,9 +263,9 @@ export default class Component extends HTMLElement {
     /* handle plan attrs
     ------------------- */
     // TODO: remove this
-    let attrs = normalizeAttrs(plan, this.ctx, definition.defaults)
+    let attrs = normalizeAttrs(plan, this.stage, definition.defaults)
     for (const attr of Object.keys(attrs)) delete plan[attr]
-    if (attrs) renderAttributes(this, this.ctx, attrs)
+    if (attrs) renderAttributes(this, this.stage, attrs)
 
     if (definition.id === true) this.id ||= uid()
 
@@ -293,7 +293,7 @@ export default class Component extends HTMLElement {
     if (computed) {
       const computedKeys = Object.keys(computed)
       if (this.#hasNewScope) {
-        this.ctx.scopeChain.at(-1).props.push(...computedKeys)
+        this.stage.scopeChain.at(-1).props.push(...computedKeys)
       } else {
         this.#setNewScope([...filteredPropsKeys, ...computedKeys])
       }
@@ -319,7 +319,7 @@ export default class Component extends HTMLElement {
       Object.assign(plan, objectifyDef(await this.render(renderConfig)))
     }
 
-    plan = normalizeDef(plan, this.ctx, { skipAttrs: true })
+    plan = normalizeDef(plan, this.stage, { skipAttrs: true })
 
     this.#animateTo = plan.animate?.to
 
@@ -327,31 +327,33 @@ export default class Component extends HTMLElement {
     -------- */
 
     if (state && options?.skipNormalize !== true) {
-      normalizeData(state, this.ctx, (res, scope, options) => {
-        this.ctx.reactive.merge(
-          this.#hasNewScope ? this.ctx.scopeChain.at(0).scope : this.ctx.scope,
+      normalizeData(state, this.stage, (res, scope, options) => {
+        this.stage.reactive.merge(
+          this.#hasNewScope
+            ? this.stage.scopeChain.at(0).scope
+            : this.stage.scope,
           res,
           options
         )
       })
     }
 
-    if (computed) normalizeComputeds(computed, this.ctx)
+    if (computed) normalizeComputeds(computed, this.stage)
 
     /* handle all attrs
     ------------------- */
     if (plan.tag) {
-      plan.attrs = normalizeAttrs(plan, this.ctx)
+      plan.attrs = normalizeAttrs(plan, this.stage)
     } else {
-      attrs = normalizeAttrs(plan, this.ctx, definition.defaults)
+      attrs = normalizeAttrs(plan, this.stage, definition.defaults)
       for (const attr of Object.keys(attrs)) delete plan[attr]
-      if (attrs) renderAttributes(this, this.ctx, attrs)
+      if (attrs) renderAttributes(this, this.stage, attrs)
     }
 
-    await this.ctx.preload.done()
+    await this.stage.preload.done()
 
     this.replaceChildren(
-      render(plan, this.ctx, {
+      render(plan, this.stage, {
         skipNormalize: true,
         step: this.localName,
       })
@@ -359,9 +361,9 @@ export default class Component extends HTMLElement {
 
     this.prepend(document.createComment("[rendered]"))
 
-    await this.ctx.components.done()
-    await this.ctx.undones.done()
-    await this.ctx.postrender.call()
+    await this.stage.components.done()
+    await this.stage.undones.done()
+    await this.stage.postrender.call()
 
     if (this[_lifecycle] === INIT) this[_lifecycle] = RENDER
   }
@@ -386,24 +388,24 @@ export default class Component extends HTMLElement {
     if (this.#instanceDestroy) await this.#instanceDestroy(options)
 
     const reason = `${this.localName} destroyed`
-    this.ctx.cancel(reason)
+    this.stage.cancel(reason)
 
-    if (this.#hasNewScope && this.ctx.reactive.data) {
-      this.ctx.reactive.delete(this.ctx.scope, { silent: true })
+    if (this.#hasNewScope && this.stage.reactive.data) {
+      this.stage.reactive.delete(this.stage.scope, { silent: true })
       const i = this.localName.indexOf("-")
       let prefix = this.localName.slice(0, i)
       const suffix = this.localName.slice(i + 1)
       if (prefix === "ui") prefix = "$" + prefix
-      if (isEmptyObject(this.ctx.reactive.data[prefix]?.[suffix])) {
-        delete this.ctx.reactive.data[prefix][suffix]
+      if (isEmptyObject(this.stage.reactive.data[prefix]?.[suffix])) {
+        delete this.stage.reactive.data[prefix][suffix]
       }
 
-      if (isEmptyObject(this.ctx.reactive.data[prefix])) {
-        delete this.ctx.reactive.data[prefix]
+      if (isEmptyObject(this.stage.reactive.data[prefix])) {
+        delete this.stage.reactive.data[prefix]
       }
 
-      const changes = new Set([this.ctx.scope])
-      this.ctx.reactive.emit("update", changes, changes) // prevent calling $ref renderers
+      const changes = new Set([this.stage.scope])
+      this.stage.reactive.emit("update", changes, changes) // prevent calling $ref renderers
     }
 
     this.ready.resolve()
@@ -413,7 +415,7 @@ export default class Component extends HTMLElement {
     if (options?.remove !== false) {
       if (this.isConnected && this.#animateTo) {
         await import("../renderers/renderAnimation.js").then((m) =>
-          m.default(this.ctx, this, "to", this.#animateTo)
+          m.default(this.stage, this, "to", this.#animateTo)
         )
       }
 
@@ -421,9 +423,9 @@ export default class Component extends HTMLElement {
       this.remove()
     }
 
-    delete this.ctx.component
-    delete this.ctx.el
-    delete this.ctx
+    delete this.stage.component
+    delete this.stage.el
+    delete this.stage
 
     this[_lifecycle] = CREATE
   }

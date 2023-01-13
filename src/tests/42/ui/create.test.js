@@ -115,26 +115,26 @@ test("classes", 2, (t) => {
   t.is(el.className, "three x y z")
 })
 
-test("ctx", async (t) => {
-  const ctx = normalizeCtx()
-  ctx.reactive.set("foo", "bar")
-  const child = create(ctx, "span", { class: "{{foo}}" })
-  const el = create(ctx, "div", { class: "derp" }, child)
+test("stage", async (t) => {
+  const stage = normalizeCtx()
+  stage.reactive.set("foo", "bar")
+  const child = create(stage, "span", { class: "{{foo}}" })
+  const el = create(stage, "div", { class: "derp" }, child)
   el.append(child)
   await repaint()
 
   t.is(el.outerHTML, '<div class="derp"><span class="bar"></span></div>')
 
-  ctx.reactive.set("foo", "baz")
+  stage.reactive.set("foo", "baz")
   await repaint()
 
   t.is(el.outerHTML, '<div class="derp"><span class="baz"></span></div>')
 })
 
-test("ctx", "renderKeyVal 'dynamic' bug", async (t) => {
-  const ctx = normalizeCtx()
-  const child = create(ctx, "span", { class: "bar" })
-  const el = create(ctx, "div", { class: "derp" }, child)
+test("stage", "renderKeyVal 'dynamic' bug", async (t) => {
+  const stage = normalizeCtx()
+  const child = create(stage, "span", { class: "bar" })
+  const el = create(stage, "div", { class: "derp" }, child)
 
   t.is(el.outerHTML, '<div class="derp"><span class="bar"></span></div>')
 })

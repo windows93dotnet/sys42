@@ -18,16 +18,16 @@ const delimiter = "/"
 export default class Reactive extends Emitter {
   #update = {}
 
-  constructor(ctx, data = {}) {
-    super({ signal: ctx.cancel.signal })
-    ctx.cancel.signal.addEventListener("abort", () => this.destroy())
+  constructor(stage, data = {}) {
+    super({ signal: stage.cancel.signal })
+    stage.cancel.signal.addEventListener("abort", () => this.destroy())
 
-    this.ctx = ctx
+    this.stage = stage
     this.data = data
     this.firstUpdateDone = false
     this.bypassEqualCheck = false
 
-    Object.defineProperty(this.ctx, "state", {
+    Object.defineProperty(this.stage, "state", {
       enumerable: true,
       get: () => this.state,
     })
@@ -51,7 +51,7 @@ export default class Reactive extends Emitter {
       try {
         this.emit("update", ...res)
       } catch (err) {
-        dispatch(ctx.el, err)
+        dispatch(stage.el, err)
       }
     }
 
@@ -61,7 +61,7 @@ export default class Reactive extends Emitter {
     this.pendingUpdate = false
 
     this.state = observe(this.data, {
-      signal: this.ctx.cancel.signal,
+      signal: this.stage.cancel.signal,
 
       locate: (ref) => locate(this.state, ref, delimiter),
 
@@ -99,11 +99,11 @@ export default class Reactive extends Emitter {
   }
 
   async done(n = 10) {
-    await Promise.all([this.ctx.components.done(), this.ctx.undones.done()])
+    await Promise.all([this.stage.components.done(), this.stage.undones.done()])
     await this.pendingUpdate
     await 0 // queueMicrotask
 
-    if (this.ctx.undones.length > 0 || this.ctx.components.length > 0) {
+    if (this.stage.undones.length > 0 || this.stage.components.length > 0) {
       if (n < 0) throw new Error("Too much recursion")
       await this.done(n--)
     }
@@ -111,7 +111,7 @@ export default class Reactive extends Emitter {
     if (this.firstUpdateDone === false) {
       this.firstUpdateDone = true
       this.throttle = true
-      await this.ctx.postrender.call()
+      await this.stage.postrender.call()
     }
   }
 
@@ -195,9 +195,9 @@ export default class Reactive extends Emitter {
     for (const [path, deleted] of queue.objects) {
       changes.add(path)
       if (deleted) deleteds.add(path)
-      for (const key in this.ctx.renderers) {
+      for (const key in this.stage.renderers) {
         if (key.startsWith(path)) {
-          for (const render of this.ctx.renderers[key]) {
+          for (const render of this.stage.renderers[key]) {
             if (rendered.has(render)) continue
             render(key)
             rendered.add(render)
@@ -209,8 +209,8 @@ export default class Reactive extends Emitter {
     for (const [path, deleted] of queue.paths) {
       changes.add(path)
       if (deleted) deleteds.add(path)
-      if (path in this.ctx.renderers) {
-        for (const render of this.ctx.renderers[path]) {
+      if (path in this.stage.renderers) {
+        for (const render of this.stage.renderers[path]) {
           if (rendered.has(render)) continue
           render(path)
           rendered.add(render)
@@ -219,8 +219,8 @@ export default class Reactive extends Emitter {
     }
 
     // root renderers
-    if (delimiter in this.ctx.renderers) {
-      for (const render of this.ctx.renderers[delimiter]) {
+    if (delimiter in this.stage.renderers) {
+      for (const render of this.stage.renderers[delimiter]) {
         if (rendered.has(render)) continue
         render(delimiter)
         rendered.add(render)
@@ -230,7 +230,7 @@ export default class Reactive extends Emitter {
     // console.group("State Update", { inTop: window.top === window.self })
     // // console.log(queue)
     // console.log([...changes].join("\n"))
-    // console.log("%c" + Object.keys(this.ctx.renderers).join("\n"), "color:#999")
+    // console.log("%c" + Object.keys(this.stage.renderers).join("\n"), "color:#999")
     // console.groupEnd()
 
     queue.objects.clear()
@@ -276,7 +276,7 @@ export default class Reactive extends Emitter {
     try {
       this.emit("update", ...res, ...rest)
     } catch (err) {
-      dispatch(this.ctx.el, err)
+      dispatch(this.stage.el, err)
     }
   }
 
@@ -309,7 +309,7 @@ export default class Reactive extends Emitter {
   }
 
   watch(loc, fn) {
-    register(this.ctx, loc, fn)
+    register(this.stage, loc, fn)
   }
 
   destroy() {
@@ -320,6 +320,6 @@ export default class Reactive extends Emitter {
     this.pendingUpdate = false
     delete this.data
     delete this.state
-    this.ctx.cancel("Reactive instance destroyed")
+    this.stage.cancel("Reactive instance destroyed")
   }
 }

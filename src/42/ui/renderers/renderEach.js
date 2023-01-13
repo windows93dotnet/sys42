@@ -19,7 +19,7 @@ function cancelExtraItems(i, cancels) {
   cancels.length = newLength
 }
 
-export default function renderEach(plan, ctx) {
+export default function renderEach(plan, stage) {
   const eachDef = normalizeDefNoCtx(plan.each)
   plan = omit(plan, ["each"])
 
@@ -36,7 +36,7 @@ export default function renderEach(plan, ctx) {
     renderFunction = (item) => ({ ...eachDef, ...objectifyDef(item) })
   }
 
-  const el = render(plan, ctx)
+  const el = render(plan, stage)
 
   let lastItem
   const cancels = []
@@ -45,9 +45,9 @@ export default function renderEach(plan, ctx) {
   el.append(placeholder)
 
   let scopeChain
-  if (ctx.scopeChain.length > 0) {
-    scopeChain = structuredClone(ctx.scopeChain)
-    scopeChain.push({ scope: ctx.scope })
+  if (stage.scopeChain.length > 0) {
+    scopeChain = structuredClone(stage.scopeChain)
+    scopeChain.push({ scope: stage.scope })
   }
 
   let prevArray
@@ -60,7 +60,7 @@ export default function renderEach(plan, ctx) {
   const animTo = eachDef?.animate?.to
   const animFrom = eachDef?.animate?.from
 
-  register(ctx, ctx.scope, (array) => {
+  register(stage, stage.scope, (array) => {
     const container = lastItem?.parentElement
 
     if (!array || !Array.isArray(array) || array.length === 0) {
@@ -69,7 +69,7 @@ export default function renderEach(plan, ctx) {
         cancels.length = 0
 
         const range = new NodesRange(placeholder, lastItem, container)
-        removeRange(ctx, range, eachDef)
+        removeRange(stage, range, eachDef)
         lastItem = undefined
       }
 
@@ -129,12 +129,12 @@ export default function renderEach(plan, ctx) {
                 recycled.before(inert)
                 const { display } = recycled.style
                 recycled.style.display = "none"
-                renderAnimation(ctx, inert, "to", animTo).then(() => {
+                renderAnimation(stage, inert, "to", animTo).then(() => {
                   inert.remove()
                   recycled.style.display = display
-                  renderAnimation(ctx, recycled, "from", animFrom)
+                  renderAnimation(stage, recycled, "from", animFrom)
                 })
-              } else renderAnimation(ctx, recycled, "from", animFrom)
+              } else renderAnimation(stage, recycled, "from", animFrom)
             }
           }
 
@@ -161,7 +161,7 @@ export default function renderEach(plan, ctx) {
                     inert.replaceChildren(...inert.cloneNode(true).childNodes)
                   }
 
-                  renderAnimation(ctx, inert, "to", animTo) //
+                  renderAnimation(stage, inert, "to", animTo) //
                     .then(() => inert.remove())
                 } else inert.remove()
               }
@@ -180,7 +180,7 @@ export default function renderEach(plan, ctx) {
     const fragment = document.createDocumentFragment()
 
     for (; i < length; i++) {
-      const cancel = new Canceller(ctx.signal)
+      const cancel = new Canceller(stage.signal)
       cancels.push(cancel)
 
       let itemDef = eachDef
@@ -191,7 +191,7 @@ export default function renderEach(plan, ctx) {
 
       if (addedElements.length > 0) {
         const recycled = addedElements.pop()
-        renderAnimation(ctx, recycled, "from", animFrom)
+        renderAnimation(stage, recycled, "from", animFrom)
         itemDef = { ...eachDef, animate: { to: animTo } }
       }
 
@@ -199,11 +199,11 @@ export default function renderEach(plan, ctx) {
         render(
           itemDef,
           {
-            ...ctx,
+            ...stage,
             cancel,
             signal: cancel.signal,
-            scope: `${ctx.scope}/${i}`,
-            steps: `${ctx.steps},[${i}]`,
+            scope: `${stage.scope}/${i}`,
+            steps: `${stage.steps},[${i}]`,
             scopeChain,
           },
           { skipNoCtx: true }

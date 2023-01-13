@@ -13,7 +13,7 @@ function start(el, how, options) {
   return animate[how](el, options).then(restore)
 }
 
-export default async function renderAnimation(ctx, el, how, options) {
+export default async function renderAnimation(stage, el, how, options) {
   if (options.initial === false) {
     delete options.initial
     return
@@ -22,7 +22,7 @@ export default async function renderAnimation(ctx, el, how, options) {
   await 0 // queueMicrotask
 
   if (how === "from" && !el.isConnected) {
-    ctx.postrender.push(() => start(el, how, options))
+    stage.postrender.push(() => start(el, how, options))
     return
   }
 

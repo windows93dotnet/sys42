@@ -2,9 +2,9 @@ import popup from "../popup.js"
 import uid from "../../core/uid.js"
 import { objectifyDef } from "../normalize.js"
 
-export async function contextmenu(el, e, plan, ctx) {
+export async function contextmenu(el, e, plan, stage) {
   if (el.nodeType !== Node.ELEMENT_NODE && el.target) {
-    ctx = plan
+    stage = plan
     plan = e
     e = el
     el = e.target
@@ -20,7 +20,7 @@ export async function contextmenu(el, e, plan, ctx) {
       rect: { x: e.x, y: e.y },
       ...objectifyDef(plan),
     },
-    ctx
+    stage
   )
 }
 

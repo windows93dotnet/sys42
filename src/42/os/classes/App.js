@@ -115,7 +115,7 @@ export async function mount(manifestPath, options) {
 
     const appShell = new UI({ id, tag: "ui-sandbox.box-fit", ...sandbox })
 
-    appShell.ctx.reactive.watch("/$dialog/title", (val) => {
+    appShell.stage.reactive.watch("/$dialog/title", (val) => {
       if (val) document.title = val
     })
 

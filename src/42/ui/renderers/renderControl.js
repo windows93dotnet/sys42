@@ -49,28 +49,28 @@ function setValidation(plan, { localName, type }) {
   return attr
 }
 
-function getBindScope(ctx, bind) {
-  return resolveScope(...findScope(ctx, bind), ctx)
+function getBindScope(stage, bind) {
+  return resolveScope(...findScope(stage, bind), stage)
 }
 
-export default function renderControl(el, ctx, plan) {
-  el.id ||= hash(ctx.steps)
+export default function renderControl(el, stage, plan) {
+  el.id ||= hash(stage.steps)
 
   if (plan.bind) {
     let scopeFrom
     let scopeTo
     if (plan.bind.from) {
-      scopeFrom = getBindScope(ctx, plan.bind.from)
-      register(ctx, scopeFrom, async (val) => setControlData(el, await val))
+      scopeFrom = getBindScope(stage, plan.bind.from)
+      register(stage, scopeFrom, async (val) => setControlData(el, await val))
     }
 
     if (plan.bind.to) {
       scopeTo =
         plan.bind.to === plan.bind.from
           ? scopeFrom
-          : getBindScope(ctx, plan.bind.to)
+          : getBindScope(stage, plan.bind.to)
 
-      const fn = () => ctx.reactive.set(scopeTo, getControlData(el))
+      const fn = () => stage.reactive.set(scopeTo, getControlData(el))
 
       plan.on ??= []
       plan.on.push(
@@ -113,7 +113,7 @@ export default function renderControl(el, ctx, plan) {
   if (role === "menuitemcheckbox" || role === "menuitemradio") {
     const label = render(
       { tag: "label", for: el.id, role: "none", content: labelText },
-      ctx
+      stage
     )
     label.prepend(el)
     return label
@@ -128,7 +128,10 @@ export default function renderControl(el, ctx, plan) {
   if (labelText) {
     el.removeAttribute("label")
 
-    const label = render({ tag: "label", for: el.id, content: labelText }, ctx)
+    const label = render(
+      { tag: "label", for: el.id, content: labelText },
+      stage
+    )
 
     if (plan.compact === true) label.classList.add("sr-only")
 

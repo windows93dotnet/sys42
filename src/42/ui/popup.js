@@ -106,7 +106,7 @@ function combineRect(rect1, rect2) {
 }
 
 export const popup = rpc(
-  async function popup(plan, ctx, rect, meta) {
+  async function popup(plan, stage, rect, meta) {
     plan.positionable = {
       preset: plan.inMenuitem && !plan.inMenubar ? "menuitem" : "popup",
       of: meta?.iframe
@@ -114,13 +114,13 @@ export const popup = rpc(
         : rect,
     }
 
-    const normalized = normalize(plan, ctx)
-    ctx = normalized[1]
+    const normalized = normalize(plan, stage)
+    stage = normalized[1]
 
-    ctx.cancel = new Canceller(ctx.cancel?.signal)
-    ctx.signal = ctx.cancel.signal
+    stage.cancel = new Canceller(stage.cancel?.signal)
+    stage.signal = stage.cancel.signal
 
-    await ctx.preload.done()
+    await stage.preload.done()
     const el = render(...normalized, { skipNormalize: true })
     el.style.position = "fixed"
     el.style.translate = "-200vw -200vh"
@@ -130,8 +130,8 @@ export const popup = rpc(
 
     if (el.ready) await el.ready
     else {
-      await ctx.reactive.done()
-      await ctx.postrender.call()
+      await stage.reactive.done()
+      await stage.postrender.call()
     }
 
     focus.autofocus(el)
@@ -148,8 +148,8 @@ export const popup = rpc(
       if (el.contains(document.activeElement)) document.activeElement.blur()
       queueTask(() => deferred.resolve({ opener, focusBack, ...options }))
       requestIdleCallback(async () => {
-        await ctx.reactive.pendingUpdate
-        ctx.cancel()
+        await stage.reactive.pendingUpdate
+        stage.cancel()
         dispatch(el, "uipopupclose")
         el.remove()
       })
@@ -174,7 +174,7 @@ export const popup = rpc(
   {
     module: import.meta.url,
 
-    async marshalling(el, plan = {}, ctx) {
+    async marshalling(el, plan = {}, stage) {
       if (el.getAttribute("aria-expanded") === "true") {
         el.setAttribute("aria-expanded", "false")
         return false
@@ -192,13 +192,13 @@ export const popup = rpc(
       const rect = plan.rect ?? el.getBoundingClientRect()
 
       if (rpc.inTop) {
-        ctx = { ...ctx }
-        return [plan, ctx, rect]
+        stage = { ...stage }
+        return [plan, stage, rect]
       }
 
-      if (ctx) await normalizePlugins(ctx, ["ipc"], { now: true })
+      if (stage) await normalizePlugins(stage, ["ipc"], { now: true })
 
-      return [forkDef(plan, ctx), {}, rect]
+      return [forkDef(plan, stage), {}, rect]
     },
 
     unmarshalling(options) {

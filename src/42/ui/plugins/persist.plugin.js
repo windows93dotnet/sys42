@@ -2,16 +2,16 @@ import persist from "../../core/persist.js"
 import debounce from "../../fabric/type/function/debounce.js"
 import omit from "../../fabric/type/object/omit.js"
 
-export default async function persistPlugin(ctx) {
+export default async function persistPlugin(stage) {
   const config = {
     initial: true,
     loaded: false,
     saved: false,
   }
 
-  ctx.plugins.persist = config
+  stage.plugins.persist = config
 
-  const persistPath = `$HOME/.ui/${ctx.id}.json5`
+  const persistPath = `$HOME/.ui/${stage.id}.json5`
 
   if (persist.has(persistPath)) {
     config.initial = false
@@ -21,7 +21,7 @@ export default async function persistPlugin(ctx) {
       const dialogs = Object.values(res.$ui.dialog)
 
       if (dialogs.length > 0) {
-        ctx.postrender.push(async () => {
+        stage.postrender.push(async () => {
           queueMicrotask(() => {
             for (const dialogState of dialogs) {
               const el = document.querySelector(`#${dialogState.opener}`)
@@ -33,18 +33,18 @@ export default async function persistPlugin(ctx) {
       }
     }
 
-    Object.assign(ctx.reactive.state, res)
+    Object.assign(stage.reactive.state, res)
 
     config.loaded = true
   }
 
-  ctx.reactive.on(
+  stage.reactive.on(
     "update",
     debounce(async () => {
       config.saved = false
       config.saved = await persist.set(
         persistPath,
-        omit(ctx.reactive.data, ["$computed"])
+        omit(stage.reactive.data, ["$computed"])
       )
     })
   )

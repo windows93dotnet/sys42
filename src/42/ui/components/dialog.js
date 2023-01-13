@@ -82,7 +82,7 @@ export class Dialog extends Component {
   async close(ok = false) {
     const event = dispatch(this, "uidialogbeforeclose", { cancelable: true })
     if (event.defaultPrevented) return
-    const data = omit(this.ctx.reactive.data, ["$ui", "$computed"])
+    const data = omit(this.stage.reactive.data, ["$ui", "$computed"])
     if (ok) data.ok = true
     this.emit("close", data)
     await this.destroy()
@@ -190,18 +190,18 @@ Component.define(Dialog)
 const tracker = new Map()
 
 export const dialog = rpc(
-  async function dialog(plan, ctx) {
-    const { steps } = ctx
+  async function dialog(plan, stage) {
+    const { steps } = stage
     let n = tracker.has(steps) ? tracker.get(steps) : 0
-    ctx = { ...ctx }
-    ctx.steps += ",dialog°" + n++
+    stage = { ...stage }
+    stage.steps += ",dialog°" + n++
     tracker.set(steps, n)
 
-    const el = new Dialog(plan, ctx)
+    const el = new Dialog(plan, stage)
     const { opener } = el
 
     await el.ready
-    await el.ctx.traitsReady
+    await el.stage.traitsReady
 
     document.documentElement.append(el)
 
@@ -210,19 +210,19 @@ export const dialog = rpc(
   {
     module: import.meta.url,
 
-    async marshalling(plan = {}, ctx) {
+    async marshalling(plan = {}, stage) {
       plan = objectifyDef(plan)
 
       forceOpener(plan)
 
       if (rpc.inTop) {
-        ctx = { ...ctx, detached: true }
-        return [plan, ctx]
+        stage = { ...stage, detached: true }
+        return [plan, stage]
       }
 
-      if (ctx?.plugins) await normalizePlugins(ctx, ["ipc"], { now: true })
+      if (stage?.plugins) await normalizePlugins(stage, ["ipc"], { now: true })
 
-      return [forkDef(plan, ctx), {}]
+      return [forkDef(plan, stage), {}]
     },
 
     unmarshalling({ res, opener }) {
