@@ -106,15 +106,15 @@ function combineRect(rect1, rect2) {
 }
 
 export const popup = rpc(
-  async function popup(def, ctx, rect, meta) {
-    def.positionable = {
-      preset: def.inMenuitem && !def.inMenubar ? "menuitem" : "popup",
+  async function popup(plan, ctx, rect, meta) {
+    plan.positionable = {
+      preset: plan.inMenuitem && !plan.inMenubar ? "menuitem" : "popup",
       of: meta?.iframe
         ? combineRect(rect, meta.iframe.getBoundingClientRect())
         : rect,
     }
 
-    const normalized = normalize(def, ctx)
+    const normalized = normalize(plan, ctx)
     ctx = normalized[1]
 
     ctx.cancel = new Canceller(ctx.cancel?.signal)
@@ -139,7 +139,7 @@ export const popup = rpc(
 
     const deferred = defer()
 
-    const { opener, openerFrame, focusBack } = def
+    const { opener, openerFrame, focusBack } = plan
 
     const close = (options) => {
       const event = dispatch(el, "uipopupbeforeclose", { cancelable: true })
@@ -157,7 +157,7 @@ export const popup = rpc(
 
     if (map.length === 0) listenGlobalEvents()
 
-    const closeEvents = def.closeEvents ?? "pointerdown"
+    const closeEvents = plan.closeEvents ?? "pointerdown"
     forgetLastPopupClose?.()
     forgetLastPopupClose = on({ [closeEvents]: closeOthers })
 
@@ -174,31 +174,31 @@ export const popup = rpc(
   {
     module: import.meta.url,
 
-    async marshalling(el, def = {}, ctx) {
+    async marshalling(el, plan = {}, ctx) {
       if (el.getAttribute("aria-expanded") === "true") {
         el.setAttribute("aria-expanded", "false")
         return false
       }
 
-      def = objectifyDef(def)
+      plan = objectifyDef(plan)
 
-      if (!def.opener) {
+      if (!plan.opener) {
         el.id ||= uid()
-        def.opener = el.id
+        plan.opener = el.id
       }
 
       el.setAttribute("aria-expanded", "true")
 
-      const rect = def.rect ?? el.getBoundingClientRect()
+      const rect = plan.rect ?? el.getBoundingClientRect()
 
       if (rpc.inTop) {
         ctx = { ...ctx }
-        return [def, ctx, rect]
+        return [plan, ctx, rect]
       }
 
       if (ctx) await normalizePlugins(ctx, ["ipc"], { now: true })
 
-      return [forkDef(def, ctx), {}, rect]
+      return [forkDef(plan, ctx), {}, rect]
     },
 
     unmarshalling(options) {

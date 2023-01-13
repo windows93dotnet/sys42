@@ -490,11 +490,11 @@ export function normalizePlugins(ctx, plugins, options) {
   if (options?.now) return Promise.all(undones)
 }
 
-export function normalizeTraits(def, ctx) {
+export function normalizeTraits(plan, ctx) {
   const list = []
-  const traits = def.traits ?? {}
+  const traits = plan.traits ?? {}
 
-  for (const key of TRAIT_KEYWORDS) if (key in def) traits[key] = def[key]
+  for (const key of TRAIT_KEYWORDS) if (key in plan) traits[key] = plan[key]
 
   for (const [name, raw] of Object.entries(traits)) {
     const val = typeof raw === "string" ? normalizeString(raw, ctx) : raw
@@ -551,16 +551,16 @@ export function normalizeTraits(def, ctx) {
   }
 }
 
-function extractWatchFromOn(def) {
-  for (const item of def.on) {
+function extractWatchFromOn(plan) {
+  for (const item of plan.on) {
     for (const key in item) {
       if (Object.hasOwn(item, key) && key.includes(":")) {
         const val = item[key]
         const events = []
         for (const event of key.split(SPLIT_REGEX)) {
           if (event.startsWith(":")) {
-            def.watch ??= {}
-            def.watch[event.slice(1)] = val
+            plan.watch ??= {}
+            plan.watch[event.slice(1)] = val
           } else events.push(event)
         }
 
@@ -571,160 +571,162 @@ function extractWatchFromOn(def) {
   }
 }
 
-function normalizeOn(def) {
-  if (def.on) def.on = arrify(def.on)
+function normalizeOn(plan) {
+  if (plan.on) plan.on = arrify(plan.on)
 
-  if (def.click) {
-    def.on ??= []
-    def.on.push({ click: def.click })
-    delete def.click
+  if (plan.click) {
+    plan.on ??= []
+    plan.on.push({ click: plan.click })
+    delete plan.click
   }
 
-  if (def.toggle) {
-    def.aria ??= {}
-    def.aria.pressed ??= false
-    def.aria.controls ??= def.toggle
-    def.on ??= []
-    def.on.push({
+  if (plan.toggle) {
+    plan.aria ??= {}
+    plan.aria.pressed ??= false
+    plan.aria.controls ??= plan.toggle
+    plan.on ??= []
+    plan.on.push({
       click(e, target) {
-        const el = document.querySelector("#" + def.toggle)
+        const el = document.querySelector("#" + plan.toggle)
         if (el) {
           el.classList.toggle("hide")
           target.setAttribute("aria-pressed", !el.classList.contains("hide"))
         }
       },
     })
-    delete def.toggle
+    delete plan.toggle
   }
 
-  if (def.dialog) {
-    def.on ??= []
-    def.on.push({ click: { dialog: def.dialog } })
-    delete def.dialog
+  if (plan.dialog) {
+    plan.on ??= []
+    plan.on.push({ click: { dialog: plan.dialog } })
+    delete plan.dialog
   }
 
-  if (def.popup) {
-    def.on ??= []
-    def.on.push({ "pointerdown || Enter || ArrowRight": { popup: def.popup } })
-    delete def.popup
+  if (plan.popup) {
+    plan.on ??= []
+    plan.on.push({
+      "pointerdown || Enter || ArrowRight": { popup: plan.popup },
+    })
+    delete plan.popup
   }
 
-  if (def.menu) {
-    def.on ??= []
-    def.on.push({
+  if (plan.menu) {
+    plan.on ??= []
+    plan.on.push({
       "pointerdown || Enter || ArrowRight": {
         popup: {
           tag: "ui-menu",
           closeEvents: "pointerdown || ArrowLeft",
-          ...objectifyDef(def.menu),
+          ...objectifyDef(plan.menu),
         },
       },
     })
-    delete def.menu
+    delete plan.menu
   }
 
-  if (def.contextmenu) {
-    def.on ??= []
-    def.on.push({
+  if (plan.contextmenu) {
+    plan.on ??= []
+    plan.on.push({
       disrupt: true,
       contextmenu: {
         popup: {
           tag: "ui-menu",
           closeEvents: "pointerdown",
-          ...objectifyDef(def.contextmenu),
+          ...objectifyDef(plan.contextmenu),
         },
       },
     })
-    delete def.contextmenu
+    delete plan.contextmenu
   }
 
-  if (def.dropzone) {
-    def.on ??= []
-    def.on.push({
+  if (plan.dropzone) {
+    plan.on ??= []
+    plan.on.push({
       "prevent": true,
       "dragover || dragenter"(e) {
         handleEffect(e)
       },
     })
-    delete def.dropzone
+    delete plan.dropzone
   }
 
-  if (def.on) extractWatchFromOn(def)
+  if (plan.on) extractWatchFromOn(plan)
 }
 
-/* def
+/* plan
 ====== */
 
-export function objectifyDef(def) {
-  if (def != null) {
-    if (typeof def === "object" && !Array.isArray(def)) return def
-    return { content: def }
+export function objectifyDef(plan) {
+  if (plan != null) {
+    if (typeof plan === "object" && !Array.isArray(plan)) return plan
+    return { content: plan }
   }
 
   return {}
 }
 
-export function forkDef(def, ctx) {
-  if (def?.content === undefined || def?.scope) def = { content: def }
+export function forkDef(plan, ctx) {
+  if (plan?.content === undefined || plan?.scope) plan = { content: plan }
 
-  def = { ...def }
+  plan = { ...plan }
 
   if (ctx) {
     const data = ctx.reactive?.data
-    if (!isEmptyObject(data)) def.state = structuredClone(data)
-    if (ctx.id) def.initiator = ctx.id
-    if (ctx.scope) def.scope = ctx.scope
-    if (ctx.scopeChain) def.scopeChain = structuredClone(ctx.scopeChain)
-    if (ctx.plugins) def.plugins = Object.keys(ctx.plugins)
+    if (!isEmptyObject(data)) plan.state = structuredClone(data)
+    if (ctx.id) plan.initiator = ctx.id
+    if (ctx.scope) plan.scope = ctx.scope
+    if (ctx.scopeChain) plan.scopeChain = structuredClone(ctx.scopeChain)
+    if (ctx.plugins) plan.plugins = Object.keys(ctx.plugins)
     const actions = ctx.actions.value
-    if (!isEmptyObject(actions)) def.actions = merge({}, actions)
+    if (!isEmptyObject(actions)) plan.actions = merge({}, actions)
   }
 
-  return def
+  return plan
 }
 
-export function ensureDef(def = {}, ctx) {
-  def = { ...def }
+export function ensureDef(plan = {}, ctx) {
+  plan = { ...plan }
 
-  if (def.initiator) {
-    ctx.initiator = def.initiator
-    delete def.initiator
+  if (plan.initiator) {
+    ctx.initiator = plan.initiator
+    delete plan.initiator
   }
 
-  if (def.scopeChain) {
-    ctx.scopeChain = def.scopeChain
-    delete def.scopeChain
+  if (plan.scopeChain) {
+    ctx.scopeChain = plan.scopeChain
+    delete plan.scopeChain
   }
 
-  return def
+  return plan
 }
 
-export function normalizeDefNoCtx(def = {}) {
-  if (def.animate) def.animate = normalizeFromTo(def.animate)
-  if (def.bind) def.bind = normalizeFromTo(def.bind)
-  normalizeOn(def)
-  return def
+export function normalizeDefNoCtx(plan = {}) {
+  if (plan.animate) plan.animate = normalizeFromTo(plan.animate)
+  if (plan.bind) plan.bind = normalizeFromTo(plan.bind)
+  normalizeOn(plan)
+  return plan
 }
 
-export function normalizeData(def, ctx, cb) {
-  if (typeof def === "function") {
+export function normalizeData(plan, ctx, cb) {
+  if (typeof plan === "function") {
     const { scope } = ctx
     ctx.undones.push(
       (async () => {
-        const res = await def()
+        const res = await plan()
         cb(res, scope)
       })()
     )
   } else {
-    cb(def, ctx.scope, { silent: true })
+    cb(plan, ctx.scope, { silent: true })
   }
 }
 
-export function normalizeState(def, ctx, initiator) {
-  if (def.state) {
-    normalizeData(def.state, ctx, (res, scope, options) => {
+export function normalizeState(plan, ctx, initiator) {
+  if (plan.state) {
+    normalizeData(plan.state, ctx, (res, scope, options) => {
       if (ctx.scopeChain.length > 0 && !initiator) {
-        ctx.scopeChain.push({ scope, props: Object.keys(def.state) })
+        ctx.scopeChain.push({ scope, props: Object.keys(plan.state) })
       }
 
       ctx.reactive.merge(scope, res, options)
@@ -732,8 +734,8 @@ export function normalizeState(def, ctx, initiator) {
   }
 }
 
-export function normalizeScope(def, ctx) {
-  if (def?.scope) {
+export function normalizeScope(plan, ctx) {
+  if (plan?.scope) {
     if (ctx.scopeChain.length > 0) {
       ctx.scopeChain.push({
         scope: ctx.scope,
@@ -741,66 +743,66 @@ export function normalizeScope(def, ctx) {
       })
     }
 
-    ctx.scope = resolveScope(ctx.scope, def.scope, ctx)
+    ctx.scope = resolveScope(ctx.scope, plan.scope, ctx)
   }
 }
 
-export function normalizeDef(def = {}, ctx, options) {
-  ctx.id ??= def.id ?? hash(def)
-  ctx.type = getType(def)
+export function normalizeDef(plan = {}, ctx, options) {
+  ctx.id ??= plan.id ?? hash(plan)
+  ctx.type = getType(plan)
 
   if (ctx.type === "string") {
-    const fn = normalizeString(def, ctx)
+    const fn = normalizeString(plan, ctx)
     ctx.type = typeof fn
-    if (ctx.type === "function") def = fn
+    if (ctx.type === "function") plan = fn
   } else if (ctx.type === "object") {
-    const { initiator } = def
-    def = ensureDef(def, ctx)
+    const { initiator } = plan
+    plan = ensureDef(plan, ctx)
 
-    const keyOrder = Object.keys(def)
+    const keyOrder = Object.keys(plan)
 
     if (keyOrder.indexOf("scope") < keyOrder.indexOf("state")) {
-      normalizeScope(def, ctx)
-      normalizeState(def, ctx, initiator)
+      normalizeScope(plan, ctx)
+      normalizeState(plan, ctx, initiator)
     } else {
-      normalizeState(def, ctx, initiator)
-      normalizeScope(def, ctx)
+      normalizeState(plan, ctx, initiator)
+      normalizeScope(plan, ctx)
     }
 
-    const traits = normalizeTraits(def, ctx)
-    if (traits) def.traits = traits
+    const traits = normalizeTraits(plan, ctx)
+    if (traits) plan.traits = traits
 
-    if (options?.skipNoCtx !== true) normalizeDefNoCtx(def)
+    if (options?.skipNoCtx !== true) normalizeDefNoCtx(plan)
 
-    if (def.computed) normalizeComputeds(def.computed, ctx)
-    if (def.watch) normalizeWatchs(def.watch, ctx)
+    if (plan.computed) normalizeComputeds(plan.computed, ctx)
+    if (plan.watch) normalizeWatchs(plan.watch, ctx)
 
     if (options?.skipAttrs !== true) {
-      const attrs = extractAttrs(def, ctx)
-      if (!isEmptyObject(attrs)) def.attrs = attrs
+      const attrs = extractAttrs(plan, ctx)
+      if (!isEmptyObject(attrs)) plan.attrs = attrs
     }
 
-    if (def.actions) {
-      normalizeData(def.actions, ctx, (res, scope) => {
+    if (plan.actions) {
+      normalizeData(plan.actions, ctx, (res, scope) => {
         ctx.actions.merge(scope, res)
       })
     }
 
     if (!inTop && ctx.initiator) {
-      def.plugins ??= []
-      if (!def.plugins.includes("ipc")) def.plugins.push("ipc")
+      plan.plugins ??= []
+      if (!plan.plugins.includes("ipc")) plan.plugins.push("ipc")
     }
 
-    if (def.picto) def.picto = normalizeStartEnd(def.picto)
+    if (plan.picto) plan.picto = normalizeStartEnd(plan.picto)
 
-    if (def.plugins) {
-      normalizeData(def.plugins, ctx, (res) => {
+    if (plan.plugins) {
+      normalizeData(plan.plugins, ctx, (res) => {
         normalizePlugins(ctx, res)
       })
     }
   }
 
-  return def
+  return plan
 }
 
 /* ctx
@@ -832,8 +834,8 @@ export function normalizeCtx(ctx = {}) {
   return ctx
 }
 
-export default function normalize(def, ctx = {}) {
+export default function normalize(plan, ctx = {}) {
   ctx = normalizeCtx(ctx)
-  def = normalizeDef(def, ctx)
-  return [def, ctx]
+  plan = normalizeDef(plan, ctx)
+  return [plan, ctx]
 }

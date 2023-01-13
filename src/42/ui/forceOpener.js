@@ -1,8 +1,8 @@
 import uid from "../core/uid.js"
 
-export default function forceOpener(def) {
-  if (!def.opener) {
+export default function forceOpener(plan) {
+  if (!plan.opener) {
     document.activeElement.id ||= uid()
-    def.opener ??= document.activeElement.id
+    plan.opener ??= document.activeElement.id
   }
 }

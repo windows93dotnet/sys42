@@ -26,13 +26,13 @@ function normalizeOptions(list) {
   })
 }
 
-export function renderOptions(el, ctx, def) {
-  if (Array.isArray(def.content)) {
-    def.content = normalizeOptions(def.content)
+export function renderOptions(el, ctx, plan) {
+  if (Array.isArray(plan.content)) {
+    plan.content = normalizeOptions(plan.content)
   }
 
-  el.append(render(def.content, ctx))
-  delete def.content
+  el.append(render(plan.content, ctx))
+  delete plan.content
 }
 
 export default renderOptions

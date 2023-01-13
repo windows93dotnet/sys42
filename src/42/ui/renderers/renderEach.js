@@ -19,9 +19,9 @@ function cancelExtraItems(i, cancels) {
   cancels.length = newLength
 }
 
-export default function renderEach(def, ctx) {
-  const eachDef = normalizeDefNoCtx(def.each)
-  def = omit(def, ["each"])
+export default function renderEach(plan, ctx) {
+  const eachDef = normalizeDefNoCtx(plan.each)
+  plan = omit(plan, ["each"])
 
   let renderFunction
 
@@ -36,7 +36,7 @@ export default function renderEach(def, ctx) {
     renderFunction = (item) => ({ ...eachDef, ...objectifyDef(item) })
   }
 
-  const el = render(def, ctx)
+  const el = render(plan, ctx)
 
   let lastItem
   const cancels = []

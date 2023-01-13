@@ -1,8 +1,8 @@
 import getNodesInRange from "../../fabric/range/getNodesInRange.js"
 import renderAnimation from "./renderAnimation.js"
 
-export default function removeRange(ctx, range, def) {
-  const anim = def?.animate?.to
+export default function removeRange(ctx, range, plan) {
+  const anim = plan?.animate?.to
   if (anim) {
     for (const el of getNodesInRange(range)) {
       if (el.nodeType === Node.ELEMENT_NODE) {

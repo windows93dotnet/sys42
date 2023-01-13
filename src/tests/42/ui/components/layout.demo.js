@@ -66,7 +66,7 @@ const menubar = [
   { label: "View", content: [{ label: "Empty", disabled: true }] },
 ]
 
-ui({
+globalThis.app = ui({
   tag: "body.box-fit.box-center.desktop",
   content: {
     tag: ".flex-v.resize.pa-xs.outset.panel",

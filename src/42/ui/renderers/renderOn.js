@@ -43,50 +43,52 @@ function forkCtx(ctx, key) {
 // @read https://labs.levelaccess.com/index.php/ARIA_Haspopup_property
 const POPUP_TYPES = new Set(["menu", "listbox", "tree", "grid", "dialog"])
 
-function setOpener(el, ctx, key, def, type) {
+function setOpener(el, ctx, key, plan, type) {
   ctx = forkCtx(ctx, key)
 
   el.id ||= hash(String(ctx.steps))
   if (inIframe) window.name ||= uid()
-  def.openerFrame = window.name
+  plan.openerFrame = window.name
 
-  type ??= def.tag?.startsWith("ui-") ? def.tag.slice(3) : def.role ?? def.tag
+  type ??= plan.tag?.startsWith("ui-")
+    ? plan.tag.slice(3)
+    : plan.role ?? plan.tag
   el.setAttribute("aria-haspopup", POPUP_TYPES.has(type) ? type : "true")
   if (type !== "dialog") el.setAttribute("aria-expanded", "false")
   return ctx
 }
 
-function setDialogOpener(el, ctx, key, def) {
-  ctx = setOpener(el, ctx, key, def, "dialog")
+function setDialogOpener(el, ctx, key, plan) {
+  ctx = setOpener(el, ctx, key, plan, "dialog")
   return async () => {
-    def.opener = el.id
+    plan.opener = el.id
     await import("../components/dialog.js") //
-      .then(({ dialog }) => dialog(def, ctx))
+      .then(({ dialog }) => dialog(plan, ctx))
   }
 }
 
-function setPopupOpener(el, ctx, key, def) {
-  ctx = setOpener(el, ctx, key, def)
-  const { focusBack } = def
+function setPopupOpener(el, ctx, key, plan) {
+  ctx = setOpener(el, ctx, key, plan)
+  const { focusBack } = plan
   return async (e) => {
-    def.opener = el.id
+    plan.opener = el.id
     if (e.type === "contextmenu" && e.x > 0 && e.y > 0) {
-      def.rect = { x: e.x, y: e.y }
+      plan.rect = { x: e.x, y: e.y }
     }
 
     if (focusBack === true) {
       const { activeElement } = document
       activeElement.id ||= uid()
-      def.focusBack = activeElement.id
+      plan.focusBack = activeElement.id
     }
 
     await import("../popup.js") //
-      .then(({ popup }) => popup(el, def, ctx))
+      .then(({ popup }) => popup(el, plan, ctx))
   }
 }
 
-export default function renderOn(el, def, ctx) {
-  const { list } = normalizeListen([{ signal: ctx.signal }, el, ...def.on], {
+export default function renderOn(el, plan, ctx) {
+  const { list } = normalizeListen([{ signal: ctx.signal }, el, ...plan.on], {
     returnForget: false,
     getEvents(events) {
       for (const [key, val] of Object.entries(events)) {

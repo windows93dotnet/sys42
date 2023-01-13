@@ -15,11 +15,11 @@ import hash from "../../fabric/type/any/hash.js"
 
 const TEXTBOX_TYPES = new Set(["text", "email", "search"])
 
-function setValidation(def, { localName, type }) {
+function setValidation(plan, { localName, type }) {
   const attr = {}
-  if (def.required) attr.required = true
-  if (def.schema) {
-    const { schema } = def
+  if (plan.required) attr.required = true
+  if (plan.schema) {
+    const { schema } = plan
     // string
     if ("pattern" in schema) attr.pattern = schema.pattern
     if ("minLength" in schema) attr.minLength = schema.minLength
@@ -37,8 +37,8 @@ function setValidation(def, { localName, type }) {
     localName === "textarea" ||
     (localName === "input" && TEXTBOX_TYPES.has(type))
   ) {
-    attr.autocomplete = def.autocomplete ?? "off" // opt-in autocomplete
-    if (def.prose !== true) {
+    attr.autocomplete = plan.autocomplete ?? "off" // opt-in autocomplete
+    if (plan.prose !== true) {
       attr.autocapitalize = "none"
       attr.autocorrect = "off"
       attr.spellcheck = "false"
@@ -53,37 +53,37 @@ function getBindScope(ctx, bind) {
   return resolveScope(...findScope(ctx, bind), ctx)
 }
 
-export default function renderControl(el, ctx, def) {
+export default function renderControl(el, ctx, plan) {
   el.id ||= hash(ctx.steps)
 
-  if (def.bind) {
+  if (plan.bind) {
     let scopeFrom
     let scopeTo
-    if (def.bind.from) {
-      scopeFrom = getBindScope(ctx, def.bind.from)
+    if (plan.bind.from) {
+      scopeFrom = getBindScope(ctx, plan.bind.from)
       register(ctx, scopeFrom, async (val) => setControlData(el, await val))
     }
 
-    if (def.bind.to) {
+    if (plan.bind.to) {
       scopeTo =
-        def.bind.to === def.bind.from
+        plan.bind.to === plan.bind.from
           ? scopeFrom
-          : getBindScope(ctx, def.bind.to)
+          : getBindScope(ctx, plan.bind.to)
 
       const fn = () => ctx.reactive.set(scopeTo, getControlData(el))
 
-      def.on ??= []
-      def.on.push(
-        def.lazy
+      plan.on ??= []
+      plan.on.push(
+        plan.lazy
           ? {
-              [def.enterKeyHint === "enter"
+              [plan.enterKeyHint === "enter"
                 ? "change || Control+s"
                 : "change || Control+s || Enter"]: fn,
             }
-          : def.debounce
+          : plan.debounce
           ? {
-              input: debounce(fn, def.debounce),
-              [def.enterKeyHint === "enter"
+              input: debounce(fn, plan.debounce),
+              [plan.enterKeyHint === "enter"
                 ? "change || Control+s"
                 : "change || Control+s || Enter"]: fn,
             }
@@ -92,18 +92,18 @@ export default function renderControl(el, ctx, def) {
     }
 
     if (el.type === "radio") {
-      el.value = def.value
-      el.checked = def.checked
+      el.value = plan.value
+      el.checked = plan.checked
     } else {
       const name = scopeTo ?? scopeFrom
       if (name) el.name ||= name
     }
   }
 
-  setAttributes(el, setValidation(def, el))
+  setAttributes(el, setValidation(plan, el))
 
   const labelText =
-    def.label ??
+    plan.label ??
     (el.type === "radio"
       ? toTitleCase(el.value)
       : toTitleCase(getBasename(el.name)))
@@ -130,9 +130,9 @@ export default function renderControl(el, ctx, def) {
 
     const label = render({ tag: "label", for: el.id, content: labelText }, ctx)
 
-    if (def.compact === true) label.classList.add("sr-only")
+    if (plan.compact === true) label.classList.add("sr-only")
 
-    if (def.required) {
+    if (plan.required) {
       label.append(
         create("abbr", { "aria-hidden": "true", "title": "Required" }, "*")
       )

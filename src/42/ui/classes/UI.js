@@ -9,19 +9,19 @@ export default class UI {
   constructor(...args) {
     if (args[0] instanceof Element || typeof args[0] === "string") {
       this.el = ensureElement(args[0])
-      this.def = args[1]
+      this.plan = args[1]
       this.ctx = args[2] ?? {}
     } else {
       this.el = document.body
-      this.def = args[0]
+      this.plan = args[0]
       this.ctx = args[1] ?? {}
     }
 
     this.ctx.el = this.el
     this.ctx.steps = "root"
 
-    const [def, ctx] = normalize(this.def, this.ctx)
-    this.def = def
+    const [plan, ctx] = normalize(this.plan, this.ctx)
+    this.plan = plan
     this.ctx = ctx
 
     this.ctx.postrender.push(() => {
@@ -33,7 +33,7 @@ export default class UI {
 
       if (this.ctx.reactive.firstUpdateDone !== true) {
         if (this.ctx.preload.length > 0) await this.ctx.preload.done()
-        this.content = render(this.def, this.ctx, { skipNormalize: true })
+        this.content = render(this.plan, this.ctx, { skipNormalize: true })
         this.el.append(this.content)
       }
 
@@ -62,7 +62,7 @@ export default class UI {
     this.ctx?.postrender.clear()
     this.content?.remove?.()
     delete this.ctx
-    delete this.def
+    delete this.plan
     delete this.el
   }
 }
