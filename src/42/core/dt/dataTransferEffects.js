@@ -1,5 +1,3 @@
-import "./preventUnwantedDrop.js"
-
 const effectUnits = ["copy", "link", "move"]
 
 const EFFECTS = {

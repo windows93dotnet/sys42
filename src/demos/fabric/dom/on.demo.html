@@ -16,69 +16,55 @@
   await ui([
     {
       tag: "button",
-      content: "yo {{cnt}}",
-      // on: {
-      //   // "+ || click": "{{cnt++}}",
-      //   "+": "{{cnt++}}",
-      //   "-": "{{cnt--}}",
-      // },
+      content: "{{cnt}}++",
+      on: {
+        "repeatable": true,
+        "+ || click": "{{cnt++}}",
+        "-": "{{cnt--}}",
+      },
       state: {
         cnt: 42,
       },
     },
   ])
 
-  // listen({
-  //   selector: "ui-sandbox",
-  //   load(e, target) {
-  //     console.log(e, target)
-  //   },
-  // })
-
   on({
-    // "Control+click"() {
-    //   console.log("Control+click")
-    // },
-    // "Control+Enter"() {
-    //   console.log("Control+Enter")
-    // },
     // "Control+p"() {
-    //   console.log("Control+p")
+    //   console.log("print")
+    //   return false
     // },
-    // // "Control+c Control+l"() {
-    // //   console.log("Control+click")
-    // // },
+    // "Control+c Control+l"() {
+    //   console.log("Control+c Control+l")
+    //   return false
+    // },
+    // "Ctrl+click"() {
+    //   console.log("Ctrl+click")
+    //   return false
+    // },
     // "click"() {
     //   console.log("click")
     // },
-    // "Enter"() {
-    //   console.log("Enter")
-    // },
-    // "Ctrl"() {
-    //   console.log("Ctrl")
-    // },
-    // "Ctrl+Enter"() {
-    //   console.log("Ctrl+Enter")
-    // },
-    "Ctrl+click"() {
-      // document.body.append("Ctrl+click")
-      console.log("Ctrl+click")
-      return false
+    "a"() {
+      console.log("-> a")
     },
-    "click"() {
-      // document.body.append("click")
-      console.log("click")
+    "b"() {
+      console.log("-> b")
     },
-    // "+"() {
-    //   console.log("+++")
+    "a b"() {
+      console.log("-> a b")
+    },
+    // "c d"() {
+    //   console.log("-> c d")
     // },
-    // repeatable: true,
-    // p() {
+    // "c d e"() {
+    //   console.log("-> c d e")
+    // },
+    // "p"() {
     //   console.log("p")
     // },
   })
 
-  // globalThis.addEventListener("keydown", ({ key, code, isComposing }) => {
-  //   console.log(key, code, isComposing)
+  // globalThis.addEventListener("keydown", ({ key, code }) => {
+  //   console.log(key, code)
   // })
 </script>

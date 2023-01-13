@@ -1,4 +1,3 @@
-import "./preventUnwantedDrop.js"
 import readDirectoryEntry from "../../fabric/type/file/readDirectoryEntry.js"
 import { handleEffect } from "./dataTransferEffects.js"
 

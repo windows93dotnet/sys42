@@ -1,17 +1,13 @@
 /* eslint-disable complexity */
 import create from "./create.js"
 import register from "./register.js"
-import normalize, { addEntry } from "./normalize.js"
-import ALLOWED_HTML_TAGS from "../fabric/constants/ALLOWED_HTML_TAGS.js"
-import ALLOWED_SVG_TAGS from "../fabric/constants/ALLOWED_SVG_TAGS.js"
-import preload from "../core/load/preload.js"
+import normalize from "./normalize.js"
 import renderComponent from "./renderers/renderComponent.js"
-import renderControl from "./renderers/renderControl.js"
 import renderIf from "./renderers/renderIf.js"
 import renderEach from "./renderers/renderEach.js"
 import renderOn from "./renderers/renderOn.js"
 import renderAnimation from "./renderers/renderAnimation.js"
-import renderOptions from "./renderers/renderOptions.js"
+import renderTag from "./renderers/renderTag.js"
 
 const { ELEMENT_NODE } = Node
 
@@ -22,56 +18,6 @@ const SPECIAL_STRINGS = {
   "<br>": makeBr,
   "---": makeHr,
   "<hr>": makeHr,
-}
-
-const PRELOAD = new Set(["link", "script"])
-const NOT_CONTROLS = new Set(["label", "legend", "output", "option"])
-const HAS_OPTIONS = new Set(["select", "selectmenu", "optgroup", "datalist"])
-
-function renderTag(tag, plan, stage) {
-  let el = create(stage, tag, plan.attrs)
-
-  const { localName } = el
-  if (localName) stage.el = el
-
-  if (
-    localName &&
-    stage.trusted !== true &&
-    !ALLOWED_HTML_TAGS.includes(localName) &&
-    !ALLOWED_SVG_TAGS.includes(localName)
-  ) {
-    throw new DOMException(`Disallowed tag: ${localName}`, "SecurityError")
-  }
-
-  if (plan.entry) {
-    addEntry(stage.component, plan.entry, el)
-    delete plan.entry
-  }
-
-  if (HAS_OPTIONS.has(localName)) renderOptions(el, stage, plan)
-
-  if (localName === "button") {
-    plan.content ??= plan.label
-  } else if (localName === "fieldset") {
-    if (plan.label) {
-      el.append(render({ tag: "legend", content: plan.label }, stage))
-    }
-  } else if (el.form !== undefined && !NOT_CONTROLS.has(localName)) {
-    el = renderControl(el, stage, plan)
-  }
-
-  if (plan.picto) {
-    el.classList.add("has-picto")
-    if (!plan.content) el.classList.add("has-picto--only-child")
-    if (plan.picto.start) el.classList.add("has-picto--start")
-    if (plan.picto.end) el.classList.add("has-picto--end")
-  }
-
-  if (PRELOAD.has(localName)) {
-    stage.preload.push(preload(el.src ?? el.href))
-  }
-
-  return el
 }
 
 export default function render(plan, stage, options) {

@@ -1,5 +1,4 @@
 import "./form.js"
-import "../core/dt/preventUnwantedDrop.js"
 import "../os/managers/themeManager.js"
 
 document.documentElement.lang ||= "en"
