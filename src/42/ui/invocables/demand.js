@@ -2,7 +2,7 @@ import dialog from "../components/dialog.js"
 import preload from "../../core/load/preload.js"
 import configure from "../../core/configure.js"
 import forceOpener from "../forceOpener.js"
-import { objectifyDef } from "../normalize.js"
+import { objectifyPlan } from "../normalize.js"
 
 const DEFAULT = {
   class: "ui-dialog-demand",
@@ -56,14 +56,14 @@ export async function demand(options) {
             : {
                 tag: "button.ui-dialog__agree.btn-default",
                 click: "{{ok()}}",
-                ...objectifyDef(config.agree),
+                ...objectifyPlan(config.agree),
               },
           config.decline === false
             ? undefined
             : {
                 tag: "button.ui-dialog__decline",
                 click: "{{close()}}",
-                ...objectifyDef(config.decline),
+                ...objectifyPlan(config.decline),
               },
         ],
         state: {

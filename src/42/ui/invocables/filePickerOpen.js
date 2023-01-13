@@ -1,6 +1,6 @@
 import explorer from "../components/explorer.js"
 import omit from "../../fabric/type/object/omit.js"
-import { objectifyDef } from "../normalize.js"
+import { objectifyPlan } from "../normalize.js"
 
 const DEFAULT = {
   agree: "Open",
@@ -30,12 +30,12 @@ export async function filePickerOpen(path, options) {
           tag: "button.ui-dialog__agree.btn-default",
           disabled: "{{selection.length === 0}}",
           click: "{{ok()}}",
-          ...objectifyDef(config.agree),
+          ...objectifyPlan(config.agree),
         },
         {
           tag: "button.ui-dialog__decline",
           click: "{{close()}}",
-          ...objectifyDef(config.decline),
+          ...objectifyPlan(config.decline),
         },
       ],
     },

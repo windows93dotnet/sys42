@@ -4,7 +4,7 @@ import rpc from "../../core/ipc/rpc.js"
 import omit from "../../fabric/type/object/omit.js"
 import dispatch from "../../fabric/event/dispatch.js"
 import maxZIndex from "../../fabric/dom/maxZIndex.js"
-import { objectifyDef, forkDef, normalizePlugins } from "../normalize.js"
+import { objectifyPlan, forkPlan, normalizePlugins } from "../normalize.js"
 import forceOpener from "../forceOpener.js"
 import { autofocus } from "../../fabric/dom/focus.js"
 import nextCycle from "../../fabric/type/promise/nextCycle.js"
@@ -211,7 +211,7 @@ export const dialog = rpc(
     module: import.meta.url,
 
     async marshalling(plan = {}, stage) {
-      plan = objectifyDef(plan)
+      plan = objectifyPlan(plan)
 
       forceOpener(plan)
 
@@ -222,7 +222,7 @@ export const dialog = rpc(
 
       if (stage?.plugins) await normalizePlugins(stage, ["ipc"], { now: true })
 
-      return [forkDef(plan, stage), {}]
+      return [forkPlan(plan, stage), {}]
     },
 
     unmarshalling({ res, opener }) {

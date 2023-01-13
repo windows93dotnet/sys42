@@ -5,8 +5,8 @@ import omit from "../../../42/fabric/type/object/omit.js"
 import dispatch from "../../../42/fabric/event/dispatch.js"
 import maxZIndex from "../../../42/fabric/dom/maxZIndex.js"
 import {
-  objectifyDef,
-  forkDef,
+  objectifyPlan,
+  forkPlan,
   normalizePlugins,
 } from "../../../42/ui/normalize.js"
 import forceOpener from "../../../42/ui/forceOpener.js"
@@ -176,7 +176,7 @@ export const dialog = rpc(
     module: import.meta.url,
 
     async marshalling(plan = {}, stage) {
-      plan = objectifyDef(plan)
+      plan = objectifyPlan(plan)
 
       forceOpener(plan)
 
@@ -187,7 +187,7 @@ export const dialog = rpc(
 
       if (stage?.plugins) await normalizePlugins(stage, ["ipc"], { now: true })
 
-      return [forkDef(plan, stage), { trusted: true } /* ATTACK */]
+      return [forkPlan(plan, stage), { trusted: true } /* ATTACK */]
     },
 
     unmarshalling({ res, opener }) {

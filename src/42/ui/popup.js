@@ -11,8 +11,8 @@ import queueTask from "../fabric/type/function/queueTask.js"
 import uid from "../core/uid.js"
 import rpc from "../core/ipc/rpc.js"
 import normalize, {
-  objectifyDef,
-  forkDef,
+  objectifyPlan,
+  forkPlan,
   normalizePlugins,
 } from "./normalize.js"
 
@@ -180,7 +180,7 @@ export const popup = rpc(
         return false
       }
 
-      plan = objectifyDef(plan)
+      plan = objectifyPlan(plan)
 
       if (!plan.opener) {
         el.id ||= uid()
@@ -198,7 +198,7 @@ export const popup = rpc(
 
       if (stage) await normalizePlugins(stage, ["ipc"], { now: true })
 
-      return [forkDef(plan, stage), {}, rect]
+      return [forkPlan(plan, stage), {}, rect]
     },
 
     unmarshalling(options) {

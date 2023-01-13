@@ -6,7 +6,7 @@ import NodesRange from "../../fabric/range/NodesRange.js"
 import removeRange from "./removeRange.js"
 import register from "../register.js"
 import Canceller from "../../fabric/classes/Canceller.js"
-import { normalizeDefNoCtx, objectifyDef } from "../normalize.js"
+import { normalizePlanWithoutStage, objectifyPlan } from "../normalize.js"
 import { arrayDiff } from "../../fabric/json/diff.js"
 import renderAnimation from "./renderAnimation.js"
 
@@ -20,20 +20,20 @@ function cancelExtraItems(i, cancels) {
 }
 
 export default function renderEach(plan, stage) {
-  const eachDef = normalizeDefNoCtx(plan.each)
+  const eachPlan = normalizePlanWithoutStage(plan.each)
   plan = omit(plan, ["each"])
 
   let renderFunction
 
-  if (typeof eachDef === "function") {
-    renderFunction = eachDef
-  } else if (typeof eachDef?.render === "function") {
-    const eachDefRender = eachDef.render
-    delete eachDef.render
-    renderFunction = (...args) => ({ ...eachDef, ...eachDefRender(...args) })
-  } else if (eachDef?.render === true) {
-    delete eachDef.render
-    renderFunction = (item) => ({ ...eachDef, ...objectifyDef(item) })
+  if (typeof eachPlan === "function") {
+    renderFunction = eachPlan
+  } else if (typeof eachPlan?.render === "function") {
+    const eachPlanRender = eachPlan.render
+    delete eachPlan.render
+    renderFunction = (...args) => ({ ...eachPlan, ...eachPlanRender(...args) })
+  } else if (eachPlan?.render === true) {
+    delete eachPlan.render
+    renderFunction = (item) => ({ ...eachPlan, ...objectifyPlan(item) })
   }
 
   const el = render(plan, stage)
@@ -57,8 +57,8 @@ export default function renderEach(plan, stage) {
   const addedIndices = []
   const addedElements = []
 
-  const animTo = eachDef?.animate?.to
-  const animFrom = eachDef?.animate?.from
+  const animTo = eachPlan?.animate?.to
+  const animFrom = eachPlan?.animate?.from
 
   register(stage, stage.scope, (array) => {
     const container = lastItem?.parentElement
@@ -69,7 +69,7 @@ export default function renderEach(plan, stage) {
         cancels.length = 0
 
         const range = new NodesRange(placeholder, lastItem, container)
-        removeRange(stage, range, eachDef)
+        removeRange(stage, range, eachPlan)
         lastItem = undefined
       }
 
@@ -183,7 +183,7 @@ export default function renderEach(plan, stage) {
       const cancel = new Canceller(stage.signal)
       cancels.push(cancel)
 
-      let itemDef = eachDef
+      let itemDef = eachPlan
 
       if (renderFunction) {
         itemDef = renderFunction(array[i], i, array)
@@ -192,7 +192,7 @@ export default function renderEach(plan, stage) {
       if (addedElements.length > 0) {
         const recycled = addedElements.pop()
         renderAnimation(stage, recycled, "from", animFrom)
-        itemDef = { ...eachDef, animate: { to: animTo } }
+        itemDef = { ...eachPlan, animate: { to: animTo } }
       }
 
       fragment.append(
@@ -206,7 +206,7 @@ export default function renderEach(plan, stage) {
             steps: `${stage.steps},[${i}]`,
             scopeChain,
           },
-          { skipNoCtx: true }
+          { skipNoStage: true }
         ),
         (lastItem = document.createComment(ITEM))
       )

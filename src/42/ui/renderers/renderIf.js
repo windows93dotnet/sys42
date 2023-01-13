@@ -5,7 +5,7 @@ import removeRange from "./removeRange.js"
 import register from "../register.js"
 import Canceller from "../../fabric/classes/Canceller.js"
 import getType from "../../fabric/type/any/getType.js"
-import { normalizeDef, normalizeTokens } from "../normalize.js"
+import { normalizePlan, normalizeTokens } from "../normalize.js"
 import expr from "../../core/expr.js"
 
 const PLACEHOLDER = "[if]"
@@ -30,26 +30,26 @@ export default function renderIf(plan, stage) {
     actions,
   })
 
-  const defIf = normalizeDef(omit(plan, ["if"]), stage)
-  const typeIf = getType(defIf)
-  let defElse
-  let typeElse
+  const ifPlan = normalizePlan(omit(plan, ["if"]), stage)
+  const ifType = getType(ifPlan)
+  let elsePlan
+  let elseType
   if (plan.else) {
-    if (typeIf === "object") {
-      if ("to" in defIf) plan.else.to ??= defIf.to
-      if ("from" in defIf) plan.else.from ??= defIf.from
-      if ("animate" in defIf) plan.else.animate ??= defIf.animate
+    if (ifType === "object") {
+      if ("to" in ifPlan) plan.else.to ??= ifPlan.to
+      if ("from" in ifPlan) plan.else.from ??= ifPlan.from
+      if ("animate" in ifPlan) plan.else.animate ??= ifPlan.animate
     }
 
-    defElse = plan.else ? normalizeDef(plan.else, stage) : undefined
-    typeElse = getType(defElse)
+    elsePlan = plan.else ? normalizePlan(plan.else, stage) : undefined
+    elseType = getType(elsePlan)
   }
 
   register(stage, scopes, async () => {
     const res = await check(stage.reactive.state)
     if (res === lastRes) return
 
-    const [plan, type] = res ? [defIf, typeIf] : [defElse, typeElse]
+    const [plan, type] = res ? [ifPlan, ifType] : [elsePlan, elseType]
 
     if (lastChild) {
       cancel?.("renderIf removed")
@@ -59,10 +59,10 @@ export default function renderIf(plan, stage) {
         stage,
         range,
         lastRes === false &&
-          typeElse === "object" &&
-          ("to" in defElse || "animate" in defElse)
-          ? defElse
-          : defIf
+          elseType === "object" &&
+          ("to" in elsePlan || "animate" in elsePlan)
+          ? elsePlan
+          : ifPlan
       )
       lastChild = undefined
     }
