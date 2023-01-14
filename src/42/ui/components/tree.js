@@ -40,7 +40,7 @@ export class Tree extends Component {
       const treeitem = {
         tag: "li.ui-tree__item",
         role: "treeitem",
-        // aria: { selected: "{{includes(../../../selection, .)}}" },
+        // aria: { selected: "{{includes(../../selection, .)}}" },
         aria: { selected: "{{log(this)}}" },
         tabIndex: first ? 0 : -1,
         content: [item.label],

@@ -60,7 +60,7 @@ export class Accordion extends Component {
             content: [
               {
                 tag: "ui-picto",
-                value: `{{includes(../../../expanded, @index) ? '${pictoOpen}' : '${pictoClose}'}}`,
+                value: `{{includes(../../expanded, @index) ? '${pictoOpen}' : '${pictoClose}'}}`,
               },
               {
                 if: "{{prelabel}}",
@@ -71,7 +71,7 @@ export class Accordion extends Component {
                 tag: "button.ui-accordion__button",
                 aria: {
                   controls: `${id}-panel-{{@index}}`,
-                  expanded: "{{includes(../../../expanded, @index)}}",
+                  expanded: "{{includes(../../expanded, @index)}}",
                 },
                 content: {
                   tag: "span.ui-accordion__button__text",
@@ -88,7 +88,7 @@ export class Accordion extends Component {
           },
           {
             tag: "section.ui-accordion__panel",
-            if: "{{includes(../../../expanded, @index)}}",
+            if: "{{includes(../../expanded, @index)}}",
             animate: {
               flexBasis: "0%",
               initial: false,
