@@ -10,7 +10,7 @@ await themeManager.ready // TODO: remove this
 // const GRIDCELL_PARENTS = new Set(["grid", "row"])
 
 class Icon extends Component {
-  static definition = {
+  static plan = {
     tag: "ui-icon",
 
     aria: {

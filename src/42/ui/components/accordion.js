@@ -2,7 +2,7 @@ import Component from "../classes/Component.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
 
 export class Accordion extends Component {
-  static definition = {
+  static plan = {
     tag: "ui-accordion",
     role: "none",
     id: true,

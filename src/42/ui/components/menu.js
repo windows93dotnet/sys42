@@ -24,7 +24,7 @@ function seq(el, dir) {
 export class Menu extends Component {
   [Symbol.for("42_POPUP_CLOSE")] = true
 
-  static definition = {
+  static plan = {
     tag: "ui-menu",
     role: "menu",
 

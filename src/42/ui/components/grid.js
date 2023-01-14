@@ -4,7 +4,7 @@ import debounce from "../../fabric/type/function/debounce.js"
 const { indexOf } = Array.prototype
 
 export class Grid extends Component {
-  static definition = {
+  static plan = {
     tag: "ui-grid",
     role: "grid",
 

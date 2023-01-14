@@ -12,7 +12,7 @@ import joinPath from "../../core/path/core/joinPath.js"
 import normalizePath from "../../core/path/core/normalizePath.js"
 
 export class Explorer extends Component {
-  static definition = {
+  static plan = {
     tag: "ui-explorer",
 
     props: {

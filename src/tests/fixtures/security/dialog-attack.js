@@ -19,7 +19,7 @@ import postrenderAutofocus from "../../../42/ui/postrenderAutofocus.js"
 const _axis = Symbol("axis")
 
 export class Dialog extends Component {
-  static definition = {
+  static plan = {
     tag: "ui-dialog",
 
     id: true,

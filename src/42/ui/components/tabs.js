@@ -3,7 +3,7 @@ import isFocusable from "../../fabric/dom/isFocusable.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
 
 export class Tabs extends Component {
-  static definition = {
+  static plan = {
     tag: "ui-tabs",
     role: "none",
     id: true,

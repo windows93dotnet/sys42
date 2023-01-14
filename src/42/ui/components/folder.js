@@ -11,7 +11,7 @@ const _forgetWatch = Symbol("Folder.forgetWatch")
 const _updatePath = Symbol("Folder.updatePath")
 
 export class Folder extends Component {
-  static definition = {
+  static plan = {
     tag: "ui-folder",
     role: "none",
 
