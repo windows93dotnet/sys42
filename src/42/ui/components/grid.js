@@ -91,9 +91,9 @@ export class Grid extends Component {
   }
 
   render({ itemTemplate }) {
-    return {
-      scope: "content",
-      content: {
+    return [
+      {
+        scope: "content",
         role: "row",
         each: {
           role: "gridcell",
@@ -102,7 +102,7 @@ export class Grid extends Component {
           ...(itemTemplate ?? { render: true }),
         },
       },
-    }
+    ]
   }
 }
 

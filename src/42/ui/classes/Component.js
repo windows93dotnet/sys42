@@ -16,7 +16,7 @@ import hash from "../../fabric/type/any/hash.js"
 import uid from "../../core/uid.js"
 import {
   addEntry,
-  ensureDef,
+  ensurePlan,
   objectifyPlan,
   normalizeStage,
   normalizePlan,
@@ -228,7 +228,7 @@ export default class Component extends HTMLElement {
     this.detached = this.stage.detached
     delete this.stage.detached
 
-    plan = ensureDef(plan, this.stage)
+    plan = ensurePlan(plan, this.stage)
     normalizeScope(plan, this.stage)
     plan = objectifyPlan(plan)
 
@@ -414,9 +414,10 @@ export default class Component extends HTMLElement {
 
     if (options?.remove !== false) {
       if (this.isConnected && this.#animateTo) {
-        await import("../renderers/renderAnimation.js").then((m) =>
-          m.default(this.stage, this, "to", this.#animateTo)
+        const { renderAnimation } = await import(
+          "../renderers/renderAnimation.js"
         )
+        await renderAnimation(this.stage, this, "to", this.#animateTo)
       }
 
       this.replaceChildren()

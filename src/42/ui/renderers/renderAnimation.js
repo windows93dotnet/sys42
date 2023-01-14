@@ -13,7 +13,7 @@ function start(el, how, options) {
   return animate[how](el, options).then(restore)
 }
 
-export default async function renderAnimation(stage, el, how, options) {
+export async function renderAnimation(stage, el, how, options) {
   if (options.initial === false) {
     delete options.initial
     return
@@ -28,3 +28,5 @@ export default async function renderAnimation(stage, el, how, options) {
 
   return start(el, how, options)
 }
+
+export default renderAnimation

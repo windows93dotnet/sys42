@@ -34,7 +34,7 @@ const ATTRIBUTES = new Set([
 ])
 const ATTRIBUTES_WITHDASH = new Set(["acceptCharset", "httpEquiv"])
 
-const DEF_KEYWORDS = new Set([
+const PLAN_KEYWORDS = new Set([
   "actions",
   "animate",
   "bind",
@@ -318,7 +318,7 @@ export function normalizeAttrs(item, stage, ignore) {
   for (const [key, val] of Object.entries(item)) {
     // TODO: use extractAttrs
     if (
-      !DEF_KEYWORDS.has(key) &&
+      !PLAN_KEYWORDS.has(key) &&
       !TRAIT_KEYWORDS.has(key) &&
       !(ignore && key in ignore) &&
       (ATTRIBUTES.has(key.toLowerCase()) ||
@@ -354,7 +354,7 @@ export function extractAttrs(item, stage, ignore) {
 
   for (const [key, val] of Object.entries(item)) {
     if (
-      !DEF_KEYWORDS.has(key) &&
+      !PLAN_KEYWORDS.has(key) &&
       !TRAIT_KEYWORDS.has(key) &&
       !(ignore && key in ignore) &&
       (ATTRIBUTES.has(key.toLowerCase()) ||
@@ -685,7 +685,7 @@ export function forkPlan(plan, stage) {
   return plan
 }
 
-export function ensureDef(plan = {}, stage) {
+export function ensurePlan(plan = {}, stage) {
   plan = { ...plan }
 
   if (plan.initiator) {
@@ -757,7 +757,7 @@ export function normalizePlan(plan = {}, stage, options) {
     if (stage.type === "function") plan = fn
   } else if (stage.type === "object") {
     const { initiator } = plan
-    plan = ensureDef(plan, stage)
+    plan = ensurePlan(plan, stage)
 
     const keyOrder = Object.keys(plan)
 
