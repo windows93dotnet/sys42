@@ -104,6 +104,7 @@ export class Folder extends Component {
       tag: "ui-grid",
       entry: "grid",
       selection: "{{selection}}",
+      selectionKey: "path",
       itemTemplate: {
         tag: "ui-icon",
         autofocus: "{{@first}}",
