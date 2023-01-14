@@ -5,7 +5,7 @@ const list = disk.glob("/tests/fixtures/formats/*", {
   sort: "mimetype",
 })
 
-ui({
+window.app = ui({
   tag: "body.box-fit.box-center.gap._box-v._ground",
   style: { padding: "90px" },
 
@@ -21,6 +21,7 @@ ui({
       style: { width: "300px", height: "300px" },
       selection: ["/tests/fixtures/formats/example.json"],
       selectionKey: "path",
+      // key: "path",
       itemTemplate: {
         tag: "ui-icon",
         path: "{{.}}",
@@ -28,29 +29,29 @@ ui({
       content: list,
     },
 
-    {
-      tag: "ui-tree.inset.paper.resize",
-      style: { width: "200px", height: "300px" },
-      // selection: ["/tests/fixtures/formats/example.json"],
-      // itemTemplate: {
-      //   content: [
-      //     { tag: "ui-icon", small: true, path: "{{.}}" },
-      //     { if: "{{endsWith(., '/')}}", content: "lol" },
-      //   ],
-      // },
-      // content: list,
-      selection: ["Hello"],
-      content: [
-        {
-          label: "Foo",
-          content: [
-            { label: "Bar" }, //
-            { label: "Baz" },
-          ],
-        },
-        { label: "Hello" },
-        { label: "World" },
-      ],
-    },
+    // {
+    //   tag: "ui-tree.inset.paper.resize",
+    //   style: { width: "200px", height: "300px" },
+    //   // selection: ["/tests/fixtures/formats/example.json"],
+    //   // itemTemplate: {
+    //   //   content: [
+    //   //     { tag: "ui-icon", small: true, path: "{{.}}" },
+    //   //     { if: "{{endsWith(., '/')}}", content: "lol" },
+    //   //   ],
+    //   // },
+    //   // content: list,
+    //   selection: ["Hello"],
+    //   content: [
+    //     {
+    //       label: "Foo",
+    //       content: [
+    //         { label: "Bar" }, //
+    //         { label: "Baz" },
+    //       ],
+    //     },
+    //     { label: "Hello" },
+    //     { label: "World" },
+    //   ],
+    // },
   ],
 })

@@ -24,7 +24,12 @@ test("generate icon list", async (t) => {
       },
       grid: {
         "root,ui-folder": {
-          item: undefined,
+          itemTemplate: {
+            tag: "ui-icon",
+            autofocus: "{{@first}}",
+            path: "{{.}}",
+          },
+          selectionKey: "path",
           multiselectable: true,
           selection: {
             $ref: "/$ui/folder/root/selection",

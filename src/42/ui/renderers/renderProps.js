@@ -160,12 +160,10 @@ export default async function renderProps(el, props, plan) {
         return
       }
 
-      // stage.reactive.now(() => {
       const silent = options?.silent ?? false
       fromWrite = true
       stage.reactive.set(scope, ref ?? value, { silent })
       if (silent) fromWrite = false
-      // })
     }
 
     const render = (val) => {
@@ -257,7 +255,6 @@ export default async function renderProps(el, props, plan) {
               render(value)
             }
           : (val) => {
-              // if (ref) stage.reactive.now(() => stage.reactive.set(ref.$ref, val))
               if (ref) stage.reactive.set(ref.$ref, val)
               else {
                 write(val)

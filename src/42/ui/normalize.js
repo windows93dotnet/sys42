@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 /* eslint-disable max-depth */
 import Reactive from "./classes/Reactive.js"
 import resolveScope from "./resolveScope.js"
@@ -744,14 +745,17 @@ export function normalizeScope(plan, stage) {
     }
 
     stage.scope = resolveScope(stage.scope, plan.scope, stage)
+    delete plan.scope
   }
 }
 
 export function normalizePlan(plan = {}, stage, options) {
   stage.id ??= plan.id ?? hash(plan)
   stage.type = getType(plan)
-
-  if (stage.type === "string") {
+  if (stage.type === "number") {
+    plan = String(plan)
+    stage.type = "string"
+  } else if (stage.type === "string") {
     const fn = normalizeString(plan, stage)
     stage.type = typeof fn
     if (stage.type === "function") plan = fn
