@@ -113,7 +113,6 @@ export class Folder extends Component {
       content: "{{getItems(path)}}",
       transferable: {
         selector: ':scope > div[role="row"] > ui-icon',
-        hint: "float",
         import({ data, effect, index }) {
           console.log(data, effect, index)
         },
