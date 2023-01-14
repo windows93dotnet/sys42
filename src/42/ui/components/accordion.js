@@ -10,7 +10,7 @@ export class Accordion extends Component {
     props: {
       multiple: true,
       collapsible: false,
-      expanded: [0],
+      expandeds: [0],
       content: [],
     },
   }
@@ -26,20 +26,20 @@ export class Accordion extends Component {
   togglePanel(index, previous) {
     if (index < 0 || index > this.content.length - 1) return
 
-    if (this.expanded.includes(index)) {
-      if (this.collapsible !== true && this.expanded.length === 1) {
+    if (this.expandeds.includes(index)) {
+      if (this.collapsible !== true && this.expandeds.length === 1) {
         if (index === this.content.length - 1) {
           this.togglePanel(index - 1, index)
         } else this.togglePanel(index + 1, index)
       } else {
-        removeItem(this.expanded, index)
+        removeItem(this.expandeds, index)
       }
     } else {
-      if (this.multiple !== true) this.expanded.length = 0
-      this.expanded.push(index)
+      if (this.multiple !== true) this.expandeds.length = 0
+      this.expandeds.push(index)
     }
 
-    if (previous !== undefined) removeItem(this.expanded, previous)
+    if (previous !== undefined) removeItem(this.expandeds, previous)
   }
 
   render() {
@@ -49,7 +49,7 @@ export class Accordion extends Component {
     const pictoOpen = styles.getPropertyValue("--picto-open") || "down"
     const pictoClose = styles.getPropertyValue("--picto-close") || "right"
 
-    if (this.multiple !== true) this.expanded.length = 1
+    if (this.multiple !== true) this.expandeds.length = 1
 
     return [
       {
@@ -60,7 +60,7 @@ export class Accordion extends Component {
             content: [
               {
                 tag: "ui-picto",
-                value: `{{includes(../../expanded, @index) ? '${pictoOpen}' : '${pictoClose}'}}`,
+                value: `{{includes(../../expandeds, @index) ? '${pictoOpen}' : '${pictoClose}'}}`,
               },
               {
                 if: "{{prelabel}}",
@@ -71,7 +71,7 @@ export class Accordion extends Component {
                 tag: "button.ui-accordion__button",
                 aria: {
                   controls: `${id}-panel-{{@index}}`,
-                  expanded: "{{includes(../../expanded, @index)}}",
+                  expanded: "{{includes(../../expandeds, @index)}}",
                 },
                 content: {
                   tag: "span.ui-accordion__button__text",
@@ -88,7 +88,7 @@ export class Accordion extends Component {
           },
           {
             tag: "section.ui-accordion__panel",
-            if: "{{includes(../../expanded, @index)}}",
+            if: "{{includes(../../expandeds, @index)}}",
             animate: {
               flexBasis: "0%",
               initial: false,

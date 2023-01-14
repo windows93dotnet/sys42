@@ -21,7 +21,6 @@ window.app = ui({
       style: { width: "300px", height: "300px" },
       selection: ["/tests/fixtures/formats/example.json"],
       selectionKey: "path",
-      // key: "path",
       itemTemplate: {
         tag: "ui-icon",
         path: "{{.}}",
@@ -36,7 +35,7 @@ window.app = ui({
     //   // itemTemplate: {
     //   //   content: [
     //   //     { tag: "ui-icon", small: true, path: "{{.}}" },
-    //   //     { if: "{{endsWith(., '/')}}", content: "lol" },
+    //   //     { if: "{{endsWith(., '/')}}", content: "subtree" },
     //   //   ],
     //   // },
     //   // content: list,

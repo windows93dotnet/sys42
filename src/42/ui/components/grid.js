@@ -26,7 +26,6 @@ export class Grid extends Component {
       itemTemplate: { type: "object" },
       selection: [],
       selectionKey: "textContent",
-      key: "content",
       multiselectable: true,
       content: {
         type: "array",
@@ -93,24 +92,7 @@ export class Grid extends Component {
     this.stage.signal.addEventListener("abort", () => ro.disconnect())
   }
 
-  render({ /* content, key, */ itemTemplate }) {
-    // const plan = {
-    //   role: "row",
-    //   content: [],
-    // }
-
-    // for (let i = 0, l = content.length; i < l; i++) {
-    //   const item = content[i]
-    //   plan.content.push({
-    //     role: "gridcell",
-    //     tabIndex: i === 0 ? 0 : -1,
-    //     ...itemTemplate,
-    //     [key]: item,
-    //   })
-    // }
-
-    // return [plan]
-
+  render({ itemTemplate }) {
     return [
       {
         scope: "content",

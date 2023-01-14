@@ -21,7 +21,7 @@ const content = [
   },
 ]
 
-ui({
+window.app = await ui({
   plugins: ["markdown"],
   tag: "body.box-fit.box-center",
   content: [
@@ -31,12 +31,12 @@ ui({
       style: { height: "256px", width: "256px" },
       content: {
         tag: "ui-accordion.inset",
-        expanded: [0],
+        expandeds: [0],
         style: {
           "--picto-open": "places/folder-open",
           "--picto-close": "places/folder",
         },
-        content,
+        content: "{{/arr}}",
       },
     },
     "### multiple: false",
@@ -45,9 +45,9 @@ ui({
       style: { height: "256px", width: "256px" },
       content: {
         tag: "ui-accordion.inset",
-        expanded: [0, 1, 2],
+        expandeds: [1],
         multiple: false,
-        content,
+        content: "{{/arr}}",
       },
     },
     "### multiple: false, collapsible: true",
@@ -56,11 +56,15 @@ ui({
       style: { height: "256px", width: "256px" },
       content: {
         tag: "ui-accordion.inset",
-        expanded: [0, 1, 2],
+        expandeds: [0],
         collapsible: true,
         multiple: false,
         content,
       },
     },
   ],
+
+  state: {
+    arr: content,
+  },
 })
