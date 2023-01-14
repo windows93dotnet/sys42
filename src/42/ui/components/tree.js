@@ -41,12 +41,13 @@ export class Tree extends Component {
         tag: "li.ui-tree__item",
         role: "treeitem",
         // aria: { selected: "{{includes(../../selection, .)}}" },
-        aria: { selected: "{{log(this)}}" },
+        // aria: { selected: "{{log(this)}}" },
         tabIndex: first ? 0 : -1,
         content: [item.label],
       }
 
       if (item.content) {
+        treeitem.aria ??= {}
         treeitem.aria.expanded = "false"
         treeitem.content.push(this.renderGroup(item.content))
       }
