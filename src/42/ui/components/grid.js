@@ -16,23 +16,16 @@ export class Grid extends Component {
       selectable: {
         draggerIgnoreItems: true,
         class: false,
-        key: "path",
+        key: "{{selectionKey}}",
         selection: "{{selection}}",
       },
     },
 
     props: {
-      item: {
-        type: "object",
-      },
-      selection: {
-        type: "array",
-        default: [],
-      },
-      multiselectable: {
-        type: "boolean",
-        default: true,
-      },
+      itemTemplate: { type: "object" },
+      selection: [],
+      selectionKey: "textContent",
+      multiselectable: true,
       content: {
         type: "array",
         default: [],
@@ -98,9 +91,9 @@ export class Grid extends Component {
   }
 
   render({ itemTemplate }) {
-    return [
-      {
-        scope: "content",
+    return {
+      scope: "content",
+      content: {
         role: "row",
         each: {
           role: "gridcell",
@@ -109,7 +102,7 @@ export class Grid extends Component {
           ...(itemTemplate ?? { render: true }),
         },
       },
-    ]
+    }
   }
 }
 
