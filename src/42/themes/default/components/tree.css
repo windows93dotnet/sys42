@@ -1,0 +1,57 @@
+:root {
+  --tree-indent: var(--unit-lg);
+  --tree-line: 1px dotted;
+}
+
+ui-tree {
+  flex-grow: 1;
+  overflow-y: auto;
+  display: block;
+  padding-left: var(--tree-indent);
+  padding-top: 4px;
+}
+
+ui-tree:focus {
+  outline: none;
+}
+
+ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
+  top: 7px;
+}
+
+.ui-tree__group {
+  margin: 0;
+  padding: 0;
+  padding-left: var(--tree-indent);
+  list-style: none;
+}
+
+.ui-tree__item {
+  position: relative;
+  line-height: 12px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.ui-tree__item::before {
+  content: "";
+  position: absolute;
+  top: 7px;
+  left: calc(-1 * var(--tree-indent) + 0px);
+  width: calc(var(--tree-indent) - 3px);
+  border-bottom: var(--tree-line);
+}
+
+.ui-tree__item::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  bottom: 0;
+  left: calc(-1 * var(--tree-indent));
+  border-left: var(--tree-line);
+}
+
+.ui-tree__item:last-child::after {
+  height: 7px;
+  bottom: auto;
+}
