@@ -2,7 +2,7 @@ import Component from "../classes/Component.js"
 import { Menu } from "./menu.js"
 
 export class Menubar extends Menu {
-  static definition = {
+  static plan = {
     tag: "ui-menubar",
     role: "menubar",
     on: {

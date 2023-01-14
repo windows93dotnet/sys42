@@ -32,7 +32,7 @@ const formatDuration = (ms) => {
 }
 
 export class Player extends Component {
-  static definition = {
+  static plan = {
     tag: "ui-player",
 
     props: {

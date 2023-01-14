@@ -25,7 +25,7 @@ function displayLayout(items, dir = "h") {
 }
 
 export class Layout extends Component {
-  static definition = {
+  static plan = {
     tag: "ui-layout",
     role: "none",
     id: true,

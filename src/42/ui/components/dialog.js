@@ -31,7 +31,7 @@ function activateIfFocused() {
 }
 
 export class Dialog extends Component {
-  static definition = {
+  static plan = {
     tag: "ui-dialog",
     role: "dialog",
     id: true,

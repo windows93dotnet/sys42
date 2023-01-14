@@ -30,7 +30,7 @@ test.tasks(
   [
     task({
       component: class extends Component {
-        static definition = { tag: "ui-t-basic" }
+        static plan = { tag: "ui-t-basic" }
       },
       html: "<ui-t-basic></ui-t-basic>",
       plan: { tag: "ui-t-basic" },
@@ -39,7 +39,7 @@ test.tasks(
 
     task({
       component: class extends Component {
-        static definition = { tag: "ui-t-string" }
+        static plan = { tag: "ui-t-string" }
         render() {
           return "hello"
         }
@@ -51,7 +51,7 @@ test.tasks(
 
     task({
       component: class extends Component {
-        static definition = { tag: "ui-t-attr", class: "derp" }
+        static plan = { tag: "ui-t-attr", class: "derp" }
         render() {
           return "hello"
         }
@@ -103,7 +103,7 @@ test.tasks(
           "ui destroyed",
         ]
         return class extends Component {
-          static definition = {
+          static plan = {
             tag: "ui-t-signal",
 
             props: {
@@ -265,7 +265,7 @@ test.tasks(
       component(t) {
         t.plan(2)
         return class extends Component {
-          static definition = {
+          static plan = {
             tag: "ui-t-filter",
             props: {
               bar: { type: "number", default: 2, reflect: true },
@@ -426,7 +426,7 @@ test.tasks(
       component(t) {
         t.plan(2)
         return class extends Component {
-          static definition = {
+          static plan = {
             tag: "ui-t-throttle",
             props: {
               path: {
@@ -707,7 +707,7 @@ test("state", "fixed", async (t) => {
 
 Component.define(
   class extends Component {
-    static definition = {
+    static plan = {
       tag: "ui-one",
       props: {
         bar: { default: 1, reflect: true },
@@ -723,7 +723,7 @@ Component.define(
 
 Component.define(
   class extends Component {
-    static definition = {
+    static plan = {
       tag: "ui-two",
       props: {
         bar: { default: 2, reflect: true },
@@ -1604,7 +1604,7 @@ test("@index", async (t) => {
 
 Component.define(
   class extends Component {
-    static definition = {
+    static plan = {
       tag: "ui-t-index-computed-array",
 
       props: {
@@ -1798,7 +1798,7 @@ test("computed", async (t) => {
 
   Component.define(
     class extends Component {
-      static definition = {
+      static plan = {
         tag: "ui-t-computed",
 
         props: {
@@ -1881,7 +1881,7 @@ test("computed", "from prop with state:true", async (t) => {
 
   Component.define(
     class extends Component {
-      static definition = {
+      static plan = {
         tag: "ui-t-compu-sta",
 
         props: {
@@ -1959,7 +1959,7 @@ test("computed", "computed prop", async (t) => {
 
   Component.define(
     class extends Component {
-      static definition = {
+      static plan = {
         tag: "ui-t-compu-prop",
 
         props: {
@@ -2051,7 +2051,7 @@ test("computed", "computed prop", async (t) => {
 
 Component.define(
   class extends Component {
-    static definition = {
+    static plan = {
       tag: "ui-t-obj-prop",
       props: {
         obj: {
@@ -2088,7 +2088,7 @@ test("obj", async (t) => {
 
 Component.define(
   class extends Component {
-    static definition = {
+    static plan = {
       tag: "ui-t-scope-chain",
       props: {
         a: 1,
@@ -2120,7 +2120,7 @@ test("scope chain", async (t) => {
 /* Find Component Actions
 ------------------------- */
 class ParentComponent extends Component {
-  static definition = {
+  static plan = {
     tag: "ui-t-parent-cpn",
     props: { a: 1 },
     content: "{{foo()}}",
@@ -2138,7 +2138,7 @@ Component.define(ParentComponent)
 
 Component.define(
   class ChildComponent extends ParentComponent {
-    static definition = {
+    static plan = {
       tag: "ui-t-child-cpn",
       props: { a: 1 },
     }
@@ -2219,7 +2219,7 @@ test("find component actions", "ignore base class methods", async (t) => {
 
 Component.define(
   class extends Component {
-    static definition = {
+    static plan = {
       tag: "ui-t-actions-above-root",
       computed: { y: "y" },
     }
@@ -2267,7 +2267,7 @@ test("actions", "above root path", async (t) => {
 async function makeSuite(name, plan) {
   Component.define(
     class extends Component {
-      static definition = { tag: `ui-t-${name}`, ...plan }
+      static plan = { tag: `ui-t-${name}`, ...plan }
 
       x(...args) {
         this.stage.state.from = ["x", `ui-t-${name}`]
@@ -2301,7 +2301,7 @@ async function makeSuite(name, plan) {
 
   Component.define(
     class extends Component {
-      static definition = { tag: `ui-t-${name}-child`, ...plan }
+      static plan = { tag: `ui-t-${name}-child`, ...plan }
 
       x(...args) {
         this.stage.state.from = ["x", `ui-t-${name}-child`]
@@ -2319,7 +2319,7 @@ async function makeSuite(name, plan) {
 
   Component.define(
     class extends Component {
-      static definition = { tag: `ui-t-${name}-child-child`, ...plan }
+      static plan = { tag: `ui-t-${name}-child-child`, ...plan }
 
       x(...args) {
         this.stage.state.from = ["x", `ui-t-${name}-child-child`]
@@ -2431,7 +2431,7 @@ await makeSuite("actions-computed", { computed: { bar: "{{['bar']}}" } })
 
 Component.define(
   class extends Component {
-    static definition = {
+    static plan = {
       tag: "ui-t-event-in-scope",
       props: { text: "---" },
       on: [

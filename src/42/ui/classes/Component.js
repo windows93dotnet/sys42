@@ -64,15 +64,15 @@ export default class Component extends HTMLElement {
   static define(Class) {
     if (typeof Class === "object") {
       Class = class extends Component {
-        static definition = Class
+        static plan = Class
       }
     }
 
-    Class.definition ??= {}
+    Class.plan ??= {}
 
     const out = (...args) => new Class(...args)
 
-    let { tag } = Class.definition
+    let { tag } = Class.plan
 
     if (tag === undefined) {
       if (Class.name === "Class") throw new Error(`missing Component "tag"`)
@@ -81,9 +81,9 @@ export default class Component extends HTMLElement {
 
     if (customElements.get(tag)) return out
 
-    if (Class.definition.props) {
+    if (Class.plan.props) {
       Class.observedAttributes = []
-      for (const [key, item] of Object.entries(Class.definition.props)) {
+      for (const [key, item] of Object.entries(Class.plan.props)) {
         Class.observedAttributes.push(item.attribute ?? toKebabCase(key))
       }
     }
@@ -195,17 +195,17 @@ export default class Component extends HTMLElement {
     this.removeAttribute("data-no-init")
     this[_lifecycle] = INIT
 
-    const { definition } = this.constructor
+    const cpnPlan = this.constructor.plan
 
     if (stage?.component) this.parent = stage.component
 
-    const entry = plan?.entry ?? definition?.entry
+    const entry = plan?.entry ?? cpnPlan?.entry
     if (entry) {
       addEntry(stage.component, entry, this)
       delete plan.entry
     }
 
-    const parentEntry = plan?.parentEntry ?? definition?.parentEntry
+    const parentEntry = plan?.parentEntry ?? cpnPlan?.parentEntry
     if (parentEntry) {
       if (this.parent) addEntry(this, parentEntry, this.parent)
       delete plan.parentEntry
@@ -238,14 +238,14 @@ export default class Component extends HTMLElement {
 
     /* handle props
     --------------- */
-    const configProps = configure(definition.props, plan?.props)
+    const configProps = configure(cpnPlan.props, plan?.props)
     const filteredPropsKeys = filterPropsKeys(configProps)
 
     const props = {}
     const propsKeys = Object.keys(configProps)
 
     if (propsKeys.length > 0) {
-      const configKeys = Object.keys(definition.defaults ?? {})
+      const configKeys = Object.keys(cpnPlan.defaults ?? {})
       const entries = Object.entries(plan)
       plan = {}
       for (const [key, val] of entries) {
@@ -263,15 +263,15 @@ export default class Component extends HTMLElement {
     /* handle plan attrs
     ------------------- */
     // TODO: remove this
-    let attrs = normalizeAttrs(plan, this.stage, definition.defaults)
+    let attrs = normalizeAttrs(plan, this.stage, cpnPlan.defaults)
     for (const attr of Object.keys(attrs)) delete plan[attr]
     if (attrs) renderAttributes(this, this.stage, attrs)
 
-    if (definition.id === true) this.id ||= uid()
+    if (cpnPlan.id === true) this.id ||= uid()
 
     /* handle plan
     ------------- */
-    plan = configure(definition, plan)
+    plan = configure(cpnPlan, plan)
     const { computed, state } = plan
 
     delete plan.computed
@@ -299,7 +299,7 @@ export default class Component extends HTMLElement {
       }
     }
 
-    const config = configure(definition.defaults, params)
+    const config = configure(cpnPlan.defaults, params)
 
     if (this.render) {
       const renderConfig = { ...config }
@@ -345,7 +345,7 @@ export default class Component extends HTMLElement {
     if (plan.tag) {
       plan.attrs = normalizeAttrs(plan, this.stage)
     } else {
-      attrs = normalizeAttrs(plan, this.stage, definition.defaults)
+      attrs = normalizeAttrs(plan, this.stage, cpnPlan.defaults)
       for (const attr of Object.keys(attrs)) delete plan[attr]
       if (attrs) renderAttributes(this, this.stage, attrs)
     }

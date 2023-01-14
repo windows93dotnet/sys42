@@ -33,7 +33,7 @@ function ensureSymbol(val) {
 }
 
 export class Picto extends Component {
-  static definition = {
+  static plan = {
     tag: "ui-picto",
 
     props: {

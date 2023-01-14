@@ -52,7 +52,7 @@ listen(
 )
 
 export class Sandbox extends Component {
-  static definition = {
+  static plan = {
     tag: "ui-sandbox",
 
     tabIndex: -1,
