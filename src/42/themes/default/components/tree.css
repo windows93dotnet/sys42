@@ -28,39 +28,22 @@ ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
   will-change: height;
 }
 
+.ui-tree__root,
+.ui-tree__group[aria-busy="true"] {
+  overflow: visible;
+}
+
 .ui-tree__item:has(.ui-tree__group[aria-busy="true"]) > .ui-tree__label {
   cursor: var(--cursor-progress);
 }
 
 .ui-tree__item:has(.ui-tree__group[aria-busy="true"]) .loader {
-  display: none;
+  margin-left: calc(-1 * var(--tree-indent) - 0.5lh);
 }
 
-.ui-tree__item:has(.ui-tree__group[aria-busy="true"]) > .ui-tree__label::after {
-  content: "";
-  display: inline-block;
-  box-sizing: border-box;
-
-  width: 1lh;
-  vertical-align: top;
-  padding: 1px;
-  margin-left: var(--unit-sm);
-  background: currentColor;
-
-  aspect-ratio: 1;
-  border-radius: 50%;
-  --_m:
-    conic-gradient(#0000, #000),
-    linear-gradient(#000 0 0) content-box;
-  -webkit-mask: var(--_m);
-  mask: var(--_m);
-  -webkit-mask-composite: source-out;
-  mask-composite: subtract;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(1turn); }
+.ui-tree__item:has(.ui-tree__group[aria-busy="true"]) .loader::after {
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 .ui-tree__item {

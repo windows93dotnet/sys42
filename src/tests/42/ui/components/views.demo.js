@@ -46,7 +46,7 @@ window.app = ui({
           label: "Foo",
           expanded: true,
           async content() {
-            await sleep(500)
+            await sleep(15)
             return [
               { label: "Bar" }, //
               { label: "Baz" },

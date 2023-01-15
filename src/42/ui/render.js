@@ -86,27 +86,28 @@ export default function render(plan, stage, options) {
     }
 
     if (isPromiseLike(state)) {
-      const loading = document.createElement("div")
-      loading.className = "loader"
+      const loader = document.createElement("div")
+      loader.setAttribute("aria-label", "loading")
+      loader.className = "loader"
 
       stage.el?.setAttribute("aria-busy", "true")
 
       state.then(async (res) => {
         delete stage.scopeResolvers[stage.scope]
         stage.reactive.set(stage.scope, res, { silent: true })
-        // await animateTo(loading, { height: "0", ms: 180 })
+        await animateTo(loader, { height: "0", ms: 180 })
         stage.el?.setAttribute("aria-busy", "false")
         const el = render(plan, stage, {
           ...options,
           skipNormalize: true,
           ignoreScopeResolver: true,
         })
-        loading.replaceWith(el)
+        loader.replaceWith(el)
         stage.scopeResolvers[stage.scope] = resolver
       })
 
-      animateFrom(loading, { height: "0", ms: 180, delay: 250 })
-      return loading
+      animateFrom(loader, { height: "0", ms: 180, delay: 100 })
+      return loader
     }
 
     if (resolver) stage.reactive.set(stage.scope, state, { silent: true })
