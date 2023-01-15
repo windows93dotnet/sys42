@@ -24,6 +24,7 @@ ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
   padding: 0;
   padding-left: var(--tree-indent);
   list-style: none;
+  overflow: hidden;
 }
 
 .ui-tree__item {
@@ -31,6 +32,12 @@ ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
   line-height: 12px;
   padding-top: 2px;
   padding-bottom: 2px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ui-tree__item[aria-expanded] > .ui-tree__label {
+  font-weight: 600;
 }
 
 .ui-tree__item::before {

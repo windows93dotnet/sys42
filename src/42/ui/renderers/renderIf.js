@@ -36,8 +36,6 @@ export default function renderIf(plan, stage) {
   let elseType
   if (plan.else) {
     if (ifType === "object") {
-      if ("to" in ifPlan) plan.else.to ??= ifPlan.to
-      if ("from" in ifPlan) plan.else.from ??= ifPlan.from
       if ("animate" in ifPlan) plan.else.animate ??= ifPlan.animate
     }
 
@@ -55,9 +53,7 @@ export default function renderIf(plan, stage) {
       cancel?.("renderIf removed")
       cancel = undefined
       const plan =
-        lastRes === false &&
-        elseType === "object" &&
-        ("to" in elsePlan || "animate" in elsePlan)
+        lastRes === false && elseType === "object" && "animate" in elsePlan
           ? elsePlan
           : ifPlan
       const range = new NodesRange(placeholder, lastChild)
