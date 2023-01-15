@@ -7,7 +7,9 @@ import renderIf from "./renderers/renderIf.js"
 import renderEach from "./renderers/renderEach.js"
 import renderOn from "./renderers/renderOn.js"
 import renderAnimation from "./renderers/renderAnimation.js"
+import { animateTo, animateFrom } from "../fabric/dom/animate.js"
 import renderTag from "./renderers/renderTag.js"
+import isPromiseLike from "../fabric/type/any/is/isPromiseLike.js"
 
 const { ELEMENT_NODE } = Node
 
@@ -70,6 +72,42 @@ export default function render(plan, stage, options) {
     }
 
     default:
+  }
+
+  if (options?.ignoreScopeResolver !== true) {
+    let state =
+      stage.scopeResolvers[stage.scope] ?? stage.reactive.get(stage.scope)
+
+    let resolver
+
+    if (typeof state === "function") {
+      resolver = state
+      state = state(stage)
+    }
+
+    if (isPromiseLike(state)) {
+      const loading = document.createElement("div")
+      loading.textContent = "..."
+      loading.className = "loading"
+
+      state.then(async (res) => {
+        delete stage.scopeResolvers[stage.scope]
+        stage.reactive.set(stage.scope, res, { silent: true })
+        await animateTo(loading, { height: "0", ms: 180 })
+        const el = render(plan, stage, {
+          ...options,
+          skipNormalize: true,
+          ignoreScopeResolver: true,
+        })
+        loading.replaceWith(el)
+        stage.scopeResolvers[stage.scope] = resolver
+      })
+
+      animateFrom(loading, { height: "0", ms: 180, delay: 250 })
+      return loading
+    }
+
+    if (resolver) stage.reactive.set(stage.scope, state, { silent: true })
   }
 
   if (plan.if) return renderIf(plan, stage)

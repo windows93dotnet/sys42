@@ -222,6 +222,7 @@ export default class Component extends HTMLElement {
       components: undefined,
       postrender: undefined,
       traitsReady: undefined,
+      scopeResolvers: undefined,
       cancel: stage?.detached ? undefined : stage?.cancel?.fork(),
       steps: stage?.steps ?? this.localName,
     })

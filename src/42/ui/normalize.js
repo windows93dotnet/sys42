@@ -823,6 +823,7 @@ export function normalizeStage(stage = {}) {
   stage.refs ??= Object.create(null)
   stage.scopeChain ??= []
   stage.pluginHandlers ??= []
+  stage.scopeResolvers ??= {}
   stage.actions ??= new Locator(Object.create(null), { delimiter: "/" })
 
   stage.preload ??= new Undones()

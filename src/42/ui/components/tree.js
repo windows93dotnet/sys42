@@ -31,12 +31,19 @@ export class Tree extends Component {
     item.expanded = !item.expanded
   }
 
-  renderGroup(loc) {
+  async renderGroup() {
     const { itemTemplate } = this
-    loc = String(loc)
     return {
       scope: "content",
-      state: { loc },
+
+      animate: {
+        from: {
+          height: "0px",
+          // ms: 1000,
+          initial: false,
+        },
+      },
+
       each: {
         tag: "li.ui-tree__item",
         role: "treeitem",
@@ -58,12 +65,13 @@ export class Tree extends Component {
             tag: "ul.ui-tree__group",
             role: "group",
             animate: {
-              height: "0px",
-              // ms: 1000,
-              initial: false,
+              to: {
+                height: "0px",
+                // ms: 1000,
+                initial: false,
+              },
             },
-            content:
-              "{{renderGroup(../loc + '/' + @index, content) |> render(^^)}}",
+            content: "{{renderGroup() |> render(^^)}}",
           },
         ],
       },
@@ -74,9 +82,9 @@ export class Tree extends Component {
     this.itemTemplate = itemTemplate
     return [
       {
-        tag: "ul.ui-tree__group",
+        tag: "ul.ui-tree__root.ui-tree__group",
         role: "tree",
-        content: "{{renderGroup('', content) |> render(^^)}}",
+        content: "{{renderGroup() |> render(^^)}}",
       },
     ]
   }

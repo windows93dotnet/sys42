@@ -18,6 +18,10 @@
   pointer-events: none !important;
 }
 
+.loading {
+  overflow: hidden;
+}
+
 button.btn-small,
 .ui-dialog__header button,
 .ui-tabs__container > span > button,
