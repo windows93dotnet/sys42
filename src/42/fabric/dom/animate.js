@@ -2,6 +2,7 @@
 
 import ensureElement from "./ensureElement.js"
 import distribute from "../type/object/distribute.js"
+import paint from "../type/promise/paint.js"
 
 const OPTIONS_KEYWORDS = [
   "ms",
@@ -42,6 +43,9 @@ export async function animateTo(el, options, duration = 240) {
   el = ensureElement(el)
   const [to, config] = distribute(options, OPTIONS_KEYWORDS)
 
+  if ("height" in to) el.style.height = `${el.offsetHeight}px`
+  if ("width" in to) el.style.width = `${el.offsetWidth}px`
+
   const restoreScrollbars = autoHideScrollbars(el)
 
   if (prefersReducedMotion) config.duration = 1
@@ -59,7 +63,7 @@ export async function animateTo(el, options, duration = 240) {
 
   if (restoreScrollbars) el.classList.remove("scrollbar-invisible")
 
-  // force rendered element
+  // force rendered element to commit styles
   const { display } = el.style
   el.style.cssText += FORCE_DISPLAY
   const { isConnected } = el
@@ -86,6 +90,36 @@ export async function animateFrom(el, options, duration = 240) {
   el = ensureElement(el)
   const [from, config] = distribute(options, OPTIONS_KEYWORDS)
 
+  let heightBkp
+  let widthBkp
+  const hasHeightAnim = "height" in from
+  const hasWidthAnim = "width" in from
+  if (hasHeightAnim || hasWidthAnim) {
+    // prevent FOUC
+    if (hasHeightAnim) {
+      heightBkp = el.style.height
+      el.style.height = from.height
+    }
+
+    if (hasWidthAnim) {
+      widthBkp = el.style.width
+      el.style.width = from.width
+    }
+
+    // ensure el.offsetHeight is defined
+    await paint()
+
+    if (hasHeightAnim) {
+      el.style.height = heightBkp
+      el.style.height = `${el.offsetHeight}px`
+    }
+
+    if (hasWidthAnim) {
+      el.style.width = widthBkp
+      el.style.width = `${el.offsetWidth}px`
+    }
+  }
+
   const restoreScrollbars = autoHideScrollbars(el)
 
   if (prefersReducedMotion) config.duration = 1
@@ -101,6 +135,8 @@ export async function animateFrom(el, options, duration = 240) {
   )
   await anim.finished
 
+  if (heightBkp !== undefined) el.style.height = heightBkp
+  if (widthBkp !== undefined) el.style.width = widthBkp
   if (restoreScrollbars) el.classList.remove("scrollbar-invisible")
 
   return anim

@@ -14,7 +14,7 @@ function start(el, how, options) {
 }
 
 export async function renderAnimation(stage, el, how, options) {
-  if (options.initial === false) {
+  if (options.initial === false && stage.reactive.firstUpdateDone !== true) {
     delete options.initial
     return
   }

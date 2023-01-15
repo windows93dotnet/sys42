@@ -49,6 +49,7 @@ window.app = ui({
             { label: "Baz" },
             {
               label: "Derp",
+              // expanded: true,
               content: [
                 {
                   label: "Foo",
