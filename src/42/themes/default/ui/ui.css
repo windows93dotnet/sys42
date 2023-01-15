@@ -18,8 +18,36 @@
   pointer-events: none !important;
 }
 
+.loader {
+  overflow: hidden;
+}
+
+/* @src https://css-tricks.com/single-element-loaders-the-spinner/ */
 .loader::after {
-  content: "...";
+  content: "";
+  display: inline-block;
+  box-sizing: border-box;
+
+  width: 1lh;
+  vertical-align: top;
+  padding: 1px;
+  margin-left: var(--unit-sm);
+  background: currentColor;
+
+  aspect-ratio: 1;
+  border-radius: 50%;
+  --_mask:
+    conic-gradient(#0000, #000),
+    linear-gradient(#000 0 0) content-box;
+  -webkit-mask: var(--_mask);
+  mask: var(--_mask);
+  -webkit-mask-composite: source-out;
+  mask-composite: subtract;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { rotate: 1turn; }
 }
 
 button.btn-small,
