@@ -27,42 +27,56 @@ export class Tree extends Component {
     },
   }
 
-  renderGroup(items) {
-    const plan = {
-      tag: "ul.ui-tree__group",
-      role: "group",
-      content: [],
-    }
-
-    let first = true
-
-    for (const item of items) {
-      const treeitem = {
+  renderGroup() {
+    const { itemTemplate } = this
+    return {
+      scope: "content",
+      each: {
         tag: "li.ui-tree__item",
         role: "treeitem",
-        // aria: { selected: "{{includes(../../selection, .)}}" },
-        // aria: { selected: "{{log(this)}}" },
-        tabIndex: first ? 0 : -1,
-        content: [item.label],
-      }
-
-      if (item.content) {
-        treeitem.aria ??= {}
-        treeitem.aria.expanded = "false"
-        treeitem.content.push(this.renderGroup(item.content))
-      }
-
-      plan.content.push(treeitem)
-
-      first = false
+        aria: {
+          selected: "{{includes(../../selection, .)}}",
+          expanded: "{{content ? expanded ?? false : undefined}}",
+        },
+        tabIndex: "{{@first ? 0 : -1}}",
+        content: [
+          { ...(itemTemplate ?? { content: "{{label}}" }) }, //
+          {
+            if: "{{content}}",
+            tag: "ul.ui-tree__group",
+            role: "group",
+            content: "{{renderGroup() |> render(^^)}}",
+          },
+        ],
+      },
     }
-
-    return plan
   }
 
-  render({ content }) {
-    const plan = this.renderGroup(content)
-    plan.role = "tree"
+  render({ itemTemplate }) {
+    this.itemTemplate = itemTemplate
+    const plan = {
+      scope: "content",
+      tag: "ul.ui-tree__group",
+      role: "tree",
+      each: {
+        tag: "li.ui-tree__item",
+        role: "treeitem",
+        aria: {
+          selected: "{{includes(../../selection, .)}}",
+          expanded: "{{content ? expanded ?? false : undefined}}",
+        },
+        tabIndex: "{{@first ? 0 : -1}}",
+        content: [
+          { ...(itemTemplate ?? { content: "{{label}}" }) }, //
+          {
+            if: "{{content}}",
+            tag: "ul.ui-tree__group",
+            role: "group",
+            content: "{{renderGroup() |> render(^^)}}",
+          },
+        ],
+      },
+    }
     return [plan]
   }
 }
