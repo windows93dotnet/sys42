@@ -1,4 +1,5 @@
 import ui from "../../../../42/ui.js"
+import sleep from "../../../../42/fabric/type/promise/sleep.js"
 
 import disk from "../../../../42/core/disk.js"
 const list = disk.glob("/tests/fixtures/formats/*", {
@@ -44,32 +45,35 @@ window.app = ui({
         {
           label: "Foo",
           expanded: true,
-          content: [
-            { label: "Bar" }, //
-            { label: "Baz" },
-            {
-              label: "Derp",
-              // expanded: true,
-              content: [
-                {
-                  label: "Foo",
-                  content: [
-                    { label: ["Bar", "\n\n", "Derp"] }, //
-                    { label: "Baz" },
-                  ],
-                },
-                { label: "Hello" },
-                { label: "World" },
-                {
-                  label: "Foo",
-                  content: [
-                    { label: "Bar" }, //
-                    { label: "Baz" },
-                  ],
-                },
-              ],
-            },
-          ],
+          async content() {
+            await sleep(500)
+            return [
+              { label: "Bar" }, //
+              { label: "Baz" },
+              {
+                label: "Derp",
+                // expanded: true,
+                content: [
+                  {
+                    label: "Foo",
+                    content: [
+                      { label: ["Bar", "\n\n", "Derp"] }, //
+                      { label: "Baz" },
+                    ],
+                  },
+                  { label: "Hello" },
+                  { label: "World" },
+                  {
+                    label: "Foo",
+                    content: [
+                      { label: "Bar" }, //
+                      { label: "Baz" },
+                    ],
+                  },
+                ],
+              },
+            ]
+          },
         },
         { label: "Hello" },
         { label: "World" },

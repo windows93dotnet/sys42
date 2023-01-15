@@ -25,6 +25,7 @@ ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
   padding-left: var(--tree-indent);
   list-style: none;
   overflow: hidden;
+  will-change: height;
 }
 
 .ui-tree__item {
@@ -49,7 +50,7 @@ ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
   border-bottom: var(--tree-line);
 }
 
-.ui-tree__item::after {
+.ui-tree__item:not(:only-child)::after {
   content: "";
   position: absolute;
   top: 1px;
