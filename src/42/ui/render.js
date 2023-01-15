@@ -87,13 +87,15 @@ export default function render(plan, stage, options) {
 
     if (isPromiseLike(state)) {
       const loading = document.createElement("div")
-      loading.textContent = "..."
-      loading.className = "loading"
+      loading.className = "loader"
+
+      stage.el?.setAttribute("aria-busy", "true")
 
       state.then(async (res) => {
         delete stage.scopeResolvers[stage.scope]
         stage.reactive.set(stage.scope, res, { silent: true })
-        await animateTo(loading, { height: "0", ms: 180 })
+        // await animateTo(loading, { height: "0", ms: 180 })
+        stage.el?.setAttribute("aria-busy", "false")
         const el = render(plan, stage, {
           ...options,
           skipNormalize: true,

@@ -18,8 +18,8 @@
   pointer-events: none !important;
 }
 
-.loading {
-  overflow: hidden;
+.loader::after {
+  content: "...";
 }
 
 button.btn-small,
