@@ -43,6 +43,7 @@ window.app = ui({
       content: [
         {
           label: "Foo",
+          expanded: true,
           content: [
             { label: "Bar" }, //
             { label: "Baz" },
@@ -72,7 +73,7 @@ window.app = ui({
         { label: "Hello" },
         { label: "World" },
         {
-          label: "Foo",
+          label: "Subtree",
           content: [
             { label: "Bar" }, //
             { label: "Baz" },
