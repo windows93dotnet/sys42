@@ -1,6 +1,6 @@
 import ui from "../../../../42/ui.js"
 
-const content = [
+const items = [
   {
     label: "Lorem ipsum",
     prelabel: { tag: "ui-picto", value: "places/folder" },
@@ -78,9 +78,10 @@ globalThis.app = ui({
         content: [
           { tag: "header.px-sm.inset-shallow", content: "header" },
           [
-            { tag: "aside.px-sm", content: "sidebar" },
-            { tag: "ui-tabs.inset.ground", transferable: true, content },
-            { tag: "ui-accordion.inset.paper", content },
+            // { tag: "aside.px-sm", content: "sidebar" },
+            { tag: "ui-tree.inset.paper", items },
+            { tag: "ui-tabs.inset.ground", transferable: true, items },
+            { tag: "ui-accordion.inset.paper", items },
           ],
           { tag: "footer.px-sm.inset-shallow", content: "footer" },
         ],
