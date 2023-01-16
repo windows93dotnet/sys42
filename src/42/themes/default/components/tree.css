@@ -1,8 +1,9 @@
 :root {
   --tree-indent: var(--unit-lg);
-  --tree-line: 1px dotted;
-
-  --tree__label-gap: var(--unit-sm);
+  --tree-graph-alpha: 0.3;
+  --tree-graph-bg-color: var(--paper-bg);
+  --tree-graph-fg-color: currentColor;
+  --tree-graph-bd-color: rgba(0 0 0 / var(--tree-graph-alpha));
 }
 
 ui-tree {
@@ -26,6 +27,10 @@ ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
   padding: 0;
   padding-left: calc(2 * var(--tree-indent));
   margin-left: calc(-1 * var(--tree-indent));
+  margin-top: -2px;
+  margin-bottom: -2px;
+  padding-top: 2px;
+  padding-bottom: 2px;
   list-style: none;
   overflow: hidden;
   will-change: height;
@@ -60,22 +65,39 @@ ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
   content: "";
   position: absolute;
   top: 7px;
-  left: calc(-1 * var(--tree-indent) + 0px);
-  width: calc(var(--tree-indent) - 3px);
-  border-bottom: var(--tree-line);
+  left: calc(-1 * var(--tree-indent) + 2px);
+  width: calc(var(--tree-indent) - 4px);
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      var(--tree-graph-bd-color) 0,
+      var(--tree-graph-bd-color) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+  height: 1px;
 }
 
 .ui-tree__item:not(:only-child)::after {
   content: "";
   position: absolute;
-  top: 1px;
-  bottom: 0;
+  top: -1px;
+  bottom: 1px;
   left: calc(-1 * var(--tree-indent));
-  border-left: var(--tree-line);
+  /* background-color: tan; */
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      var(--tree-graph-bd-color) 0,
+      var(--tree-graph-bd-color) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+  width: 1px;
 }
 
 .ui-tree__item:last-child::after {
-  height: 7px;
+  height: 9px;
   bottom: auto;
 }
 
@@ -101,15 +123,29 @@ ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
   float: left;
 }
 
-.ui-tree__picto {
+.ui-tree__pictos {
+  display: grid;
   position: absolute;
   left: calc(calc(-1 * var(--tree-indent)) - 7px);
+  z-index: 1;
 }
 
-.ui-tree__picto svg {
-  fill: var(--fg);
+.ui-tree__pictos > ui-picto {
+  grid-area: 1 / 1;
 }
 
-/* .ui-tree__item[aria-expanded] > .ui-tree__label > .ui-tree__trigger {
+.ui-tree__picto-bg svg {
+  fill: var(--tree-graph-bg-color);
+}
+
+.ui-tree__picto-fg svg {
+  fill: var(--tree-graph-fg-color);
+}
+
+.ui-tree__picto-bd svg {
+  fill: var(--tree-graph-bd-color);
+}
+
+.ui-tree__item[aria-expanded] > .ui-tree__label > .ui-tree__trigger > .ui-tree__trigger-text {
   font-weight: 600;
-} */
+}

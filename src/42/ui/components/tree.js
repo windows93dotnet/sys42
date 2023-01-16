@@ -56,8 +56,22 @@ export class Tree extends Component {
             content: [
               {
                 if: "{{items}}",
-                tag: "ui-picto.ui-tree__picto",
-                value: "{{expanded ? 'minus-square' : 'plus-square'}}",
+                tag: ".ui-tree__pictos",
+                click: "{{toggleItem(.)}}",
+                content: [
+                  {
+                    tag: "ui-picto.ui-tree__picto-bg",
+                    value: "square",
+                  },
+                  {
+                    tag: "ui-picto.ui-tree__picto-bd",
+                    value: "square-border",
+                  },
+                  {
+                    tag: "ui-picto.ui-tree__picto-fg",
+                    value: "{{expanded ? 'minus-thin' : 'plus-thin'}}",
+                  },
+                ],
               },
               {
                 if: "{{prelabel}}",
@@ -66,13 +80,13 @@ export class Tree extends Component {
               },
               {
                 tag: "span.ui-tree__trigger",
+                click: "{{toggleItem(.)}}",
                 content: {
                   ...(itemTemplate ?? {
+                    tag: "span.ui-tree__trigger-text",
                     content: "{{render(label)}}",
                   }),
                 },
-
-                click: "{{toggleItem(.)}}",
               },
               {
                 if: "{{postlabel}}",
