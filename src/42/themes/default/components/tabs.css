@@ -1,4 +1,13 @@
 :root {
+  --tabs-overlap: var(--tabs__tab-bdw);
+  --tabs-gap: calc(-1 * var(--tabs__tab-bdw));
+  --tabs-active-grow-y: var(--ctrl-py);
+  --tabs-active-grow-x: var(--ctrl-px);
+  --tabs-max-z: 999;
+  --tabs-shadow-size: var(--tabs__tab-bdw);
+
+  --tabs__label-gap: var(--unit-sm);
+
   --tabs__tab-fg: var(--btn-fg, var(--fg));
   --tabs__tab-bg: var(--btn-bg, var(--bg));
   --tabs__tab-pa: var(--btn-pa);
@@ -22,14 +31,6 @@
   --tabs__panel-br: var(--outset-br);
   --tabs__panel-tsh: var(--outset-tsh);
   --tabs__panel-bsh: var(--outset-bsh);
-
-  --tabs-overlap: var(--tabs__tab-bdw);
-  --tabs-gap: calc(-1 * var(--tabs__tab-bdw));
-  --tabs-active-grow-y: var(--ctrl-py);
-  --tabs-active-grow-x: var(--ctrl-px);
-
-  --tabs-max-z: 999;
-  --tabs-shadow-size: var(--tabs__tab-bdw);
 }
 
 ui-tabs {
@@ -155,6 +156,20 @@ ui-tabs {
 }
 
 .ui-tabs__label {
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: var(--tabs__label-gap);
+  /* container: tab / inline-size; */
+}
+
+.ui-tabs__label::after {
+  content: "";
+  height: var(--picto-size);
+}
+
+.ui-tabs__trigger {
   flex: 1 1 0%;
   min-width: 0;
 
@@ -163,20 +178,6 @@ ui-tabs {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.ui-tabs__container {
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  column-gap: var(--unit-sm);
-  /* container: tab / inline-size; */
-}
-
-.ui-tabs__container::after {
-  content: "";
-  height: var(--picto-size);
 }
 
 .ui-tabs__close {

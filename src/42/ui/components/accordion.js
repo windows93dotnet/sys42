@@ -56,32 +56,33 @@ export class Accordion extends Component {
         scope: "content",
         each: [
           {
-            tag: "h2.ui-accordion__label._button",
+            tag: "h2.ui-accordion__label",
             content: [
               {
                 tag: "ui-picto",
                 value: `{{includes(../../expandeds, @index) ? '${pictoOpen}' : '${pictoClose}'}}`,
+                click: "{{togglePanel(@index)}}",
               },
               {
                 if: "{{prelabel}}",
-                tag: "span.prelabel",
+                tag: "span.ui-accordion__prelabel",
                 content: "{{render(prelabel)}}",
               },
               {
-                tag: "button.ui-accordion__button",
+                tag: "button.ui-accordion__trigger",
                 aria: {
                   controls: `${id}-panel-{{@index}}`,
                   expanded: "{{includes(../../expandeds, @index)}}",
                 },
                 content: {
-                  tag: "span.ui-accordion__button__text",
+                  tag: "span.ui-accordion__trigger__text",
                   content: "{{render(label)}}",
                 },
                 click: "{{togglePanel(@index)}}",
               },
               {
                 if: "{{postlabel}}",
-                tag: "span.postlabel",
+                tag: "span.ui-accordion__postlabel",
                 content: "{{render(postlabel)}}",
               },
             ],

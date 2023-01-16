@@ -1,6 +1,8 @@
 :root {
   --tree-indent: var(--unit-lg);
   --tree-line: 1px dotted;
+
+  --tree__label-gap: var(--unit-sm);
 }
 
 ui-tree {
@@ -33,7 +35,7 @@ ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
   overflow: visible;
 }
 
-.ui-tree__item:has(.ui-tree__group[aria-busy="true"]) > .ui-tree__label {
+.ui-tree__item:has(.ui-tree__group[aria-busy="true"]) > .ui-tree__trigger {
   cursor: var(--cursor-progress);
 }
 
@@ -48,15 +50,8 @@ ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
 
 .ui-tree__item {
   position: relative;
-  line-height: 12px;
-  padding-top: 2px;
-  padding-bottom: 2px;
   display: flex;
   flex-direction: column;
-}
-
-.ui-tree__item[aria-expanded] > .ui-tree__label {
-  font-weight: 600;
 }
 
 .ui-tree__item::before {
@@ -80,4 +75,28 @@ ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
 .ui-tree__item:last-child::after {
   height: 7px;
   bottom: auto;
+}
+
+.ui-tree__label {
+  display: flex;
+  align-items: center;
+  column-gap: var(--tree__label-gap);
+}
+
+.ui-tree__label::after {
+  content: "";
+  height: var(--picto-size);
+}
+
+.ui-tree__trigger {
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* temp */
+
+.ui-tree__item[aria-expanded] > .ui-tree__label > .ui-tree__trigger {
+  font-weight: 600;
 }

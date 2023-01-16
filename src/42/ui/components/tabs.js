@@ -83,18 +83,29 @@ export class Tabs extends Component {
               id: `tab-${id}-{{@index}}`,
               style: { "--index": "{{@index}}" },
               tabIndex: "{{../../current === @index ? 0 : -1}}",
+              aria: {
+                selected: "{{../../current === @index}}",
+                controls: `${id}-panel-{{@index}}`,
+              },
               content: {
-                tag: "span.ui-tabs__container",
+                tag: "span.ui-tabs__label",
                 content: [
                   {
                     if: "{{prelabel}}",
-                    tag: "span.prelabel",
+                    tag: "span.ui-tabs__prelabel",
                     content: "{{render(prelabel)}}",
                   },
-                  { tag: "span.ui-tabs__label", content: "{{render(label)}}" },
+                  {
+                    tag: "span.ui-tabs__trigger",
+                    content: "{{render(label)}}",
+                    on: {
+                      "pointerdown || Space || Enter":
+                        "{{selectPanel(@index)}}",
+                    },
+                  },
                   {
                     if: "{{postlabel}}",
-                    tag: "span.postlabel",
+                    tag: "span.ui-tabs__postlabel",
                     content: "{{render(postlabel)}}",
                   },
                   closable && {
@@ -107,13 +118,6 @@ export class Tabs extends Component {
                     },
                   },
                 ],
-              },
-              aria: {
-                selected: "{{../../current === @index}}",
-                controls: `${id}-panel-{{@index}}`,
-              },
-              on: {
-                "pointerdown || Space || Enter": "{{selectPanel(@index)}}",
               },
             },
           },

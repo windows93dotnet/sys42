@@ -52,7 +52,8 @@
 
 button.btn-small,
 .ui-dialog__header button,
-.ui-tabs__container > span > button,
+.ui-tree__label button,
+.ui-tabs__label > span > button,
 .ui-accordion__label button {
   height: var(--picto-size);
   min-width: var(--picto-size);
