@@ -52,6 +52,7 @@ ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
   position: relative;
   display: flex;
   flex-direction: column;
+  /* padding-bottom: 2px; */
 }
 
 .ui-tree__item::before {
@@ -93,6 +94,10 @@ ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.ui-tree__trigger > ui-icon {
+  float: left;
 }
 
 /* temp */
