@@ -7,7 +7,7 @@ export default function parseMarkdown(text) {
 
   const makeTokenizer = (tag) => (_, content, index) => {
     const previous = text.slice(cursor, index)
-    if (previous) tokens.push(previous)
+    if (previous) tokens.push({ content: previous })
     tokens.push({ tag, content })
     cursor = index + _.length
     return " ".repeat(_.length)
@@ -24,7 +24,7 @@ export default function parseMarkdown(text) {
   // .replace(/\[(.*?)]\((.*?)\)/gim, "<a href='$2'>$1</a>")
   // .replace(/\n$/gim, "<br />")
 
-  if (cursor < text.length) tokens.push(text.slice(cursor))
+  if (cursor < text.length) tokens.push({ content: text.slice(cursor) })
 
   return tokens
 }
