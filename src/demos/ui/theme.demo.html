@@ -132,23 +132,9 @@
                 ],
               },
               {
-                tag: ".box-h.gap",
-                content: [
-                  { tag: ".inset.pa-xs", content: ".inset" },
-                  { tag: ".outset.pa-xs", content: ".outset" },
-                ],
-              },
-              {
-                tag: ".box-h.gap",
-                content: [
-                  { tag: ".inset-shallow.pa-xs", content: ".inset-shallow" },
-                  { tag: ".outset-shallow.pa-xs", content: ".outset-shallow" },
-                ],
-              },
-              {
                 tag: "ui-tabs.w-ctrl",
                 current: name === "disabled" ? 1 : 0,
-                content: [
+                items: [
                   { label: "Tab 1", content: "Tab Content 1" },
                   { label: "Tab 2", content: "Tab Content 2" },
                 ],
@@ -287,8 +273,21 @@
       },
     },
     {
-      tag: ".box-h.ma.pa.gap._checkboard.inset",
+      tag: ".box-h.ma.pa.gap.inset",
       content: [
+        {
+          tag: ".flex-v.gap",
+          content: [
+            ".inset-shallow",
+            ".outset-shallow",
+            ".inset",
+            ".outset",
+            ".pill",
+          ].map((x) => ({
+            tag: `${x}.pa`,
+            content: x,
+          })),
+        },
         {
           tag: ".flex-v.gap",
           content: [
@@ -296,7 +295,8 @@
             ".message.warning",
             ".message.success",
             ".message.info",
-            ".pill",
+            ".checkboard",
+            ".checkboard-dark",
           ].map((x) => ({
             tag: `${x}.pa`,
             content: x,
