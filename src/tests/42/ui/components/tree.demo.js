@@ -50,25 +50,7 @@ window.app = ui({
   style: { padding: "90px" },
 
   content: [
-    // {
-    //   tag: "ui-grid.inset.paper",
-    //   style: { width: "400px", height: "250px" },
-    //   content: list.map((path) => ({ tag: "ui-icon", path })),
-    // },
-
-    // {
-    //   tag: "ui-grid.inset.paper.resize",
-    //   style: { width: "300px", height: "300px" },
-    //   selection: ["/tests/fixtures/formats/example.json"],
-    //   selectionKey: "path",
-    //   itemTemplate: {
-    //     tag: "ui-icon",
-    //     path: "{{.}}",
-    //   },
-    //   content: list,
-    // },
-
-    "## Tree",
+    "## ui-tree",
     {
       tag: "ui-tree.inset.paper.resize",
       style: { width: "256px", height: "128px" },
