@@ -45,31 +45,82 @@ const content = [
 
 window.app = ui({
   // plugins: ["markdown", "persist"],
-  plugins: ["markdown"],
+  // plugins: ["markdown"],
   tag: "body.box-fit.box-center._gap._box-v._ground",
   style: { padding: "90px" },
 
   content: [
-    "## ui-tree",
-    {
-      tag: "ui-tree.inset.paper.resize",
-      style: { width: "256px", height: "128px" },
-      items: content,
-    },
+    // "## ui-tree",
+    // {
+    //   tag: "ui-tree.inset.paper.resize",
+    //   style: { width: "256px", height: "128px" },
+    //   items: content,
+    // },
 
-    "### itemTemplate",
-    {
-      tag: "ui-tree.inset.paper.resize",
-      style: { width: "256px", height: "128px" },
-      selection: ["/tests/fixtures/formats/example.json"],
-      itemTemplate: {
-        content: [
-          { tag: "ui-icon", small: true, path: "{{.}}" },
-          // { if: "{{endsWith(., '/')}}", content: "subtree" },
-        ],
-      },
-      items: list,
-    },
+    // "### itemTemplate",
+    // {
+    //   tag: "ui-tree.inset.paper.resize",
+    //   style: { width: "256px", height: "128px" },
+    //   selection: ["/tests/fixtures/formats/example.json"],
+    //   itemTemplate: {
+    //     content: [
+    //       { tag: "ui-icon", small: true, path: "{{.}}" },
+    //       // { if: "{{endsWith(., '/')}}", content: "subtree" },
+    //     ],
+    //   },
+    //   items: list,
+    // },
+
+    // "### lazy loading",
+    // {
+    //   tag: "ui-tree.inset.paper.resize",
+    //   style: { width: "256px", height: "128px" },
+    //   selection: ["Hello"],
+    //   items: [
+    //     {
+    //       label: "Foo",
+    //       expanded: true,
+    //       async items() {
+    //         await sleep(500)
+    //         return [
+    //           { label: "Bar" }, //
+    //           { label: "Baz" },
+    //           {
+    //             label: "Derp",
+    //             // expanded: true,
+    //             items: [
+    //               {
+    //                 label: "Foo",
+    //                 items: [
+    //                   { label: ["Bar", "\n\n", "Derp"] }, //
+    //                   { label: "Baz" },
+    //                 ],
+    //               },
+    //               { label: "Hello" },
+    //               { label: "World" },
+    //               {
+    //                 label: "Foo",
+    //                 items: [
+    //                   { label: "Bar" }, //
+    //                   { label: "Baz" },
+    //                 ],
+    //               },
+    //             ],
+    //           },
+    //         ]
+    //       },
+    //     },
+    //     { label: "Hello" },
+    //     { label: "World" },
+    //     {
+    //       label: "Subtree",
+    //       items: [
+    //         { label: "Bar" }, //
+    //         { label: "Baz" },
+    //       ],
+    //     },
+    //   ],
+    // },
 
     "### lazy loading",
     {
@@ -80,35 +131,32 @@ window.app = ui({
         {
           label: "Foo",
           expanded: true,
-          async items() {
-            await sleep(500)
-            return [
-              { label: "Bar" }, //
-              { label: "Baz" },
-              {
-                label: "Derp",
-                // expanded: true,
-                items: [
-                  {
-                    label: "Foo",
-                    items: [
-                      { label: ["Bar", "\n\n", "Derp"] }, //
-                      { label: "Baz" },
-                    ],
-                  },
-                  { label: "Hello" },
-                  { label: "World" },
-                  {
-                    label: "Foo",
-                    items: [
-                      { label: "Bar" }, //
-                      { label: "Baz" },
-                    ],
-                  },
-                ],
-              },
-            ]
-          },
+          items: [
+            { label: "Bar" }, //
+            { label: "Baz" },
+            {
+              label: "Derp",
+              // expanded: true,
+              items: [
+                {
+                  label: "Foo",
+                  items: [
+                    { label: ["Bar", "\n\n", "Derp"] }, //
+                    { label: "Baz" },
+                  ],
+                },
+                { label: "Hello" },
+                { label: "World" },
+                {
+                  label: "Foo",
+                  items: [
+                    { label: "Bar" }, //
+                    { label: "Baz" },
+                  ],
+                },
+              ],
+            },
+          ],
         },
         { label: "Hello" },
         { label: "World" },

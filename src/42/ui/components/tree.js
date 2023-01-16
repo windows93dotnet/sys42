@@ -55,6 +55,11 @@ export class Tree extends Component {
             tag: ".ui-tree__label",
             content: [
               {
+                if: "{{items}}",
+                tag: "ui-picto.ui-tree__picto",
+                value: "{{expanded ? 'minus-square' : 'plus-square'}}",
+              },
+              {
                 if: "{{prelabel}}",
                 tag: "span.ui-tree__prelabel",
                 content: "{{render(prelabel)}}",
@@ -63,7 +68,6 @@ export class Tree extends Component {
                 tag: "span.ui-tree__trigger",
                 content: {
                   ...(itemTemplate ?? {
-                    tag: ".ui-tree__trigger",
                     content: "{{render(label)}}",
                   }),
                 },

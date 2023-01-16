@@ -30,6 +30,9 @@ export default function render(plan, stage, options) {
     }
   }
 
+  if (plan.if) return renderIf(...normalize(plan, stage, options))
+  if (plan.each) return renderEach(...normalize(plan, stage, options))
+
   if (plan?.tag?.startsWith("ui-")) {
     // TODO: fix tags like "div > ui-foo"
     delete plan.attrs
@@ -112,9 +115,6 @@ export default function render(plan, stage, options) {
 
     if (resolver) stage.reactive.set(stage.scope, state, { silent: true })
   }
-
-  if (plan.if) return renderIf(plan, stage)
-  if (plan.each) return renderEach(plan, stage)
 
   let el
   let container

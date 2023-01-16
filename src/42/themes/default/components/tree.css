@@ -24,7 +24,8 @@ ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
 .ui-tree__group {
   margin: 0;
   padding: 0;
-  padding-left: var(--tree-indent);
+  padding-left: calc(2 * var(--tree-indent));
+  margin-left: calc(-1 * var(--tree-indent));
   list-style: none;
   overflow: hidden;
   will-change: height;
@@ -100,8 +101,15 @@ ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
   float: left;
 }
 
-/* temp */
-
-.ui-tree__item[aria-expanded] > .ui-tree__label > .ui-tree__trigger {
-  font-weight: 600;
+.ui-tree__picto {
+  position: absolute;
+  left: calc(calc(-1 * var(--tree-indent)) - 7px);
 }
+
+.ui-tree__picto svg {
+  fill: var(--fg);
+}
+
+/* .ui-tree__item[aria-expanded] > .ui-tree__label > .ui-tree__trigger {
+  font-weight: 600;
+} */
