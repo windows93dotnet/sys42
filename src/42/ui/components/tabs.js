@@ -14,12 +14,12 @@ export class Tabs extends Component {
       closable: false,
       transferable: false,
       current: 0,
-      content: {
+      items: {
         type: "array",
         default: [],
         update() {
-          if (this.content.length > 0) {
-            const max = this.content.length - 1
+          if (this.items.length > 0) {
+            const max = this.items.length - 1
             if (this.current > max) this.current = max
           } else this.current = 0
         },
@@ -28,15 +28,15 @@ export class Tabs extends Component {
   }
 
   addPanel(data) {
-    this.content.push(data)
+    this.items.push(data)
   }
 
   removePanel(index) {
-    this.content.splice(index, 1)
+    this.items.splice(index, 1)
   }
 
   selectPanel(index, options) {
-    const max = this.content.length - 1
+    const max = this.items.length - 1
     if (index > max) index = max
     else if (index < 0) index = 0
 
@@ -55,7 +55,7 @@ export class Tabs extends Component {
 
     return [
       {
-        scope: "content",
+        scope: "items",
         content: [
           {
             tag: ".ui-tabs__tablist",
@@ -69,7 +69,7 @@ export class Tabs extends Component {
               ? {
                   transferable: {
                     selector: ":scope > .ui-tabs__tab",
-                    list: this.content,
+                    list: this.items,
                     indexChange: (index) => this.selectPanel(index),
                     sortable,
                     ...transferable,

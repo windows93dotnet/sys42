@@ -1,3 +1,5 @@
+// TODO: define menu using "items" keyword
+
 /* eslint-disable complexity */
 import inTop from "../../core/env/realm/inTop.js"
 import Component from "../classes/Component.js"
