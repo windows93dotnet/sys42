@@ -53,16 +53,13 @@ class Icon extends Component {
         {
           if: "{{../label}}",
           tag: ".ui-icon__label",
-          content: [
-            { tag: "svg", content: { tag: "rect.ui-icon__focusring" } },
-            {
-              tag: ".ui-icon__text",
-              content: [
-                { tag: "span", content: "{{name}}" },
-                { tag: "span", content: "\u200B{{ext}}" },
-              ],
-            },
-          ],
+          content: {
+            tag: ".ui-icon__text",
+            content: [
+              { tag: "span.ui-icon__name", content: "{{name}}" },
+              { tag: "span.ui-icon__ext", content: "\u200B{{ext}}" },
+            ],
+          },
         },
       ],
     },
@@ -73,6 +70,7 @@ class Icon extends Component {
     const infos = getPathInfos(path, { getURIMimetype: false })
     infos.image ??= themeManager.getIconPath(infos, this.small ? 16 : undefined)
     infos.description ??= infos.isDir ? "folder" : infos.isURI ? "uri" : "file"
+    if (infos.isURI) infos.ext = ""
     infos.name ??= (
       infos.isURI
         ? infos.host.replace(/^www\./, "") +

@@ -146,13 +146,6 @@ export class Folder extends Component {
 
       this.stage.reactive.now(() => {
         this.stage.reactive.refresh(this.stage.scope + "/path")
-        const el = document.activeElement
-        if (el.localName === "ui-icon") {
-          // force redraw focusring
-          const focusring = el.querySelector(".ui-icon__focusring")
-          focusring.style.position = "static"
-          delete focusring.style.position
-        }
       })
     })
     this[_forgetWatch].path = this.path

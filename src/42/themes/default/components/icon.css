@@ -61,9 +61,27 @@ ui-icon:focus .ui-icon__label {
   background-color: var(--bg);
 }
 
-ui-icon:focus .ui-icon__focusring {
-  /* force redraw focusring */
+ui-icon:focus .ui-icon__label::after {
+  content: "";
   position: absolute;
+  inset: 0;
+  padding: 1px;
+
+  background:
+    repeating-conic-gradient(
+      transparent 0% 25%,
+      #fff 0% 50%
+    ) top left / 2px 2px;
+
+  --_mask:
+    linear-gradient(#000 0 0),
+    linear-gradient(#000 0 0) content-box;
+  -webkit-mask: var(--_mask);
+  mask: var(--_mask);
+  -webkit-mask-composite: source-out;
+  mask-composite: subtract;
+
+  mix-blend-mode: difference;
 }
 
 ui-icon:focus .ui-icon__text {
@@ -75,36 +93,6 @@ ui-icon:is([aria-pressed="true"],[aria-selected="true"]) .ui-icon__label {
   background: var(--highlight-bg);
   color: var(--fg);
   text-shadow: var(--highlight-tsh, none);
-}
-
-.ui-icon__label > svg {
-  display: none;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  inset: 0;
-  overflow: visible;
-  mix-blend-mode: difference;
-}
-
-.ui-icon__focusring {
-  rx: 0.2;
-  ry: 0.2;
-  x: 0.5;
-  y: 0.5;
-  width: calc(100% - 1.5px);
-  height: calc(100% - 1.5px);
-
-  fill: transparent;
-  stroke: #fff;
-  stroke-width: 1px;
-  shape-rendering: crispEdges;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-}
-
-ui-icon:focus .ui-icon__label > svg {
-  display: block;
 }
 
 /*  */

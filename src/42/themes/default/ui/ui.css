@@ -43,6 +43,7 @@
   mask: var(--_mask);
   -webkit-mask-composite: source-out;
   mask-composite: subtract;
+
   animation: spin 1s linear infinite;
 }
 

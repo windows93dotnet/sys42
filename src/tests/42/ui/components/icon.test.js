@@ -26,7 +26,6 @@ test("html", async (t) => {
     "/$ui/icon/root/infos/description",
     "/$ui/icon/root/infos/image",
     "/$ui/icon/root/infos/name",
-    "/$ui/icon/root/infos/isFile",
     "/$ui/icon/root/infos/ext",
   ])
 
@@ -46,14 +45,9 @@ test("html", async (t) => {
   </div>
   <!--[if]-->
   <div class="ui-icon__label">
-    <svg>
-      <rect class="ui-icon__focusring">
-      </rect>
-    </svg>
     <div class="ui-icon__text">
-      <span>script</span>
-      <!--[if]-->
-      <span>\u200b.js</span>
+      <span class="ui-icon__name">script</span>
+      <span class="ui-icon__ext">\u200b.js</span>
     </div>
   </div>
 </ui-icon>`
@@ -71,7 +65,7 @@ test("html", async (t) => {
   el.path = "/derp/foo.bar/"
   await app
 
-  t.is(el.textContent, "foo\u200b.bar")
+  t.is(el.textContent, "foo\u200b.bar\u200b")
   t.is(el.getAttribute("aria-description"), "folder")
   t.is(
     el.querySelector(":scope img").getAttribute("src"),
@@ -81,7 +75,7 @@ test("html", async (t) => {
   el.path = "https://www.windows93.net/"
   await app
 
-  t.is(el.textContent, "windows93\u200b.net")
+  t.is(el.textContent, "windows93\u200b.net\u200b")
   t.is(el.getAttribute("aria-description"), "uri")
   t.is(
     el.querySelector(":scope img").getAttribute("src"),
@@ -145,10 +139,7 @@ test("infos", async (t) => {
       { ext: "", name: "foo" },
       { ext: "", name: "foo\u200b.bar" },
       { ext: "", name: "windows93\u200b.net" },
-      {
-        ext: ".js",
-        name: "windows93\u200b.net/script\u200b.js",
-      },
+      { ext: "", name: "windows93\u200b.net/script\u200b.js" },
     ]
   )
 
@@ -191,10 +182,10 @@ test("infos", async (t) => {
 
   t.eq(icons.textContent, [
     "foo\u200b.js",
-    "foo",
-    "foo\u200b.bar",
-    "windows93\u200b.net",
-    "windows93\u200b.net/script\u200b.js",
+    "foo\u200b",
+    "foo\u200b.bar\u200b",
+    "windows93\u200b.net\u200b",
+    "windows93\u200b.net/script\u200b.js\u200b",
   ])
 
   t.eq(icons.getAttribute("aria-description"), [
@@ -255,7 +246,7 @@ test("each", async (t) => {
   ])
 
   const icons = t.puppet.$$$("ui-icon", { live: true, base: app.el })
-  t.eq(icons.textContent, ["foo\u200b.js", "derp"])
+  t.eq(icons.textContent, ["foo\u200b.js", "derp\u200b"])
 
   app.state.arr = [{ x: "bar.txt" }]
   await app
@@ -304,7 +295,7 @@ test("each", 2, async (t) => {
   ])
 
   const icons = t.puppet.$$$("ui-icon", { live: true, base: app.el })
-  t.eq(icons.textContent, ["foo\u200b.js", "derp"])
+  t.eq(icons.textContent, ["foo\u200b.js", "derp\u200b"])
   t.eq(
     icons.infos.map(({ image }) => image),
     [
@@ -332,7 +323,7 @@ test("each", 2, async (t) => {
   app.state.arr = ["derp/"]
   await app
 
-  t.eq(icons.textContent, ["derp"])
+  t.eq(icons.textContent, ["derp\u200b"])
   t.eq(
     icons.infos.map(({ image }) => image),
     ["/42/themes/default/icons/places/folder.png"]
