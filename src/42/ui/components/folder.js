@@ -110,7 +110,7 @@ export class Folder extends Component {
         autofocus: "{{@first}}",
         path: "{{.}}",
       },
-      content: "{{getItems(path)}}",
+      items: "{{getItems(path)}}",
       transferable: {
         selector: ':scope > div[role="row"] > ui-icon',
         import({ data, effect, index }) {

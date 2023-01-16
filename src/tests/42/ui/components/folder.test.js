@@ -34,7 +34,7 @@ test("generate icon list", async (t) => {
           selection: {
             $ref: "/$ui/folder/root/selection",
           },
-          content: [
+          items: [
             "/tests/fixtures/components/folder/subfolder/",
             "/tests/fixtures/components/folder/script.js",
             "/tests/fixtures/components/folder/style.css",
@@ -42,25 +42,25 @@ test("generate icon list", async (t) => {
         },
       },
       icon: {
-        "root,ui-folder,ui-grid,0,[0]": {
+        "root,ui-folder,ui-grid,[0]": {
           small: undefined,
           label: true,
           path: {
-            $ref: "/$ui/grid/root,ui-folder/content/0",
+            $ref: "/$ui/grid/root,ui-folder/items/0",
           },
         },
-        "root,ui-folder,ui-grid,0,[1]": {
+        "root,ui-folder,ui-grid,[1]": {
           small: undefined,
           label: true,
           path: {
-            $ref: "/$ui/grid/root,ui-folder/content/1",
+            $ref: "/$ui/grid/root,ui-folder/items/1",
           },
         },
-        "root,ui-folder,ui-grid,0,[2]": {
+        "root,ui-folder,ui-grid,[2]": {
           small: undefined,
           label: true,
           path: {
-            $ref: "/$ui/grid/root,ui-folder/content/2",
+            $ref: "/$ui/grid/root,ui-folder/items/2",
           },
         },
       },
