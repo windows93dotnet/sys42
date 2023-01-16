@@ -98,7 +98,7 @@ export default function render(plan, stage, options) {
     case "array": {
       const fragment = document.createDocumentFragment()
       for (let step = 0, l = plan.length; step < l; step++) {
-        // stage.type = typeof plan[step]
+        stage.type = typeof plan[step]
         fragment.append(render(plan[step], stage, { step }))
       }
 
