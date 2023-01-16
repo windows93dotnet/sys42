@@ -59,11 +59,7 @@ class Icon extends Component {
               tag: ".ui-icon__text",
               content: [
                 { tag: "span", content: "{{name}}" },
-                {
-                  if: "{{isFile && ext}}",
-                  tag: "span",
-                  content: "\u200B{{ext}}",
-                },
+                { tag: "span", content: "\u200B{{ext}}" },
               ],
             },
           ],

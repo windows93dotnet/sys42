@@ -28,7 +28,7 @@ ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
   margin: 0;
   padding: 0;
   padding-left: calc(2 * var(--tree-indent));
-  margin-left: calc(-1 * var(--tree-indent));
+  margin-left: calc(-1 * var(--tree-indent) + 2px);
   margin-top: -2px;
   margin-bottom: -2px;
   padding-top: 2px;
@@ -79,13 +79,12 @@ ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
   height: 1px;
 }
 
-.ui-tree__item:not(:only-child)::after {
+.ui-tree__item::after {
   content: "";
   position: absolute;
   top: -1px;
   bottom: 1px;
   left: calc(-1 * var(--tree-indent));
-  /* background-color: tan; */
   background-image:
     repeating-linear-gradient(
       to bottom,
@@ -95,6 +94,10 @@ ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
       transparent 2px
     );
   width: 1px;
+}
+
+.ui-tree__root > .ui-tree__item:only-child::after {
+  display: none;
 }
 
 .ui-tree__item:last-child::after {

@@ -1,13 +1,7 @@
 import "../../../../42/ui/components/icon.js"
 import ui from "../../../../42/ui.js"
 import sleep from "../../../../42/fabric/type/promise/sleep.js"
-
 import disk from "../../../../42/core/disk.js"
-const list = disk
-  .glob("/tests/fixtures/formats/*", {
-    sort: "mimetype",
-  })
-  .slice(5, 10)
 
 const content = [
   {
@@ -43,6 +37,17 @@ const content = [
   },
 ]
 
+async function recursiveFolders(dir) {
+  const out = []
+  for (const path of await disk.readDir(dir, { absolute: true })) {
+    const item = { label: path }
+    if (path.endsWith("/")) item.items = () => recursiveFolders(path)
+    out.push(item)
+  }
+
+  return out
+}
+
 window.app = ui({
   // plugins: ["markdown", "persist"],
   plugins: ["markdown"],
@@ -60,15 +65,14 @@ window.app = ui({
     "### itemTemplate",
     {
       tag: "ui-tree.inset.paper.resize",
-      style: { width: "256px", height: "128px" },
+      style: { width: "256px", height: "256px" },
       selection: ["/tests/fixtures/formats/example.json"],
       itemTemplate: {
-        content: [
-          { tag: "ui-icon", small: true, path: "{{.}}" },
-          // { if: "{{endsWith(., '/')}}", content: "subtree" },
-        ],
+        tag: "ui-icon",
+        small: true,
+        path: "{{label}}",
       },
-      items: list,
+      items: await recursiveFolders("/"),
     },
 
     "### lazy loading",

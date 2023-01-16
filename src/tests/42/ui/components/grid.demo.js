@@ -15,11 +15,11 @@ window.app = ui({
   content: [
     "## ui-grid",
 
-    {
-      tag: "ui-grid.inset.paper",
-      style: { width: "400px", height: "250px" },
-      items: items.map((path) => ({ tag: "ui-icon", path })),
-    },
+    // {
+    //   tag: "ui-grid.inset.paper",
+    //   style: { width: "400px", height: "250px" },
+    //   items: items.map((path) => ({ tag: "ui-icon", path })),
+    // },
 
     {
       tag: "ui-grid.inset.paper.resize",
