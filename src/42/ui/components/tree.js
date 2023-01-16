@@ -36,11 +36,12 @@ export class Tree extends Component {
     return {
       scope: "items",
 
-      animate: {
-        from: {
-          height: 0,
-        },
-      },
+      // animate: {
+      //   from: {
+      //     height: 0,
+      //     ms: 180,
+      //   },
+      // },
 
       each: {
         tag: "li.ui-tree__item",
@@ -57,7 +58,7 @@ export class Tree extends Component {
               {
                 if: "{{items}}",
                 tag: ".ui-tree__pictos",
-                click: "{{toggleItem(.)}}",
+                on: { pointerdown: "{{toggleItem(.)}}" },
                 content: [
                   {
                     tag: "ui-picto.ui-tree__picto-bg",
@@ -80,7 +81,7 @@ export class Tree extends Component {
               },
               {
                 tag: "span.ui-tree__trigger",
-                click: "{{toggleItem(.)}}",
+                on: { pointerdown: "{{toggleItem(.)}}" },
                 content: {
                   ...(itemTemplate ?? {
                     tag: "span.ui-tree__trigger-text",
@@ -99,12 +100,13 @@ export class Tree extends Component {
             if: "{{items && expanded}}",
             tag: "ul.ui-tree__group",
             role: "group",
-            animate: {
-              to: {
-                height: 0,
-                initial: false,
-              },
-            },
+            // animate: {
+            //   to: {
+            //     height: 0,
+            //     ms: 180,
+            //     initial: false,
+            //   },
+            // },
             content: "{{renderGroup() |> render(^^)}}",
           },
         ],

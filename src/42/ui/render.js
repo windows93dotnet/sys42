@@ -7,7 +7,7 @@ import renderIf from "./renderers/renderIf.js"
 import renderEach from "./renderers/renderEach.js"
 import renderOn from "./renderers/renderOn.js"
 import renderAnimation from "./renderers/renderAnimation.js"
-import { animateTo, animateFrom } from "../fabric/dom/animate.js"
+// import { animateTo, animateFrom } from "../fabric/dom/animate.js"
 import renderTag from "./renderers/renderTag.js"
 import isPromiseLike from "../fabric/type/any/is/isPromiseLike.js"
 
@@ -54,21 +54,23 @@ export default function render(plan, stage, options) {
 
       stage.el?.setAttribute("aria-busy", "true")
 
-      state.then(async (res) => {
-        delete stage.scopeResolvers[stage.scope]
-        stage.reactive.set(stage.scope, res, { silent: true })
-        await animateTo(loader, { height: "0", ms: 180 })
-        stage.el?.setAttribute("aria-busy", "false")
-        const el = render(plan, stage, {
-          ...options,
-          skipNormalize: true,
-          ignoreScopeResolver: true,
-        })
-        loader.replaceWith(el)
-        stage.scopeResolvers[stage.scope] = resolver
-      })
+      state.then(
+        /* async */ (res) => {
+          delete stage.scopeResolvers[stage.scope]
+          stage.reactive.set(stage.scope, res, { silent: true })
+          // await animateTo(loader, { height: "0", ms: 180 })
+          stage.el?.setAttribute("aria-busy", "false")
+          const el = render(plan, stage, {
+            ...options,
+            skipNormalize: true,
+            ignoreScopeResolver: true,
+          })
+          loader.replaceWith(el)
+          stage.scopeResolvers[stage.scope] = resolver
+        }
+      )
 
-      animateFrom(loader, { height: "0", ms: 180, delay: 100 })
+      // animateFrom(loader, { height: "0", ms: 180, delay: 100 })
       return loader
     }
 

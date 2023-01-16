@@ -101,8 +101,7 @@ export class Grid extends Component {
           role: "gridcell",
           aria: { selected: "{{includes(../../selection, .)}}" },
           tabIndex: "{{@first ? 0 : -1}}",
-          // ...(itemTemplate ?? { render: true }),
-          ...itemTemplate,
+          ...(itemTemplate ?? { content: "{{render(.)}}" }),
         },
       },
     ]
