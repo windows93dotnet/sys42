@@ -23,17 +23,17 @@ const SPECIAL_STRINGS = {
 }
 
 export default function render(plan, stage, options) {
-  if (!options?.skipNormalize) {
-    const normalized = normalize(plan, stage, options)
-    plan = normalized[0]
-    stage = normalized[1]
-  }
-
   if (stage?.pluginHandlers) {
     for (const pluginHandle of stage.pluginHandlers) {
       const res = pluginHandle(plan, stage, options)
       if (res !== undefined) plan = res
     }
+  }
+
+  if (!options?.skipNormalize) {
+    const normalized = normalize(plan, stage, options)
+    plan = normalized[0]
+    stage = normalized[1]
   }
 
   if (options?.ignoreScopeResolver !== true) {
@@ -98,7 +98,7 @@ export default function render(plan, stage, options) {
     case "array": {
       const fragment = document.createDocumentFragment()
       for (let step = 0, l = plan.length; step < l; step++) {
-        stage.type = typeof plan[step]
+        // stage.type = typeof plan[step]
         fragment.append(render(plan[step], stage, { step }))
       }
 

@@ -45,7 +45,7 @@ const content = [
 
 window.app = ui({
   // plugins: ["markdown", "persist"],
-  // plugins: ["markdown"],
+  plugins: ["markdown"],
   tag: "body.box-fit.box-center._gap._box-v._ground",
   style: { padding: "90px" },
 
@@ -125,7 +125,8 @@ window.app = ui({
     "### lazy loading",
     {
       tag: "ui-tree.inset.paper.resize",
-      style: { width: "256px", height: "128px" },
+      // style: { width: "256px", height: "128px" },
+      style: { width: "256px", height: "300px" },
       selection: ["Hello"],
       items: [
         {
@@ -136,10 +137,11 @@ window.app = ui({
             { label: "Baz" },
             {
               label: "Derp",
-              // expanded: true,
+              expanded: true,
               items: [
                 {
                   label: "Foo",
+                  expanded: true,
                   items: [
                     { label: ["Bar", "\n\n", "Derp"] }, //
                     { label: "Baz" },
