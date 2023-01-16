@@ -27,7 +27,7 @@ export class Grid extends Component {
       selection: [],
       selectionKey: "textContent",
       multiselectable: true,
-      content: {
+      items: {
         type: "array",
         // storeInState: false,
         default: [],
@@ -48,45 +48,45 @@ export class Grid extends Component {
   }
 
   moveFocusUp() {
-    const index = indexOf.call(this.items, document.activeElement)
-    this.items[index === -1 ? 0 : index - this.iconsPerLine]?.focus()
+    const index = indexOf.call(this._items, document.activeElement)
+    this._items[index === -1 ? 0 : index - this.itemsPerLine]?.focus()
   }
 
   moveFocusDown() {
-    const index = indexOf.call(this.items, document.activeElement)
-    this.items[index === -1 ? 0 : index + this.iconsPerLine]?.focus()
+    const index = indexOf.call(this._items, document.activeElement)
+    this._items[index === -1 ? 0 : index + this.itemsPerLine]?.focus()
   }
 
   moveFocusLeft() {
-    const index = indexOf.call(this.items, document.activeElement)
-    this.items[index === -1 ? 0 : index - 1]?.focus()
+    const index = indexOf.call(this._items, document.activeElement)
+    this._items[index === -1 ? 0 : index - 1]?.focus()
   }
 
   moveFocusRight() {
-    const index = indexOf.call(this.items, document.activeElement)
-    this.items[index === -1 ? 0 : index + 1]?.focus()
+    const index = indexOf.call(this._items, document.activeElement)
+    this._items[index === -1 ? 0 : index + 1]?.focus()
   }
 
   #refreshIconPerLine() {
-    if (this.items.length === 0) {
-      this.iconsPerLine = 0
+    if (this._items.length === 0) {
+      this.itemsPerLine = 0
       return
     }
 
-    const previousY = this.items[0].getBoundingClientRect().y
+    const previousY = this._items[0].getBoundingClientRect().y
 
-    for (let i = 1, l = this.items.length; i < l; i++) {
-      const { y } = this.items[i].getBoundingClientRect()
+    for (let i = 1, l = this._items.length; i < l; i++) {
+      const { y } = this._items[i].getBoundingClientRect()
       if (y !== previousY) {
-        this.iconsPerLine = i
+        this.itemsPerLine = i
         break
       }
     }
   }
 
   setup() {
-    this.items = this.children[0].children
-    this.iconsPerLine = 0
+    this._items = this.children[0].children
+    this.itemsPerLine = 0
     const ro = new ResizeObserver(debounce(() => this.#refreshIconPerLine()))
     ro.observe(this)
     this.stage.signal.addEventListener("abort", () => ro.disconnect())
@@ -95,13 +95,14 @@ export class Grid extends Component {
   render({ itemTemplate }) {
     return [
       {
-        scope: "content",
+        scope: "items",
         role: "row",
         each: {
           role: "gridcell",
           aria: { selected: "{{includes(../../selection, .)}}" },
           tabIndex: "{{@first ? 0 : -1}}",
-          ...(itemTemplate ?? { render: true }),
+          // ...(itemTemplate ?? { render: true }),
+          ...itemTemplate,
         },
       },
     ]

@@ -6,7 +6,9 @@ import NodesRange from "../../fabric/range/NodesRange.js"
 import removeRange from "./removeRange.js"
 import register from "../register.js"
 import Canceller from "../../fabric/classes/Canceller.js"
-import { normalizePlanWithoutStage, objectifyPlan } from "../normalize.js"
+import {
+  normalizePlanWithoutStage /* , objectifyPlan */,
+} from "../normalize.js"
 import { arrayDiff } from "../../fabric/json/diff.js"
 import renderAnimation from "./renderAnimation.js"
 
@@ -23,7 +25,7 @@ export default function renderEach(plan, stage) {
   const eachPlan = normalizePlanWithoutStage(plan.each)
   plan = omit(plan, ["each"])
 
-  let renderFunction
+  /* let renderFunction
 
   if (typeof eachPlan === "function") {
     renderFunction = eachPlan
@@ -34,7 +36,7 @@ export default function renderEach(plan, stage) {
   } else if (eachPlan?.render === true) {
     delete eachPlan.render
     renderFunction = (item) => ({ ...eachPlan, ...objectifyPlan(item) })
-  }
+  } */
 
   const el = render(plan, stage)
 
@@ -185,9 +187,9 @@ export default function renderEach(plan, stage) {
 
       let itemDef = eachPlan
 
-      if (renderFunction) {
-        itemDef = renderFunction(array[i], i, array)
-      }
+      // if (renderFunction) {
+      //   itemDef = renderFunction(array[i], i, array)
+      // }
 
       if (addedElements.length > 0) {
         const recycled = addedElements.pop()

@@ -11,24 +11,24 @@ export class Accordion extends Component {
       multiple: true,
       collapsible: false,
       expandeds: [0],
-      content: [],
+      items: [],
     },
   }
 
   addPanel(data) {
-    this.content.push(data)
+    this.items.push(data)
   }
 
   removePanel(index) {
-    this.content.splice(index, 1)
+    this.items.splice(index, 1)
   }
 
   togglePanel(index, previous) {
-    if (index < 0 || index > this.content.length - 1) return
+    if (index < 0 || index > this.items.length - 1) return
 
     if (this.expandeds.includes(index)) {
       if (this.collapsible !== true && this.expandeds.length === 1) {
-        if (index === this.content.length - 1) {
+        if (index === this.items.length - 1) {
           this.togglePanel(index - 1, index)
         } else this.togglePanel(index + 1, index)
       } else {
@@ -53,7 +53,7 @@ export class Accordion extends Component {
 
     return [
       {
-        scope: "content",
+        scope: "items",
         each: [
           {
             tag: "h2.ui-accordion__label",
@@ -92,14 +92,19 @@ export class Accordion extends Component {
             if: "{{includes(../../expandeds, @index)}}",
             animate: {
               flexBasis: "0%",
+              ms: 180,
               initial: false,
               autoHideScrollbars: true,
             },
             id: `${id}-panel-{{@index}}`,
+            class: {
+              "ui-accordion__panel--text": "{{getType(content) === 'string'}}",
+            },
             content: {
               tag: ".ui-accordion__content",
               content: "{{render(content)}}",
             },
+            render: "{{plan}}",
           },
         ],
       },

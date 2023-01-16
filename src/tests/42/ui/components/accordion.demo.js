@@ -1,6 +1,6 @@
 import ui from "../../../../42/ui.js"
 
-const content = [
+const items = [
   {
     label: "Lorem ipsum",
     content:
@@ -36,7 +36,7 @@ window.app = await ui({
           "--picto-open": "places/folder-open",
           "--picto-close": "places/folder",
         },
-        content: "{{/arr}}",
+        items: "{{/arr}}",
       },
     },
     "### multiple: false",
@@ -47,7 +47,7 @@ window.app = await ui({
         tag: "ui-accordion.inset",
         expandeds: [1],
         multiple: false,
-        content: "{{/arr}}",
+        items: "{{/arr}}",
       },
     },
     "### multiple: false, collapsible: true",
@@ -59,12 +59,12 @@ window.app = await ui({
         expandeds: [0],
         collapsible: true,
         multiple: false,
-        content,
+        items,
       },
     },
   ],
 
   state: {
-    arr: content,
+    arr: items,
   },
 })
