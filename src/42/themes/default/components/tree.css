@@ -1,9 +1,11 @@
 :root {
   --tree-indent: var(--unit-lg);
-  --tree-graph-alpha: 0.3;
+  --tree-graph-alpha: 0.4;
   --tree-graph-bg-color: var(--paper-bg);
   --tree-graph-fg-color: currentColor;
   --tree-graph-bd-color: rgba(0 0 0 / var(--tree-graph-alpha));
+
+  --tree__label-gap: var(--unit-sm);
 }
 
 ui-tree {
@@ -58,7 +60,6 @@ ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
   position: relative;
   display: flex;
   flex-direction: column;
-  /* padding-bottom: 2px; */
 }
 
 .ui-tree__item::before {
@@ -105,6 +106,7 @@ ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
   display: flex;
   align-items: center;
   column-gap: var(--tree__label-gap);
+  padding-bottom: 2px;
 }
 
 .ui-tree__label::after {
@@ -119,7 +121,7 @@ ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
   white-space: nowrap;
 }
 
-.ui-tree__trigger > ui-icon {
+.ui-tree__trigger ui-icon {
   float: left;
 }
 

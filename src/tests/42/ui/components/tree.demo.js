@@ -60,7 +60,8 @@ window.app = ui({
     "### itemTemplate",
     {
       tag: "ui-tree.inset.paper.resize",
-      style: { width: "256px", height: "128px" },
+      // style: { width: "256px", height: "128px" },
+      style: { width: "106px", height: "128px" },
       selection: ["/tests/fixtures/formats/example.json"],
       itemTemplate: {
         content: [

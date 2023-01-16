@@ -34,7 +34,7 @@ ui-icon {
   top: calc(var(--icon-size) + var(--icon-gap));
 }
 
-.ui-icon__text {
+:where(:not(ui-icon[small]) > .ui-icon__label > .ui-icon__text) {
   contain: paint;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -117,8 +117,16 @@ ui-icon[small] {
   justify-content: center;
   flex-direction: row;
   margin: 0;
+  max-width: 100%;
 }
 
 ui-icon[small] .ui-icon__label {
   position: static;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+ui-icon[small] .ui-icon__text {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
