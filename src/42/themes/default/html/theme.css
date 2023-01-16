@@ -347,7 +347,8 @@ h1, h2, h3, h4, h5, h6, dt {
 
 :root,
 ui-swatch,
-.checkboard {
+.checkboard,
+.checkboard-dark {
   --checkboard-dark: #cecece;
   --checkboard-light: #fff;
   --checkboard-size: 9;
@@ -358,8 +359,14 @@ ui-swatch,
     ) top left / calc(var(--checkboard-size) * 2px) calc(var(--checkboard-size) * 2px);
 }
 
-.checkboard {
+.checkboard,
+.checkboard-dark {
   background: var(--checkboard-bg);
+}
+
+.checkboard-dark {
+  --checkboard-dark: #666;
+  --checkboard-light: #555;
 }
 
 /* separators

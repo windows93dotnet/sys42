@@ -60,8 +60,7 @@ window.app = ui({
     "### itemTemplate",
     {
       tag: "ui-tree.inset.paper.resize",
-      // style: { width: "256px", height: "128px" },
-      style: { width: "106px", height: "128px" },
+      style: { width: "256px", height: "128px" },
       selection: ["/tests/fixtures/formats/example.json"],
       itemTemplate: {
         content: [
@@ -75,7 +74,7 @@ window.app = ui({
     "### lazy loading",
     {
       tag: "ui-tree.inset.paper.resize",
-      style: { width: "256px", height: "128px" },
+      style: { width: "256px", height: "256px" },
       selection: ["Hello"],
       items: [
         {
@@ -123,54 +122,53 @@ window.app = ui({
       ],
     },
 
-    "### lazy loading",
-    {
-      tag: "ui-tree.inset.paper.resize",
-      // style: { width: "256px", height: "128px" },
-      style: { width: "256px", height: "300px" },
-      selection: ["Hello"],
-      items: [
-        {
-          label: "Foo",
-          expanded: true,
-          items: [
-            { label: "Bar" }, //
-            { label: "Baz" },
-            {
-              label: "Derp",
-              expanded: true,
-              items: [
-                {
-                  label: "Foo",
-                  expanded: true,
-                  items: [
-                    { label: ["Bar", "\n\n", "Derp"] }, //
-                    { label: "Baz" },
-                  ],
-                },
-                { label: "Hello" },
-                { label: "World" },
-                {
-                  label: "Foo",
-                  items: [
-                    { label: "Bar" }, //
-                    { label: "Baz" },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-        {
-          label: "Subtree",
-          items: [
-            { label: "Bar" }, //
-            { label: "Baz" },
-          ],
-        },
-        { label: "Hello" },
-        { label: "World" },
-      ],
-    },
+    // {
+    //   tag: "ui-tree.inset.paper.resize",
+    //   // style: { width: "256px", height: "128px" },
+    //   style: { width: "256px", height: "300px" },
+    //   selection: ["Hello"],
+    //   items: [
+    //     {
+    //       label: "Foo",
+    //       expanded: true,
+    //       items: [
+    //         { label: "Bar" }, //
+    //         { label: "Baz" },
+    //         {
+    //           label: "Derp",
+    //           expanded: true,
+    //           items: [
+    //             {
+    //               label: "Foo",
+    //               expanded: true,
+    //               items: [
+    //                 { label: ["Bar", "\n\n", "Derp"] }, //
+    //                 { label: "Baz" },
+    //               ],
+    //             },
+    //             { label: "Hello" },
+    //             { label: "World" },
+    //             {
+    //               label: "Foo",
+    //               items: [
+    //                 { label: "Bar" }, //
+    //                 { label: "Baz" },
+    //               ],
+    //             },
+    //           ],
+    //         },
+    //       ],
+    //     },
+    //     {
+    //       label: "Subtree",
+    //       items: [
+    //         { label: "Bar" }, //
+    //         { label: "Baz" },
+    //       ],
+    //     },
+    //     { label: "Hello" },
+    //     { label: "World" },
+    //   ],
+    // },
   ],
 })
