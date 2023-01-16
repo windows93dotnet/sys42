@@ -124,6 +124,7 @@ types.any = {
   clone: "any/clone",
   equal: "any/equal",
   stringify: "any/stringify",
+  getType: "any/getType",
   async trace(...args) {
     const [logAsHTML, highlight, stringify] = await Promise.all([
       import("./console/logAsHTML.js").then((m) => m.default),

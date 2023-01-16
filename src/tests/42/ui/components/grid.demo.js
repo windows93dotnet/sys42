@@ -2,7 +2,7 @@ import "../../../../42/ui/components/icon.js"
 import ui from "../../../../42/ui.js"
 
 import disk from "../../../../42/core/disk.js"
-const list = disk.glob("/tests/fixtures/**/*", {
+const items = disk.glob("/tests/fixtures/**/*", {
   sort: "mimetype",
 })
 
@@ -15,11 +15,11 @@ window.app = ui({
   content: [
     "## ui-grid",
 
-    // {
-    //   tag: "ui-grid.inset.paper",
-    //   style: { width: "400px", height: "250px" },
-    //   content: list.map((path) => ({ tag: "ui-icon", path })),
-    // },
+    {
+      tag: "ui-grid.inset.paper",
+      style: { width: "400px", height: "250px" },
+      items: items.map((path) => ({ tag: "ui-icon", path })),
+    },
 
     {
       tag: "ui-grid.inset.paper.resize",
@@ -30,7 +30,7 @@ window.app = ui({
         tag: "ui-icon",
         path: "{{.}}",
       },
-      content: list,
+      items,
     },
   ],
 })

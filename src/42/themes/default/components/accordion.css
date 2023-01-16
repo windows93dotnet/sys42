@@ -11,6 +11,9 @@
   --accordion__label-tsh: var(--btn-tsh);
   --accordion__label-bsh: var(--btn-bsh);
   --accordion__label-gap: var(--unit-sm);
+
+  --accordion__panel-pa: 0;
+  --accordion__panel--text-pa: var(--unit-md) var(--unit);
 }
 
 ui-accordion {
@@ -81,4 +84,9 @@ button.ui-accordion__trigger {
   overflow-x: hidden;
   scrollbar-gutter: stable;
   will-change: flex-basis;
+  padding: var(--accordion__panel-pa);
+}
+
+.ui-accordion__panel--text {
+  padding: var(--accordion__panel--text-pa);
 }
