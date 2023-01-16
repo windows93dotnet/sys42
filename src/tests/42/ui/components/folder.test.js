@@ -73,7 +73,7 @@ test("generate icon list", async (t) => {
   t.eq(el.selection, ["/tests/fixtures/components/folder/script.js"])
 
   t.eq(icons.textContent, [
-    "subfolder", //
+    "subfolder\u200b", //
     "script\u200b.js",
     "style\u200b.css",
   ])
