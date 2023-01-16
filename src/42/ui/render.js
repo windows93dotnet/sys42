@@ -23,58 +23,17 @@ const SPECIAL_STRINGS = {
 }
 
 export default function render(plan, stage, options) {
-  if (stage?.pluginHandlers) {
-    for (const pluginHandle of stage.pluginHandlers) {
-      const res = pluginHandle(plan, stage, options)
-      if (res !== undefined) plan = res
-    }
-  }
-
-  if (plan.if) return renderIf(...normalize(plan, stage, options))
-  if (plan.each) return renderEach(...normalize(plan, stage, options))
-
-  if (plan?.tag?.startsWith("ui-")) {
-    // TODO: fix tags like "div > ui-foo"
-    delete plan.attrs
-    if (options?.step !== undefined) {
-      stage = { ...stage }
-      stage.steps += "," + options.step
-    }
-
-    return renderComponent(create(plan.tag), plan, stage, options)
-  }
-
   if (!options?.skipNormalize) {
     const normalized = normalize(plan, stage, options)
     plan = normalized[0]
     stage = normalized[1]
   }
 
-  if (options?.step !== undefined) stage.steps += "," + options.step
-
-  switch (stage.type) {
-    case "string":
-      return SPECIAL_STRINGS[plan]?.() ?? document.createTextNode(plan)
-
-    case "array": {
-      const fragment = document.createDocumentFragment()
-      for (let step = 0, l = plan.length; step < l; step++) {
-        stage.type = typeof plan[step]
-        fragment.append(render(plan[step], stage, { step }))
-      }
-
-      return fragment
+  if (stage?.pluginHandlers) {
+    for (const pluginHandle of stage.pluginHandlers) {
+      const res = pluginHandle(plan, stage, options)
+      if (res !== undefined) plan = res
     }
-
-    case "function": {
-      const el = document.createTextNode("")
-      register(stage, plan, (val) => {
-        el.textContent = val
-      })
-      return el
-    }
-
-    default:
   }
 
   if (options?.ignoreScopeResolver !== true) {
@@ -114,6 +73,47 @@ export default function render(plan, stage, options) {
     }
 
     if (resolver) stage.reactive.set(stage.scope, state, { silent: true })
+  }
+
+  if (plan.if) return renderIf(plan, stage)
+  if (plan.each) return renderEach(plan, stage)
+
+  if (plan?.tag?.startsWith("ui-")) {
+    // TODO: fix tags like "div > ui-foo"
+    delete plan.attrs
+    if (options?.step !== undefined) {
+      stage = { ...stage }
+      stage.steps += "," + options.step
+    }
+
+    return renderComponent(create(plan.tag), plan, stage, options)
+  }
+
+  if (options?.step !== undefined) stage.steps += "," + options.step
+
+  switch (stage.type) {
+    case "string":
+      return SPECIAL_STRINGS[plan]?.() ?? document.createTextNode(plan)
+
+    case "array": {
+      const fragment = document.createDocumentFragment()
+      for (let step = 0, l = plan.length; step < l; step++) {
+        stage.type = typeof plan[step]
+        fragment.append(render(plan[step], stage, { step }))
+      }
+
+      return fragment
+    }
+
+    case "function": {
+      const el = document.createTextNode("")
+      register(stage, plan, (val) => {
+        el.textContent = val
+      })
+      return el
+    }
+
+    default:
   }
 
   let el
