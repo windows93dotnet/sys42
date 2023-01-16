@@ -51,15 +51,11 @@ ui-accordion {
   margin-left: calc(-1 * var(--accordion__label-gap));
 }
 
-.ui-accordion__button__text {
-  padding: calc(var(--accordion__label-pa) - var(--accordion__label-base-pa));
-}
-
 .ui-accordion__label:last-of-type {
   margin-bottom: var(--ctrl-group-gap);
 }
 
-button.ui-accordion__button {
+button.ui-accordion__trigger {
   all: unset;
   display: flex;
   align-items: center;
@@ -70,6 +66,10 @@ button.ui-accordion__button {
   text-overflow: ellipsis;
   white-space: nowrap;
   gap: var(--unit-xs);
+}
+
+.ui-accordion__trigger__text {
+  padding: calc(var(--accordion__label-pa) - var(--accordion__label-base-pa));
 }
 
 .ui-accordion__panel {

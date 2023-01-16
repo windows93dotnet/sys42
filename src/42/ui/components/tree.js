@@ -39,7 +39,6 @@ export class Tree extends Component {
       animate: {
         from: {
           height: "0px",
-          // ms: 1000,
           initial: false,
         },
       },
@@ -53,12 +52,32 @@ export class Tree extends Component {
         },
         tabIndex: "{{@first ? 0 : -1}}",
         content: [
+          // {
+          //   ...(itemTemplate ?? {
+          //     tag: ".ui-tree__trigger",
+          //     content: "{{render(label)}}",
+          //     click: "{{toggleItem(.)}}",
+          //   }),
+          // },
           {
-            ...(itemTemplate ?? {
-              tag: ".ui-tree__label",
-              content: "{{render(label)}}",
-              click: "{{toggleItem(.)}}",
-            }),
+            tag: ".ui-tree__label",
+            content: [
+              {
+                if: "{{prelabel}}",
+                tag: "span.ui-tree__prelabel",
+                content: "{{render(prelabel)}}",
+              },
+              {
+                tag: "span.ui-tree__trigger",
+                content: "{{render(label)}}",
+                click: "{{toggleItem(.)}}",
+              },
+              {
+                if: "{{postlabel}}",
+                tag: "span.ui-tree__postlabel",
+                content: "{{render(postlabel)}}",
+              },
+            ],
           },
           {
             if: "{{content && expanded}}",
@@ -67,7 +86,6 @@ export class Tree extends Component {
             animate: {
               to: {
                 height: "0px",
-                // ms: 1000,
                 initial: false,
               },
             },
