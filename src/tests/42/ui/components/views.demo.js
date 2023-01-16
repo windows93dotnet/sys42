@@ -1,10 +1,13 @@
+import "../../../../42/ui/components/icon.js"
 import ui from "../../../../42/ui.js"
 import sleep from "../../../../42/fabric/type/promise/sleep.js"
 
 import disk from "../../../../42/core/disk.js"
-const list = disk.glob("/tests/fixtures/formats/*", {
-  sort: "mimetype",
-})
+const list = disk
+  .glob("/tests/fixtures/formats/*", {
+    sort: "mimetype",
+  })
+  .slice(5, 10)
 
 const content = [
   {
@@ -23,6 +26,17 @@ const content = [
       "Laudantium molestiae nihil pariatur enim nemo minus nostrum nobis eaque, quam mollitia magni iusto, illum iure dolor quod vel laborum nesciunt minima!",
   },
   {
+    label: {
+      tag: "ui-icon",
+      small: true,
+      path: "/tests/fixtures/formats/example.json",
+    },
+    prelabel: { tag: "button", content: "pre" },
+    postlabel: { tag: "button", content: "post" },
+    content:
+      "Quam mollitia magni iusto, illum iure dolor quod vel laborum nesciunt minima! Quam mollitia magni iusto, illum iure dolor quod vel laborum nesciunt minima! Quam mollitia magni iusto, illum iure dolor quod vel laborum nesciunt minima!",
+  },
+  {
     label: "Quam mollitia magni",
     content:
       "Quam mollitia magni iusto, illum iure dolor quod vel laborum nesciunt minima! Quam mollitia magni iusto, illum iure dolor quod vel laborum nesciunt minima! Quam mollitia magni iusto, illum iure dolor quod vel laborum nesciunt minima!",
@@ -30,8 +44,9 @@ const content = [
 ]
 
 window.app = ui({
-  // plugins: ["persist"],
-  tag: "body.box-fit.box-center.gap._box-v._ground",
+  // plugins: ["markdown", "persist"],
+  plugins: ["markdown"],
+  tag: "body.box-fit.box-center._gap._box-v._ground",
   style: { padding: "90px" },
 
   content: [
@@ -53,44 +68,37 @@ window.app = ui({
     //   content: list,
     // },
 
-    // {
-    //   tag: "ui-tree.inset.paper.resize",
-    //   style: { width: "200px", height: "200px" },
-    //   selection: ["/tests/fixtures/formats/example.json"],
-    //   // itemTemplate: {
-    //   //   content: [
-    //   //     { tag: "ui-icon", small: true, path: "{{.}}" },
-    //   //     { if: "{{endsWith(., '/')}}", content: "subtree" },
-    //   //   ],
-    //   // },
-    //   // content: list,
-    //   content,
-    //   // content: [
-    //   //   { label: { content: "Hello", picto: "puzzle" } },
-    //   //   {
-    //   //     label:
-    //   //       "Laudantium molestiae nihil pariatur enim nemo minus nostrum nobis eaque, quam mollitia magni iusto",
-    //   //     postlabel: { tag: "button", content: "more" },
-    //   //   },
-    //   //   {
-    //   //     label: "Subtree",
-    //   //     content: [
-    //   //       { label: "Bar" }, //
-    //   //       { label: "Baz" },
-    //   //     ],
-    //   //   },
-    //   // ],
-    // },
-
+    "## Tree",
     {
       tag: "ui-tree.inset.paper.resize",
-      style: { width: "200px", height: "200px" },
+      style: { width: "256px", height: "128px" },
+      items: content,
+    },
+
+    "### itemTemplate",
+    {
+      tag: "ui-tree.inset.paper.resize",
+      style: { width: "256px", height: "128px" },
+      selection: ["/tests/fixtures/formats/example.json"],
+      itemTemplate: {
+        content: [
+          { tag: "ui-icon", small: true, path: "{{.}}" },
+          // { if: "{{endsWith(., '/')}}", content: "subtree" },
+        ],
+      },
+      items: list,
+    },
+
+    "### lazy loading",
+    {
+      tag: "ui-tree.inset.paper.resize",
+      style: { width: "256px", height: "128px" },
       selection: ["Hello"],
-      content: [
+      items: [
         {
           label: "Foo",
           expanded: true,
-          async content() {
+          async items() {
             await sleep(500)
             return [
               { label: "Bar" }, //
@@ -98,10 +106,10 @@ window.app = ui({
               {
                 label: "Derp",
                 // expanded: true,
-                content: [
+                items: [
                   {
                     label: "Foo",
-                    content: [
+                    items: [
                       { label: ["Bar", "\n\n", "Derp"] }, //
                       { label: "Baz" },
                     ],
@@ -110,7 +118,7 @@ window.app = ui({
                   { label: "World" },
                   {
                     label: "Foo",
-                    content: [
+                    items: [
                       { label: "Bar" }, //
                       { label: "Baz" },
                     ],
@@ -124,7 +132,7 @@ window.app = ui({
         { label: "World" },
         {
           label: "Subtree",
-          content: [
+          items: [
             { label: "Bar" }, //
             { label: "Baz" },
           ],

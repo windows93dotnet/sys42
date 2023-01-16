@@ -23,7 +23,7 @@ export class Tree extends Component {
       selection: [],
       selectionKey: "textContent",
       multiselectable: true,
-      content: [],
+      items: [],
     },
   }
 
@@ -34,12 +34,11 @@ export class Tree extends Component {
   async renderGroup() {
     const { itemTemplate } = this
     return {
-      scope: "content",
+      scope: "items",
 
       animate: {
         from: {
-          height: "0px",
-          initial: false,
+          height: 0,
         },
       },
 
@@ -48,17 +47,10 @@ export class Tree extends Component {
         role: "treeitem",
         aria: {
           selected: "{{includes(../../selection, .)}}",
-          expanded: "{{content ? expanded ?? false : undefined}}",
+          expanded: "{{items ? expanded ?? false : undefined}}",
         },
         tabIndex: "{{@first ? 0 : -1}}",
         content: [
-          // {
-          //   ...(itemTemplate ?? {
-          //     tag: ".ui-tree__trigger",
-          //     content: "{{render(label)}}",
-          //     click: "{{toggleItem(.)}}",
-          //   }),
-          // },
           {
             tag: ".ui-tree__label",
             content: [
@@ -69,7 +61,13 @@ export class Tree extends Component {
               },
               {
                 tag: "span.ui-tree__trigger",
-                content: "{{render(label)}}",
+                content: {
+                  ...(itemTemplate ?? {
+                    tag: ".ui-tree__trigger",
+                    content: "{{render(label)}}",
+                  }),
+                },
+
                 click: "{{toggleItem(.)}}",
               },
               {
@@ -80,12 +78,12 @@ export class Tree extends Component {
             ],
           },
           {
-            if: "{{content && expanded}}",
+            if: "{{items && expanded}}",
             tag: "ul.ui-tree__group",
             role: "group",
             animate: {
               to: {
-                height: "0px",
+                height: 0,
                 initial: false,
               },
             },
