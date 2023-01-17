@@ -22,13 +22,18 @@ export class Folder extends Component {
         default: "/",
         update: _updatePath,
       },
-      glob: {
-        type: "boolean",
+      view: {
+        type: "string",
         fromView: true,
+        default: "grid",
       },
       selection: {
         type: "array",
         default: [],
+      },
+      glob: {
+        type: "boolean",
+        fromView: true,
       },
       multiselectable: {
         type: "boolean",
@@ -99,26 +104,45 @@ export class Folder extends Component {
         contextmenu: "{{displayContextmenu(e, target)}}",
       },
     ],
+  }
 
-    content: {
-      tag: "ui-grid",
-      entry: "grid",
+  render() {
+    const common = {
+      entry: "currentView",
       selection: "{{selection}}",
       selectionKey: "path",
-      itemTemplate: {
-        tag: "ui-icon",
-        autofocus: "{{@first}}",
-        path: "{{.}}",
-      },
       items: "{{getItems(path)}}",
-      transferable: {
-        selector: ':scope > div[role="row"] > ui-icon',
-        import({ data, effect, index }) {
-          console.log(data, effect, index)
+    }
+    return [
+      {
+        if: "{{view === 'tree'}}",
+        content: {
+          tag: "ui-tree",
+          ...common,
+          itemTemplate: {
+            tag: "ui-icon",
+            small: true,
+            path: "{{path}}",
+          },
+        },
+        else: {
+          tag: "ui-grid",
+          ...common,
+          itemTemplate: {
+            tag: "ui-icon",
+            autofocus: "{{@first}}",
+            path: "{{.}}",
+          },
+          // transferable: {
+          //   selector: ':scope > div[role="row"] > ui-icon',
+          //   import({ data, effect, index }) {
+          //     console.log(data, effect, index)
+          //   },
+          // },
         },
       },
-    },
-  };
+    ]
+  }
 
   [_updatePath](initial) {
     if (this[_forgetWatch]?.path === this.path) return
@@ -179,17 +203,8 @@ export class Folder extends Component {
   }
 
   selectAll() {
-    this.grid.selectable.selectAll()
+    this.currentView.selectable.selectAll()
   }
-
-  // ensureSelected(path) {
-  //   if (this.selection.length === 0) {
-  //     this.selection.push(path)
-  //   } else if (!this.selection.includes(path)) {
-  //     this.selection.length = 0
-  //     this.selection.push(path)
-  //   }
-  // }
 
   getItems(path) {
     let dir
@@ -203,6 +218,17 @@ export class Folder extends Component {
     } catch (err) {
       this.err = err.message
       dir = []
+    }
+
+    if (this.view === "tree") {
+      const out = []
+      for (const path of dir) {
+        const item = { path }
+        if (path.endsWith("/")) item.items = () => this.getItems(path)
+        out.push(item)
+      }
+
+      return out
     }
 
     return dir
