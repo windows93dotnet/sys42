@@ -680,7 +680,10 @@ export function forkPlan(plan, stage) {
     if (stage.scopeChain) plan.scopeChain = structuredClone(stage.scopeChain)
     if (stage.plugins) plan.plugins = Object.keys(stage.plugins)
     const actions = stage.actions.value
-    if (!isEmptyObject(actions)) plan.actions = merge({}, actions)
+    if (!isEmptyObject(actions)) {
+      plan.actions = merge({}, actions)
+      plan.actionsScope = "/"
+    }
   }
 
   return plan
@@ -788,7 +791,7 @@ export function normalizePlan(plan = {}, stage, options) {
 
     if (plan.actions) {
       normalizeData(plan.actions, stage, (res, scope) => {
-        stage.actions.merge(scope, res)
+        stage.actions.merge(plan.actionsScope ?? scope, res)
       })
     }
 
