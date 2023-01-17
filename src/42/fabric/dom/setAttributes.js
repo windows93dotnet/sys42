@@ -25,7 +25,7 @@ export function setAriaAttributes(el, obj) {
 }
 
 export function setAttribute(el, key, val) {
-  if (key === "class" || key === "className") {
+  if (key === "class") {
     if (val) setClasses(el, val)
     else el.setAttribute("class", "") // preserve attribute order for testing
   } else if (key === "style") {
@@ -70,8 +70,7 @@ export function setAttribute(el, key, val) {
   return el
 }
 
-// [1] throw if setting value on input[type="file"]
-export default function setAttributes(el, obj) {
+export function setAttributes(el, obj) {
   if (!obj) return el
 
   for (const [keys, val] of Object.entries(obj)) {
@@ -80,3 +79,5 @@ export default function setAttributes(el, obj) {
 
   return el
 }
+
+export default setAttributes

@@ -10,11 +10,13 @@ import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 import setTemp from "../../fabric/dom/setTemp.js"
 import noop from "../../fabric/type/function/noop.js"
 import getRects from "../../fabric/dom/getRects.js"
+import setAttributes from "../../fabric/dom/setAttributes.js"
+import removeAttributes from "../../fabric/dom/removeAttributes.js"
 
 const DEFAULTS = {
   selector: ":scope > *",
   check: "colliding",
-  class: "selected",
+  attributes: { class: "selected" },
   dragger: { distance: 5, hoverScroll: true },
   zone: undefined,
   multiselectable: true,
@@ -37,11 +39,11 @@ class Selectable extends Trait {
     if (this.elements.includes(el)) {
       removeItem(this.selection, val)
       removeItem(this.elements, el)
-      this.config.remove(el, val)
+      this._remove(el, val)
     } else {
       this.selection.push(val)
       this.elements.push(el)
-      this.config.add(el, val)
+      this._add(el, val)
     }
   }
 
@@ -50,7 +52,7 @@ class Selectable extends Trait {
       const val = this.key(el)
       this.selection.push(val)
       this.elements.push(el)
-      this.config.add(el, val)
+      this._add(el, val)
     }
   }
 
@@ -59,7 +61,7 @@ class Selectable extends Trait {
       const val = this.key(el)
       removeItem(this.selection, val)
       removeItem(this.elements, el)
-      this.config.remove(el, val)
+      this._remove(el, val)
     }
   }
 
@@ -117,21 +119,21 @@ class Selectable extends Trait {
     while (this.elements.length > 0) {
       const el = this.elements.shift()
       const val = this.selection.shift()
-      this.config.remove(el, val)
+      this._remove(el, val)
     }
   }
 
   clearElements() {
     while (this.elements.length > 0) {
       const el = this.elements.shift()
-      this.config.remove(el)
+      this._remove(el)
     }
   }
 
   clearSelection() {
     while (this.selection.length > 0) {
       const val = this.selection.shift()
-      this.config.remove(undefined, val)
+      this._remove(undefined, val)
     }
   }
 
@@ -173,7 +175,7 @@ class Selectable extends Trait {
         const i = this.selection.indexOf(val)
         if (i > -1) {
           this.elements[i] = el
-          this.config.add(el, val)
+          this._add(el, val)
         }
       }
     } else if (this.selection.length < this.elements.length) {
@@ -181,7 +183,7 @@ class Selectable extends Trait {
       for (const el of this.elements) {
         const val = this.key(el)
         this.selection.push(val)
-        this.config.add(el, val)
+        this._add(el, val)
       }
     }
   }
@@ -205,13 +207,6 @@ class Selectable extends Trait {
       ? ensureElement(this.config.zone)
       : this.el
 
-    if (
-      options?.selector === undefined &&
-      this.el.getAttribute("role") === "grid"
-    ) {
-      this.config.selector = ':scope > [role="row"] > *'
-    }
-
     this.config.selector = ensureScopeSelector(this.config.selector, this.el)
 
     if (
@@ -225,13 +220,22 @@ class Selectable extends Trait {
       this.config.dragger.ignore = this.config.selector
     }
 
-    if (this.config.class && !this.config.add && !this.config.remove) {
-      this.config.add = (el) => el.classList.add(this.config.class)
-      this.config.remove = (el) => el.classList.remove(this.config.class)
-    } else {
-      this.config.add ??= noop
-      this.config.remove ??= noop
-    }
+    this.config.add ??= noop
+    this.config.remove ??= noop
+
+    this._add = this.config.attributes
+      ? (el, val) => {
+          setAttributes(el, this.config.attributes)
+          this.config.add(el, val)
+        }
+      : this.config.add
+
+    this._remove = this.config.attributes
+      ? (el, val) => {
+          removeAttributes(el, this.config.attributes)
+          this.config.remove(el, val)
+        }
+      : this.config.remove
 
     this.key = this.config.key ?? ((item) => item)
     if (typeof this.key === "string") {

@@ -43,7 +43,7 @@ ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
   overflow: visible;
 }
 
-.ui-tree__item:has(.ui-tree__group[aria-busy="true"]) > .ui-tree__trigger {
+.ui-tree__item:has(.ui-tree__group[aria-busy="true"]) > [role="treeitem"] {
   cursor: var(--cursor-progress);
 }
 
@@ -124,10 +124,6 @@ ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
   white-space: nowrap;
 }
 
-.ui-tree__trigger ui-icon {
-  float: left;
-}
-
 .ui-tree__pictos {
   display: grid;
   position: absolute;
@@ -149,8 +145,4 @@ ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
 
 .ui-tree__picto-bd svg {
   fill: var(--tree-graph-bd-color);
-}
-
-.ui-tree__item[aria-expanded] > .ui-tree__label > .ui-tree__trigger > .ui-tree__trigger-text {
-  font-weight: 600;
 }

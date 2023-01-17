@@ -70,6 +70,7 @@ textarea.box-fit {
 
 .box-center {
   display: grid;
+  grid-auto-rows: min-content;
   justify-content: center;
   align-content: safe center;
   align-items: center;
@@ -77,12 +78,14 @@ textarea.box-fit {
 
 .box-center-y {
   display: grid;
+  grid-auto-rows: min-content;
   align-content: safe center;
   align-items: center;
 }
 
 .box-center-x {
   display: grid;
+  grid-auto-rows: min-content;
   justify-content: center;
   align-content: start;
 }

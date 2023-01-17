@@ -51,8 +51,9 @@ async function recursiveFolders(dir) {
 window.app = ui({
   // plugins: ["markdown", "persist"],
   plugins: ["markdown"],
-  tag: "body.box-fit.box-center._gap._box-v._ground",
-  style: { padding: "90px" },
+  // tag: "body.box-fit.box-center._gap._box-v._ground",
+  tag: "body.box-fit.box-center",
+  // style: { padding: "90px" },
 
   content: [
     "## ui-tree",
@@ -63,6 +64,9 @@ window.app = ui({
     },
 
     "### itemTemplate",
+
+    { tag: "text" },
+
     {
       tag: "ui-tree.inset.paper.resize",
       style: { width: "256px", height: "256px" },
@@ -74,6 +78,8 @@ window.app = ui({
       },
       items: await recursiveFolders("/"),
     },
+
+    { tag: "text" },
 
     "### lazy loading",
     {
@@ -125,54 +131,5 @@ window.app = ui({
         },
       ],
     },
-
-    // {
-    //   tag: "ui-tree.inset.paper.resize",
-    //   // style: { width: "256px", height: "128px" },
-    //   style: { width: "256px", height: "300px" },
-    //   selection: ["Hello"],
-    //   items: [
-    //     {
-    //       label: "Foo",
-    //       expanded: true,
-    //       items: [
-    //         { label: "Bar" }, //
-    //         { label: "Baz" },
-    //         {
-    //           label: "Derp",
-    //           expanded: true,
-    //           items: [
-    //             {
-    //               label: "Foo",
-    //               expanded: true,
-    //               items: [
-    //                 { label: ["Bar", "\n\n", "Derp"] }, //
-    //                 { label: "Baz" },
-    //               ],
-    //             },
-    //             { label: "Hello" },
-    //             { label: "World" },
-    //             {
-    //               label: "Foo",
-    //               items: [
-    //                 { label: "Bar" }, //
-    //                 { label: "Baz" },
-    //               ],
-    //             },
-    //           ],
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       label: "Subtree",
-    //       items: [
-    //         { label: "Bar" }, //
-    //         { label: "Baz" },
-    //       ],
-    //     },
-    //     { label: "Hello" },
-    //     { label: "World" },
-    //   ],
-    // },
   ],
 })
