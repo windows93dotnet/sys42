@@ -6,6 +6,8 @@ export class Menubar extends Menu {
     tag: "ui-menubar",
     role: "menubar",
     on: {
+      prevent: true,
+      contextmenu: false,
       ArrowLeft: "{{focusPrev()}}",
       ArrowRight: "{{focusNext()}}",
     },
