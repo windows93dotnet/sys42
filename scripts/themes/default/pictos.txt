@@ -3,8 +3,8 @@ save file file-new folder folder-open folder-new folder-export folder-import imp
 paperclip pencil pen paintbrush eyedropper magic eraser tint paintbucket palette crop cog wrench magnifier magnifier-plus magnifier-minus
 home lock lock-open key shield bug puzzle globe skull leaf cube stack eye eye-off volume volume-off
 plus-xs minus-xs plus-thin minus-thin plus minus cross cross-thin cross-alt check indeterminate bullet bullet-small bullet-list
-dots square-border-dots plus-border-dots minus-border-dots shrink shrink-alt shrink-alt2 split split-vertical split-details split-grid split-graph collapse-all collapse-all-alt collapse collapse-thick
-square square-border plus-border minus-border expand expand-alt expand-alt2 bars bars-vertical details grid graph expand-all expand-all-alt expand expand-thick
+dots square-border-dots plus-border-dots minus-border-dots shrink shrink-alt shrink-alt2 split split-vertical split-details split-grid split-tree collapse-all collapse-all-alt collapse collapse-thick
+square square-border plus-border minus-border expand expand-alt expand-alt2 bars bars-vertical details grid tree expand-all expand-all-alt expand expand-thick
 font bold italic strike underline ol ul text-left text-center text-right text-justify quote code json link link-off
 backward forward play pause stop eject loop shuffle left-right up-down move image terminal window desktop clear
 grab-thick grab-thick-vertical grab grab-vertical mirror mirror-vertical ellipsis ellipsis-vertical
