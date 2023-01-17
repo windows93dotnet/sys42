@@ -27,11 +27,36 @@ ui-icon {
 .ui-icon__label {
   pointer-events: auto;
   padding: 1px 2px;
-
   max-width: 100%;
-
   position: absolute;
   top: calc(var(--icon-size) + var(--icon-gap));
+}
+
+/* selected
+=========== */
+
+ui-icon:is([aria-pressed="true"],[aria-selected="true"]) .ui-icon__image {
+  filter: grayscale(100%) contrast(30%) brightness(90%) contrast(250%);
+}
+
+ui-icon:is([aria-pressed="true"],[aria-selected="true"]) .ui-icon__mask {
+  background-color: var(--highlight-bg);
+  mix-blend-mode: color;
+}
+
+ui-icon:is([aria-pressed="true"],[aria-selected="true"]) .ui-icon__label {
+  --fg: var(--highlight-fg);
+  --bg: var(--highlight-bg);
+  background: var(--bg);
+  color: var(--fg);
+  text-shadow: var(--highlight-tsh, none);
+}
+
+/* focus
+======== */
+
+ui-icon:focus {
+  outline: none;
 }
 
 :where(:not(ui-icon[small]) > .ui-icon__label > .ui-icon__text) {
@@ -43,25 +68,20 @@ ui-icon {
   text-align: center;
 }
 
-ui-icon:is([aria-pressed="true"],[aria-selected="true"]) .ui-icon__image {
-  filter: grayscale(100%) contrast(30%) brightness(90%) contrast(250%);
+ui-icon:not([small]):focus .ui-icon__text {
+  -webkit-line-clamp: 8;
 }
 
-ui-icon:is([aria-pressed="true"],[aria-selected="true"]) .ui-icon__mask {
-  background-color: var(--highlight-bg);
-  mix-blend-mode: color;
-}
-
-ui-icon:focus {
-  outline: none;
-}
-
-ui-icon:focus .ui-icon__label {
+ui-icon:not([small]):focus .ui-icon__label {
   z-index: 1;
-  background-color: var(--bg);
+  background: var(--bg);
 }
 
-ui-icon:focus .ui-icon__label::after {
+/* focusring
+------------ */
+
+ui-icon[small]:focus::after,
+ui-icon:not([small]):focus .ui-icon__label::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -84,18 +104,12 @@ ui-icon:focus .ui-icon__label::after {
   mix-blend-mode: difference;
 }
 
-ui-icon:focus .ui-icon__text {
-  -webkit-line-clamp: 8;
+ui-icon[small]:focus::after {
+  inset: -1px -3px;
 }
 
-ui-icon:is([aria-pressed="true"],[aria-selected="true"]) .ui-icon__label {
-  --fg: var(--highlight-fg);
-  background: var(--highlight-bg);
-  color: var(--fg);
-  text-shadow: var(--highlight-tsh, none);
-}
-
-/*  */
+/* small
+======== */
 
 ui-icon[small] {
   --icon-size: 16px;

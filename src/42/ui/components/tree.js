@@ -1,4 +1,6 @@
 import Component from "../classes/Component.js"
+import configure from "../../core/configure.js"
+import { objectifyPlan } from "../normalize.js"
 
 export class Tree extends Component {
   static plan = {
@@ -11,8 +13,12 @@ export class Tree extends Component {
 
     traits: {
       selectable: {
+        selector: '[role="treeitem"]',
+        attributes: {
+          class: undefined,
+          aria: { selected: true },
+        },
         draggerIgnoreItems: true,
-        class: false,
         key: "{{selectionKey}}",
         selection: "{{selection}}",
       },
@@ -45,13 +51,7 @@ export class Tree extends Component {
 
       each: {
         tag: "li.ui-tree__item",
-        role: "treeitem",
-        aria: {
-          // selected: "{{includes(../../selection, .)}}",
-          expanded: "{{items ? expanded ?? false : undefined}}",
-        },
-        // tabIndex: "{{@first ? 0 : -1}}",
-        tabIndex: 0,
+        role: "none", // TODO: Check if needed
         content: [
           {
             tag: ".ui-tree__label",
@@ -59,6 +59,7 @@ export class Tree extends Component {
               {
                 if: "{{items}}",
                 tag: ".ui-tree__pictos",
+                aria: { hidden: true },
                 on: { pointerdown: "{{toggleItem(.)}}" },
                 content: [
                   {
@@ -80,16 +81,22 @@ export class Tree extends Component {
                 tag: "span.ui-tree__prelabel",
                 content: "{{render(prelabel)}}",
               },
-              {
-                tag: "span.ui-tree__trigger",
-                on: { pointerdown: "{{toggleItem(.)}}" },
-                content: {
-                  ...(itemTemplate ?? {
-                    tag: "span.ui-tree__trigger-text",
-                    content: "{{render(label)}}",
-                  }),
+              configure(
+                {
+                  tag: "span.ui-tree__trigger",
+                  tabIndex: "{{@first ? 0 : -1}}",
+                  on: { pointerdown: "{{toggleItem(.)}}" },
                 },
-              },
+                itemTemplate
+                  ? objectifyPlan(itemTemplate)
+                  : { content: "{{render(.)}}" },
+                {
+                  role: "treeitem",
+                  aria: {
+                    expanded: "{{items ? expanded ?? false : undefined}}",
+                  },
+                }
+              ),
               {
                 if: "{{postlabel}}",
                 tag: "span.ui-tree__postlabel",

@@ -1,5 +1,7 @@
 import Component from "../classes/Component.js"
 import debounce from "../../fabric/type/function/debounce.js"
+import configure from "../../core/configure.js"
+import { objectifyPlan } from "../normalize.js"
 
 const { indexOf } = Array.prototype
 
@@ -14,9 +16,12 @@ export class Grid extends Component {
 
     traits: {
       selectable: {
+        selector: ':scope > [role="row"] > [role="gridcell"]',
+        attributes: {
+          class: undefined,
+          aria: { selected: true },
+        },
         draggerIgnoreItems: true,
-        class: false,
-        // ariaSelected: true,
         key: "{{selectionKey}}",
         selection: "{{selection}}",
       },
@@ -101,12 +106,13 @@ export class Grid extends Component {
       {
         scope: "items",
         role: "row",
-        each: {
-          role: "gridcell",
-          aria: { selected: "{{includes(../../selection, .)}}" },
-          tabIndex: "{{@first ? 0 : -1}}",
-          ...(itemTemplate ?? { content: "{{render(.)}}" }),
-        },
+        each: configure(
+          { tabIndex: "{{@first ? 0 : -1}}" },
+          itemTemplate
+            ? objectifyPlan(itemTemplate)
+            : { content: "{{render(.)}}" },
+          { role: "gridcell" }
+        ),
       },
     ]
   }
