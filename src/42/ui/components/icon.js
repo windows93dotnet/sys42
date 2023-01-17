@@ -68,7 +68,15 @@ class Icon extends Component {
   getInfos(path) {
     if (path === undefined) return
     const infos = getPathInfos(path, { getURIMimetype: false })
-    infos.image ??= themeManager.getIconPath(infos, this.small ? 16 : undefined)
+
+    const imageSize = this.small ? 16 : undefined
+    if (imageSize !== infos.imageSize) {
+      infos.image = undefined
+      infos.imageSize = imageSize
+    }
+
+    infos.image ??= themeManager.getIconPath(infos, infos.imageSize)
+
     infos.description ??= infos.isDir ? "folder" : infos.isURI ? "uri" : "file"
     if (infos.isURI) infos.ext = ""
     infos.name ??= (

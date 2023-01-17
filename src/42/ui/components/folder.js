@@ -116,7 +116,7 @@ export class Folder extends Component {
     return [
       {
         if: "{{view === 'tree'}}",
-        content: {
+        do: {
           tag: "ui-tree",
           ...common,
           itemTemplate: {
