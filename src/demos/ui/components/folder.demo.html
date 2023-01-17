@@ -13,17 +13,58 @@
   import ui from "../../../42/ui.js"
 
   const app = await ui({
-    tag: "body.box-center.gap.pa.desktop",
+    tag: "body.box-center._gap.pa.desktop",
     content: [
       { tag: "h2", content: "ui-folder" },
       {
-        tag: "ui-folder.inset.paper",
-        view: "tree",
-        style: { width: "300px", height: "208px" },
-        path: "/",
+        tag: ".toggle-group",
+        content: [
+          {
+            tag: "radio",
+            bind: "folder1view",
+            value: "grid",
+            label: { picto: "grid", aria: { label: "Grid view" } },
+          },
+          {
+            tag: "radio",
+            bind: "folder1view",
+            value: "tree",
+            label: { picto: "graph", aria: { label: "Tree view" } },
+            checked: true,
+          },
+        ],
       },
       {
         tag: "ui-folder.inset.paper",
+        view: "{{folder1view}}",
+        style: { width: "300px", height: "208px" },
+        path: "/",
+      },
+
+      "<br>",
+
+      {
+        tag: ".toggle-group",
+        content: [
+          {
+            tag: "radio",
+            bind: "folder2view",
+            value: "grid",
+            label: { picto: "grid", aria: { label: "Grid view" } },
+            checked: true,
+          },
+          {
+            tag: "radio",
+            bind: "folder2view",
+            value: "tree",
+            label: { picto: "graph", aria: { label: "Tree view" } },
+          },
+        ],
+      },
+
+      {
+        tag: "ui-folder.inset.paper",
+        view: "{{folder2view}}",
         style: { width: "300px", height: "208px" },
         path: "/tests/fixtures/formats/",
       },

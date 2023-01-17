@@ -98,6 +98,7 @@ export default function render(plan, stage, options) {
       return SPECIAL_STRINGS[plan]?.() ?? document.createTextNode(plan)
 
     case "array": {
+      stage.parent = stage.el
       const fragment = document.createDocumentFragment()
       for (let step = 0, l = plan.length; step < l; step++) {
         stage.type = typeof plan[step]
@@ -127,11 +128,18 @@ export default function render(plan, stage, options) {
       for (let i = 0, l = nesteds.length; i < l; i++) {
         const tag = nesteds[i]
         const cur = i === l - 1 ? renderTag(tag, plan, stage) : create(tag)
-        if (el) el.append(cur)
-        else container = cur
+        if (el) {
+          stage.parent = el
+          el.append(cur)
+        } else {
+          stage.parent = cur
+          container = cur
+        }
+
         el = cur
       }
     } else {
+      stage.parent = stage.el
       el = renderTag(plan.tag, plan, stage)
     }
   } else {

@@ -403,7 +403,8 @@ button,
 .button,
 select,
 form[disabled],
-fieldset[disabled]) {
+fieldset[disabled]
+) {
   cursor: var(--cursor-default, default);
 }
 
@@ -414,18 +415,6 @@ fieldset[disabled]) {
 [aria-busy="true" i],
 [aria-busy="true" i] * {
   cursor: var(--cursor-progress, progress);
-}
-
-/* picto
-======== */
-
-:where(button,.button,.field,.solid).has-picto::after {
-  content: var(--ZERO_WIDTH_SPACE);
-  margin-inline-start: calc(-1 * var(--ctrl-px));
-}
-
-:where(button,.button,.field,.solid).has-picto > ui-picto {
-  margin-block: calc(-1 * var(--ctrl-py));
 }
 
 /* field
@@ -703,7 +692,7 @@ input[type="button"],
 input[type="reset"],
 input[type="submit"]
 ):where(:focus,:hover),
-input:is([type="checkbox"],[type="radio"]):focus + label.button {
+:where(input:is([type="checkbox"],[type="radio"]):focus + label.button) {
   --fg: var(--btn🎯-fg);
   --bg: var(--btn🎯-bg);
   padding: var(--btn🎯-pa);
@@ -723,7 +712,7 @@ input[type="button"],
 input[type="reset"],
 input[type="submit"]
 ):focus,
-input:is([type="checkbox"],[type="radio"]):focus + label.button {
+:where(input:is([type="checkbox"],[type="radio"]):focus + label.button) {
   outline: var(--btn-o);
   outline-offset: var(--btn-oo);
 }
@@ -754,7 +743,7 @@ input[type="button"],
 input[type="reset"],
 input[type="submit"]
 ):where([aria-pressed="true"],[aria-selected="true"],[aria-expanded="true"]),
-input:is([type="checkbox"],[type="radio"]):checked + label.button {
+:where(input:is([type="checkbox"],[type="radio"]):checked + label.button) {
   --fg: var(--btn☑️-fg);
   --bg: var(--btn☑️-bg);
   padding: var(--btn☑️-pa);
@@ -774,7 +763,7 @@ input[type="button"],
 input[type="reset"],
 input[type="submit"]
 ):where([aria-pressed]:active),
-input:is([type="checkbox"],[type="radio"]) + label.button:active {
+:where(input:is([type="checkbox"],[type="radio"]) + label.button:active) {
   --fg: var(--btn☑️👇-fg);
   --bg: var(--btn☑️👇-bg);
   padding: var(--btn☑️👇-pa);
@@ -794,7 +783,7 @@ input[type="button"],
 input[type="reset"],
 input[type="submit"]
 ):where(:disabled,[aria-disabled="true"]),
-input:is([type="checkbox"],[type="radio"]):disabled + label.button {
+:where(input:is([type="checkbox"],[type="radio"]):disabled + label.button) {
   --fg: var(--btn🚫-fg);
   --bg: var(--btn🚫-bg);
   border-width: var(--btn🚫-bdw);
@@ -815,7 +804,7 @@ input[type="button"],
 input[type="reset"],
 input[type="submit"]
 ):is([aria-pressed="true"]):is(:disabled,[aria-disabled="true"]),
-input:is([type="checkbox"],[type="radio"]):checked:disabled + label.button {
+:where(input:is([type="checkbox"],[type="radio"]):checked:disabled + label.button) {
   --fg: var(--btn☑️🚫-fg);
   --bg: var(--btn☑️🚫-bg);
   border-width: var(--btn☑️🚫-bdw);
@@ -1106,12 +1095,6 @@ input:where([type="radio"],[type="checkbox"]) + label {
   user-select: none;
 }
 
-.check-buttons input:is([type="checkbox"],[type="radio"]) {
-  position: absolute;
-  clip: rect(0, 0, 0, 0);
-  pointer-events: none;
-}
-
 .check-cont {
   max-width: 100%;
   display: flex;
@@ -1162,9 +1145,9 @@ input[type="color" i]::-webkit-color-swatch { border: none; }
 }
 
 /* .ctrl-group > fieldset[role="none"] > :is(button,.button) { */
-.ctrl-group > fieldset[role="none"] > :not(label, .label) {
+/* .ctrl-group > fieldset[role="none"] > :not(label, .label) {
   width: 100%;
-}
+} */
 
 .ctrl-group > :where(label,.label):not(:first-child) {
   padding-left: var(--unit);
@@ -1221,6 +1204,19 @@ p,div:not([class]),fieldset:is([role="none"],.unstyled)) > :only-child {
   grid-column: 2;
 }
 
+/* toggle-group
+=============== */
+
+.toggle-group {
+  display: flex;
+}
+
+.toggle-group input:is([type="checkbox"],[type="radio"]) {
+  position: absolute;
+  clip: rect(0, 0, 0, 0);
+  pointer-events: none;
+}
+
 /* truncate
 =========== */
 
@@ -1271,4 +1267,20 @@ input::-webkit-datetime-edit-fields-wrapper
   text-overflow: unset;
   white-space: unset;
   text-indent: unset;
+}
+
+/* picto
+======== */
+
+:is(label,.label,button,.button,.field,.solid).has-picto--only-child {
+  padding-inline: 1px;
+}
+
+.has-picto--only-child::after {
+  content: var(--ZERO_WIDTH_SPACE);
+  margin-inline-start: calc(-1 * var(--ctrl-px));
+}
+
+.has-picto > ui-picto {
+  margin-block: calc(-1 * var(--ctrl-py));
 }

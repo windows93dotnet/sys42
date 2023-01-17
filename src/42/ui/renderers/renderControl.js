@@ -94,10 +94,18 @@ export default function renderControl(el, stage, plan) {
     if (el.type === "radio") {
       el.value = plan.value
       el.checked = plan.checked
-    } else {
-      const name = scopeTo ?? scopeFrom
-      if (name) el.name ||= name
     }
+
+    if (scopeTo) {
+      if (el.type === "radio") {
+        if (plan.checked) stage.reactive.set(scopeTo, plan.value)
+      } else if ("value" in plan) {
+        stage.reactive.set(scopeTo, plan.value)
+      }
+    }
+
+    const name = scopeTo ?? scopeFrom
+    if (name) el.name ||= name
   }
 
   setAttributes(el, setValidation(plan, el))
@@ -112,7 +120,12 @@ export default function renderControl(el, stage, plan) {
 
   if (role === "menuitemcheckbox" || role === "menuitemradio") {
     const label = render(
-      { tag: "label", for: el.id, role: "none", content: labelText },
+      {
+        tag: "label",
+        for: el.id,
+        role: "none",
+        ...(typeof labelText === "string" ? { content: labelText } : labelText),
+      },
       stage
     )
     label.prepend(el)
@@ -128,8 +141,16 @@ export default function renderControl(el, stage, plan) {
   if (labelText) {
     el.removeAttribute("label")
 
+    const tag = stage.parent?.classList.contains("toggle-group")
+      ? "label.button"
+      : "label"
+
     const label = render(
-      { tag: "label", for: el.id, content: labelText },
+      {
+        tag,
+        for: el.id,
+        ...(typeof labelText === "string" ? { content: labelText } : labelText),
+      },
       stage
     )
 
