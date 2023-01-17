@@ -12,7 +12,7 @@ ui-tree {
   flex-grow: 1;
   overflow-y: auto;
   display: block;
-  padding-left: var(--tree-indent);
+  padding-left: calc(var(--tree-indent) - 3px);
   padding-top: 4px;
 }
 

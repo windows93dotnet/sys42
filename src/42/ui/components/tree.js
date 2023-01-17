@@ -47,10 +47,11 @@ export class Tree extends Component {
         tag: "li.ui-tree__item",
         role: "treeitem",
         aria: {
-          selected: "{{includes(../../selection, .)}}",
+          // selected: "{{includes(../../selection, .)}}",
           expanded: "{{items ? expanded ?? false : undefined}}",
         },
-        tabIndex: "{{@first ? 0 : -1}}",
+        // tabIndex: "{{@first ? 0 : -1}}",
+        tabIndex: 0,
         content: [
           {
             tag: ".ui-tree__label",
