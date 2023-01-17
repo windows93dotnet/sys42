@@ -15,11 +15,11 @@
 /* @read https://guidebookgallery.org/screenshots */
 /* @see https://copy.sh/v86/?profile=windows2000 */
 
-@import "../default/index.css";
-@import "../default/fonts/sserife.css";
-/* @import "../default/fonts/fixedsys.css"; */
-@import "../default/fonts/tomo.css";
-@import "../default/themes/inc/pixel-font.css";
+@import url("../default/index.css");
+@import url("../default/fonts/sserife.css");
+/* @import url("../default/fonts/fixedsys.css"); */
+@import url("../default/fonts/tomo.css");
+@import url("../default/themes/inc/pixel-font.css");
 
 :root {
   --cursor-default: url("../../../themes/windows9x/cursors/default.cur"), default;
@@ -384,7 +384,7 @@ input[type="number" i]:disabled::-webkit-inner-spin-button {
   border-image: var(--btn💾-bdi);
 }
 
-.check-cont label {
+/* :where(.check-cont label) {
   padding-inline: 2px;
   padding-block: 0;
   margin-block: calc(var(--ctrl-py));
@@ -394,7 +394,7 @@ input[type="number" i]:disabled::-webkit-inner-spin-button {
 .check-cont:focus-within label {
   outline: var(--ctrl-o);
   outline-offset: -1px;
-}
+} */
 
 ui-menu {
   padding: 2px;
