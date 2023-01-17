@@ -1,10 +1,13 @@
 import render from "../render.js"
 import omit from "../../fabric/type/object/omit.js"
 import NodesRange from "../../fabric/range/NodesRange.js"
-import removeRange from "./removeRange.js"
+import removeElements from "./removeElements.js"
+import noop from "../../fabric/type/function/noop.js"
+import getNodesInRange from "../../fabric/range/getNodesInRange.js"
 import register from "../register.js"
 import Canceller from "../../fabric/classes/Canceller.js"
 import getType from "../../fabric/type/any/getType.js"
+import setTemp from "../../fabric/dom/setTemp.js"
 import { normalizePlan, normalizeTokens } from "../normalize.js"
 import expr from "../../core/expr.js"
 
@@ -30,7 +33,7 @@ export default function renderIf(plan, stage) {
     actions,
   })
 
-  const ifPlan = normalizePlan(omit(plan, ["if"]), stage)
+  const ifPlan = normalizePlan(plan.do ?? omit(plan, ["if", "else"]), stage)
   const ifType = getType(ifPlan)
   let elsePlan
   let elseType
@@ -49,6 +52,8 @@ export default function renderIf(plan, stage) {
 
     const [plan, type] = res ? [ifPlan, ifType] : [elsePlan, elseType]
 
+    let remover = noop
+
     if (lastChild) {
       cancel?.("renderIf removed")
       cancel = undefined
@@ -56,27 +61,42 @@ export default function renderIf(plan, stage) {
         lastRes === false && elseType === "object" && "animate" in elsePlan
           ? elsePlan
           : ifPlan
-      const range = new NodesRange(placeholder, lastChild)
-      removeRange(range, plan, stage)
+      let elements = getNodesInRange(new NodesRange(placeholder, lastChild))
+      remover = async () => {
+        await removeElements(elements, plan, stage)
+        elements.length = 0
+        elements = undefined
+      }
+
       lastChild = undefined
     }
 
     lastRes = res
-    if (!plan) return
+    if (!plan) {
+      remover()
+      return
+    }
 
     cancel = new Canceller(stage.signal)
-    const el = render(
-      plan,
-      {
-        ...stage,
-        type,
-        cancel,
-        signal: cancel.signal,
-      },
-      { skipNormalize: true }
-    )
+    const newStage = { ...stage, type, cancel, signal: cancel.signal }
+    const el = render(plan, newStage, { skipNormalize: true })
 
-    lastChild = el.nodeType === DOCUMENT_FRAGMENT_NODE ? el.lastChild : el
+    if (el.nodeType === DOCUMENT_FRAGMENT_NODE) {
+      lastChild = el.lastChild
+      remover()
+    } else {
+      lastChild = el
+
+      // prevent FOUC
+      const restore = setTemp(el, { style: { display: "none" } })
+      newStage.reactive.done().then(() => {
+        requestAnimationFrame(async () => {
+          await remover()
+          restore()
+        })
+      })
+    }
+
     placeholder.after(el)
   })
 
