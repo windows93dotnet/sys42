@@ -323,6 +323,8 @@ if (inTop) {
     t.lap(await iframe.contentWindow.sys42.once("ipc.plugin:end-of-update"))
 
     t.is(t.puppet.$("#cntIframe", iframe)?.value, "1")
+
+    // TODO: test two level menu in iframe
   })
 } else {
   document.body.classList.add("debug")

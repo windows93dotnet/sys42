@@ -36,7 +36,7 @@ function compileRun(val, stage) {
   }
 }
 
-function forkCtx(stage, key) {
+function forkStage(stage, key) {
   return { ...stage, steps: `${stage.steps},${stage.el.localName}^${key}` }
 }
 
@@ -44,7 +44,7 @@ function forkCtx(stage, key) {
 const POPUP_TYPES = new Set(["menu", "listbox", "tree", "grid", "dialog"])
 
 function setOpener(el, stage, key, plan, type) {
-  stage = forkCtx(stage, key)
+  stage = forkStage(stage, key)
 
   el.id ||= hash(String(stage.steps))
   if (inIframe) window.name ||= uid()
@@ -69,6 +69,7 @@ function setDialogOpener(el, stage, key, plan) {
 
 function setPopupOpener(el, stage, key, plan) {
   stage = setOpener(el, stage, key, plan)
+
   const { focusBack } = plan
   return async (e) => {
     plan.opener = el.id
@@ -93,7 +94,7 @@ export default function renderOn(el, plan, stage) {
     getEvents(events) {
       for (const [key, val] of Object.entries(events)) {
         if (typeof val === "string") {
-          events[key] = compileRun(val, forkCtx(stage, key))
+          events[key] = compileRun(val, forkStage(stage, key))
         } else if ("dialog" in val) {
           events[key] = setDialogOpener(el, stage, key, val.dialog)
         } else if ("popup" in val) {
