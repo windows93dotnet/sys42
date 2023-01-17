@@ -54,7 +54,11 @@ export class Grid extends Component {
 
   moveFocusDown() {
     const index = indexOf.call(this._items, document.activeElement)
-    this._items[index === -1 ? 0 : index + this.itemsPerLine]?.focus()
+    const next = this._items[index === -1 ? 0 : index + this.itemsPerLine]
+    if (next) next.focus()
+    else if (index !== this._items.length - 1) {
+      this._items[this._items.length - 1].focus()
+    }
   }
 
   moveFocusLeft() {
