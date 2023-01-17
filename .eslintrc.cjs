@@ -101,6 +101,9 @@ module.exports = {
 
     "unicorn/prefer-export-from": [2, { ignoreUsedVariables: true }],
 
+    // Allow `await 0` as queueMicroTack
+    "unicorn/no-unnecessary-await": 0,
+
     // false positives with BroadcastChannel
     "unicorn/require-post-message-target-origin": 0,
 
@@ -108,6 +111,7 @@ module.exports = {
     "unicorn/prefer-dom-node-dataset": 0,
     "unicorn/no-thenable": 0,
     "unicorn/text-encoding-identifier-case": 0,
+    "unicorn/switch-case-braces": 0,
 
     "unicorn/no-new-array": 0,
     "unicorn/no-hex-escape": 0,

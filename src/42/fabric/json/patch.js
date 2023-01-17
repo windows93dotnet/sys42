@@ -60,7 +60,7 @@ function op(
           }
         }
 
-        if (raise && typeof acc[index] === "undefined") raised = track
+        if (raise && acc[index] === undefined) raised = track
         return type === "string"
           ? stringOp(acc, index, previousValue, previousKey)
           : arrayOp(acc, index)
