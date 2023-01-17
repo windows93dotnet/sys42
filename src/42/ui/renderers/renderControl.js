@@ -12,6 +12,7 @@ import getBasename from "../../core/path/core/getBasename.js"
 import debounce from "../../fabric/type/function/debounce.js"
 import toTitleCase from "../../fabric/type/string/case/toTitleCase.js"
 import hash from "../../fabric/type/any/hash.js"
+import { objectifyPlan } from "../normalize.js"
 
 const TEXTBOX_TYPES = new Set(["text", "email", "search"])
 
@@ -110,7 +111,7 @@ export default function renderControl(el, stage, plan) {
 
   setAttributes(el, setValidation(plan, el))
 
-  const labelText =
+  const labelPlan =
     plan.label ??
     (el.type === "radio"
       ? toTitleCase(el.value)
@@ -124,7 +125,7 @@ export default function renderControl(el, stage, plan) {
         tag: "label",
         for: el.id,
         role: "none",
-        ...(typeof labelText === "string" ? { content: labelText } : labelText),
+        ...objectifyPlan(labelPlan),
       },
       stage
     )
@@ -138,7 +139,7 @@ export default function renderControl(el, stage, plan) {
     ? create(".check-cont")
     : document.createDocumentFragment()
 
-  if (labelText) {
+  if (labelPlan) {
     el.removeAttribute("label")
 
     const tag = stage.parent?.classList.contains("toggle-group")
@@ -149,7 +150,7 @@ export default function renderControl(el, stage, plan) {
       {
         tag,
         for: el.id,
-        ...(typeof labelText === "string" ? { content: labelText } : labelText),
+        ...objectifyPlan(labelPlan),
       },
       stage
     )
