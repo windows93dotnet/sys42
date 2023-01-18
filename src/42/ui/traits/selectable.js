@@ -166,7 +166,14 @@ class Selectable extends Trait {
           }
         }
 
-        if (fail !== true) return
+        if (fail !== true) {
+          for (let i = 0, l = this.elements.length; i < l; i++) {
+            this._add(this.elements[i], this.selection[i])
+          }
+
+          return
+        }
+
         this.elements.length = 0
       }
 
