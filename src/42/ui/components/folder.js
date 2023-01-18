@@ -104,46 +104,7 @@ export class Folder extends Component {
         contextmenu: "{{displayContextmenu(e, target)}}",
       },
     ],
-  }
-
-  render() {
-    const common = {
-      entry: "currentView",
-      selection: "{{selection}}",
-      selectionKey: "path",
-      items: "{{getItems(path)}}",
-      transferable: {
-        selector: ":scope ui-icon",
-        dropzoneConfig: "fade",
-        // import({ data, effect, index }) {
-        //   console.log(data, effect, index)
-        // },
-      },
-    }
-    return [
-      {
-        if: "{{view === 'tree'}}",
-        do: {
-          tag: "ui-tree.ui-folder__view",
-          ...common,
-          itemTemplate: {
-            tag: "ui-icon",
-            small: true,
-            path: "{{path}}",
-          },
-        },
-        else: {
-          tag: "ui-grid.ui-folder__view",
-          ...common,
-          itemTemplate: {
-            tag: "ui-icon",
-            autofocus: "{{@first}}",
-            path: "{{.}}",
-          },
-        },
-      },
-    ]
-  }
+  };
 
   [_updatePath](initial) {
     if (this[_forgetWatch]?.path === this.path) return
@@ -233,6 +194,45 @@ export class Folder extends Component {
     }
 
     return dir
+  }
+
+  render() {
+    const common = {
+      entry: "currentView",
+      selection: "{{selection}}",
+      selectionKey: "path",
+      items: "{{getItems(path)}}",
+      transferable: {
+        selector: ":scope ui-icon",
+        dropzoneConfig: "fade",
+        // import({ data, effect, index }) {
+        //   console.log(data, effect, index)
+        // },
+      },
+    }
+    return [
+      {
+        if: "{{view === 'tree'}}",
+        do: {
+          tag: "ui-tree.ui-folder__view",
+          ...common,
+          itemTemplate: {
+            tag: "ui-icon",
+            small: true,
+            path: "{{path}}",
+          },
+        },
+        else: {
+          tag: "ui-grid.ui-folder__view",
+          ...common,
+          itemTemplate: {
+            tag: "ui-icon",
+            autofocus: "{{@first}}",
+            path: "{{.}}",
+          },
+        },
+      },
+    ]
   }
 }
 
