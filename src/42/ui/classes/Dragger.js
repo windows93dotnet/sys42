@@ -18,7 +18,7 @@ const DEFAULTS = {
   subpixel: false,
   selector: undefined,
   ignore: undefined,
-  useTargetOffset: false,
+  applyTargetOffset: false,
   hoverScroll: false,
 }
 
@@ -50,13 +50,13 @@ export default class Dragger {
 
     const round = this.config.subpixel ? (val) => val : Math.round
 
-    let getX = this.config.useTargetOffset
+    let getX = this.config.applyTargetOffset
       ? this.config.subpixel
         ? (x) => x - this.offsetX
         : (x) => round(x - this.offsetX)
       : round
 
-    let getY = this.config.useTargetOffset
+    let getY = this.config.applyTargetOffset
       ? this.config.subpixel
         ? (y) => y - this.offsetY
         : (y) => round(y - this.offsetY)
@@ -104,7 +104,7 @@ export default class Dragger {
 
       this.hoverScroll?.init()
 
-      if (this.config.useTargetOffset) {
+      if (this.config.applyTargetOffset) {
         const rect = target.getBoundingClientRect()
         this.offsetX = round(e.x - rect.x)
         this.offsetY = round(e.y - rect.y)
