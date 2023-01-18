@@ -244,12 +244,13 @@ class Selectable extends Trait {
         }
       : this.config.remove
 
-    this.key = this.config.key ?? ((item) => item)
-    if (typeof this.key === "string") {
+    if (typeof this.config.key === "string") {
       this.key = (item) =>
         this.config.key in item
           ? item[this.config.key]
           : item.getAttribute(this.config.key)
+    } else {
+      this.key = this.config.key ?? ((item) => item.textContent)
     }
 
     this.sync()

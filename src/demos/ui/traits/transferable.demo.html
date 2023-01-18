@@ -28,7 +28,7 @@
   <div class="demos"></div>
 </body>
 
-<script type="module">
+<!-- <script type="module">
   const { outerHTML } = document.documentElement
   function makeDocClone(color1, color2) {
     const iframe = document.createElement("iframe")
@@ -49,7 +49,7 @@
     makeDocClone("indigo", "purple")
     document.body.classList.add("box-h", "box-fit", "gap")
   }
-</script>
+</script> -->
 
 <script type="module">
   import ui from "../../../42/ui.js"
@@ -119,13 +119,13 @@
           content: "{{.}}",
         },
       },
-
-      // "### selectable",
       {
         scope: "listB",
         tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl._gap-xl.inset paper",
         aria: { orientation: "horizontal" },
-        selectable: true,
+        selectable: {
+          selection: ["12", "14", "16"],
+        },
         transferable: {
           list: "{{.}}",
         },

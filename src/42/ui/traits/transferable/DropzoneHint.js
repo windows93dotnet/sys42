@@ -1,4 +1,5 @@
-// import getRects from "../../../fabric/dom/getRects.js"
+import getRects from "../../../fabric/dom/getRects.js"
+import Canceller from "../../../fabric/classes/Canceller.js"
 
 export class DropzoneHint {
   constructor(el, options) {
@@ -12,41 +13,60 @@ export class DropzoneHint {
       this.config.orientation = "horizontal"
       this.config.freeAxis ??= true
     }
+
+    if (this.config.updateRects) {
+      this.updateRects = async (items, cb) => {
+        this.rects.length = 0
+        return getRects(this.config.selector, {
+          root: this.el,
+          intersecting: true,
+        }).then((rects) => {
+          if (items && cb) {
+            for (const rect of rects) {
+              for (const item of items) {
+                if (item.target === rect.target) continue
+              }
+
+              if (cb(rect) !== false) this.rects.push(rect)
+            }
+          } else {
+            this.rects.push(...rects)
+          }
+
+          return this.rects
+        })
+      }
+    }
   }
 
   updateRects() {}
-  // async updateRects(items, cb) {
-  //   this.rects.length = 0
-  //   return getRects(this.config.selector, {
-  //     root: this.el,
-  //     intersecting: true,
-  //   }).then((rects) => {
-  //     if (items && cb) {
-  //       for (const rect of rects) {
-  //         for (const item of items) if (item.target === rect.target) continue
-  //         if (cb(rect) !== false) this.rects.push(rect)
-  //       }
-  //     } else {
-  //       this.rects.push(...rects)
-  //     }
 
-  //     return this.rects
-  //   })
-  // }
+  mount() {
+    this.firstEnterDone = false
+    this.cancel = new Canceller(this.config.signal)
+    this.signal = this.cancel.signal
+  }
 
-  init() {}
-
-  cleanup() {}
-
-  enter() {}
-
-  leave() {}
-
-  revert() {}
+  unmount() {
+    this.cancel()
+    this.el.classList.remove("dragover")
+  }
 
   dragover() {}
 
-  drop() {}
+  enter() {
+    this.el.classList.add("dragover")
+  }
+
+  leave() {
+    this.el.classList.remove("dragover")
+  }
+
+  drop() {
+    this.el.classList.remove("dragover")
+  }
+
+  revert() {}
 }
 
 export default DropzoneHint
