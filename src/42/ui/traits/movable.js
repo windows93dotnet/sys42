@@ -16,7 +16,7 @@ const DEFAULTS = {
   selector: undefined,
   ignore: "input,button,textarea,[contenteditable],[contenteditable] *",
   hoverScroll: false,
-  useTargetOffset: true,
+  applyTargetOffset: true,
   zIndexSelector: undefined,
   handlerSelector: undefined,
   useSelection: true,
@@ -59,7 +59,7 @@ class Movable extends Trait {
         "selector",
         "ignore",
         "hoverScroll",
-        "useTargetOffset",
+        "applyTargetOffset",
       ]),
     })
 

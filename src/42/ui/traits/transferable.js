@@ -150,6 +150,7 @@ if (inIframe) {
     )
     .on("42_TF_v_DRAGOVER", async ({ x, y }) => {
       if (!context.ready) return
+
       x -= context.parentX
       y -= context.parentY
       system.transfer.setCurrentZone(x, y)
@@ -500,7 +501,7 @@ class Transferable extends Trait {
 
     this.dragger = new Dragger(this.el, {
       signal,
-      useTargetOffset: false,
+      applyTargetOffset: false,
       ...pick(this.config, ["selector", "useSelection"]),
 
       start: (x, y, e, target) => {

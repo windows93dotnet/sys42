@@ -26,7 +26,7 @@ export default class Trait {
       el = undefined
     }
 
-    el = options?.element ? ensureElement(options.element) : ensureElement(el)
+    el = ensureElement(options?.element ?? el)
 
     const name = options?.name ?? this.constructor.name.toLowerCase()
 
