@@ -777,7 +777,7 @@ export function normalizePlan(plan = {}, stage, options) {
     }
 
     const traits = normalizeTraits(plan, stage)
-    if (traits) plan.traits = traits
+    if (traits) plan.setTraits = traits
 
     if (options?.skipNoStage !== true) normalizePlanWithoutStage(plan)
 
