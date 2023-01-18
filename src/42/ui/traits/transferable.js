@@ -80,9 +80,14 @@ function cleanHints() {
 class IframeDropzoneHint {
   constructor(iframe) {
     this.el = iframe
-    this.bus = ipc.to(iframe)
+    this.bus = ipc.to(iframe, { ignoreUnresponsive: true })
+    this.isIframe = true
     iframeDropzones.push(this)
   }
+
+  mount() {}
+  unmount() {}
+  scan() {}
 
   enter(items, x, y) {
     const { x: parentX, y: parentY } = this.el.getBoundingClientRect()
@@ -282,12 +287,12 @@ async function setEffect(options) {
 
   if (system.transfer.currentZone) {
     const keys = context.keys ?? keyboard.keys
-    if (system.transfer.currentZone.isIframe) {
+    if (system.transfer.currentZone.hint.isIframe) {
       const effect = await system.transfer.currentZone.hint.bus.send(
         "42_TF_v_REQUEST_EFFECT",
         keys
       )
-      applyEffect(effect)
+      applyEffect(effect ?? "none")
     } else {
       for (const [key, effect] of keyToEffect) {
         if (key in keys) return applyEffect(effect)
@@ -344,7 +349,6 @@ system.transfer = {
       for (const rect of rects) {
         if (rect.target.localName === "iframe") {
           rect.hint = new IframeDropzoneHint(rect.target)
-          rect.isIframe = true
         } else {
           rect.hint = system.transfer.dropzones.get(rect.target)
           rect.hoverScroll = new HoverScroll(
@@ -368,7 +372,7 @@ system.transfer = {
     if (system.transfer.currentZone) {
       if (inRect(point, system.transfer.currentZone)) {
         system.transfer.currentZone.hoverScroll?.update({ x, y }, async () => {
-          await system.transfer.currentZone?.hint.updateRects()
+          await system.transfer.currentZone?.hint.scan()
           system.transfer.currentZone?.hint.dragover(items, x, y)
         })
         return system.transfer.currentZone.hint.dragover(items, x, y)
@@ -384,7 +388,7 @@ system.transfer = {
         system.transfer.currentZone = dropzone
         system.transfer.currentZone.hint.enter(items, x, y)
         system.transfer.currentZone.hoverScroll?.update({ x, y }, async () => {
-          await system.transfer.currentZone?.hint.updateRects()
+          await system.transfer.currentZone?.hint.scan()
           system.transfer.currentZone?.hint.dragover(items, x, y)
         })
         return system.transfer.currentZone.hint.dragover(items, x, y)

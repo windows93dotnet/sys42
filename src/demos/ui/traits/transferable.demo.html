@@ -28,7 +28,7 @@
   <div class="demos"></div>
 </body>
 
-<!-- <script type="module">
+<script type="module">
   const { outerHTML } = document.documentElement
   function makeDocClone(color1, color2) {
     const iframe = document.createElement("iframe")
@@ -48,8 +48,13 @@
     // makeDocClone("blue", "red")
     makeDocClone("indigo", "purple")
     document.body.classList.add("box-h", "box-fit", "gap")
+
+    // const iframe = document.createElement("iframe")
+    // iframe.className = "inset"
+    // iframe.srcdoc = "empty iframe"
+    // document.querySelector(".demos").append(iframe)
   }
-</script> -->
+</script>
 
 <script type="module">
   import ui from "../../../42/ui.js"

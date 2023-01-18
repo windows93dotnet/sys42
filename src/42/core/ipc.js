@@ -204,6 +204,8 @@ export class Sender extends Emitter {
     this.#queue = new Map()
     this.ready = defer()
 
+    this.ignoreUnresponsive = options?.ignoreUnresponsive ?? false
+
     if (target === undefined) autoTarget(port2, options)
     else normalizeTarget(target, port2, options)
 
@@ -231,12 +233,14 @@ export class Sender extends Emitter {
     // emit() must be async to allow emiting in "pagehide" or "beforeunload" events
     // but if ready is not resolved yet we wait for it
     if (this.ready.isPending) {
+      if (this.ignoreUnresponsive) return this
       this.ready.then(() => this.port.postMessage(msg, transfer))
     } else this.port.postMessage(msg, transfer)
     return this
   }
 
   async send(event, data, transfer) {
+    if (this.ignoreUnresponsive && this.ready.isPending) return
     await this.ready
     const id = uid()
     const reply = defer()

@@ -13,7 +13,7 @@ const { parseInt, isNaN } = Number
 
 export class SlideDropzoneHint extends DropzoneHint {
   constructor(el, options) {
-    super(el, { ...options, updateRects: true })
+    super(el, { ...options, scan: true })
 
     this.styles = getComputedStyle(this.el)
     this.colGap = parseInt(this.styles.columnGap, 10)
@@ -83,7 +83,7 @@ export class SlideDropzoneHint extends DropzoneHint {
     }px 0`
 
     if (this.firstEnterDone || !this.inOriginalDropzone) {
-      await this.updateRects()
+      await this.scan()
       this.css.transition.enable()
     } else {
       this.firstEnterDone = true
@@ -101,7 +101,7 @@ export class SlideDropzoneHint extends DropzoneHint {
 
       // Get all visible items bounding rects and save css with empty holes
       // ------------------------------------------------------------------
-      await this.updateRects(items, (rect) => {
+      await this.scan(items, (rect) => {
         if (previousY !== rect.y) offset = 0
         previousY = rect.y
 

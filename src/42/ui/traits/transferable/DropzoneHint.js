@@ -14,8 +14,8 @@ export class DropzoneHint {
       this.config.freeAxis ??= true
     }
 
-    if (this.config.updateRects) {
-      this.updateRects = async (items, cb) => {
+    if (this.config.scan) {
+      this.scan = async (items, cb) => {
         this.rects.length = 0
         return getRects(this.config.selector, {
           root: this.el,
@@ -39,7 +39,7 @@ export class DropzoneHint {
     }
   }
 
-  updateRects() {}
+  scan() {}
 
   mount() {
     this.firstEnterDone = false
