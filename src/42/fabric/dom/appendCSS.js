@@ -27,7 +27,7 @@ export function appendCSS(cssText, options) {
     },
   }
 
-  options?.signal?.addEventlistener?.("abort", out.destroy)
+  options?.signal?.addEventListener?.("abort", out.destroy)
 
   return out
 }

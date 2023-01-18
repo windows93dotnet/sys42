@@ -1,4 +1,5 @@
 /* eslint-disable max-depth */
+import DropzoneHint from "./DropzoneHint.js"
 import { animateTo } from "../../../fabric/dom/animate.js"
 import getRects from "../../../fabric/dom/getRects.js"
 import { inRect } from "../../../fabric/geometry/point.js"
@@ -10,18 +11,9 @@ import uid from "../../../core/uid.js"
 
 const { parseInt, isNaN } = Number
 
-export class SlideDropzoneHint {
+export class SlideDropzoneHint extends DropzoneHint {
   constructor(el, options) {
-    this.el = el
-    this.rects = []
-
-    this.config = { ...options }
-    this.config.orientation ??= this.el.getAttribute("aria-orientation")
-
-    if (!this.config.orientation) {
-      this.config.orientation = "horizontal"
-      this.config.freeAxis ??= true
-    }
+    super(el, { ...options, updateRects: true })
 
     this.styles = getComputedStyle(this.el)
     this.colGap = parseInt(this.styles.columnGap, 10)
@@ -41,29 +33,11 @@ export class SlideDropzoneHint {
     this.dragover = noop
   }
 
-  async updateRects(items, cb) {
-    this.rects.length = 0
-    return getRects(this.config.selector, {
-      root: this.el,
-      intersecting: true,
-    }).then((rects) => {
-      if (items && cb) {
-        for (const rect of rects) {
-          for (const item of items) if (item.target === rect.target) continue
-          if (cb(rect) !== false) this.rects.push(rect)
-        }
-      } else {
-        this.rects.push(...rects)
-      }
-
-      return this.rects
-    })
-  }
-
-  init() {
+  mount() {
+    super.mount()
     this.firstEnterDone = false
 
-    const { signal } = this.config
+    const { signal } = this
     const cssOptions = { signal }
 
     this.css = {
@@ -82,16 +56,17 @@ export class SlideDropzoneHint {
     this.css.transition.disable()
   }
 
-  cleanup(items) {
-    this.css.global.destroy()
-    this.css.enter.destroy()
-    this.css.dragover.destroy()
-    this.css.transition.destroy()
+  unmount(items) {
+    super.unmount()
+    // this.css.global.destroy()
+    // this.css.enter.destroy()
+    // this.css.dragover.destroy()
+    // this.css.transition.destroy()
     for (const item of items) item.target.classList.remove("hide")
   }
 
   async enter(items, x, y) {
-    this.el.classList.add("dragover")
+    super.enter()
     this.css.transition.disable()
 
     // Temporary disable dragover
@@ -195,8 +170,8 @@ export class SlideDropzoneHint {
   }
 
   async leave() {
+    super.leave()
     this.dragover = noop
-    this.el.classList.remove("dragover")
     await this.enterReady
     this.rects.length = 0
     this.css.enter.disable()
@@ -210,6 +185,7 @@ export class SlideDropzoneHint {
   }
 
   async drop(items) {
+    // super.drop()
     this.dragover = noop
     await this.leave()
     this.css.transition.disable()
