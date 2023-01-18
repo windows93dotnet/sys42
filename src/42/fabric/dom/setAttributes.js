@@ -24,9 +24,9 @@ export function setAriaAttributes(el, obj) {
   return el
 }
 
-export function setAttribute(el, key, val) {
+export function setAttribute(el, key, val, options) {
   if (key === "class") {
-    if (val) setClasses(el, val)
+    if (val) setClasses(el, val, options)
     else el.setAttribute("class", "") // preserve attribute order for testing
   } else if (key === "style") {
     if (val) setStyles(el, val)
@@ -70,11 +70,11 @@ export function setAttribute(el, key, val) {
   return el
 }
 
-export function setAttributes(el, obj) {
+export function setAttributes(el, obj, options) {
   if (!obj) return el
 
   for (const [keys, val] of Object.entries(obj)) {
-    for (const key of keys.split(" ")) setAttribute(el, key, val)
+    for (const key of keys.split(" ")) setAttribute(el, key, val, options)
   }
 
   return el

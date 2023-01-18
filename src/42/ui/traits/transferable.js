@@ -16,7 +16,6 @@ import listen from "../../fabric/event/listen.js"
 
 const DEFAULTS = {
   selector: ":scope > *",
-  dropzoneSelector: undefined,
   useSelection: true,
   handlerSelector: undefined,
 
