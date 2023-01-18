@@ -9,7 +9,8 @@
 
 .dragover,
 .dragover:focus {
-  outline: 1px dashed;
+  outline: 2px dashed #999;
+  outline-offset: -6px;
 }
 
 .ghost,

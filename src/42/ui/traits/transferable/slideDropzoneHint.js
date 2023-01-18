@@ -82,11 +82,12 @@ export class SlideDropzoneHint {
     this.css.transition.disable()
   }
 
-  cleanup() {
+  cleanup(items) {
     this.css.global.destroy()
     this.css.enter.destroy()
     this.css.dragover.destroy()
     this.css.transition.destroy()
+    for (const item of items) item.target.classList.remove("hide")
   }
 
   async enter(items, x, y) {
@@ -202,14 +203,10 @@ export class SlideDropzoneHint {
     this.css.dragover.disable()
   }
 
-  async revert(items, finished) {
+  async revert() {
     this.dragover = noop
     this.css.dragover.disable()
     this.css.enter.enable()
-    await finished
-    this.css.transition.disable()
-    this.css.enter.disable()
-    for (const item of items) item.target.classList.remove("hide")
   }
 
   async drop(items) {
