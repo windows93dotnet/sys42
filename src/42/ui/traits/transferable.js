@@ -368,7 +368,7 @@ system.transfer = {
     if (system.transfer.currentZone) {
       if (inRect(point, system.transfer.currentZone)) {
         system.transfer.currentZone.hoverScroll?.update({ x, y }, async () => {
-          await system.transfer.currentZone?.hint.updateRects()
+          await system.transfer.currentZone?.hint.updateRects?.()
           system.transfer.currentZone?.hint.dragover(items, x, y)
         })
         return system.transfer.currentZone.hint.dragover(items, x, y)
@@ -384,7 +384,7 @@ system.transfer = {
         system.transfer.currentZone = dropzone
         system.transfer.currentZone.hint.enter(items, x, y)
         system.transfer.currentZone.hoverScroll?.update({ x, y }, async () => {
-          await system.transfer.currentZone?.hint.updateRects()
+          await system.transfer.currentZone?.hint.updateRects?.()
           system.transfer.currentZone?.hint.dragover(items, x, y)
         })
         return system.transfer.currentZone.hint.dragover(items, x, y)

@@ -41,16 +41,6 @@ export class Folder extends Component {
       },
     },
 
-    // traits: {
-    //   transferable: {
-    //     element: ".ui-folder__view",
-    //     selector: ":scope ui-icon",
-    //     // import({ data, effect, index }) {
-    //     //   console.log(data, effect, index)
-    //     // },
-    //   },
-    // },
-
     // dropzone: true,
     on: [
       // drag n drop
@@ -124,6 +114,7 @@ export class Folder extends Component {
       items: "{{getItems(path)}}",
       transferable: {
         selector: ":scope ui-icon",
+        dropzoneConfig: "fade",
         // import({ data, effect, index }) {
         //   console.log(data, effect, index)
         // },
