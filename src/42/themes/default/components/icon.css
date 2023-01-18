@@ -59,7 +59,7 @@ ui-icon:focus {
   outline: none;
 }
 
-:where(:not(ui-icon[small]) > .ui-icon__label > .ui-icon__text) {
+:where(ui-icon:not([small]) > .ui-icon__label) {
   contain: paint;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -68,20 +68,16 @@ ui-icon:focus {
   text-align: center;
 }
 
-ui-icon:not([small]):focus .ui-icon__text {
-  -webkit-line-clamp: 8;
-}
-
 ui-icon:not([small]):focus .ui-icon__label {
   z-index: 1;
   background: var(--bg);
+  -webkit-line-clamp: 8;
 }
 
 /* focusring
 ------------ */
 
-ui-icon[small]:focus::after,
-ui-icon:not([small]):focus .ui-icon__label::after {
+ui-icon:focus .ui-icon__label::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -104,10 +100,6 @@ ui-icon:not([small]):focus .ui-icon__label::after {
   mix-blend-mode: difference;
 }
 
-ui-icon[small]:focus::after {
-  inset: -1px -3px;
-}
-
 /* small
 ======== */
 
@@ -123,12 +115,8 @@ ui-icon[small] {
 }
 
 ui-icon[small] .ui-icon__label {
-  position: static;
+  position: relative;
   overflow: hidden;
   white-space: nowrap;
-}
-
-ui-icon[small] .ui-icon__text {
-  overflow: hidden;
   text-overflow: ellipsis;
 }

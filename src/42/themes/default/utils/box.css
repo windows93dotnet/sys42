@@ -138,9 +138,10 @@ textarea.box-fit {
 .box-h > :not(:only-child):is(
   .button,
   button,
+  .label,
+  label,
   input:is([type="button"],[type="submit"],[type="reset"],[type="color"]),
   aside,
-  label,
   nav,
   menu,
   ol,
@@ -149,7 +150,8 @@ textarea.box-fit {
   img,
   picture,
   video,
-  audio
+  audio,
+  .toggle-group
 )) {
   flex: 0 0 auto;
   max-width: 50%;
