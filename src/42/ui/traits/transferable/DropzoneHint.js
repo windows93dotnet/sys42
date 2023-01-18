@@ -1,5 +1,7 @@
 import getRects from "../../../fabric/dom/getRects.js"
 import Canceller from "../../../fabric/classes/Canceller.js"
+import system from "../../../system.js"
+import queueTask from "../../../fabric/type/function/queueTask.js"
 
 export class DropzoneHint {
   constructor(el, options) {
@@ -41,15 +43,27 @@ export class DropzoneHint {
 
   scan() {}
 
+  weakenItems() {}
+  restoreItems() {}
+
   mount() {
+    this.items = system.transfer.items
+    this.inOriginalDropzone = this.items.dropzoneId === this.el.id
     this.firstEnterDone = false
     this.cancel = new Canceller(this.config.signal)
     this.signal = this.cancel.signal
+    if (this.inOriginalDropzone) {
+      queueTask(() => {
+        this.weakenItems()
+      })
+    }
   }
 
-  unmount() {
+  async unmount() {
     this.cancel()
     this.el.classList.remove("dragover")
+    if (this.inOriginalDropzone) await this.restoreItems()
+    this.items = undefined
   }
 
   dragover() {}
@@ -64,6 +78,9 @@ export class DropzoneHint {
 
   drop() {
     this.el.classList.remove("dragover")
+
+    const { selector } = this.config
+    console.log(selector)
   }
 
   revert() {}

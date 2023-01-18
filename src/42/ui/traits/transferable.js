@@ -89,18 +89,18 @@ class IframeDropzoneHint {
   unmount() {}
   scan() {}
 
-  enter(items, x, y) {
+  enter(x, y) {
     const { x: parentX, y: parentY } = this.el.getBoundingClientRect()
     this.bus.emit("42_TF_v_ENTER", serializeItems({ x, y, parentX, parentY }))
   }
 
   leave() {}
 
-  dragover(items, x, y) {
+  dragover(x, y) {
     this.bus.emit("42_TF_v_DRAGOVER", { x, y })
   }
 
-  async drop(items, x, y) {
+  async drop(x, y) {
     const res = await this.bus.send("42_TF_v_DROP", { x, y })
 
     if (res === "revert") {
@@ -365,7 +365,7 @@ system.transfer = {
 
   setCurrentZone(x, y) {
     setEffect()
-    const { zones, items } = system.transfer
+    const { zones } = system.transfer
 
     if (zones?.length > 0 === false) return
     const point = { x, y }
@@ -374,25 +374,25 @@ system.transfer = {
       if (inRect(point, system.transfer.currentZone)) {
         system.transfer.currentZone.hoverScroll?.update({ x, y }, async () => {
           await system.transfer.currentZone?.hint.scan()
-          system.transfer.currentZone?.hint.dragover(items, x, y)
+          system.transfer.currentZone?.hint.dragover(x, y)
         })
-        return system.transfer.currentZone.hint.dragover(items, x, y)
+        return system.transfer.currentZone.hint.dragover(x, y)
       }
 
       system.transfer.currentZone.hoverScroll?.clear()
-      system.transfer.currentZone.hint.leave(items, x, y)
+      system.transfer.currentZone.hint.leave(x, y)
       system.transfer.currentZone = undefined
     }
 
     for (const dropzone of zones) {
       if (inRect(point, dropzone)) {
         system.transfer.currentZone = dropzone
-        system.transfer.currentZone.hint.enter(items, x, y)
+        system.transfer.currentZone.hint.enter(x, y)
         system.transfer.currentZone.hoverScroll?.update({ x, y }, async () => {
           await system.transfer.currentZone?.hint.scan()
-          system.transfer.currentZone?.hint.dragover(items, x, y)
+          system.transfer.currentZone?.hint.dragover(x, y)
         })
-        return system.transfer.currentZone.hint.dragover(items, x, y)
+        return system.transfer.currentZone.hint.dragover(x, y)
       }
     }
   },
@@ -400,10 +400,10 @@ system.transfer = {
   async unsetCurrentZone(x, y) {
     let res
     let finished
-    const { items, zones } = system.transfer
+    const { zones } = system.transfer
 
     if (system.transfer.currentZone) {
-      res = await system.transfer.currentZone.hint.drop(items, x, y)
+      res = await system.transfer.currentZone.hint.drop(x, y)
       res ??= "drop"
     } else {
       res = "revert"
@@ -412,14 +412,14 @@ system.transfer = {
       const dropzoneTarget = document.querySelector(`#${dropzoneId}`)
       if (dropzoneTarget) {
         const dropzone = system.transfer.dropzones.get(dropzoneTarget)
-        dropzone?.revert?.(items)
+        dropzone?.revert()
       }
 
       await finished
     }
 
     for (const dropzone of zones) {
-      dropzone.hint.unmount(items)
+      dropzone.hint.unmount()
       dropzone.hoverScroll?.clear()
     }
 

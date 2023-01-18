@@ -1,30 +1,26 @@
 import DropzoneHint from "./DropzoneHint.js"
 
 export class FadeDropzoneHint extends DropzoneHint {
-  enter(items) {
-    super.enter()
-    for (const item of items) {
+  weakenItems() {
+    for (const item of this.items) {
       item.target.classList.add("opacity-half")
     }
   }
 
-  async unmount(items) {
-    super.unmount()
-    for (const item of items) {
+  restoreItems() {
+    for (const item of this.items) {
       item.target.classList.remove("opacity-half")
     }
   }
 
-  drop(items) {
+  drop() {
     super.drop()
-    for (const item of items) {
-      item.ghost.remove()
-    }
+    for (const item of this.items) item.ghost.remove()
   }
 }
 
-export function fadeDropzoneHint(options) {
-  return new FadeDropzoneHint(options)
+export function fadeDropzoneHint(el, options) {
+  return new FadeDropzoneHint(el, options)
 }
 
 export default fadeDropzoneHint
