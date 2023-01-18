@@ -21,6 +21,11 @@ export class Explorer extends Component {
         reflect: true,
         default: "/",
       },
+      view: {
+        type: "string",
+        reflect: true,
+        default: "grid",
+      },
       glob: {
         type: "boolean",
         fromView: true,
@@ -67,28 +72,23 @@ export class Explorer extends Component {
   render() {
     return [
       {
-        tag: "header.box-h",
+        tag: "ui-menubar",
         content: [
           {
-            tag: "ui-menubar",
+            label: "File",
             content: [
               {
-                label: "File",
-                content: [
-                  {
-                    label: "Exit", //
-                    click: "{{dialog.close()}}",
-                  },
-                ],
+                label: "Exit", //
+                click: "{{dialog.close()}}",
               },
+            ],
+          },
+          {
+            label: "View",
+            content: [
               {
-                label: "View",
-                content: [
-                  {
-                    label: "Select all",
-                    click: "{{folder.selectAll()}}",
-                  },
-                ],
+                label: "Select all",
+                click: "{{folder.selectAll()}}",
               },
             ],
           },
@@ -120,11 +120,30 @@ export class Explorer extends Component {
               },
             },
           },
+          "---",
+          {
+            tag: ".toggle-group",
+            content: [
+              {
+                tag: "radio",
+                bind: "view",
+                value: "grid",
+                label: { picto: "grid", aria: { label: "Grid view" } },
+              },
+              {
+                tag: "radio",
+                bind: "view",
+                value: "tree",
+                label: { picto: "tree", aria: { label: "Tree view" } },
+              },
+            ],
+          },
         ],
       },
       {
         tag: "ui-folder.inset.paper",
         path: "{{path}}",
+        view: "{{view}}",
         glob: "{{glob}}",
         selection: "{{selection}}",
         multiselectable: "{{multiselectable}}",

@@ -53,13 +53,10 @@ class Icon extends Component {
         {
           if: "{{../label}}",
           tag: ".ui-icon__label",
-          content: {
-            tag: ".ui-icon__text",
-            content: [
-              { tag: "span.ui-icon__name", content: "{{name}}" },
-              { tag: "span.ui-icon__ext", content: "\u200B{{ext}}" },
-            ],
-          },
+          content: [
+            { tag: "span.ui-icon__name", content: "{{name}}" },
+            { tag: "span.ui-icon__ext", content: "\u200B{{ext}}" },
+          ],
         },
       ],
     },

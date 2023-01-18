@@ -382,9 +382,11 @@ hr {
   box-shadow: var(--separator-bsh);
 }
 
+.box-h > hr,
 hr[aria-orientation="vertical"] {
+  flex: 0 0 auto;
   margin-block: 0;
-  margin-inline: var(--unit);
+  margin-inline: var(--unit-sm);
   display: inline-block;
   height: auto;
   width: 0;

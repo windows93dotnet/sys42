@@ -27,6 +27,7 @@ ui-menubar {
 
 ui-menubar {
   display: flex;
+  flex-shrink: 0;
 }
 
 ui-menu {
