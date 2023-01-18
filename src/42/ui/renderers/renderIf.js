@@ -87,14 +87,18 @@ export default function renderIf(plan, stage) {
     } else {
       lastChild = el
 
-      // prevent FOUC
-      const restore = setTemp(el, { style: { display: "none" } })
-      newStage.reactive.done().then(() => {
-        requestAnimationFrame(async () => {
-          await remover()
-          restore()
+      if (elsePlan) {
+        // prevent FOUC
+        const restore = setTemp(el, { style: { display: "none" } })
+        newStage.reactive.done().then(() => {
+          requestAnimationFrame(async () => {
+            await remover()
+            restore()
+          })
         })
-      })
+      } else {
+        remover()
+      }
     }
 
     placeholder.after(el)

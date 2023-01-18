@@ -41,15 +41,15 @@ export class Folder extends Component {
       },
     },
 
-    traits: {
-      transferable: {
-        element: ".ui-folder__view",
-        selector: ":scope ui-icon",
-        // import({ data, effect, index }) {
-        //   console.log(data, effect, index)
-        // },
-      },
-    },
+    // traits: {
+    //   transferable: {
+    //     element: ".ui-folder__view",
+    //     selector: ":scope ui-icon",
+    //     // import({ data, effect, index }) {
+    //     //   console.log(data, effect, index)
+    //     // },
+    //   },
+    // },
 
     // dropzone: true,
     on: [
@@ -122,12 +122,12 @@ export class Folder extends Component {
       selection: "{{selection}}",
       selectionKey: "path",
       items: "{{getItems(path)}}",
-      // transferable: {
-      //   // selector: ":scope ui-icon",
-      //   // import({ data, effect, index }) {
-      //   //   console.log(data, effect, index)
-      //   // },
-      // },
+      transferable: {
+        selector: ":scope ui-icon",
+        // import({ data, effect, index }) {
+        //   console.log(data, effect, index)
+        // },
+      },
     }
     return [
       {
