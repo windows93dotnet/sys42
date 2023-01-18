@@ -95,7 +95,7 @@ export class Explorer extends Component {
         ],
       },
       {
-        tag: "header.box-h.ctrl-group.mb-xs",
+        tag: "header.box-h.gap-sm.mb-xs",
         content: [
           {
             tag: "button",
@@ -120,7 +120,6 @@ export class Explorer extends Component {
               },
             },
           },
-          "---",
           {
             tag: ".toggle-group",
             content: [
