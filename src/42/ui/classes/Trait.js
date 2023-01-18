@@ -1,3 +1,4 @@
+import isHashmapLike from "../../fabric/type/any/is/isHashmapLike.js"
 import Canceller from "../../fabric/classes/Canceller.js"
 import ensureElement from "../../fabric/dom/ensureElement.js"
 
@@ -20,7 +21,12 @@ export default class Trait {
   #hasGetter = false
 
   constructor(el, options) {
-    el = ensureElement(el)
+    if (isHashmapLike(el)) {
+      options = el
+      el = undefined
+    }
+
+    el = options?.element ? ensureElement(options.element) : ensureElement(el)
 
     const name = options?.name ?? this.constructor.name.toLowerCase()
 

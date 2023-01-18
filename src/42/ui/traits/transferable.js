@@ -16,17 +16,18 @@ import listen from "../../fabric/event/listen.js"
 
 const DEFAULTS = {
   selector: ":scope > *",
+  dropzoneSelector: undefined,
   useSelection: true,
   handlerSelector: undefined,
 
-  itemsHintConfig: {
+  itemsConfig: {
     name: "stack",
     startAnimation: { ms: 180 },
     revertAnimation: { ms: 180 },
     dropAnimation: { ms: 180 },
   },
 
-  dropzoneHintConfig: {
+  dropzoneConfig: {
     name: "slide",
     speed: 180,
   },
@@ -57,8 +58,8 @@ function serializeItems(obj, options) {
   }
 
   const { dropzoneId } = system.transfer.items
-  const { itemsHintConfig } = system.transfer
-  return { ...obj, items, dropzoneId, itemsHintConfig }
+  const { itemsConfig } = system.transfer
+  return { ...obj, items, dropzoneId, itemsConfig }
 }
 
 function deserializeItems(items, parentX, parentY) {
@@ -121,15 +122,7 @@ if (inIframe) {
   ipc
     .on(
       "42_TF_v_ENTER",
-      async ({
-        x,
-        y,
-        items,
-        itemsHintConfig,
-        dropzoneId,
-        parentX,
-        parentY,
-      }) => {
+      async ({ x, y, items, itemsConfig, dropzoneId, parentX, parentY }) => {
         context.parentX = parentX
         context.parentY = parentY
 
@@ -138,13 +131,13 @@ if (inIframe) {
         deserializeItems(items, context.parentX * -1, context.parentY * -1)
 
         const { itemsHint } = await system.transfer.makeHints({
-          itemsHintConfig,
+          itemsConfig,
         })
 
         context.ready = true
 
         system.transfer.items = itemsHint
-        system.transfer.itemsHintConfig = itemsHintConfig
+        system.transfer.itemsConfig = itemsConfig
         system.transfer.items.dropzoneId = dropzoneId
         system.transfer.findTransferZones(x, y)
 
@@ -202,7 +195,7 @@ if (inIframe) {
     })
     .on(
       "42_TF_^_START",
-      async ({ x, y, items, dropzoneId, itemsHintConfig }, { iframe }) => {
+      async ({ x, y, items, dropzoneId, itemsConfig }, { iframe }) => {
         context.fromIframe = true
 
         const iframeRect = iframe.getBoundingClientRect()
@@ -216,10 +209,10 @@ if (inIframe) {
         cleanHints()
 
         const { itemsHint } = await system.transfer.makeHints({
-          itemsHintConfig,
+          itemsConfig,
         })
         system.transfer.items = itemsHint
-        system.transfer.itemsHintConfig = itemsHintConfig
+        system.transfer.itemsConfig = itemsConfig
         system.transfer.items.dropzoneId = dropzoneId
         const zoneReady = system.transfer.findTransferZones(x, y)
         system.transfer.items.start(x, y, items)
@@ -321,20 +314,20 @@ system.transfer = {
 
   effect: undefined,
 
-  async makeHints({ itemsHintConfig, dropzoneHintConfig }, el) {
+  async makeHints({ itemsConfig, dropzoneConfig }, el) {
     const undones = []
 
-    if (itemsHintConfig) {
+    if (itemsConfig) {
       undones.push(
-        import(`./transferable/${itemsHintConfig.name}ItemsHint.js`) //
-          .then((m) => m.default(itemsHintConfig))
+        import(`./transferable/${itemsConfig.name}ItemsHint.js`) //
+          .then((m) => m.default(itemsConfig))
       )
     }
 
-    if (dropzoneHintConfig) {
+    if (dropzoneConfig) {
       undones.push(
-        import(`./transferable/${dropzoneHintConfig.name}DropzoneHint.js`) //
-          .then((m) => m.default(el, dropzoneHintConfig))
+        import(`./transferable/${dropzoneConfig.name}DropzoneHint.js`) //
+          .then((m) => m.default(el, dropzoneConfig))
       )
     }
 
@@ -468,18 +461,18 @@ class Transferable extends Trait {
     this.config = configure(options)
     this.config.selector = ensureScopeSelector(this.config.selector, this.el)
 
-    if (typeof this.config.itemsHintConfig === "string") {
-      this.config.itemsHintConfig = { name: this.config.itemsHintConfig }
+    if (typeof this.config.itemsConfig === "string") {
+      this.config.itemsConfig = { name: this.config.itemsConfig }
     }
 
-    if (typeof this.config.dropzoneHintConfig === "string") {
-      this.config.dropzoneHintConfig = { name: this.config.dropzoneHintConfig }
+    if (typeof this.config.dropzoneConfig === "string") {
+      this.config.dropzoneConfig = { name: this.config.dropzoneConfig }
     }
 
-    this.config.dropzoneHintConfig.signal ??= this.cancel.signal
-    this.config.dropzoneHintConfig.selector ??= this.config.selector
-    this.config.dropzoneHintConfig.indexChange ??= this.config.indexChange
-    this.config.dropzoneHintConfig.list = this.list
+    this.config.dropzoneConfig.signal ??= this.cancel.signal
+    this.config.dropzoneConfig.selector ??= this.config.selector
+    this.config.dropzoneConfig.indexChange ??= this.config.indexChange
+    this.config.dropzoneConfig.list = this.list
 
     this.init()
   }
@@ -487,10 +480,10 @@ class Transferable extends Trait {
   async init() {
     const { signal } = this.cancel
 
-    const { itemsHintConfig, dropzoneHintConfig } = this.config
+    const { itemsConfig, dropzoneConfig } = this.config
 
     const { itemsHint, dropzoneHint } = await system.transfer.makeHints(
-      { itemsHintConfig, dropzoneHintConfig },
+      { itemsConfig, dropzoneConfig },
       this.el
     )
 
@@ -527,7 +520,7 @@ class Transferable extends Trait {
 
         cleanHints()
         system.transfer.items = itemsHint
-        system.transfer.itemsHintConfig = itemsHintConfig
+        system.transfer.itemsConfig = itemsConfig
 
         if (this.config.useSelection) {
           const selectable = this.el[Trait.INSTANCES]?.selectable
