@@ -25,88 +25,10 @@
 </style>
 
 <body class="box-center desktop pa">
-  <div class="demos">
-    <!-- <h2>Drag to sort</h2>
-    <div class="demo _demo-xy box-flex scroll-y pa-xl gap-xl inset paper">
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-green-200">1</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-green-200">2</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-green-200">3</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-green-200">4</span>
-    </div>
-    <div class="demo scroll-x d-flex pa-xl gap-xl inset paper">
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-green-400">1</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-green-400">2</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-green-400">3</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-green-400">4</span>
-    </div>
-
-    <br /> -->
-
-    <!-- <h3>selectable</h3>
-    <div
-      class="demo demo-selectable demo-xy box-flex scroll-y pa-xl gap-xl inset paper">
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-200">1</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-200">2</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-200">3</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-200">4</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-200">5</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-200">6</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-200">7</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-200">8</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-200">9</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-200">10</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-200">11</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-200">12</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-200">13</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-200">14</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-200">15</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-200">16</span>
-    </div>
-    <div class="demo demo-selectable scroll-x d-flex pa-xl gap-xl inset paper">
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-400">1</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-400">2</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-400">3</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-400">4</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-400">5</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-400">6</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-400">7</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-400">8</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-400">9</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-400">10</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-400">11</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-400">12</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-400">13</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-400">14</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-400">15</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-400">16</span>
-    </div>
-    <div
-      class="demo demo-small demo-selectable scroll-x d-flex pa-xl gap-xl inset paper">
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-600">1</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-600">2</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-600">3</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-600">4</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-600">5</span>
-      <span class="bd pa-xl font-mono bg-opacity-50 bg-yellow-600">6</span>
-    </div>
-    <br /> -->
-
-    <!-- <h3>grid (not quite ready)</h3>
-    <div
-      class="demo scroll-x box-grid pa-xl gap-xl inset paper"
-      style="--cols: 4">
-      <span class="bd pa-xl">A</span>
-      <span class="bd pa-xl">B</span>
-      <span class="bd pa-xl">C</span>
-      <span class="bd pa-xl">D</span>
-      <span class="bd pa-xl">E</span>
-      <span class="bd pa-xl">F</span>
-      <span class="bd pa-xl">G</span>
-    </div> -->
-  </div>
+  <div class="demos"></div>
 </body>
 
-<!-- <script type="module">
+<script type="module">
   const { outerHTML } = document.documentElement
   function makeDocClone(color1, color2) {
     const iframe = document.createElement("iframe")
@@ -127,25 +49,7 @@
     makeDocClone("indigo", "purple")
     document.body.classList.add("box-h", "box-fit", "gap")
   }
-</script> -->
-
-<!-- <script type="module">
-  import transferable from "../../../42/ui/traits/transferable.js"
-  import selectable from "../../../42/ui/traits/selectable.js"
-  for (const item of document.querySelectorAll(".demo")) {
-    transferable(item)
-  }
-
-  for (const item of document.querySelectorAll(".demo-selectable")) {
-    selectable(item)
-  }
-
-  const demoSmall = document.querySelector(".demo-small")
-  const selectableInstance = demoSmall[Symbol.for("Trait.INSTANCES")].selectable
-  selectableInstance.add(demoSmall.querySelector(":scope > :nth-child(1)"))
-  selectableInstance.add(demoSmall.querySelector(":scope > :nth-child(3)"))
-  selectableInstance.add(demoSmall.querySelector(":scope > :nth-child(5)"))
-</script> -->
+</script>
 
 <script type="module">
   import ui from "../../../42/ui.js"
@@ -169,44 +73,75 @@
     })
   }
 
-  const arr1 = Array.from({ length: 6 }).map((_, i) => i + 1)
-  const arr2 = Array.from({ length: 4 }).map((_, i) => i + 11)
+  function makeArray(length, prefix = "") {
+    return Array.from({ length }).map((_, i) => prefix + (i + 1))
+  }
+
+  state.listA = makeArray(4)
+  state.listB = makeArray(6, "1")
 
   ui(".demos", {
-    state: { arr1, arr2, ...state },
+    plugins: ["markdown"],
+    state,
     content: [
-      { tag: "h3", content: "list" },
+      "# Transferable",
       {
-        scope: "arr1",
-        tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl._gap-xl.inset paper",
-        aria: { orientation: "horizontal" },
-        selectable: true,
-        transferable: {
-          list: "{{/arr1}}",
-        },
-        each: {
-          tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-pink-200",
-          content: "{{.}}",
-        },
-      },
-      {
-        scope: "arr2",
         tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl.gap-xl.inset paper",
         transferable: {
-          list: "{{/arr2}}",
+          dropzoneConfig: "fade",
+        },
+        content: makeArray(4).map((content) => ({
+          tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-green-200",
+          content,
+        })),
+      },
+      {
+        tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl.gap-xl.inset paper",
+        selectable: true,
+        transferable: {
+          dropzoneConfig: "fade",
+        },
+        content: makeArray(4, "1").map((content) => ({
+          tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-green-400",
+          content,
+        })),
+      },
+
+      "## list",
+      {
+        scope: "listA",
+        tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl.gap-xl.inset paper",
+        transferable: {
+          list: "{{.}}",
         },
         each: {
           tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-gray-200",
           content: "{{.}}",
         },
       },
-      { tag: "h3", content: "layout" },
+
+      // "### selectable",
       {
-        tag: "ui-tabs",
-        id: "tabs1",
-        // style: { height: "100px" },
-        items: "{{planets}}",
+        scope: "listB",
+        tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl._gap-xl.inset paper",
+        aria: { orientation: "horizontal" },
+        selectable: true,
+        transferable: {
+          list: "{{.}}",
+        },
+        each: {
+          tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-pink-200",
+          content: "{{.}}",
+        },
       },
+
+      // "## layout",
+      // {
+      //   tag: "ui-tabs",
+      //   id: "tabs1",
+      //   // style: { height: "100px" },
+      //   items: "{{planets}}",
+      // },
     ],
   })
 </script>

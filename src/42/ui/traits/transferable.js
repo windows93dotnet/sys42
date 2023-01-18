@@ -407,14 +407,14 @@ system.transfer = {
       const dropzoneTarget = document.querySelector(`#${dropzoneId}`)
       if (dropzoneTarget) {
         const dropzone = system.transfer.dropzones.get(dropzoneTarget)
-        dropzone?.revert?.(items, finished)
+        dropzone?.revert?.(items)
       }
 
       await finished
     }
 
     for (const dropzone of zones) {
-      dropzone.hint.cleanup?.()
+      dropzone.hint.cleanup?.(items)
       dropzone.hoverScroll?.clear()
     }
 
