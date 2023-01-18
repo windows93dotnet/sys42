@@ -56,16 +56,13 @@ export class SlideDropzoneHint extends DropzoneHint {
     this.css.transition.disable()
   }
 
-  unmount(items) {
-    super.unmount()
-    // this.css.global.destroy()
-    // this.css.enter.destroy()
-    // this.css.dragover.destroy()
-    // this.css.transition.destroy()
-    for (const item of items) item.target.classList.remove("hide")
+  restoreItems() {
+    for (const item of this.items) {
+      item.target.classList.remove("hide")
+    }
   }
 
-  async enter(items, x, y) {
+  async enter(x, y) {
     super.enter()
     this.css.transition.disable()
 
@@ -74,10 +71,10 @@ export class SlideDropzoneHint extends DropzoneHint {
     this.dragover = noop
 
     this.enterReady = defer()
-    this.inOriginalDropzone = items.dropzoneId === this.el.id
+    // this.inOriginalDropzone = items.dropzoneId === this.el.id
     this.newIndex = undefined
 
-    const [first] = items
+    const [first] = this.items
     this.blankWidth = `${
       first.width + first.marginLeft + first.marginRight + this.colGap
     }px 0`
@@ -101,11 +98,11 @@ export class SlideDropzoneHint extends DropzoneHint {
 
       // Get all visible items bounding rects and save css with empty holes
       // ------------------------------------------------------------------
-      await this.scan(items, (rect) => {
+      await this.scan(this.items, (rect) => {
         if (previousY !== rect.y) offset = 0
         previousY = rect.y
 
-        for (const item of items) {
+        for (const item of this.items) {
           if (item.target.id === rect.target.id) {
             offset +=
               item.width + item.marginLeft + item.marginRight + this.colGap
@@ -138,8 +135,8 @@ export class SlideDropzoneHint extends DropzoneHint {
 
     // Enable dragover
     // ---------------
-    this.dragover = (items, x, y) => {
-      const [first] = items
+    this.dragover = (x, y) => {
+      const [first] = this.items
 
       x -= first.offsetX - first.width / 2
       y -= first.offsetY - first.height / 2
@@ -164,7 +161,7 @@ export class SlideDropzoneHint extends DropzoneHint {
       }
     }
 
-    this.dragover(items, x, y)
+    this.dragover(x, y)
 
     this.enterReady.resolve()
   }
@@ -184,7 +181,7 @@ export class SlideDropzoneHint extends DropzoneHint {
     this.css.enter.enable()
   }
 
-  async drop(items) {
+  async drop() {
     // super.drop()
     this.dragover = noop
     await this.leave()
@@ -198,7 +195,7 @@ export class SlideDropzoneHint extends DropzoneHint {
       const add = []
       if (this.inOriginalDropzone) {
         const removed = []
-        for (const item of items) {
+        for (const item of this.items) {
           item.target.classList.remove("hide")
           let { index } = item
           for (const remIndex of removed) if (index > remIndex) index--
@@ -208,7 +205,7 @@ export class SlideDropzoneHint extends DropzoneHint {
           add.push(item.data)
         }
       } else {
-        for (const item of items) {
+        for (const item of this.items) {
           item.target.classList.remove("hide")
           add.push(item.data)
         }
@@ -228,7 +225,7 @@ export class SlideDropzoneHint extends DropzoneHint {
       for (let i = 0, l = droppeds.length; i < l; i++) {
         droppeds[i].classList.add("invisible")
         droppeds[i].id ||= uid()
-        items[i].target = droppeds[i]
+        this.items[i].target = droppeds[i]
       }
     } else {
       const frag = document.createDocumentFragment()
@@ -240,7 +237,7 @@ export class SlideDropzoneHint extends DropzoneHint {
               `${this.config.selector}:nth-child(${this.newIndex + 1})`
             )
 
-      for (const item of items) {
+      for (const item of this.items) {
         item.target.classList.remove("hide")
         item.target.classList.add("invisible")
         droppeds.push(item.target)
@@ -258,13 +255,13 @@ export class SlideDropzoneHint extends DropzoneHint {
       intersecting: true,
     })
 
-    for (let i = 0, l = items.length; i < l; i++) {
-      const item = items[i]
-      if (rects[i] && items.config.dropAnimation) {
+    for (let i = 0, l = this.items.length; i < l; i++) {
+      const item = this.items[i]
+      if (rects[i] && this.items.config.dropAnimation) {
         undones.push(
           animateTo(item.ghost, {
             translate: `${rects[i].x}px ${rects[i].y}px`,
-            ...items.dropAnimation(item),
+            ...this.items.dropAnimation(item),
           }).then(() => {
             item.ghost.remove()
             rects[i].target.classList.remove("invisible")

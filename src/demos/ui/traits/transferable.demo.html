@@ -83,7 +83,7 @@
   }
 
   state.listA = makeArray(4)
-  state.listB = makeArray(6, "1")
+  state.listB = makeArray(7, "1")
 
   ui(".demos", {
     plugins: ["markdown"],
@@ -116,6 +116,7 @@
       {
         scope: "listA",
         tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl.gap-xl.inset paper",
+        aria: { orientation: "horizontal" },
         transferable: {
           list: "{{.}}",
         },
