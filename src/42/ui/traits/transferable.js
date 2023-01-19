@@ -75,7 +75,8 @@ function cleanHints() {
   if (system.transfer.items) system.transfer.items.length = 0
   system.transfer.items = undefined
   system.transfer.currentZone = undefined
-  removeEffect()
+  system.transfer.effect = undefined
+  setCursor()
 }
 
 class IframeDropzoneHint {
@@ -295,11 +296,6 @@ async function setEffect(options) {
   }
 }
 
-function removeEffect() {
-  system.transfer.effect = undefined
-  setCursor()
-}
-
 /* system
 ========= */
 
@@ -394,6 +390,7 @@ system.transfer = {
 
     if (system.transfer.currentZone) {
       res = await system.transfer.currentZone.hint.drop(x, y)
+      for (const item of system.transfer.items) item.ghost.remove()
       res ??= "drop"
     }
 
@@ -567,15 +564,14 @@ class Transferable extends Trait {
 
       async stop(x, y) {
         startReady = false
-        removeEffect()
+        setCursor()
         forgetKeyevents()
         await startPromise
 
         if (inIframe) {
           ipc.emit("42_TF_^_STOP", { x, y })
-          for (const item of system.transfer.items) {
-            const target = document.querySelector(`#${item.target.id}`)
-            item.target = target
+          if (system.transfer.effect === "move") {
+            for (const item of system.transfer.items) item.target.remove()
           }
         }
 

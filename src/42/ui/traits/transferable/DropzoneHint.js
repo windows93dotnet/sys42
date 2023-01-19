@@ -43,8 +43,8 @@ export class DropzoneHint {
 
   scan() {}
 
-  weakenItems() {}
-  restoreItems() {}
+  weakenItem() {}
+  restoreItem() {}
 
   mount() {
     this.items = system.transfer.items
@@ -60,7 +60,10 @@ export class DropzoneHint {
 
     this.cancel = new Canceller(this.config.signal)
     this.signal = this.cancel.signal
-    if (this.inOriginalDropzone) this.weakenItems()
+    if (this.inOriginalDropzone) {
+      if (this.weakenItems) this.weakenItems()
+      else for (const item of this.items) this.weakenItem(item)
+    }
   }
 
   async unmount() {
@@ -75,7 +78,11 @@ export class DropzoneHint {
     //   this.items
     // )
 
-    if (this.inOriginalDropzone) await this.restoreItems()
+    if (this.inOriginalDropzone) {
+      if (this.restoreItems) this.restoreItems()
+      else for (const item of this.items) this.restoreItem(item)
+    }
+
     this.items = undefined
   }
 
@@ -91,9 +98,54 @@ export class DropzoneHint {
 
   drop() {
     this.el.classList.remove("dragover")
+    if (this.restoreItems) this.restoreItems()
 
-    const { selector } = this.config
-    console.log(selector)
+    const { effect } = system.transfer
+    const { selector, list } = this.config
+    const droppeds = list ? [] : document.createDocumentFragment()
+
+    if (this.inOriginalDropzone) {
+      const removed = []
+      for (const item of this.items) {
+        this.restoreItem(item)
+        let { index } = item
+        for (const remIndex of removed) if (index > remIndex) index--
+        if (this.newIndex > index) this.newIndex--
+        removed.push(index)
+
+        if (list) {
+          if (effect === "move") list.splice(index, 1)
+          droppeds?.push(item.data)
+        } else {
+          droppeds.append(
+            effect === "move" ? item.target : item.target.cloneNode(true)
+          )
+        }
+      }
+    } else {
+      for (const item of this.items) {
+        this.restoreItem(item)
+        if (list) {
+          droppeds?.push(item.data)
+        } else {
+          droppeds.append(
+            effect === "move" ? item.target : item.target.cloneNode(true)
+          )
+        }
+      }
+    }
+
+    if (list) {
+      list.splice(this.newIndex, 0, ...droppeds)
+      this.config.indexChange?.(this.newIndex)
+    } else if (this.newIndex) {
+      const indexedElement = this.el.querySelector(
+        `${selector}:nth-child(${this.newIndex + 1})`
+      )
+      this.el.insertBefore(droppeds, indexedElement)
+    } else {
+      this.el.append(droppeds)
+    }
   }
 
   revert() {}

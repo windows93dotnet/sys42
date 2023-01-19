@@ -56,10 +56,8 @@ export class SlideDropzoneHint extends DropzoneHint {
     this.css.transition.disable()
   }
 
-  restoreItems() {
-    for (const item of this.items) {
-      item.target.classList.remove("hide")
-    }
+  restoreItem(item) {
+    item.target.classList.remove("hide")
   }
 
   async enter(x, y) {
