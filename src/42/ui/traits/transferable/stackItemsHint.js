@@ -28,6 +28,7 @@ export class StackItemsHint extends Array {
       item.offsetY ??= y - item.y
 
       item.target.id ||= uid()
+      item.id = item.target.id
 
       if (!item.ghost) {
         item.ghost = ghostify(item.target, { rect: item })

@@ -49,7 +49,6 @@ function serializeItems(obj, options) {
 
   for (const item of system.transfer.items) {
     const exportedItem = { ...item }
-    exportedItem.id = exportedItem.target.id
     exportedItem.ghost = exportedItem.ghost.outerHTML
     exportedItem.target = exportedItem.target.outerHTML
     if (exportedItem.data) exportedItem.data = unproxy(exportedItem.data)
@@ -64,7 +63,10 @@ function serializeItems(obj, options) {
 
 function deserializeItems(items, parentX, parentY) {
   for (const item of items) {
-    item.target = document.querySelector(`#${item.id}`) ?? sanitize(item.target)
+    item.target =
+      (context.originalIframe
+        ? document.querySelector(`#${item.id}`)
+        : undefined) ?? sanitize(item.target)
     item.ghost = sanitize(item.ghost)
     item.x += parentX
     item.y += parentY
@@ -92,7 +94,7 @@ class IframeDropzoneHint {
   activate() {}
 
   halt() {
-    this.bus.send("42_TF_v_CLEANUP")
+    this.bus.emit("42_TF_v_CLEANUP")
   }
 
   enter(x, y) {
@@ -104,8 +106,8 @@ class IframeDropzoneHint {
     this.bus.emit("42_TF_v_DRAGOVER", { x, y })
   }
 
-  async drop(x, y) {
-    return this.bus.send("42_TF_v_DROP", { x, y })
+  drop(x, y) {
+    this.bus.emit("42_TF_v_DROP", { x, y })
   }
 
   async destroy() {
@@ -138,13 +140,13 @@ if (inIframe) {
         context.ready = true
       }
     )
-    .on("42_TF_v_DRAGOVER", async ({ x, y }) => {
+    .on("42_TF_v_DRAGOVER", ({ x, y }) => {
       if (!context.ready) return
       x -= context.parentX
       y -= context.parentY
       setCurrentZone(x, y)
     })
-    .on("42_TF_v_DROP", async ({ x, y }) => {
+    .on("42_TF_v_DROP", ({ x, y }) => {
       if (!context.ready || context.originalIframe) return
       x -= context.parentX
       y -= context.parentY
@@ -159,7 +161,7 @@ if (inIframe) {
       delete context.keys
       return system.transfer.effect
     })
-    .on("42_TF_v_CLEANUP", async () => {
+    .on("42_TF_v_CLEANUP", () => {
       cleanHints()
       clear(context)
     })

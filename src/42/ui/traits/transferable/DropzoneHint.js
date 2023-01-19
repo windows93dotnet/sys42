@@ -3,6 +3,13 @@ import Trait from "../../classes/Trait.js"
 import Canceller from "../../../fabric/classes/Canceller.js"
 import system from "../../../system.js"
 
+function copyElement(item) {
+  const copy = item.target.cloneNode(true)
+  copy.id += "-copy"
+  item.id = copy.id
+  return copy
+}
+
 export class DropzoneHint {
   constructor(el, options) {
     this.el = el
@@ -78,8 +85,9 @@ export class DropzoneHint {
     const selectable = this.el[Trait.INSTANCES]?.selectable
     if (selectable) {
       selectable.clear()
+      if (this.inOriginalDropzone && system.transfer.effect === "copy") return
       for (const item of system.transfer.items) {
-        const target = document.querySelector(`#${item.target.id}`)
+        const target = document.querySelector(`#${item.id}`)
         if (target) selectable?.add(target)
       }
     }
@@ -118,9 +126,7 @@ export class DropzoneHint {
           if (effect === "move") list.splice(index, 1)
           droppeds?.push(item.data)
         } else {
-          droppeds.append(
-            effect === "move" ? item.target : item.target.cloneNode(true)
-          )
+          droppeds.append(effect === "move" ? item.target : copyElement(item))
         }
       }
     } else {
@@ -131,9 +137,7 @@ export class DropzoneHint {
         if (list) {
           droppeds?.push(item.data)
         } else {
-          droppeds.append(
-            effect === "move" ? item.target : item.target.cloneNode(true)
-          )
+          droppeds.append(effect === "move" ? item.target : copyElement(item))
         }
       }
     }
