@@ -88,7 +88,9 @@ class IframeDropzoneHint {
   }
 
   mount() {}
-  unmount() {}
+  unmount() {
+    this.bus.send("42_TF_v_CLEANUP")
+  }
   scan() {}
   leave() {}
 
@@ -151,24 +153,11 @@ if (inIframe) {
       x -= context.parentX
       y -= context.parentY
 
-      let res
-      if (system.transfer.currentZone) {
-        res = "drop"
-        for (const item of system.transfer.items) {
-          document.documentElement.append(item.ghost)
-        }
-
-        system.transfer.items.drag(x, y)
-      } else {
-        res = "revert"
+      if (!context.originalIframe) {
+        system.transfer.unsetCurrentZone(x, y)
       }
 
-      // system.transfer
-      //   .unsetCurrentZone(x, y)
-      //   .then(() => system.transfer.handleSelection())
-
       clear(context)
-      return res
     })
     .on("42_TF_v_EFFECT", (effect) => {
       applyEffect(effect)
@@ -181,6 +170,7 @@ if (inIframe) {
     })
     .on("42_TF_v_CLEANUP", async () => {
       cleanHints()
+      clear(context)
     })
 } else {
   ipc
@@ -241,9 +231,7 @@ if (inIframe) {
         x += context.parentX
         y += context.parentY
         clear(context)
-        system.transfer
-          .unsetCurrentZone(x, y)
-          .then(() => system.transfer.handleSelection())
+        system.transfer.unsetCurrentZone(x, y)
       }
     })
 }
@@ -384,17 +372,16 @@ system.transfer = {
   },
 
   async unsetCurrentZone(x, y) {
-    let res
     let finished
     const { zones } = system.transfer
 
     if (system.transfer.currentZone) {
-      res = await system.transfer.currentZone.hint.drop(x, y)
-      for (const item of system.transfer.items) item.ghost.remove()
-      res ??= "drop"
+      await system.transfer.currentZone.hint.drop(x, y)
     }
 
-    if (res === undefined || res === "revert") {
+    if (system.transfer.effect === "move") {
+      for (const item of system.transfer.items) item.ghost.remove()
+    } else {
       finished = system.transfer.items.revert?.(x, y)
       const { dropzoneId } = system.transfer.items
       const dropzoneTarget = document.querySelector(`#${dropzoneId}`)
@@ -410,11 +397,10 @@ system.transfer = {
       dropzone.hint.unmount()
       dropzone.hoverScroll?.clear()
     }
-  },
 
-  handleSelection() {
     cleanHints()
   },
+
   // handleSelection() {
   //   if (!system.transfer.items) {
   //     cleanHints()
@@ -538,6 +524,7 @@ class Transferable extends Trait {
           system.transfer.items.start?.(x, y, rects)
 
           if (inIframe) {
+            context.originalIframe = true
             ipc.emit(
               "42_TF_^_START",
               serializeItems({ x, y }, { hideGhost: true })
@@ -570,13 +557,17 @@ class Transferable extends Trait {
 
         if (inIframe) {
           ipc.emit("42_TF_^_STOP", { x, y })
+
           if (system.transfer.effect === "move") {
             for (const item of system.transfer.items) item.target.remove()
           }
-        }
 
-        await system.transfer.unsetCurrentZone(x, y)
-        system.transfer.handleSelection()
+          if (context.originalIframe) {
+            await system.transfer.unsetCurrentZone(x, y)
+          }
+        } else {
+          await system.transfer.unsetCurrentZone(x, y)
+        }
 
         for (const iframeDz of iframeDropzones) iframeDz.destroy()
         iframeDropzones.length = 0
