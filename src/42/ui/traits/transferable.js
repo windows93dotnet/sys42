@@ -21,14 +21,14 @@ const DEFAULTS = {
 
   itemsConfig: {
     name: "stack",
-    startAnimation: { ms: 180 },
-    revertAnimation: { ms: 180 },
-    dropAnimation: { ms: 180 },
+    startAnimation: { ms: 180 * 3 },
+    revertAnimation: { ms: 180 * 3 },
+    dropAnimation: { ms: 180 * 3 },
   },
 
   dropzoneConfig: {
     name: "slide",
-    speed: 180,
+    speed: 180 * 3,
   },
 }
 
@@ -159,11 +159,11 @@ if (inIframe) {
       y -= context.parentY
       setCurrentZone(x, y)
     })
-    .on("42_TF_v_DROP", ({ x, y }) => {
+    .on("42_TF_v_DROP", async ({ x, y }) => {
       if (!context.ready || context.originalIframe) return
       x -= context.parentX
       y -= context.parentY
-      haltZones(x, y)
+      await haltZones(x, y)
     })
     .on("42_TF_v_EFFECT", (effect) => {
       applyEffect(effect)
@@ -351,7 +351,7 @@ async function haltZones(x, y) {
   }
 
   if (system.transfer.effect === "move") {
-    for (const item of system.transfer.items) item.ghost.remove()
+    await system.transfer.items.adopt(x, y)
   } else {
     finished = system.transfer.items.revert?.(x, y)
 

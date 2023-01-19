@@ -1,6 +1,7 @@
 import system from "../../../system.js"
 import uid from "../../../core/uid.js"
 import ghostify from "../../../fabric/dom/ghostify.js"
+import getRects from "../../../fabric/dom/getRects.js"
 import { animateTo, animateFrom } from "../../../fabric/dom/animate.js"
 
 export class StackItemsHint extends Array {
@@ -93,6 +94,68 @@ export class StackItemsHint extends Array {
         )
       } else {
         item.ghost.remove()
+      }
+    }
+
+    await Promise.all(undones)
+  }
+
+  async adopt(/* x, y */) {
+    const currentZoneHint = system.transfer.currentZone?.hint
+    if (
+      !currentZoneHint ||
+      currentZoneHint.isIframe ||
+      currentZoneHint.newIndex === undefined
+    ) {
+      for (const item of this) item.ghost.remove()
+      return
+    }
+
+    // for (const item of this) {
+    //   // item.ghost.remove()
+    //   console.log(item.ghost)
+    //   if (!item.ghost.isConnected) document.documentElement.append(item.ghost)
+    // }
+
+    // this.drag(x, y)
+
+    const { newIndex } = currentZoneHint
+    const { selector } = currentZoneHint.config
+
+    const undones = []
+    const start = newIndex + 1
+    const end = newIndex + this.length
+
+    const droppeds = document.querySelectorAll(
+      `${selector}:nth-child(n+${start}):nth-child(-n+${end})`
+    )
+
+    for (let i = 0, l = droppeds.length; i < l; i++) {
+      droppeds[i].classList.add("invisible")
+      // droppeds[i].id ||= uid()
+      // this[i].target = droppeds[i]
+    }
+
+    const rects = await getRects(droppeds, {
+      root: this.el,
+      intersecting: true,
+    })
+
+    for (let i = 0, l = this.length; i < l; i++) {
+      const item = this[i]
+      if (rects[i] && this.config.dropAnimation) {
+        undones.push(
+          animateTo(item.ghost, {
+            translate: `${rects[i].x}px ${rects[i].y}px`,
+            ...this.dropAnimation(item),
+          }).then(() => {
+            item.ghost.remove()
+            rects[i].target.classList.remove("invisible")
+          })
+        )
+      } else {
+        item.ghost.remove()
+        item.target.classList.remove("invisible")
       }
     }
 
