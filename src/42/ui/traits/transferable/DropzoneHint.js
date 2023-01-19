@@ -1,5 +1,5 @@
-// import inIframe from "../../../core/env/realm/inIframe.js"
 import getRects from "../../../fabric/dom/getRects.js"
+import Trait from "../../classes/Trait.js"
 import Canceller from "../../../fabric/classes/Canceller.js"
 import system from "../../../system.js"
 
@@ -50,14 +50,6 @@ export class DropzoneHint {
     this.items = system.transfer.items
     this.inOriginalDropzone = this.items.dropzoneId === this.el.id
 
-    // console.log(
-    //   inIframe ? "🪟" : "🌐",
-    //   "mount",
-    //   this.el.id,
-    //   this.inOriginalDropzone,
-    //   this.items
-    // )
-
     this.cancel = new Canceller(this.config.signal)
     this.signal = this.cancel.signal
     if (this.inOriginalDropzone) {
@@ -70,20 +62,27 @@ export class DropzoneHint {
     this.cancel()
     this.el.classList.remove("dragover")
 
-    // console.log(
-    //   inIframe ? "🪟" : "🌐",
-    //   "unmount",
-    //   this.el.id,
-    //   this.inOriginalDropzone,
-    //   this.items
-    // )
-
     if (this.inOriginalDropzone) {
-      if (this.restoreItems) this.restoreItems()
+      if (system.transfer.effect === "move") {
+        for (const item of system.transfer.items) {
+          if (!item.dropped) item.target.remove()
+        }
+      } else if (this.restoreItems) this.restoreItems()
       else for (const item of this.items) this.restoreItem(item)
     }
 
     this.items = undefined
+  }
+
+  restoreSelection() {
+    const selectable = this.el[Trait.INSTANCES]?.selectable
+    if (selectable) {
+      selectable.clear()
+      for (const item of system.transfer.items) {
+        const target = document.querySelector(`#${item.target.id}`)
+        if (target) selectable?.add(target)
+      }
+    }
   }
 
   dragover() {}
@@ -108,6 +107,8 @@ export class DropzoneHint {
       const removed = []
       for (const item of this.items) {
         this.restoreItem(item)
+        item.dropped = effect === "move"
+
         let { index } = item
         for (const remIndex of removed) if (index > remIndex) index--
         if (this.newIndex > index) this.newIndex--
@@ -125,6 +126,8 @@ export class DropzoneHint {
     } else {
       for (const item of this.items) {
         this.restoreItem(item)
+        item.dropped = effect === "move"
+
         if (list) {
           droppeds?.push(item.data)
         } else {
@@ -146,9 +149,13 @@ export class DropzoneHint {
     } else {
       this.el.append(droppeds)
     }
+
+    this.restoreSelection()
   }
 
-  revert() {}
+  revert() {
+    this.restoreSelection()
+  }
 }
 
 export default DropzoneHint
