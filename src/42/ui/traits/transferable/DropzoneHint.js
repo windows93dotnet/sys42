@@ -1,7 +1,7 @@
+// import inIframe from "../../../core/env/realm/inIframe.js"
 import getRects from "../../../fabric/dom/getRects.js"
 import Canceller from "../../../fabric/classes/Canceller.js"
 import system from "../../../system.js"
-import queueTask from "../../../fabric/type/function/queueTask.js"
 
 export class DropzoneHint {
   constructor(el, options) {
@@ -49,19 +49,32 @@ export class DropzoneHint {
   mount() {
     this.items = system.transfer.items
     this.inOriginalDropzone = this.items.dropzoneId === this.el.id
-    this.firstEnterDone = false
+
+    // console.log(
+    //   inIframe ? "🪟" : "🌐",
+    //   "mount",
+    //   this.el.id,
+    //   this.inOriginalDropzone,
+    //   this.items
+    // )
+
     this.cancel = new Canceller(this.config.signal)
     this.signal = this.cancel.signal
-    if (this.inOriginalDropzone) {
-      queueTask(() => {
-        this.weakenItems()
-      })
-    }
+    if (this.inOriginalDropzone) this.weakenItems()
   }
 
   async unmount() {
     this.cancel()
     this.el.classList.remove("dragover")
+
+    // console.log(
+    //   inIframe ? "🪟" : "🌐",
+    //   "unmount",
+    //   this.el.id,
+    //   this.inOriginalDropzone,
+    //   this.items
+    // )
+
     if (this.inOriginalDropzone) await this.restoreItems()
     this.items = undefined
   }

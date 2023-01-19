@@ -49,6 +49,7 @@ function serializeItems(obj, options) {
 
   for (const item of system.transfer.items) {
     const exportedItem = { ...item }
+    exportedItem.id = exportedItem.target.id
     exportedItem.ghost = exportedItem.ghost.outerHTML
     exportedItem.target = exportedItem.target.outerHTML
     if (exportedItem.data) exportedItem.data = unproxy(exportedItem.data)
@@ -63,7 +64,7 @@ function serializeItems(obj, options) {
 
 function deserializeItems(items, parentX, parentY) {
   for (const item of items) {
-    item.target = sanitize(item.target)
+    item.target = document.querySelector(`#${item.id}`) ?? sanitize(item.target)
     item.ghost = sanitize(item.ghost)
     item.x += parentX
     item.y += parentY
@@ -88,31 +89,19 @@ class IframeDropzoneHint {
   mount() {}
   unmount() {}
   scan() {}
+  leave() {}
 
   enter(x, y) {
     const { x: parentX, y: parentY } = this.el.getBoundingClientRect()
     this.bus.emit("42_TF_v_ENTER", serializeItems({ x, y, parentX, parentY }))
   }
 
-  leave() {}
-
   dragover(x, y) {
     this.bus.emit("42_TF_v_DRAGOVER", { x, y })
   }
 
   async drop(x, y) {
-    const res = await this.bus.send("42_TF_v_DROP", { x, y })
-
-    if (res === "revert") {
-      system.transfer.currentZone = undefined
-      await system.transfer.unsetCurrentZone(x, y)
-    } else if (res === "drop") {
-      for (const item of system.transfer.items) {
-        item.ghost.remove()
-      }
-    }
-
-    return res
+    return this.bus.send("42_TF_v_DROP", { x, y })
   }
 
   async destroy() {
@@ -138,14 +127,14 @@ if (inIframe) {
           itemsConfig,
         })
 
-        context.ready = true
-
         system.transfer.items = itemsHint
         system.transfer.itemsConfig = itemsConfig
         system.transfer.items.dropzoneId = dropzoneId
-        system.transfer.findTransferZones(x, y)
 
         system.transfer.items.start(x, y, items)
+        system.transfer.findTransferZones(x, y)
+
+        context.ready = true
       }
     )
     .on("42_TF_v_DRAGOVER", async ({ x, y }) => {
@@ -173,9 +162,9 @@ if (inIframe) {
         res = "revert"
       }
 
-      system.transfer
-        .unsetCurrentZone(x, y)
-        .then(() => system.transfer.handleSelection())
+      // system.transfer
+      //   .unsetCurrentZone(x, y)
+      //   .then(() => system.transfer.handleSelection())
 
       clear(context)
       return res
@@ -219,8 +208,8 @@ if (inIframe) {
         system.transfer.items = itemsHint
         system.transfer.itemsConfig = itemsConfig
         system.transfer.items.dropzoneId = dropzoneId
-        const zoneReady = system.transfer.findTransferZones(x, y)
         system.transfer.items.start(x, y, items)
+        const zoneReady = system.transfer.findTransferZones(x, y)
 
         for (const item of system.transfer.items) {
           document.documentElement.append(item.ghost)
@@ -342,6 +331,7 @@ system.transfer = {
   },
 
   async findTransferZones() {
+    // console.log({ inIframe }, "findTransferZones")
     return getRects([
       ...system.transfer.dropzones.keys(),
       ...document.querySelectorAll("iframe"),
@@ -405,8 +395,9 @@ system.transfer = {
     if (system.transfer.currentZone) {
       res = await system.transfer.currentZone.hint.drop(x, y)
       res ??= "drop"
-    } else {
-      res = "revert"
+    }
+
+    if (res === undefined || res === "revert") {
       finished = system.transfer.items.revert?.(x, y)
       const { dropzoneId } = system.transfer.items
       const dropzoneTarget = document.querySelector(`#${dropzoneId}`)
@@ -422,35 +413,36 @@ system.transfer = {
       dropzone.hint.unmount()
       dropzone.hoverScroll?.clear()
     }
-
-    return res
   },
 
   handleSelection() {
-    if (!system.transfer.items) {
-      cleanHints()
-      return
-    }
-
-    const dropzoneTarget =
-      system.transfer.currentZone?.target ??
-      (system.transfer.items?.dropzoneId
-        ? document.querySelector(`#${system.transfer.items.dropzoneId}`)
-        : undefined)
-
-    if (dropzoneTarget) {
-      const selectable = dropzoneTarget[Trait.INSTANCES]?.selectable
-      if (selectable) {
-        selectable.clear()
-        for (const item of system.transfer.items) {
-          const target = document.querySelector(`#${item.target.id}`)
-          if (target) selectable?.add(target)
-        }
-      }
-    }
-
     cleanHints()
   },
+  // handleSelection() {
+  //   if (!system.transfer.items) {
+  //     cleanHints()
+  //     return
+  //   }
+
+  //   const dropzoneTarget =
+  //     system.transfer.currentZone?.target ??
+  //     (system.transfer.items?.dropzoneId
+  //       ? document.querySelector(`#${system.transfer.items.dropzoneId}`)
+  //       : undefined)
+
+  //   if (dropzoneTarget) {
+  //     const selectable = dropzoneTarget[Trait.INSTANCES]?.selectable
+  //     if (selectable) {
+  //       selectable.clear()
+  //       for (const item of system.transfer.items) {
+  //         const target = document.querySelector(`#${item.target.id}`)
+  //         if (target) selectable?.add(target)
+  //       }
+  //     }
+  //   }
+
+  //   cleanHints()
+  // },
 }
 
 class Transferable extends Trait {
@@ -538,27 +530,27 @@ class Transferable extends Trait {
           } else targets = [target]
         } else targets = [target]
 
-        startPromise = Promise.all([
-          system.transfer.findTransferZones(x, y),
-          getRects(targets, {
-            all: this.config.selector,
-            includeMargins: true,
-          }).then((rects) => {
-            if (this.list) {
-              for (const item of rects) item.data = this.list[item.index]
-            }
+        startPromise = getRects(targets, {
+          all: this.config.selector,
+          includeMargins: true,
+        }).then(async (rects) => {
+          if (this.list) {
+            for (const item of rects) item.data = this.list[item.index]
+          }
 
-            system.transfer.items.start?.(x, y, rects)
-            if (inIframe) {
-              ipc.emit(
-                "42_TF_^_START",
-                serializeItems({ x, y }, { hideGhost: true })
-              )
-            }
-          }),
-        ]).then(() => {
+          system.transfer.items.start?.(x, y, rects)
+
+          if (inIframe) {
+            ipc.emit(
+              "42_TF_^_START",
+              serializeItems({ x, y }, { hideGhost: true })
+            )
+          } else {
+            await system.transfer.findTransferZones(x, y)
+            system.transfer.setCurrentZone(x, y)
+          }
+
           startReady = true
-          system.transfer.setCurrentZone(x, y)
           system.transfer.items.drag?.(x, y)
         })
       },
