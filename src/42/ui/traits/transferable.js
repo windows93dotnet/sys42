@@ -21,14 +21,14 @@ const DEFAULTS = {
 
   itemsConfig: {
     name: "stack",
-    startAnimation: { ms: 180 * 3 },
-    revertAnimation: { ms: 180 * 3 },
-    dropAnimation: { ms: 180 * 3 },
+    startAnimation: { ms: 180 },
+    revertAnimation: { ms: 180 },
+    dropAnimation: { ms: 180 },
   },
 
   dropzoneConfig: {
     name: "slide",
-    speed: 180 * 3,
+    speed: 180,
   },
 }
 
@@ -163,7 +163,8 @@ if (inIframe) {
       if (!context.ready || context.originalIframe) return
       x -= context.parentX
       y -= context.parentY
-      await haltZones(x, y)
+      if (system.transfer.effect === "none") haltZones(x, y)
+      else await haltZones(x, y)
     })
     .on("42_TF_v_EFFECT", (effect) => {
       applyEffect(effect)
@@ -183,6 +184,9 @@ if (inIframe) {
     .on("42_TF_^_REQUEST_EFFECT", (keys) => {
       context.keys = keys
       setEffect()
+    })
+    .on("42_TF_^_REMOVE_GHOSTS", () => {
+      for (const item of system.transfer.items) item.ghost.remove()
     })
     .on(
       "42_TF_^_START",
@@ -351,9 +355,10 @@ async function haltZones(x, y) {
   }
 
   if (system.transfer.effect === "move") {
+    if (context?.originalIframe !== true) ipc.emit("42_TF_^_REMOVE_GHOSTS")
     await system.transfer.items.adopt(x, y)
   } else {
-    finished = system.transfer.items.revert?.(x, y)
+    finished = system.transfer.items.revert(x, y)
 
     const { dropzoneId } = system.transfer.items
     const dropzoneTarget = document.querySelector(`#${dropzoneId}`)
@@ -536,7 +541,6 @@ class Transferable extends Trait {
 
         if (inIframe) {
           ipc.emit("42_TF_^_STOP", { x, y })
-
           if (context.originalIframe) await haltZones(x, y)
         } else {
           await haltZones(x, y)
