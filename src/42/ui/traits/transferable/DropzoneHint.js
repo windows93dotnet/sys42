@@ -26,7 +26,7 @@ export class DropzoneHint {
     if (this.config.scan) {
       this.scan = async (items, cb) => {
         this.rects.length = 0
-        return getRects(this.config.selector, {
+        this.scanReady = getRects(this.config.selector, {
           root: this.el,
           intersecting: true,
         }).then((rects) => {
@@ -44,14 +44,15 @@ export class DropzoneHint {
 
           return this.rects
         })
+
+        return this.scanReady
       }
     }
   }
 
   scan() {}
-
-  weakenItem() {}
-  restoreItem() {}
+  faintItem() {}
+  reviveItem() {}
 
   activate() {
     this.items = system.transfer.items
@@ -59,9 +60,12 @@ export class DropzoneHint {
 
     this.cancel = new Canceller(this.config.signal)
     this.signal = this.cancel.signal
+
     if (this.inOriginalDropzone) {
-      if (this.weakenItems) this.weakenItems()
-      else for (const item of this.items) this.weakenItem(item)
+      queueMicrotask(() => {
+        if (this.faintItems) this.faintItems()
+        else for (const item of this.items) this.faintItem(item)
+      })
     }
   }
 
@@ -74,11 +78,17 @@ export class DropzoneHint {
         for (const item of system.transfer.items) {
           if (!item.dropped) item.target.remove()
         }
-      } else if (this.restoreItems) this.restoreItems()
-      else for (const item of this.items) this.restoreItem(item)
+      }
     }
 
+    if (this.reviveItems) this.reviveItems()
+    else for (const item of this.items) this.reviveItem(item)
+
+    this.rects.length = 0
     this.items = undefined
+    this.cancel = undefined
+    this.signal = undefined
+    this.scanReady = undefined
   }
 
   restoreSelection() {
@@ -95,17 +105,22 @@ export class DropzoneHint {
 
   dragover() {}
 
-  enter() {
+  async enter() {
     this.el.classList.add("dragover")
+    await (this.scanReady === undefined ? this.scan() : this.scanReady)
   }
 
   leave() {
     this.el.classList.remove("dragover")
   }
 
+  revert() {
+    this.restoreSelection()
+  }
+
   drop() {
     this.el.classList.remove("dragover")
-    if (this.restoreItems) this.restoreItems()
+    if (this.reviveItems) this.reviveItems()
 
     const { effect } = system.transfer
     const { selector, list } = this.config
@@ -114,7 +129,7 @@ export class DropzoneHint {
     if (this.inOriginalDropzone) {
       const removed = []
       for (const item of this.items) {
-        this.restoreItem(item)
+        this.reviveItem(item)
         item.dropped = effect === "move"
 
         let { index } = item
@@ -124,18 +139,18 @@ export class DropzoneHint {
 
         if (list) {
           if (effect === "move") list.splice(index, 1)
-          droppeds?.push(item.data)
+          droppeds.push(item.data)
         } else {
           droppeds.append(effect === "move" ? item.target : copyElement(item))
         }
       }
     } else {
       for (const item of this.items) {
-        this.restoreItem(item)
+        this.reviveItem(item)
         item.dropped = effect === "move"
 
         if (list) {
-          droppeds?.push(item.data)
+          droppeds.push(item.data)
         } else {
           droppeds.append(effect === "move" ? item.target : copyElement(item))
         }
@@ -145,19 +160,15 @@ export class DropzoneHint {
     if (list) {
       list.splice(this.newIndex, 0, ...droppeds)
       this.config.indexChange?.(this.newIndex)
-    } else if (this.newIndex) {
+    } else if (this.newIndex === undefined) {
+      this.el.append(droppeds)
+    } else {
       const indexedElement = this.el.querySelector(
         `${selector}:nth-child(${this.newIndex + 1})`
       )
       this.el.insertBefore(droppeds, indexedElement)
-    } else {
-      this.el.append(droppeds)
     }
 
-    this.restoreSelection()
-  }
-
-  revert() {
     this.restoreSelection()
   }
 }

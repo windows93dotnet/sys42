@@ -117,6 +117,35 @@
         })),
       },
 
+      "## slide",
+
+      {
+        tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl.gap-xl.inset paper",
+        id: "slide1" + suffix,
+        selectable: true,
+        transferable: {
+          // dropzoneConfig: "slide",
+        },
+        content: makeArray(4).map((content) => ({
+          tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-green-200",
+          content,
+        })),
+      },
+      {
+        tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl.gap-xl.inset paper",
+        id: "slide2" + suffix,
+        selectable: {
+          selection: ["12", "14", "16"],
+        },
+        transferable: {
+          // dropzoneConfig: "slide",
+        },
+        content: makeArray(6, "1").map((content) => ({
+          tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-green-400",
+          content,
+        })),
+      },
+
       // "## list",
       // {
       //   scope: "listA",

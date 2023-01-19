@@ -90,11 +90,14 @@ class IframeDropzoneHint {
   }
 
   scan() {}
-  leave() {}
   activate() {}
 
   halt() {
     this.bus.emit("42_TF_v_CLEANUP")
+  }
+
+  leave(x, y) {
+    this.bus.emit("42_TF_v_LEAVE", { x, y })
   }
 
   enter(x, y) {
@@ -106,8 +109,8 @@ class IframeDropzoneHint {
     this.bus.emit("42_TF_v_DRAGOVER", { x, y })
   }
 
-  drop(x, y) {
-    this.bus.emit("42_TF_v_DROP", { x, y })
+  async drop(x, y) {
+    await this.bus.send("42_TF_v_DROP", { x, y })
   }
 
   async destroy() {
@@ -140,6 +143,16 @@ if (inIframe) {
         context.ready = true
       }
     )
+    .on("42_TF_v_LEAVE", ({ x, y }) => {
+      if (!context.ready) return
+      if (system.transfer.currentZone) {
+        x -= context.parentX
+        y -= context.parentY
+        system.transfer.currentZone.hoverScroll?.clear()
+        system.transfer.currentZone.hint.leave(x, y)
+        system.transfer.currentZone = undefined
+      }
+    })
     .on("42_TF_v_DRAGOVER", ({ x, y }) => {
       if (!context.ready) return
       x -= context.parentX
@@ -341,6 +354,7 @@ async function haltZones(x, y) {
     for (const item of system.transfer.items) item.ghost.remove()
   } else {
     finished = system.transfer.items.revert?.(x, y)
+
     const { dropzoneId } = system.transfer.items
     const dropzoneTarget = document.querySelector(`#${dropzoneId}`)
     if (dropzoneTarget) {
