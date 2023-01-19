@@ -1,10 +1,7 @@
 import DropzoneHint from "./DropzoneHint.js"
 import appendCSS from "../../../fabric/dom/appendCSS.js"
 import { inRect } from "../../../fabric/geometry/point.js"
-import getRects from "../../../fabric/dom/getRects.js"
-import { animateTo } from "../../../fabric/dom/animate.js"
 import paint from "../../../fabric/type/promise/paint.js"
-// import uid from "../../../core/uid.js"
 
 const { parseInt, isNaN } = Number
 
@@ -32,9 +29,9 @@ export class SlideDropzoneHint extends DropzoneHint {
     super.activate()
 
     const [first] = this.items
-    this.blankWidth = `${
+    const blankWidth =
       first.width + first.marginLeft + first.marginRight + this.colGap
-    }px 0`
+    this.blankWidth = `${blankWidth}px 0`
 
     const { signal } = this
     const cssOptions = { signal }
@@ -156,49 +153,6 @@ export class SlideDropzoneHint extends DropzoneHint {
     this.css.enter.disable()
     this.css.dragover.disable()
     this.css.transition.disable()
-
-    const { selector } = this.config
-
-    const undones = []
-    const start = this.newIndex + 1
-    const end = this.newIndex + this.items.length
-
-    const droppeds = document.querySelectorAll(
-      `${selector}:nth-child(n+${start}):nth-child(-n+${end})`
-    )
-
-    for (let i = 0, l = droppeds.length; i < l; i++) {
-      droppeds[i].classList.add("invisible")
-      // droppeds[i].id ||= uid()
-      // this.items[i].target = droppeds[i]
-    }
-
-    // await paint()
-
-    const rects = await getRects(droppeds, {
-      root: this.el,
-      intersecting: true,
-    })
-
-    for (let i = 0, l = this.items.length; i < l; i++) {
-      const item = this.items[i]
-      if (rects[i] && this.items.config.dropAnimation) {
-        undones.push(
-          animateTo(item.ghost, {
-            translate: `${rects[i].x}px ${rects[i].y}px`,
-            ...this.items.dropAnimation(item),
-          }).then(() => {
-            item.ghost.remove()
-            rects[i].target.classList.remove("invisible")
-          })
-        )
-      } else {
-        item.ghost.remove()
-        item.target.classList.remove("invisible")
-      }
-    }
-
-    await Promise.all(undones)
   }
 }
 
