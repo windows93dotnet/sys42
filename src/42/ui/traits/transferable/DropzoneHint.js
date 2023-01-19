@@ -46,7 +46,7 @@ export class DropzoneHint {
   weakenItem() {}
   restoreItem() {}
 
-  mount() {
+  activate() {
     this.items = system.transfer.items
     this.inOriginalDropzone = this.items.dropzoneId === this.el.id
 
@@ -58,7 +58,7 @@ export class DropzoneHint {
     }
   }
 
-  async unmount() {
+  async halt() {
     this.cancel()
     this.el.classList.remove("dragover")
 

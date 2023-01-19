@@ -33,8 +33,8 @@ export class SlideDropzoneHint extends DropzoneHint {
     this.dragover = noop
   }
 
-  mount() {
-    super.mount()
+  activate() {
+    super.activate()
     this.firstEnterDone = false
 
     const { signal } = this
