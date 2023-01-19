@@ -315,7 +315,6 @@ system.transfer = {
   },
 
   async findTransferZones() {
-    // console.log({ inIframe }, "findTransferZones")
     return getRects([
       ...system.transfer.dropzones.keys(),
       ...document.querySelectorAll("iframe"),
@@ -400,32 +399,6 @@ system.transfer = {
 
     cleanHints()
   },
-
-  // handleSelection() {
-  //   if (!system.transfer.items) {
-  //     cleanHints()
-  //     return
-  //   }
-
-  //   const dropzoneTarget =
-  //     system.transfer.currentZone?.target ??
-  //     (system.transfer.items?.dropzoneId
-  //       ? document.querySelector(`#${system.transfer.items.dropzoneId}`)
-  //       : undefined)
-
-  //   if (dropzoneTarget) {
-  //     const selectable = dropzoneTarget[Trait.INSTANCES]?.selectable
-  //     if (selectable) {
-  //       selectable.clear()
-  //       for (const item of system.transfer.items) {
-  //         const target = document.querySelector(`#${item.target.id}`)
-  //         if (target) selectable?.add(target)
-  //       }
-  //     }
-  //   }
-
-  //   cleanHints()
-  // },
 }
 
 class Transferable extends Trait {
@@ -557,10 +530,6 @@ class Transferable extends Trait {
 
         if (inIframe) {
           ipc.emit("42_TF_^_STOP", { x, y })
-
-          if (system.transfer.effect === "move") {
-            for (const item of system.transfer.items) item.target.remove()
-          }
 
           if (context.originalIframe) {
             await system.transfer.unsetCurrentZone(x, y)
