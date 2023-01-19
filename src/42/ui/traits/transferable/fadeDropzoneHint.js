@@ -13,10 +13,10 @@ export class FadeDropzoneHint extends DropzoneHint {
     }
   }
 
-  drop() {
-    super.drop()
-    for (const item of this.items) item.ghost.remove()
-  }
+  // drop() {
+  //   super.drop()
+  //   for (const item of this.items) item.ghost.remove()
+  // }
 }
 
 export function fadeDropzoneHint(el, options) {

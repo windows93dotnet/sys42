@@ -85,6 +85,8 @@
   state.listA = makeArray(4)
   state.listB = makeArray(7, "1")
 
+  const suffix = window.top === window.self ? "" : "iframe"
+
   ui(".demos", {
     plugins: ["markdown"],
     state,
@@ -92,6 +94,7 @@
       "# Transferable",
       {
         tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl.gap-xl.inset paper",
+        id: "fade1" + suffix,
         transferable: {
           dropzoneConfig: "fade",
         },
@@ -102,6 +105,7 @@
       },
       {
         tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl.gap-xl.inset paper",
+        id: "fade2" + suffix,
         selectable: true,
         transferable: {
           dropzoneConfig: "fade",
@@ -112,34 +116,65 @@
         })),
       },
 
-      "## list",
-      {
-        scope: "listA",
-        tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl.gap-xl.inset paper",
-        aria: { orientation: "horizontal" },
-        transferable: {
-          list: "{{.}}",
-        },
-        each: {
-          tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-gray-200",
-          content: "{{.}}",
-        },
-      },
-      {
-        scope: "listB",
-        tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl._gap-xl.inset paper",
-        aria: { orientation: "horizontal" },
-        selectable: {
-          selection: ["12", "14", "16"],
-        },
-        transferable: {
-          list: "{{.}}",
-        },
-        each: {
-          tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-pink-200",
-          content: "{{.}}",
-        },
-      },
+      // "## list",
+      // {
+      //   scope: "listA",
+      //   tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl.gap-xl.inset paper",
+      //   // aria: { orientation: "horizontal" },
+      //   transferable: {
+      //     list: "{{.}}",
+      //     dropzoneConfig: "fade",
+      //   },
+      //   each: {
+      //     tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-gray-200",
+      //     content: "{{.}}",
+      //   },
+      // },
+      // {
+      //   scope: "listB",
+      //   tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl._gap-xl.inset paper",
+      //   // aria: { orientation: "horizontal" },
+      //   selectable: {
+      //     selection: ["12", "14", "16"],
+      //   },
+      //   transferable: {
+      //     list: "{{.}}",
+      //     dropzoneConfig: "fade",
+      //   },
+      //   each: {
+      //     tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-pink-200",
+      //     content: "{{.}}",
+      //   },
+      // },
+
+      // "## Slide",
+      // {
+      //   scope: "listA",
+      //   tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl.gap-xl.inset paper",
+      //   aria: { orientation: "horizontal" },
+      //   transferable: {
+      //     list: "{{.}}",
+      //   },
+      //   each: {
+      //     tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-gray-200",
+      //     content: "{{.}}",
+      //   },
+      // },
+      // {
+      //   scope: "listB",
+      //   tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl._gap-xl.inset paper",
+      //   aria: { orientation: "horizontal" },
+      //   selectable: {
+      //     selection: ["12", "14", "16"],
+      //   },
+      //   transferable: {
+      //     list: "{{.}}",
+      //   },
+      //   each: {
+      //     tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-pink-200",
+      //     content: "{{.}}",
+      //   },
+      // },
 
       // "## layout",
       // {
