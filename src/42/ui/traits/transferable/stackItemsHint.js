@@ -1,4 +1,5 @@
 import system from "../../../system.js"
+import inIframe from "../../../core/env/realm/inIframe.js"
 import uid from "../../../core/uid.js"
 import ghostify from "../../../fabric/dom/ghostify.js"
 import getRects from "../../../fabric/dom/getRects.js"
@@ -100,24 +101,29 @@ export class StackItemsHint extends Array {
     await Promise.all(undones)
   }
 
-  async adopt(/* x, y */) {
+  async adopt(x, y) {
     const currentZoneHint = system.transfer.currentZone?.hint
     if (
       !currentZoneHint ||
       currentZoneHint.isIframe ||
       currentZoneHint.newIndex === undefined
     ) {
-      for (const item of this) item.ghost.remove()
+      for (const item of system.transfer.items) item.ghost.remove()
       return
     }
 
-    // for (const item of this) {
-    //   // item.ghost.remove()
-    //   console.log(item.ghost)
-    //   if (!item.ghost.isConnected) document.documentElement.append(item.ghost)
-    // }
+    if (inIframe) {
+      for (const item of this) {
+        item.ghost.classList.remove("hide")
+        if (!item.ghost.isConnected) {
+          item.ghost.style.top = 0
+          item.ghost.style.left = 0
+          document.documentElement.append(item.ghost)
+        }
+      }
 
-    // this.drag(x, y)
+      this.drag(x, y)
+    }
 
     const { newIndex } = currentZoneHint
     const { selector } = currentZoneHint.config

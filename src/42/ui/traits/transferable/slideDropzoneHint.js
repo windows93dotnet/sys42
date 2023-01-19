@@ -117,6 +117,7 @@ export class SlideDropzoneHint extends DropzoneHint {
   }
 
   async dragover(x, y) {
+    if (!this.items) return
     const [first] = this.items
 
     x -= first.offsetX - first.width / 2
