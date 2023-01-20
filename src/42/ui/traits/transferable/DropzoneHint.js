@@ -29,10 +29,11 @@ export class DropzoneHint {
 
     this.isHorizontal = this.config.orientation === "horizontal"
     this.isVertical = this.config.orientation === "vertical"
+    this.freeAxis = this.config.freeAxis
 
-    this.styles = getComputedStyle(this.el)
-    this.columnGap = parseInt(this.styles.columnGap, 10)
-    this.rowGap = parseInt(this.styles.rowGap, 10)
+    const styles = getComputedStyle(this.el)
+    this.columnGap = parseInt(styles.columnGap, 10)
+    this.rowGap = parseInt(styles.rowGap, 10)
     if (isNaN(this.columnGap)) this.columnGap = 0
     if (isNaN(this.rowGap)) this.rowGap = 0
 
@@ -71,12 +72,12 @@ export class DropzoneHint {
 
   activate() {
     this.items = system.transfer.items
-    this.inOriginalDropzone = this.items.dropzoneId === this.el.id
+    this.isOriginalDropzone = this.items.dropzoneId === this.el.id
 
     this.cancel = new Canceller(this.config.signal)
     this.signal = this.cancel.signal
 
-    if (this.inOriginalDropzone) {
+    if (this.isOriginalDropzone) {
       queueMicrotask(() => {
         if (this.faintItems) this.faintItems()
         else for (const item of this.items) this.faintItem(item)
@@ -88,7 +89,7 @@ export class DropzoneHint {
     this.cancel()
     this.el.classList.remove("dragover")
 
-    if (this.inOriginalDropzone) {
+    if (this.isOriginalDropzone) {
       if (system.transfer.effect === "move") {
         for (const item of system.transfer.items) {
           if (!item.dropped) item.target.remove()
@@ -161,7 +162,7 @@ export class DropzoneHint {
 
     let originalDropzone
 
-    if (this.inOriginalDropzone) {
+    if (this.isOriginalDropzone) {
       originalDropzone = this
     } else {
       const { dropzoneId } = this.items
@@ -171,7 +172,7 @@ export class DropzoneHint {
       }
     }
 
-    if (this.inOriginalDropzone) {
+    if (this.isOriginalDropzone) {
       const removed = []
       for (const item of this.items) {
         if (effect === "move") originalDropzone?.reviveItem(item)

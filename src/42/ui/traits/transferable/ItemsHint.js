@@ -60,7 +60,9 @@ export class ItemsHint extends Array {
     this.drag(x, y)
   }
 
-  drag() {}
+  drag() {
+    this.currentZone = system.transfer.currentZone?.hint
+  }
 
   async revert(items = this) {
     const undones = []
@@ -140,7 +142,7 @@ export class ItemsHint extends Array {
       )
     }
 
-    if (!(dropzone.inOriginalDropzone && system.transfer.effect === "copy")) {
+    if (!(dropzone.isOriginalDropzone && system.transfer.effect === "copy")) {
       restoreSelection(dropzone.el, droppeds)
     }
 

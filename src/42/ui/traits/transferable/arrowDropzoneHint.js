@@ -43,11 +43,11 @@ export class ArrowDropzoneHint extends DropzoneHint {
 
     if (this.newIndex === undefined) {
       const rect = this.rects.at(-1)
-      x = rect.right + this.columnGap / 2
+      x = rect.right + this.gaps.right
       y = rect.y
     } else {
       const rect = this.rects[this.newIndex]
-      x = rect.x - this.columnGap / 2
+      x = rect.x + this.gaps.left
       y = rect.y
     }
 
