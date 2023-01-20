@@ -108,6 +108,7 @@ export class SlideDropzoneHint extends DropzoneHint {
 
   enter() {
     super.enter()
+    this.css.dragover.update("")
     this.css.dragover.enable()
   }
 

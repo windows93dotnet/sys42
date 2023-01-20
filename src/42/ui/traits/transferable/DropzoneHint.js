@@ -85,6 +85,7 @@ export class DropzoneHint {
     else for (const item of this.items) this.reviveItem(item)
 
     this.rects.length = 0
+    this.newIndex = undefined
     this.items = undefined
     this.cancel = undefined
     this.signal = undefined
@@ -106,6 +107,7 @@ export class DropzoneHint {
   dragover() {}
 
   async enter() {
+    this.newIndex = undefined
     this.el.classList.add("dragover")
     await (this.scanReady === undefined ? this.scan() : this.scanReady)
   }
