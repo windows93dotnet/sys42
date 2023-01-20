@@ -10,7 +10,7 @@ export class StackItemsHint extends ItemsHint {
     let translate
 
     if (
-      this.currentZone?.isOriginalDropzone &&
+      this.currentZone?.isOriginDropzone &&
       this.currentZone?.freeAxis !== true
     ) {
       translate = this.currentZone.isVertical

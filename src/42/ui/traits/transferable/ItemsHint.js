@@ -64,6 +64,14 @@ export class ItemsHint extends Array {
     this.currentZone = system.transfer.currentZone?.hint
   }
 
+  get originDropzone() {
+    const { dropzoneId } = this
+    const dropzoneTarget = document.querySelector(`#${dropzoneId}`)
+    return dropzoneTarget
+      ? system.transfer.dropzones.get(dropzoneTarget)
+      : undefined
+  }
+
   async revert(items = this) {
     const undones = []
     for (const item of items) {
@@ -81,15 +89,11 @@ export class ItemsHint extends Array {
       }
     }
 
-    const { dropzoneId } = this
-    const dropzoneTarget = document.querySelector(`#${dropzoneId}`)
-    if (dropzoneTarget) {
-      const dropzone = system.transfer.dropzones.get(dropzoneTarget)
-      dropzone?.revert()
-    }
+    const { originDropzone } = this
+    originDropzone?.revert()
 
     await Promise.all(undones)
-    if (dropzoneTarget) restoreSelection(dropzoneTarget, this)
+    if (originDropzone?.el) restoreSelection(originDropzone.el, this)
   }
 
   async fork(x, y) {
@@ -113,6 +117,7 @@ export class ItemsHint extends Array {
 
     if (inIframe) {
       for (const item of this) {
+        // item.target.classList.remove("hide")
         item.ghost.classList.remove("hide")
         if (!item.ghost.isConnected) {
           item.ghost.style.top = 0
@@ -142,7 +147,7 @@ export class ItemsHint extends Array {
       )
     }
 
-    if (!(dropzone.isOriginalDropzone && system.transfer.effect === "copy")) {
+    if (!(dropzone.isOriginDropzone && system.transfer.effect === "copy")) {
       restoreSelection(dropzone.el, droppeds)
     }
 

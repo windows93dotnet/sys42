@@ -48,10 +48,14 @@ const context = Object.create(null)
 function serializeItems(obj, options) {
   const items = []
 
+  const { originDropzone } = system.transfer.items
+
   for (const item of system.transfer.items) {
     const exportedItem = { ...item }
-    exportedItem.ghost = exportedItem.ghost.outerHTML
+    exportedItem.target = exportedItem.target.cloneNode(true)
+    originDropzone?.reviveItem(exportedItem)
     exportedItem.target = exportedItem.target.outerHTML
+    exportedItem.ghost = exportedItem.ghost.outerHTML
     if (exportedItem.data) exportedItem.data = unproxy(exportedItem.data)
     if (options?.hideGhost) item.ghost.classList.add("hide")
     items.push(exportedItem)
@@ -65,7 +69,7 @@ function serializeItems(obj, options) {
 function deserializeItems(items, parentX, parentY) {
   for (const item of items) {
     item.target =
-      (context.originalIframe
+      (context.isOriginIframe
         ? document.querySelector(`#${item.id}`)
         : undefined) ?? sanitize(item.target)
     item.ghost = sanitize(item.ghost)
@@ -134,7 +138,7 @@ if (inIframe) {
         x -= context.parentX
         y -= context.parentY
 
-        // TODO: use original items if context.originalIframe
+        // TODO: use original items if context.isOriginIframe
         deserializeItems(items, context.parentX * -1, context.parentY * -1)
 
         const { itemsHint } = await makeHints({ itemsConfig })
@@ -166,7 +170,7 @@ if (inIframe) {
       setCurrentZone(x, y)
     })
     .on("42_TF_v_DROP", async ({ x, y }) => {
-      if (!context.ready || context.originalIframe) return
+      if (!context.ready || context.isOriginIframe) return
       x -= context.parentX
       y -= context.parentY
       if (system.transfer.effect === "none") haltZones(x, y)
@@ -360,7 +364,7 @@ async function haltZones(x, y) {
   }
 
   if (system.transfer.effect === "move") {
-    if (context?.originalIframe !== true) ipc.emit("42_TF_^_REMOVE_GHOSTS")
+    if (context?.isOriginIframe !== true) ipc.emit("42_TF_^_REMOVE_GHOSTS")
     await system.transfer.items.adopt(x, y)
   } else if (system.transfer.effect === "none") {
     await system.transfer.items.revert()
@@ -508,7 +512,7 @@ class Transferable extends Trait {
           system.transfer.items.start(x, y, rects)
 
           if (inIframe) {
-            context.originalIframe = true
+            context.isOriginIframe = true
             await ipc.send(
               "42_TF_^_START",
               serializeItems({ x, y }, { hideGhost: true })
@@ -541,7 +545,7 @@ class Transferable extends Trait {
 
         if (inIframe) {
           ipc.emit("42_TF_^_STOP", { x, y })
-          if (context.originalIframe) await haltZones(x, y)
+          if (context.isOriginIframe) await haltZones(x, y)
         } else {
           await haltZones(x, y)
         }
