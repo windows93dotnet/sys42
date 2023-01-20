@@ -93,14 +93,17 @@ class IframeDropzoneHint {
   activate() {}
 
   halt() {
+    // this.el.classList.remove("dragover")
     this.bus.emit("42_TF_v_CLEANUP")
   }
 
   leave(x, y) {
+    // this.el.classList.remove("dragover")
     this.bus.emit("42_TF_v_LEAVE", { x, y })
   }
 
   enter(x, y) {
+    // this.el.classList.add("dragover")
     const { x: parentX, y: parentY } = this.el.getBoundingClientRect()
     this.bus.emit("42_TF_v_ENTER", serializeItems({ x, y, parentX, parentY }))
   }
@@ -129,6 +132,8 @@ if (inIframe) {
 
         x -= context.parentX
         y -= context.parentY
+
+        // TODO: use original items if context.originalIframe
         deserializeItems(items, context.parentX * -1, context.parentY * -1)
 
         const { itemsHint } = await makeHints({ itemsConfig })
@@ -216,14 +221,14 @@ if (inIframe) {
 
         system.transfer.items.drag(x, y)
 
-        zoneReady.then(() => {
-          for (const iframeDz of iframeDropzones) {
-            if (iframeDz.el === iframe) {
-              context.originIframeDropzone = iframeDz
-              break
-            }
+        await zoneReady
+
+        for (const iframeDz of iframeDropzones) {
+          if (iframeDz.el === iframe) {
+            context.originIframeDropzone = iframeDz
+            break
           }
-        })
+        }
       }
     )
     .on("42_TF_^_DRAG", ({ x, y }) => {
@@ -231,7 +236,7 @@ if (inIframe) {
         x += context.parentX
         y += context.parentY
         setCurrentZone(x, y)
-        system.transfer.items.drag?.(x, y)
+        system.transfer.items.drag(x, y)
       }
     })
     .on("42_TF_^_STOP", ({ x, y }) => {
@@ -505,11 +510,11 @@ class Transferable extends Trait {
             for (const item of rects) item.data = this.list[item.index]
           }
 
-          system.transfer.items.start?.(x, y, rects)
+          system.transfer.items.start(x, y, rects)
 
           if (inIframe) {
             context.originalIframe = true
-            ipc.emit(
+            await ipc.send(
               "42_TF_^_START",
               serializeItems({ x, y }, { hideGhost: true })
             )
@@ -518,8 +523,8 @@ class Transferable extends Trait {
             setCurrentZone(x, y)
           }
 
+          system.transfer.items.drag(x, y)
           startReady = true
-          system.transfer.items.drag?.(x, y)
         })
       },
 
@@ -529,7 +534,7 @@ class Transferable extends Trait {
           ipc.emit("42_TF_^_DRAG", { x, y })
         } else {
           setCurrentZone(x, y)
-          system.transfer.items.drag?.(x, y)
+          system.transfer.items.drag(x, y)
         }
       },
 
