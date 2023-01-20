@@ -19,6 +19,15 @@
   pointer-events: none !important;
 }
 
+.dropzone__arrow {
+  pointer-events: none;
+  stroke: var(--bg);
+  fill: currentColor;
+  stroke-width: 2px;
+  paint-order: stroke;
+  shape-rendering: crispEdges;
+}
+
 .loader {
   overflow: hidden;
 }

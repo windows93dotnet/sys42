@@ -93,11 +93,11 @@
     content: [
       "# Transferable",
       {
-        tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl.gap-xl.inset paper",
+        tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl._gap-xl.inset paper",
         id: "fade1" + suffix,
         selectable: true,
         transferable: {
-          dropzoneConfig: "fade",
+          dropzoneConfig: "arrow",
         },
         content: makeArray(4).map((content) => ({
           tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-green-200",
@@ -109,7 +109,7 @@
         id: "fade2" + suffix,
         selectable: true,
         transferable: {
-          dropzoneConfig: "fade",
+          dropzoneConfig: "arrow",
         },
         content: makeArray(4, "1").map((content) => ({
           tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-green-400",
@@ -124,43 +124,12 @@
         id: "slide1" + suffix,
         selectable: true,
         transferable: {
-          // dropzoneConfig: "slide",
+          dropzoneConfig: "slide",
         },
         content: makeArray(4).map((content) => ({
           tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-green-200",
           content,
         })),
-
-        // content: [
-        //   {
-        //     tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-green-200",
-        //     content: "1",
-        //   },
-        //   {
-        //     tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-green-200",
-        //     content: "12",
-        //   },
-        //   {
-        //     tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-green-200",
-        //     content: "14",
-        //   },
-        //   {
-        //     tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-green-200",
-        //     content: "16",
-        //   },
-        //   {
-        //     tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-green-200",
-        //     content: "2",
-        //   },
-        //   {
-        //     tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-green-200",
-        //     content: "3",
-        //   },
-        //   {
-        //     tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-green-200",
-        //     content: "4",
-        //   },
-        // ],
       },
       {
         tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl.gap-xl.inset paper",
@@ -169,7 +138,7 @@
           selection: ["12", "14", "16"],
         },
         transferable: {
-          // dropzoneConfig: "slide",
+          dropzoneConfig: "slide",
         },
         content: makeArray(6, "1").map((content) => ({
           tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-green-400",
@@ -184,7 +153,7 @@
       //   // aria: { orientation: "horizontal" },
       //   transferable: {
       //     list: "{{.}}",
-      //     dropzoneConfig: "fade",
+      //     dropzoneConfig: "slide",
       //   },
       //   each: {
       //     tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-gray-200",
@@ -200,36 +169,7 @@
       //   },
       //   transferable: {
       //     list: "{{.}}",
-      //     dropzoneConfig: "fade",
-      //   },
-      //   each: {
-      //     tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-pink-200",
-      //     content: "{{.}}",
-      //   },
-      // },
-
-      // "## Slide",
-      // {
-      //   scope: "listA",
-      //   tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl.gap-xl.inset paper",
-      //   aria: { orientation: "horizontal" },
-      //   transferable: {
-      //     list: "{{.}}",
-      //   },
-      //   each: {
-      //     tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-gray-200",
-      //     content: "{{.}}",
-      //   },
-      // },
-      // {
-      //   scope: "listB",
-      //   tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl._gap-xl.inset paper",
-      //   aria: { orientation: "horizontal" },
-      //   selectable: {
-      //     selection: ["12", "14", "16"],
-      //   },
-      //   transferable: {
-      //     list: "{{.}}",
+      //     dropzoneConfig: "slide",
       //   },
       //   each: {
       //     tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-pink-200",
