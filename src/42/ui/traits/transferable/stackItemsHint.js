@@ -1,9 +1,21 @@
 import system from "../../../system.js"
+import Trait from "../../classes/Trait.js"
 import inIframe from "../../../core/env/realm/inIframe.js"
 import uid from "../../../core/uid.js"
 import ghostify from "../../../fabric/dom/ghostify.js"
 import getRects from "../../../fabric/dom/getRects.js"
 import { animateTo, animateFrom } from "../../../fabric/dom/animate.js"
+
+function restoreSelection(el, droppeds) {
+  const selectable = el[Trait.INSTANCES]?.selectable
+  if (selectable) {
+    selectable.clear()
+    for (const item of droppeds) {
+      const target = item.target ?? item
+      selectable.add(target)
+    }
+  }
+}
 
 export class StackItemsHint extends Array {
   constructor(options) {
@@ -81,9 +93,9 @@ export class StackItemsHint extends Array {
     }
   }
 
-  async revert() {
+  async revert(items = this) {
     const undones = []
-    for (const item of this) {
+    for (const item of items) {
       if (this.config.revertAnimation) {
         undones.push(
           animateTo(item.ghost, {
@@ -98,7 +110,27 @@ export class StackItemsHint extends Array {
       }
     }
 
+    const { dropzoneId } = this
+    const dropzoneTarget = document.querySelector(`#${dropzoneId}`)
+    if (dropzoneTarget) {
+      const dropzone = system.transfer.dropzones.get(dropzoneTarget)
+      dropzone?.revert()
+    }
+
     await Promise.all(undones)
+    if (dropzoneTarget) restoreSelection(dropzoneTarget, this)
+  }
+
+  async fork(x, y) {
+    const ghostsCopy = this.map(({ ghost, x, y }) => {
+      ghost = ghost.cloneNode(true)
+      document.documentElement.append(ghost)
+      return { x, y, ghost }
+    })
+    await Promise.all([
+      this.revert(ghostsCopy), //
+      this.adopt(x, y),
+    ])
   }
 
   async adopt(x, y) {
@@ -132,9 +164,15 @@ export class StackItemsHint extends Array {
     const start = newIndex + 1
     const end = newIndex + this.length
 
-    const droppeds = document.querySelectorAll(
+    const droppeds = currentZoneHint.el.querySelectorAll(
       `${selector}:nth-child(n+${start}):nth-child(-n+${end})`
     )
+
+    if (
+      !(currentZoneHint.inOriginalDropzone && system.transfer.effect === "copy")
+    ) {
+      restoreSelection(currentZoneHint.el, droppeds)
+    }
 
     for (let i = 0, l = droppeds.length; i < l; i++) {
       droppeds[i].classList.add("invisible")
@@ -143,7 +181,7 @@ export class StackItemsHint extends Array {
     }
 
     const rects = await getRects(droppeds, {
-      root: this.el,
+      root: currentZoneHint.el,
       intersecting: true,
     })
 

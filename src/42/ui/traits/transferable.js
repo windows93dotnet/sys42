@@ -16,19 +16,20 @@ import listen from "../../fabric/event/listen.js"
 
 const DEFAULTS = {
   selector: ":scope > *",
+  distance: 0,
   useSelection: true,
   handlerSelector: undefined,
 
   itemsConfig: {
     name: "stack",
-    startAnimation: { ms: 180 },
-    revertAnimation: { ms: 180 },
-    dropAnimation: { ms: 180 },
+    startAnimation: { ms: 180 * 2 },
+    revertAnimation: { ms: 180 * 2 },
+    dropAnimation: { ms: 180 * 2 },
   },
 
   dropzoneConfig: {
     name: "slide",
-    speed: 180,
+    speed: 180 * 2,
   },
 }
 
@@ -352,7 +353,6 @@ async function activateZones() {
 }
 
 async function haltZones(x, y) {
-  let finished
   const { zones } = system.transfer
 
   if (system.transfer.currentZone) {
@@ -362,17 +362,10 @@ async function haltZones(x, y) {
   if (system.transfer.effect === "move") {
     if (context?.originalIframe !== true) ipc.emit("42_TF_^_REMOVE_GHOSTS")
     await system.transfer.items.adopt(x, y)
+  } else if (system.transfer.effect === "none") {
+    await system.transfer.items.revert()
   } else {
-    finished = system.transfer.items.revert(x, y)
-
-    const { dropzoneId } = system.transfer.items
-    const dropzoneTarget = document.querySelector(`#${dropzoneId}`)
-    if (dropzoneTarget) {
-      const dropzone = system.transfer.dropzones.get(dropzoneTarget)
-      dropzone?.revert()
-    }
-
-    await finished
+    await system.transfer.items.fork(x, y)
   }
 
   for (const dropzone of zones) {
@@ -386,8 +379,8 @@ async function haltZones(x, y) {
 function setCurrentZone(x, y) {
   setEffect()
   const { zones } = system.transfer
-
   if (zones?.length > 0 === false) return
+
   const point = { x, y }
 
   if (system.transfer.currentZone) {
@@ -396,7 +389,8 @@ function setCurrentZone(x, y) {
         await system.transfer.currentZone?.hint.scan()
         system.transfer.currentZone?.hint.dragover(x, y)
       })
-      return system.transfer.currentZone.hint.dragover(x, y)
+      system.transfer.currentZone.hint.dragover(x, y)
+      return
     }
 
     system.transfer.currentZone.hoverScroll?.clear()
@@ -412,7 +406,8 @@ function setCurrentZone(x, y) {
         await system.transfer.currentZone?.hint.scan()
         system.transfer.currentZone?.hint.dragover(x, y)
       })
-      return system.transfer.currentZone.hint.dragover(x, y)
+      system.transfer.currentZone.hint.dragover(x, y)
+      return
     }
   }
 }
@@ -466,7 +461,7 @@ class Transferable extends Trait {
     this.dragger = new Dragger(this.el, {
       signal,
       applyTargetOffset: false,
-      ...pick(this.config, ["selector", "useSelection"]),
+      ...pick(this.config, ["selector", "distance", "useSelection"]),
 
       start: (x, y, e, target) => {
         if (
