@@ -1,12 +1,11 @@
-/* eslint-disable unicorn/no-this-assignment */
 import getRects from "../../../fabric/dom/getRects.js"
 import { inRect } from "../../../fabric/geometry/point.js"
 import Canceller from "../../../fabric/classes/Canceller.js"
 import system from "../../../system.js"
 
-function copyElement(item, originalDropzone) {
+function copyElement(item, originDropzone) {
   const copy = item.target.cloneNode(true)
-  originalDropzone?.reviveItem({ target: copy })
+  originDropzone?.reviveItem({ target: copy })
   copy.id += "-copy"
   item.id = copy.id
   return copy
@@ -72,12 +71,12 @@ export class DropzoneHint {
 
   activate() {
     this.items = system.transfer.items
-    this.isOriginalDropzone = this.items.dropzoneId === this.el.id
+    this.isOriginDropzone = this.items.dropzoneId === this.el.id
 
     this.cancel = new Canceller(this.config.signal)
     this.signal = this.cancel.signal
 
-    if (this.isOriginalDropzone) {
+    if (this.isOriginDropzone) {
       queueMicrotask(() => {
         if (this.faintItems) this.faintItems()
         else for (const item of this.items) this.faintItem(item)
@@ -89,7 +88,7 @@ export class DropzoneHint {
     this.cancel()
     this.el.classList.remove("dragover")
 
-    if (this.isOriginalDropzone) {
+    if (this.isOriginDropzone) {
       if (system.transfer.effect === "move") {
         for (const item of system.transfer.items) {
           if (!item.dropped) item.target.remove()
@@ -160,22 +159,14 @@ export class DropzoneHint {
     const { selector, list } = this.config
     const droppeds = list ? [] : document.createDocumentFragment()
 
-    let originalDropzone
+    const originDropzone = this.isOriginDropzone
+      ? this
+      : this.items.originDropzone
 
-    if (this.isOriginalDropzone) {
-      originalDropzone = this
-    } else {
-      const { dropzoneId } = this.items
-      const dropzoneTarget = document.querySelector(`#${dropzoneId}`)
-      if (dropzoneTarget) {
-        originalDropzone = system.transfer.dropzones.get(dropzoneTarget)
-      }
-    }
-
-    if (this.isOriginalDropzone) {
+    if (this.isOriginDropzone) {
       const removed = []
       for (const item of this.items) {
-        if (effect === "move") originalDropzone?.reviveItem(item)
+        if (effect === "move") originDropzone?.reviveItem(item)
         item.dropped = effect === "move"
 
         let { index } = item
@@ -188,24 +179,20 @@ export class DropzoneHint {
           droppeds.push(item.data)
         } else {
           droppeds.append(
-            effect === "move"
-              ? item.target
-              : copyElement(item, originalDropzone)
+            effect === "move" ? item.target : copyElement(item, originDropzone)
           )
         }
       }
     } else {
       for (const item of this.items) {
-        if (effect === "move") originalDropzone?.reviveItem(item)
+        if (effect === "move") originDropzone?.reviveItem(item)
         item.dropped = effect === "move"
 
         if (list) {
           droppeds.push(item.data)
         } else {
           droppeds.append(
-            effect === "move"
-              ? item.target
-              : copyElement(item, originalDropzone)
+            effect === "move" ? item.target : copyElement(item, originDropzone)
           )
         }
       }
