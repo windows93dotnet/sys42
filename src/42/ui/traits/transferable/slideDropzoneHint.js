@@ -1,28 +1,10 @@
 import DropzoneHint from "./DropzoneHint.js"
 import appendCSS from "../../../fabric/dom/appendCSS.js"
-import { inRect } from "../../../fabric/geometry/point.js"
 import paint from "../../../fabric/type/promise/paint.js"
-
-const { parseInt, isNaN } = Number
 
 export class SlideDropzoneHint extends DropzoneHint {
   constructor(el, options) {
-    super(el, { speed: 180, ...options, scan: true })
-
-    this.styles = getComputedStyle(this.el)
-    this.colGap = parseInt(this.styles.columnGap, 10)
-    this.rowGap = parseInt(this.styles.rowGap, 10)
-    if (isNaN(this.colGap)) this.colGap = 0
-    if (isNaN(this.rowGap)) this.rowGap = 0
-
-    const halfColGap = this.colGap / 2
-    const halfRowGap = this.rowGap / 2
-    this.gaps = {
-      top: -halfRowGap,
-      bottom: halfRowGap,
-      left: -halfColGap,
-      right: halfColGap,
-    }
+    super(el, { speed: 180, ...options })
   }
 
   activate() {
@@ -118,23 +100,7 @@ export class SlideDropzoneHint extends DropzoneHint {
   }
 
   async dragover(x, y) {
-    if (!this.items) return
-    const [first] = this.items
-
-    x -= first.offsetX - first.width / 2
-    y -= first.offsetY - first.height / 2
-
-    const point = { x, y }
-
-    for (let i = 0, l = this.rects.length; i < l; i++) {
-      const rect = this.rects[i]
-      if (inRect(point, rect, this.gaps)) {
-        this.newIndex = rect.index
-        break
-      } else if (x > rect.right + this.gaps.right && i === l - 1) {
-        this.newIndex = rect.index + 1
-      }
-    }
+    super.dragover(x, y)
 
     if (this.newIndex !== undefined) {
       this.css.dragover.update(`

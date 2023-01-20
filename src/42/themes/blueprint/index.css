@@ -4,14 +4,14 @@
  * https://chrometaphore.com/work/projects/open_source/
  */
 
-@import "../default/index.css";
+@import url("../default/index.css");
 
 :root {
   --setting-color: #00aced;
-  /* --bg: var(--setting-color); */
-  /* --fg: #fff; */
-  --bg: #bbb;
-  --fg: #000;
+  --bg: var(--setting-color);
+  --fg: #fff;
+  /* --bg: #bbb; */
+  /* --fg: #000; */
 
   --highlight-bg: rgba(255 255 255 / 0.2);
   --highlight-fg: var(--fg);

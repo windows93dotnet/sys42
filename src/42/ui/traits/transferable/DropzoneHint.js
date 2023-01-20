@@ -1,4 +1,5 @@
 import getRects from "../../../fabric/dom/getRects.js"
+import { inRect } from "../../../fabric/geometry/point.js"
 import Trait from "../../classes/Trait.js"
 import Canceller from "../../../fabric/classes/Canceller.js"
 import system from "../../../system.js"
@@ -9,6 +10,8 @@ function copyElement(item) {
   item.id = copy.id
   return copy
 }
+
+const { parseInt, isNaN } = Number
 
 export class DropzoneHint {
   constructor(el, options) {
@@ -23,34 +26,42 @@ export class DropzoneHint {
       this.config.freeAxis ??= true
     }
 
-    if (this.config.scan) {
-      this.scan = async (items, cb) => {
-        this.rects.length = 0
-        this.scanReady = getRects(this.config.selector, {
-          root: this.el,
-          intersecting: true,
-        }).then((rects) => {
-          if (items && cb) {
-            for (const rect of rects) {
-              for (const item of items) {
-                if (item.target === rect.target) continue
-              }
+    this.styles = getComputedStyle(this.el)
+    this.columnGap = parseInt(this.styles.columnGap, 10)
+    this.rowGap = parseInt(this.styles.rowGap, 10)
+    if (isNaN(this.columnGap)) this.columnGap = 0
+    if (isNaN(this.rowGap)) this.rowGap = 0
 
-              if (cb(rect) !== false) this.rects.push(rect)
-            }
-          } else {
-            this.rects.push(...rects)
-          }
-
-          return this.rects
-        })
-
-        return this.scanReady
-      }
+    const halfColGap = this.columnGap / 2
+    const halfRowGap = this.rowGap / 2
+    this.gaps = {
+      top: -halfRowGap,
+      bottom: halfRowGap,
+      left: -halfColGap,
+      right: halfColGap,
     }
   }
 
-  scan() {}
+  async scan(items, cb) {
+    this.rects.length = 0
+    this.scanReady = getRects(this.config.selector, {
+      root: this.el,
+      intersecting: true,
+    }).then((rects) => {
+      if (items && cb) {
+        for (const rect of rects) {
+          if (cb(rect) !== false) this.rects.push(rect)
+        }
+      } else {
+        this.rects.push(...rects)
+      }
+
+      return this.rects
+    })
+
+    return this.scanReady
+  }
+
   faintItem() {}
   reviveItem() {}
 
@@ -104,7 +115,26 @@ export class DropzoneHint {
     }
   }
 
-  dragover() {}
+  dragover(x, y) {
+    if (this.config.findNewIndex === false || !this.items) return
+    const [first] = this.items
+
+    x -= first.offsetX - first.width / 2
+    y -= first.offsetY - first.height / 2
+
+    const point = { x, y }
+
+    for (let i = 0, l = this.rects.length; i < l; i++) {
+      const rect = this.rects[i]
+      if (inRect(point, rect, this.gaps)) {
+        this.newIndex = rect.index
+        break
+      } else if (x > rect.right + this.gaps.right && i === l - 1) {
+        // this.newIndex = rect.index + 1
+        this.newIndex = undefined
+      }
+    }
+  }
 
   async enter() {
     this.newIndex = undefined
