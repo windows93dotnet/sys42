@@ -26,6 +26,9 @@ export class DropzoneHint {
       this.config.freeAxis ??= true
     }
 
+    this.isHorizontal = this.config.orientation === "horizontal"
+    this.isVertical = this.config.orientation === "vertical"
+
     this.styles = getComputedStyle(this.el)
     this.columnGap = parseInt(this.styles.columnGap, 10)
     this.rowGap = parseInt(this.styles.rowGap, 10)
@@ -124,14 +127,26 @@ export class DropzoneHint {
 
     const point = { x, y }
 
-    for (let i = 0, l = this.rects.length; i < l; i++) {
-      const rect = this.rects[i]
-      if (inRect(point, rect, this.gaps)) {
-        this.newIndex = rect.index
-        break
-      } else if (x > rect.right + this.gaps.right && i === l - 1) {
-        // this.newIndex = rect.index + 1
-        this.newIndex = undefined
+    this.newIndex = undefined
+
+    if (this.isHorizontal) {
+      for (let i = 0, l = this.rects.length; i < l; i++) {
+        const rect = this.rects[i]
+        if (
+          point.x >= rect.left + this.gaps.left &&
+          point.x <= rect.right + this.gaps.right
+        ) {
+          this.newIndex = rect.index
+          break
+        }
+      }
+    } else {
+      for (let i = 0, l = this.rects.length; i < l; i++) {
+        const rect = this.rects[i]
+        if (inRect(point, rect, this.gaps)) {
+          this.newIndex = rect.index
+          break
+        }
       }
     }
   }

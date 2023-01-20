@@ -12,7 +12,7 @@ export class SlideDropzoneHint extends DropzoneHint {
 
     const [first] = this.items
     const blankWidth =
-      first.width + first.marginLeft + first.marginRight + this.colGap
+      first.width + first.marginLeft + first.marginRight + this.columnGap
     this.blankWidth = `${blankWidth}px 0`
 
     const { signal } = this
@@ -56,7 +56,7 @@ export class SlideDropzoneHint extends DropzoneHint {
       for (const item of this.items) {
         if (item.target.id === rect.target.id) {
           offset +=
-            item.width + item.marginLeft + item.marginRight + this.colGap
+            item.width + item.marginLeft + item.marginRight + this.columnGap
           const i = rect.index + 1
           enterCss.push(`
             ${selector}:nth-child(n+${i}) {
@@ -102,7 +102,9 @@ export class SlideDropzoneHint extends DropzoneHint {
   async dragover(x, y) {
     super.dragover(x, y)
 
-    if (this.newIndex !== undefined) {
+    if (this.newIndex === undefined) {
+      this.css.dragover.update(``)
+    } else {
       this.css.dragover.update(`
         ${this.config.selector}:nth-child(n+${this.newIndex + 1}) {
           translate: ${this.blankWidth};
