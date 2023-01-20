@@ -134,12 +134,8 @@ export class StackItemsHint extends Array {
   }
 
   async adopt(x, y) {
-    const currentZoneHint = system.transfer.currentZone?.hint
-    if (
-      !currentZoneHint ||
-      currentZoneHint.isIframe ||
-      currentZoneHint.newIndex === undefined
-    ) {
+    const dropzone = system.transfer.currentZone?.hint
+    if (!dropzone || dropzone.isIframe) {
       for (const item of system.transfer.items) item.ghost.remove()
       return
     }
@@ -157,21 +153,26 @@ export class StackItemsHint extends Array {
       this.drag(x, y)
     }
 
-    const { newIndex } = currentZoneHint
-    const { selector } = currentZoneHint.config
+    const { newIndex } = dropzone
+    const { selector } = dropzone.config
 
     const undones = []
-    const start = newIndex + 1
-    const end = newIndex + this.length
+    let droppeds
 
-    const droppeds = currentZoneHint.el.querySelectorAll(
-      `${selector}:nth-child(n+${start}):nth-child(-n+${end})`
-    )
+    if (newIndex === undefined) {
+      droppeds = dropzone.el.querySelectorAll(
+        `${selector}:nth-last-child(-n+${this.length})`
+      )
+    } else {
+      const start = newIndex + 1
+      const end = newIndex + this.length
+      droppeds = dropzone.el.querySelectorAll(
+        `${selector}:nth-child(n+${start}):nth-child(-n+${end})`
+      )
+    }
 
-    if (
-      !(currentZoneHint.inOriginalDropzone && system.transfer.effect === "copy")
-    ) {
-      restoreSelection(currentZoneHint.el, droppeds)
+    if (!(dropzone.inOriginalDropzone && system.transfer.effect === "copy")) {
+      restoreSelection(dropzone.el, droppeds)
     }
 
     for (let i = 0, l = droppeds.length; i < l; i++) {
@@ -181,7 +182,7 @@ export class StackItemsHint extends Array {
     }
 
     const rects = await getRects(droppeds, {
-      root: currentZoneHint.el,
+      root: dropzone.el,
       intersecting: true,
     })
 

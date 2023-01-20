@@ -22,14 +22,14 @@ const DEFAULTS = {
 
   itemsConfig: {
     name: "stack",
-    startAnimation: { ms: 180 * 2 },
-    revertAnimation: { ms: 180 * 2 },
-    dropAnimation: { ms: 180 * 2 },
+    startAnimation: { ms: 180 },
+    revertAnimation: { ms: 180 },
+    dropAnimation: { ms: 180 },
   },
 
   dropzoneConfig: {
     name: "slide",
-    speed: 180 * 2,
+    speed: 180,
   },
 }
 
