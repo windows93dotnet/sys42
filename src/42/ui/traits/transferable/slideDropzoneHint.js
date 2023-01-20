@@ -99,11 +99,11 @@ export class SlideDropzoneHint extends DropzoneHint {
     this.css.dragover.disable()
   }
 
-  async dragover(x, y) {
+  dragover(x, y) {
     super.dragover(x, y)
 
     if (this.newIndex === undefined) {
-      this.css.dragover.update(``)
+      this.css.dragover.update("")
     } else {
       this.css.dragover.update(`
         ${this.config.selector}:nth-child(n+${this.newIndex + 1}) {
@@ -112,13 +112,13 @@ export class SlideDropzoneHint extends DropzoneHint {
     }
   }
 
-  async revert() {
+  revert() {
     super.revert()
     this.css.dragover.disable()
     this.css.enter.enable()
   }
 
-  async drop() {
+  drop() {
     super.drop()
     this.css.enter.disable()
     this.css.dragover.disable()

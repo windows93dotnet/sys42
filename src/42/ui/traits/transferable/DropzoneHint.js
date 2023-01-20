@@ -1,11 +1,12 @@
+/* eslint-disable unicorn/no-this-assignment */
 import getRects from "../../../fabric/dom/getRects.js"
 import { inRect } from "../../../fabric/geometry/point.js"
-import Trait from "../../classes/Trait.js"
 import Canceller from "../../../fabric/classes/Canceller.js"
 import system from "../../../system.js"
 
-function copyElement(item) {
+function copyElement(item, originalDropzone) {
   const copy = item.target.cloneNode(true)
+  originalDropzone?.reviveItem({ target: copy })
   copy.id += "-copy"
   item.id = copy.id
   return copy
@@ -45,7 +46,7 @@ export class DropzoneHint {
     }
   }
 
-  async scan(items, cb) {
+  scan(items, cb) {
     this.rects.length = 0
     this.scanReady = getRects(this.config.selector, {
       root: this.el,
@@ -83,7 +84,7 @@ export class DropzoneHint {
     }
   }
 
-  async halt() {
+  halt() {
     this.cancel()
     this.el.classList.remove("dragover")
 
@@ -104,18 +105,6 @@ export class DropzoneHint {
     this.cancel = undefined
     this.signal = undefined
     this.scanReady = undefined
-  }
-
-  restoreSelection() {
-    const selectable = this.el[Trait.INSTANCES]?.selectable
-    if (selectable) {
-      selectable.clear()
-      if (this.inOriginalDropzone && system.transfer.effect === "copy") return
-      for (const item of system.transfer.items) {
-        const target = document.querySelector(`#${item.id}`)
-        if (target) selectable?.add(target)
-      }
-    }
   }
 
   dragover(x, y) {
@@ -161,22 +150,31 @@ export class DropzoneHint {
     this.el.classList.remove("dragover")
   }
 
-  revert() {
-    this.restoreSelection()
-  }
+  revert() {}
 
   drop() {
     this.el.classList.remove("dragover")
-    if (this.reviveItems) this.reviveItems()
 
     const { effect } = system.transfer
     const { selector, list } = this.config
     const droppeds = list ? [] : document.createDocumentFragment()
 
+    let originalDropzone
+
+    if (this.inOriginalDropzone) {
+      originalDropzone = this
+    } else {
+      const { dropzoneId } = this.items
+      const dropzoneTarget = document.querySelector(`#${dropzoneId}`)
+      if (dropzoneTarget) {
+        originalDropzone = system.transfer.dropzones.get(dropzoneTarget)
+      }
+    }
+
     if (this.inOriginalDropzone) {
       const removed = []
       for (const item of this.items) {
-        this.reviveItem(item)
+        if (effect === "move") originalDropzone?.reviveItem(item)
         item.dropped = effect === "move"
 
         let { index } = item
@@ -188,18 +186,26 @@ export class DropzoneHint {
           if (effect === "move") list.splice(index, 1)
           droppeds.push(item.data)
         } else {
-          droppeds.append(effect === "move" ? item.target : copyElement(item))
+          droppeds.append(
+            effect === "move"
+              ? item.target
+              : copyElement(item, originalDropzone)
+          )
         }
       }
     } else {
       for (const item of this.items) {
-        this.reviveItem(item)
+        if (effect === "move") originalDropzone?.reviveItem(item)
         item.dropped = effect === "move"
 
         if (list) {
           droppeds.push(item.data)
         } else {
-          droppeds.append(effect === "move" ? item.target : copyElement(item))
+          droppeds.append(
+            effect === "move"
+              ? item.target
+              : copyElement(item, originalDropzone)
+          )
         }
       }
     }
@@ -215,8 +221,6 @@ export class DropzoneHint {
       )
       this.el.insertBefore(droppeds, indexedElement)
     }
-
-    this.restoreSelection()
   }
 }
 

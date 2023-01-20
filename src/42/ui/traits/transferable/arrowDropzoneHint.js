@@ -1,7 +1,7 @@
 import DropzoneHint from "./DropzoneHint.js"
 import create from "../../create.js"
 
-// TODO: find better way to get picto svg
+// TODO: make better way to get picto svg
 import "../../components/picto.js"
 const pictoArrow = create("ui-picto", { value: "down" })
 document.documentElement.append(pictoArrow)
