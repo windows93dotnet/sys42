@@ -77,9 +77,13 @@ export class DropzoneHint {
     this.signal = this.cancel.signal
 
     if (this.isOriginDropzone) {
-      queueMicrotask(() => {
-        if (this.faintItems) this.faintItems(x, y)
+      queueMicrotask(async () => {
+        if (this.faintItems) await this.faintItems(x, y)
         else for (const item of this.items) this.faintItem(item)
+        if (system.transfer.currentZone?.hint === this) {
+          await this.enter(x, y)
+          this.dragover(x, y)
+        }
       })
     }
   }
