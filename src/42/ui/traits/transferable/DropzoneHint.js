@@ -69,7 +69,7 @@ export class DropzoneHint {
   faintItem() {}
   reviveItem() {}
 
-  activate() {
+  activate(x, y) {
     this.items = system.transfer.items
     this.isOriginDropzone = this.items.dropzoneId === this.el.id
 
@@ -78,7 +78,7 @@ export class DropzoneHint {
 
     if (this.isOriginDropzone) {
       queueMicrotask(() => {
-        if (this.faintItems) this.faintItems()
+        if (this.faintItems) this.faintItems(x, y)
         else for (const item of this.items) this.faintItem(item)
       })
     }
@@ -96,8 +96,7 @@ export class DropzoneHint {
       }
     }
 
-    if (this.reviveItems) this.reviveItems()
-    else for (const item of this.items) this.reviveItem(item)
+    for (const item of this.items) this.reviveItem(item)
 
     this.rects.length = 0
     this.newIndex = undefined
