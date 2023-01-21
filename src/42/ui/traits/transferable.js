@@ -98,17 +98,14 @@ class IframeDropzoneHint {
   activate() {}
 
   halt() {
-    // this.el.classList.remove("dragover")
     this.bus.emit("42_TF_v_CLEANUP")
   }
 
   leave(x, y) {
-    // this.el.classList.remove("dragover")
     this.bus.emit("42_TF_v_LEAVE", { x, y })
   }
 
   enter(x, y) {
-    // this.el.classList.add("dragover")
     const { x: parentX, y: parentY } = this.el.getBoundingClientRect()
     this.bus.emit("42_TF_v_ENTER", serializeItems({ x, y, parentX, parentY }))
   }
@@ -118,6 +115,7 @@ class IframeDropzoneHint {
   }
 
   async drop(x, y) {
+    if (system.transfer.effect !== "none") system.transfer.items.removeGhosts()
     await this.bus.send("42_TF_v_DROP", { x, y })
   }
 
@@ -175,6 +173,10 @@ if (inIframe) {
       y -= context.parentY
       if (system.transfer.effect === "none") haltZones(x, y)
       else await haltZones(x, y)
+    })
+    .on("42_TF_v_REVERT", async ({ x, y }) => {
+      if (!context.ready) return
+      haltZones(x, y)
     })
     .on("42_TF_v_EFFECT", (effect) => {
       applyEffect(effect)
@@ -243,7 +245,12 @@ if (inIframe) {
     })
     .on("42_TF_^_STOP", ({ x, y }) => {
       if (context.parentX && system.transfer.items) {
-        for (const item of system.transfer.items) item.ghost.remove()
+        if (system.transfer.currentZone?.hint.isIframe) {
+          system.transfer.items.removeGhosts()
+        } else if (context.originIframeDropzone) {
+          context.originIframeDropzone.bus.emit("42_TF_v_REVERT", { x, y })
+        }
+
         x += context.parentX
         y += context.parentY
         clear(context)

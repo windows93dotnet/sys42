@@ -33,6 +33,10 @@ export class ItemsHint extends Array {
     return this.config.dropAnimation
   }
 
+  removeGhosts() {
+    for (const item of this) item.ghost.remove()
+  }
+
   start(x, y, items) {
     this.length = 0
     for (const item of items) {
@@ -111,7 +115,7 @@ export class ItemsHint extends Array {
   async adopt(x, y) {
     const dropzone = system.transfer.currentZone?.hint
     if (!dropzone || dropzone.isIframe) {
-      for (const item of system.transfer.items) item.ghost.remove()
+      system.transfer.items.removeGhosts()
       return
     }
 

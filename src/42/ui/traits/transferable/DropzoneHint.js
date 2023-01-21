@@ -108,7 +108,7 @@ export class DropzoneHint {
   }
 
   dragover(x, y) {
-    if (this.config.findNewIndex === false || !this.items) return
+    if (this.config.findNewIndex === false || !this.items?.length) return
     const [first] = this.items
 
     x -= first.offsetX - first.width / 2
@@ -163,38 +163,23 @@ export class DropzoneHint {
       ? this
       : this.items.originDropzone
 
-    if (this.isOriginDropzone) {
-      const removed = []
-      for (const item of this.items) {
-        if (effect === "move") originDropzone?.reviveItem(item)
-        item.dropped = effect === "move"
+    const removed = []
+    for (const item of this.items) {
+      if (effect === "move") originDropzone?.reviveItem(item)
+      item.dropped = effect === "move"
 
-        let { index } = item
-        for (const remIndex of removed) if (index > remIndex) index--
-        if (this.newIndex > index) this.newIndex--
-        removed.push(index)
+      let { index } = item
+      for (const remIndex of removed) if (index > remIndex) index--
+      removed.push(index)
+      if (this.isOriginDropzone && this.newIndex > index) this.newIndex--
 
-        if (list) {
-          if (effect === "move") list.splice(index, 1)
-          droppeds.push(item.data)
-        } else {
-          droppeds.append(
-            effect === "move" ? item.target : copyElement(item, originDropzone)
-          )
-        }
-      }
-    } else {
-      for (const item of this.items) {
-        if (effect === "move") originDropzone?.reviveItem(item)
-        item.dropped = effect === "move"
-
-        if (list) {
-          droppeds.push(item.data)
-        } else {
-          droppeds.append(
-            effect === "move" ? item.target : copyElement(item, originDropzone)
-          )
-        }
+      if (list) {
+        if (effect === "move") originDropzone.config.list.splice(index, 1)
+        droppeds.push(item.data)
+      } else {
+        droppeds.append(
+          effect === "move" ? item.target : copyElement(item, originDropzone)
+        )
       }
     }
 
