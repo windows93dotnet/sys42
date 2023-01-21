@@ -3,7 +3,6 @@ import Trait from "../../classes/Trait.js"
 import inIframe from "../../../core/env/realm/inIframe.js"
 import uid from "../../../core/uid.js"
 import ghostify from "../../../fabric/dom/ghostify.js"
-import getRects from "../../../fabric/dom/getRects.js"
 import { animateTo, animateFrom } from "../../../fabric/dom/animate.js"
 
 function restoreSelection(el, droppeds) {
@@ -136,30 +135,29 @@ export class ItemsHint extends Array {
     const { selector } = dropzone.config
 
     const undones = []
-    let droppeds
+    let adopteds
 
     if (newIndex === undefined) {
-      droppeds = dropzone.el.querySelectorAll(
+      adopteds = dropzone.el.querySelectorAll(
         `${selector}:nth-last-child(-n+${this.length})`
       )
     } else {
       const start = newIndex + 1
       const end = newIndex + this.length
-      droppeds = dropzone.el.querySelectorAll(
+      adopteds = dropzone.el.querySelectorAll(
         `${selector}:nth-child(n+${start}):nth-child(-n+${end})`
       )
     }
 
-    for (let i = 0, l = droppeds.length; i < l; i++) {
-      droppeds[i].classList.add("invisible")
-      // droppeds[i].id ||= uid()
-      // this[i].target = droppeds[i]
+    const rects = []
+    for (let i = 0, l = adopteds.length; i < l; i++) {
+      const rect = adopteds[i].getBoundingClientRect()
+      rect.target = adopteds[i]
+      rects.push(rect)
+      queueMicrotask(() => dropzone.faintTarget(rect.target))
     }
 
-    const rects = await getRects(droppeds, {
-      root: dropzone.el,
-      intersecting: true,
-    })
+    await dropzone.beforeAdoptAnimation(rects)
 
     for (let i = 0, l = this.length; i < l; i++) {
       const item = this[i]
@@ -170,19 +168,19 @@ export class ItemsHint extends Array {
             ...this.adoptAnimation(item),
           }).then(() => {
             item.ghost.remove()
-            rects[i].target.classList.remove("invisible")
+            dropzone.reviveTarget(rects[i].target)
           })
         )
       } else {
         item.ghost.remove()
-        item.target.classList.remove("invisible")
+        dropzone.reviveTarget(item.target)
       }
     }
 
     await Promise.all(undones)
 
     if (!(dropzone.isOriginDropzone && system.transfer.effect === "copy")) {
-      restoreSelection(dropzone.el, droppeds)
+      restoreSelection(dropzone.el, adopteds)
     }
   }
 }

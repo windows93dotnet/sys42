@@ -198,6 +198,8 @@ export class DropzoneHint {
       this.el.insertBefore(droppeds, indexedElement)
     }
   }
+
+  beforeAdoptAnimation() {}
 }
 
 export default DropzoneHint
