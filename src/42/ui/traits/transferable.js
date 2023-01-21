@@ -28,6 +28,170 @@ const DEFAULTS = {
 
 const configure = settings("ui.trait.transferable", DEFAULTS)
 
+/* effect
+========= */
+
+const keyToEffect = [
+  ["Control", "copy"],
+  ["Shift", "link"],
+]
+
+const effectToCursor = {
+  none: "no-drop",
+  move: "grabbing",
+  copy: "copy",
+  link: "alias",
+}
+
+function applyEffect(name) {
+  system.transfer.effect = name
+
+  if (context.fromIframe) {
+    context.originIframeDropzone?.bus.emit("42_TF_v_EFFECT", name)
+  }
+
+  setCursor(effectToCursor[name])
+}
+
+async function setEffect(options) {
+  if (inIframe && options?.bypassIframeIgnore !== true) return
+
+  if (system.transfer.currentZone) {
+    const keys = context.keys ?? keyboard.keys
+    if (system.transfer.currentZone.hint.isIframe) {
+      const effect = await system.transfer.currentZone.hint.bus.send(
+        "42_TF_v_REQUEST_EFFECT",
+        keys
+      )
+      applyEffect(effect ?? "none")
+    } else {
+      for (const [key, effect] of keyToEffect) {
+        if (key in keys) return applyEffect(effect)
+      }
+
+      applyEffect("move")
+    }
+  } else {
+    applyEffect("none")
+  }
+}
+
+/* system
+========= */
+
+system.transfer = {
+  dropzones: new Map(),
+  items: undefined,
+  currentZone: undefined,
+  effect: undefined,
+}
+
+async function makeHints({ itemsConfig, dropzoneConfig }, el) {
+  const undones = []
+
+  if (itemsConfig) {
+    undones.push(
+      import(`./transferable/${itemsConfig.name}ItemsHint.js`) //
+        .then((m) => m.default(itemsConfig))
+    )
+  }
+
+  if (dropzoneConfig) {
+    undones.push(
+      import(`./transferable/${dropzoneConfig.name}DropzoneHint.js`) //
+        .then((m) => m.default(el, dropzoneConfig))
+    )
+  }
+
+  const [itemsHint, dropzoneHint] = await Promise.all(undones)
+  if (dropzoneHint) itemsHint.dropzoneId = dropzoneHint.el.id
+  return { itemsHint, dropzoneHint }
+}
+
+async function activateZones(x, y) {
+  return getRects([
+    ...system.transfer.dropzones.keys(),
+    ...document.querySelectorAll("iframe"),
+  ]).then((rects) => {
+    system.transfer.zones = rects
+    for (const rect of rects) {
+      if (rect.target.localName === "iframe") {
+        rect.hint = new IframeDropzoneHint(rect.target)
+      } else {
+        rect.hint = system.transfer.dropzones.get(rect.target)
+        rect.hoverScroll = new HoverScroll(
+          rect.target,
+          rect.hint.config?.hoverScroll
+        )
+      }
+
+      rect.hint.activate(x, y)
+    }
+  })
+}
+
+async function haltZones(x, y) {
+  const { zones } = system.transfer
+
+  if (system.transfer.currentZone) {
+    await system.transfer.currentZone.hint.drop(x, y)
+  }
+
+  if (system.transfer.effect === "move") {
+    await system.transfer.items.adopt(x, y)
+  } else if (system.transfer.effect === "none") {
+    await system.transfer.items.revert()
+  } else {
+    await system.transfer.items.fork(x, y)
+  }
+
+  for (const dropzone of zones) {
+    dropzone.hint.halt()
+    dropzone.hoverScroll?.clear()
+  }
+
+  cleanHints()
+}
+
+function setCurrentZone(x, y) {
+  setEffect()
+  const { zones } = system.transfer
+  if (zones?.length > 0 === false) return
+
+  const point = { x, y }
+
+  if (system.transfer.currentZone) {
+    if (inRect(point, system.transfer.currentZone)) {
+      system.transfer.currentZone.hoverScroll?.update({ x, y }, async () => {
+        await system.transfer.currentZone?.hint.scan()
+        system.transfer.currentZone?.hint.dragover(x, y)
+      })
+      system.transfer.currentZone.hint.dragover(x, y)
+      return
+    }
+
+    system.transfer.currentZone.hoverScroll?.clear()
+    system.transfer.currentZone.hint.leave(x, y)
+    system.transfer.currentZone = undefined
+  }
+
+  for (const dropzone of zones) {
+    if (inRect(point, dropzone)) {
+      system.transfer.currentZone = dropzone
+      setEffect()
+      system.transfer.currentZone.hint.enter(x, y)
+      system.transfer.currentZone.hoverScroll?.update({ x, y }, async () => {
+        await system.transfer.currentZone?.hint.scan()
+        system.transfer.currentZone?.hint.dragover(x, y)
+      })
+      system.transfer.currentZone.hint.dragover(x, y)
+      return
+    }
+  }
+
+  setEffect()
+}
+
 /* ipc
 ====== */
 
@@ -253,170 +417,6 @@ if (inIframe) {
         haltZones(x, y)
       }
     })
-}
-
-/* effect
-========= */
-
-const keyToEffect = [
-  ["Control", "copy"],
-  ["Shift", "link"],
-]
-
-const effectToCursor = {
-  none: "no-drop",
-  move: "grabbing",
-  copy: "copy",
-  link: "alias",
-}
-
-function applyEffect(name) {
-  system.transfer.effect = name
-
-  if (context.fromIframe) {
-    context.originIframeDropzone?.bus.emit("42_TF_v_EFFECT", name)
-  }
-
-  setCursor(effectToCursor[name])
-}
-
-async function setEffect(options) {
-  if (inIframe && options?.bypassIframeIgnore !== true) return
-
-  if (system.transfer.currentZone) {
-    const keys = context.keys ?? keyboard.keys
-    if (system.transfer.currentZone.hint.isIframe) {
-      const effect = await system.transfer.currentZone.hint.bus.send(
-        "42_TF_v_REQUEST_EFFECT",
-        keys
-      )
-      applyEffect(effect ?? "none")
-    } else {
-      for (const [key, effect] of keyToEffect) {
-        if (key in keys) return applyEffect(effect)
-      }
-
-      applyEffect("move")
-    }
-  } else {
-    applyEffect("none")
-  }
-}
-
-/* system
-========= */
-
-system.transfer = {
-  dropzones: new Map(),
-  items: undefined,
-  currentZone: undefined,
-  effect: undefined,
-}
-
-async function makeHints({ itemsConfig, dropzoneConfig }, el) {
-  const undones = []
-
-  if (itemsConfig) {
-    undones.push(
-      import(`./transferable/${itemsConfig.name}ItemsHint.js`) //
-        .then((m) => m.default(itemsConfig))
-    )
-  }
-
-  if (dropzoneConfig) {
-    undones.push(
-      import(`./transferable/${dropzoneConfig.name}DropzoneHint.js`) //
-        .then((m) => m.default(el, dropzoneConfig))
-    )
-  }
-
-  const [itemsHint, dropzoneHint] = await Promise.all(undones)
-  if (dropzoneHint) itemsHint.dropzoneId = dropzoneHint.el.id
-  return { itemsHint, dropzoneHint }
-}
-
-async function activateZones(x, y) {
-  return getRects([
-    ...system.transfer.dropzones.keys(),
-    ...document.querySelectorAll("iframe"),
-  ]).then((rects) => {
-    system.transfer.zones = rects
-    for (const rect of rects) {
-      if (rect.target.localName === "iframe") {
-        rect.hint = new IframeDropzoneHint(rect.target)
-      } else {
-        rect.hint = system.transfer.dropzones.get(rect.target)
-        rect.hoverScroll = new HoverScroll(
-          rect.target,
-          rect.hint.config?.hoverScroll
-        )
-      }
-
-      rect.hint.activate(x, y)
-    }
-  })
-}
-
-async function haltZones(x, y) {
-  const { zones } = system.transfer
-
-  if (system.transfer.currentZone) {
-    await system.transfer.currentZone.hint.drop(x, y)
-  }
-
-  if (system.transfer.effect === "move") {
-    await system.transfer.items.adopt(x, y)
-  } else if (system.transfer.effect === "none") {
-    await system.transfer.items.revert()
-  } else {
-    await system.transfer.items.fork(x, y)
-  }
-
-  for (const dropzone of zones) {
-    dropzone.hint.halt()
-    dropzone.hoverScroll?.clear()
-  }
-
-  cleanHints()
-}
-
-function setCurrentZone(x, y) {
-  setEffect()
-  const { zones } = system.transfer
-  if (zones?.length > 0 === false) return
-
-  const point = { x, y }
-
-  if (system.transfer.currentZone) {
-    if (inRect(point, system.transfer.currentZone)) {
-      system.transfer.currentZone.hoverScroll?.update({ x, y }, async () => {
-        await system.transfer.currentZone?.hint.scan()
-        system.transfer.currentZone?.hint.dragover(x, y)
-      })
-      system.transfer.currentZone.hint.dragover(x, y)
-      return
-    }
-
-    system.transfer.currentZone.hoverScroll?.clear()
-    system.transfer.currentZone.hint.leave(x, y)
-    system.transfer.currentZone = undefined
-  }
-
-  for (const dropzone of zones) {
-    if (inRect(point, dropzone)) {
-      system.transfer.currentZone = dropzone
-      setEffect()
-      system.transfer.currentZone.hint.enter(x, y)
-      system.transfer.currentZone.hoverScroll?.update({ x, y }, async () => {
-        await system.transfer.currentZone?.hint.scan()
-        system.transfer.currentZone?.hint.dragover(x, y)
-      })
-      system.transfer.currentZone.hint.dragover(x, y)
-      return
-    }
-  }
-
-  setEffect()
 }
 
 class Transferable extends Trait {
