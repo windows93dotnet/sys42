@@ -170,7 +170,7 @@ if (inIframe) {
       setCurrentZone(x, y)
     })
     .on("42_TF_v_DROP", async ({ x, y }) => {
-      if (!context.ready || context.isOriginIframe) return
+      if (!context.ready) return
       x -= context.parentX
       y -= context.parentY
       if (system.transfer.effect === "none") haltZones(x, y)
@@ -194,9 +194,6 @@ if (inIframe) {
     .on("42_TF_^_REQUEST_EFFECT", (keys) => {
       context.keys = keys
       setEffect()
-    })
-    .on("42_TF_^_REMOVE_GHOSTS", () => {
-      for (const item of system.transfer.items) item.ghost.remove()
     })
     .on(
       "42_TF_^_START",
@@ -246,6 +243,7 @@ if (inIframe) {
     })
     .on("42_TF_^_STOP", ({ x, y }) => {
       if (context.parentX && system.transfer.items) {
+        for (const item of system.transfer.items) item.ghost.remove()
         x += context.parentX
         y += context.parentY
         clear(context)
@@ -364,7 +362,6 @@ async function haltZones(x, y) {
   }
 
   if (system.transfer.effect === "move") {
-    if (context?.isOriginIframe !== true) ipc.emit("42_TF_^_REMOVE_GHOSTS")
     await system.transfer.items.adopt(x, y)
   } else if (system.transfer.effect === "none") {
     await system.transfer.items.revert()
@@ -543,12 +540,8 @@ class Transferable extends Trait {
         forgetKeyevents()
         await startPromise
 
-        if (inIframe) {
-          ipc.emit("42_TF_^_STOP", { x, y })
-          if (context.isOriginIframe) await haltZones(x, y)
-        } else {
-          await haltZones(x, y)
-        }
+        if (inIframe) ipc.emit("42_TF_^_STOP", { x, y })
+        else await haltZones(x, y)
 
         for (const iframeDz of iframeDropzones) iframeDz.destroy()
         iframeDropzones.length = 0
