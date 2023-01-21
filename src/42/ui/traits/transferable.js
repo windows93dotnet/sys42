@@ -86,27 +86,53 @@ system.transfer = {
   effect: undefined,
 }
 
-async function makeHints({ itemsConfig, dropzoneConfig }, el) {
-  const undones = []
+import slideDropzoneHint from "./transferable/slideDropzoneHint.js"
+import fadeDropzoneHint from "./transferable/fadeDropzoneHint.js"
+import arrowDropzoneHint from "./transferable/arrowDropzoneHint.js"
+import stackItemsHint from "./transferable/stackItemsHint.js"
 
+const hints = {
+  slide: slideDropzoneHint,
+  fade: fadeDropzoneHint,
+  arrow: arrowDropzoneHint,
+  stack: stackItemsHint,
+}
+
+function makeHints({ itemsConfig, dropzoneConfig }, el) {
+  const out = {}
   if (itemsConfig) {
-    undones.push(
-      import(`./transferable/${itemsConfig.name}ItemsHint.js`) //
-        .then((m) => m.default(itemsConfig))
-    )
+    out.itemsHint = hints[itemsConfig.name](itemsConfig)
   }
 
   if (dropzoneConfig) {
-    undones.push(
-      import(`./transferable/${dropzoneConfig.name}DropzoneHint.js`) //
-        .then((m) => m.default(el, dropzoneConfig))
-    )
+    out.dropzoneHint = hints[dropzoneConfig.name](el, dropzoneConfig)
+    if (out.itemsHint) out.itemsHint.dropzoneId = out.dropzoneHint.el.id
   }
 
-  const [itemsHint, dropzoneHint] = await Promise.all(undones)
-  if (dropzoneHint) itemsHint.dropzoneId = dropzoneHint.el.id
-  return { itemsHint, dropzoneHint }
+  return out
 }
+
+// async function makeHints({ itemsConfig, dropzoneConfig }, el) {
+//   const undones = []
+
+//   if (itemsConfig) {
+//     undones.push(
+//       import(`./transferable/${itemsConfig.name}ItemsHint.js`) //
+//         .then((m) => m.default(itemsConfig))
+//     )
+//   }
+
+//   if (dropzoneConfig) {
+//     undones.push(
+//       import(`./transferable/${dropzoneConfig.name}DropzoneHint.js`) //
+//         .then((m) => m.default(el, dropzoneConfig))
+//     )
+//   }
+
+//   const [itemsHint, dropzoneHint] = await Promise.all(undones)
+//   if (dropzoneHint) itemsHint.dropzoneId = dropzoneHint.el.id
+//   return { itemsHint, dropzoneHint }
+// }
 
 async function activateZones(x, y) {
   return getRects([
@@ -283,7 +309,8 @@ class IframeDropzoneHint {
     this.bus.emit("42_TF_v_LEAVE", this.#substractCoord(x, y))
   }
 
-  enter(x, y) {
+  async enter(x, y) {
+    await this.bus.ready
     this.bus.emit("42_TF_v_ENTER", {
       ...this.#substractCoord(x, y),
       ...serializeItems(this),
@@ -310,13 +337,13 @@ if (inIframe) {
     .on("42_TF_v_ENTER", async ({ x, y, items, itemsConfig, dropzoneId }) => {
       deserializeItems(items)
 
-      const { itemsHint } = await makeHints({ itemsConfig })
+      const { itemsHint } = makeHints({ itemsConfig })
 
       system.transfer.items = itemsHint
       system.transfer.itemsConfig = itemsConfig
       system.transfer.items.dropzoneId = dropzoneId
-
       system.transfer.items.start(x, y, items)
+
       await activateZones(x, y)
       setCurrentZone(x, y)
     })
@@ -370,20 +397,19 @@ if (inIframe) {
         deserializeItems(items, context.parentX, context.parentY)
         cleanHints()
 
-        const { itemsHint } = await makeHints({ itemsConfig })
+        const { itemsHint } = makeHints({ itemsConfig })
         system.transfer.items = itemsHint
         system.transfer.itemsConfig = itemsConfig
         system.transfer.items.dropzoneId = dropzoneId
         system.transfer.items.start(x, y, items)
-        const zoneReady = activateZones(x, y)
-
         for (const item of system.transfer.items) {
           document.documentElement.append(item.ghost)
         }
 
-        system.transfer.items.drag(x, y)
+        await activateZones(x, y)
+        setCurrentZone(x, y)
 
-        await zoneReady
+        system.transfer.items.drag(x, y)
 
         for (const iframeDz of iframeDropzones) {
           if (iframeDz.el === iframe) {
