@@ -43,19 +43,22 @@ const effectToCursor = {
   link: "alias",
 }
 
-function applyEffect(name) {
+function applyEffect(name, options) {
+  // console.log(inIframe ? "🪟" : "🌐", Date.now(), name, options?.bypassEmit)
   system.transfer.effect = name
 
-  if (context.fromIframe) {
-    context.originIframeDropzone?.bus.emit("42_TF_v_EFFECT", name)
+  if (options?.bypassEmit !== true) {
+    if (context.fromIframe) {
+      context.originIframeDropzone?.bus.emit("42_TF_v_EFFECT", name)
+    } else if (inIframe) {
+      ipc.emit("42_TF_^_EFFECT", name)
+    }
   }
 
   setCursor(effectToCursor[name])
 }
 
 async function setEffect(options) {
-  if (inIframe && options?.bypassIframeIgnore !== true) return
-
   if (system.transfer.currentZone) {
     const keys = context.keys ?? keyboard.keys
     if (system.transfer.currentZone.hint.isIframe) {
@@ -63,16 +66,16 @@ async function setEffect(options) {
         "42_TF_v_REQUEST_EFFECT",
         keys
       )
-      applyEffect(effect ?? "none")
+      applyEffect(effect ?? "none", options)
     } else {
       for (const [key, effect] of keyToEffect) {
-        if (key in keys) return applyEffect(effect)
+        if (key in keys) return applyEffect(effect, options)
       }
 
-      applyEffect("move")
+      applyEffect("move", options)
     }
   } else {
-    applyEffect("none")
+    applyEffect("none", options)
   }
 }
 
@@ -167,8 +170,18 @@ async function haltZones(x, y) {
     await system.transfer.items.adopt(x, y)
   } else if (system.transfer.effect === "none") {
     await system.transfer.items.revert()
-  } else {
+  } else if (
+    system.transfer.effect === "copy" ||
+    system.transfer.effect === "link"
+  ) {
     await system.transfer.items.fork(x, y)
+  } else {
+    const type = typeof system.transfer.effect
+    throw new Error(
+      `Unknown system.transfer.effect : ${
+        type === "string" ? system.transfer.effect : type
+      }`
+    )
   }
 
   for (const dropzone of zones) {
@@ -180,9 +193,7 @@ async function haltZones(x, y) {
 }
 
 function setCurrentZone(x, y) {
-  setEffect()
   const { zones } = system.transfer
-  if (zones?.length > 0 === false) return
 
   const point = { x, y }
 
@@ -199,6 +210,7 @@ function setCurrentZone(x, y) {
     system.transfer.currentZone.hoverScroll?.clear()
     system.transfer.currentZone.hint.leave(x, y)
     system.transfer.currentZone = undefined
+    setEffect()
   }
 
   for (const dropzone of zones) {
@@ -333,8 +345,10 @@ class IframeDropzoneHint {
 }
 
 if (inIframe) {
+  let enterReady = false
   ipc
     .on("42_TF_v_ENTER", async ({ x, y, items, itemsConfig, dropzoneId }) => {
+      enterReady = false
       deserializeItems(items)
 
       const { itemsHint } = makeHints({ itemsConfig })
@@ -346,6 +360,12 @@ if (inIframe) {
 
       await activateZones(x, y)
       setCurrentZone(x, y)
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          enterReady = true
+        })
+      })
     })
     .on("42_TF_v_LEAVE", ({ x, y }) => {
       if (system.transfer.currentZone) {
@@ -355,7 +375,7 @@ if (inIframe) {
       }
     })
     .on("42_TF_v_DRAGOVER", ({ x, y }) => {
-      setCurrentZone(x, y)
+      if (enterReady) setCurrentZone(x, y)
     })
     .on("42_TF_v_DROP", async ({ x, y }) => {
       if (system.transfer.effect === "none") haltZones(x, y)
@@ -365,12 +385,12 @@ if (inIframe) {
       haltZones(x, y)
     })
     .on("42_TF_v_EFFECT", (effect) => {
-      applyEffect(effect)
+      applyEffect(effect, { bypassEmit: true })
     })
     .on("42_TF_v_REQUEST_EFFECT", async (keys) => {
       context.keys = keys
-      await setEffect({ bypassIframeIgnore: true })
-      delete context.keys
+      await setEffect({ bypassEmit: true })
+      context.keys = undefined
       return system.transfer.effect
     })
     .on("42_TF_v_CLEANUP", () => {
@@ -379,9 +399,13 @@ if (inIframe) {
     })
 } else {
   ipc
+    .on("42_TF_^_EFFECT", (effect) => {
+      applyEffect(effect, { bypassEmit: true })
+    })
     .on("42_TF_^_REQUEST_EFFECT", (keys) => {
       context.keys = keys
-      setEffect()
+      setEffect({ bypassEmit: true })
+      context.keys = undefined
     })
     .on(
       "42_TF_^_START",

@@ -80,11 +80,10 @@ export class SlideDropzoneHint extends DropzoneHint {
     // Animate empty holes
     // -------------------
     this.css.enter.update(enterCss.join("\n"))
-
+    await paint()
+    this.css.transition.enable()
     await paint()
     this.css.enter.disable()
-    this.css.transition.enable()
-    // await paint()
   }
 
   reviveItem(item) {
