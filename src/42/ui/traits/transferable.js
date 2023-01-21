@@ -23,7 +23,7 @@ const DEFAULTS = {
   itemsConfig: "stack",
   dropzoneConfig: "stack",
 
-  animationSpeed: 180 * 2,
+  animationSpeed: 180,
 }
 
 const configure = settings("ui.trait.transferable", DEFAULTS)

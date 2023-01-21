@@ -11,9 +11,9 @@ export class SlideDropzoneHint extends DropzoneHint {
     super.activate(x, y)
 
     const [first] = this.items
-    const blankWidth =
+    this.blankWidth =
       first.width + first.marginLeft + first.marginRight + this.columnGap
-    this.blankWidth = `${blankWidth}px 0`
+    this.blank = `${this.blankWidth}px 0`
 
     const { signal } = this
     const cssOptions = { signal }
@@ -86,6 +86,9 @@ export class SlideDropzoneHint extends DropzoneHint {
     this.css.enter.disable()
   }
 
+  faintTarget(target) {
+    target.classList.add("hide")
+  }
   reviveTarget(target) {
     target.classList.remove("hide")
   }
@@ -110,7 +113,7 @@ export class SlideDropzoneHint extends DropzoneHint {
     } else {
       this.css.dragover.update(`
         ${this.config.selector}:nth-child(n+${this.newIndex + 1}) {
-          translate: ${this.blankWidth};
+          translate: ${this.blank};
         }`)
     }
   }
@@ -126,6 +129,30 @@ export class SlideDropzoneHint extends DropzoneHint {
     this.css.enter.disable()
     this.css.dragover.disable()
     this.css.transition.disable()
+  }
+
+  async beforeAdoptAnimation(adopteds) {
+    if (this.newIndex === undefined) return
+
+    let n = this.newIndex + 1
+
+    this.css.enter.enable()
+    this.css.enter.update(`
+      ${this.config.selector}:nth-child(n+${n}) {
+        translate: ${this.blank};
+      }`)
+
+    await paint()
+    this.css.transition.enable()
+
+    n = this.newIndex + this.items.length
+    const blankWidth =
+      adopteds.at(-1).right - adopteds.at(0).left + this.columnGap
+
+    this.css.enter.update(`
+      ${this.config.selector}:nth-child(n+${n}) {
+        translate: ${blankWidth}px;
+      }`)
   }
 }
 
