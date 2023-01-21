@@ -239,7 +239,9 @@ if (inIframe) {
     .on("42_TF_^_STOP", ({ x, y }) => {
       if (context.parentX && system.transfer.items) {
         if (system.transfer.currentZone?.hint.isIframe) {
-          system.transfer.items.removeGhosts()
+          if (system.transfer.effect === "move") {
+            system.transfer.items.removeGhosts()
+          }
         } else if (context.originIframeDropzone) {
           context.originIframeDropzone.bus.emit("42_TF_v_REVERT", { x, y })
         }
@@ -402,6 +404,7 @@ function setCurrentZone(x, y) {
   for (const dropzone of zones) {
     if (inRect(point, dropzone)) {
       system.transfer.currentZone = dropzone
+      setEffect()
       system.transfer.currentZone.hint.enter(x, y)
       system.transfer.currentZone.hoverScroll?.update({ x, y }, async () => {
         await system.transfer.currentZone?.hint.scan()
@@ -411,6 +414,8 @@ function setCurrentZone(x, y) {
       return
     }
   }
+
+  setEffect()
 }
 
 class Transferable extends Trait {
