@@ -5,7 +5,7 @@ import system from "../../../system.js"
 
 function copyElement(item, originDropzone) {
   const copy = item.target.cloneNode(true)
-  originDropzone?.reviveItem({ target: copy })
+  originDropzone?.reviveTarget(copy)
   copy.id += "-copy"
   item.id = copy.id
   return copy
@@ -66,8 +66,8 @@ export class DropzoneHint {
     return this.scanReady
   }
 
-  faintItem() {}
-  reviveItem() {}
+  faintTarget() {}
+  reviveTarget() {}
 
   activate(x, y) {
     this.items = system.transfer.items
@@ -78,8 +78,8 @@ export class DropzoneHint {
 
     if (this.isOriginDropzone) {
       queueMicrotask(async () => {
-        if (this.faintItems) await this.faintItems(x, y)
-        else for (const item of this.items) this.faintItem(item)
+        if (this.faintTargets) await this.faintTargets(x, y)
+        else for (const { target } of this.items) this.faintTarget(target)
         if (system.transfer.currentZone?.hint === this) {
           await this.enter(x, y)
           this.dragover(x, y)
@@ -100,7 +100,7 @@ export class DropzoneHint {
       }
     }
 
-    for (const item of this.items) this.reviveItem(item)
+    for (const { target } of this.items) this.reviveTarget(target)
 
     this.rects.length = 0
     this.newIndex = undefined
@@ -168,7 +168,7 @@ export class DropzoneHint {
 
     const removed = []
     for (const item of this.items) {
-      if (effect === "move") originDropzone?.reviveItem(item)
+      if (effect === "move") originDropzone?.reviveTarget(item.target)
       item.dropped = effect === "move"
 
       let { index } = item

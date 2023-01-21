@@ -14,12 +14,12 @@ arrow.style.top = "-10px"
 arrow.style.left = "-8px"
 
 export class ArrowDropzoneHint extends DropzoneHint {
-  faintItem(item) {
-    item.target.classList.add("opacity-half")
+  faintTarget(target) {
+    target.classList.add("opacity-half")
   }
 
-  reviveItem(item) {
-    item.target.classList.remove("opacity-half")
+  reviveTarget(target) {
+    target.classList.remove("opacity-half")
   }
 
   enter() {

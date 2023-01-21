@@ -1,12 +1,12 @@
 import DropzoneHint from "./DropzoneHint.js"
 
 export class FadeDropzoneHint extends DropzoneHint {
-  faintItem(item) {
-    item.target.classList.add("opacity-half")
+  faintTarget(target) {
+    target.classList.add("opacity-half")
   }
 
-  reviveItem(item) {
-    item.target.classList.remove("opacity-half")
+  reviveTarget(target) {
+    target.classList.remove("opacity-half")
   }
 }
 
