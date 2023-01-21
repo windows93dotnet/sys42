@@ -153,7 +153,8 @@ if (inIframe) {
       system.transfer.items.dropzoneId = dropzoneId
 
       system.transfer.items.start(x, y, items)
-      activateZones(x, y)
+      await activateZones(x, y)
+      setCurrentZone(x, y)
     })
     .on("42_TF_v_LEAVE", ({ x, y }) => {
       if (system.transfer.currentZone) {
