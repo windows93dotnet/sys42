@@ -250,7 +250,7 @@ function serializeItems({ hideGhost, x = 0, y = 0 }) {
     exportedItem.x -= x
     exportedItem.y -= y
     exportedItem.target = exportedItem.target.cloneNode(true)
-    originDropzone?.reviveItem(exportedItem)
+    originDropzone?.reviveTarget(exportedItem.target)
     exportedItem.target = exportedItem.target.outerHTML
     exportedItem.ghost = exportedItem.ghost.outerHTML
     if (exportedItem.data) exportedItem.data = unproxy(exportedItem.data)

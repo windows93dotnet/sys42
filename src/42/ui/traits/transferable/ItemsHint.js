@@ -121,7 +121,6 @@ export class ItemsHint extends Array {
 
     if (inIframe) {
       for (const item of this) {
-        // item.target.classList.remove("hide")
         item.ghost.classList.remove("hide")
         if (!item.ghost.isConnected) {
           item.ghost.style.top = 0
@@ -149,10 +148,6 @@ export class ItemsHint extends Array {
       droppeds = dropzone.el.querySelectorAll(
         `${selector}:nth-child(n+${start}):nth-child(-n+${end})`
       )
-    }
-
-    if (!(dropzone.isOriginDropzone && system.transfer.effect === "copy")) {
-      restoreSelection(dropzone.el, droppeds)
     }
 
     for (let i = 0, l = droppeds.length; i < l; i++) {
@@ -185,6 +180,10 @@ export class ItemsHint extends Array {
     }
 
     await Promise.all(undones)
+
+    if (!(dropzone.isOriginDropzone && system.transfer.effect === "copy")) {
+      restoreSelection(dropzone.el, droppeds)
+    }
   }
 }
 

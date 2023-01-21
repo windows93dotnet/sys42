@@ -35,7 +35,7 @@ export class SlideDropzoneHint extends DropzoneHint {
       }`)
   }
 
-  async faintItems() {
+  async faintTargets() {
     this.css.transition.disable()
     const rect = this.el.getBoundingClientRect()
     this.css.global.update(`
@@ -86,8 +86,8 @@ export class SlideDropzoneHint extends DropzoneHint {
     this.css.enter.disable()
   }
 
-  reviveItem(item) {
-    item.target.classList.remove("hide")
+  reviveTarget(target) {
+    target.classList.remove("hide")
   }
 
   enter() {
