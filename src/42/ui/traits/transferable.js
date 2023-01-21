@@ -89,53 +89,53 @@ system.transfer = {
   effect: undefined,
 }
 
-import slideDropzoneHint from "./transferable/slideDropzoneHint.js"
-import fadeDropzoneHint from "./transferable/fadeDropzoneHint.js"
-import arrowDropzoneHint from "./transferable/arrowDropzoneHint.js"
-import stackItemsHint from "./transferable/stackItemsHint.js"
+// import slideDropzoneHint from "./transferable/slideDropzoneHint.js"
+// import fadeDropzoneHint from "./transferable/fadeDropzoneHint.js"
+// import arrowDropzoneHint from "./transferable/arrowDropzoneHint.js"
+// import stackItemsHint from "./transferable/stackItemsHint.js"
 
-const hints = {
-  slide: slideDropzoneHint,
-  fade: fadeDropzoneHint,
-  arrow: arrowDropzoneHint,
-  stack: stackItemsHint,
-}
+// const hints = {
+//   slide: slideDropzoneHint,
+//   fade: fadeDropzoneHint,
+//   arrow: arrowDropzoneHint,
+//   stack: stackItemsHint,
+// }
 
-function makeHints({ itemsConfig, dropzoneConfig }, el) {
-  const out = {}
-  if (itemsConfig) {
-    out.itemsHint = hints[itemsConfig.name](itemsConfig)
-  }
-
-  if (dropzoneConfig) {
-    out.dropzoneHint = hints[dropzoneConfig.name](el, dropzoneConfig)
-    if (out.itemsHint) out.itemsHint.dropzoneId = out.dropzoneHint.el.id
-  }
-
-  return out
-}
-
-// async function makeHints({ itemsConfig, dropzoneConfig }, el) {
-//   const undones = []
-
+// function makeHints({ itemsConfig, dropzoneConfig }, el) {
+//   const out = {}
 //   if (itemsConfig) {
-//     undones.push(
-//       import(`./transferable/${itemsConfig.name}ItemsHint.js`) //
-//         .then((m) => m.default(itemsConfig))
-//     )
+//     out.itemsHint = hints[itemsConfig.name](itemsConfig)
 //   }
 
 //   if (dropzoneConfig) {
-//     undones.push(
-//       import(`./transferable/${dropzoneConfig.name}DropzoneHint.js`) //
-//         .then((m) => m.default(el, dropzoneConfig))
-//     )
+//     out.dropzoneHint = hints[dropzoneConfig.name](el, dropzoneConfig)
+//     if (out.itemsHint) out.itemsHint.dropzoneId = out.dropzoneHint.el.id
 //   }
 
-//   const [itemsHint, dropzoneHint] = await Promise.all(undones)
-//   if (dropzoneHint) itemsHint.dropzoneId = dropzoneHint.el.id
-//   return { itemsHint, dropzoneHint }
+//   return out
 // }
+
+async function makeHints({ itemsConfig, dropzoneConfig }, el) {
+  const undones = []
+
+  if (itemsConfig) {
+    undones.push(
+      import(`./transferable/${itemsConfig.name}ItemsHint.js`) //
+        .then((m) => m.default(itemsConfig))
+    )
+  }
+
+  if (dropzoneConfig) {
+    undones.push(
+      import(`./transferable/${dropzoneConfig.name}DropzoneHint.js`) //
+        .then((m) => m.default(el, dropzoneConfig))
+    )
+  }
+
+  const [itemsHint, dropzoneHint] = await Promise.all(undones)
+  if (dropzoneHint) itemsHint.dropzoneId = dropzoneHint.el.id
+  return { itemsHint, dropzoneHint }
+}
 
 async function activateZones(x, y) {
   return getRects([
@@ -335,6 +335,7 @@ class IframeDropzoneHint {
 
   async drop(x, y) {
     if (system.transfer.effect !== "none") system.transfer.items.removeGhosts()
+    if (system.transfer.effect === "move") system.transfer.items.hideTargets()
     await this.bus.send("42_TF_v_DROP", this.#substractCoord(x, y))
   }
 
@@ -351,7 +352,7 @@ if (inIframe) {
       enterReady = false
       deserializeItems(items)
 
-      const { itemsHint } = makeHints({ itemsConfig })
+      const { itemsHint } = await makeHints({ itemsConfig })
 
       system.transfer.items = itemsHint
       system.transfer.itemsConfig = itemsConfig
@@ -360,12 +361,7 @@ if (inIframe) {
 
       await activateZones(x, y)
       setCurrentZone(x, y)
-
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          enterReady = true
-        })
-      })
+      enterReady = true
     })
     .on("42_TF_v_LEAVE", ({ x, y }) => {
       if (system.transfer.currentZone) {
@@ -421,7 +417,7 @@ if (inIframe) {
         deserializeItems(items, context.parentX, context.parentY)
         cleanHints()
 
-        const { itemsHint } = makeHints({ itemsConfig })
+        const { itemsHint } = await makeHints({ itemsConfig })
         system.transfer.items = itemsHint
         system.transfer.itemsConfig = itemsConfig
         system.transfer.items.dropzoneId = dropzoneId

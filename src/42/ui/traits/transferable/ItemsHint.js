@@ -3,6 +3,7 @@ import Trait from "../../classes/Trait.js"
 import inIframe from "../../../core/env/realm/inIframe.js"
 import uid from "../../../core/uid.js"
 import ghostify from "../../../fabric/dom/ghostify.js"
+import paint from "../../../fabric/type/promise/paint.js"
 import { animateTo, animateFrom } from "../../../fabric/dom/animate.js"
 
 function restoreSelection(el, droppeds) {
@@ -34,6 +35,9 @@ export class ItemsHint extends Array {
 
   removeGhosts() {
     for (const item of this) item.ghost.remove()
+  }
+  hideTargets() {
+    for (const item of this) item.target.classList.add("hide")
   }
 
   start(x, y, items) {
@@ -117,6 +121,8 @@ export class ItemsHint extends Array {
       system.transfer.items.removeGhosts()
       return
     }
+
+    await paint()
 
     if (inIframe) {
       for (const item of this) {

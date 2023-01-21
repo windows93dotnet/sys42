@@ -94,9 +94,7 @@ export class DropzoneHint {
 
     if (this.isOriginDropzone) {
       if (system.transfer.effect === "move") {
-        for (const item of system.transfer.items) {
-          if (!item.dropped) item.target.remove()
-        }
+        this.removeItems()
       }
     }
 
@@ -155,6 +153,22 @@ export class DropzoneHint {
 
   revert() {}
 
+  removeItem(item, index) {
+    if (item.removed) return
+    if (this.config.list) this.config.list.splice(index, 1)
+    else item.target.remove()
+  }
+
+  removeItems() {
+    const removed = []
+    for (const item of this.items) {
+      let { index } = item
+      for (const remIndex of removed) if (index > remIndex) index--
+      removed.push(index)
+      this.removeItem(item, index)
+    }
+  }
+
   drop() {
     this.el.classList.remove("dragover")
 
@@ -177,9 +191,10 @@ export class DropzoneHint {
       if (this.isOriginDropzone && this.newIndex > index) this.newIndex--
 
       if (list) {
-        if (effect === "move") originDropzone.config.list.splice(index, 1)
+        item.target.classList.add("hide")
         droppeds.push(item.data)
       } else {
+        item.removed = effect === "move"
         droppeds.append(
           effect === "move" ? item.target : copyElement(item, originDropzone)
         )
@@ -187,8 +202,13 @@ export class DropzoneHint {
     }
 
     if (list) {
-      list.splice(this.newIndex, 0, ...droppeds)
-      this.config.indexChange?.(this.newIndex)
+      if (this.newIndex === undefined) {
+        list.push(...droppeds)
+        this.config.indexChange?.(list.length)
+      } else {
+        list.splice(this.newIndex, 0, ...droppeds)
+        this.config.indexChange?.(this.newIndex)
+      }
     } else if (this.newIndex === undefined) {
       this.el.append(droppeds)
     } else {

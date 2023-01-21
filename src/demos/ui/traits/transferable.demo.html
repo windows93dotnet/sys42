@@ -87,7 +87,7 @@
 
   const suffix = window.top === window.self ? "" : "iframe"
 
-  ui(".demos", {
+  window.app = ui(".demos", {
     plugins: ["markdown"],
     state,
     content: [
@@ -95,7 +95,9 @@
       {
         tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl._gap-xl.inset paper",
         id: "fade1" + suffix,
-        selectable: true,
+        selectable: {
+          selection: ["3", "4"],
+        },
         transferable: {
           dropzoneConfig: "arrow",
         },
@@ -146,36 +148,36 @@
         })),
       },
 
-      // "## list",
-      // {
-      //   scope: "listA",
-      //   tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl.gap-xl.inset paper",
-      //   // aria: { orientation: "horizontal" },
-      //   transferable: {
-      //     list: "{{.}}",
-      //     dropzoneConfig: "arrow",
-      //   },
-      //   each: {
-      //     tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-gray-200",
-      //     content: "{{.}}",
-      //   },
-      // },
-      // {
-      //   scope: "listB",
-      //   tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl._gap-xl.inset paper",
-      //   // aria: { orientation: "horizontal" },
-      //   selectable: {
-      //     selection: ["12", "14", "16"],
-      //   },
-      //   transferable: {
-      //     list: "{{.}}",
-      //     dropzoneConfig: "arrow",
-      //   },
-      //   each: {
-      //     tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-pink-200",
-      //     content: "{{.}}",
-      //   },
-      // },
+      "## list",
+      {
+        scope: "listA",
+        tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl.gap-xl.inset paper",
+        // aria: { orientation: "horizontal" },
+        transferable: {
+          list: "{{.}}",
+          dropzoneConfig: "arrow",
+        },
+        each: {
+          tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-gray-200",
+          content: "{{.}}",
+        },
+      },
+      {
+        scope: "listB",
+        tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl._gap-xl.inset paper",
+        // aria: { orientation: "horizontal" },
+        selectable: {
+          // selection: ["12", "14", "16"],
+        },
+        transferable: {
+          list: "{{.}}",
+          dropzoneConfig: "slide",
+        },
+        each: {
+          tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-pink-200",
+          content: "{{.}}",
+        },
+      },
 
       // "## layout",
       // {
