@@ -27,6 +27,8 @@ export class SlideDropzoneHint extends DropzoneHint {
 
     const speed = this.config.animationSpeed
 
+    this.ignoreDragover = false
+
     this.css.transition.update(`
       ${this.config.selector} {
         transition:
@@ -36,6 +38,8 @@ export class SlideDropzoneHint extends DropzoneHint {
   }
 
   async faintTargets() {
+    this.ignoreDragover = true
+
     this.css.transition.disable()
     const rect = this.el.getBoundingClientRect()
     this.css.global.update(`
@@ -82,8 +86,9 @@ export class SlideDropzoneHint extends DropzoneHint {
     this.css.enter.update(enterCss.join("\n"))
     await paint()
     this.css.transition.enable()
-    await paint()
     this.css.enter.disable()
+
+    this.ignoreDragover = false
   }
 
   faintTarget(target) {
@@ -107,6 +112,8 @@ export class SlideDropzoneHint extends DropzoneHint {
 
   dragover(x, y) {
     super.dragover(x, y)
+
+    if (this.ignoreDragover) return
 
     if (this.newIndex === undefined) {
       this.css.dragover.update("")
