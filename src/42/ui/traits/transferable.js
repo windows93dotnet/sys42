@@ -20,17 +20,10 @@ const DEFAULTS = {
   useSelection: true,
   handlerSelector: undefined,
 
-  itemsConfig: {
-    name: "stack",
-    startAnimation: { ms: 180 },
-    revertAnimation: { ms: 180 },
-    dropAnimation: { ms: 180 },
-  },
+  itemsConfig: "stack",
+  dropzoneConfig: "stack",
 
-  dropzoneConfig: {
-    name: "slide",
-    speed: 180,
-  },
+  animationSpeed: 180 * 2,
 }
 
 const configure = settings("ui.trait.transferable", DEFAULTS)
@@ -45,28 +38,31 @@ import clear from "../../fabric/type/object/clear.js"
 const iframeDropzones = []
 const context = Object.create(null)
 
-function serializeItems(obj, options) {
+function serializeItems({ hideGhost, x = 0, y = 0 }) {
   const items = []
 
   const { originDropzone } = system.transfer.items
 
   for (const item of system.transfer.items) {
     const exportedItem = { ...item }
+    exportedItem.x -= x
+    exportedItem.y -= y
     exportedItem.target = exportedItem.target.cloneNode(true)
     originDropzone?.reviveItem(exportedItem)
     exportedItem.target = exportedItem.target.outerHTML
     exportedItem.ghost = exportedItem.ghost.outerHTML
     if (exportedItem.data) exportedItem.data = unproxy(exportedItem.data)
-    if (options?.hideGhost) item.ghost.classList.add("hide")
+    if (hideGhost) item.ghost.classList.add("hide")
     items.push(exportedItem)
   }
 
   const { dropzoneId } = system.transfer.items
   const { itemsConfig } = system.transfer
-  return { ...obj, items, dropzoneId, itemsConfig }
+
+  return { items, dropzoneId, itemsConfig }
 }
 
-function deserializeItems(items, parentX, parentY) {
+function deserializeItems(items, parentX = 0, parentY = 0) {
   for (const item of items) {
     item.target =
       (context.isOriginIframe
@@ -86,6 +82,15 @@ function cleanHints() {
   setCursor()
 }
 
+function getIframeInnerCoord(iframe) {
+  const iframeRect = iframe.getBoundingClientRect()
+  const { borderTopWidth, borderLeftWidth } = getComputedStyle(iframe)
+  return {
+    x: iframeRect.x + Number.parseInt(borderLeftWidth, 10),
+    y: iframeRect.y + Number.parseInt(borderTopWidth, 10),
+  }
+}
+
 class IframeDropzoneHint {
   constructor(iframe) {
     this.el = iframe
@@ -94,29 +99,40 @@ class IframeDropzoneHint {
     iframeDropzones.push(this)
   }
 
+  #substractCoord(x, y) {
+    return { x: x - this.x, y: y - this.y }
+  }
+
   scan() {}
-  activate() {}
+
+  activate() {
+    const { x, y } = getIframeInnerCoord(this.el)
+    this.x = x
+    this.y = y
+  }
 
   halt() {
     this.bus.emit("42_TF_v_CLEANUP")
   }
 
   leave(x, y) {
-    this.bus.emit("42_TF_v_LEAVE", { x, y })
+    this.bus.emit("42_TF_v_LEAVE", this.#substractCoord(x, y))
   }
 
   enter(x, y) {
-    const { x: parentX, y: parentY } = this.el.getBoundingClientRect()
-    this.bus.emit("42_TF_v_ENTER", serializeItems({ x, y, parentX, parentY }))
+    this.bus.emit("42_TF_v_ENTER", {
+      ...this.#substractCoord(x, y),
+      ...serializeItems(this),
+    })
   }
 
   dragover(x, y) {
-    this.bus.emit("42_TF_v_DRAGOVER", { x, y })
+    this.bus.emit("42_TF_v_DRAGOVER", this.#substractCoord(x, y))
   }
 
   async drop(x, y) {
     if (system.transfer.effect !== "none") system.transfer.items.removeGhosts()
-    await this.bus.send("42_TF_v_DROP", { x, y })
+    await this.bus.send("42_TF_v_DROP", this.#substractCoord(x, y))
   }
 
   async destroy() {
@@ -127,55 +143,33 @@ class IframeDropzoneHint {
 
 if (inIframe) {
   ipc
-    .on(
-      "42_TF_v_ENTER",
-      async ({ x, y, items, itemsConfig, dropzoneId, parentX, parentY }) => {
-        context.parentX = parentX
-        context.parentY = parentY
+    .on("42_TF_v_ENTER", async ({ x, y, items, itemsConfig, dropzoneId }) => {
+      deserializeItems(items)
 
-        x -= context.parentX
-        y -= context.parentY
+      const { itemsHint } = await makeHints({ itemsConfig })
 
-        // TODO: use original items if context.isOriginIframe
-        deserializeItems(items, context.parentX * -1, context.parentY * -1)
+      system.transfer.items = itemsHint
+      system.transfer.itemsConfig = itemsConfig
+      system.transfer.items.dropzoneId = dropzoneId
 
-        const { itemsHint } = await makeHints({ itemsConfig })
-
-        system.transfer.items = itemsHint
-        system.transfer.itemsConfig = itemsConfig
-        system.transfer.items.dropzoneId = dropzoneId
-
-        system.transfer.items.start(x, y, items)
-        activateZones(x, y)
-
-        context.ready = true
-      }
-    )
+      system.transfer.items.start(x, y, items)
+      activateZones(x, y)
+    })
     .on("42_TF_v_LEAVE", ({ x, y }) => {
-      if (!context.ready) return
       if (system.transfer.currentZone) {
-        x -= context.parentX
-        y -= context.parentY
         system.transfer.currentZone.hoverScroll?.clear()
         system.transfer.currentZone.hint.leave(x, y)
         system.transfer.currentZone = undefined
       }
     })
     .on("42_TF_v_DRAGOVER", ({ x, y }) => {
-      if (!context.ready) return
-      x -= context.parentX
-      y -= context.parentY
       setCurrentZone(x, y)
     })
     .on("42_TF_v_DROP", async ({ x, y }) => {
-      if (!context.ready) return
-      x -= context.parentX
-      y -= context.parentY
       if (system.transfer.effect === "none") haltZones(x, y)
       else await haltZones(x, y)
     })
     .on("42_TF_v_REVERT", async ({ x, y }) => {
-      if (!context.ready) return
       haltZones(x, y)
     })
     .on("42_TF_v_EFFECT", (effect) => {
@@ -202,13 +196,12 @@ if (inIframe) {
       async ({ x, y, items, dropzoneId, itemsConfig }, { iframe }) => {
         context.fromIframe = true
 
-        const iframeRect = iframe.getBoundingClientRect()
-        const { borderTopWidth, borderLeftWidth } = getComputedStyle(iframe)
-        context.parentX = iframeRect.x + Number.parseInt(borderLeftWidth, 10)
-        context.parentY = iframeRect.y + Number.parseInt(borderTopWidth, 10)
-
+        const iframeCoord = getIframeInnerCoord(iframe)
+        context.parentX = iframeCoord.x
+        context.parentY = iframeCoord.y
         x += context.parentX
         y += context.parentY
+
         deserializeItems(items, context.parentX, context.parentY)
         cleanHints()
 
@@ -339,7 +332,7 @@ async function makeHints({ itemsConfig, dropzoneConfig }, el) {
   return { itemsHint, dropzoneHint }
 }
 
-async function activateZones() {
+async function activateZones(x, y) {
   return getRects([
     ...system.transfer.dropzones.keys(),
     ...document.querySelectorAll("iframe"),
@@ -356,7 +349,7 @@ async function activateZones() {
         )
       }
 
-      rect.hint.activate()
+      rect.hint.activate(x, y)
     }
   })
 }
@@ -445,6 +438,13 @@ class Transferable extends Trait {
     this.config.dropzoneConfig.indexChange ??= this.config.indexChange
     this.config.dropzoneConfig.list = this.list
 
+    const ms = this.config.animationSpeed
+    this.config.itemsConfig.startAnimation ??= { ms }
+    this.config.itemsConfig.revertAnimation ??= { ms }
+    this.config.itemsConfig.adoptAnimation ??= { ms }
+
+    this.config.dropzoneConfig.animationSpeed = ms
+
     this.init()
   }
 
@@ -517,10 +517,8 @@ class Transferable extends Trait {
 
           if (inIframe) {
             context.isOriginIframe = true
-            await ipc.send(
-              "42_TF_^_START",
-              serializeItems({ x, y }, { hideGhost: true })
-            )
+            const msg = { x, y, ...serializeItems({ hideGhost: true }) }
+            await ipc.send("42_TF_^_START", msg)
           } else {
             await activateZones(x, y)
             setCurrentZone(x, y)

@@ -4,11 +4,11 @@ import paint from "../../../fabric/type/promise/paint.js"
 
 export class SlideDropzoneHint extends DropzoneHint {
   constructor(el, options) {
-    super(el, { speed: 180, ...options })
+    super(el, { ...options })
   }
 
-  activate() {
-    super.activate()
+  activate(x, y) {
+    super.activate(x, y)
 
     const [first] = this.items
     const blankWidth =
@@ -25,15 +25,17 @@ export class SlideDropzoneHint extends DropzoneHint {
       transition: appendCSS(cssOptions),
     }
 
+    const speed = this.config.animationSpeed
+
     this.css.transition.update(`
       ${this.config.selector} {
         transition:
-          margin-right ${this.config.speed}ms ease-in-out,
-          translate ${this.config.speed}ms ease-in-out !important;
+          margin-right ${speed}ms ease-in-out,
+          translate ${speed}ms ease-in-out !important;
       }`)
   }
 
-  async faintItems() {
+  async faintItems(x, y) {
     this.css.transition.disable()
     const rect = this.el.getBoundingClientRect()
     this.css.global.update(`
@@ -78,10 +80,12 @@ export class SlideDropzoneHint extends DropzoneHint {
     // Animate empty holes
     // -------------------
     this.css.enter.update(enterCss.join("\n"))
+
     await paint()
     this.css.enter.disable()
-
     this.css.transition.enable()
+    await paint()
+    this.dragover(x, y)
   }
 
   reviveItem(item) {

@@ -29,8 +29,8 @@ export class ItemsHint extends Array {
   revertAnimation() {
     return this.config.revertAnimation
   }
-  dropAnimation() {
-    return this.config.dropAnimation
+  adoptAnimation() {
+    return this.config.adoptAnimation
   }
 
   removeGhosts() {
@@ -168,11 +168,11 @@ export class ItemsHint extends Array {
 
     for (let i = 0, l = this.length; i < l; i++) {
       const item = this[i]
-      if (rects[i] && this.config.dropAnimation) {
+      if (rects[i] && this.config.adoptAnimation) {
         undones.push(
           animateTo(item.ghost, {
             translate: `${rects[i].x}px ${rects[i].y}px`,
-            ...this.dropAnimation(item),
+            ...this.adoptAnimation(item),
           }).then(() => {
             item.ghost.remove()
             rects[i].target.classList.remove("invisible")
