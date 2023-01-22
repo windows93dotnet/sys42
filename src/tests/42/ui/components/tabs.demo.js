@@ -37,6 +37,7 @@ window.app = await ui({
             content: {
               tag: "ui-tabs",
               id: "tabs1",
+              transferable: true,
               closable: true,
               // balanced: true,
               items: "{{planets}}",
@@ -52,6 +53,7 @@ window.app = await ui({
               tag: "ui-tabs",
               id: "tabs2",
               side: "left",
+              transferable: true,
               // balanced: true,
               items: [
                 { label: "One", content: lorem },
@@ -82,6 +84,8 @@ window.app = await ui({
                 tag: "ui-tabs",
                 id: "tabs3",
                 side: "bottom",
+                transferable: true,
+                closable: true,
                 items: "{{planets}}",
               },
             },
@@ -95,7 +99,8 @@ window.app = await ui({
               content: {
                 tag: "ui-tabs",
                 id: "tabs4",
-                // side: "right",
+                side: "right",
+                transferable: true,
                 items: [
                   { label: "One", content: lorem },
                   { label: "Two", content: "hello" },

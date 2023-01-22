@@ -2,6 +2,8 @@ import DropzoneHint from "./DropzoneHint.js"
 import appendCSS from "../../../fabric/dom/appendCSS.js"
 import paint from "../../../fabric/type/promise/paint.js"
 
+const { parseInt, isNaN } = Number
+
 export class SlideDropzoneHint extends DropzoneHint {
   constructor(el, options) {
     super(el, { ...options })
@@ -152,9 +154,23 @@ export class SlideDropzoneHint extends DropzoneHint {
     await paint()
     this.css.transition.enable()
 
+    let { marginLeft, marginRight } = getComputedStyle(adopteds.at(0).target)
+    if (adopteds.at(0) !== adopteds.at(-1)) {
+      marginRight = getComputedStyle(adopteds.at(-1).target).marginRight
+    }
+
+    marginLeft = parseInt(marginLeft)
+    marginRight = parseInt(marginRight)
+    if (isNaN(marginLeft)) marginLeft = 0
+    if (isNaN(marginRight)) marginRight = 0
+
     n = this.newIndex + this.items.length
     const blankWidth =
-      adopteds.at(-1).right - adopteds.at(0).left + this.columnGap
+      this.columnGap +
+      marginLeft +
+      marginRight +
+      adopteds.at(-1).right -
+      adopteds.at(0).left
 
     this.css.enter.update(`
       ${this.config.selector}:nth-child(n+${n}) {
