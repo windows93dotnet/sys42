@@ -257,10 +257,7 @@ body {
   text-shadow: var(--panel-tsh, none);
 }
 
-.code,
-code,
-samp,
-output {
+.code {
   --bg: var(--code-bg);
   --fg: var(--code-fg);
   text-shadow: var(--code-tsh, none);
@@ -273,15 +270,14 @@ output {
   max-width: 100%;
 }
 
-:where(
-.code,
-code,
-samp,
-output
-)::selection {
+.code::selection {
   background: var(--code-sel-bg, var(--code-fg));
   color: var(--code-sel-fg, var(--code-bg));
   text-shadow: var(--code-sel-tsh, none);
+}
+
+pre.code {
+  padding: var(--unit) var(--unit-lg);
 }
 
 .pill {
@@ -346,7 +342,6 @@ h1, h2, h3, h4, h5, h6, dt {
 ============= */
 
 :root,
-ui-swatch,
 .checkboard,
 .checkboard-dark {
   --checkboard-dark: #cecece;

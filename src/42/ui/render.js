@@ -152,7 +152,7 @@ export default function render(plan, stage, options) {
     )
   }
 
-  if (plan.content) {
+  if (plan.content !== undefined) {
     if (plan.content instanceof Node) el.append(plan.content)
     else {
       el.append(

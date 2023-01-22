@@ -1,7 +1,5 @@
 import parseLogTemplate from "./parseLogTemplate.js"
 
-// TODO: make parseLogTemplate returns ui definition
-
 export function formatStyle(color) {
   return {
     tag: "span.ansi-" + color.split(".").join(".ansi-"),
@@ -12,12 +10,12 @@ export function formatStyle(color) {
 export function formatLog(tokens) {
   const out = []
   let span = { tag: "span", content: "" }
-  for (const { type, text } of tokens) {
+  for (const { type, content } of tokens) {
     if (type === "style") {
       if (span.content) out.push(span)
-      span = formatStyle(text)
+      span = formatStyle(content)
     } else {
-      span.content += text
+      span.content += content
     }
   }
 
