@@ -1,6 +1,6 @@
 const { random } = Math
 
-export default function shuffle(arr, r = random) {
+export function shuffle(arr, r = random) {
   let l = arr.length
   while (l) {
     const i = (r() * l--) | 0
@@ -11,3 +11,5 @@ export default function shuffle(arr, r = random) {
 
   return arr
 }
+
+export default shuffle

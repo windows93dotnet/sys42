@@ -1,3 +1,5 @@
-export default function uniq(arr) {
+export function uniq(arr) {
   return [...new Set(arr)]
 }
+
+export default uniq
