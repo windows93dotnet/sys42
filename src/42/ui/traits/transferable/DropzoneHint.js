@@ -2,6 +2,7 @@ import getRects from "../../../fabric/dom/getRects.js"
 import { inRect } from "../../../fabric/geometry/point.js"
 import Canceller from "../../../fabric/classes/Canceller.js"
 import system from "../../../system.js"
+import unproxy from "../../../fabric/type/object/unproxy.js"
 
 function copyElement(item, originDropzone) {
   const copy = item.target.cloneNode(true)
@@ -180,23 +181,35 @@ export class DropzoneHint {
       ? this
       : this.items.originDropzone
 
+    const isMove = effect === "move"
+    const isCopy = effect === "copy"
+
     const removed = []
     for (const item of this.items) {
-      if (effect === "move") originDropzone?.reviveTarget(item.target)
-      item.dropped = effect === "move"
+      if (isMove) originDropzone?.reviveTarget(item.target)
+      item.dropped = isMove
 
       let { index } = item
-      for (const remIndex of removed) if (index > remIndex) index--
-      removed.push(index)
-      if (this.isOriginDropzone && this.newIndex > index) this.newIndex--
+
+      if (isMove) {
+        for (const remIndex of removed) if (index > remIndex) index--
+        removed.push(index)
+        if (this.isOriginDropzone && this.newIndex > index) this.newIndex--
+      }
 
       if (list) {
-        item.target.classList.add("hide")
-        droppeds.push(item.data)
+        if (this.isOriginDropzone && isMove) {
+          list.splice(index, 1)
+          item.removed = true
+        } else {
+          item.target.classList.add("hide")
+        }
+
+        droppeds.push(isCopy ? unproxy(item.data) : item.data)
       } else {
-        item.removed = effect === "move"
+        item.removed = isMove
         droppeds.append(
-          effect === "move" ? item.target : copyElement(item, originDropzone)
+          isMove ? item.target : copyElement(item, originDropzone)
         )
       }
     }
