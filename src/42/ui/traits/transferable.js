@@ -403,7 +403,7 @@ if (inIframe) {
         await activateZones(x, y)
         setCurrentZone(x, y)
 
-        system.transfer.items.drag(x, y)
+        system.transfer.items.drag(system.transfer.items.getCoord(x, y))
 
         for (const iframeDz of iframeDropzones) {
           if (iframeDz.el === iframe) {
@@ -413,12 +413,14 @@ if (inIframe) {
         }
       }
     )
-    .on("42_TF_^_DRAG", ({ x, y }) => {
+    .on("42_TF_^_DRAG", ({ x, y, coord }) => {
       if (context.parentX && system.transfer.items) {
         x += context.parentX
         y += context.parentY
+        coord.x += context.parentX
+        coord.y += context.parentY
         setCurrentZone(x, y)
-        system.transfer.items.drag(x, y)
+        system.transfer.items.drag(coord)
       }
     })
     .on("42_TF_^_STOP", ({ x, y }) => {
@@ -550,7 +552,7 @@ class Transferable extends Trait {
             setCurrentZone(x, y)
           }
 
-          system.transfer.items.drag(x, y)
+          system.transfer.items.drag(system.transfer.items.getCoord(x, y))
           startReady = true
         })
       },
@@ -558,10 +560,11 @@ class Transferable extends Trait {
       drag(x, y) {
         if (!startReady) return
         if (inIframe) {
-          ipc.emit("42_TF_^_DRAG", { x, y })
+          const coord = system.transfer.items.getCoord(x, y)
+          ipc.emit("42_TF_^_DRAG", { x, y, coord })
         } else {
           setCurrentZone(x, y)
-          system.transfer.items.drag(x, y)
+          system.transfer.items.drag(system.transfer.items.getCoord(x, y))
         }
       },
 

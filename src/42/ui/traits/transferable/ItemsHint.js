@@ -40,6 +40,18 @@ export class ItemsHint extends Array {
     for (const item of this) item.target.classList.add("hide")
   }
 
+  getCoord(x, y) {
+    const [first] = system.transfer.items
+    const { currentZone } = system.transfer
+
+    return currentZone?.hint.isOriginDropzone &&
+      currentZone?.hint.freeAxis !== true
+      ? currentZone.hint.isVertical
+        ? { x: first.x, y: y - first.offsetY }
+        : { x: x - first.offsetX, y: first.y }
+      : { x: x - first.offsetX, y: y - first.offsetY }
+  }
+
   start(x, y, items) {
     this.length = 0
     for (const item of items) {
@@ -64,7 +76,7 @@ export class ItemsHint extends Array {
       }
     }
 
-    this.drag(x, y)
+    this.drag(this.getCoord(x, y))
   }
 
   drag() {
@@ -134,7 +146,7 @@ export class ItemsHint extends Array {
         }
       }
 
-      this.drag(x, y)
+      this.drag(this.getCoord(x, y))
     }
 
     const { newIndex } = dropzone
