@@ -81,7 +81,9 @@ export default function render(plan, stage, options) {
   if (plan.each) return renderEach(plan, stage)
 
   if (plan?.tag?.startsWith("ui-")) {
-    // TODO: fix tags like "div > ui-foo"
+    // TODO: rewrite normalize using parseTagSelector
+    // to fix tags like "div > ui-foo" and skip traits and attrs normalization
+    delete plan.setTraits
     delete plan.attrs
     if (options?.step !== undefined) {
       stage = { ...stage }
