@@ -12,7 +12,7 @@ import { normalizePlan, normalizeTokens } from "../normalize.js"
 import expr from "../../core/expr.js"
 
 const PLACEHOLDER = "[if]"
-const { DOCUMENT_FRAGMENT_NODE } = Node
+const { ELEMENT_NODE, DOCUMENT_FRAGMENT_NODE } = Node
 
 export default function renderIf(plan, stage) {
   const el = document.createDocumentFragment()
@@ -87,7 +87,7 @@ export default function renderIf(plan, stage) {
     } else {
       lastChild = el
 
-      if (elsePlan) {
+      if (elsePlan && el.nodeType === ELEMENT_NODE) {
         // prevent FOUC
         const restore = setTemp(el, { style: { display: "none" } })
         newStage.reactive.done().then(() => {

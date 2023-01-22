@@ -45,10 +45,8 @@ test("html", async (t) => {
   </div>
   <!--[if]-->
   <div class="ui-icon__label">
-    <div class="ui-icon__text">
-      <span class="ui-icon__name">script</span>
-      <span class="ui-icon__ext">\u200b.js</span>
-    </div>
+    <span class="ui-icon__name">script</span>
+    <span class="ui-icon__ext">\u200b.js</span>
   </div>
 </ui-icon>`
   )
