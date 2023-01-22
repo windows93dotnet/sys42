@@ -2,8 +2,6 @@ import DropzoneHint from "./DropzoneHint.js"
 import appendCSS from "../../../fabric/dom/appendCSS.js"
 import paint from "../../../fabric/type/promise/paint.js"
 
-const { parseInt, isNaN } = Number
-
 export class SlideDropzoneHint extends DropzoneHint {
   constructor(el, options) {
     super(el, { ...options })
@@ -159,10 +157,8 @@ export class SlideDropzoneHint extends DropzoneHint {
       marginRight = getComputedStyle(adopteds.at(-1).target).marginRight
     }
 
-    marginLeft = parseInt(marginLeft)
-    marginRight = parseInt(marginRight)
-    if (isNaN(marginLeft)) marginLeft = 0
-    if (isNaN(marginRight)) marginRight = 0
+    marginLeft = Number.parseInt(marginLeft, 10) | 0
+    marginRight = Number.parseInt(marginRight, 10) | 0
 
     n = this.newIndex + this.items.length
     const blankWidth =

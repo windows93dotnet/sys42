@@ -12,8 +12,6 @@ function copyElement(item, originDropzone) {
   return copy
 }
 
-const { parseInt, isNaN } = Number
-
 export class DropzoneHint {
   constructor(el, options) {
     this.el = el
@@ -32,10 +30,8 @@ export class DropzoneHint {
     this.freeAxis = this.config.freeAxis
 
     const styles = getComputedStyle(this.el)
-    this.columnGap = parseInt(styles.columnGap, 10)
-    this.rowGap = parseInt(styles.rowGap, 10)
-    if (isNaN(this.columnGap)) this.columnGap = 0
-    if (isNaN(this.rowGap)) this.rowGap = 0
+    this.columnGap = Number.parseInt(styles.columnGap, 10) | 0
+    this.rowGap = Number.parseInt(styles.rowGap, 10) | 0
 
     const halfColGap = this.columnGap / 2
     const halfRowGap = this.rowGap / 2
