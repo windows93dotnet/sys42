@@ -13,12 +13,14 @@ import HoverScroll from "../classes/HoverScroll.js"
 import setCursor from "../../fabric/dom/setCursor.js"
 import keyboard from "../../core/devices/keyboard.js"
 import listen from "../../fabric/event/listen.js"
+import arrify from "../../fabric/type/any/arrify.js"
 
 const DEFAULTS = {
   selector: ":scope > *",
   distance: 0,
   useSelection: true,
   handlerSelector: undefined,
+  accept: undefined,
 
   itemsConfig: "stack",
   dropzoneConfig: "slide",
@@ -94,14 +96,14 @@ async function makeHints({ itemsConfig, dropzoneConfig }, el) {
 
   if (itemsConfig) {
     undones.push(
-      import(`./transferable/${itemsConfig.name}ItemsHint.js`) //
+      import(`./transferable/${itemsConfig.type}ItemsHint.js`) //
         .then((m) => m.default(itemsConfig))
     )
   }
 
   if (dropzoneConfig) {
     undones.push(
-      import(`./transferable/${dropzoneConfig.name}DropzoneHint.js`) //
+      import(`./transferable/${dropzoneConfig.type}DropzoneHint.js`) //
         .then((m) => m.default(el, dropzoneConfig))
     )
   }
@@ -166,6 +168,39 @@ async function haltZones(x, y) {
   cleanHints()
 }
 
+function checkKind(accept) {
+  if (accept.kind.length > 0) {
+    for (const kind of accept.kind) {
+      if (system.transfer.items.kind.includes(kind)) return true
+    }
+
+    return false
+  }
+
+  return true
+}
+
+function checkAccept(dropzone) {
+  if (dropzone.isIframe) return true
+  const { accept } = dropzone.config
+
+  if (accept.element) {
+    if (accept.element === true) return checkKind(accept)
+
+    return (
+      system.transfer.items.every(
+        typeof accept.element === "function"
+          ? accept.element
+          : ({ target }) => target.matches(accept.element)
+      ) && checkKind(accept)
+    )
+  }
+
+  // TODO: add schema validation for item.data
+
+  return checkKind(accept)
+}
+
 function setCurrentZone(x, y) {
   const { zones } = system.transfer
 
@@ -188,7 +223,7 @@ function setCurrentZone(x, y) {
   }
 
   for (const dropzone of zones) {
-    if (inRect(point, dropzone)) {
+    if (inRect(point, dropzone) && checkAccept(dropzone.hint)) {
       system.transfer.currentZone = dropzone
       setEffect()
       system.transfer.currentZone.hint.enter(x, y)
@@ -453,33 +488,48 @@ class Transferable extends Trait {
     this.config = configure(options)
     this.config.selector = ensureScopeSelector(this.config.selector, this.el)
 
-    if (typeof this.config.itemsConfig === "string") {
-      this.config.itemsConfig = { name: this.config.itemsConfig }
+    const itemsConfig =
+      typeof this.config.itemsConfig === "string"
+        ? { type: this.config.itemsConfig }
+        : this.config.itemsConfig
+    const dropzoneConfig =
+      typeof this.config.dropzoneConfig === "string"
+        ? { type: this.config.dropzoneConfig }
+        : this.config.itemsConfig
+
+    if (typeof this.config.accept === "string") {
+      this.config.accept = { kind: this.config.accept }
     }
 
-    if (typeof this.config.dropzoneConfig === "string") {
-      this.config.dropzoneConfig = { name: this.config.dropzoneConfig }
+    this.config.kind ??= this.list ? "42_LIST_KIND" : undefined
+
+    dropzoneConfig.signal ??= this.cancel.signal
+    dropzoneConfig.selector ??= this.config.selector
+    dropzoneConfig.indexChange ??= this.config.indexChange
+    dropzoneConfig.list = this.list
+    dropzoneConfig.accept ??=
+      this.config.accept ?? (this.list ? { element: false } : { element: true })
+
+    if (dropzoneConfig.accept.element === "*") {
+      dropzoneConfig.accept.element = true
     }
 
-    this.config.dropzoneConfig.signal ??= this.cancel.signal
-    this.config.dropzoneConfig.selector ??= this.config.selector
-    this.config.dropzoneConfig.indexChange ??= this.config.indexChange
-    this.config.dropzoneConfig.list = this.list
+    dropzoneConfig.accept.kind ??= this.config.kind
+    dropzoneConfig.accept.kind = arrify(dropzoneConfig.accept.kind)
 
     const ms = this.config.animationSpeed
-    this.config.itemsConfig.startAnimation ??= { ms }
-    this.config.itemsConfig.revertAnimation ??= { ms }
-    this.config.itemsConfig.adoptAnimation ??= { ms }
+    itemsConfig.startAnimation ??= { ms }
+    itemsConfig.revertAnimation ??= { ms }
+    itemsConfig.adoptAnimation ??= { ms }
+    itemsConfig.kind ??= arrify(this.config.kind)
 
-    this.config.dropzoneConfig.animationSpeed = ms
+    dropzoneConfig.animationSpeed = ms
 
-    this.init()
+    this.init(itemsConfig, dropzoneConfig)
   }
 
-  async init() {
+  async init(itemsConfig, dropzoneConfig) {
     const { signal } = this.cancel
-
-    const { itemsConfig, dropzoneConfig } = this.config
 
     const { itemsHint, dropzoneHint } = await makeHints(
       { itemsConfig, dropzoneConfig },

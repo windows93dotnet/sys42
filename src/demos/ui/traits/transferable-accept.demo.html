@@ -36,25 +36,37 @@
 
   const demos = [
     {
-      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl.gap-xl.inset paper",
+      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa.gap.inset paper",
       selectable: {},
       transferable: {
-        accept: { elements: true },
+        accept: { element: ".bg-red-700" },
       },
-      content: colors.map((color, i) => ({
-        tag: `span.bd.pa-xl.font-mono.bg-opacity-50.bg-${color}-700`,
-        content: "a" + (i + 1),
+      content: makeArray(4, "c").map((content) => ({
+        tag: "span.bd.pa-lg.font-mono.bg-opacity-50.bg-red-700",
+        content,
       })),
     },
 
     {
-      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl.gap-xl.inset paper",
+      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa.gap.inset paper",
       selectable: {},
       transferable: {
-        accept: { elements: ".bg-red-700,.bg-blue-700" },
+        accept: { element: ".bg-blue-700" },
+      },
+      content: makeArray(4, "d").map((content) => ({
+        tag: "span.bd.pa-lg.font-mono.bg-opacity-50.bg-blue-700",
+        content,
+      })),
+    },
+
+    {
+      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa.gap.inset paper",
+      selectable: {},
+      transferable: {
+        accept: { element: ".bg-red-700,.bg-blue-700" },
       },
       content: makeArray(4, "b").map((content, i) => ({
-        tag: `span.bd.pa-xl.font-mono.bg-opacity-50.bg-${
+        tag: `span.bd.pa-lg.font-mono.bg-opacity-50.bg-${
           i > 1 ? "red" : "blue"
         }-700`,
         content,
@@ -62,32 +74,86 @@
     },
 
     {
-      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl.gap-xl.inset paper",
+      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa.gap.inset paper",
       selectable: {},
       transferable: {
-        accept: { elements: ".bg-red-700" },
+        accept: { element: true },
       },
-      content: makeArray(4, "c").map((content) => ({
-        tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-red-700",
+      content: colors.map((color, i) => ({
+        tag: `span.bd.pa-lg.font-mono.bg-opacity-50.bg-${color}-700`,
+        content: "a" + (i + 1),
+      })),
+    },
+
+    "---",
+
+    {
+      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa.gap.inset paper",
+      selectable: {},
+      transferable: {
+        kind: "foo",
+      },
+      content: makeArray(4, "foo ").map((content) => ({
+        tag: "span.pill.py-xs.font-mono.bg-opacity-50.bg-gray-900",
         content,
       })),
     },
 
     {
-      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl.gap-xl.inset paper",
+      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa.gap.inset paper",
       selectable: {},
       transferable: {
-        accept: { elements: ".bg-blue-700" },
+        kind: "bar",
       },
-      content: makeArray(4, "d").map((content) => ({
-        tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-blue-700",
+      content: makeArray(4, "bar ").map((content) => ({
+        tag: "span.pill.py-xs.font-mono.bg-opacity-50.bg-gray-200",
+        content,
+      })),
+    },
+
+    {
+      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa.gap.inset paper",
+      selectable: {},
+      transferable: {
+        kind: ["foo", "bar"],
+      },
+      content: makeArray(4, "xxx ").map((content) => ({
+        tag: "span.pill.py-xs.font-mono.bg-opacity-50.bg-gray-500",
+        content,
+      })),
+    },
+
+    {
+      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa.gap.inset paper",
+      selectable: {},
+      transferable: {
+        kind: ["foo", "bar"],
+        accept: { kind: "foo" },
+      },
+      content: makeArray(4, "xxx ").map((content) => ({
+        tag: "span.pill.py-xs.font-mono.bg-opacity-50.bg-gray-500",
+        content,
+      })),
+    },
+
+    {
+      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa.gap.inset paper",
+      selectable: {},
+      transferable: {
+        kind: "bar",
+        accept: "foo",
+      },
+      content: makeArray(4, "bar ").map((content) => ({
+        tag: "span.pill.py-xs.font-mono.bg-opacity-50.bg-gray-200",
         content,
       })),
     },
   ]
 
   for (let i = demos.length - 1; i >= 0; i--) {
-    demos.splice(i, 0, { tag: "ui-code", content: demos[i].transferable })
+    if (demos[i].transferable) {
+      demos.splice(i, 0, { tag: "ui-code", content: demos[i].transferable })
+    }
   }
 
   window.app = ui({
