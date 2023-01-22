@@ -360,7 +360,6 @@ if (inIframe) {
     .on("42_TF_v_REQUEST_EFFECT", async (keys) => {
       context.keys = keys
       await setEffect({ bypassEmit: true })
-      context.keys = undefined
       return system.transfer.effect
     })
     .on("42_TF_v_CLEANUP", () => {
@@ -374,8 +373,7 @@ if (inIframe) {
     })
     .on("42_TF_^_REQUEST_EFFECT", (keys) => {
       context.keys = keys
-      setEffect({ bypassEmit: true })
-      context.keys = undefined
+      setEffect()
     })
     .on(
       "42_TF_^_START",
