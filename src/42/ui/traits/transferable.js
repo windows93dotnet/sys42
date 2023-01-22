@@ -423,20 +423,22 @@ if (inIframe) {
         system.transfer.items.drag(coord)
       }
     })
-    .on("42_TF_^_STOP", ({ x, y }) => {
+    .on("42_TF_^_STOP", async ({ x, y }) => {
       if (context.parentX && system.transfer.items) {
+        x += context.parentX
+        y += context.parentY
+
         if (system.transfer.currentZone?.hint.isIframe) {
           if (system.transfer.effect === "move") {
             system.transfer.items.removeGhosts()
           }
         } else if (context.originIframeDropzone) {
-          context.originIframeDropzone.bus.emit("42_TF_v_REVERT", { x, y })
+          const { bus } = context.originIframeDropzone
+          await bus.send("42_TF_v_REVERT", { x, y })
         }
 
-        x += context.parentX
-        y += context.parentY
-        clear(context)
         haltZones(x, y)
+        clear(context)
       }
     })
 }
