@@ -1,20 +1,15 @@
 const { indexOf } = Array.prototype
-const { parseInt, isNaN } = Number
+const { parseInt } = Number
 const { round } = Math
 
 function addMargins(target, rect) {
   const { marginTop, marginBottom, marginLeft, marginRight } =
     getComputedStyle(target)
 
-  rect.marginTop = parseInt(marginTop, 10)
-  rect.marginBottom = parseInt(marginBottom, 10)
-  rect.marginLeft = parseInt(marginLeft, 10)
-  rect.marginRight = parseInt(marginRight, 10)
-
-  if (isNaN(rect.marginTop)) rect.marginTop = 0
-  if (isNaN(rect.marginBottom)) rect.marginBottom = 0
-  if (isNaN(rect.marginLeft)) rect.marginLeft = 0
-  if (isNaN(rect.marginRight)) rect.marginRight = 0
+  rect.marginTop = parseInt(marginTop, 10) | 0
+  rect.marginBottom = parseInt(marginBottom, 10) | 0
+  rect.marginLeft = parseInt(marginLeft, 10) | 0
+  rect.marginRight = parseInt(marginRight, 10) | 0
 }
 
 function roundSubpixels(rect) {
