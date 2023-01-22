@@ -21,7 +21,7 @@ const DEFAULTS = {
   handlerSelector: undefined,
 
   itemsConfig: "stack",
-  dropzoneConfig: "stack",
+  dropzoneConfig: "slide",
 
   animationSpeed: 180,
 }

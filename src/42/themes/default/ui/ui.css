@@ -85,3 +85,11 @@ ui-layout {
 }
 
 :where(ui-layout) { flex-grow: 1; }
+
+ui-code {
+  display: block;
+}
+
+.demos > ui-code + * {
+  margin-bottom: var(--unit-xl);
+}

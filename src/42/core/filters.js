@@ -125,6 +125,13 @@ types.any = {
   equal: "any/equal",
   stringify: "any/stringify",
   getType: "any/getType",
+  async highlight(...args) {
+    const [logAsHTML, highlight] = await Promise.all([
+      import("./console/logAsHTML.js").then((m) => m.default),
+      import("./console/formats/highlight.js").then((m) => m.default),
+    ])
+    this.el.replaceChildren(logAsHTML(highlight(...args)))
+  },
   async trace(...args) {
     const [logAsHTML, highlight, stringify] = await Promise.all([
       import("./console/logAsHTML.js").then((m) => m.default),

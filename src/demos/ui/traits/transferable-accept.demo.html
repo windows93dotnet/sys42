@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>transferable - accept</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/style.css" id="theme" />
+
+<!-- <script type="module">
+  import trap from "../../../42/fabric/type/error/trap.js"
+  trap()
+</script> -->
+
+<style>
+  .demos {
+    width: 100%;
+  }
+  .demo {
+    width: 100%;
+  }
+</style>
+
+<script type="module">
+  import ui from "../../../42/ui.js"
+  import "../../../42/ui/components/code.js"
+  import "../../../42/ui/components/tabs.js"
+
+  function makeArray(length, prefix = "") {
+    return Array.from({ length }).map((_, i) => prefix + (i + 1))
+  }
+
+  const colors = [
+    "red", //
+    "blue",
+    "pink",
+    "purple",
+  ]
+
+  const demos = [
+    {
+      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl.gap-xl.inset paper",
+      selectable: {},
+      transferable: {
+        accept: { elements: true },
+      },
+      content: colors.map((color, i) => ({
+        tag: `span.bd.pa-xl.font-mono.bg-opacity-50.bg-${color}-700`,
+        content: "a" + (i + 1),
+      })),
+    },
+
+    {
+      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl.gap-xl.inset paper",
+      selectable: {},
+      transferable: {
+        accept: { elements: ".bg-red-700,.bg-blue-700" },
+      },
+      content: makeArray(4, "b").map((content, i) => ({
+        tag: `span.bd.pa-xl.font-mono.bg-opacity-50.bg-${
+          i > 1 ? "red" : "blue"
+        }-700`,
+        content,
+      })),
+    },
+
+    {
+      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl.gap-xl.inset paper",
+      selectable: {},
+      transferable: {
+        accept: { elements: ".bg-red-700" },
+      },
+      content: makeArray(4, "c").map((content) => ({
+        tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-red-700",
+        content,
+      })),
+    },
+
+    {
+      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa-xl.gap-xl.inset paper",
+      selectable: {},
+      transferable: {
+        accept: { elements: ".bg-blue-700" },
+      },
+      content: makeArray(4, "d").map((content) => ({
+        tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-blue-700",
+        content,
+      })),
+    },
+  ]
+
+  for (let i = demos.length - 1; i >= 0; i--) {
+    demos.splice(i, 0, { tag: "ui-code", content: demos[i].transferable })
+  }
+
+  window.app = ui({
+    plugins: ["markdown"],
+    tag: "body.box-fit.box-v.pa",
+    content: [
+      "# Transferable",
+      {
+        tag: ".box-h.pa.gap",
+        content: [
+          {
+            tag: ".demos.outset.pa",
+            content: demos,
+          },
+          {
+            tag: "ui-sandbox",
+            permissions: "app",
+            content: {
+              tag: ".demos.box-fit.inset.pa.ground",
+              content: demos,
+            },
+          },
+        ],
+      },
+    ],
+  })
+</script>

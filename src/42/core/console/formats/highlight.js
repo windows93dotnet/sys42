@@ -32,8 +32,8 @@ const FUNCTION_PLACEHOLDER = `#FUNCTION_${42}`
 const REGEX_PLACEHOLDER_REGEX = new RegExp(`${REGEX_PLACEHOLDER}(\\d+)`, "g")
 const STRING_PLACEHOLDER_REGEX = new RegExp(`${STRING_PLACEHOLDER}(\\d+)`, "g")
 
-// Licence for regexes from prismjs
-//! Copyright (c) 2012 Lea Verou. MIT Licence.
+// regular expressions from prismjs
+//! Copyright (c) 2012 Lea Verou. MIT License.
 
 const KEYWORD_REGEX =
   /(^|[^.]|\.\.\.\s*)\b(as|async|await|break|case|class|const|continue|debugger|default|delete|do|else|enum|export|extends|for|from|function|(?:get|set)(?=\s*[\w$[\u00A0-\uFFFF])|if|implements|import|in|instanceof|interface|let|new|of|package|private|protected|public|return|static|super|switch|throw|try|typeof|var|void|while|with|yield)\b/g
@@ -52,38 +52,36 @@ const NUMBER_REGEX =
 const OPERATOR_REGEX =
   /[+-]{1,2}|!|<=?|>=?|={1,3}|&{1,2}|\|?\||\?|\*|\/|~|\^|%/g
 
-const makeList = () => ({ list: [], i: 0 })
+function isInObject(_, args, colors) {
+  const str = args[args.length - 1]
+  const pos = args[args.length - 2]
+  const slice = str.slice(pos + _.length)
+  return (
+    slice.startsWith(`{${colors.punctuation} :`) ||
+    slice.startsWith(`{${colors.punctuation} (`)
+  )
+}
+
+function toPlaintext(str, _string, _regex) {
+  str = str
+    .replace(STRING_PLACEHOLDER_REGEX, (_, i) => _string.list[i])
+    .replace(REGEX_PLACEHOLDER_REGEX, (_, i) => _regex.list[i])
+
+  return str
+}
 
 export default function highlight(js, options) {
   const config = configure(options)
 
   const { colors } = config
 
-  const _string = makeList()
-  const _regex = makeList()
-  const _comment = makeList()
-  const _number = makeList()
-  const _function = makeList()
+  let _string = { list: [], i: 0 }
+  let _regex = { list: [], i: 0 }
+  let _comment = { list: [], i: 0 }
+  let _number = { list: [], i: 0 }
+  let _function = { list: [], i: 0 }
 
-  function toPlaintext(str) {
-    str = str
-      .replace(STRING_PLACEHOLDER_REGEX, (_, i) => _string.list[i])
-      .replace(REGEX_PLACEHOLDER_REGEX, (_, i) => _regex.list[i])
-
-    return str
-  }
-
-  function isInObject(_, args) {
-    const str = args[args.length - 1]
-    const pos = args[args.length - 2]
-    const slice = str.slice(pos + _.length)
-    return (
-      slice.startsWith(`{${colors.punctuation} :`) ||
-      slice.startsWith(`{${colors.punctuation} (`)
-    )
-  }
-
-  return escapeLog(js)
+  const out = escapeLog(js)
     .replace(
       REGEX_REGEX,
       (_, a, b) => a + REGEX_PLACEHOLDER + (_regex.list.push(b) - 1)
@@ -122,39 +120,45 @@ export default function highlight(js, options) {
     )
     .replace(
       OPERATOR_REGEX, //
-      (_, ...args) => (isInObject(_, args) ? _ : `{${colors.operator} ${_}}`)
+      (_, ...args) =>
+        isInObject(_, args, colors) ? _ : `{${colors.operator} ${_}}`
     )
     .replace(
       /\btrue\b/g, //
-      (_, ...args) => (isInObject(_, args) ? _ : `{${colors.true} ${_}}`)
+      (_, ...args) =>
+        isInObject(_, args, colors) ? _ : `{${colors.true} ${_}}`
     )
     .replace(
       /\bfalse\b/g, //
-      (_, ...args) => (isInObject(_, args) ? _ : `{${colors.false} ${_}}`)
+      (_, ...args) =>
+        isInObject(_, args, colors) ? _ : `{${colors.false} ${_}}`
     )
     .replace(
       /((?:^|})\s*)(?:catch|finally)\b/, //
-      (_, ...args) => (isInObject(_, args) ? _ : `{${colors.keyword} ${_}}`)
+      (_, ...args) =>
+        isInObject(_, args, colors) ? _ : `{${colors.keyword} ${_}}`
     )
     .replace(
       KEYWORD_REGEX, //
       (_, ...args) =>
-        isInObject(_, args) ? _ : `${args[0]}{${colors.keyword} ${args[1]}}`
+        isInObject(_, args, colors)
+          ? _
+          : `${args[0]}{${colors.keyword} ${args[1]}}`
     )
     .replace(
       BUILTIN_REGEX, //
       (_, ...args) =>
-        isInObject(_, args) ? _ : `{${colors.builtin} ${args[0]}}`
+        isInObject(_, args, colors) ? _ : `{${colors.builtin} ${args[0]}}`
     )
     .replace(
       /\b(NaN|null|undefined|arguments|this)\b/g, //
       (_, ...args) =>
-        isInObject(_, args) ? _ : `{${colors.number} ${args[0]}}`
+        isInObject(_, args, colors) ? _ : `{${colors.number} ${args[0]}}`
     )
     .replace(
       /\b(console)\b/g, //
       (_, ...args) =>
-        isInObject(_, args) ? _ : `{${colors.console} ${args[0]}}`
+        isInObject(_, args, colors) ? _ : `{${colors.console} ${args[0]}}`
     )
 
     .replaceAll(
@@ -196,6 +200,25 @@ export default function highlight(js, options) {
     )
     .replaceAll(
       COMMENT_PLACEHOLDER,
-      () => `{${colors.comment} ${toPlaintext(_comment.list[_comment.i++])}}`
+      () =>
+        `{${colors.comment} ${toPlaintext(
+          _comment.list[_comment.i++],
+          _string,
+          _regex
+        )}}`
     )
+
+  _string.list.length = 0
+  _regex.list.length = 0
+  _comment.list.length = 0
+  _number.list.length = 0
+  _function.list.length = 0
+
+  _string = undefined
+  _regex = undefined
+  _comment = undefined
+  _number = undefined
+  _function = undefined
+
+  return out
 }
