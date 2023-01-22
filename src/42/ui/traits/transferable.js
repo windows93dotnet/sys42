@@ -89,32 +89,6 @@ system.transfer = {
   effect: undefined,
 }
 
-// import slideDropzoneHint from "./transferable/slideDropzoneHint.js"
-// import fadeDropzoneHint from "./transferable/fadeDropzoneHint.js"
-// import arrowDropzoneHint from "./transferable/arrowDropzoneHint.js"
-// import stackItemsHint from "./transferable/stackItemsHint.js"
-
-// const hints = {
-//   slide: slideDropzoneHint,
-//   fade: fadeDropzoneHint,
-//   arrow: arrowDropzoneHint,
-//   stack: stackItemsHint,
-// }
-
-// function makeHints({ itemsConfig, dropzoneConfig }, el) {
-//   const out = {}
-//   if (itemsConfig) {
-//     out.itemsHint = hints[itemsConfig.name](itemsConfig)
-//   }
-
-//   if (dropzoneConfig) {
-//     out.dropzoneHint = hints[dropzoneConfig.name](el, dropzoneConfig)
-//     if (out.itemsHint) out.itemsHint.dropzoneId = out.dropzoneHint.el.id
-//   }
-
-//   return out
-// }
-
 async function makeHints({ itemsConfig, dropzoneConfig }, el) {
   const undones = []
 
