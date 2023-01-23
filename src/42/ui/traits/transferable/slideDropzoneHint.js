@@ -11,16 +11,23 @@ export class SlideDropzoneHint extends DropzoneHint {
     super.activate(x, y)
 
     const [first] = this.items
-    this.blankWidth =
-      first.width + first.marginLeft + first.marginRight + this.columnGap
-    this.blank = `${this.blankWidth}px 0`
+
+    if (this.isVertical) {
+      const blank =
+        first.height + first.marginTop + first.marginBottom + this.rowGap
+      this.blank = `0 ${blank}px`
+    } else {
+      const blank =
+        first.width + first.marginLeft + first.marginRight + this.columnGap
+      this.blank = `${blank}px 0`
+    }
 
     const { signal } = this
     const cssOptions = { signal }
 
     this.css = {
       global: appendCSS(cssOptions),
-      enter: appendCSS(cssOptions),
+      blank: appendCSS(cssOptions),
       dragover: appendCSS(cssOptions),
       transition: appendCSS(cssOptions),
     }
@@ -61,12 +68,21 @@ export class SlideDropzoneHint extends DropzoneHint {
 
       for (const item of this.items) {
         if (item.target.id === rect.target.id) {
-          offset +=
-            item.width + item.marginLeft + item.marginRight + this.columnGap
           const i = rect.index + 1
+          let blank
+          if (this.isVertical) {
+            offset +=
+              item.height + item.marginTop + item.marginBottom + this.rowGap
+            blank = `0 ${offset}px`
+          } else {
+            offset +=
+              item.width + item.marginLeft + item.marginRight + this.columnGap
+            blank = `${offset}px 0`
+          }
+
           enterCss.push(`
             ${selector}:nth-child(n+${i}) {
-              translate: ${offset}px 0;
+              translate: ${blank};
             }`)
           rect.target.classList.add("hide")
           return false
@@ -83,10 +99,10 @@ export class SlideDropzoneHint extends DropzoneHint {
 
     // Animate empty holes
     // -------------------
-    this.css.enter.update(enterCss.join("\n"))
+    this.css.blank.update(enterCss.join("\n"))
     await paint()
     this.css.transition.enable()
-    this.css.enter.disable()
+    this.css.blank.disable()
 
     this.ignoreDragover = false
   }
@@ -128,12 +144,12 @@ export class SlideDropzoneHint extends DropzoneHint {
   revert() {
     super.revert()
     this.css.dragover.disable()
-    this.css.enter.enable()
+    this.css.blank.enable()
   }
 
   drop() {
     super.drop()
-    this.css.enter.disable()
+    this.css.blank.disable()
     this.css.dragover.disable()
     this.css.transition.disable()
   }
@@ -143,8 +159,8 @@ export class SlideDropzoneHint extends DropzoneHint {
 
     let n = this.newIndex + 1
 
-    this.css.enter.enable()
-    this.css.enter.update(`
+    this.css.blank.enable()
+    this.css.blank.update(`
       ${this.config.selector}:nth-child(n+${n}) {
         translate: ${this.blank};
       }`)
@@ -152,25 +168,48 @@ export class SlideDropzoneHint extends DropzoneHint {
     await paint()
     this.css.transition.enable()
 
-    let { marginLeft, marginRight } = getComputedStyle(adopteds.at(0).target)
-    if (adopteds.at(0) !== adopteds.at(-1)) {
-      marginRight = getComputedStyle(adopteds.at(-1).target).marginRight
+    n = this.newIndex + this.items.length
+
+    let blank
+    if (this.isVertical) {
+      let { marginTop, marginBottom } = getComputedStyle(adopteds.at(0).target)
+      if (adopteds.at(0) !== adopteds.at(-1)) {
+        marginBottom = getComputedStyle(adopteds.at(-1).target).marginBottom
+      }
+
+      marginTop = Number.parseInt(marginTop, 10) | 0
+      marginBottom = Number.parseInt(marginBottom, 10) | 0
+
+      const height =
+        this.columnGap +
+        marginTop +
+        marginBottom +
+        adopteds.at(-1).bottom -
+        adopteds.at(0).top
+
+      blank = `0 ${height}px`
+    } else {
+      let { marginLeft, marginRight } = getComputedStyle(adopteds.at(0).target)
+      if (adopteds.at(0) !== adopteds.at(-1)) {
+        marginRight = getComputedStyle(adopteds.at(-1).target).marginRight
+      }
+
+      marginLeft = Number.parseInt(marginLeft, 10) | 0
+      marginRight = Number.parseInt(marginRight, 10) | 0
+
+      const width =
+        this.columnGap +
+        marginLeft +
+        marginRight +
+        adopteds.at(-1).right -
+        adopteds.at(0).left
+
+      blank = `${width}px 0`
     }
 
-    marginLeft = Number.parseInt(marginLeft, 10) | 0
-    marginRight = Number.parseInt(marginRight, 10) | 0
-
-    n = this.newIndex + this.items.length
-    const blankWidth =
-      this.columnGap +
-      marginLeft +
-      marginRight +
-      adopteds.at(-1).right -
-      adopteds.at(0).left
-
-    this.css.enter.update(`
+    this.css.blank.update(`
       ${this.config.selector}:nth-child(n+${n}) {
-        translate: ${blankWidth}px;
+        translate: ${blank};
       }`)
   }
 }

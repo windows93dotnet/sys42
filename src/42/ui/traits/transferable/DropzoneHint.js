@@ -110,25 +110,36 @@ export class DropzoneHint {
     if (this.config.findNewIndex === false || !this.items?.length) return
     const [first] = this.items
 
-    x -= first.offsetX - first.width / 2
-    y -= first.offsetY - first.height / 2
-
-    const point = { x, y }
-
     this.newIndex = undefined
 
-    if (this.isHorizontal) {
+    if (this.isVertical) {
+      y -= first.offsetY - first.height / 2
       for (let i = 0, l = this.rects.length; i < l; i++) {
         const rect = this.rects[i]
         if (
-          point.x >= rect.left + this.gaps.left &&
-          point.x <= rect.right + this.gaps.right
+          y >= rect.top + this.gaps.top &&
+          y <= rect.bottom + this.gaps.bottom
+        ) {
+          this.newIndex = rect.index
+          break
+        }
+      }
+    } else if (this.isHorizontal) {
+      x -= first.offsetX - first.width / 2
+      for (let i = 0, l = this.rects.length; i < l; i++) {
+        const rect = this.rects[i]
+        if (
+          x >= rect.left + this.gaps.left &&
+          x <= rect.right + this.gaps.right
         ) {
           this.newIndex = rect.index
           break
         }
       }
     } else {
+      x -= first.offsetX - first.width / 2
+      y -= first.offsetY - first.height / 2
+      const point = { x, y }
       for (let i = 0, l = this.rects.length; i < l; i++) {
         const rect = this.rects[i]
         if (inRect(point, rect, this.gaps)) {
