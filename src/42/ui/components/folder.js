@@ -207,11 +207,14 @@ export class Folder extends Component {
         dropzone: "arrow",
         kind: "42_FILE",
         findNewIndex: false,
-        import({ items, effect }) {
-          console.log(effect)
+        import: ({ items, effect }) => {
+          const paths = []
           for (const item of items) {
-            console.log(item.path)
+            paths.push(item.target.path)
           }
+
+          if (effect === "copy") io.copyPath(paths, this.path)
+          else io.movePath(paths, this.path)
 
           return false
         },
