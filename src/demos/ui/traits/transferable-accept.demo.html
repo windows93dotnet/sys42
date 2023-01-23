@@ -9,6 +9,15 @@
   trap()
 </script>
 
+<script type="_module">
+  import ui from "../../../42/ui.js"
+  ui({
+    tag: "ui-code",
+    escapeTemplate: true,
+    content: "hello {{world}}",
+  })
+</script>
+
 <script type="module">
   import ui from "../../../42/ui.js"
   import "../../../42/ui/components/code.js"
@@ -27,6 +36,24 @@
   ]
 
   const demos = {}
+
+  demos.hints = [
+    {
+      // state: { listB: makeArray(4) },
+      scope: "/listB",
+      tag: ".demo.scroll-x-auto.flex-h.pa.gap.inset.paper",
+      // demoCode: "// orientation horizontal and freeAxis by default",
+      selectable: {},
+      transferable: {
+        list: "{{.}}",
+        dropzone: "slide",
+      },
+      each: {
+        tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-pink-200",
+        content: "{{.}}",
+      },
+    },
+  ]
 
   demos.orientation = [
     {
@@ -202,9 +229,17 @@
   for (const demo of Object.values(demos)) {
     for (let i = demo.length - 1; i >= 0; i--) {
       if (demo[i].demoCode) {
-        demo.splice(i, 0, { tag: "ui-code", content: demo[i].demoCode })
+        demo.splice(i, 0, {
+          tag: "ui-code",
+          escapeTemplate: true,
+          content: demo[i].demoCode,
+        })
       } else if (demo[i].transferable) {
-        demo.splice(i, 0, { tag: "ui-code", content: demo[i].transferable })
+        demo.splice(i, 0, {
+          tag: "ui-code",
+          escapeTemplate: true,
+          content: demo[i].transferable,
+        })
       }
     }
   }
@@ -221,6 +256,27 @@
         maxHeight: "900px",
       },
       items: [
+        {
+          label: "Hints",
+          content: {
+            tag: ".item-spread.box-h.gap-sm",
+            content: [
+              {
+                tag: "section.demos.item-spread.scroll-auto.inset.pa",
+                content: demos.hints,
+              },
+              // {
+              //   tag: "ui-sandbox",
+              //   permissions: "app",
+              //   content: {
+              //     tag: "section.demos.item-spread.box-fit.scroll-auto.inset.pa.ground",
+              //     content: demos.hints,
+              //   },
+              // },
+            ],
+          },
+        },
+
         {
           label: "Orientation",
           content: {
@@ -264,5 +320,7 @@
         },
       ],
     },
+
+    state: { listB: makeArray(4) },
   })
 </script>
