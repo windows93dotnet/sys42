@@ -99,7 +99,7 @@
           selection: ["3", "4"],
         },
         transferable: {
-          dropzoneConfig: "arrow",
+          dropzone: "arrow",
         },
         content: makeArray(4).map((content) => ({
           tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-green-200",
@@ -111,7 +111,7 @@
         id: "fade2" + suffix,
         selectable: true,
         transferable: {
-          dropzoneConfig: "arrow",
+          dropzone: "arrow",
         },
         content: makeArray(4, "1").map((content) => ({
           tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-green-400",
@@ -126,7 +126,7 @@
         id: "slide1" + suffix,
         selectable: true,
         transferable: {
-          dropzoneConfig: "slide",
+          dropzone: "slide",
         },
         content: makeArray(4).map((content) => ({
           tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-green-200",
@@ -140,7 +140,7 @@
           selection: ["12", "14", "16"],
         },
         transferable: {
-          dropzoneConfig: "slide",
+          dropzone: "slide",
         },
         content: makeArray(7, "1").map((content) => ({
           tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-green-400",
@@ -155,7 +155,7 @@
         aria: { orientation: "horizontal" },
         transferable: {
           list: "{{.}}",
-          dropzoneConfig: "arrow",
+          dropzone: "arrow",
         },
         each: {
           tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-gray-200",
@@ -171,7 +171,7 @@
         },
         transferable: {
           list: "{{.}}",
-          dropzoneConfig: "slide",
+          dropzone: "slide",
         },
         each: {
           tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-pink-200",

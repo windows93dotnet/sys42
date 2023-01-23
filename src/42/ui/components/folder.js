@@ -204,7 +204,7 @@ export class Folder extends Component {
       items: "{{getItems(path)}}",
       transferable: {
         selector: ":scope ui-icon",
-        dropzoneConfig: "fade",
+        dropzone: "fade",
         // import({ data, effect, index }) {
         //   console.log(data, effect, index)
         // },

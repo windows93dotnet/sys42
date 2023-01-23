@@ -18,6 +18,7 @@ export class DropzoneHint {
     this.rects = []
 
     this.config = { ...options }
+
     this.config.orientation ??= this.el.getAttribute("aria-orientation")
 
     if (!this.config.orientation) {
