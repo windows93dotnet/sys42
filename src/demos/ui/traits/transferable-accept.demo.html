@@ -28,36 +28,40 @@
 
   const demos = {}
 
-  demos.hints = [
+  demos.list = [
     {
       demoBefore: "// using 'list', tranferable can change the state\n",
 
-      // state: { listB: makeArray(4) },
-      scope: "/listB",
+      scope: "/",
       tag: ".demo.scroll-x-auto.flex-h.pa.gap.inset.paper",
       selectable: {},
       transferable: {
-        list: "{{.}}",
+        list: "{{listA}}",
       },
-      each: {
-        tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-pink-200",
-        content: "{{.}}",
+      content: {
+        scope: "listA",
+        each: {
+          tag: "span.bd.pa-lg.font-mono..bg-opacity-50.bg-pink-200",
+          content: "{{.}}",
+        },
       },
     },
 
-    // {
-    //   // state: { listB: makeArray(4) },
-    //   scope: "/listB",
-    //   tag: ".demo.scroll-x-auto.flex-h.pa.gap.inset.paper",
-    //   selectable: {},
-    //   transferable: {
-    //     list: "{{.}}",
-    //   },
-    //   each: {
-    //     tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-pink-200",
-    //     content: "{{.}}",
-    //   },
-    // },
+    {
+      scope: "/",
+      tag: ".demo.scroll-x-auto.flex-h.pa.gap.inset.paper",
+      selectable: {},
+      transferable: {
+        list: "{{listB}}",
+      },
+      content: {
+        scope: "listB",
+        each: {
+          tag: "span.bd.pa-lg.font-mono..bg-opacity-50.bg-purple-200",
+          content: "{{.}}",
+        },
+      },
+    },
   ]
 
   demos.orientation = [
@@ -267,20 +271,20 @@
       },
       items: [
         {
-          label: "Hints",
+          label: "List",
           content: {
             tag: ".item-spread.box-h.gap-sm",
             content: [
               {
                 tag: "section.demos.item-spread.scroll-auto.inset.pa",
-                content: demos.hints,
+                content: demos.list,
               },
               {
                 tag: "ui-sandbox",
                 permissions: "app",
                 content: {
                   tag: "section.demos.item-spread.box-fit.scroll-auto.inset.pa.ground",
-                  content: demos.hints,
+                  content: demos.list,
                 },
               },
             ],
@@ -331,6 +335,9 @@
       ],
     },
 
-    state: { listB: makeArray(4) },
+    state: {
+      listA: makeArray(4, "a"),
+      listB: makeArray(4, "b"),
+    },
   })
 </script>
