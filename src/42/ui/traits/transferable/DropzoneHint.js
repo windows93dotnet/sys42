@@ -87,7 +87,7 @@ export class DropzoneHint {
   }
 
   halt() {
-    this.cancel()
+    this.cancel?.()
     this.el.classList.remove("dragover")
 
     if (this.isOriginDropzone) {
@@ -96,7 +96,9 @@ export class DropzoneHint {
       }
     }
 
-    for (const { target } of this.items) this.reviveTarget(target)
+    if (this.items?.length > 0) {
+      for (const { target } of this.items) this.reviveTarget(target)
+    }
 
     this.rects.length = 0
     this.newIndex = undefined

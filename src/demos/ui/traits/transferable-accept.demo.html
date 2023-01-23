@@ -62,9 +62,20 @@
 
     {
       tag: ".demo.scroll-y.flex-v.pa.gap.inset.paper",
-      style: { height: "200px" },
+      style: { height: "160px" },
       selectable: {},
       transferable: { orientation: "vertical" },
+      content: makeArray(4).map((content) => ({
+        tag: `span.bd.pa-y-sm.pa-x.font-mono`,
+        content,
+      })),
+    },
+
+    {
+      tag: ".demo.scroll-y.flex-v.pa.gap.inset.paper",
+      style: { height: "160px" },
+      selectable: {},
+      transferable: { orientation: "vertical", dropzone: "arrow" },
       content: makeArray(4).map((content) => ({
         tag: `span.bd.pa-y-sm.pa-x.font-mono`,
         content,

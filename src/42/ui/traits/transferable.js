@@ -344,8 +344,13 @@ class IframeDropzoneHint {
   }
 
   async drop(x, y) {
-    if (system.transfer.effect !== "none") system.transfer.items.removeGhosts()
-    if (system.transfer.effect === "move") system.transfer.items.hideTargets()
+    const { effect, items } = system.transfer
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (effect !== "none") items.removeGhosts()
+        if (effect === "move") items.hideTargets()
+      })
+    })
     await this.bus.send("42_TF_v_DROP", this.#substractCoord(x, y))
   }
 
