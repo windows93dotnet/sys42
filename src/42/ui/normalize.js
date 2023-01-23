@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 /* eslint-disable max-depth */
 import Reactive from "./classes/Reactive.js"
 import resolveScope from "./resolveScope.js"
@@ -293,7 +292,7 @@ export function normalizeString(item, stage) {
     return item
   }
 
-  return item
+  return parsed.strings.join()
 }
 
 function normalizeObject(item, stage) {
@@ -759,9 +758,8 @@ export function normalizePlan(plan = {}, stage, options) {
     plan = String(plan)
     stage.type = "string"
   } else if (stage.type === "string") {
-    const fn = normalizeString(plan, stage)
-    stage.type = typeof fn
-    if (stage.type === "function") plan = fn
+    plan = normalizeString(plan, stage)
+    stage.type = typeof plan
   } else if (stage.type === "object") {
     const { initiator } = plan
     plan = ensurePlan(plan, stage)
