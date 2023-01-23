@@ -6,9 +6,9 @@ import logAsContent from "../../core/console/logAsContent.js"
 const OPEN = `#OPEN_TEMPLATE_${42}`
 const CLOSE = `#CLOSE_TEMPLATE_${42}`
 
-export class Code extends Component {
+export class CodeDemo extends Component {
   static plan = {
-    tag: "ui-code",
+    tag: "ui-code-demo",
     role: "none",
 
     props: {
@@ -16,11 +16,15 @@ export class Code extends Component {
         type: "any",
       },
       escapeTemplate: false,
+      beforeCode: "",
+      afterCode: "",
     },
   }
 
-  render({ content, escapeTemplate }) {
+  render({ content, escapeTemplate, beforeCode = "", afterCode = "" }) {
     content = typeof content === "string" ? content : stringify.line(content)
+
+    content = beforeCode + content + afterCode
 
     content = content
       .replaceAll(`{${"{"}`, OPEN) //
@@ -46,4 +50,4 @@ export class Code extends Component {
   }
 }
 
-Component.define(Code)
+Component.define(CodeDemo)
