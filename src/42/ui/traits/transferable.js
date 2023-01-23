@@ -22,6 +22,7 @@ const DEFAULTS = {
   useSelection: true,
   handlerSelector: undefined,
   accept: undefined,
+  findNewIndex: true,
 
   items: "stack",
   dropzone: "slide",
@@ -202,6 +203,15 @@ function checkAccept(dropzone) {
   return checkKind(accept)
 }
 
+function dragoverZone(x, y) {
+  if (system.transfer.currentZone.hint?.config?.findNewIndex === false) return
+  system.transfer.currentZone.hoverScroll?.update({ x, y }, async () => {
+    await system.transfer.currentZone?.hint.scan()
+    system.transfer.currentZone?.hint.dragover(x, y)
+  })
+  system.transfer.currentZone.hint.dragover(x, y)
+}
+
 function setCurrentZone(x, y) {
   const { zones } = system.transfer
 
@@ -209,11 +219,7 @@ function setCurrentZone(x, y) {
 
   if (system.transfer.currentZone) {
     if (inRect(point, system.transfer.currentZone)) {
-      system.transfer.currentZone.hoverScroll?.update({ x, y }, async () => {
-        await system.transfer.currentZone?.hint.scan()
-        system.transfer.currentZone?.hint.dragover(x, y)
-      })
-      system.transfer.currentZone.hint.dragover(x, y)
+      dragoverZone(x, y)
       return
     }
 
@@ -228,11 +234,7 @@ function setCurrentZone(x, y) {
       system.transfer.currentZone = dropzone
       setEffect()
       system.transfer.currentZone.hint.enter(x, y)
-      system.transfer.currentZone.hoverScroll?.update({ x, y }, async () => {
-        await system.transfer.currentZone?.hint.scan()
-        system.transfer.currentZone?.hint.dragover(x, y)
-      })
-      system.transfer.currentZone.hint.dragover(x, y)
+      dragoverZone(x, y)
       return
     }
   }
@@ -514,6 +516,8 @@ class Transferable extends Trait {
     dropzoneConfig.orientation ??= this.config.orientation
     dropzoneConfig.freeAxis ??= this.config.freeAxis
     dropzoneConfig.indexChange ??= this.config.indexChange
+    dropzoneConfig.findNewIndex ??= this.config.findNewIndex
+    dropzoneConfig.import ??= this.config.import
     dropzoneConfig.list = this.list
     dropzoneConfig.accept ??=
       this.config.accept ?? (this.list ? { element: false } : { element: true })

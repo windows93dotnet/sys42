@@ -35,8 +35,8 @@ export class ArrowDropzoneHint extends DropzoneHint {
     arrow.remove()
   }
 
-  drop() {
-    super.drop()
+  async drop() {
+    await super.drop()
     arrow.remove()
   }
 
