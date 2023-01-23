@@ -29,7 +29,7 @@ export function progress(total, options) {
         content: [
           { tag: "progress", max: 100, id, value: "{{value}}" },
           {
-            tag: "div.font-mono.pt-sm",
+            tag: "div.font-mono.pa-t-sm",
             aria: { live: "off" },
             content: "{{description}}",
           },

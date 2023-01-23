@@ -37,7 +37,7 @@ export async function alert(message = "", options = {}) {
             op: "add",
             path: "/0",
             value: {
-              tag: "samp.pa.mt-0.inset.code",
+              tag: "samp.pa.ma-t-0.inset.code",
               role: "status",
               aria: { labelledby: btnId },
               class: { hide: options.collapsed !== false },

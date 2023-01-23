@@ -76,14 +76,14 @@ globalThis.app = ui({
       {
         tag: "ui-layout",
         content: [
-          { tag: "header.px-sm.inset-shallow", content: "header" },
+          { tag: "header.pa-x-sm.inset-shallow", content: "header" },
           [
-            // { tag: "aside.px-sm", content: "sidebar" },
+            // { tag: "aside.pa-x-sm", content: "sidebar" },
             { tag: "ui-tree.inset.paper", items },
             { tag: "ui-tabs.inset.ground", transferable: true, items },
             { tag: "ui-accordion.inset.paper", items },
           ],
-          { tag: "footer.px-sm.inset-shallow", content: "footer" },
+          { tag: "footer.pa-x-sm.inset-shallow", content: "footer" },
         ],
       },
     ],

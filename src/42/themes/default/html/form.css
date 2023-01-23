@@ -25,9 +25,9 @@ States
   /* all controls
   =============== */
 
-  --ctrl-px: var(--unit-sm);
-  --ctrl-py: var(--unit-xs);
-  --ctrl-picto-px: var(--unit-xs);
+  --ctrl-pa-x: var(--unit-sm);
+  --ctrl-pa-y: var(--unit-xs);
+  --ctrl-picto-pa-x: var(--unit-xs);
   --ctrl-lh: var(--lh);
   --ctrl-fs: var(--fs);
 
@@ -36,7 +36,7 @@ States
   --ctrl-h:
     calc(
       calc(var(--ctrl-lh) * var(--ctrl-fs)) +
-      calc(2 * var(--ctrl-py)) +
+      calc(2 * var(--ctrl-pa-y)) +
       calc(2 * var(--ctrl-bdw))
     );
   --ctrl-w: 25ch;
@@ -97,7 +97,7 @@ States
   --btn-br: 0px;
   --btn-o: var(--ctrl-o);
   --btn-oo: var(--ctrl-oo);
-  --btn-pa: var(--ctrl-py) var(--ctrl-px);
+  --btn-pa: var(--ctrl-pa-y) var(--ctrl-pa-x);
 
   --btn🎯-fg: var(--ctrl🎯-fg, var(--btn-fg));
   --btn🎯-bg: var(--ctrl🎯-bg, var(--btn-bg));
@@ -212,8 +212,8 @@ States
 
   --label__required-fg: rgb(var(--red-400));
 
-  --fieldset-mx: var(--unit-md);
-  --fieldset-my: var(--unit-md);
+  --fieldset-ma-x: var(--unit-md);
+  --fieldset-ma-y: var(--unit-md);
   --fieldset-bdw: var(--separator-bdw);
   --fieldset-bds: var(--separator-bds);
   --fieldset-bdc: var(--separator-bdc);
@@ -305,7 +305,7 @@ button
   min-width: 3ch;
   max-width: 100%;
 
-  padding: var(--ctrl-py) var(--ctrl-px);
+  padding: var(--ctrl-pa-y) var(--ctrl-pa-x);
 }
 
 legend:not(.label) {
@@ -323,14 +323,14 @@ legend:not(.label) {
   /* increase fieldset top margin if legend is present */
   position: relative;
   border: 0 solid transparent;
-  --legend-mt: var(--unit-xs);
-  border-top-width: var(--legend-mt);
-  transform: translateY(calc(-0.5 * var(--legend-mt)));
-  margin-bottom: calc(-0.5 * var(--legend-mt));
+  --legend-ma-t: var(--unit-xs);
+  border-top-width: var(--legend-ma-t);
+  transform: translateY(calc(-0.5 * var(--legend-ma-t)));
+  margin-bottom: calc(-0.5 * var(--legend-ma-t));
 }
 
 fieldset + fieldset > legend:not(.label) {
-  --legend-mt: var(--unit-xl);
+  --legend-ma-t: var(--unit-xl);
 }
 
 legend:not(.label)::before {
@@ -560,7 +560,7 @@ button,
   align-items: center;
   position: relative;
   background-clip: padding-box;
-  --gap: var(--ctrl-px);
+  --gap: var(--ctrl-pa-x);
   gap: var(--gap);
 }
 
@@ -633,16 +633,16 @@ textarea
 .field :where(.button,button) {
   line-height: 0;
   align-self: stretch;
-  margin-top: calc(-1 * var(--ctrl-py));
-  margin-bottom: calc(-1 * var(--ctrl-py));
+  margin-top: calc(-1 * var(--ctrl-pa-y));
+  margin-bottom: calc(-1 * var(--ctrl-pa-y));
 }
 
 .field :where(.button,button):last-child {
-  margin-right: calc(-1 * var(--ctrl-px));
+  margin-right: calc(-1 * var(--ctrl-pa-x));
 }
 
 .field :where(.button,button):first-child {
-  margin-left: calc(-1 * var(--ctrl-px));
+  margin-left: calc(-1 * var(--ctrl-pa-x));
 }
 
 /* button
@@ -922,8 +922,8 @@ select:is([multiple],[size]) optgroup::before {
   font-style: normal;
   font-weight: bold;
   display: block;
-  padding: var(--ctrl-py) var(--ctrl-px);
-  padding-bottom: calc(var(--ctrl-py) - 1px);
+  padding: var(--ctrl-pa-y) var(--ctrl-pa-x);
+  padding-bottom: calc(var(--ctrl-pa-y) - 1px);
 }
 
 @-moz-document url-prefix("") {
@@ -949,7 +949,7 @@ selectmenu::part(button) {
   background: transparent;
   color: inherit;
   font: inherit;
-  padding: var(--ctrl-py) var(--ctrl-px);
+  padding: var(--ctrl-pa-y) var(--ctrl-pa-x);
   padding-right: 0;
 }
 
@@ -1163,7 +1163,7 @@ fieldset:is([role="none"],.unstyled):not(.field) {
 }
 
 fieldset:not([role="none"],.unstyled) {
-  padding: var(--fieldset-my) var(--fieldset-mx);
+  padding: var(--fieldset-ma-y) var(--fieldset-ma-x);
   border-width: var(--fieldset-bdw);
   border-style: var(--fieldset-bds, solid);
   border-color: var(--fieldset-bdc);
@@ -1172,7 +1172,7 @@ fieldset:not([role="none"],.unstyled) {
 }
 
 fieldset:not([role="none"],.unstyled) > fieldset + fieldset {
-  margin-top: var(--fieldset-my);
+  margin-top: var(--fieldset-ma-y);
 }
 
 /* fieldset:not([role="none"],.unstyled) > :where(
@@ -1278,9 +1278,9 @@ input::-webkit-datetime-edit-fields-wrapper
 
 .has-picto--only-child::after {
   content: var(--ZERO_WIDTH_SPACE);
-  margin-inline-start: calc(-1 * var(--ctrl-px));
+  margin-inline-start: calc(-1 * var(--ctrl-pa-x));
 }
 
 .has-picto > ui-picto {
-  margin-block: calc(-1 * var(--ctrl-py));
+  margin-block: calc(-1 * var(--ctrl-pa-y));
 }
