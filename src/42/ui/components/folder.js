@@ -204,12 +204,20 @@ export class Folder extends Component {
       items: "{{getItems(path)}}",
       transferable: {
         selector: ":scope ui-icon",
-        dropzone: "fade",
-        // import({ data, effect, index }) {
-        //   console.log(data, effect, index)
-        // },
+        dropzone: "arrow",
+        kind: "42_FILE",
+        findNewIndex: false,
+        import({ items, effect }) {
+          console.log(effect)
+          for (const item of items) {
+            console.log(item.path)
+          }
+
+          return false
+        },
       },
     }
+
     return [
       {
         if: "{{view === 'tree'}}",

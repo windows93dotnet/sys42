@@ -147,8 +147,8 @@ export class SlideDropzoneHint extends DropzoneHint {
     this.css.blank.enable()
   }
 
-  drop() {
-    super.drop()
+  async drop() {
+    await super.drop()
     this.css.blank.disable()
     this.css.dragover.disable()
     this.css.transition.disable()

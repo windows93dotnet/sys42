@@ -70,6 +70,7 @@ export class DropzoneHint {
   activate(x, y) {
     this.items = system.transfer.items
     this.isOriginDropzone = this.items.dropzoneId === this.el.id
+    this.customImport = false
 
     this.cancel = new Canceller(this.config.signal)
     this.signal = this.cancel.signal
@@ -90,7 +91,7 @@ export class DropzoneHint {
     this.cancel?.()
     this.el.classList.remove("dragover")
 
-    if (this.isOriginDropzone) {
+    if (this.isOriginDropzone && this.customImport !== true) {
       if (system.transfer.effect === "move") {
         this.removeItems()
       }
@@ -109,7 +110,7 @@ export class DropzoneHint {
   }
 
   dragover(x, y) {
-    if (this.config.findNewIndex === false || !this.items?.length) return
+    if (!this.items?.length) return
     const [first] = this.items
 
     this.newIndex = undefined
@@ -180,16 +181,35 @@ export class DropzoneHint {
     }
   }
 
-  drop() {
+  async drop() {
     this.el.classList.remove("dragover")
 
     const { effect } = system.transfer
-    const { selector, list } = this.config
-    const droppeds = list ? [] : document.createDocumentFragment()
 
     const originDropzone = this.isOriginDropzone
       ? this
       : this.items.originDropzone
+
+    if (this.config.import) {
+      const res = await this.config.import(
+        {
+          items: system.transfer.items,
+          effect: system.transfer.effect,
+          kind: system.transfer.items.kind,
+          index: this.newIndex,
+        },
+        system.transfer
+      )
+
+      if (res === false) {
+        originDropzone.customImport = true
+        this.customImport = true
+        return
+      }
+    }
+
+    const { selector, list } = this.config
+    const droppeds = list ? [] : document.createDocumentFragment()
 
     const isMove = effect === "move"
     const isCopy = effect === "copy"
