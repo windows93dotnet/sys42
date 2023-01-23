@@ -164,6 +164,7 @@ export class Sandbox extends Component {
       })
       await Promise.all(undones)
       const content = forkPlan(this.content, this.stage)
+      content.scopeChain = []
       content.plugins ??= []
       if (!content.plugins.includes("ipc")) content.plugins.push("ipc")
 
