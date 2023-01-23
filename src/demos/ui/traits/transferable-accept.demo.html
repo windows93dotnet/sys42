@@ -9,23 +9,14 @@
   trap()
 </script>
 
-<script type="_module">
-  import ui from "../../../42/ui.js"
-  ui({
-    tag: "ui-code",
-    escapeTemplate: true,
-    content: "hello {{world}}",
-  })
-</script>
-
 <script type="module">
   import ui from "../../../42/ui.js"
-  import "../../../42/ui/components/code.js"
+  import "../../../42/ui/components/code-demo.js"
   import "../../../42/ui/components/tabs.js"
   import "../../../42/ui/components/sandbox.js"
 
-  function makeArray(length, prefix = "") {
-    return Array.from({ length }).map((_, i) => prefix + (i + 1))
+  function makeArray(length, before = "") {
+    return Array.from({ length }).map((_, i) => before + (i + 1))
   }
 
   const colors = [
@@ -39,26 +30,41 @@
 
   demos.hints = [
     {
+      demoBefore: "// using 'list', tranferable can change the state\n",
+
       // state: { listB: makeArray(4) },
       scope: "/listB",
       tag: ".demo.scroll-x-auto.flex-h.pa.gap.inset.paper",
-      // demoCode: "// orientation horizontal and freeAxis by default",
       selectable: {},
       transferable: {
         list: "{{.}}",
-        dropzone: "slide",
       },
       each: {
         tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-pink-200",
         content: "{{.}}",
       },
     },
+
+    // {
+    //   // state: { listB: makeArray(4) },
+    //   scope: "/listB",
+    //   tag: ".demo.scroll-x-auto.flex-h.pa.gap.inset.paper",
+    //   selectable: {},
+    //   transferable: {
+    //     list: "{{.}}",
+    //   },
+    //   each: {
+    //     tag: "span.bd.pa-xl.font-mono.bg-opacity-50.bg-pink-200",
+    //     content: "{{.}}",
+    //   },
+    // },
   ]
 
   demos.orientation = [
     {
+      demoCode: "// 'orientation' horizontal and 'freeAxis' by default",
+
       tag: ".demo.scroll-x-auto.flex-h.pa.gap.inset.paper",
-      demoCode: "// orientation horizontal and freeAxis by default",
       selectable: {},
       transferable: {},
       content: makeArray(4).map((content) => ({
@@ -230,14 +236,18 @@
     for (let i = demo.length - 1; i >= 0; i--) {
       if (demo[i].demoCode) {
         demo.splice(i, 0, {
-          tag: "ui-code",
+          tag: "ui-code-demo",
           escapeTemplate: true,
+          beforeCode: demo[i].demoBefore,
+          afterCode: demo[i].demoAfter,
           content: demo[i].demoCode,
         })
       } else if (demo[i].transferable) {
         demo.splice(i, 0, {
-          tag: "ui-code",
+          tag: "ui-code-demo",
           escapeTemplate: true,
+          beforeCode: demo[i].demoBefore,
+          afterCode: demo[i].demoAfter,
           content: demo[i].transferable,
         })
       }
@@ -265,14 +275,14 @@
                 tag: "section.demos.item-spread.scroll-auto.inset.pa",
                 content: demos.hints,
               },
-              // {
-              //   tag: "ui-sandbox",
-              //   permissions: "app",
-              //   content: {
-              //     tag: "section.demos.item-spread.box-fit.scroll-auto.inset.pa.ground",
-              //     content: demos.hints,
-              //   },
-              // },
+              {
+                tag: "ui-sandbox",
+                permissions: "app",
+                content: {
+                  tag: "section.demos.item-spread.box-fit.scroll-auto.inset.pa.ground",
+                  content: demos.hints,
+                },
+              },
             ],
           },
         },

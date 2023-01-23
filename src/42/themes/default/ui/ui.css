@@ -86,10 +86,10 @@ ui-layout {
 
 :where(ui-layout) { flex-grow: 1; }
 
-ui-code {
+ui-code-demo {
   display: block;
 }
 
-.demos > ui-code + *:not(:last-child) {
+.demos > ui-code-demo + *:not(:last-child) {
   margin-bottom: var(--unit-xl);
 }
