@@ -40,6 +40,9 @@ const renameFolder = async (...args) =>
 const movePath = async (...args) =>
   import("./os/io/movePath.js").then((m) => m.default(...args))
 
+const copyPath = async (...args) =>
+  import("./os/io/copyPath.js").then((m) => m.default(...args))
+
 createFile.meta = {
   label: "Create File…",
 }
@@ -105,6 +108,7 @@ export default Object.assign(io, {
   renameFile,
   renameFolder,
   movePath,
+  copyPath,
 
   fileContextMenu,
   folderContextMenu,
