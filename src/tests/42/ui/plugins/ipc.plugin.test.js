@@ -10,7 +10,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
         tag: ".box-fit.box-v",
         content: [
           {
-            tag: ".bb",
+            tag: ".bd-b",
             content: [
               { tag: "h2", content: "Top" },
               {
@@ -39,7 +39,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
 
           {
             content: {
-              tag: "ui-sandbox#sandbox1.bb",
+              tag: "ui-sandbox#sandbox1.bd-b",
               permissions: "trusted",
               content: [
                 { tag: "h2", content: "Sandbox 1" },
@@ -70,7 +70,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
 
           {
             content: {
-              tag: "ui-sandbox#sandbox2.bb",
+              tag: "ui-sandbox#sandbox2.bd-b",
               permissions: "trusted",
               content: [
                 { tag: "h2", content: "Sandbox 2" },

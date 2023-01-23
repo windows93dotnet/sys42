@@ -30,11 +30,11 @@
       },
     },
     {
-      tag: "footer.d-flex.gap.mt-xs.pl-sm.inset-shallow",
+      tag: "footer.d-flex.gap.ma-t-xs.pa-l-sm.inset-shallow",
       content: [
         { tag: "checkbox", bind: "pixelated" },
         {
-          tag: ".solid.ml-auto",
+          tag: ".solid.ma-l-auto",
           content: "{{width}}x{{height}}",
         },
         {

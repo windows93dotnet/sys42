@@ -24,7 +24,7 @@ export default async function createPath(path = "/", options) {
     label: options?.folder ? "Create Folder" : "Create File",
     value,
     afterfield: {
-      tag: ".message.my-sm",
+      tag: ".message.ma-y-sm",
       role: "status",
       aria: { live: "polite" },
       content: "{{message}}",

@@ -116,7 +116,7 @@ input[type="number" i]::-webkit-inner-spin-button {
   background-image: var(--input-number-up-picto), var(--input-number-down-picto);
   background-position-x: center;
   background-repeat: no-repeat;
-  --_y: calc(2px + 0.7 * var(--ctrl-py));
+  --_y: calc(2px + 0.7 * var(--ctrl-pa-y));
   background-position-y: calc(50% - var(--_y)), calc(50% + var(--_y));
 }
 

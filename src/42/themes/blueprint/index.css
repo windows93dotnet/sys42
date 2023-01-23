@@ -41,10 +41,10 @@
 
   --btn☑️👇-bg: rgba(0 0 0 / 0.3);
 
-  --fieldset-my: var(--unit-md);
-  --fieldset-mx: var(--unit-md);
-  --ctrl-px: var(--unit-md);
-  --ctrl-py: calc(0.6 * var(--unit));
+  --fieldset-ma-y: var(--unit-md);
+  --fieldset-ma-x: var(--unit-md);
+  --ctrl-pa-x: var(--unit-md);
+  --ctrl-pa-y: calc(0.6 * var(--unit));
 
   --outset-bd: none;
 

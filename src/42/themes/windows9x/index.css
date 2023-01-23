@@ -211,8 +211,8 @@
   --tooltip-filter: drop-shadow(2px 2px 1px #0005);
 
   --ctrl-group-gap: 0;
-  --ctrl-px: 4px;
-  --ctrl-py: 2px;
+  --ctrl-pa-x: 4px;
+  --ctrl-pa-y: 2px;
 
   --ctrl-bdw: 2px;
 
@@ -243,12 +243,12 @@
   --btn👇-fg: var(--btn-fg);
   --btn👇-bg: var(--btn-bg);
   --btn👇-pa:
-    calc(var(--ctrl-py) + 1px)
-    calc(var(--ctrl-px) - 1px)
-    calc(var(--ctrl-py) - 1px)
-    calc(var(--ctrl-px) + 1px);
+    calc(var(--ctrl-pa-y) + 1px)
+    calc(var(--ctrl-pa-x) - 1px)
+    calc(var(--ctrl-pa-y) - 1px)
+    calc(var(--ctrl-pa-x) + 1px);
   --btn☑️👇-pa: var(--btn👇-pa);
-  --btn☑️-pa: var(--ctrl-py) var(--ctrl-px);
+  --btn☑️-pa: var(--ctrl-pa-y) var(--ctrl-pa-x);
 
   --btn☑️-fg: var(--btn-fg);
   --btn☑️-bg: var(--btn-bg) var(--screentone-url);
@@ -387,7 +387,7 @@ input[type="number" i]:disabled::-webkit-inner-spin-button {
 /* :where(.check-cont label) {
   padding-inline: 2px;
   padding-block: 0;
-  margin-block: calc(var(--ctrl-py));
+  margin-block: calc(var(--ctrl-pa-y));
   line-height: 14px;
 }
 

@@ -1,8 +1,8 @@
 :root {
   --tabs-overlap: var(--tabs__tab-bdw);
   --tabs-gap: calc(-1 * var(--tabs__tab-bdw));
-  --tabs-active-grow-y: var(--ctrl-py);
-  --tabs-active-grow-x: var(--ctrl-px);
+  --tabs-active-grow-y: var(--ctrl-pa-y);
+  --tabs-active-grow-x: var(--ctrl-pa-x);
   --tabs-max-z: 999;
   --tabs-shadow-size: var(--tabs__tab-bdw);
 
@@ -19,7 +19,7 @@
   --tabs__tab-tsh: var(--btn-tsh);
   --tabs__tab-bsh: var(--btn-bsh);
   --tabs__tab-max-w: 16ch;
-  --tabs__tab-min-w: calc(var(--picto-size) + var(--ctrl-px));
+  --tabs__tab-min-w: calc(var(--picto-size) + var(--ctrl-pa-x));
 
   --tabs__panel-fg: var(--panel-fg);
   --tabs__panel-bg: var(--panel-bg);

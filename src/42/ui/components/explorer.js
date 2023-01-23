@@ -95,7 +95,7 @@ export class Explorer extends Component {
         ],
       },
       {
-        tag: "header.box-h.gap-sm.mb-xs",
+        tag: "header.box-h.gap-sm.ma-b-xs",
         content: [
           {
             tag: "button",
@@ -154,10 +154,10 @@ export class Explorer extends Component {
       },
       {
         if: "{{!isPicker}}",
-        tag: "footer.w-full.mt-xs.ma-0.box-h",
+        tag: "footer.w-full.ma-t-xs.ma-0.box-h",
         content: [
           {
-            tag: ".py-xs.px-md.mr-xs.inset-shallow.panel.item-shrink",
+            tag: ".pa-y-xs.pa-x-md.ma-r-xs.inset-shallow.panel.item-shrink",
             content:
               "{{folder.items.length}} {{pluralize('item', folder.items.length)}}",
           },
