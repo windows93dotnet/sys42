@@ -10,8 +10,10 @@ const arrow = pictoArrow.firstElementChild
 pictoArrow.remove()
 arrow.classList.add("dropzone__arrow")
 arrow.style.position = "fixed"
-arrow.style.top = "-10px"
-arrow.style.left = "-8px"
+arrow.style.top = "0"
+arrow.style.left = "0"
+arrow.style.top = "calc(-0.5 * var(--picto-size))"
+arrow.style.left = "calc(-0.5 * var(--picto-size))"
 
 export class ArrowDropzoneHint extends DropzoneHint {
   faintTarget(target) {
@@ -24,6 +26,7 @@ export class ArrowDropzoneHint extends DropzoneHint {
 
   enter() {
     super.enter()
+    arrow.style.rotate = this.isVertical ? "-90deg" : "none"
     this.el.append(arrow)
   }
 
@@ -41,14 +44,26 @@ export class ArrowDropzoneHint extends DropzoneHint {
     super.dragover(x, y)
     if (this.rects.length === 0) return
 
+    this.config.arrowOffset ??= 2
+
     if (this.newIndex === undefined) {
       const rect = this.rects.at(-1)
-      x = rect.right + this.gaps.right
-      y = rect.y
+      if (this.isVertical) {
+        x = rect.x - this.config.arrowOffset
+        y = rect.bottom + this.gaps.bottom
+      } else {
+        x = rect.right + this.gaps.right
+        y = rect.y - this.config.arrowOffset
+      }
     } else {
       const rect = this.rects[this.newIndex]
-      x = rect.x + this.gaps.left
-      y = rect.y
+      if (this.isVertical) {
+        x = rect.x - this.config.arrowOffset
+        y = rect.y + this.gaps.top
+      } else {
+        x = rect.x + this.gaps.left
+        y = rect.y - this.config.arrowOffset
+      }
     }
 
     arrow.style.translate = `${x}px ${y}px`
