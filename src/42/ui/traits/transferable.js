@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import system from "../../system.js"
 import Trait from "../classes/Trait.js"
 import Dragger from "../classes/Dragger.js"
@@ -22,8 +23,8 @@ const DEFAULTS = {
   handlerSelector: undefined,
   accept: undefined,
 
-  itemsConfig: "stack",
-  dropzoneConfig: "slide",
+  items: "stack",
+  dropzone: "slide",
 
   animationSpeed: 180,
 }
@@ -489,13 +490,13 @@ class Transferable extends Trait {
     this.config.selector = ensureScopeSelector(this.config.selector, this.el)
 
     const itemsConfig =
-      typeof this.config.itemsConfig === "string"
-        ? { type: this.config.itemsConfig }
-        : this.config.itemsConfig
+      typeof this.config.items === "string"
+        ? { type: this.config.items }
+        : this.config.items
     const dropzoneConfig =
-      typeof this.config.dropzoneConfig === "string"
-        ? { type: this.config.dropzoneConfig }
-        : this.config.itemsConfig
+      typeof this.config.dropzone === "string"
+        ? { type: this.config.dropzone }
+        : this.config.dropzone
 
     if (typeof this.config.accept === "string") {
       this.config.accept = { kind: this.config.accept }
@@ -505,6 +506,8 @@ class Transferable extends Trait {
 
     dropzoneConfig.signal ??= this.cancel.signal
     dropzoneConfig.selector ??= this.config.selector
+    dropzoneConfig.orientation ??= this.config.orientation
+    dropzoneConfig.freeAxis ??= this.config.freeAxis
     dropzoneConfig.indexChange ??= this.config.indexChange
     dropzoneConfig.list = this.list
     dropzoneConfig.accept ??=

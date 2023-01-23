@@ -30,11 +30,42 @@
 
   demos.orientation = [
     {
-      tag: ".demo.scroll-x-auto.d-flex.pa.gap.inset.paper",
+      tag: ".demo.scroll-x-auto.flex-h.pa.gap.inset.paper",
+      demoCode: "// orientation horizontal and freeAxis by default",
       selectable: {},
       transferable: {},
-      content: makeArray(4, "c").map((content) => ({
-        tag: `span.bd.pa-lg.font-mono.bg-opacity-50.bg-red-700`,
+      content: makeArray(4).map((content) => ({
+        tag: `span.bd.pa-lg.font-mono`,
+        content,
+      })),
+    },
+
+    {
+      tag: ".demo.scroll-x-auto.flex-h.pa.gap.inset.paper",
+      selectable: {},
+      transferable: { freeAxis: false },
+      content: makeArray(4).map((content) => ({
+        tag: `span.bd.pa-lg.font-mono`,
+        content,
+      })),
+    },
+
+    {
+      tag: ".demo.scroll-x-auto.flex-h.pa.gap.inset.paper",
+      selectable: {},
+      transferable: { freeAxis: false, dropzone: "arrow" },
+      content: makeArray(4).map((content) => ({
+        tag: `span.bd.pa-lg.font-mono`,
+        content,
+      })),
+    },
+
+    {
+      tag: ".demo.scroll-x-auto.flex-v.pa.gap.inset.paper",
+      selectable: {},
+      transferable: { orientation: "vertical" },
+      content: makeArray(4).map((content) => ({
+        tag: `span.bd.py-sm.px.font-mono`,
         content,
       })),
     },
@@ -42,7 +73,7 @@
 
   demos.accept = [
     {
-      tag: ".demo.scroll-x-auto.d-flex.pa.gap.inset.paper",
+      tag: ".demo.scroll-x-auto.flex-h.pa.gap.inset.paper",
       selectable: {},
       transferable: {
         accept: { element: ".bg-red-700" },
@@ -54,7 +85,7 @@
     },
 
     {
-      tag: ".demo.scroll-x-auto.d-flex.pa.gap.inset.paper",
+      tag: ".demo.scroll-x-auto.flex-h.pa.gap.inset.paper",
       selectable: {},
       transferable: {
         accept: { element: ".bg-blue-700" },
@@ -66,7 +97,7 @@
     },
 
     {
-      tag: ".demo.scroll-x-auto.d-flex.pa.gap.inset.paper",
+      tag: ".demo.scroll-x-auto.flex-h.pa.gap.inset.paper",
       selectable: {},
       transferable: {
         accept: { element: ".bg-red-700,.bg-blue-700" },
@@ -80,7 +111,7 @@
     },
 
     {
-      tag: ".demo.scroll-x-auto.d-flex.pa.gap.inset.paper",
+      tag: ".demo.scroll-x-auto.flex-h.pa.gap.inset.paper",
       selectable: {},
       transferable: {
         accept: { element: true },
@@ -94,7 +125,7 @@
     "---",
 
     {
-      tag: ".demo.scroll-x-auto.d-flex.pa.gap.inset.paper",
+      tag: ".demo.scroll-x-auto.flex-h.pa.gap.inset.paper",
       selectable: {},
       transferable: {
         kind: "foo",
@@ -106,7 +137,7 @@
     },
 
     {
-      tag: ".demo.scroll-x-auto.d-flex.pa.gap.inset.paper",
+      tag: ".demo.scroll-x-auto.flex-h.pa.gap.inset.paper",
       selectable: {},
       transferable: {
         kind: "bar",
@@ -118,7 +149,7 @@
     },
 
     {
-      tag: ".demo.scroll-x-auto.d-flex.pa.gap.inset.paper",
+      tag: ".demo.scroll-x-auto.flex-h.pa.gap.inset.paper",
       selectable: {},
       transferable: {
         kind: ["foo", "bar"],
@@ -130,7 +161,7 @@
     },
 
     {
-      tag: ".demo.scroll-x-auto.d-flex.pa.gap.inset.paper",
+      tag: ".demo.scroll-x-auto.flex-h.pa.gap.inset.paper",
       selectable: {},
       transferable: {
         kind: ["foo", "bar"],
@@ -143,7 +174,7 @@
     },
 
     {
-      tag: ".demo.scroll-x-auto.d-flex.pa.gap.inset.paper",
+      tag: ".demo.scroll-x-auto.flex-h.pa.gap.inset.paper",
       selectable: {},
       transferable: {
         kind: "bar",
@@ -158,7 +189,9 @@
 
   for (const demo of Object.values(demos)) {
     for (let i = demo.length - 1; i >= 0; i--) {
-      if (demo[i].transferable) {
+      if (demo[i].demoCode) {
+        demo.splice(i, 0, { tag: "ui-code", content: demo[i].demoCode })
+      } else if (demo[i].transferable) {
         demo.splice(i, 0, { tag: "ui-code", content: demo[i].transferable })
       }
     }
@@ -179,7 +212,7 @@
         {
           label: "Orientation",
           content: {
-            tag: ".item-spread.box-h.pa.gap",
+            tag: ".item-spread.box-h.gap-sm",
             content: [
               {
                 tag: "section.demos.item-spread.scroll-auto.inset.pa",
@@ -200,7 +233,7 @@
         {
           label: "Accept",
           content: {
-            tag: ".item-spread.box-h.pa.gap",
+            tag: ".item-spread.box-h.gap-sm",
             content: [
               {
                 tag: "section.demos.item-spread.scroll-auto.inset.pa",
