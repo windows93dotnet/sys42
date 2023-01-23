@@ -164,13 +164,14 @@ export class Sandbox extends Component {
       })
       await Promise.all(undones)
       const content = forkPlan(this.content, this.stage)
-      content.plugins = ["ipc"]
+      content.plugins ??= []
+      if (!content.plugins.includes("ipc")) content.plugins.push("ipc")
+
       const script = `
-import ipc from "${ipcUrl}"
-import ui from "${uiUrl}"
-const app = await ui(${JSON.stringify(content)})
-${this.script ?? ""}
-`
+        import ipc from "${ipcUrl}";
+        import ui from "${uiUrl}";
+        const app = await ui(${JSON.stringify(content)});
+        ${this.script ?? ""}`
 
       return this.resource.script(script, options)
     }

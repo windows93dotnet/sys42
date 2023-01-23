@@ -187,6 +187,8 @@ export default class Dragger {
         })
       },
     })
+
+    signal?.addEventListener("abort", () => stop())
   }
 
   destroy() {

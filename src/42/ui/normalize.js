@@ -674,10 +674,10 @@ export function forkPlan(plan, stage) {
 
   if (stage) {
     const data = stage.reactive?.data
-    if (!isEmptyObject(data)) plan.state = structuredClone(data)
+    if (!isEmptyObject(data)) plan.state = merge({}, data)
     if (stage.id) plan.initiator = stage.id
     if (stage.scope) plan.scope = stage.scope
-    if (stage.scopeChain) plan.scopeChain = structuredClone(stage.scopeChain)
+    if (stage.scopeChain) plan.scopeChain = merge([], stage.scopeChain)
     if (stage.plugins) plan.plugins = Object.keys(stage.plugins)
     const actions = stage.actions.value
     if (!isEmptyObject(actions)) {
