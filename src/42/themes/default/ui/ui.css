@@ -90,6 +90,6 @@ ui-code {
   display: block;
 }
 
-.demos > ui-code + * {
+.demos > ui-code + *:not(:last-child) {
   margin-bottom: var(--unit-xl);
 }

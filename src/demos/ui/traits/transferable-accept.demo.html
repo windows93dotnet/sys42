@@ -4,24 +4,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" href="/style.css" id="theme" />
 
-<!-- <script type="module">
+<script type="module">
   import trap from "../../../42/fabric/type/error/trap.js"
   trap()
-</script> -->
-
-<style>
-  .demos {
-    width: 100%;
-  }
-  .demo {
-    width: 100%;
-  }
-</style>
+</script>
 
 <script type="module">
   import ui from "../../../42/ui.js"
   import "../../../42/ui/components/code.js"
   import "../../../42/ui/components/tabs.js"
+  import "../../../42/ui/components/sandbox.js"
 
   function makeArray(length, prefix = "") {
     return Array.from({ length }).map((_, i) => prefix + (i + 1))
@@ -34,33 +26,47 @@
     "purple",
   ]
 
-  const demos = [
+  const demos = {}
+
+  demos.orientation = [
     {
-      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa.gap.inset paper",
+      tag: ".demo.scroll-x-auto.d-flex.pa.gap.inset.paper",
+      selectable: {},
+      transferable: {},
+      content: makeArray(4, "c").map((content) => ({
+        tag: `span.bd.pa-lg.font-mono.bg-opacity-50.bg-red-700`,
+        content,
+      })),
+    },
+  ]
+
+  demos.accept = [
+    {
+      tag: ".demo.scroll-x-auto.d-flex.pa.gap.inset.paper",
       selectable: {},
       transferable: {
         accept: { element: ".bg-red-700" },
       },
       content: makeArray(4, "c").map((content) => ({
-        tag: "span.bd.pa-lg.font-mono.bg-opacity-50.bg-red-700",
+        tag: `span.bd.pa-lg.font-mono.bg-opacity-50.bg-red-700`,
         content,
       })),
     },
 
     {
-      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa.gap.inset paper",
+      tag: ".demo.scroll-x-auto.d-flex.pa.gap.inset.paper",
       selectable: {},
       transferable: {
         accept: { element: ".bg-blue-700" },
       },
       content: makeArray(4, "d").map((content) => ({
-        tag: "span.bd.pa-lg.font-mono.bg-opacity-50.bg-blue-700",
+        tag: `span.bd.pa-lg.font-mono.bg-opacity-50.bg-blue-700`,
         content,
       })),
     },
 
     {
-      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa.gap.inset paper",
+      tag: ".demo.scroll-x-auto.d-flex.pa.gap.inset.paper",
       selectable: {},
       transferable: {
         accept: { element: ".bg-red-700,.bg-blue-700" },
@@ -74,7 +80,7 @@
     },
 
     {
-      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa.gap.inset paper",
+      tag: ".demo.scroll-x-auto.d-flex.pa.gap.inset.paper",
       selectable: {},
       transferable: {
         accept: { element: true },
@@ -88,96 +94,130 @@
     "---",
 
     {
-      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa.gap.inset paper",
+      tag: ".demo.scroll-x-auto.d-flex.pa.gap.inset.paper",
       selectable: {},
       transferable: {
         kind: "foo",
       },
       content: makeArray(4, "foo ").map((content) => ({
-        tag: "span.pill.py-xs.font-mono.bg-opacity-50.bg-gray-900",
+        tag: `span.pill.py-xs.font-mono.bg-opacity-50.bg-gray-900`,
         content,
       })),
     },
 
     {
-      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa.gap.inset paper",
+      tag: ".demo.scroll-x-auto.d-flex.pa.gap.inset.paper",
       selectable: {},
       transferable: {
         kind: "bar",
       },
       content: makeArray(4, "bar ").map((content) => ({
-        tag: "span.pill.py-xs.font-mono.bg-opacity-50.bg-gray-200",
+        tag: `span.pill.py-xs.font-mono.bg-opacity-50.bg-gray-200`,
         content,
       })),
     },
 
     {
-      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa.gap.inset paper",
+      tag: ".demo.scroll-x-auto.d-flex.pa.gap.inset.paper",
       selectable: {},
       transferable: {
         kind: ["foo", "bar"],
       },
       content: makeArray(4, "xxx ").map((content) => ({
-        tag: "span.pill.py-xs.font-mono.bg-opacity-50.bg-gray-500",
+        tag: `span.pill.py-xs.font-mono.bg-opacity-50.bg-gray-500`,
         content,
       })),
     },
 
     {
-      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa.gap.inset paper",
+      tag: ".demo.scroll-x-auto.d-flex.pa.gap.inset.paper",
       selectable: {},
       transferable: {
         kind: ["foo", "bar"],
         accept: { kind: "foo" },
       },
       content: makeArray(4, "xxx ").map((content) => ({
-        tag: "span.pill.py-xs.font-mono.bg-opacity-50.bg-gray-500",
+        tag: `span.pill.py-xs.font-mono.bg-opacity-50.bg-gray-500`,
         content,
       })),
     },
 
     {
-      tag: ".demo.demo-small.scroll-x-auto.d-flex.pa.gap.inset paper",
+      tag: ".demo.scroll-x-auto.d-flex.pa.gap.inset.paper",
       selectable: {},
       transferable: {
         kind: "bar",
         accept: "foo",
       },
       content: makeArray(4, "bar ").map((content) => ({
-        tag: "span.pill.py-xs.font-mono.bg-opacity-50.bg-gray-200",
+        tag: `span.pill.py-xs.font-mono.bg-opacity-50.bg-gray-200`,
         content,
       })),
     },
   ]
 
-  for (let i = demos.length - 1; i >= 0; i--) {
-    if (demos[i].transferable) {
-      demos.splice(i, 0, { tag: "ui-code", content: demos[i].transferable })
+  for (const demo of Object.values(demos)) {
+    for (let i = demo.length - 1; i >= 0; i--) {
+      if (demo[i].transferable) {
+        demo.splice(i, 0, { tag: "ui-code", content: demo[i].transferable })
+      }
     }
   }
 
   window.app = ui({
     plugins: ["markdown"],
-    tag: "body.box-fit.box-v.pa",
-    content: [
-      "# Transferable",
-      {
-        tag: ".box-h.pa.gap",
-        content: [
-          {
-            tag: ".demos.outset.pa",
-            content: demos,
-          },
-          {
-            tag: "ui-sandbox",
-            permissions: "app",
-            content: {
-              tag: ".demos.box-fit.inset.pa.ground",
-              content: demos,
-            },
-          },
-        ],
+    tag: "body.box-fit.box-center",
+    content: {
+      tag: "ui-tabs",
+      style: {
+        width: "90vw",
+        maxWidth: "900px",
+        height: "90vh",
+        maxHeight: "900px",
       },
-    ],
+      items: [
+        {
+          label: "Orientation",
+          content: {
+            tag: ".item-spread.box-h.pa.gap",
+            content: [
+              {
+                tag: "section.demos.item-spread.scroll-auto.inset.pa",
+                content: demos.orientation,
+              },
+              {
+                tag: "ui-sandbox",
+                permissions: "app",
+                content: {
+                  tag: "section.demos.item-spread.box-fit.scroll-auto.inset.pa.ground",
+                  content: demos.orientation,
+                },
+              },
+            ],
+          },
+        },
+
+        {
+          label: "Accept",
+          content: {
+            tag: ".item-spread.box-h.pa.gap",
+            content: [
+              {
+                tag: "section.demos.item-spread.scroll-auto.inset.pa",
+                content: demos.accept,
+              },
+              {
+                tag: "ui-sandbox",
+                permissions: "app",
+                content: {
+                  tag: "section.demos.item-spread.box-fit.scroll-auto.inset.pa.ground",
+                  content: demos.accept,
+                },
+              },
+            ],
+          },
+        },
+      ],
+    },
   })
 </script>

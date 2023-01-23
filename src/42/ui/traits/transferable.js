@@ -632,6 +632,13 @@ class Transferable extends Trait {
       },
     })
   }
+
+  destroy() {
+    super.destroy()
+    const dropzoneHint = system.transfer.dropzones.get(this.el)
+    dropzoneHint?.halt()
+    system.transfer.dropzones.delete(this.el)
+  }
 }
 
 export function transferable(...args) {

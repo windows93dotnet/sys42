@@ -37,14 +37,10 @@
   padding-left: var(--breath);
 }
 
-:where(body, nav, section, article, aside) > :where(section, article, header, footer) {
-  margin-block-start: var(--breath);
-  margin-block-end: var(--unit);
-}
 
 :where(h1, h2, h3, h4, h5, h6) {
   margin-block-start: var(--breath);
-  margin-block-end: var(--unit);
+  margin-block-end: var(--breath);
 }
 
 :where(:is(section, article, header, footer):first-child),
