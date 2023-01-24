@@ -5,8 +5,8 @@ import traverse from "../../fabric/type/object/traverse.js"
 import { forkPlan } from "../normalize.js"
 import setTemp from "../../fabric/dom/setTemp.js"
 import listen from "../../fabric/event/listen.js"
-import ipc from "../../core/ipc.js"
-import dataTransfertImport from "../../core/dt/dataTransfertImport.js"
+// import ipc from "../../core/ipc.js"
+// import dataTransfertImport from "../../core/dt/dataTransfertImport.js"
 
 const _setResource = Symbol("setResource")
 
@@ -26,30 +26,17 @@ const options = {
 // or dropping folder into sandboxed iframe
 // https://bugs.chromium.org/p/chromium/issues/detail?id=251718
 let restore
-listen(
-  {
-    "dragstart || dragover"() {
-      restore ??= setTemp(document.documentElement, {
-        class: { "pointerless-iframes": true },
-      })
-    },
-    "dragend"() {
-      restore?.()
-      restore = undefined
-    },
+listen({
+  "dragstart || dragover"() {
+    restore ??= setTemp(document.documentElement, {
+      class: { "pointerless-iframes": true },
+    })
   },
-  {
-    "prevent": true,
-    "selector": "ui-sandbox",
-    "dragover || dragenter": false,
-    async "drop"(e, target) {
-      restore?.()
-      restore = undefined
-      const data = await dataTransfertImport(e)
-      ipc.to(target.resource.el).emit("42_SANDBOX_DROP", data)
-    },
-  }
-)
+  "dragend"() {
+    restore?.()
+    restore = undefined
+  },
+})
 
 export class Sandbox extends Component {
   static plan = {

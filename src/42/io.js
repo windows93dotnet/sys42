@@ -5,10 +5,6 @@ import Emitter from "./fabric/classes/Emitter.js"
 export class IO extends Emitter {}
 const io = new IO()
 
-const listenImport = async () =>
-  import("./os/io/listenImport.js") //
-    .then((m) => m.default(io))
-
 const createFile = async (path, options) =>
   import("./os/io/createPath.js") //
     .then((m) => m.default(path, options))
@@ -17,31 +13,31 @@ const createFolder = async (path, options) =>
   import("./os/io/createPath.js") //
     .then((m) => m.default(path, { ...options, folder: true }))
 
-const deleteFile = async (path) =>
-  import("./os/io/deletePath.js") //
+const deleteFiles = async (path) =>
+  import("./os/io/deletePaths.js") //
     .then((m) => m.default(path))
 
-const deleteFolder = async (path) =>
-  import("./os/io/deletePath.js") //
+const deleteFolders = async (path) =>
+  import("./os/io/deletePaths.js") //
     .then((m) => m.default(path))
 
-const launchFile = async (...args) =>
-  import("./os/io/launchFile.js").then((m) => m.default(...args))
+const launchFiles = async (...args) =>
+  import("./os/io/launchFiles.js").then((m) => m.default(...args))
 
-const launchFolder = async (...args) =>
-  import("./os/io/launchFolder.js").then((m) => m.default(...args))
+const launchFolders = async (...args) =>
+  import("./os/io/launchFolders.js").then((m) => m.default(...args))
 
-const renameFile = async (...args) =>
-  import("./os/io/renamePath.js").then((m) => m.default(...args))
+const renameFiles = async (...args) =>
+  import("./os/io/renamePaths.js").then((m) => m.default(...args))
 
-const renameFolder = async (...args) =>
-  import("./os/io/renamePath.js").then((m) => m.default(...args))
+const renameFolders = async (...args) =>
+  import("./os/io/renamePaths.js").then((m) => m.default(...args))
 
-const movePath = async (...args) =>
-  import("./os/io/movePath.js").then((m) => m.default(...args))
+const movePaths = async (...args) =>
+  import("./os/io/movePaths.js").then((m) => m.default(...args))
 
-const copyPath = async (...args) =>
-  import("./os/io/copyPath.js").then((m) => m.default(...args))
+const copyPaths = async (...args) =>
+  import("./os/io/copyPaths.js").then((m) => m.default(...args))
 
 createFile.meta = {
   label: "Create File…",
@@ -52,63 +48,62 @@ createFolder.meta = {
   shortcut: "F10",
 }
 
-deleteFile.meta = {
+deleteFiles.meta = {
   label: "Delete File",
   shortcut: "Del",
 }
 
-deleteFolder.meta = {
+deleteFolders.meta = {
   label: "Delete Folder",
   shortcut: "Del",
 }
 
-launchFile.meta = {
+launchFiles.meta = {
   label: "Open File…",
   shortcut: "Ctrl+O",
   picto: "file",
 }
 
-launchFolder.meta = {
+launchFolders.meta = {
   label: "Open Folder…",
   shortcut: "Ctrl+K Ctrl+O",
   picto: "folder-open",
 }
 
-renameFile.meta = {
+renameFiles.meta = {
   label: "Rename…",
   shortcut: "F2",
 }
 
-renameFolder.meta = { ...renameFile.meta }
+renameFolders.meta = { ...renameFiles.meta }
 
 const fileContextMenu = [
-  { ...launchFile.meta, click: "{{io.launchFile(selection)}}" },
+  { ...launchFiles.meta, click: "{{io.launchFiles(selection)}}" },
   "---",
-  { ...deleteFile.meta, click: "{{io.deleteFile(selection)}}" },
+  { ...deleteFiles.meta, click: "{{io.deleteFiles(selection)}}" },
   "---",
-  { ...renameFile.meta, click: "{{io.renameFile(selection)}}" },
+  { ...renameFiles.meta, click: "{{io.renameFiles(selection)}}" },
 ]
 
 const folderContextMenu = [
-  { ...launchFolder.meta, click: "{{io.launchFolder(selection)}}" },
+  { ...launchFolders.meta, click: "{{io.launchFolders(selection)}}" },
   "---",
-  { ...deleteFolder.meta, click: "{{io.deleteFolder(selection)}}" },
+  { ...deleteFolders.meta, click: "{{io.deleteFolders(selection)}}" },
   "---",
-  { ...renameFile.meta, click: "{{io.renameFile(selection)}}" },
+  { ...renameFiles.meta, click: "{{io.renameFiles(selection)}}" },
 ]
 
 export default Object.assign(io, {
-  listenImport,
   createFile,
   createFolder,
-  deleteFile,
-  deleteFolder,
-  launchFile,
-  launchFolder,
-  renameFile,
-  renameFolder,
-  movePath,
-  copyPath,
+  deleteFiles,
+  deleteFolders,
+  launchFiles,
+  launchFolders,
+  renameFiles,
+  renameFolders,
+  movePaths,
+  copyPaths,
 
   fileContextMenu,
   folderContextMenu,
