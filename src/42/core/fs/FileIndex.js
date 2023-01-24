@@ -29,6 +29,7 @@ export default class FileIndex extends Storable {
     return super.set(path, val)
   }
   async delete(path) {
+    console.log({ delete: path })
     this.emit("change", path, "delete")
     return super.delete(path)
   }
@@ -38,42 +39,43 @@ export default class FileIndex extends Storable {
   }
 
   watch(pattern, options, fn) {
+    pattern = normalizeFilename(pattern)
+
     if (typeof options === "function") fn = options
     const signal = options?.signal
 
     if (isGlob(pattern)) {
-      pattern = normalizeFilename(pattern)
       const glob = new Glob(pattern)
       return this.on("change", { signal, off: true }, (path, type) => {
-        if (glob.test(path)) {
-          fn(path, type)
-        }
+        if (glob.test(path)) fn(path, type)
       })
     }
 
     return this.on("change", { signal, off: true }, (path, type) => {
-      if (path === pattern) {
-        fn(path, type)
-      }
+      if (path === pattern) fn(path, type)
     })
   }
 
   watchDir(dirname, options, fn) {
+    dirname = normalizeDirname(assertPath(dirname))
+
     if (typeof options === "function") fn = options
     const signal = options?.signal
 
-    dirname = normalizeDirname(assertPath(dirname))
     const tokens = tokenizePath(dirname)
 
     return this.on("change", { signal, off: true }, (path, type) => {
       if (path.startsWith(dirname)) {
-        const changed = `${dirname}${tokenizePath(path).at(tokens.length)}`
+        const changed = options?.directChild
+          ? `${dirname}${tokenizePath(path).at(tokens.length)}`
+          : path
+        const hasPath = this.has(changed)
         if (
-          (type === "set" && !this.has(changed)) ||
-          (type === "delete" && this.has(changed)) ||
+          (type === "set" && !hasPath) ||
+          (type === "delete" && hasPath) ||
           type === "clear"
         ) {
-          fn(changed, type)
+          fn(changed, type, path)
         }
       }
     })
