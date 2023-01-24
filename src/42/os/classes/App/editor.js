@@ -99,15 +99,15 @@ editor.init = (app) => {
   const { state, manifest } = app
   const { encode, decode, dir } = manifest
 
-  import("../../../io.js").then(({ default: io }) => {
-    io.listenImport()
-    io.on("import", ([{ id, file }]) => {
-      FileAgent.recycle(state.$files, 0, { id, file })
-    })
-    io.on("paths", ([path]) => {
-      FileAgent.recycle(state.$files, 0, path)
-    })
-  })
+  // import("../../../io.js").then(({ default: io }) => {
+  //   io.listenImport()
+  //   io.on("import", ([{ id, file }]) => {
+  //     FileAgent.recycle(state.$files, 0, { id, file })
+  //   })
+  //   io.on("paths", ([path]) => {
+  //     FileAgent.recycle(state.$files, 0, path)
+  //   })
+  // })
 
   const defaultFolder = manifest.defaultFolder ?? "/users/anonymous/" // "$HOME"
 

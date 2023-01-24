@@ -48,7 +48,7 @@ export class Folder extends Component {
       // {
       //   async drop(e) {
       //     const { files, folders, paths } = await dt.import(e)
-      //     if (paths) io.movePath(paths, this.el.path)
+      //     if (paths) io.movePaths(paths, this.el.path)
       //     else if (files || folders) {
       //       const fs = await import("../../core/fs.js").then((m) => m.default)
       //       const undones = []
@@ -87,17 +87,17 @@ export class Folder extends Component {
       // ============
       {
         "selector": 'ui-icon[aria-description="file"]',
-        "dblclick || Enter || Space": "{{io.launchFile(target.path)}}",
+        "dblclick || Enter || Space": "{{io.launchFiles(target.path)}}",
       },
       {
         "selector": 'ui-icon[aria-description="folder"]',
-        "dblclick || Enter || Space": "{{io.launchFolder(target.path)}}",
+        "dblclick || Enter || Space": "{{io.launchFolders(target.path)}}",
       },
       {
         prevent: true,
         [io.createFolder.meta.shortcut]: "{{io.createFolder(path)}}",
-        [io.deleteFile.meta.shortcut]: "{{io.deleteFile(selection)}}",
-        [io.renameFile.meta.shortcut]: "{{io.renameFile(selection)}}",
+        [io.deleteFiles.meta.shortcut]: "{{io.deleteFiles(selection)}}",
+        [io.renameFiles.meta.shortcut]: "{{io.renameFiles(selection)}}",
       },
       {
         disrupt: true,
@@ -226,7 +226,7 @@ export class Folder extends Component {
           }
 
           if (effect === "copy") io.copyPath(paths, this.path)
-          else io.movePath(paths, this.path)
+          else io.movePaths(paths, this.path)
 
           return false
         },
