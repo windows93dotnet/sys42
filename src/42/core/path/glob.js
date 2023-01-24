@@ -13,6 +13,7 @@ import difference from "../../fabric/type/array/difference.js"
 import escapeRegex from "../../fabric/type/string/escapeRegex.js"
 import locate from "../../fabric/locator/locate.js"
 import exists from "../../fabric/locator/exists.js"
+import isDirDescriptor from "../fs/isDirDescriptor.js"
 
 const DEFAULTS = {
   onlyFiles: false,
@@ -176,7 +177,7 @@ const flattenKeys = (obj, prefix = "") => {
 
   for (const [key, val] of Object.entries(obj)) {
     const pre = prefix + "/"
-    if (val && typeof val === "object") {
+    if (isDirDescriptor(val)) {
       out.push(pre + key + "/", ...flattenKeys(val, pre + key))
     } else out.push(pre + key)
   }

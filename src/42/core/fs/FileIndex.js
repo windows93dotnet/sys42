@@ -5,6 +5,7 @@ import assertPath from "../../core/path/assertPath.js"
 import joinPath from "../../core/path/core/joinPath.js"
 import sortPath from "../../core/path/core/sortPath.js"
 import emittable from "../../fabric/traits/emittable.js"
+import isDirDescriptor from "./isDirDescriptor.js"
 import isGlob from "../path/isGlob.js"
 import glob, { Glob } from "../../core/path/glob.js"
 import normalizeDirname from "./normalizeDirname.js"
@@ -15,11 +16,6 @@ const DEFAULTS = {
   name: "fileindex",
   sep: "/",
   hashmap: true,
-}
-
-function isDir(entry) {
-  if (Array.isArray(entry) || entry === 0 || entry === undefined) return false
-  return true
 }
 
 export default class FileIndex extends Storable {
@@ -89,12 +85,12 @@ export default class FileIndex extends Storable {
   }
 
   isDir(path) {
-    return isDir(this.get(path))
+    return isDirDescriptor(this.get(path))
   }
 
   isFile(path) {
-    const entry = this.get(path)
-    return Array.isArray(entry) || entry === 0
+    const desc = this.get(path)
+    return Array.isArray(desc) || desc === 0
   }
 
   readDir(path, options = {}, parent = "") {
@@ -111,9 +107,9 @@ export default class FileIndex extends Storable {
 
     for (const key in dir) {
       if (Object.hasOwn(dir, key)) {
-        const entry = dir[key]
+        const desc = dir[key]
         const res = absolute ? joinPath(path, key) : joinPath(parent, key)
-        if (isDir(entry)) {
+        if (isDirDescriptor(desc)) {
           if (recursive) {
             names.push(...this.readDir(`${path}/${key}`, options, res))
           } else names.push(res + this.sep)
