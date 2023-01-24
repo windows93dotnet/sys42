@@ -12,10 +12,15 @@
 <script type="module">
   import os from "../42/os.js"
   import ui from "../42/ui.js"
-  // import io from "../42/io.js"
+  import io from "../42/io.js"
 
   // import disk from "../42/core/disk.js"
   // await disk.reinstall()
+
+  import trap from "../42/fabric/type/error/trap.js"
+  trap((err) => {
+    os.desktop.state.errors.push(err)
+  })
 
   os.desktop = await ui({
     tag: "body.box-fit.box-v._debug",
@@ -26,12 +31,7 @@
         content: [
           {
             tag: "ui-folder.box-fit.scroll-auto",
-            transferable: {
-              dropzone: ":scope > ui-grid > div",
-              selector: ":scope > ui-icon",
-            },
-            // path: "/tests/fixtures/formats/**/*",
-            // glob: true,
+            path: "$HOME/desktop/",
           },
         ],
       },
@@ -64,7 +64,7 @@
     },
   })
 
-  // io.launchFolder("/tests/fixtures/formats/")
+  io.launchFolder("/tests/fixtures/formats/")
   // io.launchFolder("/tests/fixtures/formats/audio/")
 
   // io.launchFile("/tests/fixtures/formats/example.html")

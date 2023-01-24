@@ -18,7 +18,7 @@ import arrify from "../../fabric/type/any/arrify.js"
 
 const DEFAULTS = {
   selector: ":scope > *",
-  distance: 0,
+  distance: 2,
   useSelection: true,
   handlerSelector: undefined,
   accept: undefined,
@@ -120,7 +120,6 @@ async function activateZones(x, y) {
     ...system.transfer.dropzones.keys(),
     ...document.querySelectorAll("iframe"),
   ]).then((rects) => {
-    system.transfer.zones = rects
     for (const rect of rects) {
       if (rect.target.localName === "iframe") {
         rect.hint = new IframeDropzoneHint(rect.target)
@@ -134,6 +133,11 @@ async function activateZones(x, y) {
 
       rect.hint.activate(x, y)
     }
+
+    system.transfer.zones = rects.sort((a, b) => {
+      if (a.x >= b.x || a.y >= b.y) return -1
+      return 1
+    })
   })
 }
 
@@ -217,8 +221,17 @@ function setCurrentZone(x, y) {
 
   const point = { x, y }
 
+  let currentZone
+
+  for (const dropzone of zones) {
+    if (inRect(point, dropzone) && checkAccept(dropzone.hint)) {
+      currentZone = dropzone
+      break
+    }
+  }
+
   if (system.transfer.currentZone) {
-    if (inRect(point, system.transfer.currentZone)) {
+    if (system.transfer.currentZone === currentZone) {
       dragoverZone(x, y)
       return
     }
@@ -226,20 +239,14 @@ function setCurrentZone(x, y) {
     system.transfer.currentZone.hoverScroll?.clear()
     system.transfer.currentZone.hint.leave(x, y)
     system.transfer.currentZone = undefined
+  }
+
+  if (currentZone) {
+    system.transfer.currentZone = currentZone
     setEffect()
-  }
-
-  for (const dropzone of zones) {
-    if (inRect(point, dropzone) && checkAccept(dropzone.hint)) {
-      system.transfer.currentZone = dropzone
-      setEffect()
-      system.transfer.currentZone.hint.enter(x, y)
-      dragoverZone(x, y)
-      return
-    }
-  }
-
-  setEffect()
+    system.transfer.currentZone.hint.enter(x, y)
+    dragoverZone(x, y)
+  } else setEffect()
 }
 
 /* ipc
