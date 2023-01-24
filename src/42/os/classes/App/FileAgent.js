@@ -126,8 +126,8 @@ export default class FileAgent {
 
     return (async () => {
       if (this.path) {
-        const { id } = await disk.getIdAndMask(this.path)
-        if (id === 0) {
+        const desc = await disk.get(this.path)
+        if (desc === 0) {
           this[_url] = this.path
           return this[_url]
         }
