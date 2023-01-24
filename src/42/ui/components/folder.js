@@ -107,9 +107,15 @@ export class Folder extends Component {
   };
 
   [_updatePath](initial) {
-    this.path = normalizeDirname(this.path)
+    const path = normalizeDirname(this.path)
 
-    if (this[_forgetWatch]?.path === this.path) return
+    this.stage.reactive.now(() => {
+      this.stage.reactive.set(this.stage.scope + "/path", path, {
+        silent: true,
+      })
+    })
+
+    if (this[_forgetWatch]?.path === path) return
 
     if (!initial) this.selection.length = 0
 
@@ -117,7 +123,7 @@ export class Folder extends Component {
     const options = { signal }
 
     this[_forgetWatch]?.()
-    this[_forgetWatch] = disk.watchDir(this.path, options, (changed, type) => {
+    this[_forgetWatch] = disk.watchDir(path, options, (changed, type) => {
       if (!this.stage) return
 
       const { selection } = this
@@ -130,7 +136,7 @@ export class Folder extends Component {
 
       this.refresh()
     })
-    this[_forgetWatch].path = this.path
+    this[_forgetWatch].path = path
   }
 
   go(path) {

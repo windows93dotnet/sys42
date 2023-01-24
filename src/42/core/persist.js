@@ -42,6 +42,7 @@ persist.set = (path, data) => {
 
   return new Promise((resolve) => {
     const fn = async () => {
+      console.log(1, path)
       try {
         await fs.write[persist.ensureType(path)](path, data)
       } catch (err) {
@@ -50,13 +51,16 @@ persist.set = (path, data) => {
         return
       }
 
+      console.log(2, path)
+
       pending.delete(path)
       if (isListening && pending.size === 0) forget()
       resolve(true)
     }
 
     if (!isListening) listen()
-    const id = requestIdleCallback(fn)
+    const id = requestIdleCallback(fn, { timeout: 3000 })
+    console.log(0, path, id)
     pending.set(path, { id, resolve, fn })
   })
 }
