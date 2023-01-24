@@ -72,7 +72,7 @@ export default class BrowserDriver extends Driver {
 
     const [id, mask] = entry
     entry[2].a = Date.now()
-    disk.set(filename, entry)
+    disk.set(filename, entry, { silent: true })
 
     if (this.mask !== mask) {
       const driver = await this.getDriver(mask)
@@ -83,7 +83,7 @@ export default class BrowserDriver extends Driver {
 
     if (blob === undefined) {
       // TODO: remove memoryDriver files from FileIndex on init
-      disk.delete(filename)
+      disk.delete(filename, { silent: true })
       throw new FileSystemError(ENOENT, filename)
     }
 
