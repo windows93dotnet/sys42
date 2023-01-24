@@ -77,7 +77,7 @@ export class Grid extends Component {
   }
 
   #refreshIconPerLine() {
-    if (this._items.length === 0) {
+    if (!this._items || this._items.length === 0) {
       this.itemsPerLine = 0
       return
     }
