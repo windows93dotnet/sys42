@@ -79,7 +79,7 @@ export class DropzoneHint {
       queueMicrotask(async () => {
         if (this.faintTargets) await this.faintTargets(x, y)
         else for (const { target } of this.items) this.faintTarget(target)
-        if (system.transfer.currentZone?.hint === this) {
+        if (system.transfer.currentZone === this) {
           await this.enter(x, y)
           this.dragover(x, y)
         }
