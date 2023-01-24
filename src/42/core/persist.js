@@ -26,13 +26,16 @@ persist.ensureType = (path) => {
   return ext.slice(1)
 }
 
-persist.has = (path) => disk.has(normalizeFilename(path))
+persist.watch = (path, fn) =>
+  disk.watch(path, (...args) => {
+    if (!pending.has(path)) fn(...args)
+  })
 
-persist.watch = (path, fn) => disk.watch(path, fn)
+persist.has = (path) => disk.has(normalizeFilename(path))
 
 persist.get = async (path) => fs.read[persist.ensureType(path)](path)
 
-persist.set = (path, data) => {
+persist.set = async (path, data) => {
   if (pending.has(path)) {
     const { id, resolve } = pending.get(path)
     cancelIdleCallback(id)
@@ -42,7 +45,6 @@ persist.set = (path, data) => {
 
   return new Promise((resolve) => {
     const fn = async () => {
-      console.log(1, path)
       try {
         await fs.write[persist.ensureType(path)](path, data)
       } catch (err) {
@@ -51,16 +53,13 @@ persist.set = (path, data) => {
         return
       }
 
-      console.log(2, path)
-
       pending.delete(path)
       if (isListening && pending.size === 0) forget()
       resolve(true)
     }
 
     if (!isListening) listen()
-    const id = requestIdleCallback(fn, { timeout: 3000 })
-    console.log(0, path, id)
+    const id = requestIdleCallback(fn, { timeout: 5000 })
     pending.set(path, { id, resolve, fn })
   })
 }

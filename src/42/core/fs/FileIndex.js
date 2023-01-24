@@ -29,7 +29,6 @@ export default class FileIndex extends Storable {
     return super.set(path, val)
   }
   async delete(path) {
-    console.log({ delete: path })
     this.emit("change", path, "delete")
     return super.delete(path)
   }
@@ -40,7 +39,6 @@ export default class FileIndex extends Storable {
 
   watch(pattern, options, fn) {
     pattern = normalizeFilename(pattern)
-
     if (typeof options === "function") fn = options
     const signal = options?.signal
 
