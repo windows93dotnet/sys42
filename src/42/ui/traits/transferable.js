@@ -4,13 +4,12 @@ import Trait from "../classes/Trait.js"
 import Dragger from "../classes/Dragger.js"
 import inIframe from "../../core/env/realm/inIframe.js"
 import getRects from "../../fabric/dom/getRects.js"
-import { inRect } from "../../fabric/geometry/point.js"
 import pick from "../../fabric/type/object/pick.js"
 import unproxy from "../../fabric/type/object/unproxy.js"
 import settings from "../../core/settings.js"
 import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
-import HoverScroll from "../classes/HoverScroll.js"
+// import HoverScroll from "../classes/HoverScroll.js"
 import setCursor from "../../fabric/dom/setCursor.js"
 import keyboard from "../../core/devices/keyboard.js"
 import listen from "../../fabric/event/listen.js"
@@ -65,8 +64,8 @@ function applyEffect(name, options) {
 async function setEffect(options) {
   if (system.transfer.currentZone) {
     const keys = context.keys ?? keyboard.keys
-    if (system.transfer.currentZone.hint.isIframe) {
-      const effect = await system.transfer.currentZone.hint.bus.send(
+    if (system.transfer.currentZone.isIframe) {
+      const effect = await system.transfer.currentZone.bus.send(
         "42_TF_v_REQUEST_EFFECT",
         keys
       )
@@ -115,37 +114,21 @@ async function makeHints({ itemsConfig, dropzoneConfig }, el) {
   return { itemsHint, dropzoneHint }
 }
 
-async function activateZones(x, y) {
-  return getRects([
-    ...system.transfer.dropzones.keys(),
-    ...document.querySelectorAll("iframe"),
-  ]).then((rects) => {
-    for (const rect of rects) {
-      if (rect.target.localName === "iframe") {
-        rect.hint = new IframeDropzoneHint(rect.target)
-      } else {
-        rect.hint = system.transfer.dropzones.get(rect.target)
-        rect.hoverScroll = new HoverScroll(
-          rect.target,
-          rect.hint.config?.hoverScroll
-        )
-      }
+function activateZones(x, y) {
+  for (const dropzone of system.transfer.dropzones.values()) {
+    // zone.hoverScroll = new HoverScroll(zone.el, zone.config?.hoverScroll)
+    dropzone.activate(x, y)
+  }
 
-      rect.hint.activate(x, y)
-    }
-
-    system.transfer.zones = rects.sort((a, b) => {
-      if (a.x >= b.x || a.y >= b.y) return -1
-      return 1
-    })
-  })
+  for (const iframe of document.querySelectorAll("iframe")) {
+    const dropzone = new IframeDropzoneHint(iframe)
+    system.transfer.dropzones.set(dropzone.el, dropzone)
+  }
 }
 
 async function haltZones(x, y) {
-  const { zones } = system.transfer
-
   if (system.transfer.currentZone) {
-    await system.transfer.currentZone.hint.drop(x, y)
+    await system.transfer.currentZone.drop(x, y)
   }
 
   if (system.transfer.effect === "move") {
@@ -166,8 +149,8 @@ async function haltZones(x, y) {
     )
   }
 
-  for (const dropzone of zones) {
-    dropzone.hint.halt()
+  for (const dropzone of system.transfer.dropzones.values()) {
+    dropzone.halt()
     dropzone.hoverScroll?.clear()
   }
 
@@ -207,26 +190,34 @@ function checkAccept(dropzone) {
   return checkKind(accept)
 }
 
-function dragoverZone(x, y) {
-  if (system.transfer.currentZone.hint?.config?.findNewIndex === false) return
+const dragoverZone = (x, y) => {
+  if (
+    !system.transfer.currentZone ||
+    system.transfer.currentZone?.config?.findNewIndex === false
+  ) {
+    return
+  }
+
   system.transfer.currentZone.hoverScroll?.update({ x, y }, async () => {
-    await system.transfer.currentZone?.hint.scan()
-    system.transfer.currentZone?.hint.dragover(x, y)
+    await system.transfer.currentZone?.scan()
+    system.transfer.currentZone?.dragover(x, y)
   })
-  system.transfer.currentZone.hint.dragover(x, y)
+  system.transfer.currentZone.dragover(x, y)
 }
 
-function setCurrentZone(x, y) {
-  const { zones } = system.transfer
-
-  const point = { x, y }
-
+const setCurrentZone = (x, y) => {
   let currentZone
 
-  for (const dropzone of zones) {
-    if (inRect(point, dropzone) && checkAccept(dropzone.hint)) {
-      currentZone = dropzone
-      break
+  const elements = document.elementsFromPoint(x, y)
+  const [target] = elements
+
+  for (const el of elements) {
+    if (system.transfer.dropzones.has(el) && el.contains(target)) {
+      const zone = system.transfer.dropzones.get(el)
+      if (checkAccept(zone)) {
+        currentZone = zone
+        break
+      }
     }
   }
 
@@ -237,14 +228,14 @@ function setCurrentZone(x, y) {
     }
 
     system.transfer.currentZone.hoverScroll?.clear()
-    system.transfer.currentZone.hint.leave(x, y)
+    system.transfer.currentZone.leave(x, y)
     system.transfer.currentZone = undefined
   }
 
   if (currentZone) {
     system.transfer.currentZone = currentZone
     setEffect()
-    system.transfer.currentZone.hint.enter(x, y)
+    system.transfer.currentZone.enter(x, y)
     dragoverZone(x, y)
   } else setEffect()
 }
@@ -304,19 +295,32 @@ function cleanHints() {
 }
 
 function getIframeInnerCoord(iframe) {
-  const iframeRect = iframe.getBoundingClientRect()
+  const rect = iframe.getBoundingClientRect()
   const { borderTopWidth, borderLeftWidth } = getComputedStyle(iframe)
-  return {
-    x: iframeRect.x + Number.parseInt(borderLeftWidth, 10),
-    y: iframeRect.y + Number.parseInt(borderTopWidth, 10),
-  }
+  rect.innerX = rect.x + Number.parseInt(borderLeftWidth, 10)
+  rect.innerY = rect.y + Number.parseInt(borderTopWidth, 10)
+  return rect
 }
 
 class IframeDropzoneHint {
   constructor(iframe) {
-    this.el = iframe
+    this.iframe = iframe
     this.bus = ipc.to(iframe, { ignoreUnresponsive: true })
     this.isIframe = true
+
+    const rect = getIframeInnerCoord(iframe)
+    this.x = rect.innerX
+    this.y = rect.innerY
+    this.el = document.createElement("div")
+    this.el.style = `
+      position: fixed;
+      top: ${rect.top}px;
+      left: ${rect.left}px;
+      width: ${rect.width}px;
+      height: ${rect.height}px;
+      /* background: rgba(255,0,0,0.2); */`
+    document.documentElement.append(this.el)
+
     iframeDropzones.push(this)
   }
 
@@ -325,14 +329,12 @@ class IframeDropzoneHint {
   }
 
   scan() {}
-
-  activate() {
-    const { x, y } = getIframeInnerCoord(this.el)
-    this.x = x
-    this.y = y
-  }
+  activate() {}
 
   halt() {
+    system.transfer.dropzones.delete(this.el)
+    this.el?.remove()
+    this.el = undefined
     this.bus.emit("42_TF_v_CLEANUP")
   }
 
@@ -390,7 +392,7 @@ if (inIframe) {
     .on("42_TF_v_LEAVE", ({ x, y }) => {
       if (system.transfer.currentZone) {
         system.transfer.currentZone.hoverScroll?.clear()
-        system.transfer.currentZone.hint.leave(x, y)
+        system.transfer.currentZone.leave(x, y)
         system.transfer.currentZone = undefined
       }
     })
@@ -431,8 +433,8 @@ if (inIframe) {
         context.fromIframe = true
 
         const iframeCoord = getIframeInnerCoord(iframe)
-        context.parentX = iframeCoord.x
-        context.parentY = iframeCoord.y
+        context.parentX = iframeCoord.innerX
+        context.parentY = iframeCoord.innerY
         x += context.parentX
         y += context.parentY
 
@@ -454,7 +456,7 @@ if (inIframe) {
         system.transfer.items.drag(system.transfer.items.getCoord(x, y))
 
         for (const iframeDz of iframeDropzones) {
-          if (iframeDz.el === iframe) {
+          if (iframeDz.iframe === iframe) {
             context.originIframeDropzone = iframeDz
             break
           }
@@ -476,7 +478,7 @@ if (inIframe) {
         x += context.parentX
         y += context.parentY
 
-        if (system.transfer.currentZone?.hint.isIframe) {
+        if (system.transfer.currentZone?.isIframe) {
           if (system.transfer.effect === "move") {
             system.transfer.items.removeGhosts()
           }
@@ -654,8 +656,7 @@ class Transferable extends Trait {
 
   destroy() {
     super.destroy()
-    const dropzoneHint = system.transfer.dropzones.get(this.el)
-    dropzoneHint?.halt()
+    system.transfer.dropzones.get(this.el)?.halt()
     system.transfer.dropzones.delete(this.el)
   }
 }

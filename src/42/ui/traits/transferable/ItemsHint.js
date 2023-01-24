@@ -45,9 +45,8 @@ export class ItemsHint extends Array {
     const [first] = system.transfer.items
     const { currentZone } = system.transfer
 
-    return currentZone?.hint.isOriginDropzone &&
-      currentZone?.hint.freeAxis !== true
-      ? currentZone.hint.isVertical
+    return currentZone?.isOriginDropzone && currentZone?.freeAxis !== true
+      ? currentZone.isVertical
         ? { x: first.x, y: y - first.offsetY }
         : { x: x - first.offsetX, y: first.y }
       : { x: x - first.offsetX, y: y - first.offsetY }
@@ -81,7 +80,7 @@ export class ItemsHint extends Array {
   }
 
   drag() {
-    this.currentZone = system.transfer.currentZone?.hint
+    this.currentZone = system.transfer.currentZone
   }
 
   get originDropzone() {
@@ -129,7 +128,7 @@ export class ItemsHint extends Array {
   }
 
   async adopt(x, y) {
-    const dropzone = system.transfer.currentZone?.hint
+    const dropzone = system.transfer.currentZone
     if (!dropzone || dropzone.isIframe || dropzone.customImport) {
       system.transfer.items.removeGhosts()
       return
