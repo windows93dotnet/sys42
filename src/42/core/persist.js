@@ -53,12 +53,12 @@ persist.set = async (path, data) => {
         return
       }
 
-      pending.delete(path)
-      if (isListening && pending.size === 0) forget()
+      if (isListening && pending.size === 0) forgetUnload()
       resolve(true)
+      queueMicrotask(() => pending.delete(path))
     }
 
-    if (!isListening) listen()
+    if (!isListening) listenUnload()
     const id = requestIdleCallback(fn, { timeout: 5000 })
     pending.set(path, { id, resolve, fn })
   })
@@ -74,7 +74,7 @@ const handler = (e) => {
       }
 
       pending.clear()
-      if (isListening) forget()
+      if (isListening) forgetUnload()
     })
     e.preventDefault()
     e.returnValue = "Changes you made may not be saved."
@@ -85,12 +85,12 @@ const handler = (e) => {
 const options = { capture: true }
 let isListening = false
 
-const listen = () => {
+const listenUnload = () => {
   isListening = true
   globalThis.addEventListener("beforeunload", handler, options)
 }
 
-const forget = () => {
+const forgetUnload = () => {
   isListening = false
   globalThis.removeEventListener("beforeunload", handler, options)
 }

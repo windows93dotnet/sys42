@@ -24,16 +24,16 @@ export default class FileIndex extends Storable {
     emittable(this)
   }
 
-  async set(path, val) {
-    this.emit("change", path, "set", val)
+  async set(path, val, options) {
+    if (options?.silent !== true) this.emit("change", path, "set", val)
     return super.set(path, val)
   }
-  async delete(path) {
-    this.emit("change", path, "delete")
+  async delete(path, options) {
+    if (options?.silent !== true) this.emit("change", path, "delete")
     return super.delete(path)
   }
-  async clear() {
-    this.emit("change", "/", "clear")
+  async clear(options) {
+    if (options?.silent !== true) this.emit("change", "/", "clear")
     return super.clear()
   }
 
