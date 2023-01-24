@@ -32,7 +32,7 @@ function compileRun(val, stage) {
 
   return (e, target) => {
     const eventLocals = makeEventLocals(stage.scope, e, target)
-    stage.undones.push(fn(stage.reactive.state, eventLocals))
+    fn(stage.reactive.state, eventLocals)
   }
 }
 
