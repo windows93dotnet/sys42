@@ -107,34 +107,49 @@ export class Folder extends Component {
   };
 
   [_updatePath](initial) {
+    this.path = normalizeDirname(this.path)
+
     if (this[_forgetWatch]?.path === this.path) return
 
     if (!initial) this.selection.length = 0
 
-    const path = normalizeDirname(this.path)
     const { signal } = this.stage
 
     this[_forgetWatch]?.()
-    this[_forgetWatch] = disk.watchDir(path, { signal }, (changed, type) => {
-      if (!this.stage) return
+    this[_forgetWatch] = disk.watchDir(
+      this.path,
+      { signal },
+      (changed, type) => {
+        if (!this.stage) return
 
-      if (type === "delete") {
-        if (this.selection.includes(changed)) {
-          removeItem(this.selection, changed)
+        console.log(type, changed)
+
+        if (type === "delete") {
+          if (this.selection.includes(changed)) {
+            removeItem(this.selection, changed)
+          }
+
+          changed += "/"
+
+          if (this.selection.includes(changed)) {
+            removeItem(this.selection, changed)
+          }
         }
 
-        changed += "/"
-
-        if (this.selection.includes(changed)) {
-          removeItem(this.selection, changed)
-        }
+        this.refresh()
       }
-
-      this.stage.reactive.now(() => {
-        this.stage.reactive.refresh(this.stage.scope + "/path")
-      })
-    })
+    )
     this[_forgetWatch].path = this.path
+  }
+
+  go(path) {
+    this.path = path
+  }
+
+  refresh() {
+    this.stage.reactive.now(() => {
+      this.stage.reactive.refresh(this.stage.scope + "/path")
+    })
   }
 
   displayContextmenu(e, target) {

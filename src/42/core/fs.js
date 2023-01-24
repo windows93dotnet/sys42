@@ -235,6 +235,14 @@ export async function copy(from, to, options) {
 }
 
 export async function move(from, to, options) {
+  from = resolvePath(from)
+  to = resolvePath(to)
+
+  if (to.startsWith(from)) {
+    if (to === from) return
+    throw new Error("A folder cannot be moved into itself")
+  }
+
   return copy(from, to, { ...options, delete: true })
 }
 
