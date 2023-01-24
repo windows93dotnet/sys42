@@ -89,7 +89,7 @@ export class Tree extends Component {
                 },
                 itemTemplate
                   ? objectifyPlan(itemTemplate)
-                  : { content: "{{render(.)}}" },
+                  : { content: "{{render(label)}}" },
                 {
                   role: "treeitem",
                   aria: {
