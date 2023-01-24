@@ -177,14 +177,22 @@ class Selectable extends Trait {
         this.elements.length = 0
       }
 
+      const selection = []
+      const elements = []
+
       for (const el of this.el.querySelectorAll(this.config.selector)) {
         const val = this.key(el)
         const i = this.selection.indexOf(val)
         if (i > -1) {
-          this.elements[i] = el
+          selection[i] = val
+          elements[i] = el
           this._add(el, val)
         }
       }
+
+      this.selection.length = 0
+      this.selection.push(...selection.filter((x) => x !== undefined))
+      this.elements.push(...elements.filter((x) => x !== undefined))
     } else if (this.selection.length < this.elements.length) {
       this.clearSelection()
       for (const el of this.elements) {

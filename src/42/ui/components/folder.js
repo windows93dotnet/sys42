@@ -114,31 +114,22 @@ export class Folder extends Component {
     if (!initial) this.selection.length = 0
 
     const { signal } = this.stage
+    const options = { signal }
 
     this[_forgetWatch]?.()
-    this[_forgetWatch] = disk.watchDir(
-      this.path,
-      { signal },
-      (changed, type) => {
-        if (!this.stage) return
+    this[_forgetWatch] = disk.watchDir(this.path, options, (changed, type) => {
+      if (!this.stage) return
 
-        console.log(type, changed)
+      const { selection } = this
 
-        if (type === "delete") {
-          if (this.selection.includes(changed)) {
-            removeItem(this.selection, changed)
-          }
-
-          changed += "/"
-
-          if (this.selection.includes(changed)) {
-            removeItem(this.selection, changed)
-          }
-        }
-
-        this.refresh()
+      if (type === "delete") {
+        if (selection.includes(changed)) removeItem(selection, changed)
+        changed += "/"
+        if (selection.includes(changed)) removeItem(selection, changed)
       }
-    )
+
+      this.refresh()
+    })
     this[_forgetWatch].path = this.path
   }
 
