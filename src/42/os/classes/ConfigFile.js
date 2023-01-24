@@ -2,6 +2,7 @@ import inTop from "../../core/env/realm/inTop.js"
 import system from "../../system.js"
 import defer from "../../fabric/type/promise/defer.js"
 import getBasename from "../../core/path/core/getBasename.js"
+import normalizeFilename from "../../core/fs/normalizeFilename.js"
 import configure from "../../core/configure.js"
 import persist from "../../core/persist.js"
 import dispatch from "../../fabric/event/dispatch.js"
@@ -10,7 +11,7 @@ export default class ConfigFile {
   #instanceInit
 
   constructor(filename, defaults) {
-    this.path = `$HOME/${getBasename(filename)}`
+    this.path = normalizeFilename(`$HOME/${getBasename(filename)}`)
     persist.ensureType(filename)
     this.defaults = configure({ version: -1 * Date.now() }, defaults)
 
