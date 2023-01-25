@@ -14,7 +14,11 @@ const _resetURL = Symbol("FileAgent._resetURL")
 const dummyBlob = Promise.resolve(new Blob())
 
 export default class FileAgent {
-  [Symbol.for("observe")] = true
+  [Symbol.for("observe")] = true;
+
+  [Symbol.for("serialize")]() {
+    return { path: this.path, id: this.id }
+  }
 
   static recycle(obj, key, init) {
     if (key in obj) {

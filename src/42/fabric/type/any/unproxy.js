@@ -1,5 +1,5 @@
-import isHashmapLike from "../any/is/isHashmapLike.js"
-import merge from "./merge.js"
+import isHashmapLike from "./is/isHashmapLike.js"
+import merge from "../object/merge.js"
 
 export function unproxy(val) {
   if (isHashmapLike(val)) return merge({}, val)

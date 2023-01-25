@@ -47,46 +47,60 @@ export default {
 
   content: {
     tag: "ui-tabs",
-    closable: true,
     transferable: true,
-    items: "{{$files}}",
-    tabTemplate: {
-      content: "{{getBasename(path)}}{{dirty ? '*' : ''}}",
-    },
-    panelTemplate: {
-      content: [
-        {
-          tag: "textarea.size-full",
-          entry: "textbox",
-          label: "{{path}}",
-          class: "{{/monospace ? 'font-mono' : ''}}",
-          style: { tabSize: "{{/tabSize}}" },
-          spellcheck: "{{/spellcheck}}",
-          wrap: "{{/wrap ? 'soft' : 'off'}}",
-          prose: false,
-          compact: true,
-          autofocus: true,
-          bind: "text",
-          // bind: { to: "data" },
-          // value: "{{text}}",
-          // lazy: true,
-          // bind: { to: "data" },
-          // on: {
-          //   "input": "{{dirty = true}}",
-          //   ":name || :dirty || focus": `{{
-          //     /$dialog.title = 'TextEdit - ' + name;
-          //     /$dialog.title += dirty ? '*' : '';
-          //   }}`,
-
-          //   ":stream": `{{
-          //     // locked = true;
-          //     // log(textbox);
-          //     field.sink(stream, textbox);
-          //     // locked = false;
-          //   }}`,
-          // },
-        },
-      ],
-    },
+    // balanced: true,
+    items: [
+      { label: "One", content: "lorem" },
+      { label: "Two", content: "hello" },
+      {
+        label: "Three Lorem Hello World Three Lorem Hello World",
+        content: "world",
+      },
+    ],
   },
+
+  // content: {
+  //   tag: "ui-tabs",
+  //   closable: true,
+  //   transferable: true,
+  //   items: "{{$files}}",
+  //   tabTemplate: {
+  //     content: "{{getBasename(path)}}{{dirty ? '*' : ''}}",
+  //   },
+  //   panelTemplate: {
+  //     content: [
+  //       {
+  //         tag: "textarea.size-full",
+  //         entry: "textbox",
+  //         label: "{{path}}",
+  //         class: "{{/monospace ? 'font-mono' : ''}}",
+  //         style: { tabSize: "{{/tabSize}}" },
+  //         spellcheck: "{{/spellcheck}}",
+  //         wrap: "{{/wrap ? 'soft' : 'off'}}",
+  //         prose: false,
+  //         compact: true,
+  //         autofocus: true,
+  //         bind: "text",
+  //         // bind: { to: "data" },
+  //         // value: "{{text}}",
+  //         // lazy: true,
+  //         // bind: { to: "data" },
+  //         // on: {
+  //         //   "input": "{{dirty = true}}",
+  //         //   ":name || :dirty || focus": `{{
+  //         //     /$dialog.title = 'TextEdit - ' + name;
+  //         //     /$dialog.title += dirty ? '*' : '';
+  //         //   }}`,
+
+  //         //   ":stream": `{{
+  //         //     // locked = true;
+  //         //     // log(textbox);
+  //         //     field.sink(stream, textbox);
+  //         //     // locked = false;
+  //         //   }}`,
+  //         // },
+  //       },
+  //     ],
+  //   },
+  // },
 }

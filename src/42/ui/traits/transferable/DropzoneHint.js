@@ -2,7 +2,7 @@ import getRects from "../../../fabric/dom/getRects.js"
 import { inRect } from "../../../fabric/geometry/point.js"
 import Canceller from "../../../fabric/classes/Canceller.js"
 import system from "../../../system.js"
-import unproxy from "../../../fabric/type/object/unproxy.js"
+import unproxy from "../../../fabric/type/any/unproxy.js"
 
 function copyElement(item, originDropzone) {
   const copy = item.target.cloneNode(true)
