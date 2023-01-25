@@ -5,7 +5,7 @@ import Dragger from "../classes/Dragger.js"
 import inIframe from "../../core/env/realm/inIframe.js"
 import getRects from "../../fabric/dom/getRects.js"
 import pick from "../../fabric/type/object/pick.js"
-import unproxy from "../../fabric/type/object/unproxy.js"
+import serialize from "../../fabric/type/any/serialize.js"
 import settings from "../../core/settings.js"
 import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
@@ -267,7 +267,7 @@ function serializeItems({ hideGhost, x = 0, y = 0 }) {
     originDropzone?.reviveTarget(exportedItem.target)
     exportedItem.target = exportedItem.target.outerHTML
     exportedItem.ghost = exportedItem.ghost.outerHTML
-    if (exportedItem.data) exportedItem.data = unproxy(exportedItem.data)
+    if (exportedItem.data) exportedItem.data = serialize(exportedItem.data)
     if (hideGhost) item.ghost.classList.add("hide")
     items.push(exportedItem)
   }
