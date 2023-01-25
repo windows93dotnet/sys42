@@ -217,18 +217,22 @@ export class Folder extends Component {
       transferable: {
         selector: ":scope ui-icon",
         dropzone: "arrow",
-        kind: "42_FILE",
+        kind: "$file",
         findNewIndex: false,
-        import: ({ items, effect }) => {
+        import: (details) => {
+          const { items, effect, isOriginDropzone } = details
+          if (isOriginDropzone) return "revert"
+
           const paths = []
           for (const item of items) {
-            paths.push(item.data?.path ?? item.target.path)
+            const path = item.data?.path ?? item.target.path
+            if (path) paths.push(path)
           }
 
           if (effect === "copy") io.copyPaths(paths, this.path)
           else io.movePaths(paths, this.path)
 
-          return false
+          return "vanish"
         },
       },
     }

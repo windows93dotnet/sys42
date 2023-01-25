@@ -129,7 +129,7 @@ export class ItemsHint extends Array {
 
   async adopt(x, y) {
     const dropzone = system.transfer.currentZone
-    if (!dropzone || dropzone.isIframe || dropzone.customImport) {
+    if (!dropzone || dropzone.isIframe) {
       system.transfer.items.removeGhosts()
       return
     }
