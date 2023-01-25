@@ -1,5 +1,6 @@
 import "./icon.js"
 import Component from "../classes/Component.js"
+import configure from "../../core/configure.js"
 import disk from "../../core/disk.js"
 import io from "../../io.js"
 import normalizeDirname from "../../core/fs/normalizeDirname.js"
@@ -39,6 +40,7 @@ export class Folder extends Component {
         type: "boolean",
         default: true,
       },
+      transferable: { type: "object" },
     },
 
     // dropzone: true,
@@ -208,33 +210,41 @@ export class Folder extends Component {
     return dir
   }
 
-  render() {
+  render({ transferable }) {
     const common = {
       entry: "currentView",
       selection: "{{selection}}",
       selectionKey: "path",
       items: "{{getItems(path)}}",
-      transferable: {
-        selector: ":scope ui-icon",
-        dropzone: "arrow",
-        kind: "$file",
-        findNewIndex: false,
-        import: (details) => {
-          const { items, effect, isOriginDropzone } = details
-          if (isOriginDropzone) return "revert"
-
-          const paths = []
-          for (const item of items) {
-            const path = item.data?.path ?? item.target.path
-            if (path) paths.push(path)
-          }
-
-          if (effect === "copy") io.copyPaths(paths, this.path)
-          else io.movePaths(paths, this.path)
-
-          return "vanish"
+      transferable: configure(
+        {
+          selector: ":scope ui-icon",
+          dropzone: "arrow",
+          findNewIndex: false,
+          kind: "$file",
         },
-      },
+        transferable,
+        {
+          import: (details) => {
+            const res = transferable?.import?.(details)
+            if (res !== undefined) return res
+
+            const { items, effect, isOriginDropzone } = details
+            if (isOriginDropzone) return "revert"
+
+            const paths = []
+            for (const item of items) {
+              const path = item.data?.path ?? item.target.path
+              if (path) paths.push(path)
+            }
+
+            if (effect === "copy") io.copyPaths(paths, this.path)
+            else io.movePaths(paths, this.path)
+
+            return "vanish"
+          },
+        }
+      ),
     }
 
     return [
@@ -245,8 +255,9 @@ export class Folder extends Component {
           ...common,
           itemTemplate: {
             tag: "ui-icon",
-            small: true,
+            autofocus: "{{@first}}",
             path: "{{path}}",
+            small: true,
           },
         },
         else: {

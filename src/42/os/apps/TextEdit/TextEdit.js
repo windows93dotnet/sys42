@@ -51,9 +51,10 @@ export default {
     transferable: {
       kind: ["$file", "$app"],
     },
+    current: "{{$current}}",
     items: "{{$files}}",
     tabTemplate: {
-      content: "{{getBasename(path)}}{{dirty ? '*' : ''}}",
+      content: "{{dirty ? '*' : ''}}{{name}}",
     },
     panelTemplate: {
       content: [

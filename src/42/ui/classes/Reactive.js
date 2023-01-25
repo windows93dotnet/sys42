@@ -38,6 +38,12 @@ export default class Reactive extends Emitter {
     }
 
     const update = () => {
+      try {
+        this.emit("queue", this.queue)
+      } catch (err) {
+        dispatch(stage.el, err)
+      }
+
       if (this.queue.objects.size === 0 && this.queue.paths.size === 0) {
         this.pendingUpdate?.resolve?.()
         this.pendingUpdate = false
