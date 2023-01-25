@@ -50,6 +50,10 @@ export default {
     closable: true,
     transferable: {
       kind: ["$file", "$app"],
+      import(details) {
+        console.log("TextEdit", details)
+        return "vanish"
+      },
     },
     current: "{{$current}}",
     items: "{{$files}}",

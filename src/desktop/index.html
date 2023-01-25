@@ -37,7 +37,7 @@
             transferable: {
               accept: { kind: ["$file", "$app"] },
               import({ kind }) {
-                console.log("desktop import", { kind })
+                console.log("desktop import", ...kind)
                 return "revert"
               },
             },
