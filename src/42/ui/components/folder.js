@@ -222,10 +222,10 @@ export class Folder extends Component {
         import: ({ items, effect }) => {
           const paths = []
           for (const item of items) {
-            paths.push(item.target.path)
+            paths.push(item.data?.path ?? item.target.path)
           }
 
-          if (effect === "copy") io.copyPath(paths, this.path)
+          if (effect === "copy") io.copyPaths(paths, this.path)
           else io.movePaths(paths, this.path)
 
           return false

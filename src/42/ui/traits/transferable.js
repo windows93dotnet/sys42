@@ -123,8 +123,9 @@ function activateZones(x, y) {
     dropzone.activate(x, y)
   }
 
-  for (const iframe of document.querySelectorAll("iframe")) {
-    const dropzone = new IframeDropzoneHint(iframe)
+  const iframes = document.querySelectorAll("iframe")
+  for (let i = 0, l = iframes.length; i < l; i++) {
+    const dropzone = new IframeDropzoneHint(iframes[i], i)
     system.transfer.dropzones.set(dropzone.el, dropzone)
   }
 }
@@ -307,7 +308,7 @@ function getIframeInnerCoord(iframe) {
 }
 
 class IframeDropzoneHint {
-  constructor(iframe) {
+  constructor(iframe, index) {
     this.iframe = iframe
     this.bus = ipc.to(iframe, { ignoreUnresponsive: true })
     this.isIframe = true
@@ -318,6 +319,7 @@ class IframeDropzoneHint {
     this.el = document.createElement("div")
     this.el.style = `
       position: fixed;
+      z-index: ${100_000 + index};
       top: ${rect.top}px;
       left: ${rect.left}px;
       width: ${rect.width}px;
