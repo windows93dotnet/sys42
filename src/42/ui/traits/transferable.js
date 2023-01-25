@@ -130,9 +130,30 @@ function activateZones(x, y) {
   }
 }
 
+function stopTranfer() {
+  for (const dropzone of system.transfer.dropzones.values()) {
+    dropzone.halt()
+    dropzone.hoverScroll?.clear()
+  }
+
+  cleanHints()
+  system.transfer.active = false
+}
+
 async function haltZones(x, y) {
   if (system.transfer.currentZone) {
-    await system.transfer.currentZone.drop(x, y)
+    const res = await system.transfer.currentZone.import()
+    if (res === undefined) {
+      await system.transfer.currentZone.drop(x, y)
+    } else if (res === "adopt") {
+      system.transfer.effect = "move"
+    } else if (res === "revert") {
+      system.transfer.effect = "none"
+    } else if (res === "vanish") {
+      system.transfer.effect = "none"
+      system.transfer.items.removeGhosts()
+      return void stopTranfer()
+    }
   }
 
   if (system.transfer.effect === "move") {
@@ -153,13 +174,7 @@ async function haltZones(x, y) {
     )
   }
 
-  for (const dropzone of system.transfer.dropzones.values()) {
-    dropzone.halt()
-    dropzone.hoverScroll?.clear()
-  }
-
-  cleanHints()
-  system.transfer.active = false
+  stopTranfer()
 }
 
 function checkKind(accept) {

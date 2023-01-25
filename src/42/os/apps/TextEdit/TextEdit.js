@@ -49,7 +49,7 @@ export default {
     tag: "ui-tabs",
     closable: true,
     transferable: {
-      kind: "42_FILE",
+      kind: ["$file", "$app"],
     },
     items: "{{$files}}",
     tabTemplate: {
