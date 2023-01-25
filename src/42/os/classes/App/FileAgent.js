@@ -152,7 +152,9 @@ export default class FileAgent {
     if (this[_blob]) return this[_blob].text()
     return this.blob.then((blob) => blob.text())
   }
-  set text(val) {}
+  set text(val) {
+    this.data = val
+  }
 
   get locked() {
     return this[_locked]

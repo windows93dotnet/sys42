@@ -1,6 +1,8 @@
 import Component from "../classes/Component.js"
 import isFocusable from "../../fabric/dom/isFocusable.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
+import configure from "../../core/configure.js"
+import { objectifyPlan } from "../normalize.js"
 
 export class Tabs extends Component {
   static plan = {
@@ -9,6 +11,8 @@ export class Tabs extends Component {
     id: true,
 
     props: {
+      tabTemplate: { type: "object" },
+      panelTemplate: { type: "object" },
       side: { type: "string", reflect: true },
       balanced: { type: "boolean", reflect: true },
       closable: false,
@@ -50,7 +54,7 @@ export class Tabs extends Component {
     })
   }
 
-  render({ transferable, sortable, closable }) {
+  render({ tabTemplate, panelTemplate, transferable, sortable, closable }) {
     const { id } = this
 
     return [
@@ -95,14 +99,18 @@ export class Tabs extends Component {
                     tag: "span.ui-tabs__prelabel",
                     content: "{{render(prelabel)}}",
                   },
-                  {
-                    tag: "span.ui-tabs__trigger",
-                    content: "{{render(label)}}",
-                    on: {
-                      "pointerdown || Space || Enter":
-                        "{{selectPanel(@index)}}",
+                  configure(
+                    {
+                      tag: "span.ui-tabs__trigger",
+                      on: {
+                        "pointerdown || Space || Enter":
+                          "{{selectPanel(@index)}}",
+                      },
                     },
-                  },
+                    tabTemplate
+                      ? objectifyPlan(tabTemplate)
+                      : { content: "{{render(label)}}" }
+                  ),
                   {
                     if: "{{postlabel}}",
                     tag: "span.ui-tabs__postlabel",
@@ -123,31 +131,35 @@ export class Tabs extends Component {
           },
           {
             tag: ".ui-tabs__panels",
-            each: {
-              if: "{{../../current === @index}}",
-              tag: ".ui-tabs__panel",
-              role: "tabpanel",
-              id: `${id}-panel-{{@index}}`,
-              content: "{{render(content)}}",
-              tabIndex: 0,
-              // hidden: "{{../../current !== @index}}",
-              aria: {
-                labelledby: `tab-${id}-{{@index}}`,
-                expanded: "{{../../current === @index}}",
-              },
-              on: {
-                render(e, target) {
-                  queueTask(() => {
-                    if (
-                      isFocusable(target.firstElementChild) ||
-                      target.firstElementChild?.localName === "label"
-                    ) {
-                      target.tabIndex = -1
-                    }
-                  })
+            each: configure(
+              {
+                if: "{{../../current === @index}}",
+                tag: ".ui-tabs__panel",
+                role: "tabpanel",
+                id: `${id}-panel-{{@index}}`,
+                tabIndex: 0,
+                // hidden: "{{../../current !== @index}}",
+                aria: {
+                  labelledby: `tab-${id}-{{@index}}`,
+                  expanded: "{{../../current === @index}}",
+                },
+                on: {
+                  render(e, target) {
+                    queueTask(() => {
+                      if (
+                        isFocusable(target.firstElementChild) ||
+                        target.firstElementChild?.localName === "label"
+                      ) {
+                        target.tabIndex = -1
+                      }
+                    })
+                  },
                 },
               },
-            },
+              panelTemplate
+                ? objectifyPlan(panelTemplate)
+                : { content: "{{render(content)}}" }
+            ),
           },
         ],
       },
