@@ -142,20 +142,18 @@ function stopTranfer() {
 
 async function haltZones(x, y) {
   if (system.transfer.currentZone) {
-    // const res = await system.transfer.currentZone.import()
-    // if (res === undefined) {
-    //   await system.transfer.currentZone.drop(x, y)
-    // } else if (res === "adopt") {
-    //   system.transfer.effect = "move"
-    // } else if (res === "revert") {
-    //   system.transfer.effect = "none"
-    // } else if (res === "vanish") {
-    //   system.transfer.effect = "none"
-    //   system.transfer.items.removeGhosts()
-    //   return void stopTranfer()
-    // }
-
-    await system.transfer.currentZone.drop(x, y)
+    const res = await system.transfer.currentZone.import()
+    if (res === undefined) {
+      await system.transfer.currentZone.drop(x, y)
+    } else if (res === "adopt") {
+      system.transfer.effect = "move"
+    } else if (res === "revert") {
+      system.transfer.effect = "none"
+    } else if (res === "vanish") {
+      system.transfer.effect = "none"
+      system.transfer.items.removeGhosts()
+      return void stopTranfer()
+    }
   }
 
   if (system.transfer.effect === "move") {
@@ -377,6 +375,10 @@ class IframeDropzoneHint {
     this.bus.emit("42_TF_v_DRAGOVER", this.#substractCoord(x, y))
   }
 
+  async import() {
+    return this.bus.send("42_TF_v_IMPORT")
+  }
+
   async drop(x, y) {
     const { effect, items } = system.transfer
     requestAnimationFrame(() => {
@@ -424,6 +426,11 @@ if (inIframe) {
     .on("42_TF_v_DRAGOVER", ({ x, y }) => {
       if (enterReady?.isResolved) setCurrentZone(x, y)
     })
+    .on("42_TF_v_IMPORT", async () => {
+      if (system.transfer.currentZone) {
+        return system.transfer.currentZone.import()
+      }
+    })
     .on("42_TF_v_DROP", async ({ x, y }) => {
       if (system.transfer.effect === "none") haltZones(x, y)
       else await haltZones(x, y)
@@ -441,7 +448,7 @@ if (inIframe) {
     })
     .on("42_TF_v_CLEANUP", () => {
       enterReady = undefined
-      cleanHints()
+      stopTranfer()
       clear(context)
     })
 } else {

@@ -241,6 +241,7 @@ export class Folder extends Component {
             if (effect === "copy") io.copyPaths(paths, this.path)
             else io.movePaths(paths, this.path)
 
+            // return effect === "copy" ? "revert" : "vanish"
             return "vanish"
           },
         }
