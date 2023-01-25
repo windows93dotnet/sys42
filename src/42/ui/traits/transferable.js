@@ -14,6 +14,7 @@ import setCursor from "../../fabric/dom/setCursor.js"
 import keyboard from "../../core/devices/keyboard.js"
 import listen from "../../fabric/event/listen.js"
 import arrify from "../../fabric/type/any/arrify.js"
+import defer from "../../fabric/type/promise/defer.js"
 
 const DEFAULTS = {
   selector: ":scope > *",
@@ -115,6 +116,8 @@ async function makeHints({ itemsConfig, dropzoneConfig }, el) {
 }
 
 function activateZones(x, y) {
+  if (system.transfer.active === true) return
+  system.transfer.active = true
   for (const dropzone of system.transfer.dropzones.values()) {
     // zone.hoverScroll = new HoverScroll(zone.el, zone.config?.hoverScroll)
     dropzone.activate(x, y)
@@ -155,6 +158,7 @@ async function haltZones(x, y) {
   }
 
   cleanHints()
+  system.transfer.active = false
 }
 
 function checkKind(accept) {
@@ -372,10 +376,10 @@ class IframeDropzoneHint {
 }
 
 if (inIframe) {
-  let enterReady = false
+  let enterReady
   ipc
     .on("42_TF_v_ENTER", async ({ x, y, items, itemsConfig, dropzoneId }) => {
-      enterReady = false
+      enterReady = defer()
       deserializeItems(items)
 
       const { itemsHint } = await makeHints({ itemsConfig })
@@ -385,11 +389,13 @@ if (inIframe) {
       system.transfer.items.dropzoneId = dropzoneId
       system.transfer.items.start(x, y, items)
 
-      await activateZones(x, y)
+      activateZones(x, y)
       setCurrentZone(x, y)
-      enterReady = true
+      enterReady.resolve()
     })
-    .on("42_TF_v_LEAVE", ({ x, y }) => {
+    .on("42_TF_v_LEAVE", async ({ x, y }) => {
+      await enterReady
+      enterReady = undefined
       if (system.transfer.currentZone) {
         system.transfer.currentZone.hoverScroll?.clear()
         system.transfer.currentZone.leave(x, y)
@@ -397,7 +403,7 @@ if (inIframe) {
       }
     })
     .on("42_TF_v_DRAGOVER", ({ x, y }) => {
-      if (enterReady) setCurrentZone(x, y)
+      if (enterReady?.isResolved) setCurrentZone(x, y)
     })
     .on("42_TF_v_DROP", async ({ x, y }) => {
       if (system.transfer.effect === "none") haltZones(x, y)
@@ -415,6 +421,7 @@ if (inIframe) {
       return system.transfer.effect
     })
     .on("42_TF_v_CLEANUP", () => {
+      enterReady = undefined
       cleanHints()
       clear(context)
     })
@@ -430,8 +437,6 @@ if (inIframe) {
     .on(
       "42_TF_^_START",
       async ({ x, y, items, dropzoneId, itemsConfig }, { iframe }) => {
-        context.fromIframe = true
-
         const iframeCoord = getIframeInnerCoord(iframe)
         context.parentX = iframeCoord.innerX
         context.parentY = iframeCoord.innerY
@@ -450,7 +455,7 @@ if (inIframe) {
           document.documentElement.append(item.ghost)
         }
 
-        await activateZones(x, y)
+        activateZones(x, y)
         setCurrentZone(x, y)
 
         system.transfer.items.drag(system.transfer.items.getCoord(x, y))
@@ -461,10 +466,12 @@ if (inIframe) {
             break
           }
         }
+
+        context.fromIframe = true
       }
     )
     .on("42_TF_^_DRAG", ({ x, y, coord }) => {
-      if (context.parentX && system.transfer.items) {
+      if (context.fromIframe && system.transfer.items) {
         x += context.parentX
         y += context.parentY
         coord.x += context.parentX
@@ -474,7 +481,7 @@ if (inIframe) {
       }
     })
     .on("42_TF_^_STOP", async ({ x, y }) => {
-      if (context.parentX && system.transfer.items) {
+      if (context.fromIframe && system.transfer.items) {
         x += context.parentX
         y += context.parentY
 
@@ -619,7 +626,7 @@ class Transferable extends Trait {
             const msg = { x, y, ...serializeItems({ hideGhost: true }) }
             await ipc.send("42_TF_^_START", msg)
           } else {
-            await activateZones(x, y)
+            activateZones(x, y)
             setCurrentZone(x, y)
           }
 
