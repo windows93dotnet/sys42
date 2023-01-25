@@ -9,13 +9,6 @@
   trap()
 </script>
 
-<!-- <script type="module">
-  import FileAgent from "../42/os/classes/App/FileAgent.js"
-  import serialize from "../42/fabric/type/any/serialize.js"
-
-  console.log(serialize({ a: 1, file: new FileAgent("/style.css") }))
-</script> -->
-
 <script type="module">
   import os from "../42/os.js"
   import ui from "../42/ui.js"
@@ -41,6 +34,13 @@
             tag: "ui-folder.box-fit.scroll-auto",
             // path: "$HOME/desktop/",
             path: "/",
+            transferable: {
+              accept: { kind: ["$file", "$app"] },
+              import({ kind }) {
+                console.log("desktop import", { kind })
+                return "revert"
+              },
+            },
           },
         ],
       },
@@ -95,8 +95,8 @@
 
   appsManager.exec("TextEdit", {
     $files: [
-      "/tests/fixtures/formats/example.json",
       "/tests/fixtures/formats/example.json5",
+      "/tests/fixtures/formats/example.html",
     ],
   })
 </script>

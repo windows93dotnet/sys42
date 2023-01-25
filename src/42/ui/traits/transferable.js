@@ -142,18 +142,20 @@ function stopTranfer() {
 
 async function haltZones(x, y) {
   if (system.transfer.currentZone) {
-    const res = await system.transfer.currentZone.import()
-    if (res === undefined) {
-      await system.transfer.currentZone.drop(x, y)
-    } else if (res === "adopt") {
-      system.transfer.effect = "move"
-    } else if (res === "revert") {
-      system.transfer.effect = "none"
-    } else if (res === "vanish") {
-      system.transfer.effect = "none"
-      system.transfer.items.removeGhosts()
-      return void stopTranfer()
-    }
+    // const res = await system.transfer.currentZone.import()
+    // if (res === undefined) {
+    //   await system.transfer.currentZone.drop(x, y)
+    // } else if (res === "adopt") {
+    //   system.transfer.effect = "move"
+    // } else if (res === "revert") {
+    //   system.transfer.effect = "none"
+    // } else if (res === "vanish") {
+    //   system.transfer.effect = "none"
+    //   system.transfer.items.removeGhosts()
+    //   return void stopTranfer()
+    // }
+
+    await system.transfer.currentZone.drop(x, y)
   }
 
   if (system.transfer.effect === "move") {

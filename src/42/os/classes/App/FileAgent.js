@@ -1,6 +1,7 @@
 import isHashmapLike from "../../../fabric/type/any/is/isHashmapLike.js"
 import isInstanceOf from "../../../fabric/type/any/is/isInstanceOf.js"
 import getBasename from "../../../core/path/core/getBasename.js"
+import unproxy from "../../../fabric/type/any/unproxy.js"
 import disk from "../../../core/disk.js"
 
 const _noSideEffects = Symbol("FileAgent._noSideEffects")
@@ -17,7 +18,16 @@ export default class FileAgent {
   [Symbol.for("observe")] = true;
 
   [Symbol.for("serialize")]() {
-    return { path: this.path, id: this.id }
+    return {
+      path: this.path,
+      name: this.name,
+      dirty: this.dirty,
+      data: unproxy(this.data),
+    }
+  }
+
+  toJSON() {
+    return this[Symbol.for("serialize")]()
   }
 
   static recycle(obj, key, init) {
@@ -55,6 +65,7 @@ export default class FileAgent {
 
       if ("id" in init) this.id = init.id
       if ("dirty" in init) this.dirty = init.dirty
+      if ("name" in init) this.name = init.name
     } else if (isInstanceOf(init, Blob)) {
       this[_noSideEffects] = true
       this.path = undefined

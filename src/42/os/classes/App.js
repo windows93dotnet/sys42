@@ -170,6 +170,7 @@ export default class App extends UI {
   constructor(manifest) {
     manifest.state ??= {}
     manifest.state.$files ??= []
+    manifest.state.$current ??= 0
     for (let i = 0, l = manifest.state.$files.length; i < l; i++) {
       manifest.state.$files[i] = new FileAgent(
         manifest.state.$files[i],
@@ -187,6 +188,26 @@ export default class App extends UI {
     })
 
     this.manifest = manifest
+
+    const option = { silent: true }
+
+    this.reactive.on("queue", (queue) => {
+      for (const [path, deleted] of queue.objects) {
+        if (!deleted && path.startsWith("/$files/")) {
+          const $file = this.reactive.get(path)
+          if (!($file instanceof FileAgent)) {
+            this.reactive.set(path, new FileAgent($file, manifest), option)
+          }
+        }
+      }
+    })
+
+    // this.state.$files.push({ path: "/tests/fixtures/formats/example.html" })
+    // this.state.$files.push("/tests/fixtures/formats/example.html")
+    // this.state.$files.push({ name: "untitled" })
+    // this.state.$current = 2
+
+    // this.state.$files.length = 0
 
     editor.init(this)
   }
