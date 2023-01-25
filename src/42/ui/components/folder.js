@@ -234,14 +234,14 @@ export class Folder extends Component {
 
             const paths = []
             for (const item of items) {
-              const path = item.data?.path ?? item.target.path
+              const path =
+                item.data?.path ?? item.data ?? item.target.getAttribute("path")
               if (path) paths.push(path)
             }
 
             if (effect === "copy") io.copyPaths(paths, this.path)
             else io.movePaths(paths, this.path)
 
-            // return effect === "copy" ? "revert" : "vanish"
             return "vanish"
           },
         }

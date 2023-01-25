@@ -50,8 +50,22 @@ export default {
     closable: true,
     transferable: {
       kind: ["$file", "$app"],
-      import(details) {
-        console.log("TextEdit", details)
+      accept: "$file",
+      import({ items, dropzone, index }) {
+        const paths = []
+        for (const item of items) {
+          const path =
+            item.data?.path ?? item.data ?? item.target.getAttribute("path")
+          if (path) paths.push({ path })
+        }
+
+        if (dropzone.el.parentElement) {
+          const cpn = dropzone.el.parentElement
+          index ??= cpn.stage.state.$files.length
+          cpn.stage.state.$files.splice(index, 0, ...paths)
+          cpn.stage.state.$current = index
+        }
+
         return "vanish"
       },
     },
