@@ -611,7 +611,6 @@ class Transferable extends Trait {
           return false
         }
 
-        let targets
         startReady = false
 
         forgetKeyevents = listen({
@@ -625,14 +624,25 @@ class Transferable extends Trait {
         system.transfer.items = itemsHint
         system.transfer.itemsConfig = itemsConfig
 
+        let targets = []
+        let targetsData
+
         if (this.config.useSelection) {
           const selectable = this.el[Trait.INSTANCES]?.selectable
           if (selectable) {
+            targetsData = new WeakMap()
             selectable.ensureSelected(target)
-            const { elements } = selectable
-            targets = [...elements]
+            const { elements, selection } = selectable
+
+            for (let i = 0, l = elements.length; i < l; i++) {
+              targetsData.set(elements[i], selection[i])
+              targets.push(elements[i])
+            }
+
+            // always set the clicked target in top of list
             removeItem(targets, target)
             targets.unshift(target)
+
             selectable.clear()
           } else targets = [target]
         } else targets = [target]
@@ -643,6 +653,10 @@ class Transferable extends Trait {
         }).then(async (rects) => {
           if (this.list) {
             for (const item of rects) item.data = this.list[item.index]
+          } else if (targetsData) {
+            for (const item of rects) {
+              item.data = targetsData.get(item.target)
+            }
           }
 
           system.transfer.items.start(x, y, rects)
