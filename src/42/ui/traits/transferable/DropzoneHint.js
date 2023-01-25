@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import getRects from "../../../fabric/dom/getRects.js"
 import { inRect } from "../../../fabric/geometry/point.js"
 import Canceller from "../../../fabric/classes/Canceller.js"
@@ -202,7 +203,7 @@ export class DropzoneHint {
       )
 
       if (res === false) {
-        originDropzone.customImport = true
+        if (originDropzone) originDropzone.customImport = true
         this.customImport = true
         return
       }
