@@ -22,49 +22,52 @@
     os.desktop.state.errors.push(err)
   })
 
-  os.desktop = await ui({
-    tag: "body.box-fit.box-v._debug",
-    content: [
-      {
-        scope: "desktop",
-        tag: "main#desktop.desktop",
-        content: [
-          {
-            tag: "ui-folder.box-fit.scroll-auto",
-            path: "$HOME/desktop/",
-          },
-        ],
-      },
-      {
-        scope: "taskbar",
-        tag: "footer#taskbar.d-flex.outset.pa-xs",
-        content: [
-          {
-            tag: "button",
-            content: "Start",
-            picto: "puzzle",
-            menu: [{ label: "start", click: "{{start(e, target)}}" }],
-          },
-          {
-            if: "{{/errors.length > 0}}",
-            tag: ".solid.error.ma-l-auto",
-            content: "{{/errors.length}} error(s)",
-          },
-        ],
-        actions: {
-          start(e, target) {
-            console.log("start", e, target)
-          },
-        },
-      },
-    ],
+  document.body.classList.add("desktop")
 
-    state: {
-      errors: [],
-    },
-  })
+  // os.desktop = await ui({
+  //   tag: "body.box-fit.box-v._debug",
+  //   content: [
+  //     {
+  //       scope: "desktop",
+  //       tag: "main#desktop.desktop",
+  //       content: [
+  //         {
+  //           tag: "ui-folder.box-fit.scroll-auto",
+  //           // path: "$HOME/desktop/",
+  //           path: "/",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       scope: "taskbar",
+  //       tag: "footer#taskbar.d-flex.outset.pa-xs",
+  //       content: [
+  //         {
+  //           tag: "button",
+  //           content: "Start",
+  //           picto: "puzzle",
+  //           menu: [{ label: "start", click: "{{start(e, target)}}" }],
+  //         },
+  //         {
+  //           if: "{{/errors.length > 0}}",
+  //           tag: ".solid.error.ma-l-auto",
+  //           content: "{{/errors.length}} error(s)",
+  //         },
+  //       ],
+  //       actions: {
+  //         start(e, target) {
+  //           console.log("start", e, target)
+  //         },
+  //       },
+  //     },
+  //   ],
 
-  io.launchFolders("/tests/fixtures/formats/")
+  //   state: {
+  //     errors: [],
+  //   },
+  // })
+
+  // io.launchFolders("/tests/fixtures/formats/")
   // io.launchFolders("/tests/fixtures/formats/audio/")
 
   // io.launchFiles("/tests/fixtures/formats/video/example.mp4")
@@ -76,7 +79,17 @@
   // ])
   // io.launchFiles("/tests/fixtures/formats/image/example.jpg")
 
-  // import appsManager from "../42/os/managers/appsManager.js"
-  // console.log(appsManager)
+  import appsManager from "../42/os/managers/appsManager.js"
   // appsManager.exec("ImageViewer")
+
+  // appsManager.exec("Textarea", {
+  //   $files: ["/tests/fixtures/formats/example.json"],
+  // })
+
+  appsManager.exec("TextEdit", {
+    $files: [
+      "/tests/fixtures/formats/example.json",
+      "/tests/fixtures/formats/example.json5",
+    ],
+  })
 </script>
