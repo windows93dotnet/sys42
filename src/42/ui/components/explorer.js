@@ -56,7 +56,7 @@ export class Explorer extends Component {
         "capture": true,
         "selector": 'ui-icon[aria-description="file"]',
         "dblclick || Enter || Space":
-          "{{isPicker ? pick(target.path) : open(target.path)}}",
+          "{{isPicker ? pick(target) : open(target.path)}}",
       },
       {
         "Alt+Up": "{{folderUp()}}",
@@ -64,10 +64,51 @@ export class Explorer extends Component {
     ],
   }
 
-  pick(path) {
-    this.folder.autoSelect(path)
+  pick(target) {
+    this.folder.currentView.selectable.ensureSelected(target)
     this.dialog.ok()
   }
+
+  resetFocus() {
+    document.activeElement.blur()
+    queueTask(() => focusInside(this.folder) || this.folder.focus())
+  }
+
+  folderUp(options) {
+    let path = getDirname(this.path)
+    if (!path.endsWith("/")) path += "/"
+    this.path = path
+    if (!options?.keepFocus) this.resetFocus()
+  }
+
+  go(path, options) {
+    if (keyboard.keys.Control) return // TODO: check how to do this in template
+    this.path = path
+
+    if (this.folder.err) {
+      this.message.textContent = this.folder.err
+    } else {
+      this.message.textContent = ""
+      if (!options?.keepFocus) this.resetFocus()
+    }
+  }
+
+  open(path) {
+    if (keyboard.keys.Control) return
+    open(path)
+  }
+
+  displaySelection(selection) {
+    return selection.length > 1
+      ? JSON.stringify(selection).slice(1, -1)
+      : selection[0]
+  }
+
+  // async getItemsLength() {
+  //   await this.folder.ready
+  //   console.log(this.folder.currentView)
+  //   return this.folder.currentView.items.length
+  // }
 
   render() {
     return [
@@ -77,19 +118,13 @@ export class Explorer extends Component {
           {
             label: "File",
             content: [
-              {
-                label: "Exit", //
-                click: "{{dialog.close()}}",
-              },
+              { label: "Exit", click: "{{dialog.close()}}" }, //
             ],
           },
           {
             label: "View",
             content: [
-              {
-                label: "Select all",
-                click: "{{folder.selectAll()}}",
-              },
+              { label: "Select all", click: "{{folder.selectAll()}}" }, //
             ],
           },
         ],
@@ -140,13 +175,13 @@ export class Explorer extends Component {
         ],
       },
       {
+        entry: "folder",
         tag: "ui-folder.inset.paper",
         path: "{{path}}",
         view: "{{view}}",
         glob: "{{glob}}",
         selection: "{{selection}}",
         multiselectable: "{{multiselectable}}",
-        entry: "folder",
       },
       {
         tag: ".message",
@@ -159,7 +194,7 @@ export class Explorer extends Component {
           {
             tag: ".pa-y-xs.pa-x-md.ma-r-xs.inset-shallow.panel.item-shrink",
             content:
-              "{{folder.items.length}} {{pluralize('item', folder.items.length)}}",
+              "{{folder.currentView.items.length}} {{pluralize('item', folder.currentView.items.length)}}",
           },
           {
             tag: "input.inset-shallow.panel",
@@ -171,41 +206,6 @@ export class Explorer extends Component {
         ],
       },
     ]
-  }
-
-  resetFocus() {
-    document.activeElement.blur()
-    queueTask(() => focusInside(this.folder) || this.folder.focus())
-  }
-
-  folderUp(options) {
-    let path = getDirname(this.path)
-    if (!path.endsWith("/")) path += "/"
-    this.path = path
-    if (!options?.keepFocus) this.resetFocus()
-  }
-
-  go(path, options) {
-    if (keyboard.keys.Control) return // TODO: check how to do this in template
-    this.path = path
-
-    if (this.folder.err) {
-      this.message.textContent = this.folder.err
-    } else {
-      this.message.textContent = ""
-      if (!options?.keepFocus) this.resetFocus()
-    }
-  }
-
-  open(path) {
-    if (keyboard.keys.Control) return
-    open(path)
-  }
-
-  displaySelection(selection) {
-    return selection.length > 1
-      ? JSON.stringify(selection).slice(1, -1)
-      : selection[0]
   }
 }
 
@@ -232,13 +232,13 @@ export async function explorer(path = "/", options) {
         style: { width: "400px", height: "350px" },
 
         content: {
+          entry: "explorer",
           tag: "ui-explorer",
           path: "{{path}}",
           selection: "{{selection}}",
           glob: "{{glob}}",
           isPicker: options?.isPicker,
           parentEntry: "dialog",
-          entry: "explorer",
         },
 
         state: { path, selection, glob },

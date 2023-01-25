@@ -13,7 +13,7 @@
 
   content: [
     {
-      tag: ".box-center.scroll-1.max-w-full.inset.checkboard",
+      tag: ".flex-h.scroll-1.max-w-full.inset.checkboard",
       content: {
         tag: "img",
         style: {
@@ -22,6 +22,7 @@
           "height": "{{display !== '100%' ? '100%' : 'auto'}}",
           "width": "{{display !== '100%' ? '100%' : 'auto'}}",
           "max-width": "none",
+          "margin": "auto",
         },
         src: "{{$files/0/url}}",
         on: {
