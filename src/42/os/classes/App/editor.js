@@ -37,7 +37,8 @@ const editor = {
         },
         {
           $id: "saveAll",
-          disabled: "{{$files.length === 0}}",
+          // disabled: "{{$files.length === 0}}",
+          disabled: true,
           label: "Save All",
           click: "{{editor.saveAll()}}",
         },
@@ -122,12 +123,6 @@ editor.init = (app) => {
 
   const defaultFolder = manifest.defaultFolder ?? "$HOME"
 
-  setTimeout(() => {
-    // state.$files.push({ path: "/tests/fixtures/formats/example.html" })
-    const file = new File(["hello"], "hello.txt")
-    state.$files.push({ file })
-  }, 0)
-
   app.stage.actions.assign("/editor", {
     newFile() {
       if (manifest.multiple !== true) state.$files.length = 0
@@ -205,9 +200,9 @@ editor.init = (app) => {
         )
         .then(({ ok, selection }) => {
           if (ok && selection.length > 0) {
-            const [first, ...rest] = selection
             if (manifest.multiple !== true) state.$files.length = 0
 
+            const [first, ...rest] = selection
             const i = state.$files.push({ path: first })
             state.$current = i - 1
 
@@ -223,9 +218,9 @@ editor.init = (app) => {
       const fileImport = await import("../../../fabric/type/file/fileImport.js") //
         .then((m) => m.default)
 
-      const [first, ...rest] = await fileImport(decode)
       if (manifest.multiple !== true) state.$files.length = 0
 
+      const [first, ...rest] = await fileImport(decode)
       const i = state.$files.push({ file: first })
       state.$current = i - 1
 

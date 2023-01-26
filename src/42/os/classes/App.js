@@ -10,8 +10,8 @@ import configure from "../../core/configure.js"
 import toKebabCase from "../../fabric/type/string/case/toKebabCase.js"
 import noop from "../../fabric/type/function/noop.js"
 import editor from "./App/editor.js"
-import postrenderAutofocus from "../../ui/postrenderAutofocus.js"
-import queueTask from "../../fabric/type/function/queueTask.js"
+// import postrenderAutofocus from "../../ui/postrenderAutofocus.js"
+// import queueTask from "../../fabric/type/function/queueTask.js"
 
 // TODO: check if rpc functions can be injecteds
 import "../../fabric/browser/openInNewTab.js"
@@ -172,8 +172,12 @@ export default class App extends UI {
 
   constructor(manifest) {
     manifest.state ??= {}
-    manifest.state.$files ??= []
     manifest.state.$current ??= 0
+    manifest.state.$files ??= []
+    if (manifest.empty === false && manifest.state.$files.length === 0) {
+      manifest.state.$files.push({ name: "untitled" })
+    }
+
     for (let i = 0, l = manifest.state.$files.length; i < l; i++) {
       manifest.state.$files[i] = new FileAgent(
         manifest.state.$files[i],
@@ -190,6 +194,7 @@ export default class App extends UI {
         dropzone: "arrow",
         accept: "$file",
         import: ({ paths, index }) => {
+          if (manifest.multiple !== true) this.state.$files.length = 0
           index ??= this.state.$files.length
           this.state.$files.splice(index, 0, ...paths)
           this.state.$current = index
@@ -211,25 +216,24 @@ export default class App extends UI {
 
     const option = { silent: true }
 
-    this.reactive
-      .on("prerender", (queue) => {
-        for (const [loc, deleted] of queue.objects) {
-          if (!deleted && loc.startsWith("/$files/")) {
-            const $file = this.reactive.get(loc)
-            if (!($file instanceof FileAgent)) {
-              this.reactive.set(loc, new FileAgent($file, manifest), option)
-            }
+    this.reactive.on("prerender", (queue) => {
+      for (const [loc, deleted] of queue.objects) {
+        if (!deleted && loc.startsWith("/$files/")) {
+          const $file = this.reactive.get(loc)
+          if (!($file instanceof FileAgent)) {
+            this.reactive.set(loc, new FileAgent($file, manifest), option)
           }
         }
-      })
-      .on("postrender", (changed) => {
-        for (const loc of changed) {
-          if (loc.startsWith("/$files/")) {
-            queueTask(() => postrenderAutofocus(this.el))
-            break
-          }
-        }
-      })
+      }
+    })
+    // .on("postrender", (changed) => {
+    //   for (const loc of changed) {
+    //     if (loc.startsWith("/$files/")) {
+    //       // requestAnimationFrame(() => postrenderAutofocus(this.el))
+    //       break
+    //     }
+    //   }
+    // })
 
     if (!inTop) {
       import("../../core/ipc.js").then(({ ipc }) => {

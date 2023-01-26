@@ -5,6 +5,7 @@
   description: "A simple text editor using textarea",
 
   multiple: true,
+  empty: false,
   width: 300,
   height: 300,
 
