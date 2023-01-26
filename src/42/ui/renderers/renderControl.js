@@ -58,11 +58,15 @@ export default function renderControl(el, stage, plan) {
   el.id ||= hash(stage.steps)
 
   if (plan.bind) {
+    let changeFromInput
     let scopeFrom
     let scopeTo
     if (plan.bind.from) {
       scopeFrom = getBindScope(stage, plan.bind.from)
-      register(stage, scopeFrom, async (val) => setControlData(el, await val))
+      register(stage, scopeFrom, async (val) => {
+        if (changeFromInput) changeFromInput = false
+        else setControlData(el, await val)
+      })
     }
 
     if (plan.bind.to) {
@@ -71,7 +75,10 @@ export default function renderControl(el, stage, plan) {
           ? scopeFrom
           : getBindScope(stage, plan.bind.to)
 
-      const fn = () => stage.reactive.set(scopeTo, getControlData(el))
+      const fn = () => {
+        if (scopeFrom === scopeTo) changeFromInput = true
+        stage.reactive.set(scopeTo, getControlData(el))
+      }
 
       plan.on ??= []
       plan.on.push(

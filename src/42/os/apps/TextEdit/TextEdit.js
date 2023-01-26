@@ -62,6 +62,7 @@ export default {
           style: { tabSize: "{{/tabSize}}" },
           spellcheck: "{{/spellcheck}}",
           wrap: "{{/wrap ? 'soft' : 'off'}}",
+          lazy: true,
           prose: false,
           compact: true,
           autofocus: true,

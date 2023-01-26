@@ -10,8 +10,8 @@ import configure from "../../core/configure.js"
 import toKebabCase from "../../fabric/type/string/case/toKebabCase.js"
 import noop from "../../fabric/type/function/noop.js"
 import editor from "./App/editor.js"
-// import postrenderAutofocus from "../../ui/postrenderAutofocus.js"
-// import queueTask from "../../fabric/type/function/queueTask.js"
+import postrenderAutofocus from "../../ui/postrenderAutofocus.js"
+import queueTask from "../../fabric/type/function/queueTask.js"
 
 // TODO: check if rpc functions can be injecteds
 import "../../fabric/browser/openInNewTab.js"
@@ -216,24 +216,25 @@ export default class App extends UI {
 
     const option = { silent: true }
 
-    this.reactive.on("prerender", (queue) => {
-      for (const [loc, deleted] of queue.objects) {
-        if (!deleted && loc.startsWith("/$files/")) {
-          const $file = this.reactive.get(loc)
-          if (!($file instanceof FileAgent)) {
-            this.reactive.set(loc, new FileAgent($file, manifest), option)
+    this.reactive
+      .on("prerender", (queue) => {
+        for (const [loc, deleted] of queue.objects) {
+          if (!deleted && loc.startsWith("/$files/")) {
+            const $file = this.reactive.get(loc)
+            if (!($file instanceof FileAgent)) {
+              this.reactive.set(loc, new FileAgent($file, manifest), option)
+            }
           }
         }
-      }
-    })
-    // .on("postrender", (changed) => {
-    //   for (const loc of changed) {
-    //     if (loc.startsWith("/$files/")) {
-    //       // requestAnimationFrame(() => postrenderAutofocus(this.el))
-    //       break
-    //     }
-    //   }
-    // })
+      })
+      .on("postrender", (changed) => {
+        for (const loc of changed) {
+          if (loc.startsWith("/$files/")) {
+            queueTask(() => postrenderAutofocus(this.el))
+            break
+          }
+        }
+      })
 
     if (!inTop) {
       import("../../core/ipc.js").then(({ ipc }) => {
@@ -245,13 +246,6 @@ export default class App extends UI {
           .catch(noop)
       })
     }
-
-    // this.state.$files.push({ path: "/tests/fixtures/formats/example.html" })
-    // this.state.$files.push("/tests/fixtures/formats/example.html")
-    // this.state.$files.push({ name: "untitled" })
-    // this.state.$current = 2
-
-    // this.state.$files.length = 0
 
     editor.init(this)
   }
