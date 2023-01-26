@@ -1,4 +1,3 @@
-import FileAgent from "./FileAgent.js"
 import supportInstall from "../../../core/env/supportInstall.js"
 
 const editor = {
@@ -15,11 +14,11 @@ const editor = {
           click: "{{editor.newFile(}}",
         },
         {
-          $id: "openFile",
+          $id: "openFiles",
           label: "Open…",
           picto: "folder-open",
           shortcut: "Ctrl+O",
-          click: "{{editor.openFile(}}",
+          click: "{{editor.openFiles()}}",
         },
         {
           $id: "saveFile",
@@ -31,22 +30,37 @@ const editor = {
         {
           $id: "saveFileAs",
           label: "Save As…",
-          picto: "save",
           shortcut: "Ctrl+Shift+S",
           click: "{{editor.saveFileAs()}}",
         },
+        {
+          $id: "saveAll",
+          label: "Save All",
+          click: "{{editor.saveAll()}}",
+        },
         "---",
         {
-          $id: "import",
+          $id: "importFiles",
           label: "Import…",
           picto: "import",
-          click: "{{editor.import()}}",
+          click: "{{editor.importFiles()}}",
         },
         {
-          $id: "export",
+          $id: "exportFile",
           label: "Export…",
           picto: "export",
-          click: "{{editor.export()}}",
+          click: "{{editor.exportFile()}}",
+        },
+        "---",
+        {
+          $id: "closeFile",
+          label: "Close",
+          click: "{{editor.closeFile()}}",
+        },
+        {
+          $id: "closeAll",
+          label: "Close All",
+          click: "{{editor.closeAll()}}",
         },
         "---",
         {
@@ -109,82 +123,113 @@ editor.init = (app) => {
   //   })
   // })
 
-  const defaultFolder = manifest.defaultFolder ?? "/users/anonymous/" // "$HOME"
-
-  // setTimeout(() => {
-  //   FileAgent.recycle(state.$files, 0, "/style.css")
-  // }, 100)
+  const defaultFolder = manifest.defaultFolder ?? "$HOME"
 
   app.stage.actions.assign("/editor", {
     newFile() {
-      FileAgent.recycle(state.$files, 0, { path: undefined, dirty: false })
+      if (manifest.multiple !== true) state.$files.length = 0
+      const i = state.$files.push(manifest.emptyFile ?? { name: "untitled" })
+      state.$current = i - 1
+    },
+    closeFile() {
+      state.$files.splice(state.$current, 1)
+    },
+    closeAll() {
+      state.$files.length = 0
     },
 
     /* save/export
     -------------- */
     async saveFile() {
-      if (state.$files[0]?.path) {
+      const i = state.$current
+      const $file = state.$files[i]
+      if ($file?.path) {
         const [blob, fs] = await Promise.all([
-          state.$files[0].blob,
+          $file.blob,
           import("../../../core/fs.js") //
             .then(({ fs }) => fs),
         ])
-        await fs.write(state.$files[0].path, blob)
-        state.$files[0].dirty = false
+        await fs.write($file.path, blob)
+        $file.dirty = false
       } else {
         await app.run.editor.saveFileAs()
       }
     },
     async saveFileAs() {
-      if (!state.$files[0]) return
-
-      FileAgent.recycle(state.$files, 0) // Ensure modified data are stored in a FileAgent
+      const i = state.$current
+      const $file = state.$files[i]
+      if (!$file) return
 
       const [data, filePickerSave] = await Promise.all([
-        state.$files[0].blob,
+        $file.blob,
         import("../../../ui/invocables/filePickerSave.js") //
           .then(({ filePickerSave }) => filePickerSave),
       ])
       const { ok, path } = await filePickerSave(
-        state.$files[0]?.path ?? defaultFolder,
+        $file?.path ?? defaultFolder, //
         { data }
       )
       if (ok) {
-        state.$files[0].updatePath(path)
-        state.$files[0].dirty = false
+        $file.updatePath(path)
+        $file.dirty = false
       }
     },
-    async export() {
-      if (!state.$files[0]) return
+    async saveAll() {
+      console.log("saveAll")
+    },
+    async exportFile() {
+      const i = state.$current
+      const $file = state.$files[i]
+      if (!$file) return
+
       const [blob, fileExport] = await Promise.all([
-        state.$files[0].blob,
+        $file.blob,
         import("../../../fabric/type/file/fileExport.js") //
           .then((m) => m.default),
       ])
-      await fileExport(new File([blob], state.$files[0].name), encode)
+      await fileExport(new File([blob], $file.name), encode)
     },
 
     /* open/import
     -------------- */
-    async openFile() {
+    async openFiles() {
       await import("../../../ui/invocables/filePickerOpen.js") //
         .then(({ filePickerOpen }) =>
-          filePickerOpen(state.$files[0]?.path ?? defaultFolder, {
-            files: false,
-          })
+          filePickerOpen(
+            state.$files[state.$current]?.path ?? defaultFolder, //
+            { files: false }
+          )
         )
         .then(({ ok, selection }) => {
           if (ok && selection.length > 0) {
-            FileAgent.recycle(state.$files, 0, selection[0])
+            const [first, ...rest] = selection
+            if (manifest.multiple !== true) state.$files.length = 0
+
+            const i = state.$files.push({ path: first })
+            state.$current = i - 1
+
+            if (manifest.multiple === true) {
+              for (const path of rest) {
+                state.$files.push({ path })
+              }
+            }
           }
         })
     },
-    async import() {
+    async importFiles() {
       const fileImport = await import("../../../fabric/type/file/fileImport.js") //
         .then((m) => m.default)
-      const [file] = await fileImport(decode)
-      if (file) {
-        FileAgent.recycle(state.$files, 0, { file, path: undefined })
+
+      const [first, ...rest] = await fileImport(decode)
+      if (manifest.multiple !== true) state.$files.length = 0
+
+      const i = state.$files.push({ file: first })
+      state.$current = i - 1
+
+      if (manifest.multiple === true) {
+        for (const file of rest) {
+          state.$files.push({ file })
+        }
       }
     },
 
