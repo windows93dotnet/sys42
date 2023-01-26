@@ -47,21 +47,6 @@ export default {
 
   content: {
     tag: "ui-tabs",
-    closable: true,
-    transferable: {
-      kind: ["$file", "$app"],
-      accept: "$file",
-      import({ paths, dropzone, index }) {
-        if (dropzone.el.parentElement) {
-          const cpn = dropzone.el.parentElement
-          index ??= cpn.stage.state.$files.length
-          cpn.stage.state.$files.splice(index, 0, ...paths)
-          cpn.stage.state.$current = index
-        }
-
-        return "vanish"
-      },
-    },
     current: "{{$current}}",
     items: "{{$files}}",
     tabTemplate: {
@@ -83,6 +68,21 @@ export default {
           bind: "text",
         },
       ],
+    },
+    closable: true,
+    transferable: {
+      kind: ["$file", "$app"],
+      accept: "$file",
+      import({ paths, dropzone, index }) {
+        if (dropzone.el.parentElement) {
+          const cpn = dropzone.el.parentElement
+          index ??= cpn.stage.state.$files.length
+          cpn.stage.state.$files.splice(index, 0, ...paths)
+          cpn.stage.state.$current = index
+        }
+
+        return "vanish"
+      },
     },
   },
 }

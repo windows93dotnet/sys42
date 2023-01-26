@@ -35,10 +35,11 @@ export default function setControlData(el, val) {
       break
 
     case "textarea": {
-      const top = el.scrollTop
-      const left = el.scrollLeft
+      // const top = el.scrollTop
+      // const left = el.scrollLeft
       el.value = val ?? ""
-      requestAnimationFrame(() => el.scrollTo(top, left))
+      // el.setSelectionRange?.(0, 0)
+      // requestAnimationFrame(() => el.scrollTo(top, left))
       break
     }
 

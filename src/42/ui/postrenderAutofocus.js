@@ -3,11 +3,9 @@ export function postrenderAutofocus(el) {
 
   if (items.length > 0) {
     const item = items[items.length - 1]
+    if (item === document.activeElement) return true
     item.focus({ preventScroll: true })
     item.setSelectionRange?.(0, 0)
-    setTimeout(() => {
-      item.setSelectionRange?.(0, 0)
-    }, 100)
     return true
   }
 
