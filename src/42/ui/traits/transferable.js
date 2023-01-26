@@ -140,20 +140,21 @@ function stopTranfer() {
   system.transfer.active = false
 }
 
-async function haltZones(x, y) {
+async function haltZones(x, y, mode) {
   if (system.transfer.currentZone) {
-    const res = await system.transfer.currentZone.import()
-    if (res === undefined) {
-      await system.transfer.currentZone.drop(x, y)
-    } else if (res === "adopt") {
-      system.transfer.effect = "move"
-    } else if (res === "revert") {
-      system.transfer.effect = "none"
-    } else if (res === "vanish") {
-      system.transfer.effect = "none"
-      system.transfer.items.removeGhosts()
-      return void stopTranfer()
-    }
+    mode ??= await system.transfer.currentZone.import()
+  }
+
+  if (system.transfer.currentZone && mode === undefined) {
+    await system.transfer.currentZone.drop(x, y)
+  } else if (mode === "adopt") {
+    system.transfer.effect = "move"
+  } else if (mode === "revert") {
+    system.transfer.effect = "none"
+  } else if (mode === "vanish") {
+    system.transfer.effect = "none"
+    system.transfer.items.removeGhosts()
+    return void stopTranfer()
   }
 
   if (system.transfer.effect === "move") {
@@ -435,8 +436,8 @@ if (inIframe) {
       if (system.transfer.effect === "none") haltZones(x, y)
       else await haltZones(x, y)
     })
-    .on("42_TF_v_REVERT", async ({ x, y }) => {
-      haltZones(x, y)
+    .on("42_TF_v_REVERT", async ({ x, y, mode }) => {
+      haltZones(x, y, mode)
     })
     .on("42_TF_v_EFFECT", (effect) => {
       applyEffect(effect, { bypassEmit: true })
@@ -511,16 +512,22 @@ if (inIframe) {
         x += context.parentX
         y += context.parentY
 
+        let mode
+
         if (system.transfer.currentZone?.isIframe) {
           if (system.transfer.effect === "move") {
             system.transfer.items.removeGhosts()
           }
         } else if (context.originIframeDropzone) {
+          if (system.transfer.currentZone) {
+            mode = await system.transfer.currentZone.import()
+          }
+
           const { bus } = context.originIframeDropzone
-          await bus.send("42_TF_v_REVERT", { x, y })
+          await bus.send("42_TF_v_REVERT", { x, y, mode })
         }
 
-        haltZones(x, y)
+        haltZones(x, y, mode)
         clear(context)
       }
     })
