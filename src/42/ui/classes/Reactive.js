@@ -39,7 +39,7 @@ export default class Reactive extends Emitter {
 
     const update = () => {
       try {
-        this.emit("queue", this.queue)
+        this.emit("prerender", this.queue)
       } catch (err) {
         dispatch(stage.el, err)
       }
@@ -55,7 +55,7 @@ export default class Reactive extends Emitter {
       this.pendingUpdate = false
 
       try {
-        this.emit("update", ...res)
+        this.emit("postrender", ...res)
       } catch (err) {
         dispatch(stage.el, err)
       }

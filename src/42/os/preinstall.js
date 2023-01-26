@@ -14,6 +14,8 @@ import uid from "../core/uid.js"
 const SHARED_MANIFEST_KEYS = ["description", "categories"]
 
 export default async function preinstall(manifest) {
+  await mimetypesManager.ready
+
   function resolve(url) {
     return new URL(url, manifest.dir).href
   }
@@ -61,7 +63,7 @@ export default async function preinstall(manifest) {
             return out
           }),
         }
-      : {}),
+      : undefined),
     // related_applications: [
     //   {
     //     platform: "webapp",

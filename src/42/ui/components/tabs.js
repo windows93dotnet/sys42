@@ -1,5 +1,5 @@
 import Component from "../classes/Component.js"
-import isFocusable from "../../fabric/dom/isFocusable.js"
+// import isFocusable from "../../fabric/dom/isFocusable.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
 import configure from "../../core/configure.js"
 import { objectifyPlan } from "../normalize.js"
@@ -84,7 +84,7 @@ export class Tabs extends Component {
             each: {
               tag: ".ui-tabs__tab",
               role: "tab",
-              id: `tab-${id}-{{@index}}`,
+              id: `${id}-tab-{{@index}}`,
               style: { "--index": "{{@index}}" },
               tabIndex: "{{../../current === @index ? 0 : -1}}",
               aria: {
@@ -137,24 +137,24 @@ export class Tabs extends Component {
                 tag: ".ui-tabs__panel",
                 role: "tabpanel",
                 id: `${id}-panel-{{@index}}`,
-                tabIndex: 0,
+                // tabIndex: 0,
                 // hidden: "{{../../current !== @index}}",
                 aria: {
-                  labelledby: `tab-${id}-{{@index}}`,
+                  labelledby: `${id}-tab-{{@index}}`,
                   expanded: "{{../../current === @index}}",
                 },
-                on: {
-                  render(e, target) {
-                    queueTask(() => {
-                      if (
-                        isFocusable(target.firstElementChild) ||
-                        target.firstElementChild?.localName === "label"
-                      ) {
-                        target.tabIndex = -1
-                      }
-                    })
-                  },
-                },
+                // on: {
+                //   render(e, target) {
+                //     queueTask(() => {
+                //       if (
+                //         isFocusable(target.firstElementChild) ||
+                //         target.firstElementChild?.localName === "label"
+                //       ) {
+                //         target.tabIndex = -1
+                //       }
+                //     })
+                //   },
+                // },
               },
               panelTemplate
                 ? objectifyPlan(panelTemplate)

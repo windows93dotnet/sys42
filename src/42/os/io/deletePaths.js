@@ -1,7 +1,7 @@
 import fs from "../../core/fs.js"
 import arrify from "../../fabric/type/any/arrify.js"
 
-export default async function deletePath(selection) {
+export default async function deletePaths(selection) {
   if (!selection) return
   const out = []
 

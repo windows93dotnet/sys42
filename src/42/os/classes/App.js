@@ -8,7 +8,10 @@ import getDirname from "../../core/path/core/getDirname.js"
 import escapeTemplate from "../../core/formats/template/escapeTemplate.js"
 import configure from "../../core/configure.js"
 import toKebabCase from "../../fabric/type/string/case/toKebabCase.js"
+import noop from "../../fabric/type/function/noop.js"
 import editor from "./App/editor.js"
+import postrenderAutofocus from "../../ui/postrenderAutofocus.js"
+import queueTask from "../../fabric/type/function/queueTask.js"
 
 // TODO: check if rpc functions can be injecteds
 import "../../fabric/browser/openInNewTab.js"
@@ -110,7 +113,7 @@ export async function mount(manifestPath, options) {
 
     import("../../core/ipc.js") //
       .then(({ ipc }) => {
-        ipc.on("42_IO_READY", async () => system.pwa.files)
+        ipc.on("42_APP_READY", async () => system.pwa.files)
       })
 
     const appShell = new UI({ id, tag: "ui-sandbox.box-fit", ...sandbox })
@@ -179,7 +182,7 @@ export default class App extends UI {
     }
 
     super({
-      tag: ".box-fit.box-v",
+      tag: ".box-fit.box-v.panel",
       content: manifest.menubar
         ? [{ tag: "ui-menubar", content: manifest.menubar }, manifest.content]
         : manifest.content,
@@ -191,16 +194,36 @@ export default class App extends UI {
 
     const option = { silent: true }
 
-    this.reactive.on("queue", (queue) => {
-      for (const [path, deleted] of queue.objects) {
-        if (!deleted && path.startsWith("/$files/")) {
-          const $file = this.reactive.get(path)
-          if (!($file instanceof FileAgent)) {
-            this.reactive.set(path, new FileAgent($file, manifest), option)
+    this.reactive
+      .on("prerender", (queue) => {
+        for (const [loc, deleted] of queue.objects) {
+          if (!deleted && loc.startsWith("/$files/")) {
+            const $file = this.reactive.get(loc)
+            if (!($file instanceof FileAgent)) {
+              this.reactive.set(loc, new FileAgent($file, manifest), option)
+            }
           }
         }
-      }
-    })
+      })
+      .on("postrender", (changed) => {
+        for (const loc of changed) {
+          if (loc.startsWith("/$files/")) {
+            queueTask(() => postrenderAutofocus(this.el))
+            break
+          }
+        }
+      })
+
+    if (!inTop) {
+      import("../../core/ipc.js").then(({ ipc }) => {
+        ipc
+          .send("42_APP_READY")
+          .then((files) => {
+            for (const item of files) this.state.$files.push(item)
+          })
+          .catch(noop)
+      })
+    }
 
     // this.state.$files.push({ path: "/tests/fixtures/formats/example.html" })
     // this.state.$files.push("/tests/fixtures/formats/example.html")

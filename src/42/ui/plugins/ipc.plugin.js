@@ -42,7 +42,7 @@ export default async function ipcPlugin(stage) {
   // const options = { signal: stage.signal }
   const options = {}
   if (inTop) {
-    stage.reactive.on("update", options, (changes, deleteds, source) => {
+    stage.reactive.on("postrender", options, (changes, deleteds, source) => {
       const data = stage.reactive.export(changes, deleteds)
       for (const { iframe, emit } of ipc.iframes.values()) {
         if (iframe !== source) {
@@ -70,7 +70,7 @@ export default async function ipcPlugin(stage) {
   }
 
   if (inIframe) {
-    stage.reactive.on("update", options, (changes, deleteds, source) => {
+    stage.reactive.on("postrender", options, (changes, deleteds, source) => {
       const data = stage.reactive.export(changes, deleteds)
 
       // Parent Iframe --> Top
