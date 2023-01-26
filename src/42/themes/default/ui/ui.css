@@ -7,10 +7,13 @@
   mix-blend-mode: difference;
 }
 
-.dragover,
-.dragover:focus {
-  outline: 2px dashed #999;
-  outline-offset: -6px;
+.dragover::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border: 2px dashed #999;
+  pointer-events: none;
+  z-index: 1e5;
 }
 
 .ghost,
