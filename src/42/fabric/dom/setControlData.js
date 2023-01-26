@@ -8,6 +8,17 @@ export function addPercentProp(target) {
   target.style.setProperty("--percent", getPercent(target))
 }
 
+// @src https://stackoverflow.com/a/55111246
+function setSelectionRange(el, selectionStart, selectionEnd) {
+  const { value, clientHeight } = el
+  el.value = value.slice(0, Math.max(0, selectionEnd))
+  const { scrollHeight } = el
+  el.value = value
+  el.scrollTop =
+    scrollHeight > clientHeight ? scrollHeight - clientHeight / 2 : 0
+  el.setSelectionRange(selectionStart, selectionEnd)
+}
+
 export default function setControlData(el, val) {
   switch (el.type) {
     case "checkbox":
@@ -35,11 +46,12 @@ export default function setControlData(el, val) {
       break
 
     case "textarea": {
-      // const top = el.scrollTop
-      // const left = el.scrollLeft
+      const { selectionStart, selectionEnd } = el
       el.value = val ?? ""
-      // el.setSelectionRange?.(0, 0)
-      // requestAnimationFrame(() => el.scrollTo(top, left))
+      if (document.activeElement === el) {
+        setSelectionRange(el, selectionStart, selectionEnd)
+      }
+
       break
     }
 
