@@ -2,6 +2,7 @@
 import system from "../../system.js"
 import Trait from "../classes/Trait.js"
 import Dragger from "../classes/Dragger.js"
+import setTemp from "../../fabric/dom/setTemp.js"
 import inIframe from "../../core/env/realm/inIframe.js"
 import getRects from "../../fabric/dom/getRects.js"
 import pick from "../../fabric/type/object/pick.js"
@@ -48,7 +49,6 @@ const effectToCursor = {
 }
 
 function applyEffect(name, options) {
-  // console.log(inIframe ? "🪟" : "🌐", Date.now(), name, options?.bypassEmit)
   system.transfer.effect = name
 
   if (options?.bypassEmit !== true) {
@@ -97,21 +97,17 @@ async function makeHints({ itemsConfig, dropzoneConfig }, el) {
   const undones = []
 
   if (itemsConfig) {
-    undones.push(
-      import(`./transferable/${itemsConfig.type}ItemsHint.js`) //
-        .then((m) => m.default(itemsConfig))
-    )
+    undones[0] = import(`./transferable/${itemsConfig.type}ItemsHint.js`) //
+      .then((m) => m.default(itemsConfig))
   }
 
   if (dropzoneConfig) {
-    undones.push(
-      import(`./transferable/${dropzoneConfig.type}DropzoneHint.js`) //
-        .then((m) => m.default(el, dropzoneConfig))
-    )
+    undones[1] = import(`./transferable/${dropzoneConfig.type}DropzoneHint.js`) //
+      .then((m) => m.default(el, dropzoneConfig))
   }
 
   const [itemsHint, dropzoneHint] = await Promise.all(undones)
-  if (dropzoneHint) itemsHint.dropzoneId = dropzoneHint.el.id
+  if (dropzoneHint && itemsHint) itemsHint.dropzoneId = dropzoneHint.el.id
   return { itemsHint, dropzoneHint }
 }
 
@@ -545,6 +541,12 @@ class Transferable extends Trait {
     this.config = configure(options)
     this.config.selector = ensureScopeSelector(this.config.selector, this.el)
 
+    const { position } = getComputedStyle(this.el)
+    if (position === "static") {
+      const { signal } = this.cancel
+      setTemp(this.el, { signal, style: { position: "relative" } })
+    }
+
     const itemsConfig =
       typeof this.config.items === "string"
         ? { type: this.config.items }
@@ -579,10 +581,12 @@ class Transferable extends Trait {
     dropzoneConfig.accept.kind = arrify(dropzoneConfig.accept.kind)
 
     const ms = this.config.animationSpeed
-    itemsConfig.startAnimation ??= { ms }
-    itemsConfig.revertAnimation ??= { ms }
-    itemsConfig.adoptAnimation ??= { ms }
-    itemsConfig.kind ??= arrify(this.config.kind)
+    if (itemsConfig) {
+      itemsConfig.startAnimation ??= { ms }
+      itemsConfig.revertAnimation ??= { ms }
+      itemsConfig.adoptAnimation ??= { ms }
+      itemsConfig.kind ??= arrify(this.config.kind)
+    }
 
     dropzoneConfig.animationSpeed = ms
 
@@ -600,6 +604,8 @@ class Transferable extends Trait {
     if (dropzoneHint) {
       system.transfer.dropzones.set(this.el, dropzoneHint)
     }
+
+    if (!itemsHint) return
 
     let startPromise
     let startReady

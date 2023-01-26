@@ -84,8 +84,8 @@ export class ItemsHint extends Array {
   }
 
   get originDropzone() {
-    const { dropzoneId } = this
-    const dropzoneTarget = document.querySelector(`#${dropzoneId}`)
+    if (!this.dropzoneId) return
+    const dropzoneTarget = document.querySelector(`#${this.dropzoneId}`)
     return dropzoneTarget
       ? system.transfer.dropzones.get(dropzoneTarget)
       : undefined

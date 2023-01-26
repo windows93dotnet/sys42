@@ -229,15 +229,8 @@ export class Folder extends Component {
             const res = transferable?.import?.(details)
             if (res !== undefined) return res
 
-            const { items, effect, isOriginDropzone } = details
+            const { paths, effect, isOriginDropzone } = details
             if (isOriginDropzone && effect === "move") return "revert"
-
-            const paths = []
-            for (const item of items) {
-              const path =
-                item.data?.path ?? item.data ?? item.target.getAttribute("path")
-              if (path) paths.push(path)
-            }
 
             if (effect === "copy") io.copyPaths(paths, this.path)
             else io.movePaths(paths, this.path)

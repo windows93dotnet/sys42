@@ -181,11 +181,28 @@ export default class App extends UI {
       )
     }
 
+    const content = {
+      tag: ".box-v",
+      content: manifest.content,
+      transferable: {
+        items: false,
+        findNewIndex: false,
+        dropzone: "arrow",
+        accept: "$file",
+        import: ({ paths, index }) => {
+          index ??= this.state.$files.length
+          this.state.$files.splice(index, 0, ...paths)
+          this.state.$current = index
+          return "vanish"
+        },
+      },
+    }
+
     super({
       tag: ".box-fit.box-v.panel",
       content: manifest.menubar
-        ? [{ tag: "ui-menubar", content: manifest.menubar }, manifest.content]
-        : manifest.content,
+        ? [{ tag: "ui-menubar", content: manifest.menubar }, content]
+        : content,
       state: manifest.state,
       initiator: manifest.initiator,
     })

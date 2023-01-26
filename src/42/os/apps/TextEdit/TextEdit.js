@@ -51,14 +51,7 @@ export default {
     transferable: {
       kind: ["$file", "$app"],
       accept: "$file",
-      import({ items, dropzone, index }) {
-        const paths = []
-        for (const item of items) {
-          const path =
-            item.data?.path ?? item.data ?? item.target.getAttribute("path")
-          if (path) paths.push({ path })
-        }
-
+      import({ paths, dropzone, index }) {
         if (dropzone.el.parentElement) {
           const cpn = dropzone.el.parentElement
           index ??= cpn.stage.state.$files.length
