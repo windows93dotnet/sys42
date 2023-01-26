@@ -4,6 +4,7 @@
   categories: ["utilities", "productivity", "development"],
   description: "A simple text editor using textarea",
 
+  multiple: true,
   width: 300,
   height: 300,
 
