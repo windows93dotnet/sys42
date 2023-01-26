@@ -9,13 +9,9 @@ sys42
 
 ## Does this answer the Ultimate Question ?
 
-tl;dr: Nope, but it can help you build desktop interfaces using web technologies.
+tl;dr: Nope, but it can help you build interfaces and desktop-like apps using web technologies, as depicted by [Atwood's Law](https://blog.codinghorror.com/the-principle-of-least-power/).
 
-### Fine, but why making desktop-like GUI on the web ?
-
-Because this project started as a cleanup of the [windows93.net](https://windows93.xyz) codebase, a website mimicking old microsoft windows interfaces.
-
-Also, [Atwood's Law](https://blog.codinghorror.com/the-principle-of-least-power/).
+This project started as a cleanup of the [windows93.net](https://windows93.xyz) codebase, a platform mimicking old desktop interfaces.
 
 Here is a glimpse of what's inside :
 
@@ -30,13 +26,28 @@ Most of the files in this repository are standalone javascript and css modules/u
 
 ## UI Framework
 
-Using the `ui` function is like declaring HTML using JSON.
+Using the `ui` function is like declaring HTML using JSON. \
+It has reactive templates inspired by vue.js.
 
-We're not proud to re-invent HTML markup, but JavaScript is not DX friendly for making HTML elements.
-
-And in the context of a Fantasy OS like windows93, that type of declaration could be safer if 3rd party apps can't execute JavaScript without user permission (because app can be made using JSON, not JavaScript functions or HTML with XSS).
-
-[...]
+```js
+ui(".destination", {
+  tag: "main",
+  content: [
+    {
+      tag: "button.pa-xl",
+      content: "Increment",
+      click: "{{cnt++}}",
+    },
+    {
+      tag: "output",
+      content: "{{cnt}}",
+    },
+  ],
+  state: {
+    cnt: 0,
+  },
+})
+```
 
 ## UI Components
 
@@ -61,21 +72,19 @@ Using the `ui` function
 ui({ tag: "ui-picto", value: "puzzle", tooltip: "Modules" })
 ```
 
-[...]
-
 ## Project Philosophies
 
 ### Desktop First
 
 _Desktop First_ means it's not designed as many UI components made for websites and mobile apps.
 The main goal here is to make something close to GTK/Qt for HTML.
-In the same way the term _Mobile First_ also implies that you can make desktop apps with it, we're trying to make all our components inclusives for any users and devices.
+But also, in the same way the term _Mobile First_ also implies that you can make desktop apps with it, we're trying to make all our components inclusives for any users, devices and screen sizes.
 
 ### Inclusive Design
 
 To make it short _[Inclusive Design](https://24ways.org/2016/what-the-heck-is-inclusive-design/)_ is a term combining web accessibility and responsive design.
 We tried to follow good practices and semantic markup to help every users.
-Thoses who use small screens, touch devices, screen readers, stylus, gamepads, MIDI controllers...
+Those who use small screens, touch devices, screen readers, stylus, gamepads, MIDI controllers...
 (The only ones we don't think about are [Safari users](https://issafarithenewie.com/)).
 
 ## Tomorrow is teh future
@@ -85,9 +94,9 @@ The project is still in an experimental phase, here are the current list of prio
 - DX (developer experience) with consistant API and function naming/signature
 - DRY and modularity
 - Inclusive Design (UX, a11y...)
-- Lightweight
 - Security
 - Performance
+- Lightweight
 
 > 🐬 Totally suitable for use in production. Trust me... im a dolphin. <sup><a href="#a1">[1]</a></sup>
 
@@ -107,8 +116,7 @@ Also, please, before submiting a bug, note that we're currently only supporting 
 
 ## Code of Conduct
 
-We are not on windows93's trollbox here, so like in any public project: No insults, disrespect or provocative material of any kind will be tolerated in any interactions here (commit message, issues, comments...).
-(And yes, even when "it's funny", "for roleplaying" or "just for trolling").
+No insults, disrespect or provocative material of any kind will be tolerated in any interactions here (commit message, issues, comments...).
 
 ## Sources
 
@@ -119,14 +127,12 @@ For consistant naming and API we refactored (and sometimes improved) many useful
 > Some original API were too good and didn't need any changes. We did some rewrite from scratch when original scripts didn't fit well our codebase, either because original implementation was too big, too old (no ES modules) or not specific enough. \
 > While doing that, an habit emmerged: STDD (Stolen Test Driven Development).
 
-Many thanks to all authors who shared that knowledge! We tried to mention licences and credits as much as possible, but please contact us if you think we forgot you or if you disagree with licence usage.
+Many thanks to all authors who shared that knowledge! We tried to mention licenses and credits as much as possible, but please contact us if you think we forgot you or if you disagree with license usage.
 
 We know it's far from a perfect solution when considering open source contribution.
 But the project modularity nature is a bit too much entangled to use most existing 3rd party modules.
 
 ## How to use
-
-[...]
 
 <pre id="a1" style="font-size: 70%; line-height:1.2;">
 [1] sys42 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY. Without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the License for more details.

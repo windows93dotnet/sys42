@@ -22,6 +22,7 @@ const editor = {
         },
         {
           $id: "saveFile",
+          disabled: "{{$files.length === 0}}",
           label: "Save",
           picto: "save",
           shortcut: "Ctrl+S",
@@ -29,12 +30,14 @@ const editor = {
         },
         {
           $id: "saveFileAs",
+          disabled: "{{$files.length === 0}}",
           label: "Save As…",
           shortcut: "Ctrl+Shift+S",
           click: "{{editor.saveFileAs()}}",
         },
         {
           $id: "saveAll",
+          disabled: "{{$files.length === 0}}",
           label: "Save All",
           click: "{{editor.saveAll()}}",
         },
@@ -47,6 +50,7 @@ const editor = {
         },
         {
           $id: "exportFile",
+          disabled: "{{$files.length === 0}}",
           label: "Export…",
           picto: "export",
           click: "{{editor.exportFile()}}",
@@ -54,11 +58,14 @@ const editor = {
         "---",
         {
           $id: "closeFile",
+          disabled: "{{$files.length === 0}}",
           label: "Close",
+          shortcut: "Alt+W",
           click: "{{editor.closeFile()}}",
         },
         {
           $id: "closeAll",
+          disabled: "{{$files.length === 0}}",
           label: "Close All",
           click: "{{editor.closeAll()}}",
         },
@@ -113,17 +120,13 @@ editor.init = (app) => {
   const { state, manifest } = app
   const { encode, decode, dir } = manifest
 
-  // import("../../../io.js").then(({ default: io }) => {
-  //   io.listenImport()
-  //   io.on("import", ([{ id, file }]) => {
-  //     FileAgent.recycle(state.$files, 0, { id, file })
-  //   })
-  //   io.on("paths", ([path]) => {
-  //     FileAgent.recycle(state.$files, 0, path)
-  //   })
-  // })
-
   const defaultFolder = manifest.defaultFolder ?? "$HOME"
+
+  setTimeout(() => {
+    // state.$files.push({ path: "/tests/fixtures/formats/example.html" })
+    const file = new File(["hello"], "hello.txt")
+    state.$files.push({ file })
+  }, 0)
 
   app.stage.actions.assign("/editor", {
     newFile() {

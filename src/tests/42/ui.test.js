@@ -264,7 +264,7 @@ test("update", async (t) => {
 
   const stub = t.stub()
 
-  app.reactive.on("update", stub)
+  app.reactive.on("postrender", stub)
 
   t.is(app.el.innerHTML, "abc")
   t.is(stub.count, 0)
@@ -304,7 +304,7 @@ test("update throttle", async (t) => {
 
   const stub = t.stub()
 
-  app.reactive.on("update", stub)
+  app.reactive.on("postrender", stub)
 
   t.is(app.el.innerHTML, "abc")
   t.is(stub.count, 0)
@@ -340,7 +340,7 @@ test("update throttle", "using throttle:false", async (t) => {
 
   const stub = t.stub()
 
-  app.reactive.on("update", stub)
+  app.reactive.on("postrender", stub)
 
   t.is(app.el.innerHTML, "abc")
   t.is(stub.count, 0)
@@ -376,7 +376,7 @@ test("update throttle", "using updateNow", async (t) => {
 
   const stub = t.stub()
 
-  app.reactive.on("update", stub)
+  app.reactive.on("postrender", stub)
 
   t.is(app.el.innerHTML, "abc")
   t.is(stub.count, 0)
@@ -413,7 +413,7 @@ test("update throttle", "using silent:true", async (t) => {
 
   const stub = t.stub()
 
-  app.reactive.on("update", stub)
+  app.reactive.on("postrender", stub)
 
   t.is(app.el.innerHTML, "abc")
   t.is(stub.count, 0)
@@ -2012,7 +2012,7 @@ test("computed", async (t) => {
   )
 
   const updates = ["/formated", "/parsed"]
-  app.reactive.on("update", (changes) => {
+  app.reactive.on("postrender", (changes) => {
     t.is(updates.shift(), [...changes][0])
   })
 

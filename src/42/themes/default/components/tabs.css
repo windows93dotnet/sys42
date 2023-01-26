@@ -23,7 +23,7 @@
 
   --tabs__panel-fg: var(--panel-fg);
   --tabs__panel-bg: var(--panel-bg);
-  --tabs__panel-pa: var(--unit-sm);
+  --tabs__panel-pa: var(--unit-xs);
   --tabs__panel-bdw: var(--outset-bdw);
   --tabs__panel-bds: var(--outset-bds);
   --tabs__panel-bdc: var(--outset-bdc);
@@ -103,10 +103,8 @@ ui-tabs {
 
 .ui-tabs__tablist::-webkit-scrollbar { display: none; }
 
-.ui-tabs__tablist:empty {
-  border: 1px dashed;
-  opacity: 0.4;
-  min-height: 4ex;
+:where(.ui-tabs__tablist:empty) {
+  min-height: calc(2lh + calc(2 * var(--tabs__tab-pa)));
 }
 
 .ui-tabs__tab {

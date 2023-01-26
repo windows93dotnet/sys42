@@ -230,7 +230,7 @@ export class Folder extends Component {
             if (res !== undefined) return res
 
             const { items, effect, isOriginDropzone } = details
-            if (isOriginDropzone) return "revert"
+            if (isOriginDropzone && effect === "move") return "revert"
 
             const paths = []
             for (const item of items) {

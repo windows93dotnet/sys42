@@ -1856,7 +1856,7 @@ test("computed", async (t) => {
     "/$ui/t-computed/root/formated",
     "/$ui/t-computed/root/parsed",
   ]
-  app.reactive.on("update", (changes) => {
+  app.reactive.on("postrender", (changes) => {
     t.is(updates.shift(), [...changes][0])
   })
 
@@ -1933,7 +1933,7 @@ test("computed", "from prop with state:true", async (t) => {
   )
 
   const updates = ["/formated", "/$ui/t-compu-sta/root/parsed"]
-  app.reactive.on("update", (changes) => {
+  app.reactive.on("postrender", (changes) => {
     t.is(updates.shift(), [...changes][0])
   })
 
@@ -2020,7 +2020,7 @@ test("computed", "computed prop", async (t) => {
     "/$ui/t-compu-prop/root/formated",
     "/$ui/t-compu-prop/root/parsed",
   ]
-  app.reactive.on("update", (changes) => {
+  app.reactive.on("postrender", (changes) => {
     t.is(updates.shift(), [...changes][0])
   })
 

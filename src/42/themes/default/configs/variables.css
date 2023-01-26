@@ -34,7 +34,7 @@
 
   --font-sans: var(--fs-sans)/var(--lh-sans) var(--_ff-sans);
 
-  --fs-mono: 9px;
+  --fs-mono: 10px;
   --lh-mono: 1.222223;
   --_ff-mono:
     var(--ff-mono, --EMPTY),
