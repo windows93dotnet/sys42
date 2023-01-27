@@ -91,6 +91,38 @@ class AppsManager extends ConfigFile {
     const app = this.value[appName]
     return App.launch(app.manifestPath, { state })
   }
+
+  async makeMenu(apps) {
+    await this.ready
+    apps ??= this.value
+
+    const menu = []
+    const undones = []
+
+    for (const [appName, { manifestPath }] of Object.entries(apps)) {
+      if (appName === "version") continue
+
+      undones.push(
+        App.getIcons(manifestPath).then((icons) => {
+          const menuItem = {
+            label: appName,
+            click: () => {
+              this.exec(appName)
+            },
+          }
+
+          for (const { sizes, src } of icons) {
+            if (sizes === "16x16") menuItem.picto = src
+          }
+
+          menu.push(menuItem)
+        })
+      )
+    }
+
+    await Promise.all(undones)
+    return menu
+  }
 }
 
 const appsManager = new AppsManager(".apps.json")

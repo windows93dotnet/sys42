@@ -52,7 +52,7 @@
             tag: "button",
             content: "Start",
             picto: "puzzle",
-            menu: [{ label: "start", click: "{{start(e, target)}}" }],
+            menu: await os.apps.makeMenu(),
           },
           {
             if: "{{/errors.length > 0}}",
@@ -60,11 +60,6 @@
             content: "{{/errors.length}} error(s)",
           },
         ],
-        actions: {
-          start(e, target) {
-            console.log("start", e, target)
-          },
-        },
       },
     ],
 

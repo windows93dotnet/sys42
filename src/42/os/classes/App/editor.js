@@ -123,10 +123,6 @@ editor.init = (app) => {
 
   const defaultFolder = manifest.defaultFolder ?? "$HOME/"
 
-  setTimeout(() => {
-    state.$files.push("/tests/fixtures/formats/example.json5")
-  }, 0)
-
   app.stage.actions.assign("/editor", {
     newFile() {
       if (manifest.multiple !== true) state.$files.length = 0
@@ -143,8 +139,9 @@ editor.init = (app) => {
     /* save/export
     -------------- */
     async saveFile() {
-      const i = state.$current
-      const $file = state.$files[i]
+      const $file = state.$files[state.$current]
+      if (!$file) return
+
       if ($file?.path) {
         const [blob, fs] = await Promise.all([
           $file.blob,
@@ -158,8 +155,7 @@ editor.init = (app) => {
       }
     },
     async saveFileAs() {
-      const i = state.$current
-      const $file = state.$files[i]
+      const $file = state.$files[state.$current]
       if (!$file) return
 
       const [data, filePickerSave] = await Promise.all([
@@ -180,8 +176,7 @@ editor.init = (app) => {
       console.log("saveAll")
     },
     async exportFile() {
-      const i = state.$current
-      const $file = state.$files[i]
+      const $file = state.$files[state.$current]
       if (!$file) return
 
       const [blob, fileExport] = await Promise.all([
