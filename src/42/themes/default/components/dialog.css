@@ -73,7 +73,7 @@ ui-dialog:focus {
 .ui-dialog__title {
   flex: 1;
   padding: 0 var(--unit-md);
-  display: inline-block;
+  display: inline-flex;
   margin: 0;
   font-size: inherit;
   font-weight: inherit;
@@ -83,9 +83,13 @@ ui-dialog:focus {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  gap: var(--unit-sm);
+
+  align-items: center;
 }
 
 .ui-dialog__title::before {
   content: var(--ZERO_WIDTH_SPACE);
   speak: none;
+  margin-right: calc(-1 * var(--unit-sm));
 }
