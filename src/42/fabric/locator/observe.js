@@ -1,3 +1,5 @@
+import queueTask from "../type/function/queueTask.js"
+
 export default function observe(root, options = {}) {
   const revokes = new Set()
   const proxies = new WeakMap()
@@ -116,8 +118,10 @@ export default function observe(root, options = {}) {
   revokes.add(revoke)
 
   const destroy = () => {
-    for (const revoke of revokes) revoke()
-    revokes.clear()
+    queueTask(() => {
+      for (const revoke of revokes) revoke()
+      revokes.clear()
+    })
   }
 
   options.signal?.addEventListener("abort", destroy)

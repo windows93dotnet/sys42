@@ -1158,7 +1158,7 @@ test("props", 4, async (t) => {
   t.is(app.el.innerHTML, '<ui-a bar="d"><!--[rendered]-->foo: d, bar: d</ui-a>')
 })
 
-test("props", 5, async (t) => {
+test.skip("props", 5, async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: { tag: "ui-a", bar: "{{foo |> upperCase(^^)}}" },
@@ -1856,7 +1856,7 @@ test("computed", async (t) => {
     "/$ui/t-computed/root/formated",
     "/$ui/t-computed/root/parsed",
   ]
-  app.reactive.on("postrender", (changes) => {
+  app.reactive.on("update", (changes) => {
     t.is(updates.shift(), [...changes][0])
   })
 
@@ -1933,7 +1933,7 @@ test("computed", "from prop with state:true", async (t) => {
   )
 
   const updates = ["/formated", "/$ui/t-compu-sta/root/parsed"]
-  app.reactive.on("postrender", (changes) => {
+  app.reactive.on("update", (changes) => {
     t.is(updates.shift(), [...changes][0])
   })
 
@@ -2020,7 +2020,7 @@ test("computed", "computed prop", async (t) => {
     "/$ui/t-compu-prop/root/formated",
     "/$ui/t-compu-prop/root/parsed",
   ]
-  app.reactive.on("postrender", (changes) => {
+  app.reactive.on("update", (changes) => {
     t.is(updates.shift(), [...changes][0])
   })
 

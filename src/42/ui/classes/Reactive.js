@@ -32,10 +32,7 @@ export default class Reactive extends Emitter {
       get: () => this.state,
     })
 
-    this.queue = {
-      paths: new Set(),
-      objects: new Set(),
-    }
+    this.queue = new Set()
 
     const update = () => {
       try {
@@ -44,7 +41,7 @@ export default class Reactive extends Emitter {
         dispatch(stage.el, err)
       }
 
-      if (this.queue.objects.size === 0 && this.queue.paths.size === 0) {
+      if (this.queue.size === 0) {
         this.pendingUpdate?.resolve?.()
         this.pendingUpdate = false
         return
@@ -55,7 +52,7 @@ export default class Reactive extends Emitter {
       this.pendingUpdate = false
 
       try {
-        this.emit("postrender", ...res)
+        this.emit("update", ...res)
       } catch (err) {
         dispatch(stage.el, err)
       }
@@ -155,13 +152,18 @@ export default class Reactive extends Emitter {
     this.bypassEqualCheck = bypassEqualCheck
   }
 
+  update(path, val, oldVal, deleted) {
+    this.pendingUpdate ||= defer()
+    this.enqueue(this.queue, path, val, oldVal, deleted)
+    this.#update.fn()
+  }
+
   // eslint-disable-next-line max-params
-  enqueue(queue, path, val, oldVal, deleted) {
+  enqueue(queue, loc, val, oldVal, deleted) {
     if (deleted) {
-      const type = oldVal && typeof oldVal === "object" ? "objects" : "paths"
-      queue[type].add([path, true])
-    } else if (path.endsWith("/length")) {
-      queue.objects.add([path.slice(0, -7)])
+      queue.add([loc, Boolean(oldVal && typeof oldVal === "object"), true])
+    } else if (loc.endsWith("/length")) {
+      queue.add([loc.slice(0, -7), true])
     } else if (val && typeof val === "object") {
       if (
         oldVal !== undefined &&
@@ -172,7 +174,7 @@ export default class Reactive extends Emitter {
         return
       }
 
-      queue.objects.add([path])
+      queue.add([loc, true])
     } else {
       if (
         oldVal !== undefined &&
@@ -182,14 +184,8 @@ export default class Reactive extends Emitter {
         return
       }
 
-      queue.paths.add([path])
+      queue.add([loc, false])
     }
-  }
-
-  update(path, val, oldVal, deleted) {
-    this.pendingUpdate ||= defer()
-    this.enqueue(this.queue, path, val, oldVal, deleted)
-    this.#update.fn()
   }
 
   render(queue) {
@@ -198,27 +194,23 @@ export default class Reactive extends Emitter {
 
     const rendered = new WeakSet()
 
-    for (const [path, deleted] of queue.objects) {
-      changes.add(path)
-      if (deleted) deleteds.add(path)
-      for (const key in this.stage.renderers) {
-        if (key.startsWith(path)) {
-          for (const render of this.stage.renderers[key]) {
-            if (rendered.has(render)) continue
-            render(key)
-            rendered.add(render)
+    for (const [loc, isObject, deleted] of queue) {
+      changes.add(loc)
+      if (deleted) deleteds.add(loc)
+      if (isObject) {
+        for (const key in this.stage.renderers) {
+          if (key.startsWith(loc)) {
+            for (const render of this.stage.renderers[key]) {
+              if (rendered.has(render)) continue
+              render(key)
+              rendered.add(render)
+            }
           }
         }
-      }
-    }
-
-    for (const [path, deleted] of queue.paths) {
-      changes.add(path)
-      if (deleted) deleteds.add(path)
-      if (path in this.stage.renderers) {
-        for (const render of this.stage.renderers[path]) {
+      } else if (loc in this.stage.renderers) {
+        for (const render of this.stage.renderers[loc]) {
           if (rendered.has(render)) continue
-          render(path)
+          render(loc)
           rendered.add(render)
         }
       }
@@ -239,8 +231,7 @@ export default class Reactive extends Emitter {
     // console.log("%c" + Object.keys(this.stage.renderers).join("\n"), "color:#999")
     // console.groupEnd()
 
-    queue.objects.clear()
-    queue.paths.clear()
+    queue.clear()
 
     return [changes, deleteds]
   }
@@ -260,10 +251,7 @@ export default class Reactive extends Emitter {
   }
 
   import({ add, remove }, ...rest) {
-    const queue = {
-      paths: new Set(),
-      objects: new Set(),
-    }
+    const queue = new Set()
 
     for (const loc of remove) {
       deallocate(this.data, loc, delimiter)
@@ -321,8 +309,7 @@ export default class Reactive extends Emitter {
   destroy() {
     this.emit("destroy", this)
     this.off("*")
-    this.queue.paths.clear()
-    this.queue.objects.clear()
+    this.queue.clear()
     this.pendingUpdate = false
     delete this.data
     delete this.state

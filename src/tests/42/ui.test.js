@@ -264,7 +264,7 @@ test("update", async (t) => {
 
   const stub = t.stub()
 
-  app.reactive.on("postrender", stub)
+  app.reactive.on("update", stub)
 
   t.is(app.el.innerHTML, "abc")
   t.is(stub.count, 0)
@@ -304,7 +304,7 @@ test("update throttle", async (t) => {
 
   const stub = t.stub()
 
-  app.reactive.on("postrender", stub)
+  app.reactive.on("update", stub)
 
   t.is(app.el.innerHTML, "abc")
   t.is(stub.count, 0)
@@ -340,7 +340,7 @@ test("update throttle", "using throttle:false", async (t) => {
 
   const stub = t.stub()
 
-  app.reactive.on("postrender", stub)
+  app.reactive.on("update", stub)
 
   t.is(app.el.innerHTML, "abc")
   t.is(stub.count, 0)
@@ -376,7 +376,7 @@ test("update throttle", "using updateNow", async (t) => {
 
   const stub = t.stub()
 
-  app.reactive.on("postrender", stub)
+  app.reactive.on("update", stub)
 
   t.is(app.el.innerHTML, "abc")
   t.is(stub.count, 0)
@@ -413,7 +413,7 @@ test("update throttle", "using silent:true", async (t) => {
 
   const stub = t.stub()
 
-  app.reactive.on("postrender", stub)
+  app.reactive.on("update", stub)
 
   t.is(app.el.innerHTML, "abc")
   t.is(stub.count, 0)
@@ -2012,7 +2012,7 @@ test("computed", async (t) => {
   )
 
   const updates = ["/formated", "/parsed"]
-  app.reactive.on("postrender", (changes) => {
+  app.reactive.on("update", (changes) => {
     t.is(updates.shift(), [...changes][0])
   })
 
@@ -2032,6 +2032,8 @@ test("computed", async (t) => {
 
 /* actions
 ========== */
+
+// [1] TODO: find good way to wait renderOn end of update
 
 test("on", async (t) => {
   const app = await t.utils.decay(
@@ -2054,7 +2056,7 @@ test("on", async (t) => {
 
   el.click()
   t.eq(app.state, { cnt: 42 })
-  await app
+  await t.utils.sleep(100) // [1]
   t.eq(app.state, { cnt: 43 })
 })
 
@@ -2082,7 +2084,7 @@ test("on", "queued fast calls", async (t) => {
   el.click()
   el.click()
   t.eq(app.state, { cnt: 42 })
-  await app
+  await t.utils.sleep(100) // [1]
   t.eq(app.state, { cnt: 46 })
 })
 
@@ -2115,7 +2117,7 @@ test("on", "actions", async (t) => {
 
   el.click()
   t.eq(app.state, { cnt: 42 })
-  await app
+  await t.utils.sleep(100) // [1]
   t.eq(app.state, { cnt: 52 })
 
   app.destroy()
