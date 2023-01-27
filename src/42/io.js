@@ -22,10 +22,10 @@ const deleteFolders = async (path) =>
     .then((m) => m.default(path))
 
 const launchFiles = async (...args) =>
-  import("./os/io/launchFiles.js").then((m) => m.default(...args))
+  import("./os/io/launchPaths.js").then((m) => m.default(...args))
 
 const launchFolders = async (...args) =>
-  import("./os/io/launchFolders.js").then((m) => m.default(...args))
+  import("./os/io/launchPaths.js").then((m) => m.default(...args))
 
 const renameFiles = async (...args) =>
   import("./os/io/renamePaths.js").then((m) => m.default(...args))
