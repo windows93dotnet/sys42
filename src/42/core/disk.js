@@ -1,7 +1,7 @@
 import system from "../system.js"
 import Disk from "./fs/Disk.js"
 
-let disk
+export let disk
 if (system.disk) disk = system.disk
 else {
   disk = new Disk()

@@ -18,6 +18,15 @@ import "../../fabric/browser/openInNewTab.js"
 import "../../ui/components/dialog.js"
 import "../../ui/popup.js"
 
+function getBaseURL(manifestPath) {
+  if (manifestPath) {
+    return getDirname(new URL(manifestPath, location).href) + "/"
+  }
+
+  const url = document.URL
+  return url.endsWith("/") ? url : getDirname(url) + "/"
+}
+
 async function normalizeManifest(manifest, options) {
   if (options?.skipNormalize !== true) {
     if (typeof manifest === "string") {
@@ -35,13 +44,7 @@ async function normalizeManifest(manifest, options) {
   manifest.slug ??= toKebabCase(manifest.name)
 
   if (manifest.dir === undefined) {
-    if (manifest.manifestPath) {
-      manifest.dir =
-        getDirname(new URL(manifest.manifestPath, location).href) + "/"
-    } else {
-      const url = document.URL
-      manifest.dir = url.endsWith("/") ? url : getDirname(url) + "/"
-    }
+    manifest.dir = getBaseURL(manifest.manifestPath)
   }
 
   if (inTop) {
@@ -53,17 +56,6 @@ async function normalizeManifest(manifest, options) {
 
   manifest.state ??= {}
   manifest.state.$files ??= []
-  manifest.state.$files = manifest.state.$files.map((item) => {
-    if (typeof item === "string") {
-      return {
-        path: item,
-        data: undefined,
-        dirty: false,
-      }
-    }
-
-    return item
-  })
 
   return manifest
 }
@@ -141,21 +133,31 @@ export async function mount(manifestPath, options) {
 
 // Execute App sandboxed inside a dialog
 export async function launch(manifestPath, options) {
-  const manifest = await normalizeManifest(manifestPath, options)
+  const [manifest, icons, dialog] = await Promise.all([
+    normalizeManifest(manifestPath, options),
+    getIcons(manifestPath),
+    await import("../../ui/components/dialog.js") //
+      .then((m) => m.default),
+  ])
 
   const width = `${manifest.width ?? "400"}px`
   const height = `${manifest.height ?? "350"}px`
 
-  const dialog = await import("../../ui/components/dialog.js") //
-    .then((m) => m.default)
-
   const { id, sandbox } = makeSandbox(manifest)
+
+  let picto
+  for (const item of icons) {
+    if (item.sizes === "16x16") {
+      picto = item.src
+      break
+    }
+  }
 
   return dialog({
     id,
     class: `app__${manifest.slug}`,
     style: { width, height },
-    label: "{{$dialog.title}}",
+    label: { tag: "span", content: "{{$dialog.title}}", picto },
     content: {
       tag: "ui-sandbox.box-fit" + (manifest.inset ? ".inset" : ""),
       ...sandbox,
@@ -166,9 +168,46 @@ export async function launch(manifestPath, options) {
   })
 }
 
+async function getIcons(manifestPath) {
+  const dir = getDirname(manifestPath)
+  const base = getBaseURL(manifestPath)
+  const disk = await import("../../core/disk.js") //
+    .then(({ disk }) => disk)
+
+  const icons = []
+
+  for (const path of disk.glob([
+    `${dir}/icons/**/*.{jpg,gif,svg,png}`,
+    `${dir}/icons/*.{jpg,gif,svg,png}`,
+    `${dir}/icon*.{jpg,gif,svg,png}`,
+  ])) {
+    if (path.includes("/16/") || path.includes("-16.")) {
+      icons.push({
+        src: new URL(path, base).href,
+        sizes: "16x16",
+      })
+    } else if (path.includes("/32/") || path.includes("-32.")) {
+      icons.push({
+        src: new URL(path, base).href,
+        sizes: "32x32",
+      })
+    } else if (path.includes("/144/") || path.includes("-144.")) {
+      icons.push({
+        src: new URL(path, base).href,
+        sizes: "144x144",
+      })
+    }
+  }
+
+  return icons
+
+  // console.log(disk, dir)
+}
+
 export default class App extends UI {
   static mount = mount
   static launch = launch
+  static getIcons = getIcons
 
   constructor(manifest) {
     manifest.state ??= {}
@@ -219,7 +258,11 @@ export default class App extends UI {
     this.reactive
       .on("prerender", (queue) => {
         for (const [loc, , deleted] of queue) {
-          if (!deleted && loc.startsWith("/$files/")) {
+          if (
+            !deleted &&
+            loc.startsWith("/$files/") &&
+            loc.lastIndexOf("/") === 7
+          ) {
             const $file = this.reactive.get(loc)
             if (!($file instanceof FileAgent)) {
               this.reactive.set(loc, new FileAgent($file, manifest), option)
@@ -229,7 +272,7 @@ export default class App extends UI {
       })
       .on("update", (changed) => {
         for (const loc of changed) {
-          if (loc.startsWith("/$files/")) {
+          if (loc.startsWith("/$files/") && loc.lastIndexOf("/") === 7) {
             queueTask(() => postrenderAutofocus(this.el))
             break
           }
