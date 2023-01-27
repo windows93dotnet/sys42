@@ -153,7 +153,9 @@ export class Folder extends Component {
 
   displayContextmenu(e, target) {
     const icon = target.closest("ui-icon")
+
     if (icon) {
+      this.currentView.selectable.ensureSelected(icon)
       let menu
       let hasFolders = false
       let hasFiles = false

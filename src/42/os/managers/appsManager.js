@@ -60,9 +60,7 @@ class AppsManager extends ConfigFile {
 
     const openers = {}
 
-    paths = arrify(paths)
-
-    for (const path of paths) {
+    for (const path of arrify(paths)) {
       const apps = mimetypesManager.getApps(path)
 
       if (apps?.length) {
