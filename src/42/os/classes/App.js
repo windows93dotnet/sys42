@@ -2,7 +2,7 @@ import FileAgent from "./App/FileAgent.js"
 import system from "../../system.js"
 import inTop from "../../core/env/realm/inTop.js"
 import uid from "../../core/uid.js"
-import UI from "../../ui/classes/UI.js"
+import ui, { UI } from "../../ui.js"
 import preinstall from "../preinstall.js"
 import getDirname from "../../core/path/core/getDirname.js"
 import escapeTemplate from "../../core/formats/template/escapeTemplate.js"
@@ -95,12 +95,19 @@ function makeSandbox(manifest) {
     return out
   }
 
-  const script = escapeTemplate(`\
+  const script = escapeTemplate(
+    manifest.script
+      ? `\
+    globalThis.$manifest = ${JSON.stringify(manifest)}
+    await import("${new URL(manifest.script, manifest.dir).href}")
+    `
+      : `\
     import App from "${import.meta.url}"
-    globalThis.app = await App.mount(
+    globalThis.$app = await App.mount(
       ${JSON.stringify(manifest)},
       { skipNormalize: true }
-    )`)
+    )`
+  )
 
   out.sandbox.script = script
   return out
@@ -157,10 +164,20 @@ export async function launch(manifestPath, options) {
       .then((m) => m.default),
   ])
 
+  const { id, sandbox } = makeSandbox(manifest)
+  if (manifest.script) {
+    ui(document.documentElement, {
+      id,
+      tag: `ui-sandbox`,
+      class: `app__${manifest.slug} box-fit`,
+      style: { zIndex: -1 },
+      ...sandbox,
+    })
+    return
+  }
+
   const width = `${manifest.width ?? "400"}px`
   const height = `${manifest.height ?? "350"}px`
-
-  const { id, sandbox } = makeSandbox(manifest)
 
   let picto
   for (const item of icons) {

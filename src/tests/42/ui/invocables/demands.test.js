@@ -1,8 +1,8 @@
 import test from "../../../../42/test.js"
 import { make, launch, log, inTop } from "./helpers.js"
 
-const manual = 0
-const iframe = 1
+const manual = 1
+const iframe = 0
 
 const { href } = new URL(
   "../../../../demos/ui/invocables/demands.demo.html?test=true",
@@ -31,7 +31,13 @@ const makeContent = () => ({
       label: "Alert Custom",
       id: "alertCustom",
       click() {
-        log(alert("Hello, alert", { icon: "warning", agree: "Fine !" }))
+        log(
+          alert("Hello, alert", {
+            label: "Yo",
+            icon: "warning",
+            agree: "Fine !",
+          })
+        )
       },
     },
     {
@@ -49,7 +55,7 @@ const makeContent = () => ({
       click() {
         log(
           alert(new TypeError("boom"), {
-            message: "Oops",
+            content: "Oops",
             collapsed: false,
           })
         )

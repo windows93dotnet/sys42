@@ -42,17 +42,20 @@ export default class Disk extends FileIndex {
   }
 
   async format() {
-    const fs = await import("../fs.js").then((m) => m.default)
-    await fs.deleteDir("/")
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      for (const registration of registrations) registration.unregister()
+    })
+    const Database = await import("../db/Database.js").then((m) => m.default)
+    await Promise.all([
+      Database.delete("fs"), //
+      Database.delete("fileindex"),
+    ])
+    localStorage.clear()
+    sessionStorage.clear()
   }
 
   async upgrade() {
     await this.populate(getFiles)
     await this.init()
-  }
-
-  async reinstall() {
-    await this.format()
-    await this.upgrade()
   }
 }
