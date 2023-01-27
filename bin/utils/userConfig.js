@@ -1,8 +1,8 @@
 import { lilconfig } from "lilconfig"
 
-import fs from "node:fs/promises"
+// import fs from "node:fs/promises"
 import CLI from "../classes/CLI.js"
-import log, { Log } from "../../src/42/core/log.js"
+import { Log } from "../../src/42/core/log.js"
 import normalizeConfig from "./userConfig/normalizeConfig.js"
 import normalizePaths from "./userConfig/normalizePaths.js"
 import configure from "../../src/42/core/configure.js"
@@ -29,8 +29,8 @@ const dirRoot = new URL("../../", import.meta.url).pathname.slice(0, -1)
 const dirLib = dirRoot + "/src"
 const dirBin = dirRoot + "/bin"
 
-const key = dirBin + "/ssl/localhost.key"
-const cert = dirBin + "/ssl/localhost.crt"
+// const key = dirBin + "/ssl/localhost.key"
+// const cert = dirBin + "/ssl/localhost.crt"
 
 // [1] defaults in ../../src/42/tool/testRunner.js
 // [2] defaults in ./automatedBrowser.js
@@ -57,7 +57,7 @@ const DEFAULTS = {
       verbose: undefined,
       port: 4200,
       timeout: 3000,
-      ssl: { key, cert },
+      // ssl: { key, cert },
       log: {
         200: "**/*",
         404: "**/*",
@@ -207,7 +207,7 @@ export default async function userConfig(args) {
 
   config.paths.files.config = configFile ? configFile.filepath : ""
 
-  config.tasks.serve.host ??= `https://localhost:${config.tasks.serve.port}`
+  config.tasks.serve.host ??= `http://localhost:${config.tasks.serve.port}`
   config.host = config.tasks.serve.host
   config.paths.host = config.host
 
@@ -244,22 +244,20 @@ export default async function userConfig(args) {
     config.tasks[name].log = log[task.color].hour.prefix("┃ " + task.icon)
   }
 
-  if (config.run.includes("serve")) {
-    try {
-      const certificates = await Promise.all([
-        fs.readFile(config.tasks.serve.ssl.key),
-        fs.readFile(config.tasks.serve.ssl.cert),
-      ])
-      // config.tasks.serve.ssl.key = new DataView(certificates[0])
-      // config.tasks.serve.ssl.cert = new DataView(certificates[1])
-      config.tasks.serve.ssl.key = certificates[0]
-      config.tasks.serve.ssl.cert = certificates[1]
-    } catch {
-      log.red(
-        `certificates not found\nkey: ${config.tasks.serve.ssl.key}\ncert: ${config.tasks.serve.ssl.cert}`
-      )
-    }
-  }
+  // if (config.run.includes("serve")) {
+  //   try {
+  //     const certificates = await Promise.all([
+  //       fs.readFile(config.tasks.serve.ssl.key),
+  //       fs.readFile(config.tasks.serve.ssl.cert),
+  //     ])
+  //     config.tasks.serve.ssl.key = certificates[0]
+  //     config.tasks.serve.ssl.cert = certificates[1]
+  //   } catch {
+  //     log.red(
+  //       `certificates not found\nkey: ${config.tasks.serve.ssl.key}\ncert: ${config.tasks.serve.ssl.cert}`
+  //     )
+  //   }
+  // }
 
   return config
 }

@@ -25,13 +25,13 @@ function restart() {
 
 function start(isRestart) {
   child = spawn("node", isRestart ? [...args, "--no-greet"] : args, {
-    env: {
-      ...process.env,
-      NODE_EXTRA_CA_CERTS: new URL(
-        "./ssl/localhost.crt", //
-        import.meta.url
-      ).pathname,
-    },
+    // env: {
+    //   ...process.env,
+    //   NODE_EXTRA_CA_CERTS: new URL(
+    //     "./ssl/localhost.crt", //
+    //     import.meta.url
+    //   ).pathname,
+    // },
     stdio: ["inherit", "inherit", "inherit", "ipc"],
   })
 

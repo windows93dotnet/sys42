@@ -36,7 +36,7 @@ system
 export default async function serve() {
   const server = fastify({
     // http2: true,
-    https: task.ssl,
+    // https: task.ssl,
     // logger: {
     //   transport: {
     //     target: "pino-pretty",
