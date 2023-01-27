@@ -9,7 +9,8 @@ import { focusInside } from "../../fabric/dom/focus.js"
 
 import parsePath from "../../core/path/core/parsePath.js"
 import joinPath from "../../core/path/core/joinPath.js"
-import normalizePath from "../../core/path/core/normalizePath.js"
+import normalizeFilename from "../../core/fs/normalizeFilename.js"
+import normalizeDirname from "../../core/fs/normalizeDirname.js"
 
 export class Explorer extends Component {
   static plan = {
@@ -215,7 +216,10 @@ export async function explorer(path = "/", options) {
   const selection = options?.selection ?? []
   const glob = options?.glob ?? false
 
-  const parsed = parsePath(normalizePath(path), { checkDir: true })
+  const parsed = parsePath(
+    path.endsWith("/") ? normalizeDirname(path) : normalizeFilename(path),
+    { checkDir: true }
+  )
 
   if (parsed.base && selection.length === 0) {
     selection.push(joinPath(parsed.dir, parsed.base))

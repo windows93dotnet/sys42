@@ -93,7 +93,7 @@ class AppsManager extends ConfigFile {
   }
 }
 
-const appsManager = new AppsManager("apps.json")
+const appsManager = new AppsManager(".apps.json")
 appsManager.init()
 
 export default appsManager

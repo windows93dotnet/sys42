@@ -140,7 +140,7 @@ class MimetypesManager extends ConfigFile {
   }
 }
 
-const mimetypesManager = new MimetypesManager("mimetypes.json")
+const mimetypesManager = new MimetypesManager(".mimetypes.json")
 mimetypesManager.init()
 
 export default mimetypesManager
