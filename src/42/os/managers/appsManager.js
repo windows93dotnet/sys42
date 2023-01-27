@@ -112,7 +112,12 @@ class AppsManager extends ConfigFile {
           }
 
           for (const { sizes, src } of icons) {
-            if (sizes === "16x16") menuItem.picto = src
+            if (sizes === "16x16") {
+              menuItem.picto = src
+              break
+            }
+
+            menuItem.picto = src
           }
 
           menu.push(menuItem)

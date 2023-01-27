@@ -6,10 +6,7 @@
   decode: {
     types: [
       { description: "HTML Pages", accept: "text/html" },
-      // { description: "Audio", accept: "audio/*" },
-      // { description: "Video", accept: "video/*" },
-      // { description: "Image", accept: "image/*" },
-      { description: "Any", accept: "application/*" },
+      // { description: "Any", accept: "application/*" },
     ],
   },
 

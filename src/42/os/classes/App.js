@@ -12,6 +12,7 @@ import noop from "../../fabric/type/function/noop.js"
 import editor from "./App/editor.js"
 import postrenderAutofocus from "../../ui/postrenderAutofocus.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
+import template from "../../core/formats/template.js"
 
 // TODO: check if rpc functions can be injecteds
 import "../../fabric/browser/openInNewTab.js"
@@ -68,7 +69,23 @@ function makeSandbox(manifest) {
   const out = { id, sandbox: { permissions } }
 
   if (manifest.path) {
-    let path = new URL(manifest.path, manifest.dir).href
+    let path
+    const parsed = template.parse(manifest.path)
+    if (parsed.substitutions.length > 0) {
+      const state = { ...manifest.state, foo: "hello" }
+
+      for (let i = 0, l = manifest.state.$files.length; i < l; i++) {
+        if (!(manifest.state.$files[i] instanceof FileAgent)) {
+          state.$files[i] = new FileAgent(manifest.state.$files[i], manifest)
+        }
+      }
+
+      path = template.format(parsed, state, { delimiter: "/" })
+    } else {
+      path = manifest.path
+    }
+
+    path = new URL(path, manifest.dir).href
 
     if (path.endsWith(".html") || path.endsWith(".php")) {
       path += "?state=" + encodeURIComponent(JSON.stringify(manifest.state))
@@ -151,13 +168,16 @@ export async function launch(manifestPath, options) {
       picto = item.src
       break
     }
+
+    picto = item.src
   }
 
   return dialog({
     id,
     class: `app__${manifest.slug}`,
     style: { width, height },
-    label: { tag: "span", content: "{{$dialog.title}}", picto },
+    picto,
+    label: "{{$dialog.title}}",
     content: {
       tag: "ui-sandbox.box-fit" + (manifest.inset ? ".inset" : ""),
       ...sandbox,
@@ -200,8 +220,6 @@ async function getIcons(manifestPath) {
   }
 
   return icons
-
-  // console.log(disk, dir)
 }
 
 export default class App extends UI {

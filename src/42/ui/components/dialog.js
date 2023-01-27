@@ -60,6 +60,12 @@ export class Dialog extends Component {
         type: "number",
         update: _axis,
       },
+      // label: {
+      //   type: "any",
+      // },
+      content: {
+        type: "any",
+      },
     },
 
     defaults: {
@@ -95,7 +101,7 @@ export class Dialog extends Component {
     return this.close(true)
   }
 
-  render({ content, label, footer }) {
+  render({ content, label, picto, footer }) {
     const buttons = [
       {
         tag: "button.ui-dialog__close",
@@ -112,7 +118,11 @@ export class Dialog extends Component {
       {
         tag: "header.ui-dialog__header",
         content: [
-          { tag: "h2.ui-dialog__title", id, content: label },
+          {
+            tag: "h2.ui-dialog__title",
+            id,
+            content: picto ? [{ tag: "ui-picto", value: picto }, label] : label,
+          },
           ...buttons,
         ],
       },
