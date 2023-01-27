@@ -121,7 +121,7 @@ editor.init = (app) => {
   const { state, manifest } = app
   const { encode, decode, dir } = manifest
 
-  const defaultFolder = manifest.defaultFolder ?? "$HOME"
+  const defaultFolder = manifest.defaultFolder ?? "$HOME/"
 
   setTimeout(() => {
     state.$files.push("/tests/fixtures/formats/example.json5")

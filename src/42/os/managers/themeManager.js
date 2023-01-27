@@ -36,7 +36,7 @@ class ThemeManager extends ConfigFile {
   }
 }
 
-export const themeManager = new ThemeManager("theme.json", DEFAULTS)
+export const themeManager = new ThemeManager(".theme.json", DEFAULTS)
 themeManager.init()
 
 export default themeManager
