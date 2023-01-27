@@ -21,6 +21,7 @@ import pick from "../../../fabric/type/object/pick.js"
 import prettify from "../../formats/markup/prettify.js"
 import puppet from "../puppet.js"
 import queueTask from "../../../fabric/type/function/queueTask.js"
+import paint from "../../../fabric/type/promise/paint.js"
 import repaint from "../../../fabric/type/promise/repaint.js"
 import serial from "../../../fabric/type/promise/serial.js"
 import shell from "../../shell.js"
@@ -197,6 +198,7 @@ export default function addUtilities(item, isExecutionContext) {
     nextCycle,
     noop,
     omit,
+    paint,
     parallel,
     pick,
     pickValues,

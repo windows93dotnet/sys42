@@ -123,6 +123,10 @@ editor.init = (app) => {
 
   const defaultFolder = manifest.defaultFolder ?? "$HOME"
 
+  setTimeout(() => {
+    state.$files.push("/tests/fixtures/formats/example.json5")
+  }, 0)
+
   app.stage.actions.assign("/editor", {
     newFile() {
       if (manifest.multiple !== true) state.$files.length = 0

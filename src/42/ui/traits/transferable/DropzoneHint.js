@@ -194,7 +194,7 @@ export class DropzoneHint {
           for (const item of system.transfer.items) {
             const path =
               item.data?.path ?? item.data ?? item.target.getAttribute("path")
-            if (path) paths.push({ path })
+            if (path) paths.push(path)
           }
 
           return paths

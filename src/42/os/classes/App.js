@@ -218,7 +218,7 @@ export default class App extends UI {
 
     this.reactive
       .on("prerender", (queue) => {
-        for (const [loc, deleted] of queue.objects) {
+        for (const [loc, , deleted] of queue) {
           if (!deleted && loc.startsWith("/$files/")) {
             const $file = this.reactive.get(loc)
             if (!($file instanceof FileAgent)) {
@@ -227,7 +227,7 @@ export default class App extends UI {
           }
         }
       })
-      .on("postrender", (changed) => {
+      .on("update", (changed) => {
         for (const loc of changed) {
           if (loc.startsWith("/$files/")) {
             queueTask(() => postrenderAutofocus(this.el))
