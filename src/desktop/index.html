@@ -13,8 +13,7 @@
   import os from "../42/os.js"
   import ui from "../42/ui.js"
 
-  // import disk from "../42/core/disk.js"
-  // await disk.reinstall()
+  import disk from "../42/core/disk.js"
 
   import trap from "../42/fabric/type/error/trap.js"
   trap((err) => {
@@ -52,7 +51,17 @@
             tag: "button",
             content: "Start",
             picto: "puzzle",
-            menu: await os.apps.makeMenu(),
+            menu: [
+              ...(await os.apps.makeMenu()),
+              "---",
+              {
+                label: "Format",
+                async click() {
+                  await disk.format()
+                  location.reload()
+                },
+              },
+            ],
           },
           {
             if: "{{/errors.length > 0}}",
@@ -71,23 +80,23 @@
   // import io from "../42/io.js"
   // io.launchFolders("/tests/fixtures/formats/video/")
   // io.launchFiles("/tests/fixtures/formats/video/example.mp4")
-
   // io.launchFiles("/tests/fixtures/formats/example.html")
   // io.launchFiles("/tests/fixtures/formats/video/example.mp4")
+  // io.launchFiles("/tests/fixtures/formats/image/example.jpg")
   // io.launchFiles([
   //   "/tests/fixtures/formats/example.json",
   //   "/tests/fixtures/formats/example.json5",
   // ])
-  // io.launchFiles("/tests/fixtures/formats/image/example.jpg")
+
+  // import "../tests/apps/Hydra/Hydra.js"
 
   // import appsManager from "../42/os/managers/appsManager.js"
-  // // appsManager.exec("ImageViewer")
+  // appsManager.exec("Hydra")
 
-  // // appsManager.exec("Textarea", {
-  // //   $files: ["/tests/fixtures/formats/example.json"],
-  // // })
-
+  // import appsManager from "../42/os/managers/appsManager.js"
   // appsManager.exec("TextEdit")
+
+  // import appsManager from "../42/os/managers/appsManager.js"
   // appsManager.exec("TextEdit", {
   //   $files: [
   //     "/tests/fixtures/formats/example.json5",

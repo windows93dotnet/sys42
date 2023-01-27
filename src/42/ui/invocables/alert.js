@@ -9,17 +9,14 @@ const DEFAULT = {
   decline: false,
 }
 
-export async function alert(message = "", options = {}) {
-  const config = { ...DEFAULT, ...options }
-  config.dialog ??= {}
-  forceOpener(config.dialog)
-
+export async function alert(message = "", options) {
   if (isErrorLike(message)) {
+    options ??= {}
     const error = await import("../../fabric/type/error/normalizeError.js") //
       .then((m) => m.default(message))
     options.icon ??= "error"
     options.label ??= error.name
-    message = options.message ?? error.message
+    message = options.content ?? error.message
     if (error.stack && error.stack !== error.message) {
       const [logAsContent, formated] = await Promise.all([
         import("../../core/console/logAsContent.js") //
@@ -48,24 +45,28 @@ export async function alert(message = "", options = {}) {
               ],
             },
           },
-          {
-            op: "add",
-            path: "/-",
-            value: {
-              tag: "button",
-              content: "Details",
-              id: btnId,
-              toggle: sampId,
-              aria: { pressed: options.collapsed === false },
-            },
-          },
+          // {
+          //   op: "add",
+          //   path: "/-",
+          //   value: {
+          //     tag: "button",
+          //     content: "Details",
+          //     id: btnId,
+          //     toggle: sampId,
+          //     aria: { pressed: options.collapsed === false },
+          //   },
+          // },
         ],
       }
     }
   } else if (options === undefined && message && typeof message === "object") {
     options = message
-    message = options.message
+    message = options.content
   }
+
+  const config = { ...DEFAULT, ...options }
+  config.dialog ??= {}
+  forceOpener(config.dialog)
 
   config.content = {
     tag: ".box-center-y.pa-md",

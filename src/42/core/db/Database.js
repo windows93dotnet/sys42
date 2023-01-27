@@ -9,7 +9,7 @@ const DEFAULTS = {
   durability: "default",
 }
 
-export default class Database {
+export class Database {
   #config
   #obsolete = false
 
@@ -195,3 +195,5 @@ export default class Database {
     await Database.delete(this.#config.name, arg)
   }
 }
+
+export default Database

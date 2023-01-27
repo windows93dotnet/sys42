@@ -107,6 +107,7 @@ module.exports = {
     // false positives with BroadcastChannel
     "unicorn/require-post-message-target-origin": 0,
 
+    "unicorn/prefer-top-level-await": 0,
     "unicorn/relative-url-style": [2, "always"],
     "unicorn/prefer-dom-node-dataset": 0,
     "unicorn/no-thenable": 0,
