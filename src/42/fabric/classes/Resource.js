@@ -128,38 +128,41 @@ export default class Resource {
     this.el.referrerpolicy = this.config.referrerpolicy
     this.el.fetchpriority = "high"
 
-    this.el.toggleAttribute("sandbox", true)
-
     this.#addBus()
 
-    const allowList = []
-    for (const x of arrify(permissions)) {
-      if (FEATURES.includes(x)) allowList.push(x)
-      else {
-        const token = x.startsWith("allow-") ? x : `allow-${x}`
-        if (this.el.sandbox.supports(token)) this.el.sandbox.add(token)
-        else {
-          throw new DOMException(
-            `Sandbox token not supported: ${token}`,
-            "SecurityError"
-          )
-        }
-      }
-    }
+    // -------------------------------------------
+    // temporarily disabled while windows93 v3 dev
+    // -------------------------------------------
 
-    const allow = []
-    for (const perm of FEATURES) {
-      if (
-        SUPPORTED_FEATURES === undefined ||
-        SUPPORTED_FEATURES.includes(perm)
-      ) {
-        // if (allowList.includes(perm)) allow.push(`${perm} 'src' ${origin}`)
-        if (allowList.includes(perm)) allow.push(`${perm} *`)
-        else allow.push(`${perm} 'none'`)
-      }
-    }
+    // this.el.toggleAttribute("sandbox", true)
+    // const allowList = []
+    // for (const x of arrify(permissions)) {
+    //   if (FEATURES.includes(x)) allowList.push(x)
+    //   else {
+    //     const token = x.startsWith("allow-") ? x : `allow-${x}`
+    //     if (this.el.sandbox.supports(token)) this.el.sandbox.add(token)
+    //     else {
+    //       throw new DOMException(
+    //         `Sandbox token not supported: ${token}`,
+    //         "SecurityError"
+    //       )
+    //     }
+    //   }
+    // }
 
-    this.el.allow = allow.join("; ")
+    // const allow = []
+    // for (const perm of FEATURES) {
+    //   if (
+    //     SUPPORTED_FEATURES === undefined ||
+    //     SUPPORTED_FEATURES.includes(perm)
+    //   ) {
+    //     // if (allowList.includes(perm)) allow.push(`${perm} 'src' ${origin}`)
+    //     if (allowList.includes(perm)) allow.push(`${perm} *`)
+    //     else allow.push(`${perm} 'none'`)
+    //   }
+    // }
+
+    // this.el.allow = allow.join("; ")
   }
 
   #addBus() {
