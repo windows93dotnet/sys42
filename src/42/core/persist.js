@@ -26,11 +26,6 @@ persist.ensureType = (path) => {
   return ext.slice(1)
 }
 
-persist.watch = (path, fn) =>
-  disk.watch(path, (...args) => {
-    if (!pending.has(path)) fn(...args)
-  })
-
 persist.has = (path) => disk.has(normalizeFilename(path))
 
 persist.get = async (path) => fs.read[persist.ensureType(path)](path)
