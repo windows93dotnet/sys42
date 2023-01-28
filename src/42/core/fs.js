@@ -190,6 +190,7 @@ export function sink(path, options) {
 
 export function source(path, options) {
   let iterator
+  let emptyQueue = true
 
   return new ReadableStream(
     {
@@ -205,8 +206,13 @@ export function source(path, options) {
         }
 
         const { value, done } = await iterator.next()
-        if (done) controller.close()
-        else controller.enqueue(value)
+        if (done) {
+          if (emptyQueue) controller.enqueue()
+          controller.close()
+        } else {
+          emptyQueue = false
+          controller.enqueue(value)
+        }
       },
     },
     options?.queuingStrategy
