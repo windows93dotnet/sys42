@@ -11,7 +11,7 @@ const editor = {
           label: "New",
           picto: "file",
           shortcut: "Ctrl+N",
-          click: "{{editor.newFile(}}",
+          click: "{{editor.newFile()}}",
         },
         {
           $id: "openFiles",
