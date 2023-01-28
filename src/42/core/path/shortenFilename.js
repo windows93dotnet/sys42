@@ -36,7 +36,7 @@ export default function shortenFilename(str, options) {
     }
   }
 
-  let filename = url.href
+  let filename = decodeURI(url.href)
 
   if (config.hostRegex) {
     filename = filename.replace(config.hostRegex, config.hostShort)

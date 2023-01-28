@@ -299,6 +299,8 @@
   --separator-v-bdc: transparent var(--ButtonHilight) transparent var(--ButtonShadow);
 }
 
+img { image-rendering: pixelated; }
+
 legend { --legend-bg: var(--bg); }
 
 select:is([multiple],[size]),
