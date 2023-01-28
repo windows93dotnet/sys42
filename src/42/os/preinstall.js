@@ -98,9 +98,9 @@ export default async function preinstall(manifest) {
 
   system.pwa = {}
 
-  system.pwa.registration ??= navigator.serviceWorker
-    ?.register("/42.sw.js", { type: "module" })
-    .catch(installPrompt.reject)
+  // system.pwa.registration ??= navigator.serviceWorker
+  //   ?.register("/42.sw.js", { type: "module" })
+  //   .catch(installPrompt.reject)
 
   // if (inPWA) window.resizeTo(400, 350)
   // console.log(globalThis.navigator.windowControlsOverlay.getTitlebarAreaRect())

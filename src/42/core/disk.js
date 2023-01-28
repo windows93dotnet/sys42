@@ -1,7 +1,7 @@
 import system from "../system.js"
 import Disk from "./fs/Disk.js"
 
-export let disk
+let disk
 if (system.disk) disk = system.disk
 else {
   disk = new Disk()
@@ -9,4 +9,5 @@ else {
   system.disk = disk
 }
 
+export { disk }
 export default disk
