@@ -2,14 +2,14 @@
 
 import { spawn } from "node:child_process"
 
+function resolve(path) {
+  return decodeURI(new URL(path, import.meta.url).pathname)
+}
+
 let child
 
 const args = [
-  // "--no-warnings",
-  // "--harmony",
-  // "--stack-size=1024",
-  // "--stack_trace_limit=1000",
-  new URL("./backend.js", import.meta.url).pathname,
+  resolve("./backend.js", import.meta.url),
   ...process.argv.slice(2),
 ]
 
@@ -25,13 +25,6 @@ function restart() {
 
 function start(isRestart) {
   child = spawn("node", isRestart ? [...args, "--no-greet"] : args, {
-    // env: {
-    //   ...process.env,
-    //   NODE_EXTRA_CA_CERTS: new URL(
-    //     "./ssl/localhost.crt", //
-    //     import.meta.url
-    //   ).pathname,
-    // },
     stdio: ["inherit", "inherit", "inherit", "ipc"],
   })
 

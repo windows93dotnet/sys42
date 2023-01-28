@@ -25,8 +25,9 @@ export default async function graph(glob, { cwd, host }) {
       for (const dependency of dependencies) {
         const url = new URL(dependency.url, base)
         if (url.origin !== host) {
-          externals[url.href] ??= new Set()
-          externals[url.href].add(pathname)
+          const href = decodeURI(url.href)
+          externals[href] ??= new Set()
+          externals[href].add(pathname)
           continue
         }
 

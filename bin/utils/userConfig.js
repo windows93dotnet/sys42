@@ -12,6 +12,10 @@ import normalizeTestContexts, {
   TEST_CTX,
 } from "./userConfig/normalizeTestContexts.js"
 
+function resolve(path) {
+  return decodeURI(new URL(path, import.meta.url).pathname)
+}
+
 export const CLI_TASKS = [
   ["🚀", "serve", "cyanBright"],
   ["🔭", "watch", "blueBright"],
@@ -25,12 +29,9 @@ export const CLI_TASKS = [
 
 const SUBCOMMANDS = CLI_TASKS.map((x) => x[1])
 
-const dirRoot = new URL("../../", import.meta.url).pathname.slice(0, -1)
+const dirRoot = resolve("../../").slice(0, -1)
 const dirLib = dirRoot + "/src"
 const dirBin = dirRoot + "/bin"
-
-// const key = dirBin + "/ssl/localhost.key"
-// const cert = dirBin + "/ssl/localhost.crt"
 
 // [1] defaults in ../../src/42/tool/testRunner.js
 // [2] defaults in ./automatedBrowser.js
@@ -57,7 +58,6 @@ const DEFAULTS = {
       verbose: undefined,
       port: 4200,
       timeout: 3000,
-      // ssl: { key, cert },
       log: {
         200: "**/*",
         404: "**/*",
@@ -236,28 +236,11 @@ export default async function userConfig(args) {
 
   for (const name of config.ignore) config.tasks[name].verbose = 0
 
-  // log(config.tasks.test)
-
   for (const name of config.run) {
     const task = config.tasks[name]
     const log = new Log(task.verbose)
     config.tasks[name].log = log[task.color].hour.prefix("┃ " + task.icon)
   }
-
-  // if (config.run.includes("serve")) {
-  //   try {
-  //     const certificates = await Promise.all([
-  //       fs.readFile(config.tasks.serve.ssl.key),
-  //       fs.readFile(config.tasks.serve.ssl.cert),
-  //     ])
-  //     config.tasks.serve.ssl.key = certificates[0]
-  //     config.tasks.serve.ssl.cert = certificates[1]
-  //   } catch {
-  //     log.red(
-  //       `certificates not found\nkey: ${config.tasks.serve.ssl.key}\ncert: ${config.tasks.serve.ssl.cert}`
-  //     )
-  //   }
-  // }
 
   return config
 }

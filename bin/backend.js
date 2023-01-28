@@ -6,6 +6,10 @@ import log from "../src/42/core/log.js"
 import propagateConfig from "./utils/propagateConfig.js"
 import fs from "node:fs/promises"
 
+function resolve(path) {
+  return decodeURI(new URL(path, import.meta.url).pathname)
+}
+
 trap((err, title) => {
   log(`\n💥 ${title}:`, err)
 })
@@ -40,7 +44,7 @@ async function greet() {
     config.verbose > 1 ? ` verbose {magenta ${config.verbose}}` : ""
 
   const { version } = JSON.parse(
-    await fs.readFile(new URL("../package.json", import.meta.url), "utf-8")
+    await fs.readFile(resolve("../package.json"), "utf-8")
   )
 
   log[config.dev ? "yellow" : "cyanBright"](`
