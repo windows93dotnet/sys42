@@ -47,7 +47,6 @@ const PLAN_KEYWORDS = new Set([
   "dropzone",
   "each",
   "else",
-  "height",
   "if",
   "initiator",
   "menu",
@@ -61,7 +60,6 @@ const PLAN_KEYWORDS = new Set([
   "state",
   "tag",
   "traits",
-  "width",
   // TODO: implement once https://vuejs.org/api/built-in-directives.html#v-once
   // TODO: implement memo https://vuejs.org/api/built-in-directives.html#v-memo
 ])

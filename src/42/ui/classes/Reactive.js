@@ -10,7 +10,7 @@ import dispatch from "../../fabric/event/dispatch.js"
 import equal from "../../fabric/type/any/equal.js"
 import merge from "../../fabric/type/object/merge.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
-import isSerializable from "../../fabric/type/any/is/isSerializable.js"
+import serialize from "../../fabric/type/any/serialize.js"
 import register from "../register.js"
 
 const delimiter = "/"
@@ -243,7 +243,7 @@ export default class Reactive extends Emitter {
       if (deleteds.has(loc)) data.remove.push(loc)
       else {
         const res = locate(this.data, loc, delimiter)
-        if (isSerializable(res)) data.add.push([loc, res])
+        data.add.push([loc, serialize(res)])
       }
     }
 

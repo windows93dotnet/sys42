@@ -51,6 +51,11 @@ types.string = {
   trim: TRIM,
   trimStart: TRIM,
   trimEnd: TRIM,
+
+  encodeURI: (str) => encodeURI(str),
+  encodeURIComponent: (str) => encodeURIComponent(str),
+  decodeURI: (str) => decodeURI(str),
+  decodeURIComponent: (str) => decodeURIComponent(str),
 }
 
 export function padding(num, decimals, pad) {
