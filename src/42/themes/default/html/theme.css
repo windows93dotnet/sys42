@@ -31,6 +31,8 @@
   --ground-fg: var(--fg);
   --panel-bg: var(--bg);
   --panel-fg: var(--fg);
+  --screen-bg: #000;
+  --screen-fg: #fff;
 
   --highlight-bg: var(--fg);
   --highlight-fg: var(--bg);
@@ -167,6 +169,7 @@
 .paper,
 .document,
 .panel,
+.screen,
 .code,
 code,
 samp,
@@ -244,6 +247,12 @@ output,
   --bg: var(--document-bg);
   --fg: var(--document-fg);
   text-shadow: var(--document-tsh, none);
+}
+
+.screen {
+  --bg: var(--screen-bg);
+  --fg: var(--screen-fg);
+  text-shadow: var(--screen-tsh, none);
 }
 
 :not(.document) > :where(body,section,article,header,footer):is(.document) {
