@@ -63,7 +63,7 @@ function setAnchors(obj, carrier, hash) {
   }
 }
 
-async function fetchUncacheds(carrier, options) {
+async function fetchUncacheds(carrier, options, source) {
   await import("../../core/load/loadJSON.js").then(({ default: loadJSON }) =>
     Promise.all(
       carrier.uncacheds.map(async (path) => {
@@ -72,7 +72,7 @@ async function fetchUncacheds(carrier, options) {
           if (options?.strict === false) {
             value = await import(path).then((m) => m.default)
             if (typeof value === "function") {
-              value = await value(carrier, options)
+              value = await value(source, carrier, options)
             }
           } else throw new Error("js module are not allowed in strict mode")
         } else {
@@ -196,7 +196,7 @@ export default async function resolve(source, options, carrier) {
   walk(out.dest, source, carrier)
 
   if (carrier.fetch && carrier.uncacheds.length > 0) {
-    await fetchUncacheds(carrier, options)
+    await fetchUncacheds(carrier, options, source)
   }
 
   const mustResolve = new Set()
