@@ -36,6 +36,7 @@ if (inTop && inAutomated) {
     help() {
       log(log.esc`\
 {cyanBright sys42}{cyan .dev.test(options)} {grey ..} run tests
+{cyanBright sys42}{cyan .dev.clear(options)} {grey .} clear site data
 {cyanBright sys42}{cyan .dev.tree(element)} {grey ..} display accessibility tree
 {cyanBright sys42}{cyan .dev.env(full)} {grey ......} display env
 {cyanBright sys42}{cyan .dev.pause()} {grey ........} pause live-reload
@@ -47,6 +48,9 @@ if (inTop && inAutomated) {
       log.color("#000")(
         `\n         ▄▄████▄▄\n  █ ▄ ▄▄██{bg.c3ff00 ▀▄  ▄▀}██\n  {0ff ▄} ▀▀▀▀██{bg.c3ff00  ▀  ▀ }██\n  {0ff ▀ █▄██}██{bg.c3ff00  ▄  ▄ }██\n  {f0f █ ▄ ▄▄}██{bg.c3ff00   ▀▀  }██\n  ▄ {f0f ▀▀▀▀}██{bg.c3ff00 ▄████▄}██\n  ▀ █▄███▀▀    ▀▀█\n`
       )
+    },
+    clear() {
+      fetch("/?clear").then(() => location.reload())
     },
     pause() {
       dev.sse.enabled = false
