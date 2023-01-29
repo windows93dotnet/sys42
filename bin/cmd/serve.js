@@ -80,6 +80,12 @@ export default async function serve() {
     method: ["OPTIONS", "HEAD", "GET"],
     async handler(req, reply) {
       const { url } = req
+
+      if (url === "/?clear") {
+        task.log(`🧽 clear site data`)
+        reply.header("Clear-Site-Data", '"cache", "storage"')
+      }
+
       const asset = new StaticFile(system.config.paths.dirs.src + url)
 
       if (req.headers.origin === "http://localhost:8000") {
