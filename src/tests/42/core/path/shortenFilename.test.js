@@ -7,7 +7,7 @@ const { task } = test
 test.tasks(
   [
     task({
-      path: "https://localhost:4200/tests/xxx.test.js",
+      path: "http://localhost:4200/tests/xxx.test.js",
       backend: "./src/tests/xxx.test.js",
       frontend: "/tests/xxx.test.js",
     }),
