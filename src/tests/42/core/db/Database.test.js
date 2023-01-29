@@ -299,6 +299,19 @@ test("strings", async (t) => {
   })
 })
 
+test("fromEntries", async (t) => {
+  await db.strings.fromEntries(
+    Object.entries({
+      a: "A",
+      b: "B",
+      c: "C",
+      d: "D",
+    })
+  )
+  t.is(await db.strings.get("a"), "A")
+  t.is(await db.strings.get("d"), "D")
+})
+
 test("files", async (t) => {
   const res = await db.files
     .put(file)
