@@ -95,18 +95,27 @@ function makeSandbox(manifest) {
     return out
   }
 
+  const appScript = manifest.script
+    ? `await import("${new URL(manifest.script, manifest.dir).href}")`
+    : ""
+
   const script = escapeTemplate(
-    manifest.script
+    manifest.script && !manifest.content
       ? `\
     globalThis.$manifest = ${JSON.stringify(manifest)}
-    await import("${new URL(manifest.script, manifest.dir).href}")
+    ${appScript}
     `
       : `\
     import App from "${import.meta.url}"
+    globalThis.$manifest = ${JSON.stringify(manifest)}
     globalThis.$app = await App.mount(
-      ${JSON.stringify(manifest)},
+      globalThis.$manifest,
       { skipNormalize: true }
-    )`
+    )
+    globalThis.$files = globalThis.$app.state.$files
+    globalThis.$main?.(globalThis.$app)
+    ${appScript}
+    `
   )
 
   out.sandbox.script = script
@@ -165,7 +174,7 @@ export async function launch(manifestPath, options) {
   ])
 
   const { id, sandbox } = makeSandbox(manifest)
-  if (manifest.script) {
+  if (manifest.script && !manifest.content) {
     ui(document.documentElement, {
       id,
       tag: `ui-sandbox`,

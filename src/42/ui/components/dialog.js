@@ -224,6 +224,7 @@ export const dialog = rpc(
     async marshalling(plan = {}, stage) {
       plan = objectifyPlan(plan)
 
+      plan.content ??= ""
       forceOpener(plan)
 
       if (rpc.inTop) {
