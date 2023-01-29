@@ -1,4 +1,5 @@
 // @read https://stackoverflow.com/questions/22247614/optimized-bulk-chunk-upload-of-objects-into-indexeddb
+// @read https://nolanlawson.com/2021/08/22/speeding-up-indexeddb-reads-and-writes/
 // @read https://rxdb.info/slow-indexeddb.html
 
 import DatabaseError from "./DatabaseError.js"
@@ -14,6 +15,8 @@ const DEFAULT_ITERATE = {
   direction: undefined,
   durability: "default",
 }
+
+const WRITE_ACTIONS = new Set(["put", "add", "clear", "delete"])
 
 function wrap(req) {
   return new Promise((resolve, reject) => {
@@ -131,16 +134,15 @@ export default class ObjectStore {
   }
 
   async fromEntries(entries) {
-    // TODO: read https://nolanlawson.com/2021/08/22/speeding-up-indexeddb-reads-and-writes/
-    const all = []
-    for (const [key, value] of entries) all.push(this.put(value, key))
-    return Promise.all(all)
+    await this.tx("readwrite", ({ store }) => {
+      for (const [key, value] of entries) store.put(value, key)
+    })
   }
 
   async from(arr) {
-    const all = []
-    for (const value of arr) all.push(this.put(value))
-    return Promise.all(all)
+    await this.tx("readwrite", ({ store }) => {
+      for (const value of arr) store.put(value)
+    })
   }
 
   async tx(mode, action, ...args) {
@@ -154,34 +156,52 @@ export default class ObjectStore {
         durability: this.db.durability,
       })
 
-      this.#signal?.addEventListener("abort", () => tx.abort())
+      const onabort = () => tx.abort()
+      this.#signal?.addEventListener("abort", onabort)
+      const end = (e) => {
+        e?.stopPropagation()
+        this.#signal?.removeEventListener("abort", onabort)
+      }
 
       tx.onerror = (e) => {
-        e.stopPropagation()
+        end(e)
         reject(new DatabaseError(tx.error))
       }
 
       tx.onabort = (e) => {
-        e.stopPropagation()
+        end(e)
         reject(new DOMException("Aborted", "AbortError"))
       }
 
       let store = tx.objectStore(this.name)
       if (this.#index !== undefined) store = store.index(this.#index)
 
-      if (!action) {
+      if (typeof action === "function") {
+        tx.oncomplete = () => {
+          end()
+          resolve()
+        }
+
+        action({ store, resolve, reject })
+      } else if (action) {
+        const req = store[action](...args)
+
+        req.onerror = (e) => {
+          end(e)
+          reject(new DatabaseError(req.error))
+        }
+
+        tx.oncomplete = () => {
+          end()
+          resolve(req.result)
+        }
+
+        if (WRITE_ACTIONS.has(action)) tx.commit?.()
+      } else {
+        tx.onerror = null
+        tx.onabort = null
         resolve(store)
-        return
       }
-
-      const req = store[action](...args)
-
-      req.onerror = (e) => {
-        e.stopPropagation()
-        reject(new DatabaseError(req.error))
-      }
-
-      tx.oncomplete = () => resolve(req.result)
     })
   }
 

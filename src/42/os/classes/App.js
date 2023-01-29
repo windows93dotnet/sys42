@@ -196,7 +196,7 @@ export async function launch(manifestPath, options) {
     picto,
     label: "{{$dialog.title}}",
     content: {
-      tag: "ui-sandbox.box-fit" + (manifest.inset ? ".inset" : ""),
+      tag: "ui-sandbox" + (manifest.inset ? ".inset" : ""),
       ...sandbox,
     },
     state: {

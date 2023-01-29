@@ -16,6 +16,7 @@ const DEFAULTS = {
   name: "fileindex",
   sep: "/",
   hashmap: true,
+  // durability: "relaxed",
 }
 
 export default class FileIndex extends Storable {
