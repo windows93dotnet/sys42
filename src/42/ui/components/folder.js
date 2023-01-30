@@ -123,11 +123,15 @@ export class Folder extends Component {
     if (!initial) this.selection.length = 0
 
     const { signal } = this.stage
-    const options = { signal }
+    const options = { signal, directChild: this.view === "grid" }
+
+    let timerId
 
     this[_forgetWatch]?.()
     this[_forgetWatch] = disk.watchDir(path, options, (changed, type) => {
       if (!this.stage) return
+
+      clearTimeout(timerId)
 
       const { selection } = this
 
@@ -137,7 +141,9 @@ export class Folder extends Component {
         if (selection.includes(changed)) removeItem(selection, changed)
       }
 
-      this.refresh()
+      timerId = setTimeout(() => {
+        this.refresh(changed)
+      }, 50)
     })
     this[_forgetWatch].path = path
   }
@@ -185,14 +191,14 @@ export class Folder extends Component {
     this.currentView.selectable.selectAll()
   }
 
-  getItems(path) {
+  async getItems(path) {
     let dir
     try {
-      dir = this.glob
+      dir = await (this.glob
         ? disk.glob(
             path.endsWith("*") || path.includes(".") ? path : path + "*"
           )
-        : disk.readDir(path, { absolute: true })
+        : disk.readDir(path, { absolute: true }))
       this.err = undefined
     } catch (err) {
       this.err = err.message
@@ -203,7 +209,7 @@ export class Folder extends Component {
       const out = []
       for (const path of dir) {
         const item = { path }
-        if (path.endsWith("/")) item.items = () => this.getItems(path)
+        if (path.endsWith("/")) item.items = async () => this.getItems(path)
         out.push(item)
       }
 
