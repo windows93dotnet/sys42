@@ -42,6 +42,18 @@ function renderStyles(el, stage, styles) {
 }
 
 export default function renderAttributes(el, stage, attrs, prefix = "") {
+  if ("height" in attrs && "height" in el === false) {
+    attrs.style ??= {}
+    attrs.style.height = attrs.height + "px"
+    delete attrs.height
+  }
+
+  if ("width" in attrs && "width" in el === false) {
+    attrs.style ??= {}
+    attrs.style.width = attrs.width + "px"
+    delete attrs.width
+  }
+
   for (let [key, val] of Object.entries(attrs)) {
     if (key === "autofocus") key = "data-autofocus" // prevent use of restricted autofocus attribute
 

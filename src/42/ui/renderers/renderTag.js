@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import render from "../render.js"
 import create from "../create.js"
 import { addEntry } from "../normalize.js"
@@ -18,18 +17,6 @@ export const HAS_OPTIONS = new Set([
 ])
 
 export function renderTag(tag, plan, stage) {
-  if ("width" in plan) {
-    plan.attrs ??= {}
-    plan.attrs.style ??= {}
-    plan.attrs.style.width = plan.width + "px"
-  }
-
-  if ("height" in plan) {
-    plan.attrs ??= {}
-    plan.attrs.style ??= {}
-    plan.attrs.style.height = plan.height + "px"
-  }
-
   let el = create(stage, tag, plan.attrs)
 
   const { localName } = el
