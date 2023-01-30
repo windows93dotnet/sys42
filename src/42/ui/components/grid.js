@@ -14,21 +14,9 @@ export class Grid extends Component {
       multiselectable: "{{multiselectable}}",
     },
 
-    traits: {
-      selectable: {
-        selector: ':scope > [role="row"] > [role="gridcell"]',
-        attributes: {
-          class: undefined,
-          aria: { selected: true },
-        },
-        draggerIgnoreItems: true,
-        key: "{{selectionKey}}",
-        selection: "{{selection}}",
-      },
-    },
-
     props: {
       itemTemplate: { type: "object" },
+      selectable: { type: "object" },
       selection: [],
       selectionKey: "textContent",
       multiselectable: true,
@@ -101,9 +89,24 @@ export class Grid extends Component {
     this.stage.signal.addEventListener("abort", () => ro.disconnect())
   }
 
-  render({ itemTemplate }) {
-    return [
-      {
+  render({ itemTemplate, selectable }) {
+    return {
+      selectable: selectable
+        ? configure(
+            {
+              selector: ':scope > [role="row"] > [role="gridcell"]',
+              attributes: {
+                class: undefined,
+                aria: { selected: true },
+              },
+              draggerIgnoreItems: true,
+              key: "{{selectionKey}}",
+              selection: "{{selection}}",
+            },
+            selectable
+          )
+        : false,
+      content: {
         scope: "items",
         role: "row",
         each: configure(
@@ -114,7 +117,7 @@ export class Grid extends Component {
           { role: "gridcell" }
         ),
       },
-    ]
+    }
   }
 }
 

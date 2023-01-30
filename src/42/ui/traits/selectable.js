@@ -398,8 +398,8 @@ class Selectable extends Trait {
 
   destroy() {
     super.destroy()
-    this.svg.remove()
-    this.dragger.destroy()
+    this.svg?.remove()
+    this.dragger?.destroy?.()
     this.svg = undefined
     this.dragger = undefined
   }

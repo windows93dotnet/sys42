@@ -42,11 +42,13 @@ class Icon extends Component {
               tag: "img.ui-icon__image",
               fetchpriority: "high",
               decoding: "async",
-              src: "{{image}}",
+              src: "{{../small ? imageSmall : imageNormal}}",
             },
             {
               tag: ".ui-icon__mask",
-              style: { "mask-image": "url({{image}})" },
+              style: {
+                "mask-image": "url({{../small ? imageSmall : imageNormal}})",
+              },
             },
           ],
         },
@@ -66,13 +68,13 @@ class Icon extends Component {
     if (path === undefined) return
     const infos = getPathInfos(path, { getURIMimetype: false })
 
-    const imageSize = this.small ? 16 : undefined
-    if (imageSize !== infos.imageSize) {
-      infos.image = undefined
-      infos.imageSize = imageSize
+    if (this.small) {
+      infos.imageSmall ??= themeManager.getIconPath(infos, 16)
+    } else {
+      infos.imageNormal ??= themeManager.getIconPath(infos)
     }
 
-    infos.image ??= themeManager.getIconPath(infos, infos.imageSize)
+    infos.image = this.small ? infos.imageSmall : infos.imageNormal
 
     infos.description ??= infos.isDir ? "folder" : infos.isURI ? "uri" : "file"
     if (infos.isURI) infos.ext = ""
