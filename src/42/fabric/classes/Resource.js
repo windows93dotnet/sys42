@@ -187,7 +187,7 @@ export default class Resource {
     this.el.srcdoc = /* html */ `
       <!DOCTYPE html>
       <meta charset="utf-8" />
-      <meta http-equiv="Content-Security-Policy" content="${CSP}" />
+      <!-- <meta http-equiv="Content-Security-Policy" content="${CSP}" /> -->
       ${head}
       <script type="module" src="${errorCatcher}"></script>
       ${body}
