@@ -123,6 +123,19 @@ types.object = {
   pick: "object/pick",
 }
 
+types.base64 = {
+  async encode(val) {
+    const base64 = await import("./formats/base64.js") //
+      .then(({ base64 }) => base64)
+    return base64.encode(val)
+  },
+  async decode(val) {
+    const base64 = await import("./formats/base64.js") //
+      .then(({ base64 }) => base64)
+    return base64.decode(val)
+  },
+}
+
 types.any = {
   arrify: "any/arrify",
   cast: "any/cast",

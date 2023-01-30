@@ -159,10 +159,12 @@ export function base64Decode(val, options) {
   return buffer
 }
 
-export default {
+export const base64 = {
   encode: base64Encode,
   decode: base64Decode,
   toArrayBuffer,
   fromArrayBuffer,
   byteLength,
 }
+
+export default base64
