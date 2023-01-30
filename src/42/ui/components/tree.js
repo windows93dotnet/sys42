@@ -11,21 +11,9 @@ export class Tree extends Component {
       multiselectable: "{{multiselectable}}",
     },
 
-    traits: {
-      selectable: {
-        selector: '[role="treeitem"]',
-        attributes: {
-          class: undefined,
-          aria: { selected: true },
-        },
-        draggerIgnoreItems: true,
-        key: "{{selectionKey}}",
-        selection: "{{selection}}",
-      },
-    },
-
     props: {
       itemTemplate: { type: "object" },
+      selectable: { type: "object" },
       selection: [],
       selectionKey: "textContent",
       multiselectable: true,
@@ -122,15 +110,29 @@ export class Tree extends Component {
     }
   }
 
-  render({ itemTemplate }) {
-    this.itemTemplate = itemTemplate
-    return [
-      {
+  render({ selectable }) {
+    return {
+      selectable: selectable
+        ? configure(
+            {
+              selector: '[role="treeitem"]',
+              attributes: {
+                class: undefined,
+                aria: { selected: true },
+              },
+              draggerIgnoreItems: true,
+              key: "{{../selectionKey}}",
+              selection: "{{../selection}}",
+            },
+            selectable
+          )
+        : false,
+      content: {
         tag: "ul.ui-tree__root.ui-tree__group",
         role: "tree",
         content: "{{renderGroup() |> render(^^)}}",
       },
-    ]
+    }
   }
 }
 

@@ -69,7 +69,40 @@
         style: { width: "300px", height: "208px" },
         selection: ["/tests/fixtures/components/folder/subfolder/file.txt"],
         path: "/tests/fixtures/components/folder/subfolder",
-        // path: "/tests/fixtures/formats",
+      },
+
+      "<br>",
+
+      {
+        tag: ".toggle-group",
+        content: [
+          {
+            tag: "radio",
+            bind: "folder3view",
+            value: "grid",
+            label: { picto: "grid", aria: { label: "Grid view" } },
+          },
+          {
+            tag: "radio",
+            bind: "folder3view",
+            value: "tree",
+            label: { picto: "tree", aria: { label: "Tree view" } },
+            checked: true,
+          },
+        ],
+      },
+
+      {
+        tag: "ui-folder.inset.paper",
+        style: { width: "300px", height: "208px" },
+        view: "{{folder3view}}",
+        transferable: false,
+        multiselectable: false,
+        selectable: {
+          selector: '[aria-description="file"]',
+        },
+        selection: ["/tests/fixtures/components/folder/subfolder/file.txt"],
+        path: "/tests/fixtures/components/folder/subfolder",
       },
     ],
   })

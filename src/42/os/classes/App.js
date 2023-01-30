@@ -286,6 +286,10 @@ export default class App extends UI {
       },
     }
 
+    if (manifest.on) content.on = manifest.on
+    if (manifest.watch) content.watch = manifest.watch
+    if (manifest.traits) content.traits = manifest.traits
+
     super({
       tag: ".box-fit.box-v.panel",
       content: manifest.menubar

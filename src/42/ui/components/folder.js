@@ -40,7 +40,8 @@ export class Folder extends Component {
         type: "boolean",
         default: true,
       },
-      transferable: { type: "object" },
+      transferable: { type: "object", default: true },
+      selectable: { type: "object", default: true },
     },
 
     // dropzone: true,
@@ -215,32 +216,36 @@ export class Folder extends Component {
   render({ transferable }) {
     const common = {
       entry: "currentView",
+      selectable: "{{selectable}}",
+      multiselectable: "{{multiselectable}}",
       selection: "{{selection}}",
       selectionKey: "path",
       items: "{{getItems(path)}}",
-      transferable: configure(
-        {
-          selector: ":scope ui-icon",
-          dropzone: "arrow",
-          findNewIndex: false,
-          kind: "$file",
-        },
-        transferable,
-        {
-          import: (details) => {
-            const res = transferable?.import?.(details)
-            if (res !== undefined) return res
+      transferable: transferable
+        ? configure(
+            {
+              selector: ":scope ui-icon",
+              dropzone: "arrow",
+              findNewIndex: false,
+              kind: "$file",
+            },
+            transferable,
+            {
+              import: (details) => {
+                const res = transferable?.import?.(details)
+                if (res !== undefined) return res
 
-            const { paths, effect, isOriginDropzone } = details
-            if (isOriginDropzone && effect === "move") return "revert"
+                const { paths, effect, isOriginDropzone } = details
+                if (isOriginDropzone && effect === "move") return "revert"
 
-            if (effect === "copy") io.copyPaths(paths, this.path)
-            else io.movePaths(paths, this.path)
+                if (effect === "copy") io.copyPaths(paths, this.path)
+                else io.movePaths(paths, this.path)
 
-            return "vanish"
-          },
-        }
-      ),
+                return "vanish"
+              },
+            }
+          )
+        : false,
     }
 
     return [
