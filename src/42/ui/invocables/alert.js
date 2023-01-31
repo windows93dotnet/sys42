@@ -11,6 +11,10 @@ const DEFAULT = {
 
 export async function alert(message = "", options) {
   if (isErrorLike(message)) {
+    console.group("⚠ alert")
+    console.log(message)
+    console.groupEnd()
+
     options ??= {}
     const error = await import("../../fabric/type/error/normalizeError.js") //
       .then((m) => m.default(message))
@@ -45,17 +49,17 @@ export async function alert(message = "", options) {
               ],
             },
           },
-          // {
-          //   op: "add",
-          //   path: "/-",
-          //   value: {
-          //     tag: "button",
-          //     content: "Details",
-          //     id: btnId,
-          //     toggle: sampId,
-          //     aria: { pressed: options.collapsed === false },
-          //   },
-          // },
+          {
+            op: "add",
+            path: "/-",
+            value: {
+              tag: "button",
+              content: "Details",
+              id: btnId,
+              toggle: sampId,
+              aria: { pressed: options.collapsed === false },
+            },
+          },
         ],
       }
     }

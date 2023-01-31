@@ -1,5 +1,18 @@
 import queueTask from "../type/function/queueTask.js"
 
+function isAccessor(obj, key) {
+  const propertyDescriptor = Object.getOwnPropertyDescriptor(obj, key)
+  return (
+    !propertyDescriptor || "value" in Object.getOwnPropertyDescriptor(obj, key)
+  )
+}
+
+function getOldVal(target, key, receiver) {
+  return target && isAccessor(target, key)
+    ? undefined
+    : Reflect.get(target, key, receiver)
+}
+
 export default function observe(root, options = {}) {
   const revokes = new Set()
   const proxies = new WeakMap()
@@ -67,7 +80,7 @@ export default function observe(root, options = {}) {
         let res
 
         if (typeof key === "string") {
-          const oldVal = Reflect.get(target, key, receiver)
+          const oldVal = getOldVal(target, key, receiver)
           const path = scope + key
 
           if (options.setProxyAsTarget !== false && targets.has(val)) {
@@ -93,7 +106,7 @@ export default function observe(root, options = {}) {
         let res
 
         if (typeof key === "string") {
-          const oldVal = Reflect.get(target, key, receiver)
+          const oldVal = getOldVal(target, key, receiver)
           const path = scope + key
           const allow = options.delete?.(path, oldVal, {
             key,

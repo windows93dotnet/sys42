@@ -4,9 +4,9 @@ import arrify from "../../fabric/type/any/arrify.js"
 import getCWD from "./cwd.js"
 
 const origin = globalThis?.location?.origin
-const host = origin ?? "https?://localhost:(\\d{2,4})"
+const host = origin === "null" ? "https?://localhost:(\\d{2,4})" : origin
 const cwd = getCWD()
-const base = origin ?? `file://${cwd}/`
+const base = origin === "null" ? `file://${cwd}/` : origin
 
 const DEFAULTS = {
   ignoreParams: ["t"],
