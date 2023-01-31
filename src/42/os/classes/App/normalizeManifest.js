@@ -52,9 +52,7 @@ async function normaliseDecode(manifest) {
       const out = {}
       out.action = type.action ?? mainAction
 
-      out.accept = Array.isArray(type.accept)
-        ? mimetypesManager.resolve(type.accept)
-        : type.accept
+      out.accept = mimetypesManager.normalize(type.accept)
 
       if (type.icons) out.icons = type.icons
       if (type.launch_type) out.launch_type = type.launch_type
@@ -63,8 +61,9 @@ async function normaliseDecode(manifest) {
   }
 }
 
-export async function normalizeManifest(manifest) {
+export async function normalizeManifest(manifest, options) {
   manifest.slug ??= toKebabCase(manifest.name)
+
   manifest.manifestPath ??= document.URL
   manifest.manifestURL ??= new URL(manifest.manifestPath, location).href
   manifest.dir ??= getDirname(manifest.manifestPath) + "/"
@@ -72,7 +71,9 @@ export async function normalizeManifest(manifest) {
 
   const [icons] = await Promise.all([
     getIcons(manifest),
-    normaliseDecode(manifest),
+    options?.skipNormaliseDecode === true
+      ? undefined
+      : normaliseDecode(manifest),
   ])
 
   if (icons) manifest.icons = icons
