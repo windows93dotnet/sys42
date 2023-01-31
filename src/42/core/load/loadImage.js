@@ -19,13 +19,27 @@ export const loadImage = (src) => {
   if (src instanceof HTMLImageElement) {
     if (src.complete) return resolveImage(src)
     return new Promise((resolve, reject) => {
-      src.onload = () => resolveImage(src).then(resolve, reject)
-      src.onerror = () => rejectImage(src.src, reject)
+      const onload = () => {
+        src.removeEventListener("load", onload)
+        src.removeEventListener("error", onerror)
+        resolveImage(src).then(resolve, reject)
+      }
+
+      const onerror = () => {
+        src.removeEventListener("load", onload)
+        src.removeEventListener("error", onerror)
+        rejectImage(src.src, reject)
+      }
+
+      src.addEventListener("load", onload)
+      src.addEventListener("error", onerror)
     })
   }
 
   return new Promise((resolve, reject) => {
     const asset = new Image()
+    asset.fetchpriority = "high"
+    asset.decoding = "sync"
     asset.onload = () => resolveImage(asset).then(resolve, reject)
     asset.onerror = () => rejectImage(src, reject)
     asset.src = src
