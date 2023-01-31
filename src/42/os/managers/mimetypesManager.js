@@ -4,6 +4,7 @@ import parseMimetype from "../../fabric/type/file/parseMimetype.js"
 import getExtname from "../../core/path/core/getExtname.js"
 import getBasename from "../../core/path/core/getBasename.js"
 import groupBy from "../../fabric/type/array/groupBy.js"
+import arrify from "../../fabric/type/any/arrify.js"
 
 class MimetypesManager extends ConfigFile {
   async populate() {
@@ -28,21 +29,22 @@ class MimetypesManager extends ConfigFile {
     }
   }
 
-  #resolveMimetype(mimetype, exts, options) {
+  #normalize(mimetype, exts, options) {
     const { type, subtype } = parseMimetype(mimetype)
 
-    const out = {}
-
     if (type in this.mimetypes) {
+      const out = {}
+      exts = arrify(exts)
+
       if (subtype === "*") {
         if (options?.keepGlob) {
-          out[`${type}/*`] = [...(exts ?? [])]
+          out[`${type}/*`] = [...exts]
         } else {
           for (const key in this.mimetypes[type]) {
             if (key === "*") continue
             if (Object.hasOwn(this.mimetypes[type], key)) {
               out[`${type}/${key}`] = [
-                ...(exts ?? []),
+                ...exts,
                 ...this.mimetypes[type][key].extnames,
               ]
             }
@@ -50,21 +52,41 @@ class MimetypesManager extends ConfigFile {
         }
       } else if (subtype in this.mimetypes[type]) {
         out[`${type}/${subtype}`] = [
-          ...(exts ?? []),
+          ...exts,
           ...this.mimetypes[type][subtype].extnames,
         ]
+      } else {
+        out[`${type}/${subtype}`] = [...exts]
+      }
+
+      return out
+    }
+
+    throw new Error(`Unknown mimetype type: ${type}`)
+  }
+
+  normalize(mimetypes, options) {
+    const out = {}
+
+    if (typeof mimetypes === "string") mimetypes = [mimetypes]
+
+    if (Array.isArray(mimetypes)) {
+      for (const item of mimetypes) {
+        Object.assign(out, this.#normalize(item, undefined, options))
+      }
+    } else {
+      for (const key in mimetypes) {
+        if (Object.hasOwn(mimetypes, key)) {
+          Object.assign(out, this.#normalize(key, mimetypes[key], options))
+        }
       }
     }
 
     return out
   }
 
-  parse(mimetype) {
-    return parseMimetype(mimetype)
-  }
-
   async add(mimetypes, appName) {
-    mimetypes = this.resolve(mimetypes, { keepGlob: true })
+    mimetypes = this.normalize(mimetypes, { keepGlob: true })
 
     for (const mimetype in mimetypes) {
       if (Object.hasOwn(mimetypes, mimetype)) {
@@ -84,6 +106,7 @@ class MimetypesManager extends ConfigFile {
         }
 
         if (extnames) {
+          target.extnames ??= []
           for (const ext of extnames) {
             if (!target.extnames.includes(ext)) target.extnames.push(ext)
             this.extnames[ext] ??= target
@@ -91,6 +114,7 @@ class MimetypesManager extends ConfigFile {
         }
 
         if (basenames) {
+          target.basenames ??= []
           for (const bn of basenames) {
             if (!target.basenames.includes(bn)) target.basenames.push(bn)
             this.basenames[bn] ??= target
@@ -100,29 +124,6 @@ class MimetypesManager extends ConfigFile {
     }
 
     return this.save()
-  }
-
-  resolve(mimetypes, options) {
-    const out = {}
-
-    if (typeof mimetypes === "string") mimetypes = [mimetypes]
-
-    if (Array.isArray(mimetypes)) {
-      for (const item of mimetypes) {
-        Object.assign(out, this.#resolveMimetype(item, undefined, options))
-      }
-    } else {
-      for (const key in mimetypes) {
-        if (Object.hasOwn(mimetypes, key)) {
-          Object.assign(
-            out,
-            this.#resolveMimetype(key, mimetypes[key], options)
-          )
-        }
-      }
-    }
-
-    return out
   }
 
   lookup(path) {
@@ -141,6 +142,10 @@ class MimetypesManager extends ConfigFile {
     }
 
     return out.apps
+  }
+
+  parse(mimetype) {
+    return parseMimetype(mimetype)
   }
 }
 

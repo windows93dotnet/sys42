@@ -37,17 +37,21 @@ class AppsManager extends ConfigFile {
       .then((m) => m.default)
 
     const manifest = await fs.read.json5(manifestPath)
-    manifest.manifestPath = manifestPath
-    await normalizeManifest(manifest)
 
     if (manifest?.decode?.types) {
-      if (manifestPath === "/c/programs/IKnowBasic/IKnowBasic.app.json5") {
-        console.log("decode.types", manifest?.decode?.types)
+      await mimetypesManager.ready
+      const undones = []
+      for (const { accept } of manifest.decode.types) {
+        undones.push(mimetypesManager.add(accept, manifest.name))
       }
+
+      await Promise.all(undones)
     }
 
+    manifest.manifestPath = manifestPath
+    await normalizeManifest(manifest, { skipNormaliseDecode: true })
+
     const out = pick(manifest, REGISTRY_KEYS)
-    out.manifestPath = manifestPath
 
     this.value[manifest.name] = out
 
