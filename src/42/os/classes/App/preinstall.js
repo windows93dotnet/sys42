@@ -2,19 +2,55 @@
 
 /* eslint-disable camelcase */
 
-import system from "../system.js"
-import defer from "../fabric/type/promise/defer.js"
-import pick from "../fabric/type/object/pick.js"
-import inPWA from "../core/env/runtime/inPWA.js"
-import supportInstall from "../core/env/supportInstall.js"
-import mimetypesManager from "./managers/mimetypesManager.js"
-import appCard from "./blocks/appCard.js"
-import uid from "../core/uid.js"
+import system from "../../../system.js"
+import defer from "../../../fabric/type/promise/defer.js"
+import pick from "../../../fabric/type/object/pick.js"
+import inPWA from "../../../core/env/runtime/inPWA.js"
+import supportInstall from "../../../core/env/supportInstall.js"
+import mimetypesManager from "../../managers/mimetypesManager.js"
+import appCard from "../../blocks/appCard.js"
+import uid from "../../../core/uid.js"
 
 const SHARED_MANIFEST_KEYS = ["description", "categories", "icons"]
 
 export default async function preinstall(manifest) {
   await mimetypesManager.ready
+
+  let hasMinIconSize
+  let icon32
+  for (const icon of manifest.icons) {
+    if (icon.sizes === "32x32") icon32 = icon
+    else if (Number.parseInt(icon.sizes.split("x")[0], 10) >= 144) {
+      hasMinIconSize = true
+      break
+    }
+  }
+
+  if (!hasMinIconSize) {
+    const resizeImage = await import("../../../fabric/img/resizeImage.js") //
+      .then(({ resizeImage }) => resizeImage)
+
+    const img = new Image()
+    img.src = icon32.src
+
+    await Promise.all([
+      resizeImage(img, 160, { output: "url" }).then((src) => {
+        manifest.icons.push({
+          src,
+          sizes: "160x160",
+          type: "image/png",
+        })
+      }),
+      resizeImage(img, 160, { padding: 32, output: "url" }).then((src) => {
+        manifest.icons.push({
+          src,
+          sizes: "160x160",
+          type: "image/png",
+          purpose: "maskable",
+        })
+      }),
+    ])
+  }
 
   const webmanifest = {
     name: manifest.name,
@@ -31,10 +67,13 @@ export default async function preinstall(manifest) {
       .getComputedStyle(document.documentElement)
       .getPropertyValue("--panel-bg")
       .trim(),
+
     ...pick(manifest, SHARED_MANIFEST_KEYS),
+
     ...(manifest.decode?.types
       ? { file_handlers: manifest.decode.types }
       : undefined),
+
     // related_applications: [
     //   {
     //     platform: "webapp",
@@ -129,22 +168,21 @@ export default async function preinstall(manifest) {
 
   const params = new URLSearchParams(location.search)
   if (params.has("install")) {
-    card = await import("../ui.js").then(({ default: ui }) => {
+    card = await import("../../../ui.js").then(({ default: ui }) => {
+      const card = appCard(webmanifest)
+      card.content.push({
+        tag: "button.w-full.ma-t-xl",
+        id: "install",
+        content: "Install as Web App",
+        disabled: true,
+        click: system.pwa.install,
+      })
       ui({
         tag: ".box-fit.desktop.box-center.z-top",
         id: "install-card",
         content: {
           tag: ".panel.outset.pa-xl",
-          content: [
-            appCard(webmanifest),
-            {
-              tag: "button.w-full",
-              id: "install",
-              content: "Install as Web App",
-              disabled: true,
-              click: system.pwa.install,
-            },
-          ],
+          content: card,
         },
       })
     })

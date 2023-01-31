@@ -1,16 +1,17 @@
-import FileAgent from "./App/FileAgent.js"
 import system from "../../system.js"
 import inTop from "../../core/env/realm/inTop.js"
 import uid from "../../core/uid.js"
 import ui, { UI } from "../../ui.js"
-import preinstall from "../preinstall.js"
 import escapeTemplate from "../../core/formats/template/escapeTemplate.js"
 import configure from "../../core/configure.js"
 import noop from "../../fabric/type/function/noop.js"
-import editor from "./App/editor.js"
 import postrenderAutofocus from "../../ui/postrenderAutofocus.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
 import template from "../../core/formats/template.js"
+
+import editor from "./App/editor.js"
+import preinstall from "./App/preinstall.js"
+import FileAgent from "./App/FileAgent.js"
 import normalizeManifest, { getIcons } from "./App/normalizeManifest.js"
 
 // TODO: check if rpc functions can be injecteds
