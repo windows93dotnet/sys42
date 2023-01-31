@@ -1,4 +1,4 @@
-:root {
+/* :root {
   --txt-xxs: xx-small;
   --txt-xs: x-small;
   --txt-sm: smaller;
@@ -12,7 +12,7 @@
 .txt-sm { font-size: var(--txt-sm); }
 .txt-lg { font-size: var(--txt-lg); }
 .txt-xl { font-size: var(--txt-xl); }
-.txt-xxl { font-size: var(--txt-xxl); }
+.txt-xxl { font-size: var(--txt-xxl); } */
 
 .font-sans { font: var(--font-sans); }
 .font-mono { font: var(--font-mono); }
@@ -40,6 +40,9 @@
 .txt-pre { white-space: pre; }
 .txt-wrap { white-space: pre-wrap; }
 .txt-nowrap { white-space: nowrap; }
+
+.txt-break-word { word-break: break-word; }
+.txt-break-all { word-break: break-all; }
 
 .txt-b { font-weight: bold; }
 .txt-i { font-style: italic; }

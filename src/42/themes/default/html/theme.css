@@ -92,7 +92,8 @@
 }
 
 * {
-  overflow-wrap: break-word;
+  /* overflow-wrap: break-word; */
+  overflow-wrap: anywhere;
 }
 
 .breath {

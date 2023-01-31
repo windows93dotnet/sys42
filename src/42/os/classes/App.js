@@ -52,8 +52,12 @@ async function prepareManifest(manifest, options) {
   if (inTop) {
     manifest.permissions ??= "app"
     if (manifest.permissions !== "app") {
-      throw new Error("TODO: ask user for permissions")
+      console.warn("TODO: ask user for permissions")
+      manifest.trusted = true
     }
+
+    // manifest.permissions ??= "trusted"
+    // manifest.trusted = true
   }
 
   manifest.state ??= {}
@@ -142,7 +146,10 @@ export async function mount(manifestPath, options) {
         ipc.on("42_APP_READY", async () => system.pwa.files)
       })
 
-    const appShell = new UI({ id, tag: "ui-sandbox.box-fit", ...sandbox })
+    const appShell = new UI(
+      { id, tag: "ui-sandbox.box-fit", ...sandbox },
+      { trusted: manifest.trusted }
+    )
 
     appShell.stage.reactive.watch("/$dialog/title", (val) => {
       if (val) document.title = val
@@ -175,13 +182,17 @@ export async function launch(manifestPath, options) {
 
   const { id, sandbox } = makeSandbox(manifest)
   if (manifest.script && !manifest.content) {
-    ui(document.documentElement, {
-      id,
-      tag: `ui-sandbox`,
-      class: `app__${manifest.slug} box-fit`,
-      style: { zIndex: -1 },
-      ...sandbox,
-    })
+    ui(
+      document.documentElement,
+      {
+        id,
+        tag: `ui-sandbox`,
+        class: `app__${manifest.slug} box-fit`,
+        style: { zIndex: -1 },
+        ...sandbox,
+      },
+      { trusted: manifest.trusted }
+    )
     return
   }
 
@@ -198,20 +209,23 @@ export async function launch(manifestPath, options) {
     picto = item.src
   }
 
-  return dialog({
-    id,
-    class: `app__${manifest.slug}`,
-    style: { width, height },
-    picto,
-    label: "{{$dialog.title}}",
-    content: {
-      tag: "ui-sandbox" + (manifest.inset ? ".inset" : ""),
-      ...sandbox,
+  return dialog(
+    {
+      id,
+      class: `app__${manifest.slug}`,
+      style: { width, height },
+      picto,
+      label: "{{$dialog.title}}",
+      content: {
+        tag: "ui-sandbox" + (manifest.inset ? ".inset" : ""),
+        ...sandbox,
+      },
+      state: {
+        $dialog: { title: manifest.name },
+      },
     },
-    state: {
-      $dialog: { title: manifest.name },
-    },
-  })
+    { trusted: manifest.trusted }
+  )
 }
 
 export default class App extends UI {
