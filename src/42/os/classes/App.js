@@ -20,6 +20,19 @@ import "../../ui/popup.js"
 
 async function prepareManifest(manifest, options) {
   if (options?.skipNormalize !== true) {
+    if (manifest === undefined) {
+      const disk = await import("../../core/disk.js") //
+        .then((m) => m.default)
+      const dirPath = new URL(document.URL).pathname
+      const dir = disk.get(dirPath)
+      for (const key of Object.keys(dir)) {
+        if (key.endsWith(".app.json5")) {
+          manifest = dirPath + key
+          break
+        }
+      }
+    }
+
     if (typeof manifest === "string") {
       const fs = await import("../../core/fs.js") //
         .then((m) => m.default)
@@ -29,11 +42,11 @@ async function prepareManifest(manifest, options) {
       manifest = await fs.read.json5(manifestPath)
       manifest.manifestPath = manifestPath
     }
+
+    await normalizeManifest(manifest)
   }
 
   manifest = configure(manifest, options)
-
-  await normalizeManifest(manifest)
 
   if (inTop) {
     manifest.permissions ??= "app"
