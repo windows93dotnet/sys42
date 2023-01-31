@@ -4,74 +4,21 @@ import inTop from "../../core/env/realm/inTop.js"
 import uid from "../../core/uid.js"
 import ui, { UI } from "../../ui.js"
 import preinstall from "../preinstall.js"
-import getDirname from "../../core/path/core/getDirname.js"
 import escapeTemplate from "../../core/formats/template/escapeTemplate.js"
 import configure from "../../core/configure.js"
-import toKebabCase from "../../fabric/type/string/case/toKebabCase.js"
 import noop from "../../fabric/type/function/noop.js"
 import editor from "./App/editor.js"
 import postrenderAutofocus from "../../ui/postrenderAutofocus.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
 import template from "../../core/formats/template.js"
-import normalizeDecodeTypes from "./App/normalizeDecodeTypes.js"
+import normalizeManifest, { getIcons } from "./App/normalizeManifest.js"
 
 // TODO: check if rpc functions can be injecteds
 import "../../fabric/browser/openInNewTab.js"
 import "../../ui/components/dialog.js"
 import "../../ui/popup.js"
 
-function getBaseURL(manifestPath) {
-  if (manifestPath) {
-    return getDirname(new URL(manifestPath, location).href) + "/"
-  }
-
-  const url = document.URL
-  return url.endsWith("/") ? url : getDirname(url) + "/"
-}
-
-async function getIcons(manifestPath) {
-  const dir = getDirname(manifestPath)
-  const base = getBaseURL(manifestPath)
-  const disk = await import("../../core/disk.js") //
-    .then(({ disk }) => disk)
-
-  const icons = []
-
-  let icon16
-  let icon32
-  let icon144
-
-  for (const path of disk.glob([
-    `${dir}/icons/**/*.{jpg,gif,svg,png}`,
-    `${dir}/icons/*.{jpg,gif,svg,png}`,
-    `${dir}/icon*.{jpg,gif,svg,png}`,
-  ])) {
-    if (path.includes("/16/") || path.includes("-16.")) {
-      icon16 = {
-        src: new URL(path, base).href,
-        sizes: "16x16",
-      }
-    } else if (path.includes("/32/") || path.includes("-32.")) {
-      icon32 = {
-        src: new URL(path, base).href,
-        sizes: "32x32",
-      }
-    } else if (path.includes("/144/") || path.includes("-144.")) {
-      icon144 = {
-        src: new URL(path, base).href,
-        sizes: "144x144",
-      }
-    }
-  }
-
-  if (icon16) icons.push(icon16)
-  if (icon32) icons.push(icon32)
-  if (icon144) icons.push(icon144)
-
-  return icons
-}
-
-async function normalizeManifest(manifest, options) {
+async function prepareManifest(manifest, options) {
   if (options?.skipNormalize !== true) {
     if (typeof manifest === "string") {
       const fs = await import("../../core/fs.js") //
@@ -85,11 +32,8 @@ async function normalizeManifest(manifest, options) {
   }
 
   manifest = configure(manifest, options)
-  manifest.slug ??= toKebabCase(manifest.name)
 
-  if (manifest.dir === undefined) {
-    manifest.dir = getBaseURL(manifest.manifestPath)
-  }
+  await normalizeManifest(manifest)
 
   if (inTop) {
     manifest.permissions ??= "app"
@@ -97,13 +41,6 @@ async function normalizeManifest(manifest, options) {
       throw new Error("TODO: ask user for permissions")
     }
   }
-
-  const [icons] = await Promise.all([
-    getIcons(manifest.manifestPath),
-    normalizeDecodeTypes(manifest),
-  ])
-
-  manifest.icons = icons
 
   manifest.state ??= {}
   manifest.state.$files ??= []
@@ -135,7 +72,7 @@ function makeSandbox(manifest) {
       path = manifest.path
     }
 
-    path = new URL(path, manifest.dir).href
+    path = new URL(path, manifest.dirURL).href
 
     if (path.endsWith(".html") || path.endsWith(".php")) {
       path += "?state=" + encodeURIComponent(JSON.stringify(manifest.state))
@@ -146,7 +83,7 @@ function makeSandbox(manifest) {
   }
 
   const appScript = manifest.script
-    ? `await import("${new URL(manifest.script, manifest.dir).href}")`
+    ? `await import("${new URL(manifest.script, manifest.dirURL).href}")`
     : ""
 
   const script = escapeTemplate(
@@ -174,7 +111,7 @@ function makeSandbox(manifest) {
 
 // Execute App sandboxed in a top level page
 export async function mount(manifestPath, options) {
-  let manifest = await normalizeManifest(manifestPath, options)
+  let manifest = await prepareManifest(manifestPath, options)
 
   if (inTop) {
     const { id, sandbox } = makeSandbox(manifest)
@@ -208,7 +145,7 @@ export async function mount(manifestPath, options) {
   // It's safe to resolve $ref keywords with potential javascript functions
   manifest = await import("../../fabric/json/resolve.js") //
     .then(({ resolve }) =>
-      resolve(manifest, { strict: false, baseURI: manifest.dir })
+      resolve(manifest, { strict: false, baseURI: manifest.dirURL })
     )
 
   return new App(manifest)
@@ -216,9 +153,8 @@ export async function mount(manifestPath, options) {
 
 // Execute App sandboxed inside a dialog
 export async function launch(manifestPath, options) {
-  const [manifest, /* icons, */ dialog] = await Promise.all([
-    normalizeManifest(manifestPath, options),
-    // getIcons(manifestPath),
+  const [manifest, dialog] = await Promise.all([
+    prepareManifest(manifestPath, options),
     await import("../../ui/components/dialog.js") //
       .then((m) => m.default),
   ])

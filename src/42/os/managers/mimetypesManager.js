@@ -59,6 +59,10 @@ class MimetypesManager extends ConfigFile {
     return out
   }
 
+  parse(mimetype) {
+    return parseMimetype(mimetype)
+  }
+
   async add(mimetypes, appName) {
     mimetypes = this.resolve(mimetypes, { keepGlob: true })
 
