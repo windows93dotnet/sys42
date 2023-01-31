@@ -13,6 +13,7 @@ import editor from "./App/editor.js"
 import postrenderAutofocus from "../../ui/postrenderAutofocus.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
 import template from "../../core/formats/template.js"
+import normalizeDecodeTypes from "./App/normalizeDecodeTypes.js"
 
 // TODO: check if rpc functions can be injecteds
 import "../../fabric/browser/openInNewTab.js"
@@ -28,15 +29,57 @@ function getBaseURL(manifestPath) {
   return url.endsWith("/") ? url : getDirname(url) + "/"
 }
 
+async function getIcons(manifestPath) {
+  const dir = getDirname(manifestPath)
+  const base = getBaseURL(manifestPath)
+  const disk = await import("../../core/disk.js") //
+    .then(({ disk }) => disk)
+
+  const icons = []
+
+  let icon16
+  let icon32
+  let icon144
+
+  for (const path of disk.glob([
+    `${dir}/icons/**/*.{jpg,gif,svg,png}`,
+    `${dir}/icons/*.{jpg,gif,svg,png}`,
+    `${dir}/icon*.{jpg,gif,svg,png}`,
+  ])) {
+    if (path.includes("/16/") || path.includes("-16.")) {
+      icon16 = {
+        src: new URL(path, base).href,
+        sizes: "16x16",
+      }
+    } else if (path.includes("/32/") || path.includes("-32.")) {
+      icon32 = {
+        src: new URL(path, base).href,
+        sizes: "32x32",
+      }
+    } else if (path.includes("/144/") || path.includes("-144.")) {
+      icon144 = {
+        src: new URL(path, base).href,
+        sizes: "144x144",
+      }
+    }
+  }
+
+  if (icon16) icons.push(icon16)
+  if (icon32) icons.push(icon32)
+  if (icon144) icons.push(icon144)
+
+  return icons
+}
+
 async function normalizeManifest(manifest, options) {
   if (options?.skipNormalize !== true) {
     if (typeof manifest === "string") {
       const fs = await import("../../core/fs.js") //
         .then((m) => m.default)
 
-      const manifestPath = manifest
+      const manifestPath = new URL(manifest, location).pathname
 
-      manifest = await fs.read.json5(new URL(manifest, location).pathname)
+      manifest = await fs.read.json5(manifestPath)
       manifest.manifestPath = manifestPath
     }
   }
@@ -54,6 +97,13 @@ async function normalizeManifest(manifest, options) {
       throw new Error("TODO: ask user for permissions")
     }
   }
+
+  const [icons] = await Promise.all([
+    getIcons(manifest.manifestPath),
+    normalizeDecodeTypes(manifest),
+  ])
+
+  manifest.icons = icons
 
   manifest.state ??= {}
   manifest.state.$files ??= []
@@ -166,9 +216,9 @@ export async function mount(manifestPath, options) {
 
 // Execute App sandboxed inside a dialog
 export async function launch(manifestPath, options) {
-  const [manifest, icons, dialog] = await Promise.all([
+  const [manifest, /* icons, */ dialog] = await Promise.all([
     normalizeManifest(manifestPath, options),
-    getIcons(manifestPath),
+    // getIcons(manifestPath),
     await import("../../ui/components/dialog.js") //
       .then((m) => m.default),
   ])
@@ -189,7 +239,7 @@ export async function launch(manifestPath, options) {
   const height = `${manifest.height ?? "350"}px`
 
   let picto
-  for (const item of icons) {
+  for (const item of manifest.icons) {
     if (item.sizes === "16x16") {
       picto = item.src
       break
@@ -212,40 +262,6 @@ export async function launch(manifestPath, options) {
       $dialog: { title: manifest.name },
     },
   })
-}
-
-async function getIcons(manifestPath) {
-  const dir = getDirname(manifestPath)
-  const base = getBaseURL(manifestPath)
-  const disk = await import("../../core/disk.js") //
-    .then(({ disk }) => disk)
-
-  const icons = []
-
-  for (const path of disk.glob([
-    `${dir}/icons/**/*.{jpg,gif,svg,png}`,
-    `${dir}/icons/*.{jpg,gif,svg,png}`,
-    `${dir}/icon*.{jpg,gif,svg,png}`,
-  ])) {
-    if (path.includes("/16/") || path.includes("-16.")) {
-      icons.push({
-        src: new URL(path, base).href,
-        sizes: "16x16",
-      })
-    } else if (path.includes("/32/") || path.includes("-32.")) {
-      icons.push({
-        src: new URL(path, base).href,
-        sizes: "32x32",
-      })
-    } else if (path.includes("/144/") || path.includes("-144.")) {
-      icons.push({
-        src: new URL(path, base).href,
-        sizes: "144x144",
-      })
-    }
-  }
-
-  return icons
 }
 
 export default class App extends UI {

@@ -11,20 +11,16 @@ import mimetypesManager from "./managers/mimetypesManager.js"
 import appCard from "./blocks/appCard.js"
 import uid from "../core/uid.js"
 
-const SHARED_MANIFEST_KEYS = ["description", "categories"]
+const SHARED_MANIFEST_KEYS = ["description", "categories", "icons"]
 
 export default async function preinstall(manifest) {
   await mimetypesManager.ready
 
-  function resolve(url) {
-    return new URL(url, manifest.dir).href
-  }
-
   const webmanifest = {
     name: manifest.name,
     id: `42-${manifest.slug}`,
-    scope: resolve("."),
-    start_url: resolve("."),
+    scope: manifest.dir,
+    start_url: manifest.dir,
     display: "standalone",
     display_override: [
       // TODO: experiment with borderless https://github.com/sonkkeli/borderless/blob/main/EXPLAINER.md#proposal
@@ -33,36 +29,11 @@ export default async function preinstall(manifest) {
     ],
     theme_color: window
       .getComputedStyle(document.documentElement)
-      .getPropertyValue("--panel-bg"),
+      .getPropertyValue("--panel-bg")
+      .trim(),
     ...pick(manifest, SHARED_MANIFEST_KEYS),
-    icons: [
-      {
-        src: resolve("./icons/icon-16.png"),
-        sizes: "16x16",
-        type: "image/png",
-      },
-      {
-        src: resolve("./icons/icon-32.png"),
-        sizes: "32x32",
-        type: "image/png",
-      },
-      {
-        src: resolve("./icons/icon-144.png"),
-        sizes: "144x144",
-        type: "image/png",
-      },
-    ],
     ...(manifest.decode?.types
-      ? {
-          file_handlers: manifest.decode.types.map((type) => {
-            const out = {}
-            out.action = type.action ?? resolve(".")
-            out.accept = mimetypesManager.resolve(type.accept)
-            if (type.icons) out.icons = type.icons
-            if (type.launch_type) out.launch_type = type.launch_type
-            return out
-          }),
-        }
+      ? { file_handlers: manifest.decode.types }
       : undefined),
     // related_applications: [
     //   {
@@ -86,8 +57,10 @@ export default async function preinstall(manifest) {
   head[0].name = "viewport"
   head[0].content = "width=device-width, initial-scale=1"
 
-  head[1].rel = "icon"
-  head[1].href = webmanifest.icons[0].src
+  if (webmanifest.icons?.length) {
+    head[1].rel = "icon"
+    head[1].href = webmanifest.icons[0].src
+  }
 
   head[2].rel = "manifest"
   head[2].href = manifestURL
