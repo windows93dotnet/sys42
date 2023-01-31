@@ -9,6 +9,8 @@ const DEFAULTS = {
   durability: "default",
 }
 
+const debug = 0
+
 export class Database {
   #config
   #obsolete = false
@@ -26,6 +28,7 @@ export class Database {
       let pending
 
       req.onupgradeneeded = ({ target, oldVersion, newVersion }) => {
+        if (debug) console.log("db onupgradeneeded", name)
         if (upgrade) {
           pending = upgrade(target.result, {
             oldVersion,
@@ -96,9 +99,11 @@ export class Database {
 
   #registerDB(db) {
     db.addEventListener("close", () => {
+      if (debug) console.log("db close")
       this.indexedDB = undefined
     })
     db.addEventListener("versionchange", () => {
+      if (debug) console.log("db versionchange")
       db.close()
       this.#obsolete = true
       this.indexedDB = undefined
@@ -165,6 +170,7 @@ export class Database {
     }
 
     if (this.#config.populate) {
+      if (debug) console.log("db populate", this.name)
       await this.#config.populate(this, db, arg)
     }
   }

@@ -43,7 +43,7 @@ const DISALLOWED_FEATURES = [
   "picture-in-picture",
   "publickey-credentials-get",
   // "speaker-selection",
-  "sync-xhr",
+  // "sync-xhr",
   // "unoptimized-images",
   // "unsized-media",
   "usb",
@@ -104,7 +104,7 @@ ALLOW_PRESETS.web = [
 ALLOW_PRESETS.all = [...ALLOW_PRESETS.web, ...DISALLOWED_FEATURES]
 ALLOW_PRESETS["*"] = ALLOW_PRESETS.all
 
-const FEATURES = [...APP_FEATURES, ...DISALLOWED_FEATURES]
+const FEATURES = new Set([...APP_FEATURES, ...DISALLOWED_FEATURES])
 
 export default class Resource {
   constructor(options) {
@@ -134,35 +134,36 @@ export default class Resource {
     // temporarily disabled while windows93 v3 dev
     // -------------------------------------------
 
-    // this.el.toggleAttribute("sandbox", true)
-    // const allowList = []
-    // for (const x of arrify(permissions)) {
-    //   if (FEATURES.includes(x)) allowList.push(x)
-    //   else {
-    //     const token = x.startsWith("allow-") ? x : `allow-${x}`
-    //     if (this.el.sandbox.supports(token)) this.el.sandbox.add(token)
-    //     else {
-    //       throw new DOMException(
-    //         `Sandbox token not supported: ${token}`,
-    //         "SecurityError"
-    //       )
-    //     }
-    //   }
-    // }
+    const allowList = []
 
-    // const allow = []
-    // for (const perm of FEATURES) {
-    //   if (
-    //     SUPPORTED_FEATURES === undefined ||
-    //     SUPPORTED_FEATURES.includes(perm)
-    //   ) {
-    //     // if (allowList.includes(perm)) allow.push(`${perm} 'src' ${origin}`)
-    //     if (allowList.includes(perm)) allow.push(`${perm} *`)
-    //     else allow.push(`${perm} 'none'`)
-    //   }
-    // }
+    this.el.toggleAttribute("sandbox", true)
+    for (const x of arrify(permissions)) {
+      if (FEATURES.has(x)) allowList.push(x)
+      else {
+        const token = x.startsWith("allow-") ? x : `allow-${x}`
+        if (this.el.sandbox.supports(token)) this.el.sandbox.add(token)
+        else {
+          throw new DOMException(
+            `Sandbox token not supported: ${token}`,
+            "SecurityError"
+          )
+        }
+      }
+    }
 
-    // this.el.allow = allow.join("; ")
+    const allow = []
+    for (const perm of FEATURES) {
+      if (
+        SUPPORTED_FEATURES === undefined ||
+        SUPPORTED_FEATURES.includes(perm)
+      ) {
+        // if (allowList.includes(perm)) allow.push(`${perm} 'src' ${origin}`)
+        if (allowList.includes(perm)) allow.push(`${perm} *`)
+        else allow.push(`${perm} 'none'`)
+      }
+    }
+
+    this.el.allow = allow.join("; ")
   }
 
   #addBus() {
