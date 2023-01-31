@@ -3,10 +3,12 @@ import arrify from "../../fabric/type/any/arrify.js"
 import pick from "../../fabric/type/object/pick.js"
 import disk from "../../core/disk.js"
 import mimetypesManager from "./mimetypesManager.js"
+import normalizeManifest from "../classes/App/normalizeManifest.js"
 import App from "../classes/App.js"
 
 const REGISTRY_KEYS = [
   "name",
+  "slug",
   "path",
   "manifestPath",
   "categories",
@@ -14,6 +16,7 @@ const REGISTRY_KEYS = [
   "geometry",
   "width",
   "height",
+  "icons",
 ]
 
 class AppsManager extends ConfigFile {
@@ -30,20 +33,17 @@ class AppsManager extends ConfigFile {
   }
 
   async add(manifestPath, options) {
-    await mimetypesManager.ready
-
     const fs = await import("../../core/fs.js") //
       .then((m) => m.default)
 
     const manifest = await fs.read.json5(manifestPath)
+    manifest.manifestPath = manifestPath
+    await normalizeManifest(manifest)
 
     if (manifest?.decode?.types) {
-      const undones = []
-      for (const { accept } of manifest.decode.types) {
-        undones.push(mimetypesManager.add(accept, manifest.name))
+      if (manifestPath === "/c/programs/IKnowBasic/IKnowBasic.app.json5") {
+        console.log("decode.types", manifest?.decode?.types)
       }
-
-      await Promise.all(undones)
     }
 
     const out = pick(manifest, REGISTRY_KEYS)
@@ -92,38 +92,35 @@ class AppsManager extends ConfigFile {
 
   async makeMenu(apps) {
     await this.ready
-    apps ??= this.value
+
+    apps = apps
+      ? Object.entries(apps)
+      : Object.entries(this.value).sort(([a], [b]) => a.localeCompare(b))
 
     const menu = []
-    const undones = []
 
-    for (const [appName, { manifestPath }] of Object.entries(apps)) {
+    for (const [appName, { icons }] of apps) {
       if (appName === "version") continue
 
-      undones.push(
-        App.getIcons(manifestPath).then((icons) => {
-          const menuItem = {
-            label: appName,
-            click: () => {
-              this.exec(appName)
-            },
-          }
+      const menuItem = {
+        label: appName,
+        click: () => {
+          this.exec(appName)
+        },
+      }
 
-          for (const { sizes, src } of icons) {
-            if (sizes === "16x16") {
-              menuItem.picto = src
-              break
-            }
+      for (const { sizes, src } of icons) {
+        if (sizes === "16x16") {
+          menuItem.picto = src
+          break
+        }
 
-            menuItem.picto = src
-          }
+        menuItem.picto = src
+      }
 
-          menu.push(menuItem)
-        })
-      )
+      menu.push(menuItem)
     }
 
-    await Promise.all(undones)
     return menu
   }
 }

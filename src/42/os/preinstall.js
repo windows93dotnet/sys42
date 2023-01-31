@@ -19,8 +19,8 @@ export default async function preinstall(manifest) {
   const webmanifest = {
     name: manifest.name,
     id: `42-${manifest.slug}`,
-    scope: manifest.dir,
-    start_url: manifest.dir,
+    scope: manifest.dirURL,
+    start_url: manifest.dirURL,
     display: "standalone",
     display_override: [
       // TODO: experiment with borderless https://github.com/sonkkeli/borderless/blob/main/EXPLAINER.md#proposal
