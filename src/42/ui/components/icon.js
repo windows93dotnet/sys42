@@ -66,7 +66,7 @@ class Icon extends Component {
     },
   }
 
-  getInfos(path) {
+  async getInfos(path) {
     if (path === undefined) return
     const infos = getPathInfos(path, {
       getURIMimetype: false,
@@ -84,9 +84,13 @@ class Icon extends Component {
     }
 
     if (this.small) {
-      infos.imageSmall ??= fs.getURL(themeManager.getIconPath(infos, 16))
+      infos.imageSmall ??= await fs.getURL(
+        await themeManager.getIconPath(infos, 16)
+      )
     } else {
-      infos.imageNormal ??= fs.getURL(themeManager.getIconPath(infos))
+      infos.imageNormal ??= await fs.getURL(
+        await themeManager.getIconPath(infos)
+      )
     }
 
     infos.image = this.small ? infos.imageSmall : infos.imageNormal
