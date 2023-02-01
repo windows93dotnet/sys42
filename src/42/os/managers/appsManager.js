@@ -107,7 +107,8 @@ class AppsManager extends ConfigFile {
     }
 
     const app = this.value[appName]
-    return App.launch(app.manifestPath, { state })
+    const options = state ? { state } : undefined
+    return App.launch(app.manifestPath, options)
   }
 
   async makeMenu(apps) {
