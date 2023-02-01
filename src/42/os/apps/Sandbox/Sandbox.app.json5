@@ -12,5 +12,5 @@
 
   installable: false,
   inset: true,
-  path: "{{$files/0/path}}",
+  document: "{{$files/0/path}}",
 }

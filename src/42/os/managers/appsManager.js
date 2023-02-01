@@ -10,16 +10,16 @@ import App from "../classes/App.js"
 import getBasename from "../../core/path/core/getBasename.js"
 
 const REGISTRY_KEYS = [
-  "name",
-  "slug",
-  "path",
-  "manifestPath",
   "categories",
-  "inset",
+  "document",
   "geometry",
-  "width",
   "height",
   "icons",
+  "inset",
+  "manifestPath",
+  "name",
+  "slug",
+  "width",
 ]
 
 class AppsManager extends ConfigFile {

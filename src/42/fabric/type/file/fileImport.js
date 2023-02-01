@@ -3,7 +3,8 @@
 
 // @thanks https://stackoverflow.com/a/67603015
 
-import inOpaqueOrigin from "../../../core/env/realm/inOpaqueOrigin.js"
+// import inOpaqueOrigin from "../../../core/env/realm/inOpaqueOrigin.js"
+import inIframe from "../../../core/env/realm/inIframe.js"
 const supportShowOpenFilePicker = "showOpenFilePicker" in globalThis
 
 function legacyAccept(types) {
@@ -78,7 +79,9 @@ export default async function fileImport(options = {}) {
     directory: options.directory,
   }
 
-  return !inOpaqueOrigin && supportShowOpenFilePicker
+  // return legacyOpenFile(config)
+
+  return !inIframe && supportShowOpenFilePicker
     ? openFile(config)
     : legacyOpenFile(config)
 }

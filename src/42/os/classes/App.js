@@ -50,14 +50,14 @@ async function prepareManifest(manifest, options) {
   manifest = configure(manifest, options)
 
   if (inTop) {
-    manifest.permissions ??= "app"
-    if (manifest.permissions !== "app") {
-      console.warn("TODO: ask user for permissions")
-      manifest.trusted = true
-    }
+    // manifest.permissions ??= "app"
+    // if (manifest.permissions !== "app") {
+    //   console.warn("TODO: ask user for permissions")
+    //   manifest.trusted = true
+    // }
 
-    // manifest.permissions ??= "trusted"
-    // manifest.trusted = true
+    manifest.permissions ??= "trusted"
+    manifest.trusted = true
   }
 
   manifest.state ??= {}
@@ -73,9 +73,9 @@ function makeSandbox(manifest) {
 
   const out = { id, sandbox: { permissions } }
 
-  if (manifest.path) {
+  if (manifest.document) {
     let path
-    const parsed = template.parse(manifest.path)
+    const parsed = template.parse(manifest.document)
     if (parsed.substitutions.length > 0) {
       const state = { ...manifest.state, foo: "hello" }
 
@@ -87,7 +87,7 @@ function makeSandbox(manifest) {
 
       path = template.format(parsed, state, { delimiter: "/" })
     } else {
-      path = manifest.path
+      path = manifest.document
     }
 
     path = new URL(path, manifest.dirURL).href
