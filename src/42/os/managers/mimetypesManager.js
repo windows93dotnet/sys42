@@ -97,7 +97,7 @@ class MimetypesManager extends ConfigFile {
         const { type, subtype } = parseMimetype(mimetype)
 
         this.mimetypes[type] ??= {}
-        this.mimetypes[type][subtype] ??= {}
+        this.mimetypes[type][subtype] ??= { mimetype }
         const target = this.mimetypes[type][subtype]
 
         if (appName) {

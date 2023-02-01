@@ -10,15 +10,19 @@ import supportInstall from "../../../core/env/supportInstall.js"
 import mimetypesManager from "../../managers/mimetypesManager.js"
 import appCard from "../../blocks/appCard.js"
 import uid from "../../../core/uid.js"
+import { merge } from "../../../core/configure.js"
 
 const SHARED_MANIFEST_KEYS = ["description", "categories", "icons"]
 
 export default async function preinstall(manifest) {
   await mimetypesManager.ready
 
+  if (manifest.pwa) merge(manifest, manifest.pwa)
+
   let hasMinIconSize
   let icon32
   for (const icon of manifest.icons) {
+    icon.src = new URL(icon.src, manifest.dirURL).href
     if (icon.sizes === "32x32") icon32 = icon
     else if (Number.parseInt(icon.sizes.split("x")[0], 10) >= 144) {
       hasMinIconSize = true
@@ -108,13 +112,16 @@ export default async function preinstall(manifest) {
 
   const installPrompt = defer()
 
+  if (inPWA && manifest.width && manifest.height) {
+    window.resizeTo(manifest.width, manifest.height)
+  }
+
   system.pwa = {}
 
   // system.pwa.registration ??= navigator.serviceWorker
   //   ?.register("/42.sw.js", { type: "module" })
   //   .catch(installPrompt.reject)
 
-  // if (inPWA) window.resizeTo(400, 350)
   // console.log(globalThis.navigator.windowControlsOverlay.getTitlebarAreaRect())
 
   // @read https://web.dev/file-handling/

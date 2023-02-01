@@ -91,7 +91,6 @@ export class Picto extends Component {
         decoding: "async",
         on: {
           load() {
-            console.log(src)
             URL.revokeObjectURL(src)
           },
         },

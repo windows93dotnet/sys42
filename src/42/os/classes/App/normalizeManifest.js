@@ -11,7 +11,7 @@ export async function getIcons(manifest) {
 
   let icon16
   let icon32
-  let icon144
+  let icon160
 
   for (const path of disk.glob([
     `${manifest.dir}icons/**/*.{jpg,gif,svg,png}`,
@@ -20,25 +20,25 @@ export async function getIcons(manifest) {
   ])) {
     if (path.includes("/16/icon.") || path.includes("-16.")) {
       icon16 = {
-        src: new URL(path, manifest.dirURL).href,
+        src: new URL(path, manifest.dirURL).pathname,
         sizes: "16x16",
       }
     } else if (path.includes("/32/icon.") || path.includes("-32.")) {
       icon32 = {
-        src: new URL(path, manifest.dirURL).href,
+        src: new URL(path, manifest.dirURL).pathname,
         sizes: "32x32",
       }
-    } else if (path.includes("/144/icon.") || path.includes("-144.")) {
-      icon144 = {
-        src: new URL(path, manifest.dirURL).href,
-        sizes: "144x144",
+    } else if (path.includes("/160/icon.") || path.includes("-160.")) {
+      icon160 = {
+        src: new URL(path, manifest.dirURL).pathname,
+        sizes: "160x160",
       }
     }
   }
 
   if (icon16) icons.push(icon16)
   if (icon32) icons.push(icon32)
-  if (icon144) icons.push(icon144)
+  if (icon160) icons.push(icon160)
 
   return icons
 }
