@@ -26,11 +26,6 @@ export default function appCard(manifest) {
             ],
           },
           {
-            if: "{{description}}",
-            tag: "p.ma-t-0",
-            content: "{{description}}",
-          },
-          {
             tag: "ul.unstyled.d-flex.gap-sm",
             aria: { label: "Categories" },
             content: {
@@ -40,6 +35,16 @@ export default function appCard(manifest) {
                 content: "{{titleCase(.)}}",
               },
             },
+          },
+          {
+            if: "{{description}}",
+            tag: "p",
+            content: "{{description}}",
+          },
+          {
+            if: "{{copyright}}",
+            tag: "p.ma-b-0.opacity-half",
+            content: "{{copyright}}",
           },
         ],
       },

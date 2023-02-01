@@ -278,6 +278,12 @@ States
   outline-offset: var(--ctrl-oo);
 }
 
+a:focus,
+a.focus {
+  outline: var(--ctrl-o);
+  outline-offset: 1px;
+}
+
 /* :focus:not(:focus-visible, [aria-pressed]), */
 :focus:not(:focus-visible),
 [tabindex="-1"]:focus,
