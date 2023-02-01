@@ -117,8 +117,10 @@ export default class FileAgent {
     if (val?.name && !this.name) this.name = val.name
     this.id = undefined
     this.url = undefined
-    this.text = undefined
     this.stream = undefined
+    this[_noSideEffects] = true
+    this.text = undefined
+    this[_noSideEffects] = false
   }
 
   get data() {
@@ -168,6 +170,7 @@ export default class FileAgent {
     return this.blob.then((blob) => blob.text())
   }
   set text(val) {
+    if (this[_noSideEffects]) return
     this.data = val
   }
 

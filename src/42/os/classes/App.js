@@ -291,7 +291,7 @@ export default class App extends UI {
             loc.startsWith("/$files/") &&
             loc.lastIndexOf("/") === 7
           ) {
-            const $file = this.reactive.get(loc)
+            const $file = this.reactive.get(loc, option)
             if (!($file instanceof FileAgent)) {
               this.reactive.set(loc, new FileAgent($file, manifest), option)
             }
