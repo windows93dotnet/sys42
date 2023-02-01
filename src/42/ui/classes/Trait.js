@@ -35,7 +35,11 @@ export default class Trait {
     if (previous) previous.destroy()
     el[_INSTANCES][name] = this
 
-    if (el[_isComponent] && name in el === false) {
+    if (
+      el[_isComponent] &&
+      (name in el === false ||
+        el.constructor.plan?.props?.[name]?.trait === true)
+    ) {
       this.#hasGetter = true
       Object.defineProperty(el, name, {
         configurable: true,
