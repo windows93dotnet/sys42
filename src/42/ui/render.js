@@ -111,8 +111,22 @@ export default function render(plan, stage, options) {
     }
 
     case "function": {
-      const el = document.createTextNode("")
+      let el = document.createTextNode("")
       register(stage, plan, (val) => {
+        if (stage?.pluginHandlers) {
+          for (const pluginHandle of stage.pluginHandlers) {
+            const res = pluginHandle(val, stage, options)
+            if (res !== undefined) val = res
+          }
+
+          if (val !== undefined && typeof val !== "string") {
+            const res = render(val, stage, options)
+            el.replaceWith(res)
+            el = res
+            return
+          }
+        }
+
         el.textContent = val
       })
       return el

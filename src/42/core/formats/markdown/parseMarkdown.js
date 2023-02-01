@@ -5,10 +5,13 @@ export default function parseMarkdown(text) {
 
   let cursor = 0
 
-  const makeTokenizer = (tag) => (_, content, index) => {
+  const makeTokenizer = (tag) => (_, content, index) =>
+    handleToken(_, index, { tag, content })
+
+  function handleToken(_, index, plan) {
     const previous = text.slice(cursor, index)
     if (previous) tokens.push({ content: previous })
-    tokens.push({ tag, content })
+    tokens.push(plan)
     cursor = index + _.length
     return " ".repeat(_.length)
   }
@@ -20,9 +23,13 @@ export default function parseMarkdown(text) {
     .replace(/^> (.*$)/gim, makeTokenizer("blockquote"))
     .replace(/\*\*(.*?)\*\*/gim, makeTokenizer("strong"))
     .replace(/\*(.*?)\*/gim, makeTokenizer("em"))
-  // .replace(/!\[(.*?)]\((.*?)\)/gim, "<img alt='$1' src='$2' />")
-  // .replace(/\[(.*?)]\((.*?)\)/gim, "<a href='$2'>$1</a>")
-  // .replace(/\n$/gim, "<br />")
+    .replace(/ {2}$/gim, (_, index) => handleToken(_, index, { tag: "br" }))
+    .replace(/!\[(.*?)]\((.*?)\)/gim, (_, alt, src, index) =>
+      handleToken(_, index, { tag: "img", alt, src })
+    )
+    .replace(/\[(.*?)]\((.*?)\)/gim, (_, content, href, index) =>
+      handleToken(_, index, { tag: "a", href, content })
+    )
 
   if (cursor < text.length) tokens.push({ content: text.slice(cursor) })
 

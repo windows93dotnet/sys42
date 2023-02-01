@@ -160,7 +160,7 @@ export async function mount(manifestPath, options) {
 
   // manifest.$id = new URL(manifest.manifestPath, manifest.dir).href
   manifest.$defs ??= {}
-  Object.assign(manifest.$defs, editor.menubar)
+  Object.assign(manifest.$defs, editor.menubar(manifest))
 
   // Execution is in a sandbox.
   // It's safe to resolve $ref keywords with potential javascript functions

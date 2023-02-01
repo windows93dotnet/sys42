@@ -78,16 +78,13 @@ export default async function preinstall(manifest) {
       ? { file_handlers: manifest.decode.types }
       : undefined),
 
-    // related_applications: [
-    //   {
-    //     platform: "webapp",
-    //     url: resolve("./app.webmanifest"),
-    //   },
-    // ],
+    related_applications: [
+      { platform: "webapp", url: `${manifest.dirURL}app.webmanifest` },
+    ],
   }
 
   const manifestJSON = encodeURIComponent(JSON.stringify(webmanifest))
-  const manifestURL = `data:application/manifest+json;name=app.webmanifest,${manifestJSON}`
+  const manifestURL = `data:application/manifest+json;name=${manifest.dirURL}app.webmanifest,${manifestJSON}`
 
   document.title = webmanifest.name
 
@@ -111,10 +108,6 @@ export default async function preinstall(manifest) {
   document.head.append(...head)
 
   const installPrompt = defer()
-
-  if (inPWA && manifest.width && manifest.height) {
-    window.resizeTo(manifest.width, manifest.height)
-  }
 
   system.pwa = {}
 
@@ -149,18 +142,19 @@ export default async function preinstall(manifest) {
 
   if (!supportInstall || inPWA) return false
 
-  // // @read https://web.dev/get-installed-related-apps/
-  // navigator.getInstalledRelatedApps().then((res) => {
-  //   console.log("getInstalledRelatedApps", res)
-  // })
+  // @read https://web.dev/get-installed-related-apps/
+  navigator.getInstalledRelatedApps().then((res) => {
+    console.log("getInstalledRelatedApps", res)
+  })
 
   let card
   let displayApp
 
   // @read https://web.dev/customize-install/
-  window.addEventListener("beforeinstallprompt", (e) => {
+  window.addEventListener("beforeinstallprompt", async (e) => {
     e.preventDefault()
     installPrompt.resolve(e)
+    card = await card
     document.querySelector("#install")?.removeAttribute("disabled")
   })
 
@@ -168,28 +162,38 @@ export default async function preinstall(manifest) {
     const install = await installPrompt
     install.prompt()
     await install.userChoice
+    card = await card
     card?.destroy()
     document.querySelector("#install-card")?.remove()
     displayApp?.resolve()
+
+    if (manifest.width && manifest.height) {
+      window.resizeTo(manifest.width, manifest.height)
+    }
+  }
+
+  if (inPWA && manifest.width && manifest.height) {
+    window.resizeTo(manifest.width, manifest.height)
   }
 
   const params = new URLSearchParams(location.search)
   if (params.has("install")) {
-    card = await import("../../../ui.js").then(({ default: ui }) => {
-      const card = appCard(webmanifest)
-      card.content.push({
+    card = import("../../../ui.js").then(({ default: ui }) => {
+      const content = appCard(webmanifest)
+      content.content.push({
         tag: "button.w-full.ma-t-xl",
         id: "install",
         content: "Install as Web App",
         disabled: true,
         click: system.pwa.install,
       })
-      ui({
+      return ui({
+        plugins: ["markdown"],
         tag: ".box-fit.desktop.box-center.z-top",
         id: "install-card",
         content: {
           tag: ".panel.outset.pa-xl",
-          content: card,
+          content,
         },
       })
     })

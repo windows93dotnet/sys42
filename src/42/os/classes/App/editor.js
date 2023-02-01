@@ -1,7 +1,8 @@
 import supportInstall from "../../../core/env/supportInstall.js"
+// import inPWA from "../../../core/env/runtime/inPWA.js"
 
 const editor = {
-  menubar: [
+  menubar: (manifest) => [
     {
       $id: "FileMenu",
       label: "File",
@@ -56,20 +57,24 @@ const editor = {
           picto: "export",
           click: "{{editor.exportFile()}}",
         },
-        "---",
-        {
-          $id: "closeFile",
-          disabled: "{{$files.length === 0}}",
-          label: "Close",
-          shortcut: "Alt+W",
-          click: "{{editor.closeFile()}}",
-        },
-        {
-          $id: "closeAll",
-          disabled: "{{$files.length === 0}}",
-          label: "Close All",
-          click: "{{editor.closeAll()}}",
-        },
+        ...(manifest.multiple
+          ? [
+              "---",
+              {
+                $id: "closeFile",
+                disabled: "{{$files.length === 0}}",
+                label: "Close",
+                shortcut: "Alt+W",
+                click: "{{editor.closeFile()}}",
+              },
+              {
+                $id: "closeAll",
+                disabled: "{{$files.length === 0}}",
+                label: "Close All",
+                click: "{{editor.closeAll()}}",
+              },
+            ]
+          : []),
         "---",
         {
           $id: "exit",
@@ -251,9 +256,10 @@ editor.init = (app) => {
           .then((m) => m.default),
       ]).then(([dialog, appCard]) => {
         dialog({
+          plugins: ["markdown"],
           class: "ui-dialog-about",
           label: "About",
-          content: appCard(manifest),
+          content: { tag: ".pa-xl", content: appCard(manifest) },
         })
       })
     },
