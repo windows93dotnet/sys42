@@ -40,8 +40,8 @@ export class Folder extends Component {
         type: "boolean",
         default: true,
       },
-      transferable: { type: "object", default: true },
-      selectable: { type: "object", default: true },
+      transferable: { type: "any", trait: true, default: true },
+      selectable: { type: "any", trait: true, default: true },
     },
 
     // dropzone: true,

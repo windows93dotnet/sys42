@@ -12,8 +12,8 @@ export class Tree extends Component {
     },
 
     props: {
-      itemTemplate: { type: "object" },
-      selectable: { type: "object" },
+      itemTemplate: { type: "any" },
+      selectable: { type: "any", trait: true },
       selection: [],
       selectionKey: "textContent",
       multiselectable: true,
