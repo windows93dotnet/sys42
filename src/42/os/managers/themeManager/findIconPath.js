@@ -5,6 +5,7 @@
 import disk from "../../../core/disk.js"
 import locate from "../../../fabric/locator/locate.js"
 import getDirBasePair from "../../../core/path/core/getDirBasePair.js"
+import parseMimetype from "../../../fabric/type/file/parseMimetype.js"
 
 function searchIcon(themePath, obj, val) {
   if (typeof val === "string") {
@@ -22,9 +23,11 @@ function searchIcon(themePath, obj, val) {
           if (k.startsWith(`${val}.`)) return `${themePath}/${key}/${k}`
         }
       }
+
+      return
     }
 
-    return
+    val = { mime: parseMimetype(val) }
   }
 
   const { filename, ext, mime, protocol, host } = val

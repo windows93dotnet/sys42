@@ -17,12 +17,24 @@ export default class Driver {
     throw new Error(`${this.constructor.name}.access() is not implemented`)
   }
 
+  async getURL() {
+    throw new Error(`${this.constructor.name}.getURL() is not implemented`)
+  }
+
   async isFile() {
     throw new Error(`${this.constructor.name}.isFile() is not implemented`)
   }
 
   async isDir() {
     throw new Error(`${this.constructor.name}.isDir() is not implemented`)
+  }
+
+  async isLink() {
+    throw new Error(`${this.constructor.name}.isLink() is not implemented`)
+  }
+
+  async link() {
+    throw new Error(`${this.constructor.name}.link() is not implemented`)
   }
 
   /* file
