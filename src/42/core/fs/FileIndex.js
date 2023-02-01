@@ -94,6 +94,20 @@ export default class FileIndex extends Storable {
     return Array.isArray(desc) || desc === 0
   }
 
+  isLink(path) {
+    const desc = this.get(path)
+    return Array.isArray(desc) && desc[0] === -1
+  }
+
+  link(source, destination) {
+    const desc = this.get(source)
+    if (desc === undefined) {
+      throw new FileSystemError(FileSystemError.ENOENT, source)
+    }
+
+    this.set(destination, [-1, source])
+  }
+
   readDir(path, options = {}, parent = "") {
     const { recursive, absolute } = options
     const dir = this.get(path)

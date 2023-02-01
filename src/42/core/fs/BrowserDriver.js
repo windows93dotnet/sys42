@@ -49,11 +49,30 @@ export default class BrowserDriver extends Driver {
     return disk.has(filename)
   }
 
+  async getURL(filename) {
+    if (!disk.has(filename)) throw new FileSystemError(ENOENT, filename)
+
+    const desc = disk.get(filename)
+    if (desc === 0) return filename
+    if (desc?.[0] === -1) return this.getURL(desc[1])
+
+    const blob = await this.open(filename)
+    const objectURL = URL.createObjectURL(blob)
+    return objectURL
+  }
+
   async isDir(filename) {
     return disk.isDir(filename)
   }
   async isFile(filename) {
     return disk.isFile(filename)
+  }
+  async isLink(filename) {
+    return disk.isLink(filename)
+  }
+
+  async link(source, destination) {
+    return disk.link(source, destination)
   }
 
   /* file
@@ -71,6 +90,9 @@ export default class BrowserDriver extends Driver {
     }
 
     const [id, mask] = entry
+
+    if (id === -1) return this.open(mask)
+
     entry[2].a = Date.now()
     disk.set(filename, entry, { silent: true })
 

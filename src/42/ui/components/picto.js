@@ -2,6 +2,7 @@ import Component from "../classes/Component.js"
 import create from "../create.js"
 import render from "../render.js"
 import loadSVG from "../../core/load/loadSVG.js"
+import fs from "../../core/fs.js"
 
 const inlineds = new Set()
 const sprites = create("svg#picto-sprites", {
@@ -48,9 +49,21 @@ export class Picto extends Component {
   async update() {
     const type = typeof this.value
 
-    if (type !== "string" || this.value.includes("/")) {
+    const isString = type === "string"
+
+    if (!isString || this.value.includes("/")) {
       let src = this.value
-      if (type !== "string" || !this.value.includes(".")) {
+      if (
+        !isString ||
+        !(
+          this.value.endsWith(".png") ||
+          this.value.endsWith(".jpg") ||
+          this.value.endsWith(".gif") ||
+          this.value.endsWith(".svg") ||
+          this.value.endsWith(".webm") ||
+          this.value.endsWith(".ico")
+        )
+      ) {
         src = await import("../../os/managers/themeManager.js").then(
           async ({ themeManager }) => {
             await themeManager.ready
@@ -58,6 +71,8 @@ export class Picto extends Component {
           }
         )
       }
+
+      src = await fs.getURL(src)
 
       if (this.rasterImage) {
         this.rasterImage.src = src
@@ -74,6 +89,12 @@ export class Picto extends Component {
         entry: "rasterImage",
         fetchpriority: "high",
         decoding: "async",
+        on: {
+          load() {
+            console.log(src)
+            URL.revokeObjectURL(src)
+          },
+        },
         ...visual,
         src,
       })

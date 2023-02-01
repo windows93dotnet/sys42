@@ -103,6 +103,11 @@ export async function access(path, ...args) {
   return driver.access(filename, ...args)
 }
 
+export async function getURL(path, ...args) {
+  const { driver, filename } = await findDriver(path)
+  return driver.getURL(filename, ...args)
+}
+
 export async function isFile(path, ...args) {
   const { driver, filename } = await findDriver(path)
   return driver.isFile(filename, ...args)
@@ -111,6 +116,16 @@ export async function isFile(path, ...args) {
 export async function isDir(path, ...args) {
   const { driver, filename } = await findDriver(path)
   return driver.isDir(filename, ...args)
+}
+
+export async function isLink(path, ...args) {
+  const { driver, filename } = await findDriver(path)
+  return driver.isLink(filename, ...args)
+}
+
+export async function link(path, ...args) {
+  const { driver, filename } = await findDriver(path)
+  await driver.link(filename, ...args)
 }
 
 /* file
@@ -315,8 +330,11 @@ export const fs = {
   config: structuredClone(DEFAULTS),
 
   access,
+  getURL,
   isDir,
   isFile,
+  isLink,
+  link,
 
   open,
   read,
