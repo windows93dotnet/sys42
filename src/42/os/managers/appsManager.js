@@ -1,3 +1,4 @@
+/* eslint-disable max-depth */
 import ConfigFile from "../classes/ConfigFile.js"
 import arrify from "../../fabric/type/any/arrify.js"
 import pick from "../../fabric/type/object/pick.js"
@@ -5,6 +6,8 @@ import disk from "../../core/disk.js"
 import mimetypesManager from "./mimetypesManager.js"
 import normalizeManifest from "../classes/App/normalizeManifest.js"
 import App from "../classes/App.js"
+
+import getBasename from "../../core/path/core/getBasename.js"
 
 const REGISTRY_KEYS = [
   "name",
@@ -41,7 +44,20 @@ class AppsManager extends ConfigFile {
     if (manifest?.decode?.types) {
       await mimetypesManager.ready
       const undones = []
-      for (const { accept } of manifest.decode.types) {
+      for (const { accept, icons } of manifest.decode.types) {
+        if (icons) {
+          const manifestURL = new URL(manifestPath, location).href
+          for (const icon of icons) {
+            const src = new URL(icon.src, manifestURL).pathname
+            let { pathname } = new URL(
+              "../../themes/default/icons",
+              import.meta.url
+            )
+            if (icon.sizes === "16x16") pathname += "/16"
+            fs.link(src, `${pathname}/subtype/${getBasename(src)}`)
+          }
+        }
+
         undones.push(mimetypesManager.add(accept, manifest.name))
       }
 

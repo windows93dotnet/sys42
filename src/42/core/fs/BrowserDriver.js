@@ -50,7 +50,13 @@ export default class BrowserDriver extends Driver {
   }
 
   async getURL(filename) {
-    if (!disk.has(filename)) throw new FileSystemError(ENOENT, filename)
+    if (!disk.has(filename)) {
+      if (filename.startsWith("http") || filename.startsWith("//")) {
+        return filename
+      }
+
+      throw new FileSystemError(ENOENT, filename)
+    }
 
     const desc = disk.get(filename)
     if (desc === 0) return filename

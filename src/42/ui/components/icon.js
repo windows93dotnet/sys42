@@ -1,6 +1,8 @@
 import Component from "../classes/Component.js"
 import getPathInfos from "../../core/path/getPathInfos.js"
+import fs from "../../core/fs.js"
 import themeManager from "../../os/managers/themeManager.js"
+import mimetypesManager from "../../os/managers/mimetypesManager.js"
 
 await themeManager.ready // TODO: remove this
 
@@ -66,12 +68,25 @@ class Icon extends Component {
 
   getInfos(path) {
     if (path === undefined) return
-    const infos = getPathInfos(path, { getURIMimetype: false })
+    const infos = getPathInfos(path, {
+      getURIMimetype: false,
+      parseMimetype: false,
+    })
+
+    const m =
+      mimetypesManager.extnames[infos.ext] ??
+      mimetypesManager.basenames[infos.base]
+    if (m) {
+      infos.mimetype = m.mimetype
+      infos.mime = mimetypesManager.parse(m.mimetype)
+    } else {
+      infos.mime = mimetypesManager.parse(infos.mimetype)
+    }
 
     if (this.small) {
-      infos.imageSmall ??= themeManager.getIconPath(infos, 16)
+      infos.imageSmall ??= fs.getURL(themeManager.getIconPath(infos, 16))
     } else {
-      infos.imageNormal ??= themeManager.getIconPath(infos)
+      infos.imageNormal ??= fs.getURL(themeManager.getIconPath(infos))
     }
 
     infos.image = this.small ? infos.imageSmall : infos.imageNormal
