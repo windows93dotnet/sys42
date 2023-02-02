@@ -67,7 +67,7 @@ export class Picto extends Component {
         const { themeManager } = await import(
           "../../os/managers/themeManager.js"
         )
-        src = await themeManager.getIconPath(this.value, 16)
+        src = await themeManager.getIconPath(this.value, "16x16")
       }
 
       src = await fs.getURL(src)

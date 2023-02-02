@@ -1,4 +1,3 @@
-/* eslint-disable max-depth */
 import ConfigFile from "../classes/ConfigFile.js"
 import arrify from "../../fabric/type/any/arrify.js"
 import pick from "../../fabric/type/object/pick.js"
@@ -6,8 +5,6 @@ import disk from "../../core/disk.js"
 import mimetypesManager from "./mimetypesManager.js"
 import normalizeManifest from "../classes/App/normalizeManifest.js"
 import App from "../classes/App.js"
-
-import getBasename from "../../core/path/core/getBasename.js"
 
 const REGISTRY_KEYS = [
   "categories",
@@ -49,12 +46,19 @@ class AppsManager extends ConfigFile {
           const manifestURL = new URL(manifestPath, location).href
           for (const icon of icons) {
             const src = new URL(icon.src, manifestURL).pathname
-            let { pathname } = new URL(
+
+            const sizes = icon.sizes.split(" ")[0]
+
+            const { pathname } = new URL(
               "../../themes/default/icons",
               import.meta.url
             )
-            if (icon.sizes === "16x16") pathname += "/16"
-            fs.link(src, `${pathname}/subtype/${getBasename(src)}`)
+
+            const dest = `${pathname}/${sizes}${src.slice(
+              src.indexOf(sizes) + sizes.length
+            )}`
+
+            fs.link(src, dest)
           }
         }
 
