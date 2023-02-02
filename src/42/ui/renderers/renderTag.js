@@ -55,9 +55,7 @@ export function renderTag(tag, plan, stage) {
     if (plan.picto.end) el.classList.add("has-picto--end")
   }
 
-  if (PRELOAD.has(localName)) {
-    stage.preload.push(preload(el.src ?? el.href))
-  }
+  if (PRELOAD.has(localName)) stage.preload.push(preload(el))
 
   return el
 }

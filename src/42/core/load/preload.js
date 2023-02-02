@@ -41,14 +41,20 @@ export async function preload(
   url,
   { as, crossorigin, media, type, signal, rel, prefetch } = {}
 ) {
-  let el = document.createElement("link")
-  el.rel = prefetch ? "prefetch" : rel ?? "preload"
+  if (url instanceof Element) {
+    as = url
+    url = url.src ?? url.href
+  }
 
-  if (crossorigin) el.crossorigin = crossorigin
+  let el = document.createElement("link")
+
+  rel = prefetch ? "prefetch" : rel ?? "preload"
+
+  el.crossorigin = crossorigin ?? "anonymous"
   if (media) el.media = media
   if (type) el.type = type
 
-  if (el.rel === "preload") {
+  if (rel === "preload") {
     if (as instanceof Element) as = fromElement(as)
 
     if (as === undefined || type === true) {
@@ -61,6 +67,8 @@ export async function preload(
 
     if (as === "fetch" || as === "font") el.crossorigin = true
   }
+
+  el.rel = rel
 
   return new Promise((resolve, reject) => {
     const cleanup = () => {

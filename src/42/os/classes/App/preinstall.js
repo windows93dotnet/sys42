@@ -78,9 +78,9 @@ export default async function preinstall(manifest) {
       ? { file_handlers: manifest.decode.types }
       : undefined),
 
-    related_applications: [
-      { platform: "webapp", url: `${manifest.dirURL}app.webmanifest` },
-    ],
+    // related_applications: [
+    //   { platform: "webapp", url: `${manifest.dirURL}app.webmanifest` },
+    // ],
   }
 
   const manifestJSON = encodeURIComponent(JSON.stringify(webmanifest))
@@ -143,9 +143,9 @@ export default async function preinstall(manifest) {
   if (!supportInstall || inPWA) return false
 
   // @read https://web.dev/get-installed-related-apps/
-  navigator.getInstalledRelatedApps().then((res) => {
-    console.log("getInstalledRelatedApps", res)
-  })
+  // navigator.getInstalledRelatedApps().then((res) => {
+  //   console.log("getInstalledRelatedApps", res)
+  // })
 
   let card
   let displayApp
