@@ -8,6 +8,7 @@ import noop from "../../fabric/type/function/noop.js"
 import postrenderAutofocus from "../../ui/postrenderAutofocus.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
 import template from "../../core/formats/template.js"
+import emittable from "../../fabric/traits/emittable.js"
 
 import editor from "./App/editor.js"
 import preinstall from "./App/preinstall.js"
@@ -107,19 +108,19 @@ function makeSandbox(manifest) {
   const script = escapeTemplate(
     manifest.script && !manifest.content
       ? `\
-    globalThis.$manifest = ${JSON.stringify(manifest)}
+    window.$manifest = ${JSON.stringify(manifest)}
     ${appScript}
     `
       : `\
     import App from "${import.meta.url}"
-    globalThis.$manifest = ${JSON.stringify(manifest)}
-    globalThis.$app = await App.mount(
-      globalThis.$manifest,
+    window.$manifest = ${JSON.stringify(manifest)}
+    window.$app = await App.mount(
+      window.$manifest,
       { skipNormalize: true }
     )
-    globalThis.$files = globalThis.$app.state.$files
-    globalThis.$main?.(globalThis.$app)
+    window.$files = window.$app.state.$files
     ${appScript}
+    window.$app.init()
     `
   )
 
@@ -279,6 +280,8 @@ export default class App extends UI {
       initiator: manifest.initiator,
     })
 
+    emittable(this)
+
     this.manifest = manifest
 
     const option = { silent: true }
@@ -286,15 +289,21 @@ export default class App extends UI {
     this.reactive
       .on("prerender", (queue) => {
         for (const [loc, , deleted] of queue) {
+          // console.log(loc)
           if (
             !deleted &&
             loc.startsWith("/$files/") &&
             loc.lastIndexOf("/") === 7
           ) {
-            const $file = this.reactive.get(loc, option)
+            let $file = this.reactive.get(loc, option)
             if (!($file instanceof FileAgent)) {
-              this.reactive.set(loc, new FileAgent($file, manifest), option)
+              $file = new FileAgent($file, manifest)
+              this.reactive.set(loc, $file, option)
             }
+
+            // console.log($file)
+
+            this.emit("file", $file)
           }
         }
       })
@@ -319,5 +328,11 @@ export default class App extends UI {
     }
 
     editor.init(this)
+  }
+
+  init() {
+    for (const item of this.state.$files) {
+      this.emit("file", item)
+    }
   }
 }

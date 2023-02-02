@@ -3,6 +3,7 @@ import isInstanceOf from "../../../fabric/type/any/is/isInstanceOf.js"
 import getBasename from "../../../core/path/core/getBasename.js"
 import unproxy from "../../../fabric/type/any/unproxy.js"
 import disk from "../../../core/disk.js"
+import fs from "../../../core/fs.js"
 
 const _noSideEffects = Symbol("FileAgent._noSideEffects")
 const _path = Symbol("FileAgent._path")
@@ -103,12 +104,15 @@ export default class FileAgent {
 
     if (!this.path) return dummyBlob
 
-    return import("../../../core/fs.js") //
-      .then(({ default: fs }) => fs.open(this.path))
-      .then((blob) => {
+    return (async () => {
+      const blob = await fs.open(this.path)
+      if (blob) {
         this[_blob] = blob
         return this[_blob]
-      })
+      }
+
+      return dummyBlob
+    })()
   }
   set blob(val) {
     if (val === undefined) this[_data].length = 0
