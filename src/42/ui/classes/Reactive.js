@@ -303,7 +303,7 @@ export default class Reactive extends Emitter {
   }
 
   watch(loc, fn) {
-    register(this.stage, loc, fn)
+    return register(this.stage, loc, fn)
   }
 
   destroy() {

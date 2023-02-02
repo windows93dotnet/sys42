@@ -1,14 +1,8 @@
 import arrify from "../fabric/type/any/arrify.js"
 
-export function registerRenderer(stage, scope, renderer) {
+function registerRenderer(stage, scope, renderer) {
   stage.renderers[scope] ??= new Set()
   stage.renderers[scope].add(renderer)
-  stage.cancel.signal.addEventListener("abort", () => {
-    if (stage.renderers[scope]) {
-      stage.renderers[scope].delete(renderer)
-      if (stage.renderers[scope].size === 0) delete stage.renderers[scope]
-    }
-  })
 }
 
 export default function register(stage, loc, fn) {
@@ -24,6 +18,7 @@ export default function register(stage, loc, fn) {
     }
   } else {
     scopes = arrify(loc)
+
     renderer = async (changed) => {
       const res = fn(stage.reactive.get(scopes[0]), changed)
       if (res !== undefined) stage.undones.push(res)
@@ -35,6 +30,19 @@ export default function register(stage, loc, fn) {
   }
 
   renderer()
+
+  const forget = () => {
+    for (const scope of scopes) {
+      if (stage.renderers[scope]) {
+        stage.renderers[scope].delete(renderer)
+        if (stage.renderers[scope].size === 0) delete stage.renderers[scope]
+      }
+    }
+  }
+
+  stage.cancel.signal.addEventListener("abort", forget)
+
+  return forget
 }
 
 register.registerRenderer = registerRenderer

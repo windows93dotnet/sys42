@@ -8,7 +8,6 @@ import noop from "../../fabric/type/function/noop.js"
 import postrenderAutofocus from "../../ui/postrenderAutofocus.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
 import template from "../../core/formats/template.js"
-import emittable from "../../fabric/traits/emittable.js"
 
 import editor from "./App/editor.js"
 import preinstall from "./App/preinstall.js"
@@ -280,8 +279,6 @@ export default class App extends UI {
       initiator: manifest.initiator,
     })
 
-    emittable(this)
-
     this.manifest = manifest
 
     const option = { silent: true }
@@ -289,7 +286,6 @@ export default class App extends UI {
     this.reactive
       .on("prerender", (queue) => {
         for (const [loc, , deleted] of queue) {
-          // console.log(loc)
           if (
             !deleted &&
             loc.startsWith("/$files/") &&
@@ -300,10 +296,6 @@ export default class App extends UI {
               $file = new FileAgent($file, manifest)
               this.reactive.set(loc, $file, option)
             }
-
-            // console.log($file)
-
-            this.emit("file", $file)
           }
         }
       })
@@ -321,7 +313,11 @@ export default class App extends UI {
         ipc
           .send("42_APP_READY")
           .then((files) => {
-            for (const item of files) this.state.$files.push(item)
+            if (manifest.multiple === true) {
+              for (const item of files) this.state.$files.push(item)
+            } else {
+              this.state.$files.push(files.at(-1))
+            }
           })
           .catch(noop)
       })
@@ -330,9 +326,7 @@ export default class App extends UI {
     editor.init(this)
   }
 
-  init() {
-    for (const item of this.state.$files) {
-      this.emit("file", item)
-    }
+  watch(loc, fn) {
+    return this.reactive.watch(loc, fn)
   }
 }
