@@ -215,6 +215,7 @@ Component.define(Explorer)
 export async function explorer(path = "/", options) {
   const selection = options?.selection ?? []
   const glob = options?.glob ?? false
+  const view = options?.view ?? "grid"
 
   const parsed = parsePath(
     path.endsWith("/") ? normalizeDirname(path) : normalizeFilename(path),
@@ -241,11 +242,12 @@ export async function explorer(path = "/", options) {
           path: "{{path}}",
           selection: "{{selection}}",
           glob: "{{glob}}",
+          view: "{{view}}",
           isPicker: options?.isPicker,
           parentEntry: "dialog",
         },
 
-        state: { path, selection, glob },
+        state: { path, selection, glob, view },
       },
       options?.dialog
     )

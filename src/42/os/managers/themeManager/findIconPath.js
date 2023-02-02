@@ -30,7 +30,7 @@ function searchIcon(themePath, obj, val) {
     val = { mime: parseMimetype(val) }
   }
 
-  const { filename, ext, mime, protocol, host } = val
+  let { filename, ext, mime, protocol, host } = val
 
   if (protocol?.startsWith("http")) {
     if ("host" in obj) {
@@ -59,6 +59,7 @@ function searchIcon(themePath, obj, val) {
   }
 
   if (ext && "ext" in obj) {
+    if (ext.startsWith(".")) ext = ext.slice(1)
     for (const k in obj.ext) {
       if (k.includes(`${ext}.`) || k.includes(`${ext}_`)) {
         return `${themePath}/ext/${k}`
@@ -98,5 +99,6 @@ export default function findIconPath(themePath, val, size) {
     if (res) return res
   }
 
-  return searchIcon(themePath, obj, val)
+  size = "32x32"
+  return searchIcon(`${themePath}/${size}`, obj[size], val)
 }

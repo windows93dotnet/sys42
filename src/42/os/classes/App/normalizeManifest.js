@@ -18,17 +18,17 @@ export async function getIcons(manifest) {
     `${manifest.dir}icons/*.{jpg,gif,svg,png}`,
     `${manifest.dir}icon*.{jpg,gif,svg,png}`,
   ])) {
-    if (path.includes("/16/icon.") || path.includes("-16.")) {
+    if (path.includes("/16x16/icon.") || path.includes("-16.")) {
       icon16 = {
         src: new URL(path, manifest.dirURL).pathname,
         sizes: "16x16",
       }
-    } else if (path.includes("/32/icon.") || path.includes("-32.")) {
+    } else if (path.includes("/32x32/icon.") || path.includes("-32.")) {
       icon32 = {
         src: new URL(path, manifest.dirURL).pathname,
         sizes: "32x32",
       }
-    } else if (path.includes("/160/icon.") || path.includes("-160.")) {
+    } else if (path.includes("/160x160/icon.") || path.includes("-160.")) {
       icon160 = {
         src: new URL(path, manifest.dirURL).pathname,
         sizes: "160x160",

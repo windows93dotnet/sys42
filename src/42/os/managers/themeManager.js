@@ -22,7 +22,7 @@ class ThemeManager extends ConfigFile {
     // el.id = "theme"
   }
 
-  async getIconPath(infos, size) {
+  async getIconPath(infos, size = "32x32") {
     await this.ready
     for (const themePath of this.value.icons) {
       const path = findIconPath(themePath, infos, size)
