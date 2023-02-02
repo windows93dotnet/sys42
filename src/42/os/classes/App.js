@@ -7,6 +7,7 @@ import configure from "../../core/configure.js"
 import noop from "../../fabric/type/function/noop.js"
 import postrenderAutofocus from "../../ui/postrenderAutofocus.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
+import arrify from "../../fabric/type/any/arrify.js"
 import template from "../../core/formats/template.js"
 
 import editor from "./App/editor.js"
@@ -100,9 +101,24 @@ function makeSandbox(manifest) {
     return out
   }
 
-  const appScript = manifest.script
-    ? `await import("${new URL(manifest.script, manifest.dirURL).href}")`
-    : ""
+  if (manifest.stylesheet) {
+    out.sandbox.head = ""
+    for (const stylesheet of arrify(manifest.stylesheet)) {
+      const { href } = new URL(stylesheet, manifest.dirURL)
+      out.sandbox.head = `
+      <link rel="stylesheet" href="${href}" />
+      `
+    }
+  }
+
+  let appScript = ""
+
+  if (manifest.script) {
+    for (const script of arrify(manifest.script)) {
+      const { href } = new URL(script, manifest.dirURL)
+      appScript += `\nawait import("${href}")`
+    }
+  }
 
   const script = escapeTemplate(
     manifest.script && !manifest.content
@@ -119,7 +135,6 @@ function makeSandbox(manifest) {
     )
     window.$files = window.$app.state.$files
     ${appScript}
-    window.$app.init()
     `
   )
 

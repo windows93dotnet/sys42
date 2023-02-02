@@ -14,7 +14,7 @@ const { href: ipcUrl } = new URL("../../core/ipc.js", import.meta.url)
 const { href: uiUrl } = new URL("../../ui.js", import.meta.url)
 const { href: headUrl } = new URL("../head.js", import.meta.url)
 
-const options = {
+const DEFAULTS = {
   head: /* html */ `
     <link rel="stylesheet" href="/style.css" id="theme" />
     <script type="module" src="${headUrl}"></script>
@@ -57,6 +57,11 @@ export class Sandbox extends Component {
       },
       content: {
         type: "any",
+        fromView: true,
+        update: true,
+      },
+      head: {
+        type: "string",
         fromView: true,
         update: true,
       },
@@ -141,6 +146,10 @@ export class Sandbox extends Component {
     if (!this.resource) this[_setResource]()
     this.cancel()
     this.message()
+
+    const head = DEFAULTS.head + (this.head ?? "")
+    const { body } = DEFAULTS
+    const options = { head, body }
 
     if (this.content) {
       const undones = []
