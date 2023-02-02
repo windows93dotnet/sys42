@@ -1,5 +1,5 @@
 import ieee754 from "../../../../42/core/formats/ieee754.js"
-import Buffer from "../../../../42/fabric/classes/Buffer.compat.js"
+import Buffer from "../../../../42/fabric/classes/Buffer.js"
 import test from "../../../../42/test.js"
 
 const EPSILON = 0.000_01
