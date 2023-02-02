@@ -1,5 +1,6 @@
 /* eslint-disable complexity */
 
+// @src https://github.com/paroga/cbor-js
 //! Copyright (c) 2018 Patrick Gansterer <paroga@paroga.com>. MIT License.
 
 import noop from "../../../fabric/type/function/noop.js"
