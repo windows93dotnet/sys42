@@ -1,4 +1,6 @@
 import "./icon.js"
+import "./tree.js"
+import "./grid.js"
 import Component from "../classes/Component.js"
 import configure from "../../core/configure.js"
 import disk from "../../core/disk.js"
@@ -41,7 +43,7 @@ export class Folder extends Component {
         default: true,
       },
       transferable: { type: "any", trait: true, default: true },
-      selectable: { type: "any", trait: true, default: true },
+      selectable: { type: "any", default: true },
     },
 
     // dropzone: true,
@@ -153,6 +155,7 @@ export class Folder extends Component {
   }
 
   refresh() {
+    if (!this.stage) return
     this.stage.reactive.now(() => {
       this.stage.reactive.refresh(this.stage.scope + "/path")
     })
@@ -231,7 +234,7 @@ export class Folder extends Component {
         ? configure(
             {
               selector: ":scope ui-icon",
-              dropzone: "arrow",
+              dropzone: "dim",
               findNewIndex: false,
               kind: "$file",
             },
@@ -262,6 +265,7 @@ export class Folder extends Component {
           ...common,
           itemTemplate: {
             tag: "ui-icon",
+            aria: { selected: false },
             autofocus: "{{@first}}",
             path: "{{path}}",
             small: true,
@@ -272,6 +276,7 @@ export class Folder extends Component {
           ...common,
           itemTemplate: {
             tag: "ui-icon",
+            aria: { selected: false },
             autofocus: "{{@first}}",
             path: "{{.}}",
           },

@@ -118,8 +118,8 @@ test.ui(async (t) => {
       }
     ),
 
-    /* Save
-    ======= */
+    // /* Save
+    // ======= */
 
     launch(t, "#filePickerSave", ".ui-dialog__close", { ok: false }),
     launch(t, "#filePickerSave", ".ui-dialog__decline", { ok: false }),
@@ -161,6 +161,7 @@ test.ui(async (t) => {
         base: "hello.txt",
       },
       async (dialog) => {
+        await t.sleep(100) // TODO: remove this
         t.is(dialog.querySelector('[name$="/name"]').value, "hello.txt")
       }
     )
@@ -168,7 +169,7 @@ test.ui(async (t) => {
         t.is(await fs.readText("/hello.txt"), "hello world")
       })
       .finally(() => {
-        fs.delete("/hello.txt")
+        fs.delete("/hello.txt").catch(t.noop)
       }),
   ])
 })

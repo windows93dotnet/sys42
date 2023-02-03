@@ -28,6 +28,12 @@ export class ArrowDropzoneHint extends DropzoneHint {
     super.enter()
     arrow.style.rotate = this.isVertical ? "-90deg" : "none"
     this.el.append(arrow)
+    arrow.style.translate = `-200vw -200vh`
+  }
+
+  halt() {
+    super.halt()
+    arrow.remove()
   }
 
   leave() {

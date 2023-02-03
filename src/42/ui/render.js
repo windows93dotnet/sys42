@@ -113,7 +113,7 @@ export default function render(plan, stage, options) {
     case "function": {
       let el = document.createTextNode("")
       register(stage, plan, (val) => {
-        if (stage?.pluginHandlers) {
+        if (stage.pluginHandlers.length > 0) {
           for (const pluginHandle of stage.pluginHandlers) {
             const res = pluginHandle(val, stage, options)
             if (res !== undefined) val = res

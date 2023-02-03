@@ -1,5 +1,4 @@
 import dialog from "../components/dialog.js"
-import preload from "../../core/load/preload.js"
 import configure from "../../core/configure.js"
 import forceOpener from "../forceOpener.js"
 import { objectifyPlan } from "../normalize.js"
@@ -20,7 +19,7 @@ export async function demand(options) {
 
   content = { tag: ".ui-dialog-modal__content.box-v", content }
 
-  let src = config.img
+  let src // = config.img
 
   if (config.icon) {
     const { themeManager } = await import("../../os/managers/themeManager.js")
@@ -38,7 +37,6 @@ export async function demand(options) {
         content,
       ],
     }
-    await preload(src, { as: "image" })
   }
 
   return dialog(

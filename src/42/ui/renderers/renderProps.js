@@ -89,7 +89,7 @@ export default async function renderProps(el, props, plan) {
   if (el.update) {
     queue = new Set()
     componentUpdate = paintThrottle(() => {
-      el.update(queue)
+      if (!stage.signal.aborted) el.update(queue)
       queue.clear()
     })
   }
@@ -145,7 +145,10 @@ export default async function renderProps(el, props, plan) {
     if (item.update) {
       const type = typeof item.update
       if (type === "string" || type === "symbol") {
-        updates[item.update] ??= paintThrottle((init) => el[item.update](init))
+        updates[item.update] ??= paintThrottle((init) => {
+          if (stage.signal.aborted) return
+          el[item.update](init)
+        })
         update = updates[item.update]
       } else if (type === "function") {
         updates[key] = (init) => item.update.call(el, init)

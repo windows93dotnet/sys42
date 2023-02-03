@@ -1,8 +1,8 @@
 import test from "../../../../42/test.js"
 import { make, launch, log, inTop } from "./helpers.js"
 
-const manual = 1
-const iframe = 0
+const manual = 0
+const iframe = 1
 
 const { href } = new URL(
   "../../../../demos/ui/invocables/demands.demo.html?test=true",
