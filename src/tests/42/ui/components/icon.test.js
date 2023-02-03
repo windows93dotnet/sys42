@@ -39,8 +39,8 @@ test("html", async (t) => {
 <ui-icon path="/script.js" aria-description="file">
   <!--[rendered]-->
   <div class="ui-icon__figure" aria-hidden="true">
-    <img class="ui-icon__image" fetchpriority="high" decoding="async" src="/42/themes/default/icons/subtype/javascript.png">
-    <div class="ui-icon__mask" style="${cssKey}: url(&quot;/42/themes/default/icons/subtype/javascript.png&quot;);">
+    <img class="ui-icon__image" fetchpriority="high" decoding="async" src="/42/themes/default/icons/32x32/subtype/javascript.png">
+    <div class="ui-icon__mask" style="${cssKey}: url(&quot;/42/themes/default/icons/32x32/subtype/javascript.png&quot;);">
     </div>
   </div>
   <!--[if]-->
@@ -57,7 +57,7 @@ test("html", async (t) => {
   t.is(el.getAttribute("aria-description"), "file")
   t.is(
     el.querySelector(":scope img").getAttribute("src"),
-    "/42/themes/default/icons/subtype/javascript.png"
+    "/42/themes/default/icons/32x32/subtype/javascript.png"
   )
 
   el.path = "/derp/foo.bar/"
@@ -67,7 +67,7 @@ test("html", async (t) => {
   t.is(el.getAttribute("aria-description"), "folder")
   t.is(
     el.querySelector(":scope img").getAttribute("src"),
-    "/42/themes/default/icons/places/folder.png"
+    "/42/themes/default/icons/32x32/places/folder.png"
   )
 
   el.path = "https://www.windows93.net/"
@@ -77,7 +77,7 @@ test("html", async (t) => {
   t.is(el.getAttribute("aria-description"), "uri")
   t.is(
     el.querySelector(":scope img").getAttribute("src"),
-    "/42/themes/default/icons/ext/url.png"
+    "/42/themes/default/icons/32x32/ext/url.png"
   )
 })
 
@@ -170,11 +170,11 @@ test("infos", async (t) => {
   t.eq(
     infos.map(({ image }) => image),
     [
-      "/42/themes/default/icons/subtype/javascript.png",
-      "/42/themes/default/icons/places/folder.png",
-      "/42/themes/default/icons/places/folder.png",
-      "/42/themes/default/icons/ext/url.png",
-      "/42/themes/default/icons/ext/url.png",
+      "/42/themes/default/icons/32x32/subtype/javascript.png",
+      "/42/themes/default/icons/32x32/places/folder.png",
+      "/42/themes/default/icons/32x32/places/folder.png",
+      "/42/themes/default/icons/32x32/ext/url.png",
+      "/42/themes/default/icons/32x32/ext/url.png",
     ]
   )
 
@@ -297,8 +297,8 @@ test("each", 2, async (t) => {
   t.eq(
     icons.infos.map(({ image }) => image),
     [
-      "/42/themes/default/icons/subtype/javascript.png",
-      "/42/themes/default/icons/places/folder.png",
+      "/42/themes/default/icons/32x32/subtype/javascript.png",
+      "/42/themes/default/icons/32x32/places/folder.png",
     ]
   )
   t.eq(icons.getAttribute("aria-description"), [
@@ -312,7 +312,7 @@ test("each", 2, async (t) => {
   t.eq(icons.textContent, ["bar\u200b.txt"])
   t.eq(
     icons.infos.map(({ image }) => image),
-    ["/42/themes/default/icons/type/text.png"]
+    ["/42/themes/default/icons/32x32/type/text.png"]
   )
   t.eq(icons.getAttribute("aria-description"), [
     "file", //
@@ -324,7 +324,7 @@ test("each", 2, async (t) => {
   t.eq(icons.textContent, ["derp\u200b"])
   t.eq(
     icons.infos.map(({ image }) => image),
-    ["/42/themes/default/icons/places/folder.png"]
+    ["/42/themes/default/icons/32x32/places/folder.png"]
   )
   t.eq(icons.getAttribute("aria-description"), [
     "folder", //

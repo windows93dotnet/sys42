@@ -4,7 +4,7 @@ export default async function markdownPlugin() {
   return (plan) => {
     if (typeof plan === "string") {
       const tokens = parseMarkdown(plan)
-      if (tokens.length > 1 || tokens[0].tag) {
+      if (tokens.length > 1 || tokens[0]?.tag) {
         return tokens
       }
     }

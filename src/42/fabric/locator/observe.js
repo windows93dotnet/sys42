@@ -1,5 +1,3 @@
-import queueTask from "../type/function/queueTask.js"
-
 function isAccessor(obj, key) {
   const propertyDescriptor = Object.getOwnPropertyDescriptor(obj, key)
   return (
@@ -131,10 +129,13 @@ export default function observe(root, options = {}) {
   revokes.add(revoke)
 
   const destroy = () => {
-    queueTask(() => {
-      for (const revoke of revokes) revoke()
-      revokes.clear()
-    })
+    requestIdleCallback(
+      () => {
+        for (const revoke of revokes) revoke()
+        revokes.clear()
+      },
+      { timeout: 3000 }
+    )
   }
 
   options.signal?.addEventListener("abort", destroy)

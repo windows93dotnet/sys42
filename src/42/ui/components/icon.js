@@ -4,7 +4,7 @@ import fs from "../../core/fs.js"
 import themeManager from "../../os/managers/themeManager.js"
 import mimetypesManager from "../../os/managers/mimetypesManager.js"
 
-await themeManager.ready // TODO: remove this
+let ready
 
 class Icon extends Component {
   static plan = {
@@ -32,50 +32,57 @@ class Icon extends Component {
         default: true,
       },
     },
+  }
 
-    content: {
-      scope: "infos",
-      content: [
-        {
-          tag: ".ui-icon__figure",
-          aria: { hidden: true },
-          content: [
-            {
-              tag: "img.ui-icon__image",
-              fetchpriority: "high",
-              decoding: "async",
-              src: "{{../small ? imageSmall : imageNormal}}",
-            },
-            {
-              tag: ".ui-icon__mask",
-              style: {
-                "mask-image": "url({{../small ? imageSmall : imageNormal}})",
-              },
-            },
-          ],
-        },
-        {
-          if: "{{../label}}",
-          tag: ".ui-icon__label",
-          content: [
-            { tag: "span.ui-icon__name", content: "{{name}}" },
-            { tag: "span.ui-icon__ext", content: "\u200B{{ext}}" },
-          ],
-        },
-      ],
-    },
+  render() {
+    const image = this.small ? "infos.image16x16" : "infos.image"
+    return [
+      {
+        tag: ".ui-icon__figure",
+        aria: { hidden: true },
+        content: [
+          {
+            tag: "img.ui-icon__image",
+            fetchpriority: "high",
+            decoding: "async",
+            src: `{{${image}}}`,
+          },
+          {
+            tag: ".ui-icon__mask",
+            style: { "mask-image": `url({{${image}}})` },
+          },
+        ],
+      },
+      {
+        if: "{{label}}",
+        tag: ".ui-icon__label",
+        content: [
+          { tag: "span.ui-icon__name", content: "{{infos.name}}" },
+          { tag: "span.ui-icon__ext", content: "\u200B{{infos.ext}}" },
+        ],
+      },
+    ]
   }
 
   async getInfos(path) {
     if (path === undefined) return
+
+    if (!ready) {
+      const undones = Promise.all([themeManager.ready, mimetypesManager.ready])
+      this.stage.undones.push(undones)
+      await undones
+      ready = true
+    }
+
     const infos = getPathInfos(path, {
       getURIMimetype: false,
       parseMimetype: false,
     })
 
-    const m =
-      mimetypesManager.extnames[infos.ext] ??
-      mimetypesManager.basenames[infos.base]
+    const m = infos.isURI
+      ? undefined
+      : mimetypesManager.extnames[infos.ext] ??
+        mimetypesManager.basenames[infos.base]
     if (m) {
       infos.mimetype = m.mimetype
       infos.mime = mimetypesManager.parse(m.mimetype)
@@ -84,19 +91,17 @@ class Icon extends Component {
     }
 
     if (this.small) {
-      infos.imageSmall ??= await fs.getURL(
+      infos.image16x16 ??= await fs.getURL(
         await themeManager.getIconPath(infos, "16x16")
       )
     } else {
-      infos.imageNormal ??= await fs.getURL(
-        await themeManager.getIconPath(infos)
-      )
+      infos.image ??= await fs.getURL(await themeManager.getIconPath(infos))
     }
 
-    infos.image = this.small ? infos.imageSmall : infos.imageNormal
+    if (infos.isURI) infos.ext = ""
 
     infos.description ??= infos.isDir ? "folder" : infos.isURI ? "uri" : "file"
-    if (infos.isURI) infos.ext = ""
+
     infos.name ??= (
       infos.isURI
         ? infos.host.replace(/^www\./, "") +

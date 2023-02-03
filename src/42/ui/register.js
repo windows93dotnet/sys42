@@ -20,6 +20,7 @@ export default function register(stage, loc, fn) {
     scopes = arrify(loc)
 
     renderer = async (changed) => {
+      if (stage.signal.aborted) console.log(stage.signal.aborted)
       const res = fn(stage.reactive.get(scopes[0]), changed)
       if (res !== undefined) stage.undones.push(res)
     }

@@ -226,9 +226,9 @@ export default class Reactive extends Emitter {
     }
 
     // console.group("State Update", { inTop: window.top === window.self })
-    // // console.log(queue)
+    // const list = Object.keys(this.stage.renderers).join("\n")
     // console.log([...changes].join("\n"))
-    // console.log("%c" + Object.keys(this.stage.renderers).join("\n"), "color:#999")
+    // console.log(`%c${list}`, "color:#999")
     // console.groupEnd()
 
     queue.clear()
