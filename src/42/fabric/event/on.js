@@ -59,19 +59,20 @@ export function parseShortcut(source) {
     } else {
       if (buffer in aliases) buffer = aliases[buffer]
       const item = { event: "keydown" }
-      if (buffer.length === 1 || buffer === "Enter") item.key = buffer
-      else if (
+
+      if (buffer === "Enter") item.key = buffer
+      else if (buffer === "Return") {
+        item.key = "enter"
+        item.code = "Enter"
+      } else if (
         codes.has(buffer) ||
         buffer.startsWith("Key") ||
         buffer.startsWith("Digit") ||
         buffer.startsWith("Numpad")
       ) {
         item.code = buffer
-      } else if (buffer === "Return") {
-        item.key = "Enter"
-        item.code = "Enter"
       } else {
-        item.key = buffer
+        item.key = buffer.toLocaleLowerCase()
       }
 
       tokens[or][sequence].push(item)
@@ -188,10 +189,9 @@ function handleSeq(seq, fn, el, { repeatable, options }, registry) {
           eventOptions.capture = true
           events[event] = (e) => {
             if (chordCalls.length === 0) {
+              // eslint-disable-next-line guard-for-in
               for (const key in keyboard.keys) {
-                if (Object.hasOwn(keyboard.keys, key)) {
-                  chordCalls.push({ type: "keydown", key })
-                }
+                chordCalls.push({ type: "keydown", key })
               }
             }
 
@@ -210,7 +210,7 @@ function handleSeq(seq, fn, el, { repeatable, options }, registry) {
 
             chordCalls.push({
               type: e.type,
-              key: e.key,
+              key: e.key?.toLocaleLowerCase(),
               code: e.code,
             })
 

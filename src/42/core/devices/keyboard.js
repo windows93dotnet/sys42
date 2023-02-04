@@ -52,8 +52,9 @@ const strokes = Object.create(null)
 
 const keydown = ({ key, code, repeat }) => {
   if (repeat === false) {
-    codes[code] = true
+    key = key.toLocaleLowerCase()
     keys[key] = true
+    codes[code] = true
     // allow keyup event to remove a "key" from it's "code"
     strokes[code] ??= { counter: 0, keys: [] }
     strokes[code].counter++
@@ -86,10 +87,10 @@ const cleanup = () => {
 
 // Register modifier keys pressed before the window is focused
 const pressedMods = (e) => {
-  if (e.ctrlKey && "Control" in keys === false) keys.Control = true
-  if (e.shiftKey && "Shift" in keys === false) keys.Shift = true
-  if (e.metaKey && "Meta" in keys === false) keys.Meta = true
-  if (e.altKey && "Alt" in keys === false) keys.Alt = true
+  if (e.ctrlKey && "control" in keys === false) keys.control = true
+  if (e.shiftKey && "shift" in keys === false) keys.shift = true
+  if (e.metaKey && "meta" in keys === false) keys.meta = true
+  if (e.altKey && "alt" in keys === false) keys.alt = true
 }
 
 export const forget = () => {
