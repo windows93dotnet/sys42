@@ -75,24 +75,26 @@ export async function filePickerSave(path, options) {
     options = { data: options }
   }
 
+  const out = {
+    ok: true,
+    path,
+    dir: res.path,
+    base: res.name,
+  }
+
   if (options && "data" in options) {
     const fs = await import("../../core/fs.js").then((m) => m.default)
     const { encoding } = options
     try {
       await fs.write(path, options.data, { encoding })
-      saved = true
-    } catch {
-      saved = false
+      out.saved = true
+    } catch (err) {
+      out.error = err
+      out.saved = false
     }
   }
 
-  return {
-    ok: true,
-    saved,
-    path,
-    dir: res.path,
-    base: res.name,
-  }
+  return out
 }
 
 export default filePickerSave
