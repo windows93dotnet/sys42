@@ -11,17 +11,37 @@ import arrify from "../../fabric/type/any/arrify.js"
 import template from "../../core/formats/template.js"
 import getDirname from "../../core/path/core/getDirname.js"
 import Emitter from "../../fabric/classes/Emitter.js"
+import resolve from "../../fabric/json/resolve.js"
 import transferable from "../../ui/traits/transferable.js"
 
 import editor from "./App/editor.js"
 import preinstall from "./App/preinstall.js"
 import FileAgent from "./App/FileAgent.js"
-import normalizeManifest, { getIcons } from "./App/normalizeManifest.js"
+import normalizeManifest from "./App/normalizeManifest.js"
 
 // TODO: check if rpc functions can be injecteds
 import "../../fabric/browser/openInNewTab.js"
 import "../../ui/components/dialog.js"
 import "../../ui/popup.js"
+
+let DEFAULT_PRELOAD = ""
+if (inTop) {
+  for (const pathname of [
+    new URL(import.meta.url).pathname,
+    new URL("../../fabric/json/resolve.js", import.meta.url).pathname,
+    new URL("../../ui.js", import.meta.url).pathname,
+    new URL("../../ui/classes/Component.js", import.meta.url).pathname,
+    new URL("../../ui/classes/UI.js", import.meta.url).pathname,
+    new URL("../../ui/components/menu.js", import.meta.url).pathname,
+    new URL("../../ui/components/menubar.js", import.meta.url).pathname,
+    new URL("../../ui/traits/transferable.js", import.meta.url).pathname,
+    new URL("./App/FileAgent.js", import.meta.url).pathname,
+    new URL("../../core/fs.js", import.meta.url).pathname,
+    new URL("../../core/fs/BrowserDriver.js", import.meta.url).pathname,
+  ]) {
+    DEFAULT_PRELOAD += `<link rel="modulepreload" href="${pathname}" />\n`
+  }
+}
 
 async function prepareManifest(manifest, options) {
   if (manifest === undefined) {
@@ -81,11 +101,7 @@ async function prepareManifest(manifest, options) {
 async function resoleManifest(manifest) {
   manifest.$defs ??= {}
   Object.assign(manifest.$defs, editor.menubar(manifest))
-
-  return import("../../fabric/json/resolve.js") //
-    .then(({ resolve }) =>
-      resolve(manifest, { strict: false, baseURI: manifest.dirURL })
-    )
+  return resolve(manifest, { strict: false, baseURI: manifest.dirURL })
 }
 
 function makeSandbox(manifest) {
@@ -122,23 +138,32 @@ function makeSandbox(manifest) {
     return out
   }
 
+  out.sandbox.head = manifest.content ? DEFAULT_PRELOAD : ""
+
+  if (manifest.preload) {
+    for (const preload of arrify(manifest.preload)) {
+      const { pathname } = new URL(preload, manifest.dirURL)
+      out.sandbox.head += `<link rel="modulepreload" href="${pathname}" />\n`
+    }
+  }
+
   if (manifest.stylesheet) {
-    out.sandbox.head = ""
     for (const stylesheet of arrify(manifest.stylesheet)) {
       const { href } = new URL(stylesheet, manifest.dirURL)
-      out.sandbox.head = `
-      <link rel="stylesheet" href="${href}" />
-      `
+      out.sandbox.head += `<link rel="stylesheet" href="${href}" />\n`
     }
   }
 
   let appScript = ""
 
   if (manifest.script) {
+    appScript += `await Promise.all([`
     for (const script of arrify(manifest.script)) {
       const { href } = new URL(script, manifest.dirURL)
-      appScript += `\nawait import("${href}")`
+      appScript += `import("${href}"),`
     }
+
+    appScript += `])`
   }
 
   const script = escapeTemplate(
@@ -154,6 +179,7 @@ function makeSandbox(manifest) {
       window.$manifest,
       { skipNormalize: true }
     )
+    // await $app.done()
     window.$files = window.$app.state.$files
     ${appScript}
     `
@@ -421,6 +447,7 @@ export default class App extends UI {
       })
       return forget
     }
+
     return this.emitter.once(events, ...args)
   }
 

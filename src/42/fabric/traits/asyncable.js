@@ -35,4 +35,6 @@ export default function asyncable(obj, options, fn) {
       get: () => (obj[_RESOLVED] ? undefined : then),
     },
   })
+
+  return obj
 }

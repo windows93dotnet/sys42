@@ -74,14 +74,10 @@ export default {
     transferable: {
       kind: ["$file", "$app"],
       accept: "$file",
-      import({ paths, dropzone, index }) {
-        if (dropzone.el.parentElement) {
-          const cpn = dropzone.el.parentElement
-          index ??= cpn.stage.state.$files.length
-          cpn.stage.state.$files.splice(index, 0, ...paths)
-          cpn.stage.state.$current = index
-        }
-
+      import({ paths, index }) {
+        index ??= $files.length
+        $files.splice(index, 0, ...paths)
+        $app.state.$current = index
         return "vanish"
       },
     },

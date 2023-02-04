@@ -24,5 +24,7 @@
     ],
   },
 
+  preload: ["../../../ui/components/tabs.js"],
+
   $ref: "./TextEdit.js",
 }

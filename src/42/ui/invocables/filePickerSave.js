@@ -66,8 +66,6 @@ export async function filePickerSave(path, options) {
 
   await nextCycle()
 
-  let saved
-
   if (!res.path.endsWith("/")) res.path += "/"
   path = res.path + res.name
 
@@ -78,8 +76,8 @@ export async function filePickerSave(path, options) {
   const out = {
     ok: true,
     path,
-    dir: res.path,
-    base: res.name,
+    // dir: res.path,
+    // base: res.name,
   }
 
   if (options && "data" in options) {
