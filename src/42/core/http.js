@@ -167,15 +167,15 @@ export const makeStream = (requestMethod, withBody = true) =>
         return writable
       }
     : (url, options, ...rest) => {
-        let { queuingStrategy, onheaders, onsize } = options ?? {}
+        let { queuingStrategy, onHeaders, onSize } = options ?? {}
         let reader
         const rs = new ReadableStream(
           {
             async pull(controller) {
               if (!reader) {
                 const res = await requestMethod(url, options, ...rest)
-                onheaders?.(res.headers, rs)
-                onsize?.(Number(res.headers.get("content-length")), rs)
+                onHeaders?.(res.headers, rs)
+                onSize?.(Number(res.headers.get("content-length")), rs)
                 reader = res.body.getReader()
               }
 
@@ -187,8 +187,8 @@ export const makeStream = (requestMethod, withBody = true) =>
           queuingStrategy
         )
 
-        rs.headers = (fn) => ((onheaders = fn), rs)
-        rs.size = (fn) => ((onsize = fn), rs)
+        rs.headers = (fn) => ((onHeaders = fn), rs)
+        rs.size = (fn) => ((onSize = fn), rs)
         return rs
       }
 

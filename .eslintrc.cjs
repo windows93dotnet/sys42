@@ -1,5 +1,6 @@
 module.exports = {
   // parser: "@babel/eslint-parser",
+  root: true,
   parserOptions: {
     requireConfigFile: false,
     ecmaVersion: 2022,
@@ -27,6 +28,9 @@ module.exports = {
     SharedWorkerGlobalScope: true,
     ReportingObserver: true,
     sys42: true,
+    $app: true,
+    $files: true,
+    $manifest: true,
   },
   env: {
     node: true,

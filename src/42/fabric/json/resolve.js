@@ -6,6 +6,7 @@ import isHashmapLike from "../type/any/is/isHashmapLike.js"
 import locate from "../locator/locate.js"
 import splitJSONPointer from "./splitJSONPointer.js"
 import removeItem from "../type/array/removeItem.js"
+import loadJSON from "../../core/load/loadJSON.js"
 
 const { isArray } = Array
 
@@ -64,27 +65,25 @@ function setAnchors(obj, carrier, hash) {
 }
 
 async function fetchUncacheds(carrier, options, source) {
-  await import("../../core/load/loadJSON.js").then(({ default: loadJSON }) =>
-    Promise.all(
-      carrier.uncacheds.map(async (path) => {
-        let value
-        if (path.endsWith(".js")) {
-          if (options?.strict === false) {
-            value = await import(path).then((m) => m.default)
-            if (typeof value === "function") {
-              value = await value(source, carrier, options)
-            }
-          } else throw new Error("js module are not allowed in strict mode")
-        } else {
-          value = await loadJSON(path)
-        }
+  await Promise.all(
+    carrier.uncacheds.map(async (path) => {
+      let value
+      if (path.endsWith(".js")) {
+        if (options?.strict === false) {
+          value = await import(path).then((m) => m.default)
+          if (typeof value === "function") {
+            value = await value(source, carrier, options)
+          }
+        } else throw new Error("js module are not allowed in strict mode")
+      } else {
+        value = await loadJSON(path)
+      }
 
-        await resolve(value, options, {
-          ...carrier,
-          baseURI: path,
-        })
+      await resolve(value, options, {
+        ...carrier,
+        baseURI: path,
       })
-    )
+    })
   )
 }
 

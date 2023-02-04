@@ -213,10 +213,12 @@ types.io = io
 
 types.ui = {
   render(item) {
-    queueMicrotask(() => {
-      if (!this.el) return
-      this.el.replaceChildren(render(item, this))
-    })
+    if (!this.el) return
+    this.el.replaceChildren(render(item, this))
+    // queueMicrotask(() => {
+    //   if (!this.el) return
+    //   this.el.replaceChildren(render(item, this))
+    // })
   },
   alert: "alert",
   confirm: "confirm",

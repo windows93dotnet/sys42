@@ -1,3 +1,4 @@
+import "../traits/transferable.js"
 import Component from "../classes/Component.js"
 // import isFocusable from "../../fabric/dom/isFocusable.js"
 import queueTask from "../../fabric/type/function/queueTask.js"

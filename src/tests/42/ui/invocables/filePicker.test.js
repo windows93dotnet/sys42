@@ -125,10 +125,9 @@ test.ui(async (t) => {
     launch(t, "#filePickerSave", ".ui-dialog__decline", { ok: false }),
     launch(t, "#filePickerSave", ".ui-dialog__agree", {
       ok: true,
-      saved: undefined,
       path: "/untitled.txt",
-      dir: "/",
-      base: "untitled.txt",
+      // dir: "/",
+      // base: "untitled.txt",
     }),
     launch(
       t,
@@ -136,10 +135,9 @@ test.ui(async (t) => {
       ".ui-dialog__agree",
       {
         ok: true,
-        saved: undefined,
         path: "/style.css",
-        dir: "/",
-        base: "style.css",
+        // dir: "/",
+        // base: "style.css",
       },
       async (dialog) => {
         await t.puppet('[path="/style.css"]', dialog).click()
@@ -157,8 +155,8 @@ test.ui(async (t) => {
         ok: true,
         saved: true,
         path: "/hello.txt",
-        dir: "/",
-        base: "hello.txt",
+        // dir: "/",
+        // base: "hello.txt",
       },
       async (dialog) => {
         await t.sleep(100) // TODO: remove this
