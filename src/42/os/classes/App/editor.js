@@ -6,7 +6,7 @@ const editor = {
     {
       $id: "FileMenu",
       label: "File",
-      content: [
+      items: [
         {
           $id: "newFile",
           label: "New",
@@ -86,7 +86,7 @@ const editor = {
     {
       $id: "ViewMenu",
       label: "View",
-      content: [
+      items: [
         {
           $id: "fullscreen",
           label: "Full Screen",
@@ -103,7 +103,7 @@ const editor = {
     {
       $id: "HelpMenu",
       label: "Help",
-      content: [
+      items: [
         {
           $id: "install",
           label: "Install on {{editor.getOS()}} desktop",
@@ -134,6 +134,11 @@ editor.init = (app) => {
   //   state.$current = 1
   // }, 0)
 
+  async function getBlob($file) {
+    const res = await app.send("encode", $file)
+    return res ?? $file.blob
+  }
+
   app.stage.actions.assign("/editor", {
     newFile() {
       if (manifest.multiple !== true) state.$files.length = 0
@@ -154,10 +159,8 @@ editor.init = (app) => {
       if (!$file) return
 
       if ($file?.path) {
-        const [encoded] = await app.send("encode", $file)
-
         const [blob, fs] = await Promise.all([
-          encoded ?? $file.blob,
+          getBlob($file),
           import("../../../core/fs.js") //
             .then(({ fs }) => fs),
         ])
@@ -178,11 +181,8 @@ editor.init = (app) => {
       const { ok, path } = await filePickerSave($file?.path ?? defaultFolder)
 
       if (ok) {
-        const [encoded] = await app.send("encode", $file)
-        console.log({ encoded })
-
-        const [blob, fs, filePickerSave] = await Promise.all([
-          encoded ?? $file.blob,
+        const [blob, fs] = await Promise.all([
+          getBlob($file),
           import("../../../core/fs.js") //
             .then(({ fs }) => fs),
         ])
@@ -200,7 +200,7 @@ editor.init = (app) => {
       if (!$file) return
 
       const [blob, fileExport] = await Promise.all([
-        $file.blob,
+        getBlob($file),
         import("../../../fabric/type/file/fileExport.js") //
           .then((m) => m.default),
       ])

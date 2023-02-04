@@ -31,6 +31,9 @@ export class Menu extends Component {
     role: "menu",
 
     props: {
+      // items: {
+      //   type: "array",
+      // },
       opener: {
         type: "string",
       },
@@ -60,22 +63,22 @@ export class Menu extends Component {
     seq(this, 1)
   }
 
-  render({ content, displayPicto, shortcuts, focusBack }) {
+  render({ items, displayPicto, shortcuts, focusBack }) {
     const inMenubar = this.constructor.name === "Menubar"
-    const items = []
+    const plan = []
 
     let first = true
 
-    for (let item of content) {
+    for (let item of items) {
       if (item === "---") {
-        items.push(item)
+        plan.push(item)
         continue
       }
 
       item = { ...item }
       item.id ??= uid()
 
-      const { content, label } = item
+      const { label } = item
 
       if (
         item.dialog &&
@@ -98,7 +101,7 @@ export class Menu extends Component {
         ]
       }
 
-      if (content) {
+      if (item.items) {
         item.tag ??= "button.ui-menu__menuitem--submenu"
         item.role = "menuitem"
         item.on = {
@@ -110,7 +113,7 @@ export class Menu extends Component {
               inMenubar,
               focusBack: item.focusBack ?? focusBack ?? inMenubar,
               closeEvents: shortcuts.closeSubmenu,
-              content,
+              items: item.items,
             },
           },
         }
@@ -147,10 +150,10 @@ export class Menu extends Component {
         delete item.picto
       }
 
-      items.push({ tag: "li", role: "none", content: item })
+      plan.push({ tag: "li", role: "none", content: item })
     }
 
-    return items
+    return plan
   }
 }
 

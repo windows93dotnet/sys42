@@ -3,7 +3,7 @@ export default {
     { $ref: "FileMenu" },
     {
       label: "View",
-      content: [
+      items: [
         { $ref: "fullscreen" },
         { $ref: "openInNewTab" },
         "---",
@@ -12,7 +12,7 @@ export default {
         { tag: "checkbox", bind: "spellcheck" },
         {
           label: "Tab Size",
-          content: [
+          items: [
             { tag: "radio", bind: "tabSize", value: "2" },
             { tag: "radio", bind: "tabSize", value: "4" },
             { tag: "radio", bind: "tabSize", value: "6" },

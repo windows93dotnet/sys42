@@ -56,13 +56,13 @@ const makeMenu = (name) => {
   const submenu = [
     {
       label: "Infinite Submenu",
-      get content() {
+      get items() {
         return submenu
       },
     },
     {
       label: "Submenu",
-      content: makeSubmenu(name),
+      items: makeSubmenu(name),
     },
     "---",
     {
@@ -84,12 +84,12 @@ const makeMenu = (name) => {
       label: "Infinite",
       id: `menuItemSubmenu${name}${__}`,
       picto: "cog",
-      content: submenu,
+      items: submenu,
     },
     {
       label: "Submenu",
       id: `submenuItem3rd${name}${__}`,
-      content: makeSubmenu(name),
+      items: makeSubmenu(name),
     },
     "---",
     makeDialogMenuitem(name),
@@ -149,14 +149,14 @@ const makeDemo = ({ content } = {}) => {
     },
     "\n\n",
     "\n\n",
-    { tag: "ui-menubar", content: makeMenu("Inline") },
+    { tag: "ui-menubar", items: makeMenu("Inline") },
     "\n\n",
-    { tag: "ui-menubar", content: makeMenu("Inline"), displayPicto: true },
+    { tag: "ui-menubar", items: makeMenu("Inline"), displayPicto: true },
     "\n\n",
     { tag: "number", bind: "cnt", compact: true },
     "\n\n",
     "\n\n",
-    { tag: "ui-menu", content: makeMenu("Inline") },
+    { tag: "ui-menu", items: makeMenu("Inline") },
     "\n\n",
     { tag: "number", bind: "cnt", compact: true },
     "\n\n",
