@@ -358,7 +358,7 @@ export default class App extends UI {
       super(el, {
         tag: ".box-v",
         content: manifest.menubar
-          ? [{ tag: "ui-menubar", content: manifest.menubar }, content]
+          ? [{ tag: "ui-menubar", items: manifest.menubar }, content]
           : content,
         state: manifest.state,
         initiator: manifest.initiator,
@@ -377,7 +377,7 @@ export default class App extends UI {
       super({
         tag: ".box-fit.box-v",
         content: manifest.menubar
-          ? [{ tag: "ui-menubar", content: manifest.menubar }, content]
+          ? [{ tag: "ui-menubar", items: manifest.menubar }, content]
           : content,
         state: manifest.state,
         initiator: manifest.initiator,

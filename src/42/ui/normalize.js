@@ -618,7 +618,7 @@ function normalizeOn(plan) {
         popup: {
           tag: "ui-menu",
           closeEvents: "pointerdown || ArrowLeft",
-          ...objectifyPlan(plan.menu),
+          ...objectifyPlan(plan.menu, "items"),
         },
       },
     })
@@ -633,7 +633,7 @@ function normalizeOn(plan) {
         popup: {
           tag: "ui-menu",
           closeEvents: "pointerdown",
-          ...objectifyPlan(plan.contextmenu),
+          ...objectifyPlan(plan.contextmenu, "items"),
         },
       },
     })
@@ -657,17 +657,26 @@ function normalizeOn(plan) {
 /* plan
 ====== */
 
-export function objectifyPlan(plan) {
+export function objectifyPlan(plan, key = "content") {
   if (plan != null) {
     if (typeof plan === "object" && !Array.isArray(plan)) return plan
-    return { content: plan }
+    return { [key]: plan }
   }
 
   return {}
 }
 
+// import log from "../core/log.js"
+
 export function forkPlan(plan, stage) {
-  if (plan?.content === undefined || plan?.scope) plan = { content: plan }
+  if (
+    (plan?.content === undefined && plan?.items === undefined) ||
+    plan?.scope
+  ) {
+    // log(plan)
+    plan = { content: plan }
+  }
+  // if (plan?.scope) plan = { content: plan }
 
   plan = { ...plan }
 

@@ -18,7 +18,7 @@ export async function contextmenu(el, e, plan, stage) {
       closeEvents: "pointerdown",
       opener: el.id,
       rect: { x: e.x, y: e.y },
-      ...objectifyPlan(plan),
+      ...objectifyPlan(plan, "items"),
     },
     stage
   )

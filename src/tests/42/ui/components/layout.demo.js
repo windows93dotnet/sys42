@@ -26,7 +26,7 @@ const items = [
 const menubar = [
   {
     label: "File",
-    content: [
+    items: [
       {
         label: "New",
         picto: "file",
@@ -63,7 +63,12 @@ const menubar = [
       },
     ],
   },
-  { label: "View", content: [{ label: "Empty", disabled: true }] },
+  {
+    label: "View",
+    items: [
+      { label: "Empty", disabled: true }, //
+    ],
+  },
 ]
 
 globalThis.app = ui({
@@ -72,7 +77,7 @@ globalThis.app = ui({
     tag: ".flex-v.resize.pa-xs.outset.panel",
     style: { height: "350px", width: "640px" },
     content: [
-      { tag: "ui-menubar", content: menubar },
+      { tag: "ui-menubar", items: menubar },
       {
         tag: "ui-layout",
         content: [

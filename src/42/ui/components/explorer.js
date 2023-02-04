@@ -115,16 +115,16 @@ export class Explorer extends Component {
     return [
       {
         tag: "ui-menubar",
-        content: [
+        items: [
           {
             label: "File",
-            content: [
+            items: [
               { label: "Exit", click: "{{dialog.close()}}" }, //
             ],
           },
           {
             label: "View",
-            content: [
+            items: [
               { label: "Select all", click: "{{folder.selectAll()}}" }, //
             ],
           },
