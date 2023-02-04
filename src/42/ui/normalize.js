@@ -22,7 +22,6 @@ import hash from "../fabric/type/any/hash.js"
 import getType from "../fabric/type/any/getType.js"
 import inTop from "../core/env/realm/inTop.js"
 import segmentize from "../fabric/type/string/segmentize.js"
-import { handleEffect } from "../core/dt/dataTransferEffects.js"
 import ALLOWED_HTML_ATTRIBUTES from "../fabric/constants/ALLOWED_HTML_ATTRIBUTES.js"
 import ALLOWED_SVG_ATTRIBUTES from "../fabric/constants/ALLOWED_SVG_ATTRIBUTES.js"
 
@@ -638,17 +637,6 @@ function normalizeOn(plan) {
       },
     })
     delete plan.contextmenu
-  }
-
-  if (plan.dropzone) {
-    plan.on ??= []
-    plan.on.push({
-      "prevent": true,
-      "dragover || dragenter"(e) {
-        handleEffect(e)
-      },
-    })
-    delete plan.dropzone
   }
 
   if (plan.on) extractWatchFromOn(plan)

@@ -7,7 +7,7 @@ export function traverse(obj, cb, parentKey, memory = new WeakSet()) {
 
   for (const [key, val] of Object.entries(obj)) {
     cb(key, val, obj, parentKey)
-    if (isHashmapLike(val) && !memory.has(val)) {
+    if ((isHashmapLike(val) || Array.isArray(val)) && !memory.has(val)) {
       traverse(val, cb, key, memory)
     }
   }

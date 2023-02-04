@@ -1,5 +1,7 @@
 import Component from "../classes/Component.js"
 import { Menu } from "./menu.js"
+import extractShortcuts from "../extractShortcuts.js"
+import renderOn from "../renderers/renderOn.js"
 
 export class Menubar extends Menu {
   static plan = {
@@ -19,6 +21,18 @@ export class Menubar extends Menu {
         closeSubmenu: "pointerdown || ArrowLeft",
       },
     },
+  }
+
+  render(plan) {
+    if (this.parentElement) {
+      renderOn(
+        this.parentElement,
+        { on: extractShortcuts(plan.items) },
+        this.stage
+      )
+    }
+
+    return super.render(plan)
   }
 }
 
