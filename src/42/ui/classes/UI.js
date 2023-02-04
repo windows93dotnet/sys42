@@ -28,17 +28,31 @@ export default class UI {
       postrenderAutofocus(this.el)
     })
 
-    asyncable(this, async () => {
-      if (!this.stage) return
+    // asyncable(this, async () => {
+    //   if (!this.stage) return
 
-      if (this.stage.reactive.firstUpdateDone !== true) {
-        if (this.stage.preload.length > 0) await this.stage.preload.done()
-        this.content = render(this.plan, this.stage, { skipNormalize: true })
-        this.el.append(this.content)
-      }
+    //   if (this.stage.reactive.firstUpdateDone !== true) {
+    //     if (this.stage.preload.length > 0) await this.stage.preload.done()
+    //     this.content = render(this.plan, this.stage, { skipNormalize: true })
+    //     this.el.append(this.content)
+    //   }
 
-      await this.stage.reactive.done()
-    })
+    //   await this.stage.reactive.done()
+    // })
+
+    this.done()
+  }
+
+  async done() {
+    if (!this.stage) return
+
+    if (this.stage.reactive.firstUpdateDone !== true) {
+      if (this.stage.preload.length > 0) await this.stage.preload.done()
+      this.content = render(this.plan, this.stage, { skipNormalize: true })
+      this.el.append(this.content)
+    }
+
+    await this.stage.reactive.done()
   }
 
   get reactive() {

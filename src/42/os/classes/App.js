@@ -11,6 +11,7 @@ import arrify from "../../fabric/type/any/arrify.js"
 import template from "../../core/formats/template.js"
 import getDirname from "../../core/path/core/getDirname.js"
 import Emitter from "../../fabric/classes/Emitter.js"
+import transferable from "../../ui/traits/transferable.js"
 
 import editor from "./App/editor.js"
 import preinstall from "./App/preinstall.js"
@@ -23,8 +24,13 @@ import "../../ui/components/dialog.js"
 import "../../ui/popup.js"
 
 async function prepareManifest(manifest, options) {
-  if (options?.skipNormalize !== true) {
-    if (manifest === undefined) {
+  if (manifest === undefined) {
+    const params = new URLSearchParams(location.search)
+    if (params.has("manifest")) {
+      manifest = JSON.parse(params.get("manifest"))
+      options ??= {}
+      options.skipNormalize = true
+    } else {
       const disk = await import("../../core/disk.js") //
         .then((m) => m.default)
       let dirPath = new URL(document.URL).pathname
@@ -37,17 +43,19 @@ async function prepareManifest(manifest, options) {
         }
       }
     }
+  }
 
-    if (typeof manifest === "string") {
-      const fs = await import("../../core/fs.js") //
-        .then((m) => m.default)
+  if (typeof manifest === "string") {
+    const fs = await import("../../core/fs.js") //
+      .then((m) => m.default)
 
-      const manifestPath = new URL(manifest, location).pathname
+    const manifestPath = new URL(manifest, location).pathname
 
-      manifest = await fs.read.json5(manifestPath)
-      manifest.manifestPath = manifestPath
-    }
+    manifest = await fs.read.json5(manifestPath)
+    manifest.manifestPath = manifestPath
+  }
 
+  if (options?.skipNormalize !== true) {
     await normalizeManifest(manifest)
   }
 
@@ -107,7 +115,7 @@ function makeSandbox(manifest) {
     path = new URL(path, manifest.dirURL).href
 
     if (path.endsWith(".html") || path.endsWith(".php")) {
-      path += "?state=" + encodeURIComponent(JSON.stringify(manifest.state))
+      path += "?manifest=" + encodeURIComponent(JSON.stringify(manifest))
     }
 
     out.sandbox.path = path
@@ -142,7 +150,7 @@ function makeSandbox(manifest) {
       : `\
     import App from "${import.meta.url}"
     window.$manifest = ${JSON.stringify(manifest)}
-    window.$app = await App.mount(
+    window.$app = await App.init(
       window.$manifest,
       { skipNormalize: true }
     )
@@ -156,14 +164,21 @@ function makeSandbox(manifest) {
 }
 
 // Execute App
-async function nest(manifestPath) {
-  let manifest = await prepareManifest(manifestPath)
+async function init(manifestPath, options) {
+  let manifest = await prepareManifest(manifestPath, options)
   manifest = await resoleManifest(manifest)
   return new App(manifest)
 }
 
+// Execute App inside element
+async function mount(el, manifestPath, options) {
+  let manifest = await prepareManifest(manifestPath, options)
+  manifest = await resoleManifest(manifest)
+  return new App(el ?? true, manifest)
+}
+
 // Execute App sandboxed in a top level page
-export async function mount(manifestPath, options) {
+export async function shell(manifestPath, options) {
   let manifest = await prepareManifest(manifestPath, options)
 
   if (inTop) {
@@ -257,12 +272,17 @@ export async function launch(manifestPath, options) {
 }
 
 export default class App extends UI {
-  static nest = nest
+  static init = init
   static mount = mount
+  static shell = shell
   static launch = launch
-  static getIcons = getIcons
 
-  constructor(manifest) {
+  constructor(el, manifest) {
+    if (manifest === undefined) {
+      manifest = el
+      el = undefined
+    }
+
     manifest.state ??= {}
     manifest.state.$current ??= 0
     manifest.state.$files ??= []
@@ -277,36 +297,66 @@ export default class App extends UI {
       )
     }
 
-    const content = {
-      tag: ".box-v",
-      content: manifest.content,
-      transferable: {
-        items: false,
-        findNewIndex: false,
-        dropzone: "arrow",
-        accept: "$file",
-        import: ({ paths, index }) => {
-          if (manifest.multiple !== true) this.state.$files.length = 0
-          index ??= this.state.$files.length
-          this.state.$files.splice(index, 0, ...paths)
-          this.state.$current = index
-          return "vanish"
-        },
+    const transferableConfig = {
+      items: false,
+      findNewIndex: false,
+      dropzone: "dim",
+      accept: "$file",
+      import: ({ paths, index }) => {
+        console.log(paths, index)
+        if (manifest.multiple !== true) this.state.$files.length = 0
+        index ??= this.state.$files.length
+        this.state.$files.splice(index, 0, ...paths)
+        this.state.$current = index
+        return "vanish"
       },
     }
 
-    if (manifest.on) content.on = manifest.on
-    if (manifest.watch) content.watch = manifest.watch
-    if (manifest.traits) content.traits = manifest.traits
+    if (el) {
+      if (el === true) {
+        el = document.createElement("div")
+        document.body.prepend(el)
+      }
 
-    super({
-      tag: ".box-fit.box-v.panel",
-      content: manifest.menubar
-        ? [{ tag: "ui-menubar", content: manifest.menubar }, content]
-        : content,
-      state: manifest.state,
-      initiator: manifest.initiator,
-    })
+      transferable(document.body, transferableConfig)
+
+      const content = {
+        tag: ".box-v",
+        content: manifest.content,
+      }
+
+      if (manifest.on) content.on = manifest.on
+      if (manifest.watch) content.watch = manifest.watch
+      if (manifest.traits) content.traits = manifest.traits
+
+      super(el, {
+        tag: ".box-v",
+        content: manifest.menubar
+          ? [{ tag: "ui-menubar", content: manifest.menubar }, content]
+          : content,
+        state: manifest.state,
+        initiator: manifest.initiator,
+      })
+    } else {
+      const content = {
+        tag: ".box-v",
+        content: manifest.content,
+        transferable: transferableConfig,
+      }
+
+      if (manifest.on) content.on = manifest.on
+      if (manifest.watch) content.watch = manifest.watch
+      if (manifest.traits) content.traits = manifest.traits
+
+      super({
+        tag: ".box-fit.box-v",
+        content: manifest.menubar
+          ? [{ tag: "ui-menubar", content: manifest.menubar }, content]
+          : content,
+        state: manifest.state,
+        initiator: manifest.initiator,
+      })
+    }
 
     this.manifest = manifest
 

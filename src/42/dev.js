@@ -106,7 +106,7 @@ if (inTop && inAutomated) {
         location.reload()
       })
 
-    const hasTestFlag = new URL(location.href).searchParams.has("test")
+    const hasTestFlag = new URLSearchParams(location.search).has("test")
     if (config.testRunner && hasTestFlag) await dev.test()
   }
 }
