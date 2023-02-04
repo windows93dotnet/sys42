@@ -2,7 +2,6 @@ import normalizeFilename from "./fs/normalizeFilename.js"
 import getDriverLazy from "./fs/getDriverLazy.js"
 import removeItem from "../fabric/type/array/removeItem.js"
 import resolvePath from "./path/core/resolvePath.js"
-import inOpaqueOrigin from "./env/realm/inOpaqueOrigin.js"
 import defer from "../fabric/type/promise/defer.js"
 import inTop from "./env/realm/inTop.js"
 import ipc from "./ipc.js"
@@ -80,7 +79,7 @@ async function findDriver(path) {
   const filename = normalizeFilename(path)
 
   let name
-  if (inOpaqueOrigin) {
+  if (!inTop) {
     name = "ipc"
   } else {
     const place = places.find((item) => filename.startsWith(item))

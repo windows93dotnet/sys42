@@ -9,6 +9,8 @@ import postrenderAutofocus from "../../ui/postrenderAutofocus.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
 import arrify from "../../fabric/type/any/arrify.js"
 import template from "../../core/formats/template.js"
+import getDirname from "../../core/path/core/getDirname.js"
+import Emitter from "../../fabric/classes/Emitter.js"
 
 import editor from "./App/editor.js"
 import preinstall from "./App/preinstall.js"
@@ -25,7 +27,8 @@ async function prepareManifest(manifest, options) {
     if (manifest === undefined) {
       const disk = await import("../../core/disk.js") //
         .then((m) => m.default)
-      const dirPath = new URL(document.URL).pathname
+      let dirPath = new URL(document.URL).pathname
+      if (!dirPath.endsWith("/")) dirPath = getDirname(dirPath) + "/"
       const dir = disk.get(dirPath)
       for (const key of Object.keys(dir)) {
         if (key.endsWith(".app.json5")) {
@@ -65,6 +68,16 @@ async function prepareManifest(manifest, options) {
   manifest.state.$files ??= []
 
   return manifest
+}
+
+async function resoleManifest(manifest) {
+  manifest.$defs ??= {}
+  Object.assign(manifest.$defs, editor.menubar(manifest))
+
+  return import("../../fabric/json/resolve.js") //
+    .then(({ resolve }) =>
+      resolve(manifest, { strict: false, baseURI: manifest.dirURL })
+    )
 }
 
 function makeSandbox(manifest) {
@@ -142,6 +155,13 @@ function makeSandbox(manifest) {
   return out
 }
 
+// Execute App
+async function nest(manifestPath) {
+  let manifest = await prepareManifest(manifestPath)
+  manifest = await resoleManifest(manifest)
+  return new App(manifest)
+}
+
 // Execute App sandboxed in a top level page
 export async function mount(manifestPath, options) {
   let manifest = await prepareManifest(manifestPath, options)
@@ -173,16 +193,9 @@ export async function mount(manifestPath, options) {
     return appShell
   }
 
-  // manifest.$id = new URL(manifest.manifestPath, manifest.dir).href
-  manifest.$defs ??= {}
-  Object.assign(manifest.$defs, editor.menubar(manifest))
-
   // Execution is in a sandbox.
   // It's safe to resolve $ref keywords with potential javascript functions
-  manifest = await import("../../fabric/json/resolve.js") //
-    .then(({ resolve }) =>
-      resolve(manifest, { strict: false, baseURI: manifest.dirURL })
-    )
+  manifest = await resoleManifest(manifest)
 
   return new App(manifest)
 }
@@ -244,6 +257,7 @@ export async function launch(manifestPath, options) {
 }
 
 export default class App extends UI {
+  static nest = nest
   static mount = mount
   static launch = launch
   static getIcons = getIcons
@@ -296,6 +310,8 @@ export default class App extends UI {
 
     this.manifest = manifest
 
+    this.emitter = new Emitter()
+
     const option = { silent: true }
 
     this.reactive
@@ -341,7 +357,28 @@ export default class App extends UI {
     editor.init(this)
   }
 
-  watch(loc, fn) {
-    return this.reactive.watch(loc, fn)
+  on(events, ...args) {
+    if (events.startsWith("/")) return this.reactive.watch(events, args[0])
+    return this.emitter.on(events, ...args)
+  }
+
+  once(events, ...args) {
+    if (events.startsWith("/")) {
+      const [fn] = args
+      const forget = this.reactive.watch(events, (...args) => {
+        fn(...args)
+        forget()
+      })
+      return forget
+    }
+    return this.emitter.once(events, ...args)
+  }
+
+  emit(...args) {
+    return this.emitter.emit(...args)
+  }
+
+  async send(...args) {
+    return this.emitter.send(...args)
   }
 }

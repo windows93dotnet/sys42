@@ -154,8 +154,10 @@ editor.init = (app) => {
       if (!$file) return
 
       if ($file?.path) {
+        const [encoded] = await app.send("encode", $file)
+
         const [blob, fs] = await Promise.all([
-          $file.blob,
+          encoded ?? $file.blob,
           import("../../../core/fs.js") //
             .then(({ fs }) => fs),
         ])
@@ -169,16 +171,23 @@ editor.init = (app) => {
       const $file = state.$files[state.$current]
       if (!$file) return
 
-      const [data, filePickerSave] = await Promise.all([
-        $file.blob,
-        import("../../../ui/invocables/filePickerSave.js") //
-          .then(({ filePickerSave }) => filePickerSave),
-      ])
-      const { ok, path } = await filePickerSave(
-        $file?.path ?? defaultFolder, //
-        { data }
-      )
+      const filePickerSave = await import(
+        "../../../ui/invocables/filePickerSave.js"
+      ).then(({ filePickerSave }) => filePickerSave)
+
+      const { ok, path } = await filePickerSave($file?.path ?? defaultFolder)
+
       if (ok) {
+        const [encoded] = await app.send("encode", $file)
+        console.log({ encoded })
+
+        const [blob, fs, filePickerSave] = await Promise.all([
+          encoded ?? $file.blob,
+          import("../../../core/fs.js") //
+            .then(({ fs }) => fs),
+        ])
+
+        await fs.write(path, blob)
         $file.updatePath(path)
         $file.dirty = false
       }
