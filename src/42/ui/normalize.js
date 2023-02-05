@@ -78,9 +78,8 @@ const _isTrait = Symbol.for("Trait.isTrait")
 const delimiter = "/"
 const UNALLOWED_COMPONENT_ACTIONS = new Set(["render"])
 
-const makeActionFn =
-  (fn, thisArg, el) =>
-  async (...args) => {
+const makeActionFn = (fn, thisArg, el) => {
+  async function action(...args) {
     try {
       if (thisArg === undefined) return await fn(...args)
       return await fn.call(thisArg, ...args)
@@ -88,6 +87,10 @@ const makeActionFn =
       dispatch(el, err)
     }
   }
+
+  action.original = fn
+  return action
+}
 
 const findAction = (obj, segments) => {
   let current = obj

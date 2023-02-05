@@ -14,7 +14,7 @@ const serialize = (val) => {
 
   traverse(val, (key, fn, obj) => {
     if (typeof fn === "function") {
-      const id = "42_RPC_FUNCTION_" + hash(fn)
+      const id = "42_RPC_FUNCTION_" + hash(fn.original ?? fn)
       forgets.push(ipc.on(id, { off: true }, (args) => fn(...args)))
       obj[key] = id
     }

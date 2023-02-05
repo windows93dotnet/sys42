@@ -1,6 +1,7 @@
 export default {
   menubar: [
     { $ref: "FileMenu" }, //
+    { $ref: "ViewMenu" },
     { $ref: "HelpMenu" },
   ],
 

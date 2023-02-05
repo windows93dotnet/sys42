@@ -1,15 +1,14 @@
 import traverse from "./../fabric/type/object/traverse.js"
 
 export function extractShortcuts(items) {
-  const on = []
+  const eventmap = { prevent: true }
+  const on = [eventmap]
   traverse(items, (key, val, obj) => {
-    if (key === "shortcut") {
-      on.push({
-        prevent: true,
-        [val]: obj.click,
-      })
+    if (key === "shortcut" && obj.click) {
+      eventmap[val] = obj.click
     }
   })
+
   return on
 }
 
