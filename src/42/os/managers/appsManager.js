@@ -25,7 +25,7 @@ class AppsManager extends ConfigFile {
 
     await Promise.all(
       disk
-        .glob("**/*.app.json5")
+        .glob("**/*app.json5")
         .map((manifestPath) => this.add(manifestPath, { save: false }))
     )
 
