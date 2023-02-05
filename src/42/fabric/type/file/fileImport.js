@@ -3,7 +3,6 @@
 
 // @thanks https://stackoverflow.com/a/67603015
 
-// import inOpaqueOrigin from "../../../core/env/realm/inOpaqueOrigin.js"
 import inIframe from "../../../core/env/realm/inIframe.js"
 const supportShowOpenFilePicker = "showOpenFilePicker" in globalThis
 

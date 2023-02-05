@@ -90,18 +90,21 @@
 
   // import "../tests/apps/Hydra/Hydra.js"
 
+  import appsManager from "../42/os/managers/appsManager.js"
+  appsManager.exec("PixelEdit")
+
   // import appsManager from "../42/os/managers/appsManager.js"
   // appsManager.exec("Hydra")
 
   // import appsManager from "../42/os/managers/appsManager.js"
   // appsManager.exec("TextEdit")
 
-  import appsManager from "../42/os/managers/appsManager.js"
-  appsManager.exec("TextEdit", {
-    $files: [
-      "/tests/fixtures/formats/example.json5",
-      "/tests/fixtures/formats/example.html",
-      "/style.css",
-    ],
-  })
+  // import appsManager from "../42/os/managers/appsManager.js"
+  // appsManager.exec("TextEdit", {
+  //   $files: [
+  //     "/tests/fixtures/formats/example.json5",
+  //     "/tests/fixtures/formats/example.html",
+  //     "/style.css",
+  //   ],
+  // })
 </script>

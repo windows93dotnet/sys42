@@ -1,6 +1,6 @@
 // @read https://github.com/jimmywarting/native-file-system-adapter/blob/master/src/adapters/downloader.js
 
-import inOpaqueOrigin from "../../../core/env/realm/inOpaqueOrigin.js"
+import inIframe from "../../../core/env/realm/inIframe.js"
 const supportShowSaveFilePicker = "showSaveFilePicker" in globalThis
 
 function legacySaveFile(file, options) {
@@ -20,7 +20,7 @@ async function saveFile(file, options) {
 export default async function fileExport(file, options = {}) {
   options.suggestedName ??= options.name ?? file.name ?? "untitled"
 
-  return !inOpaqueOrigin && supportShowSaveFilePicker
+  return !inIframe && supportShowSaveFilePicker
     ? saveFile(file, options)
     : legacySaveFile(file, options)
 }
