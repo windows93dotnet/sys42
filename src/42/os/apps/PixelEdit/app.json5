@@ -9,5 +9,5 @@
   width: 600,
   height: 500,
 
-  $ref: "./PixelEdit.js",
+  $ref: "./app.js",
 }
