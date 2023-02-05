@@ -19,12 +19,15 @@ export default class FileAgent {
   [Symbol.for("observe")] = true;
 
   [Symbol.for("serialize")]() {
-    return {
+    const json = {
       path: this.path,
       name: this.name,
       dirty: this.dirty,
-      data: unproxy(this.data),
     }
+
+    if (this.data.length > 0) json.data = unproxy(this.data)
+
+    return json
   }
 
   toJSON() {

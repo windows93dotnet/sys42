@@ -329,7 +329,6 @@ export default class App extends UI {
       dropzone: "dim",
       accept: "$file",
       import: ({ paths, index }) => {
-        console.log(paths, index)
         if (manifest.multiple !== true) this.state.$files.length = 0
         index ??= this.state.$files.length
         this.state.$files.splice(index, 0, ...paths)
