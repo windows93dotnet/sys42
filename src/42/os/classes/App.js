@@ -204,7 +204,7 @@ async function mount(el, manifestPath, options) {
 }
 
 // Execute App sandboxed in a top level page
-export async function shell(manifestPath, options) {
+async function shell(manifestPath, options) {
   let manifest = await prepareManifest(manifestPath, options)
 
   if (inTop) {
@@ -223,7 +223,7 @@ export async function shell(manifestPath, options) {
       })
 
     const appShell = new UI(
-      { id, tag: "ui-sandbox.box-fit", ...sandbox },
+      { id, tag: "ui-sandbox.app-shell.box-fit", ...sandbox },
       { trusted: manifest.trusted }
     )
 
@@ -346,7 +346,7 @@ export default class App extends UI {
       transferable(document.body, transferableConfig)
 
       const content = {
-        tag: ".box-v",
+        tag: ".box-v.app-content",
         content: manifest.content,
       }
 
@@ -355,7 +355,7 @@ export default class App extends UI {
       if (manifest.traits) content.traits = manifest.traits
 
       super(el, {
-        tag: ".box-v",
+        tag: ".box-v.app-frame",
         content: manifest.menubar
           ? [{ tag: "ui-menubar", items: manifest.menubar }, content]
           : content,
@@ -364,7 +364,7 @@ export default class App extends UI {
       })
     } else {
       const content = {
-        tag: ".box-v",
+        tag: ".box-v.app-content",
         content: manifest.content,
         transferable: transferableConfig,
       }
@@ -374,7 +374,7 @@ export default class App extends UI {
       if (manifest.traits) content.traits = manifest.traits
 
       super({
-        tag: ".box-fit.box-v",
+        tag: ".box-fit.box-v.app-frame",
         content: manifest.menubar
           ? [{ tag: "ui-menubar", items: manifest.menubar }, content]
           : content,
