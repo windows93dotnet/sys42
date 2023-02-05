@@ -2,7 +2,7 @@
   name: "TextEdit",
   command: "textedit",
   categories: ["utilities", "productivity", "development"],
-  description: "A simple text editor using textarea",
+  description: "Simple text editor using textarea",
 
   multiple: true,
   empty: false,
