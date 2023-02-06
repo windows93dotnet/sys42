@@ -389,6 +389,12 @@ export default class App extends UI {
 
     const option = { silent: true }
 
+    queueTask(() => {
+      for (const $file of this.state.$files) {
+        this.emitter.emit("decode", $file)
+      }
+    })
+
     this.reactive
       .on("prerender", (queue) => {
         for (const [loc, , deleted] of queue) {
@@ -402,6 +408,8 @@ export default class App extends UI {
               $file = new FileAgent($file, manifest)
               this.reactive.set(loc, $file, option)
             }
+
+            this.emitter.emit("decode", $file)
           }
         }
       })
