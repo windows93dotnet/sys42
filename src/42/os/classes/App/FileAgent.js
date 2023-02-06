@@ -25,6 +25,7 @@ export default class FileAgent {
       dirty: this.dirty,
     }
 
+    if (this.decoded) json.decoded = unproxy(this.decoded)
     if (this.data.length > 0) json.data = unproxy(this.data)
 
     return json

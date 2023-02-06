@@ -135,11 +135,11 @@ editor.init = (app) => {
   // }, 0)
 
   async function getBlob($file) {
-    const res = await app.send("encode", $file)
+    const [res] = await app.send("encode", $file)
     return res ?? $file.blob
   }
 
-  app.stage.actions.assign("/editor", {
+  const methods = {
     newFile() {
       if (manifest.multiple !== true) state.$files.length = 0
       const i = state.$files.push(manifest.emptyFile ?? { name: "untitled" })
@@ -154,8 +154,9 @@ editor.init = (app) => {
 
     /* save/export
     -------------- */
-    async saveFile() {
-      const $file = state.$files[state.$current]
+    async saveFile($file) {
+      if (typeof $file === "number") $file = state.$files[$file]
+      else $file ??= state.$files[state.$current]
       if (!$file) return
 
       if ($file?.path) {
@@ -170,8 +171,9 @@ editor.init = (app) => {
         await app.run.editor.saveFileAs()
       }
     },
-    async saveFileAs() {
-      const $file = state.$files[state.$current]
+    async saveFileAs($file) {
+      if (typeof $file === "number") $file = state.$files[$file]
+      else $file ??= state.$files[state.$current]
       if (!$file) return
 
       const filePickerSave = await import(
@@ -290,7 +292,10 @@ editor.init = (app) => {
     exit() {
       console.log("exit")
     },
-  })
+  }
+
+  app.stage.actions.assign("/editor", methods)
+  Object.assign(app, methods)
 }
 
 export default editor
