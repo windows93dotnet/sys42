@@ -15,11 +15,11 @@ const editor = {
           click: "{{editor.newFile()}}",
         },
         {
-          $id: "openFiles",
+          $id: "openFile",
           label: "Open…",
           picto: "folder-open",
           shortcut: "Ctrl+O",
-          click: "{{editor.openFiles()}}",
+          click: "{{editor.openFile()}}",
         },
         {
           $id: "saveFile",
@@ -45,10 +45,10 @@ const editor = {
         },
         "---",
         {
-          $id: "importFiles",
+          $id: "importFile",
           label: "Import…",
           picto: "import",
-          click: "{{editor.importFiles()}}",
+          click: "{{editor.importFile()}}",
         },
         {
           $id: "exportFile",
@@ -134,15 +134,17 @@ editor.init = (app) => {
   //   state.$current = 1
   // }, 0)
 
-  async function getBlob($file) {
-    const [res] = await app.send("encode", $file)
+  async function getBlob($file, path) {
+    const [res] = await app.send("encode", $file, path)
     return res ?? $file.blob
   }
 
+  const emptyFile = manifest.emptyFile ?? { name: "untitled" }
+
   const methods = {
-    newFile() {
+    newFile(init) {
       if (manifest.multiple !== true) state.$files.length = 0
-      const i = state.$files.push(manifest.emptyFile ?? { name: "untitled" })
+      const i = state.$files.push(init ?? emptyFile)
       state.$current = i - 1
     },
     closeFile() {
@@ -161,7 +163,7 @@ editor.init = (app) => {
 
       if ($file?.path) {
         const [blob, fs] = await Promise.all([
-          getBlob($file),
+          getBlob($file, $file.path),
           import("../../../core/fs.js") //
             .then(({ fs }) => fs),
         ])
@@ -180,11 +182,13 @@ editor.init = (app) => {
         "../../../ui/invocables/filePickerSave.js"
       ).then(({ filePickerSave }) => filePickerSave)
 
-      const { ok, path } = await filePickerSave($file?.path ?? defaultFolder)
+      const { ok, path } = await filePickerSave(
+        $file.path ?? defaultFolder + emptyFile.name
+      )
 
       if (ok) {
         const [blob, fs] = await Promise.all([
-          getBlob($file),
+          getBlob($file, path),
           import("../../../core/fs.js") //
             .then(({ fs }) => fs),
         ])
@@ -211,7 +215,7 @@ editor.init = (app) => {
 
     /* open/import
     -------------- */
-    async openFiles() {
+    async openFile() {
       await import("../../../ui/invocables/filePickerOpen.js") //
         .then(({ filePickerOpen }) =>
           filePickerOpen(
@@ -235,7 +239,7 @@ editor.init = (app) => {
           }
         })
     },
-    async importFiles() {
+    async importFile() {
       const fileImport = await import("../../../fabric/type/file/fileImport.js") //
         .then((m) => m.default)
 
