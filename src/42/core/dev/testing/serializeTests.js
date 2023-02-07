@@ -1,6 +1,7 @@
 import system from "../../../system.js"
 import configure from "../../configure.js"
 import stringify from "../../../fabric/type/any/stringify.js"
+import mark from "../../../fabric/type/any/mark.js"
 import truncate from "../../../fabric/type/string/truncate.js"
 import sortPath from "../../../core/path/core/sortPath.js"
 import { calcPatch } from "../../../fabric/algorithm/myersDiff.js"
@@ -8,7 +9,6 @@ import diff from "../../../fabric/json/diff.js"
 import serializeError from "../../../fabric/type/error/serializeError.js"
 
 const DEFAULTS = {
-  title: "line",
   details: "inspect",
   alike: { preset: "inspect", traceNullProto: false },
   diff: "inspect",
@@ -16,19 +16,16 @@ const DEFAULTS = {
   keepIframes: false,
 }
 
-const castTestTitleParts = async (arg, config) =>
+const castTestTitleParts = (arg, config) =>
   truncate(
-    (typeof arg === "string" ? arg : await stringify(arg, config.title)).trim(),
+    (typeof arg === "string" ? arg : mark(arg)).trim(),
     config.truncateTitleParts
   )
 
 async function serializeTest(test, config) {
-  test.title = await Promise.all(
-    test.title
-      .filter((x) => x !== undefined)
-      .map((x) => castTestTitleParts(x, config))
-  )
-
+  test.title = test.title
+    .filter((x) => x !== undefined)
+    .map((x) => castTestTitleParts(x, config))
   if (test.error) {
     let tmpDiff
 
