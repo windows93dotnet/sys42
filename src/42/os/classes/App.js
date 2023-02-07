@@ -55,8 +55,8 @@ async function prepareManifest(manifest, options) {
         .then((m) => m.default)
       let dirPath = new URL(document.URL).pathname
       if (!dirPath.endsWith("/")) dirPath = getDirname(dirPath) + "/"
-      const dir = disk.get(dirPath)
-      for (const key of Object.keys(dir)) {
+      const dirNode = disk.get(dirPath)
+      for (const key of Object.keys(dirNode)) {
         if (key.endsWith(".app.json5")) {
           manifest = dirPath + key
           break

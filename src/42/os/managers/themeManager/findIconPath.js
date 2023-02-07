@@ -91,14 +91,14 @@ function searchIcon(themePath, obj, val) {
 }
 
 export default function findIconPath(themePath, val, size) {
-  const obj = disk.get(themePath)
-  if (!obj) return
+  const dirNode = disk.get(themePath)
+  if (!dirNode) return
 
-  if (size && size in obj) {
-    const res = searchIcon(`${themePath}/${size}`, obj[size], val)
+  if (size && size in dirNode) {
+    const res = searchIcon(`${themePath}/${size}`, dirNode[size], val)
     if (res) return res
   }
 
   size = "32x32"
-  return searchIcon(`${themePath}/${size}`, obj[size], val)
+  return searchIcon(`${themePath}/${size}`, dirNode[size], val)
 }
