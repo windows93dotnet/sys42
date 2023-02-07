@@ -23,22 +23,22 @@ self.addEventListener("fetch", async (e) => {
 
   // console.log(`🛰 ${pathname}`)
 
-  const entry = disk.get(
+  const inode = disk.get(
     pathname.endsWith("/") ? pathname + "index.html" : pathname
   )
 
-  if (!entry) return
+  if (!inode) return
 
   const infos = getPathInfos(pathname, { headers: true })
 
   // console.group(`🛰 ${pathname}`)
   // console.log(e.request)
   // console.log(infos)
-  // console.log(entry)
+  // console.log(inode)
   // console.groupEnd()
 
   e.respondWith(
-    getDriver(entry[1])
+    getDriver(inode[1])
       .then((driver) => driver.open(pathname))
       .then(
         (blob) =>

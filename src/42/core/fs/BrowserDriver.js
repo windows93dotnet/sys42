@@ -58,9 +58,9 @@ export default class BrowserDriver extends Driver {
       throw new FileSystemError(ENOENT, filename)
     }
 
-    const desc = disk.get(filename)
-    if (desc === 0) return filename
-    if (desc?.[0] === -1) return this.getURL(desc[1])
+    const inode = disk.get(filename)
+    if (inode === 0) return filename
+    if (inode?.[0] === -1) return this.getURL(inode[1])
 
     const blob = await this.open(filename)
     const objectURL = URL.createObjectURL(blob)
@@ -88,19 +88,21 @@ export default class BrowserDriver extends Driver {
     if (!disk.has(filename)) throw new FileSystemError(ENOENT, filename)
     else if (disk.isDir(filename)) throw new FileSystemError(EISDIR, filename)
 
-    const entry = disk.get(filename)
+    const inode = disk.get(filename)
 
-    if (entry === 0) {
+    if (inode === 0) {
       const res = await http.get(filename)
       return res.blob()
     }
 
-    const [id, mask] = entry
+    const [id, mask] = inode
 
     if (id === -1) return this.open(mask)
 
-    entry[2].a = Date.now()
-    disk.set(filename, entry, { silent: true })
+    inode[2].a = Date.now()
+    requestIdleCallback(() => {
+      disk.set(filename, inode, { silent: true })
+    })
 
     if (this.mask !== mask) {
       const driver = await this.getDriver(mask)
@@ -129,25 +131,26 @@ export default class BrowserDriver extends Driver {
     if (typeof options === "string") options = { encoding: options }
 
     let id
-    let entry = disk.get(filename)
+    let inode = disk.get(filename)
 
-    if (entry) {
-      id = entry[0]
-      const mask = entry[1]
+    if (inode) {
+      id = inode[0]
+      const mask = inode[1]
 
       if (this.mask !== mask) {
         const driver = await this.getDriver(mask)
         driver.delete(filename)
       }
 
-      entry[2].m = Date.now()
-      entry[2].c = entry[2].m
-      disk.set(filename, entry)
+      inode[2].m = Date.now()
+      // inode[2].c = inode[2].m
+      disk.set(filename, inode)
     } else {
       id = uid()
+      // @read https://man7.org/linux/man-pages/man7/inode.7.html
       const time = Date.now()
-      entry = [id, this.mask, { a: time, c: time, m: time, cr: time }]
-      disk.set(filename, entry)
+      inode = [id, this.mask, { b: time, a: time, c: time, m: time }]
+      disk.set(filename, inode)
     }
 
     await this.store.set(id, BrowserDriver.toFile([data], options?.encoding))
@@ -158,8 +161,8 @@ export default class BrowserDriver extends Driver {
     else if (disk.isDir(filename)) throw new FileSystemError(EISDIR, filename)
 
     if (typeof options === "string") options = { encoding: options }
-    const entry = disk.get(filename)
-    const id = entry === 0 ? uid() : entry[0]
+    const inode = disk.get(filename)
+    const id = inode === 0 ? uid() : inode[0]
     const prev = await this.open(filename)
     const bits = [prev, data]
     return this.store.set(id, BrowserDriver.toFile(bits, options?.encoding))
@@ -170,13 +173,13 @@ export default class BrowserDriver extends Driver {
     else if (disk.isDir(filename)) throw new FileSystemError(EISDIR, filename)
 
     let id
-    const previous = disk.get(filename)
+    const inode = disk.get(filename)
 
     disk.delete(filename)
 
-    if (previous) {
-      id = previous[0]
-      const mask = previous[1]
+    if (inode) {
+      id = inode[0]
+      const mask = inode[1]
       if (this.mask !== mask) {
         const driver = await this.getDriver(mask)
         await driver.delete(filename)

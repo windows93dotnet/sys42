@@ -151,8 +151,8 @@ export default class FileAgent {
 
     return (async () => {
       if (this.path) {
-        const desc = await disk.get(this.path)
-        if (desc === 0) {
+        const inode = await disk.get(this.path)
+        if (inode === 0) {
           this[_url] = this.path
           return this[_url]
         }
