@@ -40,6 +40,16 @@ export default function mark(val, memory = new WeakSet()) {
       .join()}}`
   }
 
+  if (type === "symbol") {
+    const key = Symbol.keyFor(val)
+    return key ? `Symbol.for(${key})` : val.toString()
+  }
+
+  if (val === document) return "document"
+  if (val === globalThis) return "globalThis"
+
+  memory.add(val)
+
   if ("Blob" in globalThis && val instanceof Blob) {
     return "File" in globalThis && val.constructor === File
       ? `new File([],"${val.name}",{size:${val.size},type:"${
@@ -69,11 +79,6 @@ export default function mark(val, memory = new WeakSet()) {
       ? [...val]
       : [...val].map((x) => mark(x, memory))
     ).join()}])${closeTag}`
-  }
-
-  if (type === "symbol") {
-    const key = Symbol.keyFor(val)
-    return key ? `Symbol.for(${key})` : val.toString()
   }
 
   if (typeof val.toString === "function") {
