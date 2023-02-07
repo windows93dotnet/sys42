@@ -218,10 +218,12 @@ export default class Component extends HTMLElement {
       el: this,
       component: this,
       refs: undefined,
-      preload: undefined,
-      components: undefined,
-      postrender: undefined,
-      traitsReady: undefined,
+
+      waitlistPreload: undefined,
+      waitlistComponents: undefined,
+      // waitlistPostrender: undefined,
+      waitlistTraits: undefined,
+
       scopeResolvers: undefined,
       cancel: stage?.detached ? undefined : stage?.cancel?.fork(),
       steps: stage?.steps ?? this.localName,
@@ -351,7 +353,7 @@ export default class Component extends HTMLElement {
       if (attrs) renderAttributes(this, this.stage, attrs)
     }
 
-    await this.stage.preload.done()
+    await this.stage.waitlistPreload.done()
 
     this.replaceChildren(
       render(plan, this.stage, {
@@ -362,9 +364,9 @@ export default class Component extends HTMLElement {
 
     this.prepend(document.createComment("[rendered]"))
 
-    await this.stage.components.done()
-    await this.stage.undones.done()
-    await this.stage.postrender.call()
+    await this.stage.waitlistComponents.done()
+    await this.stage.waitlistPrerender.done()
+    await this.stage.waitlistPostrender.call()
 
     if (this[_lifecycle] === INIT) this[_lifecycle] = RENDER
   }

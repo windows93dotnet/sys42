@@ -120,7 +120,7 @@ export const popup = rpc(
     stage.cancel = new Canceller(stage.cancel?.signal)
     stage.signal = stage.cancel.signal
 
-    await stage.preload.done()
+    await stage.waitlistPreload.done()
     const el = render(...normalized, { skipNormalize: true })
     el.style.position = "fixed"
     el.style.translate = "-200vw -200vh"
@@ -131,7 +131,7 @@ export const popup = rpc(
     if (el.ready) await el.ready
     else {
       await stage.reactive.done()
-      await stage.postrender.call()
+      await stage.waitlistPostrender.call()
     }
 
     focus.autofocus(el)

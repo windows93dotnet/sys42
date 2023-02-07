@@ -12,28 +12,33 @@ test("generate icon list", async (t) => {
     })
   )
 
+  // await t.sleep(100)
+
   // t.eq(t.utils.omit(app.reactive.data, ["$computed"]), {
   //   $ui: {
   //     folder: {
   //       root: {
   //         path: "/tests/fixtures/components/folder/",
-  //         glob: undefined,
+  //         view: "grid",
   //         selection: ["/tests/fixtures/components/folder/script.js"],
+  //         glob: undefined,
   //         multiselectable: true,
+  //         transferable: true,
+  //         selectable: true,
   //       },
   //     },
   //     grid: {
   //       "root,ui-folder": {
   //         itemTemplate: {
   //           tag: "ui-icon",
+  //           aria: { selected: false },
   //           autofocus: "{{@first}}",
   //           path: "{{.}}",
   //         },
   //         selectionKey: "path",
-  //         multiselectable: true,
-  //         selection: {
-  //           $ref: "/$ui/folder/root/selection",
-  //         },
+  //         selectable: { $ref: "/$ui/folder/root/selectable" },
+  //         selection: { $ref: "/$ui/folder/root/selection" },
+  //         multiselectable: { $ref: "/$ui/folder/root/multiselectable" },
   //         items: [
   //           "/tests/fixtures/components/folder/subfolder/",
   //           "/tests/fixtures/components/folder/script.js",
@@ -45,29 +50,21 @@ test("generate icon list", async (t) => {
   //       "root,ui-folder,ui-grid,[0]": {
   //         small: undefined,
   //         label: true,
-  //         path: {
-  //           $ref: "/$ui/grid/root,ui-folder/items/0",
-  //         },
+  //         path: { $ref: "/$ui/grid/root,ui-folder/items/0" },
   //       },
   //       "root,ui-folder,ui-grid,[1]": {
   //         small: undefined,
   //         label: true,
-  //         path: {
-  //           $ref: "/$ui/grid/root,ui-folder/items/1",
-  //         },
+  //         path: { $ref: "/$ui/grid/root,ui-folder/items/1" },
   //       },
   //       "root,ui-folder,ui-grid,[2]": {
   //         small: undefined,
   //         label: true,
-  //         path: {
-  //           $ref: "/$ui/grid/root,ui-folder/items/2",
-  //         },
+  //         path: { $ref: "/$ui/grid/root,ui-folder/items/2" },
   //       },
   //     },
   //   },
   // })
-
-  await t.sleep(100)
 
   const el = app.el.querySelector("ui-folder")
   const icons = t.puppet.$$$("ui-icon", { live: true, base: app.el })

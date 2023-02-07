@@ -10,7 +10,7 @@ import allocate from "../fabric/locator/allocate.js"
 import template from "../core/formats/template.js"
 import expr from "../core/expr.js"
 import Canceller from "../fabric/classes/Canceller.js"
-import Undones from "../fabric/classes/Undones.js"
+import Waitlist from "../fabric/classes/Waitlist.js"
 import filters from "../core/filters.js"
 import traverse from "../fabric/type/object/traverse.js"
 import dispatch from "../fabric/event/dispatch.js"
@@ -480,7 +480,7 @@ export function normalizePlugins(stage, plugins, options) {
 
     if (options?.now) undones.push(promise)
     else {
-      stage.preload.push(
+      stage.waitlistPreload.push(
         (async () => {
           const res = await promise
           if (typeof res === "function") stage.pluginHandlers.push(res)
@@ -502,7 +502,7 @@ export function normalizeTraits(plan, stage) {
     const val = typeof raw === "string" ? normalizeString(raw, stage) : raw
     const trait = { name, val }
     list.push(trait)
-    stage.preload.push(
+    stage.waitlistPreload.push(
       import(
         name === "emittable"
           ? "../fabric/traits/emittable.js"
@@ -516,7 +516,7 @@ export function normalizeTraits(plan, stage) {
   if (list.length === 0) return
 
   return async (el) => {
-    await stage.preload
+    await stage.waitlistPreload
     await el.ready
 
     const undones = []
@@ -714,7 +714,7 @@ export function normalizePlanWithoutStage(plan = {}) {
 export function normalizeData(plan, stage, cb) {
   if (typeof plan === "function") {
     const { scope } = stage
-    stage.undones.push(
+    stage.waitlistPrerender.push(
       (async () => {
         const res = await plan()
         cb(res, scope)
@@ -827,11 +827,11 @@ export function normalizeStage(stage = {}) {
   stage.scopeResolvers ??= {}
   stage.actions ??= new Locator(Object.create(null), { delimiter: "/" })
 
-  stage.preload ??= new Undones()
-  stage.components ??= new Undones()
-  stage.undones ??= new Undones()
-  stage.postrender ??= new Undones()
-  stage.traitsReady ??= new Undones()
+  stage.waitlistPreload ??= new Waitlist()
+  stage.waitlistPrerender ??= new Waitlist()
+  stage.waitlistPostrender ??= new Waitlist()
+  stage.waitlistComponents ??= new Waitlist()
+  stage.waitlistTraits ??= new Waitlist()
 
   stage.cancel ??= new Canceller()
   stage.signal = stage.cancel.signal

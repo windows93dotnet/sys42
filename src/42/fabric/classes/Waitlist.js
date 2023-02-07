@@ -1,4 +1,4 @@
-export default class Undones extends Array {
+export default class Waitlist extends Array {
   then(resolve, reject) {
     return Promise.all(this).then(resolve, reject)
   }

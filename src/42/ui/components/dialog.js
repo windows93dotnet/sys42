@@ -212,7 +212,7 @@ export const dialog = rpc(
     const { opener } = el
 
     await el.ready
-    await el.stage.traitsReady
+    await el.stage.waitlistTraits
 
     document.documentElement.append(el)
 

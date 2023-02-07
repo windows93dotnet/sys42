@@ -12,7 +12,7 @@ export default function register(stage, loc, fn) {
   if (typeof loc === "function") {
     scopes = loc.scopes
     renderer = async (changed) => {
-      stage.undones.push(
+      stage.waitlistPrerender.push(
         loc(stage.reactive.state).then((val) => fn(val, changed))
       )
     }
@@ -22,7 +22,7 @@ export default function register(stage, loc, fn) {
     renderer = async (changed) => {
       if (stage.signal.aborted) console.log(stage.signal.aborted)
       const res = fn(stage.reactive.get(scopes[0]), changed)
-      if (res !== undefined) stage.undones.push(res)
+      if (res !== undefined) stage.waitlistPrerender.push(res)
     }
   }
 
