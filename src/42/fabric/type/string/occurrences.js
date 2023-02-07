@@ -1,5 +1,5 @@
 /**
- * Function that count occurrences of a substring in a string;
+ * Function that count occurrences of a substring in a string
  *
  * @param {string} str  The string
  * @param {string} search  The sub string to search for

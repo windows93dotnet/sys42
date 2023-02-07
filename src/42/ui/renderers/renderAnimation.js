@@ -22,7 +22,7 @@ export async function renderAnimation(stage, el, how, options) {
   await 0 // queueMicrotask
 
   if (how === "from" && !el.isConnected) {
-    stage.postrender.push(() => start(el, how, options))
+    stage.waitlistPostrender.push(() => start(el, how, options))
     return
   }
 

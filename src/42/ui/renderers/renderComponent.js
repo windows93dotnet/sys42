@@ -2,7 +2,7 @@ import defer from "../../fabric/type/promise/defer.js"
 
 export default function renderComponent(el, plan, stage, options) {
   const deferred = defer()
-  stage?.components.push(deferred)
+  stage?.waitlistComponents.push(deferred)
   const tag = el.localName
 
   if (customElements.get(tag) === undefined) {

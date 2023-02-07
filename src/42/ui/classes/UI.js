@@ -23,7 +23,7 @@ export default class UI {
     this.plan = plan
     this.stage = stage
 
-    this.stage.postrender.push(() => {
+    this.stage.waitlistPostrender.push(() => {
       postrenderAutofocus(this.el)
     })
 
@@ -35,7 +35,10 @@ export default class UI {
     if (!this.stage) return
 
     if (this.stage.reactive.firstUpdateDone !== true) {
-      if (this.stage.preload.length > 0) await this.stage.preload.done()
+      if (this.stage.waitlistPreload.length > 0) {
+        await this.stage.waitlistPreload.done()
+      }
+
       this.content = render(this.plan, this.stage, { skipNormalize: true })
       this.el.append(this.content)
     }
@@ -59,10 +62,10 @@ export default class UI {
 
   destroy() {
     this.stage?.cancel("ui destroyed")
-    this.stage?.preload.clear()
-    this.stage?.components.clear()
-    this.stage?.undones.clear()
-    this.stage?.postrender.clear()
+    this.stage?.waitlistPreload.clear()
+    this.stage?.waitlistComponents.clear()
+    this.stage?.waitlistPrerender.clear()
+    this.stage?.waitlistPostrender.clear()
     this.content?.remove?.()
     delete this.stage
     delete this.plan

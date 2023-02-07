@@ -188,7 +188,7 @@ export default function render(plan, stage, options) {
     )
   }
 
-  if (plan.setTraits) stage.traitsReady.push(plan.setTraits(stage.el))
+  if (plan.setTraits) stage.waitlistTraits.push(plan.setTraits(stage.el))
 
   if (plan.on) renderOn(stage.el, plan, stage)
 

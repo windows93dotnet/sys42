@@ -110,7 +110,7 @@ export default function renderOn(el, plan, stage) {
 
   eventsMap(list)
 
-  stage.postrender.push(() => {
+  stage.waitlistPostrender.push(() => {
     el.dispatchEvent(new CustomEvent("render"))
   })
 }

@@ -21,7 +21,7 @@ export default async function persistPlugin(stage) {
       const dialogs = Object.values(res.$ui.dialog)
 
       if (dialogs.length > 0) {
-        stage.postrender.push(async () => {
+        stage.waitlistPostrender.push(async () => {
           queueMicrotask(() => {
             for (const dialogState of dialogs) {
               const el = document.querySelector(`#${dialogState.opener}`)
