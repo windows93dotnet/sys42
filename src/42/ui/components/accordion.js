@@ -13,6 +13,23 @@ export class Accordion extends Component {
       expandeds: [0],
       items: [],
     },
+
+    traits: {
+      navigable: {
+        selector: ".ui-accordion__trigger",
+        remember: true,
+        shortcuts: {
+          next: "ArrowDown",
+          prev: "ArrowUp",
+
+          expand: "ArrowRight",
+          reduce: "ArrowLeft",
+
+          exitAfter: "Control+ArrowDown || Esc",
+          exitBefore: "Control+ArrowUp",
+        },
+      },
+    },
   }
 
   addPanel(data) {
@@ -23,15 +40,11 @@ export class Accordion extends Component {
     this.items.splice(index, 1)
   }
 
-  togglePanel(index, previous) {
+  togglePanel(index, ensureFocus) {
     if (index < 0 || index > this.items.length - 1) return
 
     if (this.expandeds.includes(index)) {
-      if (this.collapsible !== true && this.expandeds.length === 1) {
-        if (index === this.items.length - 1) {
-          this.togglePanel(index - 1, index)
-        } else this.togglePanel(index + 1, index)
-      } else {
+      if (!(this.collapsible !== true && this.expandeds.length === 1)) {
         removeItem(this.expandeds, index)
       }
     } else {
@@ -39,7 +52,30 @@ export class Accordion extends Component {
       this.expandeds.push(index)
     }
 
-    if (previous !== undefined) removeItem(this.expandeds, previous)
+    if (ensureFocus) {
+      const el = this.querySelector(`#${this.id}-trigger-${index}`)
+      if (el && document.activeElement !== el) el.focus()
+    }
+  }
+
+  expandPanel(index, move) {
+    if (!this.expandeds.includes(index)) {
+      if (this.multiple !== true) this.expandeds.length = 0
+      this.expandeds.push(index)
+    } else if (move) {
+      this.navigable.next()
+    }
+  }
+
+  reducePanel(index, move) {
+    if (
+      this.expandeds.includes(index) &&
+      !(this.collapsible !== true && this.expandeds.length === 1)
+    ) {
+      removeItem(this.expandeds, index)
+    } else if (move) {
+      this.navigable.prev()
+    }
   }
 
   render() {
@@ -61,7 +97,7 @@ export class Accordion extends Component {
               {
                 tag: "ui-picto",
                 value: `{{includes(../../expandeds, @index) ? '${pictoOpen}' : '${pictoClose}'}}`,
-                click: "{{togglePanel(@index)}}",
+                click: "{{togglePanel(@index, true)}}",
               },
               {
                 if: "{{prelabel}}",
@@ -70,6 +106,7 @@ export class Accordion extends Component {
               },
               {
                 tag: "button.ui-accordion__trigger",
+                id: `${id}-trigger-{{@index}}`,
                 aria: {
                   controls: `${id}-panel-{{@index}}`,
                   expanded: "{{includes(../../expandeds, @index)}}",
@@ -78,7 +115,11 @@ export class Accordion extends Component {
                   tag: "span.ui-accordion__trigger__text",
                   content: "{{render(label)}}",
                 },
-                click: "{{togglePanel(@index)}}",
+                on: {
+                  click: "{{togglePanel(@index)}}",
+                  ArrowRight: "{{expandPanel(@index, true)}}",
+                  ArrowLeft: "{{reducePanel(@index, true)}}",
+                },
               },
               {
                 if: "{{postlabel}}",

@@ -5,18 +5,19 @@ import focus, { TabOrder } from "../../fabric/dom/focus.js"
 import on from "../../fabric/event/on.js"
 import noop from "../../fabric/type/function/noop.js"
 import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
-// import ensureFocusable from "../../fabric/dom/ensureFocusable.js"
 
 const DEFAULTS = {
   selector: undefined,
-  loop: !false,
-  remember: !false,
+  loop: false,
+  remember: false,
   preventBlur: false,
   shortcuts: {
     next: "ArrowRight",
     prev: "ArrowLeft",
     first: "Home || PageUp",
     last: "End || PageDown",
+    exitAfter: "Tab || Esc",
+    exitBefore: "Shift+Tab",
   },
 }
 
@@ -28,8 +29,6 @@ class Navigable extends Trait {
 
     this.config = configure(options)
 
-    // ensureFocusable(this.el)
-
     if (this.config.selector) {
       this.config.selector = ensureScopeSelector(this.config.selector, this.el)
     }
@@ -37,26 +36,37 @@ class Navigable extends Trait {
     const { shortcuts } = this.config
 
     const { signal } = this.cancel
-    const tabOrderOptions = {
+
+    this.tabOrderOptions = {
       loop: this.config.loop,
       selector: this.config.selector,
     }
 
     if (this.config.selector) {
-      this.list ??= new TabOrder(this.el, tabOrderOptions)
+      this.tabOrder ??= new TabOrder(this.el, this.tabOrderOptions)
     }
 
     let fromPointerdown
 
     const remember = this.config.remember
       ? (target = document.activeElement) => {
-          if (this.el.contains(target)) this.lastFocused = target
+          if (this.el.contains(target)) {
+            if (this.config.selector) {
+              const el = target.closest(this.config.selector)
+              if (el) {
+                this.lastFocused = el
+                return
+              }
+            }
+
+            this.lastFocused = target
+          }
         }
       : noop
 
     const blur = (target) => {
       remember(target)
-      this.list = undefined
+      this.tabOrder = undefined
     }
 
     on(
@@ -95,39 +105,47 @@ class Navigable extends Trait {
           : undefined,
       },
       {
-        "prevent": true,
+        prevent: true,
 
-        "Tab": () => {
+        [shortcuts.exitAfter]: () => {
           blur()
-          focus.next(this.el, this.el.parentElement)
+          focus.next(this.el)
         },
-        "Shift+Tab": () => {
+        [shortcuts.exitBefore]: () => {
           blur()
-          focus.prev(this.el, this.el.parentElement)
+          focus.prev(this.el)
         },
 
-        [shortcuts.next]: () => {
-          this.list ??= new TabOrder(this.el, tabOrderOptions)
-          this.list.next()
-        },
-        [shortcuts.prev]: () => {
-          this.list ??= new TabOrder(this.el, tabOrderOptions)
-          this.list.prev()
-        },
-        [shortcuts.first]: () => {
-          this.list ??= new TabOrder(this.el, tabOrderOptions)
-          this.list.first()
-        },
-        [shortcuts.last]: () => {
-          this.list ??= new TabOrder(this.el, tabOrderOptions)
-          this.list.last()
-        },
+        [shortcuts.next]: () => this.next(),
+        [shortcuts.prev]: () => this.prev(),
+        [shortcuts.first]: () => this.first(),
+        [shortcuts.last]: () => this.last(),
       }
     )
   }
 
+  next() {
+    this.tabOrder ??= new TabOrder(this.el, this.tabOrderOptions)
+    return this.tabOrder.next()
+  }
+
+  prev() {
+    this.tabOrder ??= new TabOrder(this.el, this.tabOrderOptions)
+    return this.tabOrder.prev()
+  }
+
+  first() {
+    this.tabOrder ??= new TabOrder(this.el, this.tabOrderOptions)
+    return this.tabOrder.first()
+  }
+
+  last() {
+    this.tabOrder ??= new TabOrder(this.el, this.tabOrderOptions)
+    return this.tabOrder.last()
+  }
+
   update() {
-    this.list = undefined
+    this.tabOrder = undefined
   }
 }
 

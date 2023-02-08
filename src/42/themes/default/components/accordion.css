@@ -1,5 +1,4 @@
 :root {
-  --accordion__label-pa: 1px;
   --accordion__label-fg: var(--btn-fg);
   --accordion__label-bg: var(--btn-bg);
   --accordion__label-base-pa: var(--btn-pa);
@@ -11,6 +10,8 @@
   --accordion__label-tsh: var(--btn-tsh);
   --accordion__label-bsh: var(--btn-bsh);
   --accordion__label-gap: var(--unit-sm);
+
+  --accordion__trigger-pa: 1px 3px;
 
   --accordion__panel-pa: 0;
   --accordion__panel--text-pa: var(--unit-md) var(--unit);
@@ -32,7 +33,6 @@ ui-accordion {
   flex: 0 1 0%;
   display: flex;
   align-items: center;
-  gap: var(--accordion__label-gap);
 
   --fg: var(--accordion__label-fg);
   --bg: var(--accordion__label-bg);
@@ -45,13 +45,11 @@ ui-accordion {
   border-radius: var(--accordion__label-br);
   text-shadow: var(--accordion__label-tsh, none);
   box-shadow: var(--accordion__label-bsh);
-  padding: var(--accordion__label-pa);
 }
 
 .ui-accordion__label::after {
   content: "";
   height: var(--picto-size);
-  margin-left: calc(-1 * var(--accordion__label-gap));
 }
 
 .ui-accordion__label:last-of-type {
@@ -60,15 +58,21 @@ ui-accordion {
 
 button.ui-accordion__trigger {
   all: unset;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
-  width: 100%;
-  text-align: left;
-  max-width: 100%;
+  flex: 1;
+  text-align: start;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   gap: var(--unit-xs);
+  padding: var(--accordion__trigger-pa);
+}
+
+.ui-accordion__label:has(button.ui-accordion__trigger:focus) {
+  outline: var(--ctrl-o);
+  outline-offset: -3px;
 }
 
 .ui-accordion__trigger__text {
