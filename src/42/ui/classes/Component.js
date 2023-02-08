@@ -219,9 +219,9 @@ export default class Component extends HTMLElement {
       component: this,
       refs: undefined,
 
-      waitPending: undefined,
+      pendingDone: undefined,
       waitlistPreload: undefined,
-      // waitlistPrerender: undefined,
+      // waitlistPending: undefined,
       waitlistComponents: undefined,
       waitlistPostrender: undefined,
       waitlistTraits: undefined,
@@ -368,7 +368,7 @@ export default class Component extends HTMLElement {
 
     this.prepend(document.createComment("[rendered]"))
 
-    await this.stage.waitPending()
+    await this.stage.pendingDone()
     if (this.stage.waitlistPostrender.length > 0) {
       await this.stage.waitlistPostrender.call()
     }
