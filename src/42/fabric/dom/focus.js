@@ -52,15 +52,21 @@ export function focusInside(el) {
 
 const { FILTER_ACCEPT, FILTER_SKIP, SHOW_ELEMENT } = NodeFilter
 
-const acceptNode = (node) =>
+const acceptNodeFn = (node) =>
   isFocusable(node) //
     ? FILTER_ACCEPT
     : FILTER_SKIP
 
 export class TabOrder {
-  constructor(base = document.body) {
+  constructor(base = document.body, options) {
+    const acceptNode = options?.include
+      ? (node) =>
+          node === options.include ||
+          (!options.include.contains(node) && acceptNodeFn(node))
+      : acceptNodeFn
     this.walker = document.createTreeWalker(base, SHOW_ELEMENT, { acceptNode })
     this.list = []
+    this.config = { loop: true, ...options }
     this.scan()
   }
 
@@ -87,13 +93,16 @@ export class TabOrder {
 
   next(el = document.activeElement) {
     let index = this.list.indexOf(el)
-    if (index === this.list.length - 1) index = -1
+    if (this.config.loop && index === this.list.length - 1) index = -1
     return attemptFocus(this.list[++index])
   }
 
   prev(el = document.activeElement) {
     let index = this.list.indexOf(el)
-    if (index === 0 || index === -1) index = this.list.length
+    if (this.config.loop && (index === 0 || index === -1)) {
+      index = this.list.length
+    }
+
     return attemptFocus(this.list[--index])
   }
 
@@ -104,29 +113,29 @@ export class TabOrder {
 }
 
 export function focusPrev(el, base) {
-  const tab = new TabOrder(base)
+  const tab = new TabOrder(base, { include: el })
   const res = tab.prev(el)
   tab.destroy()
   return res
 }
 
 export function focusNext(el, base) {
-  const tab = new TabOrder(base)
+  const tab = new TabOrder(base, { include: el })
   const res = tab.next(el)
   tab.destroy()
   return res
 }
 
-export function focusFirst(el, base) {
+export function focusFirst(base) {
   const tab = new TabOrder(base)
-  const res = tab.first(el)
+  const res = tab.first()
   tab.destroy()
   return res
 }
 
-export function focusLast(el, base) {
+export function focusLast(base) {
   const tab = new TabOrder(base)
-  const res = tab.last(el)
+  const res = tab.last()
   tab.destroy()
   return res
 }
@@ -137,8 +146,10 @@ export function autofocus(el) {
 }
 
 export default {
+  TabOrder,
   isFocusable,
   autofocus,
+  attemptFocus,
   inside: focusInside,
   insideFirst: focusInsideFirst,
   insideLast: focusInsideLast,

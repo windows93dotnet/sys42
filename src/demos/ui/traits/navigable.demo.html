@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>navigable</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/style.css" id="theme" />
+
+<script type="module">
+  import trap from "../../../42/fabric/type/error/trap.js"
+  trap()
+</script>
+
+<style>
+  .demo-simple,
+  .demo-v-scroll {
+    width: 256px;
+    height: 256px;
+  }
+
+  .demo-not-multi,
+  .demo-h-scroll {
+    width: 256px;
+  }
+
+  .demo span {
+    display: inline-block;
+    padding: 1.5rem;
+    border: 1px solid;
+  }
+
+  .demo-v-scroll span {
+    display: block;
+    width: 100%;
+  }
+  .demo-v-scroll span {
+    padding: 0.4rem 0.5rem;
+  }
+</style>
+
+<body class="box-center desktop">
+  <input type="text" />
+
+  <div
+    class="demo demo-simple d-flex items-wrap items-center pa-xxl gap inset paper">
+    <span tabindex="0">a</span>
+    <span tabindex="0">b</span>
+    <span tabindex="0">c</span>
+    <span tabindex="0">d</span>
+    <!--
+    <span tabindex="0"><em>e</em></span>
+    <span tabindex="0">f</span>
+    <span tabindex="0">g</span>
+    <span tabindex="0">h</span> -->
+  </div>
+
+  <input type="text" />
+</body>
+
+<script type="module">
+  import navigable from "../../../42/ui/traits/navigable.js"
+
+  navigable(".demo")
+</script>
