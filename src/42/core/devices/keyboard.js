@@ -1,71 +1,36 @@
 /* eslint-disable guard-for-in */
-const aliases = {}
-
-for (const item of [
-  "⌫ Backspace",
-  "↲ ↩︎ Enter",
-  "⇧ Shift",
-  "⇫ Caps CapsLock",
-  "↹ Tab",
-  "⌥ Option Alt",
-  "⌃ ^ Ctrl Control",
-  "⌘ 🐧 🪟 🍎 🍏 🍐 ♥ Cmd Win Super Command OS Meta",
-  "⇞ PgUp PageUp",
-  "⇟ PgDn PgDown PageDown",
-  "↖ Home",
-  "↘ End",
-  "← Left ArrowLeft",
-  "↑ Up ArrowUp",
-  "→ Right ArrowRight",
-  "↓ Down ArrowDown",
-  "⎵ SpaceBar Space  ",
-  "Del Delete",
-  "Ins Insert",
-  "⎙ Print PrintScreen",
-  "☰ Menu ContextMenu",
-  "⤓ ⇳ ScrollLock",
-  "AltGr AltGraph",
-  "Break Pause",
-  "Esc Escape",
-  "Multiply *",
-  "Plus Add +",
-  "Minus Sub Subtract -",
-  "Dot Decimal Period .",
-  "Divide Slash /",
-  "Backslash \\",
-  "Equals Equal =",
-  "Semicolon ;",
-  "Comma ,",
-  "Hash Sharp Hashtag Octothorpe #",
-]) {
-  const t = item.split(" ")
-  const ref = t[t.length - 1] || " "
-  for (let j = 0, m = t.length; j < m; j++) aliases[t[j].toLowerCase()] = ref
-}
-
-// fill function keys
-for (let i = 1; i <= 12; i++) aliases["f" + i] = "F" + i
 
 const keys = Object.create(null)
 const codes = Object.create(null)
 const strokes = Object.create(null)
 
-const keydown = ({ key, code, repeat }) => {
+const keydown = (e) => {
+  let { key, code, repeat } = e
   if (repeat === false) {
+    if (e.ctrlKey) keys.control = true
+    if (e.shiftKey) keys.shift = true
+    if (e.metaKey) keys.meta = true
+    if (e.altKey) keys.alt = true
+
     key = key.toLocaleLowerCase()
     keys[key] = true
     codes[code] = true
-    // allow keyup event to remove a "key" from it's "code"
+    // Allow keyup event to remove a "key" from it's "code"
     strokes[code] ??= { counter: 0, keys: [] }
     strokes[code].counter++
     strokes[code].keys.push(key)
   }
 }
 
-const keyup = ({ code }) => {
-  // allow non-capturing events to access "code"
-  // before removing it from "codes" and "strokes"
+const keyup = (e) => {
+  const { code } = e
+  // Allow non-capturing events to access keyboard.codes before cleanup
   queueMicrotask(() => {
+    if (!e.ctrlKey) delete keys.control
+    if (!e.shiftKey) delete keys.shift
+    if (!e.metaKey) delete keys.meta
+    if (!e.altKey) delete keys.alt
+
     delete codes[code]
     if (strokes[code]) {
       strokes[code].keys.forEach((key) => delete keys[key])
@@ -75,29 +40,19 @@ const keyup = ({ code }) => {
   })
 }
 
-// the keyup event is not called if a keydown shortcut
-// call a function that focus outside the document (like alert()).
+// The keyup event is not called if a keydown shortcut
+// set the focus outside the document.
 // We must clean all pressed keys on blur.
 const cleanup = () => {
   for (const key in keys) delete keys[key]
   for (const key in codes) delete codes[key]
   for (const key in strokes) delete strokes[key]
-  globalThis.addEventListener("pointerdown", pressedMods, { once: true })
-}
-
-// Register modifier keys pressed before the window is focused
-const pressedMods = (e) => {
-  if (e.ctrlKey && "control" in keys === false) keys.control = true
-  if (e.shiftKey && "shift" in keys === false) keys.shift = true
-  if (e.metaKey && "meta" in keys === false) keys.meta = true
-  if (e.altKey && "alt" in keys === false) keys.alt = true
 }
 
 export const forget = () => {
   globalThis.removeEventListener("keydown", keydown, true)
   globalThis.removeEventListener("keyup", keyup, true)
   globalThis.removeEventListener("blur", cleanup)
-  globalThis.removeEventListener("pointerdown", pressedMods, { once: true })
   keyboard.isListening = false
 }
 
@@ -105,19 +60,16 @@ export const listen = () => {
   if (keyboard.isListening) return forget
   globalThis.addEventListener("keydown", keydown, true /* [1] */)
   globalThis.addEventListener("keyup", keyup, true /* [1] */)
-  globalThis.addEventListener("blur", cleanup /* [2] */)
-  globalThis.addEventListener("pointerdown", pressedMods, { once: true })
+  globalThis.addEventListener("blur", cleanup)
   keyboard.isListening = true
   return forget
 }
 
 // [1] Use capture to prevent canceled events to impact "keys" and "codes".
-// [2] "blur" event don't bubble, so no capture.
 
 const keyboard = {
   keys,
   codes,
-  aliases,
   cleanup,
   listen,
   forget,
