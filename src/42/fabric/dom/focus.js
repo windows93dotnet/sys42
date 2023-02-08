@@ -4,6 +4,7 @@
 // @thanks https://stackoverflow.com/a/7208990
 
 import isFocusable from "./isFocusable.js"
+import ensureFocusable from "./ensureFocusable.js"
 
 const { ELEMENT_NODE } = Node
 
@@ -58,29 +59,45 @@ const acceptNodeFn = (node) =>
     : FILTER_SKIP
 
 export class TabOrder {
-  constructor(base = document.body, options) {
-    const acceptNode = options?.include
-      ? (node) =>
-          node === options.include ||
-          (!options.include.contains(node) && acceptNodeFn(node))
-      : acceptNodeFn
-    this.walker = document.createTreeWalker(base, SHOW_ELEMENT, { acceptNode })
-    this.list = []
+  constructor(root = document.body, options) {
     this.config = { loop: true, ...options }
-    this.scan()
-  }
+    this.list = []
 
-  scan() {
-    this.list.length = 0
-    const ordered = []
-    while (this.walker.nextNode()) {
-      if (this.walker.currentNode.tabIndex > 0) {
-        ordered.push(this.walker.currentNode)
-      } else this.list.push(this.walker.currentNode)
+    if (this.config.selector) {
+      this.update = () => {
+        this.list.length = 0
+        for (const node of root.querySelectorAll(this.config.selector)) {
+          ensureFocusable(node)
+          this.list.push(node)
+        }
+      }
+    } else {
+      const acceptNode = options?.include
+        ? (node) =>
+            node === options.include ||
+            (!options.include.contains(node) && acceptNodeFn(node))
+        : acceptNodeFn
+
+      this.walker = document.createTreeWalker(
+        root, //
+        SHOW_ELEMENT,
+        { acceptNode }
+      )
+      this.update = () => {
+        this.list.length = 0
+        const ordered = []
+        while (this.walker.nextNode()) {
+          if (this.walker.currentNode.tabIndex > 0) {
+            ordered.push(this.walker.currentNode)
+          } else this.list.push(this.walker.currentNode)
+        }
+
+        this.list.unshift(...ordered.sort((a, b) => a.tabIndex - b.tabIndex))
+        return this
+      }
     }
 
-    this.list.unshift(...ordered.sort((a, b) => a.tabIndex - b.tabIndex))
-    return this
+    this.update()
   }
 
   first() {
@@ -112,29 +129,29 @@ export class TabOrder {
   }
 }
 
-export function focusPrev(el, base) {
-  const tab = new TabOrder(base, { include: el })
+export function focusPrev(el, root) {
+  const tab = new TabOrder(root, { include: el })
   const res = tab.prev(el)
   tab.destroy()
   return res
 }
 
-export function focusNext(el, base) {
-  const tab = new TabOrder(base, { include: el })
+export function focusNext(el, root) {
+  const tab = new TabOrder(root, { include: el })
   const res = tab.next(el)
   tab.destroy()
   return res
 }
 
-export function focusFirst(base) {
-  const tab = new TabOrder(base)
+export function focusFirst(root) {
+  const tab = new TabOrder(root)
   const res = tab.first()
   tab.destroy()
   return res
 }
 
-export function focusLast(base) {
-  const tab = new TabOrder(base)
+export function focusLast(root) {
+  const tab = new TabOrder(root)
   const res = tab.last()
   tab.destroy()
   return res
@@ -148,6 +165,7 @@ export function autofocus(el) {
 export default {
   TabOrder,
   isFocusable,
+  ensureFocusable,
   autofocus,
   attemptFocus,
   inside: focusInside,

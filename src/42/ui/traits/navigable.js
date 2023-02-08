@@ -4,11 +4,14 @@ import settings from "../../core/settings.js"
 import focus, { TabOrder } from "../../fabric/dom/focus.js"
 import on from "../../fabric/event/on.js"
 import noop from "../../fabric/type/function/noop.js"
+import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
+// import ensureFocusable from "../../fabric/dom/ensureFocusable.js"
 
 const DEFAULTS = {
   selector: undefined,
   loop: !false,
   remember: !false,
+  preventBlur: false,
   shortcuts: {
     next: "ArrowRight",
     prev: "ArrowLeft",
@@ -25,12 +28,23 @@ class Navigable extends Trait {
 
     this.config = configure(options)
 
-    this.el.tabIndex = -1
+    // ensureFocusable(this.el)
+
+    if (this.config.selector) {
+      this.config.selector = ensureScopeSelector(this.config.selector, this.el)
+    }
 
     const { shortcuts } = this.config
 
     const { signal } = this.cancel
-    const tabOrderOptions = { loop: this.config.loop }
+    const tabOrderOptions = {
+      loop: this.config.loop,
+      selector: this.config.selector,
+    }
+
+    if (this.config.selector) {
+      this.list ??= new TabOrder(this.el, tabOrderOptions)
+    }
 
     let fromPointerdown
 
@@ -65,15 +79,20 @@ class Navigable extends Trait {
             focus.first(this.el)
           }
         },
-        "focus": (e) => {
-          if (
-            !this.el.contains(e.relatedTarget) ||
-            document.activeElement === this.el
-          ) {
-            if (this.lastFocused && focus.attemptFocus(this.lastFocused)) return
-            focus.first(this.el)
-          }
-        },
+        "focus": this.config.preventBlur
+          ? (e) => {
+              if (
+                !this.el.contains(e.relatedTarget) ||
+                document.activeElement === this.el
+              ) {
+                if (this.lastFocused && focus.attemptFocus(this.lastFocused)) {
+                  return
+                }
+
+                focus.first(this.el)
+              }
+            }
+          : undefined,
       },
       {
         "prevent": true,
