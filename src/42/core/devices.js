@@ -29,13 +29,6 @@ const forget = () => {
 Object.defineProperties(devices, {
   listen: { value: listen, enumerable: false },
   forget: { value: forget, enumerable: false },
-  aliases: {
-    value: {
-      keyboard: keyboard.aliases,
-      gamepad: gamepad.aliases,
-    },
-    enumerable: false,
-  },
 })
 
 export default devices
