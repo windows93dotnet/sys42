@@ -86,12 +86,13 @@ export const eventsMap = (list) => {
 }
 
 const validEventTypes = new Set(["string", "function", "object"])
+const falsyKeys = new Set(["undefined", "null", "false"])
 
 function normalizeEvents(events) {
   const out = {}
 
   for (const key in events) {
-    if (Object.hasOwn(events, key)) {
+    if (!falsyKeys.has(key) && Object.hasOwn(events, key)) {
       const value = events[key]
 
       if (!value) {
