@@ -34,16 +34,25 @@ export default class UI {
     if (this.ready) return this.ready
     if (!this.stage) return
 
-    if (this.stage.reactive.firstUpdateDone !== true) {
+    if (this.stage.reactive.firstUpdateDone === true) {
+      await this.stage.waitPending()
+    } else {
       if (this.stage.waitlistPreload.length > 0) {
         await this.stage.waitlistPreload.done()
       }
 
       this.content = render(this.plan, this.stage, { skipNormalize: true })
       this.el.append(this.content)
+
+      await this.stage.waitPending()
+
+      if (this.stage?.reactive) {
+        this.stage.reactive.firstUpdateDone = true
+        this.stage.reactive.throttle = true
+        await this.stage.waitlistPostrender.call()
+      }
     }
 
-    await this.stage.reactive.done()
     this.ready = undefined
   }
 

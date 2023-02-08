@@ -219,9 +219,11 @@ export default class Component extends HTMLElement {
       component: this,
       refs: undefined,
 
+      waitPending: undefined,
       waitlistPreload: undefined,
+      // waitlistPrerender: undefined,
       waitlistComponents: undefined,
-      // waitlistPostrender: undefined,
+      waitlistPostrender: undefined,
       waitlistTraits: undefined,
 
       scopeResolvers: undefined,
@@ -353,7 +355,9 @@ export default class Component extends HTMLElement {
       if (attrs) renderAttributes(this, this.stage, attrs)
     }
 
-    await this.stage.waitlistPreload.done()
+    if (this.stage.waitlistPreload.length > 0) {
+      await this.stage.waitlistPreload.done()
+    }
 
     this.replaceChildren(
       render(plan, this.stage, {
@@ -364,9 +368,10 @@ export default class Component extends HTMLElement {
 
     this.prepend(document.createComment("[rendered]"))
 
-    await this.stage.waitlistComponents.done()
-    await this.stage.waitlistPrerender.done()
-    await this.stage.waitlistPostrender.call()
+    await this.stage.waitPending()
+    if (this.stage.waitlistPostrender.length > 0) {
+      await this.stage.waitlistPostrender.call()
+    }
 
     if (this[_lifecycle] === INIT) this[_lifecycle] = RENDER
   }
