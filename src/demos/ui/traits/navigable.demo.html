@@ -10,53 +10,41 @@
 </script>
 
 <style>
-  .demo-simple,
-  .demo-v-scroll {
-    width: 256px;
-    height: 256px;
-  }
-
-  .demo-not-multi,
-  .demo-h-scroll {
-    width: 256px;
-  }
-
   .demo span {
     display: inline-block;
     padding: 1.5rem;
     border: 1px solid;
   }
-
-  .demo-v-scroll span {
-    display: block;
-    width: 100%;
-  }
-  .demo-v-scroll span {
-    padding: 0.4rem 0.5rem;
-  }
 </style>
 
 <body class="box-center desktop">
-  <input type="text" />
+  <input type="text" class="ma-y" />
 
   <div
-    class="demo demo-simple d-flex items-wrap items-center pa-xxl gap inset paper">
+    class="demo demo-auto d-flex items-wrap items-center pa-xxl gap inset paper">
     <span tabindex="0">a</span>
     <span tabindex="0">b</span>
     <span tabindex="0">c</span>
     <span tabindex="0">d</span>
-    <!--
-    <span tabindex="0"><em>e</em></span>
-    <span tabindex="0">f</span>
-    <span tabindex="0">g</span>
-    <span tabindex="0">h</span> -->
   </div>
 
-  <input type="text" />
+  <input type="text" class="ma-y" />
+
+  <div
+    class="demo demo-selector d-flex items-wrap items-center pa-xxl gap inset paper">
+    <span>a</span>
+    <span>b</span>
+    <span>c</span>
+    <span>d</span>
+  </div>
+
+  <input type="text" class="ma-y" />
 </body>
 
 <script type="module">
   import navigable from "../../../42/ui/traits/navigable.js"
 
-  navigable(".demo")
+  navigable(".demo-auto")
+
+  navigable(".demo-selector", { selector: "span" })
 </script>

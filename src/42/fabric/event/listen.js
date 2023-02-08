@@ -87,13 +87,15 @@ export const eventsMap = (list) => {
 
 const validEventTypes = new Set(["string", "function", "object"])
 
-function ensureEvents(events) {
+function normalizeEvents(events) {
+  const out = {}
+
   for (const key in events) {
     if (Object.hasOwn(events, key)) {
       const value = events[key]
 
-      if (value === false) {
-        events[key] = () => false
+      if (!value) {
+        if (value === false) out[key] = () => false
         continue
       }
 
@@ -103,10 +105,12 @@ function ensureEvents(events) {
           value,
         })
       }
+
+      out[key] = value
     }
   }
 
-  return events
+  return out
 }
 
 export function normalizeListen(args, config) {
@@ -147,7 +151,7 @@ export function normalizeListen(args, config) {
         continue
       }
 
-      item.events = getEvents(ensureEvents(events), item, options)
+      item.events = getEvents(normalizeEvents(events), item, options)
       item.options = options
       current.listeners.push(item)
     }
