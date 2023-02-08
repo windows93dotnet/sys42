@@ -90,7 +90,7 @@ export default function renderIf(plan, stage) {
       if (elsePlan && el.nodeType === ELEMENT_NODE) {
         // prevent FOUC
         const restore = setTemp(el, { style: { display: "none" } })
-        newStage.reactive.done().then(() => {
+        newStage.waitPending().then(() => {
           requestAnimationFrame(async () => {
             await remover()
             restore()

@@ -1,6 +1,7 @@
 /* eslint-disable max-depth */
 import Reactive from "./classes/Reactive.js"
 import resolveScope from "./resolveScope.js"
+import waitPending from "./waitPending.js"
 import findScope from "./findScope.js"
 import register from "./register.js"
 import Locator from "../fabric/classes/Locator.js"
@@ -836,6 +837,8 @@ export function normalizeStage(stage = {}) {
   stage.cancel ??= new Canceller()
   stage.signal = stage.cancel.signal
   stage.reactive ??= new Reactive(stage)
+
+  stage.waitPending ??= async () => waitPending(stage)
 
   return stage
 }

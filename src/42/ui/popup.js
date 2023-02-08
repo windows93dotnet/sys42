@@ -130,7 +130,7 @@ export const popup = rpc(
 
     if (el.ready) await el.ready
     else {
-      await stage.reactive.done()
+      await stage.waitPending()
       await stage.waitlistPostrender.call()
     }
 

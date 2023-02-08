@@ -101,29 +101,29 @@ export default class Reactive extends Emitter {
     })
   }
 
-  async done(n = 10) {
-    await Promise.all([
-      this.stage.waitlistPrerender.done(),
-      this.stage.waitlistComponents.done(),
-    ])
+  // async done(n = 10) {
+  //   await Promise.all([
+  //     this.stage.waitlistPrerender.done(),
+  //     this.stage.waitlistComponents.done(),
+  //   ])
 
-    await this.pendingUpdate
-    await 0 // queueMicrotask
+  //   await this.pendingUpdate
+  //   await 0 // queueMicrotask
 
-    if (
-      this.stage.waitlistPrerender.length > 0 ||
-      this.stage.waitlistComponents.length > 0
-    ) {
-      if (n < 0) throw new Error("Too much recursion")
-      await this.done(--n)
-    }
+  //   if (
+  //     this.stage.waitlistPrerender.length > 0 ||
+  //     this.stage.waitlistComponents.length > 0
+  //   ) {
+  //     if (n < 0) throw new Error("Too much recursion")
+  //     await this.done(--n)
+  //   }
 
-    if (this.firstUpdateDone === false) {
-      this.firstUpdateDone = true
-      this.throttle = true
-      await this.stage.waitlistPostrender.call()
-    }
-  }
+  //   if (this.firstUpdateDone === false) {
+  //     this.firstUpdateDone = true
+  //     this.throttle = true
+  //     await this.stage.waitlistPostrender.call()
+  //   }
+  // }
 
   get throttle() {
     return this.#update.fn === this.#update.onrepaint

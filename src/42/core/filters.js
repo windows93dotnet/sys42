@@ -215,10 +215,6 @@ types.ui = {
   render(item) {
     if (!this.el) return
     this.el.replaceChildren(render(item, this))
-    // queueMicrotask(() => {
-    //   if (!this.el) return
-    //   this.el.replaceChildren(render(item, this))
-    // })
   },
   alert: "alert",
   confirm: "confirm",

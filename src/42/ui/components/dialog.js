@@ -10,6 +10,7 @@ import { autofocus } from "../../fabric/dom/focus.js"
 import nextCycle from "../../fabric/type/promise/nextCycle.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
 import postrenderAutofocus from "../postrenderAutofocus.js"
+import emittable from "../../fabric/traits/emittable.js"
 
 const _axis = Symbol("axis")
 
@@ -37,7 +38,7 @@ export class Dialog extends Component {
     id: true,
 
     traits: {
-      emittable: true,
+      // emittable: true,
       movable: {
         handlerSelector: ".ui-dialog__title",
         zIndexSelector,
@@ -79,7 +80,12 @@ export class Dialog extends Component {
       globalThis,
       { "blur || uiiframeblur": activateIfFocused },
     ],
-  };
+  }
+
+  constructor(...args) {
+    super(...args)
+    emittable(this)
+  }
 
   [_axis]() {
     this.style.translate = `${this.x}px ${this.y}px`
@@ -191,6 +197,7 @@ export class Dialog extends Component {
     }
 
     this.activate()
+
     this.emit("open", this)
     dispatch(this, "uidialogopen")
   }
@@ -204,7 +211,12 @@ export const dialog = rpc(
   async function dialog(plan, stage) {
     const { steps } = stage
     let n = tracker.has(steps) ? tracker.get(steps) : 0
-    stage = { ...stage }
+    stage = {
+      ...stage,
+      // waitlistComponents: undefined,
+      // waitlistPrerender: undefined,
+      // waitlistTraits: undefined,
+    }
     stage.steps += ",dialog°" + n++
     tracker.set(steps, n)
 
@@ -212,7 +224,23 @@ export const dialog = rpc(
     const { opener } = el
 
     await el.ready
-    await el.stage.waitlistTraits
+
+    // await Promise.all([
+    //   el.stage.waitlistPrerender.done(),
+    //   el.stage.waitlistComponents.done(),
+    //   // el.stage.waitlistTraits.done(),
+    // ])
+
+    // await el.stage.reactive.pendingUpdate
+
+    // await Promise.all([
+    //   el.stage.waitlistPrerender.done(),
+    //   el.stage.waitlistComponents.done(),
+    //   el.stage.waitlistTraits.done(),
+    // ])
+    // // await el.stage.waitlistComponents.done()
+
+    // await el.stage.reactive.done()
 
     document.documentElement.append(el)
 
