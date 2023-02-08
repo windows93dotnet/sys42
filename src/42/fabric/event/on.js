@@ -243,7 +243,7 @@ function handleSeq(seq, fn, el, { repeatable, options }, registry) {
             if (registry.seqIndex !== i) return
             if (registry.chordCalled) return
             if (e.repeat && repeatable !== true) return
-            if (e.key === key || e.code === code) fn(e)
+            if (e.code === code || e.key.toLocaleLowerCase() === key) fn(e)
             else registry.seqIndex = 0
           }
         } else {
