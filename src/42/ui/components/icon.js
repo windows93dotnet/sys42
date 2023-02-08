@@ -69,7 +69,7 @@ class Icon extends Component {
 
     if (!ready) {
       const undones = Promise.all([themeManager.ready, mimetypesManager.ready])
-      this.stage.waitlistPrerender.push(undones)
+      this.stage.waitlistPending.push(undones)
       await undones
       ready = true
     }

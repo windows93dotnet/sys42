@@ -271,7 +271,7 @@ export default async function renderProps(el, props, plan) {
     })
   }
 
-  await stage.waitlistPrerender.done()
+  await stage.waitlistPending.done()
 
   el.ready.then(() => {
     for (const key of Reflect.ownKeys(updates)) updates[key](true)

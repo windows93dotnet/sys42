@@ -211,12 +211,7 @@ export const dialog = rpc(
   async function dialog(plan, stage) {
     const { steps } = stage
     let n = tracker.has(steps) ? tracker.get(steps) : 0
-    stage = {
-      ...stage,
-      // waitlistComponents: undefined,
-      // waitlistPrerender: undefined,
-      // waitlistTraits: undefined,
-    }
+    stage = { ...stage }
     stage.steps += ",dialog°" + n++
     tracker.set(steps, n)
 
@@ -224,24 +219,6 @@ export const dialog = rpc(
     const { opener } = el
 
     await el.ready
-
-    // await Promise.all([
-    //   el.stage.waitlistPrerender.done(),
-    //   el.stage.waitlistComponents.done(),
-    //   // el.stage.waitlistTraits.done(),
-    // ])
-
-    // await el.stage.reactive.pendingUpdate
-
-    // await Promise.all([
-    //   el.stage.waitlistPrerender.done(),
-    //   el.stage.waitlistComponents.done(),
-    //   el.stage.waitlistTraits.done(),
-    // ])
-    // // await el.stage.waitlistComponents.done()
-
-    // await el.stage.reactive.done()
-
     document.documentElement.append(el)
 
     return el.once("close").then((res) => ({ res, opener }))

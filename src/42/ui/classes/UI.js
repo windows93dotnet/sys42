@@ -18,6 +18,7 @@ export default class UI {
 
     this.stage.el = this.el
     this.stage.steps = "root"
+    this.stage.firstUpdateMade = false
 
     const [plan, stage] = normalize(this.plan, this.stage)
     this.plan = plan
@@ -34,8 +35,8 @@ export default class UI {
     if (this.ready) return this.ready
     if (!this.stage) return
 
-    if (this.stage.reactive.firstUpdateDone === true) {
-      await this.stage.waitPending()
+    if (this.stage.firstUpdateMade === true) {
+      await this.stage.pendingDone()
     } else {
       if (this.stage.waitlistPreload.length > 0) {
         await this.stage.waitlistPreload.done()
@@ -44,10 +45,10 @@ export default class UI {
       this.content = render(this.plan, this.stage, { skipNormalize: true })
       this.el.append(this.content)
 
-      await this.stage.waitPending()
+      await this.stage.pendingDone()
 
       if (this.stage?.reactive) {
-        this.stage.reactive.firstUpdateDone = true
+        this.stage.firstUpdateMade = true
         this.stage.reactive.throttle = true
         await this.stage.waitlistPostrender.call()
       }
@@ -73,7 +74,7 @@ export default class UI {
     this.stage?.cancel("ui destroyed")
     this.stage?.waitlistPreload.clear()
     this.stage?.waitlistComponents.clear()
-    this.stage?.waitlistPrerender.clear()
+    this.stage?.waitlistPending.clear()
     this.stage?.waitlistPostrender.clear()
     this.content?.remove?.()
     delete this.stage

@@ -1,7 +1,7 @@
 /* eslint-disable max-depth */
 import Reactive from "./classes/Reactive.js"
 import resolveScope from "./resolveScope.js"
-import waitPending from "./waitPending.js"
+import pendingDone from "./pendingDone.js"
 import findScope from "./findScope.js"
 import register from "./register.js"
 import Locator from "../fabric/classes/Locator.js"
@@ -715,7 +715,7 @@ export function normalizePlanWithoutStage(plan = {}) {
 export function normalizeData(plan, stage, cb) {
   if (typeof plan === "function") {
     const { scope } = stage
-    stage.waitlistPrerender.push(
+    stage.waitlistPending.push(
       (async () => {
         const res = await plan()
         cb(res, scope)
@@ -829,7 +829,7 @@ export function normalizeStage(stage = {}) {
   stage.actions ??= new Locator(Object.create(null), { delimiter: "/" })
 
   stage.waitlistPreload ??= new Waitlist()
-  stage.waitlistPrerender ??= new Waitlist()
+  stage.waitlistPending ??= new Waitlist()
   stage.waitlistPostrender ??= new Waitlist()
   stage.waitlistComponents ??= new Waitlist()
   stage.waitlistTraits ??= new Waitlist()
@@ -838,7 +838,7 @@ export function normalizeStage(stage = {}) {
   stage.signal = stage.cancel.signal
   stage.reactive ??= new Reactive(stage)
 
-  stage.waitPending ??= async () => waitPending(stage)
+  stage.pendingDone ??= async () => pendingDone(stage)
 
   return stage
 }
