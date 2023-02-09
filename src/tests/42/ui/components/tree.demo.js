@@ -81,55 +81,55 @@ window.app = ui({
 
     { tag: "text" },
 
-    "### lazy loading",
-    {
-      tag: "ui-tree.inset.paper.resize",
-      style: { width: "256px", height: "256px" },
-      selection: ["Hello"],
-      items: [
-        {
-          label: "Foo",
-          expanded: true,
-          async items() {
-            await sleep(500)
-            return [
-              { label: "Bar" }, //
-              { label: "Baz" },
-              {
-                label: "Derp",
-                // expanded: true,
-                items: [
-                  {
-                    label: "Foo",
-                    items: [
-                      { label: ["Bar", "\n\n", "Derp"] }, //
-                      { label: "Baz" },
-                    ],
-                  },
-                  { label: "Hello" },
-                  { label: "World" },
-                  {
-                    label: "Foo",
-                    items: [
-                      { label: "Bar" }, //
-                      { label: "Baz" },
-                    ],
-                  },
-                ],
-              },
-            ]
-          },
-        },
-        { label: "Hello" },
-        { label: "World" },
-        {
-          label: "Subtree",
-          items: [
-            { label: "Bar" }, //
-            { label: "Baz" },
-          ],
-        },
-      ],
-    },
+    // "### lazy loading",
+    // {
+    //   tag: "ui-tree.inset.paper.resize",
+    //   style: { width: "256px", height: "256px" },
+    //   selection: ["Hello"],
+    //   items: [
+    //     {
+    //       label: "Foo",
+    //       expanded: true,
+    //       async items() {
+    //         await sleep(500)
+    //         return [
+    //           { label: "Bar" }, //
+    //           { label: "Baz" },
+    //           {
+    //             label: "Derp",
+    //             // expanded: true,
+    //             items: [
+    //               {
+    //                 label: "Foo",
+    //                 items: [
+    //                   { label: ["Bar", "\n\n", "Derp"] }, //
+    //                   { label: "Baz" },
+    //                 ],
+    //               },
+    //               { label: "Hello" },
+    //               { label: "World" },
+    //               {
+    //                 label: "Foo",
+    //                 items: [
+    //                   { label: "Bar" }, //
+    //                   { label: "Baz" },
+    //                 ],
+    //               },
+    //             ],
+    //           },
+    //         ]
+    //       },
+    //     },
+    //     { label: "Hello" },
+    //     { label: "World" },
+    //     {
+    //       label: "Subtree",
+    //       items: [
+    //         { label: "Bar" }, //
+    //         { label: "Baz" },
+    //       ],
+    //     },
+    //   ],
+    // },
   ],
 })

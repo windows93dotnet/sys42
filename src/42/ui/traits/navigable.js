@@ -106,6 +106,7 @@ class Navigable extends Trait {
       },
       {
         prevent: true,
+        repeatable: true,
 
         [shortcuts.exitAfter]: () => {
           blur()
