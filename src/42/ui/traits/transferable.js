@@ -611,8 +611,15 @@ class Transferable extends Trait {
     let startReady
     let forgetKeyevents
 
+    let dataTransfer
+
+    if (this.config.accept && "mimetype" in this.config.accept) {
+      dataTransfer = true
+    }
+
     this.dragger = new Dragger(this.el, {
       signal,
+      dataTransfer,
       applyTargetOffset: false,
       ...pick(this.config, ["selector", "distance", "useSelection"]),
 
@@ -640,7 +647,11 @@ class Transferable extends Trait {
         let targets = []
         let targetsData
 
-        if (this.config.useSelection) {
+        if (e.type === "dragenter") {
+          const dummy = document.createElement("div")
+          dummy.style = `position: absolute; width: 32px; height: 32px;`
+          targets = [dummy]
+        } else if (this.config.useSelection) {
           const selectable = this.el[Trait.INSTANCES]?.selectable
           if (selectable) {
             targetsData = new WeakMap()
