@@ -34,6 +34,8 @@ const SETUP = 3
 const RECYCLE = 4
 const DESTROY = 5
 
+const _INSTANCES = Symbol.for("Trait.INSTANCES")
+
 const stepsToHash = (steps) => (system.DEV ? steps : hash(steps))
 
 function filterPropsKeys(configProps) {
@@ -359,6 +361,25 @@ export default class Component extends HTMLElement {
       await this.stage.waitlistPreload.done()
     }
 
+    let traitsPending
+
+    if (plan.traits) {
+      traitsPending = []
+      for (const name of Object.keys(plan.traits)) {
+        if (
+          name in this === false ||
+          this.constructor.plan?.props?.[name]?.trait === true
+        ) {
+          const deferred = defer()
+          traitsPending.push([name, deferred])
+          Object.defineProperty(this, name, {
+            configurable: true,
+            get: () => deferred,
+          })
+        }
+      }
+    }
+
     this.replaceChildren(
       render(plan, this.stage, {
         skipNormalize: true,
@@ -367,6 +388,19 @@ export default class Component extends HTMLElement {
     )
 
     this.prepend(document.createComment("[rendered]"))
+
+    if (traitsPending) {
+      this.stage.waitlistTraits.done().then(() => {
+        for (const [name, promise] of traitsPending) {
+          const trait = this[_INSTANCES][name]
+          promise.resolve(trait)
+          Object.defineProperty(this, name, {
+            configurable: true,
+            get: () => trait,
+          })
+        }
+      })
+    }
 
     await this.stage.pendingDone()
     if (this.stage.waitlistPostrender.length > 0) {

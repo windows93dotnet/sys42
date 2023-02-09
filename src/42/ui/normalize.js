@@ -16,6 +16,7 @@ import filters from "../core/filters.js"
 import traverse from "../fabric/type/object/traverse.js"
 import dispatch from "../fabric/event/dispatch.js"
 import isEmptyObject from "../fabric/type/any/is/isEmptyObject.js"
+import isPromiseLike from "../fabric/type/any/is/isPromiseLike.js"
 import noop from "../fabric/type/function/noop.js"
 import arrify from "../fabric/type/any/arrify.js"
 import merge from "../fabric/type/object/merge.js"
@@ -98,7 +99,9 @@ const findAction = (obj, segments) => {
   let thisArg = obj
   let lastObj
 
-  for (const key of segments) {
+  for (let i = 0, l = segments.length; i < l; i++) {
+    const key = segments[i]
+
     if (
       typeof current !== "object" ||
       key in current === false ||
@@ -121,6 +124,12 @@ const findAction = (obj, segments) => {
 
     lastObj = current
     current = current[key]
+    if (isPromiseLike(current)) {
+      return [
+        thisArg,
+        (async () => findAction(await current, segments.slice(i + 1)))(),
+      ]
+    }
   }
 
   if (lastObj[_isComponent] || lastObj[_isTrait]) thisArg = lastObj
@@ -232,10 +241,25 @@ export function normalizeTokens(tokens, stage, options) {
         const err = new TypeError(
           `Template filter is not a function: "${value}"`
         )
-        fn = filters(value).then((filter) => {
-          if (typeof filter !== "function") return void dispatch(stage.el, err)
-          return makeActionFn(filter, thisArg, stage.el)
-        })
+
+        if (isPromiseLike(action)) {
+          fn = action.then((res) => {
+            if (Array.isArray(res)) {
+              const [thisArg, action] = res
+              return makeActionFn(action, thisArg, stage.el)
+            }
+
+            return void dispatch(stage.el, err)
+          })
+        } else {
+          fn = filters(value).then((filter) => {
+            if (typeof filter !== "function") {
+              return void dispatch(stage.el, err)
+            }
+
+            return makeActionFn(filter, thisArg, stage.el)
+          })
+        }
       }
 
       allocate(actions, loc, fn, delimiter)

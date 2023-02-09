@@ -6,7 +6,6 @@ const { ELEMENT_NODE } = Node
 
 const _INSTANCES = Symbol.for("Trait.INSTANCES")
 const _EVENTS = Symbol.for("Emitter.EVENTS")
-const _isComponent = Symbol.for("Component.isComponent")
 const _isTrait = Symbol.for("Trait.isTrait")
 
 export default class Trait {
@@ -35,18 +34,6 @@ export default class Trait {
     if (previous) previous.destroy()
     el[_INSTANCES][name] = this
 
-    if (
-      el[_isComponent] &&
-      (name in el === false ||
-        el.constructor.plan?.props?.[name]?.trait === true)
-    ) {
-      this.#hasGetter = true
-      Object.defineProperty(el, name, {
-        configurable: true,
-        get: () => this,
-      })
-    }
-
     this.el = el
     this.name = name
     this.cancel = new Canceller()
@@ -64,7 +51,6 @@ export default class Trait {
     }
 
     if (this.el && this.el.nodeType === ELEMENT_NODE) {
-      if (this.#hasGetter) delete this.el[this.name]
       delete this.el[_INSTANCES][this.name]
     }
   }

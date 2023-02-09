@@ -56,21 +56,22 @@ window.app = ui({
   // style: { padding: "90px" },
 
   content: [
-    "## ui-tree",
-    {
-      tag: "ui-tree.inset.paper.resize",
-      style: { width: "256px", height: "128px" },
-      items: content,
-    },
+    // "## ui-tree",
+    // {
+    //   tag: "ui-tree.inset.paper.resize",
+    //   style: { width: "256px", height: "128px" },
+    //   items: content,
+    // },
 
-    "### itemTemplate",
+    // "### itemTemplate",
 
-    { tag: "text" },
+    { tag: "text.ma-y" },
 
     {
       tag: "ui-tree.inset.paper.resize",
       style: { width: "256px", height: "256px" },
       selection: ["/tests/fixtures/formats/example.json"],
+      expandeds: ["3", "3-1"],
       itemTemplate: {
         tag: "ui-icon",
         small: true,
@@ -79,7 +80,7 @@ window.app = ui({
       items: await recursiveFolders("/"),
     },
 
-    { tag: "text" },
+    { tag: "text.ma-y" },
 
     // "### lazy loading",
     // {
