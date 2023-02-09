@@ -54,22 +54,22 @@ export class Accordion extends Component {
     }
   }
 
-  expandPanel(index, move) {
+  expandPanel(index, navigate) {
     if (!this.expandeds.includes(index)) {
       if (this.multiple !== true) this.expandeds.length = 0
       this.expandeds.push(index)
-    } else if (move) {
+    } else if (navigate) {
       this.navigable.next()
     }
   }
 
-  reducePanel(index, move) {
+  reducePanel(index, navigate) {
     if (
       this.expandeds.includes(index) &&
       !(this.collapsible !== true && this.expandeds.length === 1)
     ) {
       removeItem(this.expandeds, index)
-    } else if (move) {
+    } else if (navigate) {
       this.navigable.prev()
     }
   }

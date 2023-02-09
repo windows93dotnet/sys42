@@ -1,11 +1,13 @@
 import Component from "../classes/Component.js"
 import configure from "../../core/configure.js"
+import removeItem from "../../fabric/type/array/removeItem.js"
 import { objectifyPlan } from "../normalize.js"
 
 export class Tree extends Component {
   static plan = {
     tag: "ui-tree",
     role: "none",
+    id: true,
 
     aria: {
       multiselectable: "{{multiselectable}}",
@@ -17,6 +19,7 @@ export class Tree extends Component {
       selection: [],
       selectionKey: "textContent",
       multiselectable: true,
+      expandeds: [],
       items: [],
     },
 
@@ -34,23 +37,55 @@ export class Tree extends Component {
     },
   }
 
-  toggleItem(item) {
-    item.expanded = !item.expanded
+  async toggleItem(path) {
+    if (this.expandeds.includes(path)) {
+      removeItem(this.expandeds, path)
+    } else {
+      this.expandeds.push(path)
+      this.busy = this.stage.pendingDone()
+      await this.busy
+      this.busy = undefined
+    }
+
     this.navigable.update()
   }
 
-  expandItem(item) {
-    item.expanded = true
-    this.navigable.update()
+  async expandItem(path, navigate) {
+    if (this.busy) return
+
+    if (!this.expandeds.includes(path)) {
+      this.expandeds.push(path)
+      this.busy = this.stage.pendingDone()
+      await this.busy
+      this.busy = undefined
+      this.navigable.update()
+    } else if (navigate) {
+      this.navigable.next()
+    }
   }
 
-  reduceItem(item) {
-    item.expanded = false
-    this.navigable.update()
+  reduceItem(path, navigate) {
+    if (this.expandeds.includes(path)) {
+      removeItem(this.expandeds, path)
+      this.navigable.update()
+    } else if (navigate) {
+      this.navigable.prev()
+    }
   }
 
-  async renderGroup() {
-    const { itemTemplate } = this
+  focusUp(path) {
+    const index = path.lastIndexOf("-")
+    if (index === -1) this.navigable.prev()
+    else {
+      const sel = `#${this.id}-trigger-${path.slice(0, index)}`
+      const el = this.querySelector(sel)
+      if (el) el.focus()
+    }
+  }
+
+  async renderGroup(path = "") {
+    const { itemTemplate, id } = this
+
     return {
       scope: "items",
 
@@ -64,17 +99,39 @@ export class Tree extends Component {
       each: {
         tag: "li.ui-tree__item",
         role: "none", // TODO: Check if needed
+
+        computed: {
+          path: `{{"${path}" + @index}}`,
+          expanded: `{{includes(@component/expandeds, path)}}`,
+        },
+
+        id: `${id}-item-{{path}}`,
+
         content: [
           {
             tag: ".ui-tree__label",
-            on: {
-              selector: '.ui-tree__pictos, [role="treeitem"]',
-              pointerdown: "{{toggleItem(.)}}",
-              ArrowRight: "{{expandItem(., true)}}",
-              ArrowLeft: "{{reduceItem(., true)}}",
-            },
 
             content: [
+              {
+                if: "{{items}}",
+                do: {
+                  on: {
+                    selector: '.ui-tree__pictos, [role="treeitem"]',
+                    repeatable: true,
+                    pointerdown: `{{toggleItem(path)}}`,
+                    ArrowRight: `{{expandItem(path, true)}}`,
+                    ArrowLeft: `{{reduceItem(path, true)}}`,
+                  },
+                },
+                else: {
+                  on: {
+                    selector: '[role="treeitem"]',
+                    repeatable: true,
+                    ArrowRight: `{{navigable.next()}}`,
+                    ArrowLeft: `{{focusUp(path)}}`,
+                  },
+                },
+              },
               {
                 if: "{{items}}",
                 tag: ".ui-tree__pictos",
@@ -106,6 +163,7 @@ export class Tree extends Component {
                   : { content: "{{render(label)}}" },
                 {
                   role: "treeitem",
+                  id: `${id}-trigger-{{path}}`,
                   aria: {
                     expanded: "{{items ? expanded ?? false : undefined}}",
                   },
@@ -120,7 +178,7 @@ export class Tree extends Component {
             ],
           },
           {
-            if: "{{items && expanded}}",
+            if: `{{items && expanded}}`,
             tag: "ul.ui-tree__group",
             role: "group",
             // animate: {
@@ -130,14 +188,15 @@ export class Tree extends Component {
             //     initial: false,
             //   },
             // },
-            content: "{{renderGroup() |> render(^^)}}",
+            content: `{{renderGroup("${path}" + @index + "-") |> render(^^)}}`,
           },
         ],
       },
     }
   }
 
-  render({ selectable }) {
+  async render({ selectable }) {
+    // await this.stage.waitlistTraits.done()
     return {
       selectable: selectable
         ? configure(
