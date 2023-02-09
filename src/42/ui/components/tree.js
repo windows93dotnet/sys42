@@ -69,17 +69,40 @@ export class Tree extends Component {
       removeItem(this.expandeds, path)
       this.navigable.update()
     } else if (navigate) {
-      this.navigable.prev()
+      this.focusAbove(path)
     }
   }
 
-  focusUp(path) {
-    const index = path.lastIndexOf("-")
-    if (index === -1) this.navigable.prev()
-    else {
-      const sel = `#${this.id}-trigger-${path.slice(0, index)}`
+  focusAbove(path) {
+    this.expandeds.sort()
+    const index = path.lastIndexOf("_")
+
+    if (index === -1) {
+      if (this.expandeds.length === 0) return void this.navigable.prev()
+      const lastExpanded = this.expandeds.at(-1)
+      const item = lastExpanded.slice(0, lastExpanded.lastIndexOf("_"))
+      const sel = `#${this.id}-group-${item} > li:last-child > .ui-tree__label > [role="treeitem"]`
       const el = this.querySelector(sel)
-      if (el) el.focus()
+      if (el) this.navigable.focus(el)
+      else this.navigable.prev()
+      return
+    }
+
+    const parent = path.slice(0, index)
+
+    for (let i = this.expandeds.length - 1; i >= 0; i--) {
+      const item = this.expandeds[i]
+      if (item.startsWith(parent + "_") && item < path) {
+        const sel = `#${this.id}-group-${item} > li:last-child > .ui-tree__label > [role="treeitem"]`
+        const el = this.querySelector(sel)
+        if (el) this.navigable.focus(el)
+        break
+      } else if (item === parent) {
+        const sel = `#${this.id}-item-${item} > .ui-tree__label > [role="treeitem"]`
+        const el = this.querySelector(sel)
+        if (el) this.navigable.focus(el)
+        break
+      }
     }
   }
 
@@ -128,7 +151,7 @@ export class Tree extends Component {
                     selector: '[role="treeitem"]',
                     repeatable: true,
                     ArrowRight: `{{navigable.next()}}`,
-                    ArrowLeft: `{{focusUp(path)}}`,
+                    ArrowLeft: `{{focusAbove(path)}}`,
                   },
                 },
               },
@@ -180,6 +203,7 @@ export class Tree extends Component {
           {
             if: `{{items && expanded}}`,
             tag: "ul.ui-tree__group",
+            id: `${id}-group-{{path}}`,
             role: "group",
             // animate: {
             //   to: {
@@ -188,7 +212,7 @@ export class Tree extends Component {
             //     initial: false,
             //   },
             // },
-            content: `{{renderGroup("${path}" + @index + "-") |> render(^^)}}`,
+            content: `{{renderGroup("${path}" + @index + "_") |> render(^^)}}`,
           },
         ],
       },

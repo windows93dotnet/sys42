@@ -145,6 +145,10 @@ class Navigable extends Trait {
     return this.tabOrder.last()
   }
 
+  focus(el) {
+    el.focus()
+  }
+
   update() {
     this.tabOrder = undefined
   }

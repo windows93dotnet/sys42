@@ -48,7 +48,7 @@ async function recursiveFolders(dir) {
   return out
 }
 
-window.app = ui({
+window.app = await ui({
   // plugins: ["markdown", "persist"],
   plugins: ["markdown"],
   // tag: "body.box-fit.box-center._gap._box-v._ground",
@@ -69,9 +69,11 @@ window.app = ui({
 
     {
       tag: "ui-tree.inset.paper.resize",
-      style: { width: "256px", height: "256px" },
+      id: "tree-demo",
+      style: { width: "256px", height: "650px" },
       selection: ["/tests/fixtures/formats/example.json"],
-      expandeds: ["3", "3-1"],
+      // expandeds: ["3", /* "3_2", */ "4_0", "3_1", "4", "3_3"],
+      expandeds: ["3", "3_3_3", "3_3"],
       itemTemplate: {
         tag: "ui-icon",
         small: true,
@@ -134,3 +136,7 @@ window.app = ui({
     // },
   ],
 })
+
+// document.querySelector("#tree-demo").focusAbove("3_2")
+// document.querySelector("#tree-demo").focusAbove("4_0_2")
+// document.querySelector("#tree-demo").focusAbove("8")
