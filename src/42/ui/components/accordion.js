@@ -21,12 +21,8 @@ export class Accordion extends Component {
         shortcuts: {
           next: "ArrowDown",
           prev: "ArrowUp",
-
-          expand: "ArrowRight",
-          reduce: "ArrowLeft",
-
-          exitAfter: "Control+ArrowDown || Esc",
-          exitBefore: "Control+ArrowUp",
+          // exitAfter: "Control+ArrowDown || Esc",
+          // exitBefore: "Control+ArrowUp",
         },
       },
     },

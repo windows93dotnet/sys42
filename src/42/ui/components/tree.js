@@ -19,10 +19,34 @@ export class Tree extends Component {
       multiselectable: true,
       items: [],
     },
+
+    traits: {
+      navigable: {
+        selector: '[role="treeitem"]',
+        remember: true,
+        shortcuts: {
+          next: "ArrowDown",
+          prev: "ArrowUp",
+          // exitAfter: "Control+ArrowDown || Esc",
+          // exitBefore: "Control+ArrowUp",
+        },
+      },
+    },
   }
 
   toggleItem(item) {
     item.expanded = !item.expanded
+    this.navigable.update()
+  }
+
+  expandItem(item) {
+    item.expanded = true
+    this.navigable.update()
+  }
+
+  reduceItem(item) {
+    item.expanded = false
+    this.navigable.update()
   }
 
   async renderGroup() {
@@ -43,12 +67,18 @@ export class Tree extends Component {
         content: [
           {
             tag: ".ui-tree__label",
+            on: {
+              selector: '.ui-tree__pictos, [role="treeitem"]',
+              pointerdown: "{{toggleItem(.)}}",
+              ArrowRight: "{{expandItem(., true)}}",
+              ArrowLeft: "{{reduceItem(., true)}}",
+            },
+
             content: [
               {
                 if: "{{items}}",
                 tag: ".ui-tree__pictos",
                 aria: { hidden: true },
-                on: { pointerdown: "{{toggleItem(.)}}" },
                 content: [
                   {
                     tag: "ui-picto.ui-tree__picto-bg",
@@ -70,11 +100,7 @@ export class Tree extends Component {
                 content: "{{render(prelabel)}}",
               },
               configure(
-                {
-                  tag: "span.ui-tree__trigger",
-                  tabIndex: "{{@first ? 0 : -1}}",
-                  on: { pointerdown: "{{toggleItem(.)}}" },
-                },
+                { tag: "span.ui-tree__trigger" },
                 itemTemplate
                   ? objectifyPlan(itemTemplate)
                   : { content: "{{render(label)}}" },
@@ -90,6 +116,7 @@ export class Tree extends Component {
                 tag: "span.ui-tree__postlabel",
                 content: "{{render(postlabel)}}",
               },
+              "\n", // Improve textContent
             ],
           },
           {

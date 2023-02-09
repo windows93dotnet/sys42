@@ -118,10 +118,12 @@ ui-tree > .ui-tree__group > .ui-tree__item:first-child::after {
 }
 
 .ui-tree__trigger {
+  display: flex;
   flex-grow: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  --ctrl-oo: 0;
 }
 
 .ui-tree__pictos {
