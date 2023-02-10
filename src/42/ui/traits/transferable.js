@@ -198,7 +198,10 @@ function checkMimetype(mimetype) {
     let ok = false
 
     for (const item of system.transfer.items.dataTypes) {
-      if (item.type === type && (subtype === "*" || item.subtype === subtype)) {
+      if (
+        (type === "*" || item.type === type) &&
+        (subtype === "*" || item.subtype === subtype)
+      ) {
         ok = item
       }
     }
