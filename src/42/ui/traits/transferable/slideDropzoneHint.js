@@ -1,6 +1,7 @@
 import DropzoneHint from "./DropzoneHint.js"
 import appendCSS from "../../../fabric/dom/appendCSS.js"
 import paint from "../../../fabric/type/promise/paint.js"
+import sleep from "../../../fabric/type/promise/sleep.js"
 
 export class SlideDropzoneHint extends DropzoneHint {
   constructor(el, options) {
@@ -167,6 +168,12 @@ export class SlideDropzoneHint extends DropzoneHint {
 
     await paint()
     this.css.transition.enable()
+
+    if (!adopteds?.length) {
+      this.css.blank.update("")
+      await sleep(this.config.animationSpeed)
+      return
+    }
 
     n = this.newIndex + this.items.length
 

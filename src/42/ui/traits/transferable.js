@@ -16,6 +16,7 @@ import keyboard from "../../core/devices/keyboard.js"
 import listen from "../../fabric/event/listen.js"
 import arrify from "../../fabric/type/any/arrify.js"
 import defer from "../../fabric/type/promise/defer.js"
+import dragInsideWindow from "../../core/dt/dragInsideWindow.js"
 
 const DEFAULTS = {
   selector: ":scope > *",
@@ -276,10 +277,14 @@ function serializeItems({ hideGhost, x = 0, y = 0 }) {
     const exportedItem = { ...item }
     exportedItem.x -= x
     exportedItem.y -= y
-    exportedItem.target = exportedItem.target.cloneNode(true)
-    originDropzone?.reviveTarget(exportedItem.target)
-    exportedItem.target = exportedItem.target.outerHTML
-    exportedItem.ghost = exportedItem.ghost.outerHTML
+
+    if (exportedItem.target) {
+      exportedItem.target = exportedItem.target.cloneNode(true)
+      originDropzone?.reviveTarget(exportedItem.target)
+      exportedItem.target = exportedItem.target.outerHTML
+      exportedItem.ghost = exportedItem.ghost.outerHTML
+    }
+
     if (exportedItem.data) exportedItem.data = serialize(exportedItem.data)
     if (hideGhost) item.ghost.classList.add("hide")
     items.push(exportedItem)
@@ -293,11 +298,14 @@ function serializeItems({ hideGhost, x = 0, y = 0 }) {
 
 function deserializeItems(items, parentX = 0, parentY = 0) {
   for (const item of items) {
-    item.target =
-      (context.isOriginIframe
-        ? document.querySelector(`#${item.id}`)
-        : undefined) ?? sanitize(item.target)
-    item.ghost = sanitize(item.ghost)
+    if (item.target) {
+      item.target =
+        (context.isOriginIframe
+          ? document.querySelector(`#${item.id}`)
+          : undefined) ?? sanitize(item.target)
+      item.ghost = sanitize(item.ghost)
+    }
+
     item.x += parentX
     item.y += parentY
   }
@@ -529,6 +537,40 @@ if (inIframe) {
     })
 }
 
+if (!inIframe) {
+  let started
+  dragInsideWindow({
+    async start({ x, y }) {
+      cleanHints()
+      const items = [{ x, y, height: 32, width: 32 }]
+      const itemsConfig = { type: "invisible" }
+      const { itemsHint } = await makeHints({ itemsConfig })
+      system.transfer.items = itemsHint
+      system.transfer.itemsConfig = itemsConfig
+      system.transfer.items.start(x, y, items)
+
+      activateZones(x, y)
+      setCurrentZone(x, y)
+
+      system.transfer.items.drag(system.transfer.items.getCoord(x, y))
+      started = true
+    },
+    drag({ x, y }) {
+      if (!started) return
+      setCurrentZone(x, y)
+      system.transfer.items.drag({ x, y })
+    },
+    stop({ x, y }) {
+      console.log("stop", x, y)
+      started = false
+      haltZones(x, y)
+    },
+    drop({ x, y }) {
+      console.log("drop", x, y)
+    },
+  })
+}
+
 class Transferable extends Trait {
   constructor(el, options) {
     super(el, options)
@@ -611,15 +653,8 @@ class Transferable extends Trait {
     let startReady
     let forgetKeyevents
 
-    let dataTransfer
-
-    if (this.config.accept && "mimetype" in this.config.accept) {
-      dataTransfer = true
-    }
-
     this.dragger = new Dragger(this.el, {
       signal,
-      dataTransfer,
       applyTargetOffset: false,
       ...pick(this.config, ["selector", "distance", "useSelection"]),
 
@@ -647,11 +682,7 @@ class Transferable extends Trait {
         let targets = []
         let targetsData
 
-        if (e.type === "dragenter") {
-          const dummy = document.createElement("div")
-          dummy.style = `position: absolute; width: 32px; height: 32px;`
-          targets = [dummy]
-        } else if (this.config.useSelection) {
+        if (this.config.useSelection) {
           const selectable = this.el[Trait.INSTANCES]?.selectable
           if (selectable) {
             targetsData = new WeakMap()

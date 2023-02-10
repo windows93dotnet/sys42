@@ -97,7 +97,7 @@ export class DropzoneHint {
     }
 
     if (this.items?.length > 0) {
-      for (const { target } of this.items) this.reviveTarget(target)
+      for (const { target } of this.items) if (target) this.reviveTarget(target)
     }
 
     this.rects.length = 0
@@ -243,9 +243,11 @@ export class DropzoneHint {
         droppeds.push(isCopy ? unproxy(item.data) : item.data)
       } else {
         item.removed = isMove
-        droppeds.append(
-          isMove ? item.target : copyElement(item, originDropzone)
-        )
+        if (item.target) {
+          droppeds.append(
+            isMove ? item.target : copyElement(item, originDropzone)
+          )
+        }
       }
     }
 
