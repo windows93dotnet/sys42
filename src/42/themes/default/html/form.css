@@ -272,7 +272,7 @@ States
   opacity: var(--ctrl🚫-alpha);
 }
 
-:where(:focus, .focus):not([tabindex="-1"]) {
+:where(:focus, .focus) {
   outline: var(--ctrl-o);
   outline-offset: var(--ctrl-oo);
 }
@@ -283,6 +283,7 @@ a.focus {
   outline-offset: 1px;
 }
 
+:where(:focus, .focus):where([tabindex="-1"]),
 :where(a, button, .button):focus:not(:focus-visible) {
   outline: none;
 }
