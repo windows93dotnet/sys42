@@ -69,7 +69,6 @@ export const forget = () => {
 }
 
 export const listen = () => {
-  console.log("keyboard.listen")
   if (keyboard.isListening) return forget
   globalThis.addEventListener("keydown", keydown, true /* [1] */)
   globalThis.addEventListener("keyup", keyup, true /* [1] */)

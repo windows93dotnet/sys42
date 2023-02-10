@@ -33,21 +33,17 @@
       tag: ".demo.scroll-x-auto.flex-h.pa.gap.inset.paper",
       selectable: {},
       transferable: {
-        accept: { mimetype: "text/*" },
+        accept: { mimetype: ["text/*", "application/json"] },
       },
       content: makeArray(4, "a").map((content) => ({
         tag: `span.bd.pa-lg.font-mono.bg-opacity-50.bg-red-700`,
         content,
       })),
-      // content: {
-      //   tag: "div.box-center",
-      //   height: 600,
-      //   content: [
-      //     "Drop text files here",
-      //     { tag: "button", content: "button" },
-      //     { tag: "input" },
-      //   ],
-      // },
+    },
+
+    {
+      tag: "ui-folder.inset.paper",
+      path: "/tests/fixtures/formats/",
     },
   ]
 
