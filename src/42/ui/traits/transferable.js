@@ -19,6 +19,7 @@ import listen from "../../fabric/event/listen.js"
 import arrify from "../../fabric/type/any/arrify.js"
 import defer from "../../fabric/type/promise/defer.js"
 import dragInsideWindow from "../../core/dt/dragInsideWindow.js"
+import parseMimetype from "../../fabric/type/file/parseMimetype.js"
 
 const DEFAULTS = {
   selector: ":scope > *",
@@ -192,9 +193,30 @@ function checkKind(accept) {
   return true
 }
 
+function checkMimetype(mimetype) {
+  for (const { type, subtype } of mimetype) {
+    let ok = false
+
+    for (const item of system.transfer.items.dataTypes) {
+      if (item.type === type && (subtype === "*" || item.subtype === subtype)) {
+        ok = item
+      }
+    }
+
+    if (ok) return ok
+  }
+
+  return false
+}
+
 function checkAccept(dropzone) {
   if (dropzone.isIframe) return true
   const { accept } = dropzone.config
+
+  if (system.transfer.items.dataTypes) {
+    if (accept.mimetype) return Boolean(checkMimetype(accept.mimetype))
+    return false
+  }
 
   if (accept.element) {
     if (accept.element === true) return checkKind(accept)
@@ -295,10 +317,10 @@ function serializeItems({ hideGhost, x = 0, y = 0 }) {
     items.push(exportedItem)
   }
 
-  const { dropzoneId } = system.transfer.items
+  const { dropzoneId, dataTypes } = system.transfer.items
   const { itemsConfig } = system.transfer
 
-  return { items, dropzoneId, itemsConfig }
+  return { items, dropzoneId, itemsConfig, dataTypes }
 }
 
 function deserializeItems(items, parentX = 0, parentY = 0) {
@@ -321,7 +343,6 @@ function cleanHints() {
   system.transfer.items = undefined
   system.transfer.currentZone = undefined
   system.transfer.effect = undefined
-  system.transfer.dataTransfer = undefined
   setCursor()
 }
 
@@ -410,21 +431,25 @@ class IframeDropzoneHint {
 if (inIframe) {
   let enterReady
   ipc
-    .on("42_TF_v_ENTER", async ({ x, y, items, itemsConfig, dropzoneId }) => {
-      enterReady = defer()
-      deserializeItems(items)
+    .on(
+      "42_TF_v_ENTER",
+      async ({ x, y, items, itemsConfig, dropzoneId, dataTypes }) => {
+        enterReady = defer()
+        deserializeItems(items)
 
-      const { itemsHint } = await makeHints({ itemsConfig })
+        const { itemsHint } = await makeHints({ itemsConfig })
 
-      system.transfer.items = itemsHint
-      system.transfer.itemsConfig = itemsConfig
-      system.transfer.items.dropzoneId = dropzoneId
-      system.transfer.items.start(x, y, items)
+        system.transfer.items = itemsHint
+        system.transfer.itemsConfig = itemsConfig
+        system.transfer.items.dropzoneId = dropzoneId
+        system.transfer.items.dataTypes = dataTypes
+        system.transfer.items.start(x, y, items)
 
-      activateZones(x, y)
-      setCurrentZone(x, y)
-      enterReady.resolve()
-    })
+        activateZones(x, y)
+        setCurrentZone(x, y)
+        enterReady.resolve()
+      }
+    )
     .on("42_TF_v_LEAVE", async ({ x, y }) => {
       await enterReady
       enterReady = undefined
@@ -549,12 +574,17 @@ if (!inIframe) {
     async start({ x, y, dataTransfer }) {
       cleanHints()
 
-      system.transfer.dataTransfer = dataTransfer
+      const dataTypes = []
+
+      for (const { type } of dataTransfer.items) {
+        dataTypes.push(parseMimetype(type))
+      }
 
       const items = [{ x, y, height: 32, width: 32 }]
       const itemsConfig = { type: "invisible" }
       const { itemsHint } = await makeHints({ itemsConfig })
       system.transfer.items = itemsHint
+      system.transfer.items.dataTypes = dataTypes
       system.transfer.itemsConfig = itemsConfig
       system.transfer.items.start(x, y, items)
 
@@ -566,12 +596,11 @@ if (!inIframe) {
     },
     drag(e) {
       if (!started) return
-      system.transfer.dataTransfer = e.dataTransfer
 
       setCurrentZone(e.x, e.y)
       setEffect()
 
-      system.transfer.dataTransfer.dropEffect = system.transfer.effect
+      e.dataTransfer.dropEffect = system.transfer.effect
       system.transfer.items.drag(e)
     },
     async stop({ x, y }) {
@@ -638,6 +667,12 @@ class Transferable extends Trait {
 
     dropzoneConfig.accept.kind ??= this.config.kind
     dropzoneConfig.accept.kind = arrify(dropzoneConfig.accept.kind)
+
+    if (dropzoneConfig.accept.mimetype) {
+      dropzoneConfig.accept.mimetype = arrify(
+        dropzoneConfig.accept.mimetype
+      ).map((x) => parseMimetype(x))
+    }
 
     const ms = this.config.animationSpeed
     if (itemsConfig) {
