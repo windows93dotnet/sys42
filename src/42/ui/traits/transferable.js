@@ -28,6 +28,7 @@ const DEFAULTS = {
   handlerSelector: undefined,
   accept: undefined,
   findNewIndex: true,
+  effectAllowed: ["move", "copy", "link"],
 
   items: "stack",
   dropzone: "slide",
@@ -79,11 +80,19 @@ function setEffect(options) {
           applyEffect(effect ?? "none", options)
         })
     } else {
+      const { effectAllowed } = system.transfer.currentZone.config
       for (const [key, effect] of keyToEffect) {
-        if (key in keys) return applyEffect(effect, options)
+        if (key in keys && effectAllowed.includes(effect)) {
+          return applyEffect(effect, options)
+        }
       }
 
-      applyEffect("move", options)
+      applyEffect(
+        system.transfer.currentZone.isOriginDropzone
+          ? "move" // sort
+          : effectAllowed[0],
+        options
+      )
     }
   } else {
     applyEffect("none", options)
@@ -661,6 +670,7 @@ class Transferable extends Trait {
     dropzoneConfig.findNewIndex ??= this.config.findNewIndex
     dropzoneConfig.import ??= this.config.import
     dropzoneConfig.list = this.list
+
     dropzoneConfig.accept ??=
       this.config.accept ?? (this.list ? { element: false } : { element: true })
 
@@ -676,6 +686,16 @@ class Transferable extends Trait {
         dropzoneConfig.accept.mimetype
       ).map((x) => parseMimetype(x))
     }
+
+    dropzoneConfig.effectAllowed ??= arrify(
+      options.effectAllowed ??
+        (this.list
+          ? ["move", "copy"]
+          : options.accept &&
+            Object.keys(options.accept).every((x) => x === "mimetype")
+          ? ["copy"]
+          : this.config.effectAllowed)
+    )
 
     const ms = this.config.animationSpeed
     if (itemsConfig) {
