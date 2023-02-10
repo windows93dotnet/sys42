@@ -17,6 +17,35 @@ function restoreSelection(el, droppeds) {
   }
 }
 
+function normalizeItem(item) {
+  item.index |= 0
+
+  item.x |= 0
+  item.y |= 0
+  item.width |= 0
+  item.height |= 0
+
+  item.marginTop |= 0
+  item.marginBottom |= 0
+  item.marginLeft |= 0
+  item.marginRight |= 0
+
+  item.left ??= item.x
+  item.top ??= item.y
+  item.bottom ??= item.y + item.height
+  item.right ??= item.x + item.width
+
+  if (item.target) {
+    item.target.id ||= uid()
+    item.id = item.target.id
+
+    if (!item.ghost) {
+      item.ghost = ghostify(item.target, { rect: item })
+      document.documentElement.append(item.ghost)
+    }
+  }
+}
+
 export class ItemsHint extends Array {
   constructor(options) {
     super()
@@ -35,10 +64,10 @@ export class ItemsHint extends Array {
   }
 
   removeGhosts() {
-    for (const item of this) item.ghost.remove()
+    for (const { ghost } of this) ghost?.remove()
   }
   hideTargets() {
-    for (const item of this) item.target.classList.add("hide")
+    for (const { target } of this) target?.classList.add("hide")
   }
 
   getCoord(x, y) {
@@ -55,20 +84,13 @@ export class ItemsHint extends Array {
   start(x, y, items) {
     this.length = 0
     for (const item of items) {
-      this.push(item)
-
+      normalizeItem(item)
       item.offsetX ??= x - item.x
       item.offsetY ??= y - item.y
 
-      item.target.id ||= uid()
-      item.id = item.target.id
+      this.push(item)
 
-      if (!item.ghost) {
-        item.ghost = ghostify(item.target, { rect: item })
-        document.documentElement.append(item.ghost)
-      }
-
-      if (this.config.startAnimation && items.length > 1) {
+      if (item.ghost && this.config.startAnimation && items.length > 1) {
         animateFrom(item.ghost, {
           translate: `${item.x}px ${item.y}px`,
           ...this.startAnimation(item),
@@ -94,6 +116,7 @@ export class ItemsHint extends Array {
   async revert(items = this) {
     const undones = []
     for (const item of items) {
+      if (!item.ghost) break
       if (this.config.revertAnimation) {
         undones.push(
           animateTo(item.ghost, {
@@ -131,6 +154,13 @@ export class ItemsHint extends Array {
     const dropzone = system.transfer.currentZone
     if (!dropzone || dropzone.isIframe) {
       system.transfer.items.removeGhosts()
+      return
+    }
+
+    if (this[0]?.ghost === undefined) {
+      const adopteds = []
+      restoreSelection(dropzone.el, adopteds)
+      await dropzone.beforeAdoptAnimation(adopteds)
       return
     }
 
@@ -179,6 +209,11 @@ export class ItemsHint extends Array {
 
     for (let i = 0, l = this.length; i < l; i++) {
       const item = this[i]
+      if (!item.ghost) {
+        if (rects[i]) dropzone.reviveTarget(rects[i].target)
+        continue
+      }
+
       if (rects[i] && this.config.adoptAnimation) {
         undones.push(
           animateTo(item.ghost, {

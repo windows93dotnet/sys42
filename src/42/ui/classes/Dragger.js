@@ -159,32 +159,26 @@ export default class Dragger {
 
     if (this.config.throttle) drag = paintThrottle(drag)
 
-    const init = (e, target) => {
-      drag.clear?.()
-      this.isDragging = false
-      Dragger.isDragging = false
-
-      if (this.config.beforestart?.(e, target) === false) return false
-
-      target = this.config.selector ? target : this.el
-      if (this.config.ignore && e.target.closest(this.config.ignore)) {
-        return false
-      }
-
-      this.fromX = round(e.x)
-      this.fromY = round(e.y)
-    }
-
     listen(this.el, {
       signal,
       selector: this.config.selector,
       touchstart: false,
-      pointerdown(e, target) {
+      pointerdown: (e, target) => {
         if (e.target.hasPointerCapture(e.pointerId)) {
           e.target.releasePointerCapture(e.pointerId) // https://stackoverflow.com/a/70976018
         }
 
-        if (init(e, target) === false) return
+        drag.clear?.()
+        this.isDragging = false
+        Dragger.isDragging = false
+
+        if (this.config.beforestart?.(e, target) === false) return
+
+        target = this.config.selector ? target : this.el
+        if (this.config.ignore && e.target.closest(this.config.ignore)) return
+
+        this.fromX = round(e.x)
+        this.fromY = round(e.y)
 
         forget = listen({
           signal,
@@ -193,37 +187,6 @@ export default class Dragger {
         })
       },
     })
-
-    if (this.config.dataTransfer) {
-      let cnt = 0
-      let isRunning
-      listen({
-        signal,
-        dragenter(e, target) {
-          if (cnt === 0) {
-            if (init(e, target) !== false) {
-              isRunning = true
-              start(e, target)
-            }
-          }
-
-          cnt++
-        },
-        dragleave() {
-          cnt--
-          if (cnt === 0) isRunning = false
-        },
-        dragover(e, target) {
-          if (isRunning) drag(e, target)
-          return false
-        },
-        drop(e, target) {
-          if (isRunning) stop(e, target)
-          isRunning = false
-          return false
-        },
-      })
-    }
 
     signal?.addEventListener("abort", () => stop())
   }
