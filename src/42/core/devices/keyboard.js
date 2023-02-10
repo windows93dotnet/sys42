@@ -4,6 +4,17 @@ const keys = Object.create(null)
 const codes = Object.create(null)
 const strokes = Object.create(null)
 
+const dragover = (e) => {
+  if (e.ctrlKey) keys.control = true
+  else delete keys.control
+  if (e.shiftKey) keys.shift = true
+  else delete keys.shift
+  if (e.metaKey) keys.meta = true
+  else delete keys.meta
+  if (e.altKey) keys.alt = true
+  else delete keys.alt
+}
+
 const keydown = (e) => {
   let { key, code, repeat } = e
   if (repeat === false) {
@@ -52,14 +63,17 @@ const cleanup = () => {
 export const forget = () => {
   globalThis.removeEventListener("keydown", keydown, true)
   globalThis.removeEventListener("keyup", keyup, true)
+  globalThis.removeEventListener("dragover", dragover)
   globalThis.removeEventListener("blur", cleanup)
   keyboard.isListening = false
 }
 
 export const listen = () => {
+  console.log("keyboard.listen")
   if (keyboard.isListening) return forget
   globalThis.addEventListener("keydown", keydown, true /* [1] */)
   globalThis.addEventListener("keyup", keyup, true /* [1] */)
+  globalThis.addEventListener("dragover", dragover)
   globalThis.addEventListener("blur", cleanup)
   keyboard.isListening = true
   return forget

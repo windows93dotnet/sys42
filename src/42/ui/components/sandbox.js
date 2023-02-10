@@ -3,10 +3,6 @@ import Resource from "../../fabric/classes/Resource.js"
 import create from "../create.js"
 import traverse from "../../fabric/type/object/traverse.js"
 import { forkPlan } from "../normalize.js"
-import setTemp from "../../fabric/dom/setTemp.js"
-import listen from "../../fabric/event/listen.js"
-// import ipc from "../../core/ipc.js"
-// import dataTransfertImport from "../../core/dt/dataTransfertImport.js"
 
 const _setResource = Symbol("setResource")
 
@@ -21,22 +17,6 @@ const DEFAULTS = {
   `,
   body: /* html */ `<body class="in-iframe">`,
 }
-
-// Chrome don't allow drag from top to iframe
-// or dropping folder into sandboxed iframe
-// https://bugs.chromium.org/p/chromium/issues/detail?id=251718
-let restore
-listen({
-  "dragstart || dragover"() {
-    restore ??= setTemp(document.documentElement, {
-      class: { "pointerless-iframes": true },
-    })
-  },
-  "dragend"() {
-    restore?.()
-    restore = undefined
-  },
-})
 
 export class Sandbox extends Component {
   static plan = {

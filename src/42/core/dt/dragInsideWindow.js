@@ -3,7 +3,9 @@ import listen from "../../fabric/event/listen.js"
 export function dragInsideWindow(obj) {
   let cnt = 0
   listen({
+    prevent: true,
     dragenter(e) {
+      e.dataTransfer.dropEffect = "none" // prevent dropEffect flickering
       if (cnt === 0) obj.start?.(e)
       cnt++
     },
@@ -13,13 +15,11 @@ export function dragInsideWindow(obj) {
     },
     dragover(e) {
       obj.drag?.(e)
-      return false
     },
     drop(e) {
       cnt = 0
       obj.stop?.(e)
       obj.drop?.(e)
-      return false
     },
   })
 }

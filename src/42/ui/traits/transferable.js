@@ -1,3 +1,5 @@
+// @read https://www.w3.org/wiki/PF/ARIA/BestPractices/DragDrop
+
 /* eslint-disable complexity */
 import system from "../../system.js"
 import Trait from "../classes/Trait.js"
@@ -38,8 +40,9 @@ const configure = settings("ui.trait.transferable", DEFAULTS)
 ========= */
 
 const keyToEffect = [
-  ["Control", "copy"],
-  ["Shift", "link"],
+  ["control", "copy"],
+  ["shift", "move"],
+  ["alt", "link"],
 ]
 
 const effectToCursor = {
@@ -52,26 +55,28 @@ const effectToCursor = {
 function applyEffect(name, options) {
   system.transfer.effect = name
 
-  if (options?.bypassEmit !== true) {
-    if (context.fromIframe) {
-      context.originIframeDropzone?.bus.emit("42_TF_v_EFFECT", name)
-    } else if (inIframe) {
-      ipc.emit("42_TF_^_EFFECT", name)
+  if (!system.transfer.dataTransfer) {
+    if (options?.bypassEmit !== true) {
+      if (context.fromIframe) {
+        context.originIframeDropzone?.bus.emit("42_TF_v_EFFECT", name)
+      } else if (inIframe) {
+        ipc.emit("42_TF_^_EFFECT", name)
+      }
     }
-  }
 
-  setCursor(effectToCursor[name])
+    setCursor(effectToCursor[name])
+  }
 }
 
-async function setEffect(options) {
+function setEffect(options) {
   if (system.transfer.currentZone) {
     const keys = context.keys ?? keyboard.keys
     if (system.transfer.currentZone.isIframe) {
-      const effect = await system.transfer.currentZone.bus.send(
-        "42_TF_v_REQUEST_EFFECT",
-        keys
-      )
-      applyEffect(effect ?? "none", options)
+      system.transfer.currentZone.bus
+        .send("42_TF_v_REQUEST_EFFECT", keys)
+        .then((effect) => {
+          applyEffect(effect ?? "none", options)
+        })
     } else {
       for (const [key, effect] of keyToEffect) {
         if (key in keys) return applyEffect(effect, options)
@@ -316,6 +321,7 @@ function cleanHints() {
   system.transfer.items = undefined
   system.transfer.currentZone = undefined
   system.transfer.effect = undefined
+  system.transfer.dataTransfer = undefined
   setCursor()
 }
 
@@ -540,8 +546,11 @@ if (inIframe) {
 if (!inIframe) {
   let started
   dragInsideWindow({
-    async start({ x, y }) {
+    async start({ x, y, dataTransfer }) {
       cleanHints()
+
+      system.transfer.dataTransfer = dataTransfer
+
       const items = [{ x, y, height: 32, width: 32 }]
       const itemsConfig = { type: "invisible" }
       const { itemsHint } = await makeHints({ itemsConfig })
@@ -555,15 +564,23 @@ if (!inIframe) {
       system.transfer.items.drag(system.transfer.items.getCoord(x, y))
       started = true
     },
-    drag({ x, y }) {
+    drag(e) {
       if (!started) return
-      setCurrentZone(x, y)
-      system.transfer.items.drag({ x, y })
+      system.transfer.dataTransfer = e.dataTransfer
+
+      setCurrentZone(e.x, e.y)
+      setEffect()
+
+      system.transfer.dataTransfer.dropEffect = system.transfer.effect
+      system.transfer.items.drag(e)
     },
-    stop({ x, y }) {
-      console.log("stop", x, y)
+    async stop({ x, y }) {
       started = false
-      haltZones(x, y)
+
+      await haltZones(x, y)
+
+      for (const iframeDz of iframeDropzones) iframeDz.destroy()
+      iframeDropzones.length = 0
     },
     drop({ x, y }) {
       console.log("drop", x, y)
