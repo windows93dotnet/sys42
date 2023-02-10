@@ -139,6 +139,11 @@ export class ItemsHint extends Array {
   }
 
   async fork(x, y) {
+    if (this[0]?.ghost === undefined) {
+      this.adopt(x, y)
+      return
+    }
+
     const ghostsCopy = this.map(({ ghost, x, y }) => {
       ghost = ghost.cloneNode(true)
       document.documentElement.append(ghost)
