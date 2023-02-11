@@ -28,7 +28,7 @@
 
   const demos = {}
 
-  demos.File = [
+  demos.File = ({ inIframe }) => [
     {
       tag: ".demo.scroll-x-auto.flex-h.pa.gap.inset.paper",
       selectable: {},
@@ -56,11 +56,11 @@
 
     {
       tag: "ui-folder.inset.paper",
-      path: "/tests/fixtures/formats/",
+      path: inIframe ? "/tests/fixtures/formats/" : "/",
     },
   ]
 
-  demos.Accept = [
+  demos.Accept = () => [
     {
       tag: ".demo.scroll-x-auto.flex-h.pa.gap.inset.paper",
       selectable: {},
@@ -176,7 +176,7 @@
     },
   ]
 
-  demos.Orientation = [
+  demos.Orientation = () => [
     {
       demoCode: "// 'orientation' horizontal and 'freeAxis' by default",
 
@@ -232,7 +232,7 @@
     },
   ]
 
-  demos.List = [
+  demos.List = () => [
     {
       demoBefore: "// using 'list', tranferable can change the state\n",
 
@@ -268,7 +268,7 @@
     },
   ]
 
-  for (const demo of Object.values(demos)) {
+  function makeDemo(demo) {
     for (let i = demo.length - 1; i >= 0; i--) {
       if (demo[i].demoCode) {
         demo.splice(i, 0, {
@@ -288,6 +288,8 @@
         })
       }
     }
+
+    return demo
   }
 
   window.demo = ui({
@@ -308,14 +310,14 @@
           content: [
             {
               tag: "section.demos.item-spread.scroll-auto.inset.pa",
-              content: val,
+              content: makeDemo(val({ inIframe: false })),
             },
             {
               tag: "ui-sandbox",
               permissions: "app",
               content: {
                 tag: "section.demos.item-spread.box-fit.scroll-auto.inset.pa.ground",
-                content: val,
+                content: makeDemo(val({ inIframe: true })),
               },
             },
           ],
