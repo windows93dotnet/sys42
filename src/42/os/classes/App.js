@@ -179,9 +179,9 @@ function makeSandbox(manifest) {
       window.$manifest,
       { skipNormalize: true }
     )
-    // await $app.done()
     window.$files = window.$app.state.$files
     ${appScript}
+    $app.emitDecode()
     `
   )
 
@@ -384,16 +384,8 @@ export default class App extends UI {
     }
 
     this.manifest = manifest
-
     this.emitter = new Emitter()
-
     const option = { silent: true }
-
-    queueTask(() => {
-      for (const $file of this.state.$files) {
-        this.emitter.emit("decode", $file)
-      }
-    })
 
     this.reactive
       .on("prerender", (queue) => {
@@ -404,12 +396,13 @@ export default class App extends UI {
             loc.lastIndexOf("/") === 7
           ) {
             let $file = this.reactive.get(loc, option)
+
             if (!($file instanceof FileAgent)) {
               $file = new FileAgent($file, manifest)
               this.reactive.set(loc, $file, option)
             }
 
-            this.emitter.emit("decode", $file)
+            this.emit("decode", $file)
           }
         }
       })
@@ -438,6 +431,16 @@ export default class App extends UI {
     }
 
     editor.init(this)
+
+    this.emitDecode()
+  }
+
+  emitDecode() {
+    queueTask(() => {
+      for (const $file of this.state.$files) {
+        this.emit("decode", $file)
+      }
+    })
   }
 
   on(events, ...args) {
