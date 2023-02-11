@@ -240,7 +240,6 @@ export class Folder extends Component {
                     }
 
                     await Promise.all(undones)
-                    this.refresh() // force refresh
                   })
                 }
 
