@@ -190,7 +190,7 @@ async function haltZones(x, y, mode) {
   stopTranfer()
 }
 
-function checkKind(accept) {
+function checkKind(accept, noKind) {
   if (accept.kind.length > 0) {
     for (const kind of accept.kind) {
       if (system.transfer.items.kind.includes(kind)) return true
@@ -199,7 +199,7 @@ function checkKind(accept) {
     return false
   }
 
-  return true
+  return noKind
 }
 
 function checkMimetype(mimetype) {
@@ -226,25 +226,24 @@ function checkAccept(dropzone) {
   const { accept } = dropzone.config
 
   if (system.transfer.items.details.dataTypes) {
-    if (accept.mimetype) return Boolean(checkMimetype(accept.mimetype))
-    return false
+    if (accept.mimetype && checkMimetype(accept.mimetype)) return true
   }
 
   if (accept.element) {
-    if (accept.element === true) return checkKind(accept)
+    if (accept.element === true) return checkKind(accept, true)
 
     return (
       system.transfer.items.every(
         typeof accept.element === "function"
           ? accept.element
           : ({ target }) => target.matches(accept.element)
-      ) && checkKind(accept)
+      ) && checkKind(accept, true)
     )
   }
 
   // TODO: add schema validation for item.data
 
-  return checkKind(accept)
+  return checkKind(accept, false)
 }
 
 const dragoverZone = (x, y) => {

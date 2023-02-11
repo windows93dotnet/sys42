@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import system from "../../system.js"
 import inTop from "../../core/env/realm/inTop.js"
 import uid from "../../core/uid.js"
@@ -323,18 +324,37 @@ export default class App extends UI {
       )
     }
 
-    const transferableConfig = {
-      items: false,
-      findNewIndex: false,
-      dropzone: "dim",
-      accept: "$file",
-      import: ({ paths, index }) => {
-        if (manifest.multiple !== true) this.state.$files.length = 0
-        index ??= this.state.$files.length
-        this.state.$files.splice(index, 0, ...paths)
-        this.state.$current = index
-        return "vanish"
-      },
+    let transferableConfig
+
+    if (manifest.decode) {
+      const mimetype = []
+      for (const type of manifest.decode.types) {
+        mimetype.push(...Object.keys(type.accept))
+      }
+
+      if (mimetype.length > 0) {
+        transferableConfig = {
+          items: false,
+          findNewIndex: false,
+          dropzone: "dim",
+          accept: { mimetype },
+          import: ({ paths, files, index }) => {
+            if (!files && !paths) return
+
+            if (manifest.multiple !== true) this.state.$files.length = 0
+            index ??= this.state.$files.length
+
+            if (files) {
+              this.state.$files.splice(index, 0, ...Object.values(files))
+            } else {
+              this.state.$files.splice(index, 0, ...paths)
+            }
+
+            this.state.$current = index
+            return "vanish"
+          },
+        }
+      }
     }
 
     if (el) {
@@ -343,7 +363,9 @@ export default class App extends UI {
         document.body.prepend(el)
       }
 
-      transferable(document.body, transferableConfig)
+      if (transferableConfig) {
+        transferable(document.body, transferableConfig)
+      }
 
       const content = {
         tag: ".box-v.app-content",
@@ -366,8 +388,9 @@ export default class App extends UI {
       const content = {
         tag: ".box-v.app-content",
         content: manifest.content,
-        transferable: transferableConfig,
       }
+
+      if (transferableConfig) content.transferable = transferableConfig
 
       if (manifest.on) content.on = manifest.on
       if (manifest.watch) content.watch = manifest.watch
