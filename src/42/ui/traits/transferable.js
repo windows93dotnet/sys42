@@ -304,7 +304,6 @@ import ipc from "../../core/ipc.js"
 import sanitize from "../../fabric/dom/sanitize.js"
 import clear from "../../fabric/type/object/clear.js"
 
-const iframeDropzones = []
 const context = Object.create(null)
 
 function serializeItems({ hideGhost, x = 0, y = 0 }) {
@@ -385,8 +384,6 @@ class IframeDropzoneHint {
       height: ${rect.height}px;
       /* background: rgba(255,0,0,0.2); */`
     document.documentElement.append(this.el)
-
-    iframeDropzones.push(this)
   }
 
   #substractCoord(x, y) {
@@ -534,9 +531,9 @@ if (inIframe) {
 
         system.transfer.items.drag(system.transfer.items.getCoord(x, y))
 
-        for (const iframeDz of iframeDropzones) {
-          if (iframeDz.iframe === iframe) {
-            context.originIframeDropzone = iframeDz
+        for (const dropzone of system.transfer.dropzones.values()) {
+          if (dropzone.iframe === iframe) {
+            context.originIframeDropzone = dropzone
             break
           }
         }
@@ -617,14 +614,11 @@ if (!inIframe) {
     },
     async stop({ x, y }) {
       started = false
-
       await haltZones(x, y)
-
-      for (const iframeDz of iframeDropzones) iframeDz.destroy()
-      iframeDropzones.length = 0
     },
-    drop({ x, y }) {
-      console.log("drop", x, y)
+    async drop(imports) {
+      Object.assign(system.transfer.items.details, imports)
+      // console.log("drop", system.transfer.items.details)
     },
   })
 }
@@ -825,9 +819,6 @@ class Transferable extends Trait {
 
         if (inIframe) ipc.emit("42_TF_^_STOP", { x, y })
         else await haltZones(x, y)
-
-        for (const iframeDz of iframeDropzones) iframeDz.destroy()
-        iframeDropzones.length = 0
       },
     })
   }
