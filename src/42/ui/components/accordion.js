@@ -36,39 +36,39 @@ export class Accordion extends Component {
     this.items.splice(index, 1)
   }
 
-  togglePanel(index, ensureFocus) {
-    if (index < 0 || index > this.items.length - 1) return
+  togglePanel(addr, ensureFocus) {
+    if (addr < 0 || addr > this.items.length - 1) return
 
-    if (this.expandeds.includes(index)) {
+    if (this.expandeds.includes(addr)) {
       if (!(this.collapsible !== true && this.expandeds.length === 1)) {
-        removeItem(this.expandeds, index)
+        removeItem(this.expandeds, addr)
       }
     } else {
       if (this.multiple !== true) this.expandeds.length = 0
-      this.expandeds.push(index)
+      this.expandeds.push(addr)
     }
 
     if (ensureFocus) {
-      const el = this.querySelector(`#${this.id}-trigger-${index}`)
+      const el = this.querySelector(`#${this.id}-trigger-${addr}`)
       if (el && document.activeElement !== el) el.focus()
     }
   }
 
-  expandPanel(index, navigate) {
-    if (!this.expandeds.includes(index)) {
+  expandPanel(addr, navigate) {
+    if (!this.expandeds.includes(addr)) {
       if (this.multiple !== true) this.expandeds.length = 0
-      this.expandeds.push(index)
+      this.expandeds.push(addr)
     } else if (navigate) {
       this.navigable.next()
     }
   }
 
-  reducePanel(index, navigate) {
+  reducePanel(addr, navigate) {
     if (
-      this.expandeds.includes(index) &&
+      this.expandeds.includes(addr) &&
       !(this.collapsible !== true && this.expandeds.length === 1)
     ) {
-      removeItem(this.expandeds, index)
+      removeItem(this.expandeds, addr)
     } else if (navigate) {
       this.navigable.prev()
     }

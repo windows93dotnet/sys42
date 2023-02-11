@@ -79,15 +79,15 @@ async function findDriver(path) {
   const filename = normalizeFilename(path)
 
   let name
-  if (!inTop) {
-    name = "ipc"
-  } else {
+  if (inTop) {
     const place = places.find((item) => filename.startsWith(item))
     if (place in fs.config.places === false) {
       throw new Error(`no driver mounted for '${filename}'`)
     }
 
     name = fs.config.places[place]
+  } else {
+    name = "ipc"
   }
 
   const driver = await getDriverLazy(name)

@@ -8,7 +8,7 @@ import io from "../../io.js"
 import normalizeDirname from "../../core/fs/normalizeDirname.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
 import contextmenu from "../invocables/contextmenu.js"
-// import dt from "../../core/dt.js"
+// import fs from "../../core/fs.js"
 
 const _forgetWatch = Symbol("Folder.forgetWatch")
 const _updatePath = Symbol("Folder.updatePath")
@@ -29,6 +29,7 @@ export class Folder extends Component {
         type: "string",
         fromView: true,
         default: "grid",
+        update: _updatePath,
       },
       selection: {
         type: "array",
@@ -79,17 +80,21 @@ export class Folder extends Component {
       })
     })
 
-    if (this[_forgetWatch]?.path === path) return
+    if (
+      this[_forgetWatch]?.path === path &&
+      this[_forgetWatch]?.view === this.view
+    ) {
+      return
+    }
 
-    if (!initial) this.selection.length = 0
-
-    const { signal } = this.stage
-    const options = { signal, directChild: this.view === "grid" }
+    if (!initial) this.currentView.selectable.clear()
 
     let timerId
+    const { signal } = this.stage
+    const pattern = path + (this.view === "tree" ? "**" : "*")
 
     this[_forgetWatch]?.()
-    this[_forgetWatch] = disk.watchDir(path, options, (changed, type) => {
+    this[_forgetWatch] = disk.watch(pattern, { signal }, (changed, type) => {
       if (!this.stage) return
 
       clearTimeout(timerId)
@@ -107,6 +112,7 @@ export class Folder extends Component {
       }, 50)
     })
     this[_forgetWatch].path = path
+    this[_forgetWatch].view = this.view
   }
 
   go(path) {
@@ -161,6 +167,7 @@ export class Folder extends Component {
             path.endsWith("*") || path.includes(".") ? path : path + "*"
           )
         : disk.readDir(path, { absolute: true }))
+      // dir = await fs.readDir(path, { absolute: true })
       this.err = undefined
     } catch (err) {
       this.err = err.message
@@ -233,6 +240,7 @@ export class Folder extends Component {
                     }
 
                     await Promise.all(undones)
+                    this.refresh() // force refresh
                   })
                 }
 

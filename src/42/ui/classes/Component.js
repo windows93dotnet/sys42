@@ -201,11 +201,12 @@ export default class Component extends HTMLElement {
 
     if (stage?.component) this.parent = stage.component
 
-    const entry = plan?.entry ?? cpnPlan?.entry
-    if (entry) {
-      addEntry(stage.component, entry, this)
-      delete plan.entry
-    }
+    // const entry = plan?.entry ?? cpnPlan?.entry
+    // if (entry) {
+    //   console.log(777, entry)
+    //   addEntry(stage.component, entry, this)
+    //   delete plan.entry
+    // }
 
     const parentEntry = plan?.parentEntry ?? cpnPlan?.parentEntry
     if (parentEntry) {

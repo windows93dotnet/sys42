@@ -1,9 +1,15 @@
 import defer from "../../fabric/type/promise/defer.js"
+import { addEntry } from "../normalize.js"
 
 export default function renderComponent(el, plan, stage, options) {
   const deferred = defer()
   stage?.waitlistComponents.push(deferred)
   const tag = el.localName
+
+  if (plan.entry) {
+    addEntry(stage.component, plan.entry, el)
+    delete plan.entry
+  }
 
   if (customElements.get(tag) === undefined) {
     el.toggleAttribute("data-no-init", true)
