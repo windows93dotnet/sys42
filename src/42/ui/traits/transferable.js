@@ -477,6 +477,9 @@ if (inIframe) {
         return system.transfer.currentZone.import()
       }
     })
+    .on("42_TF_v_DETAILS", (details) => {
+      system.transfer.items.details = details
+    })
     .on("42_TF_v_DROP", async ({ x, y }) => {
       if (system.transfer.effect === "none") haltZones(x, y)
       else await haltZones(x, y)
@@ -622,7 +625,10 @@ if (!inIframe) {
     },
     async drop(imports) {
       Object.assign(system.transfer.items.details, imports)
-      // console.log("drop", system.transfer.items.details)
+      if (system.transfer.currentZone.isIframe) {
+        const { bus } = system.transfer.currentZone
+        await bus.send("42_TF_v_DETAILS", system.transfer.items.details)
+      }
     },
   })
 }

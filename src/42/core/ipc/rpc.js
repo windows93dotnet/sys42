@@ -57,7 +57,7 @@ if (inTop) {
       }
 
       const help = info.module
-        ? `.\nAdd this module in the top-level realm ${info.module}`
+        ? `.\nImport this module inside a script running in the main html page:\n${info.module}`
         : ""
       throw new Error(
         `The ${info.name} function isn't registered in the top-level realm${help}`
