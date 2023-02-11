@@ -189,16 +189,17 @@ export class DropzoneHint {
         index: this.newIndex,
         isOriginDropzone: this.isOriginDropzone,
         dropzone: this,
-        get paths() {
-          const paths = []
-          for (const item of system.transfer.items) {
-            const path =
-              item.data?.path ?? item.data ?? item.target.getAttribute("path")
-            if (path) paths.push(path)
-          }
+        ...system.transfer.items.details,
+        // get paths() {
+        //   const paths = []
+        //   for (const item of system.transfer.items) {
+        //     const path =
+        //       item.data?.path ?? item.data ?? item.target.getAttribute("path")
+        //     if (path) paths.push(path)
+        //   }
 
-          return paths
-        },
+        //   return paths
+        // },
       },
       system.transfer
     )
