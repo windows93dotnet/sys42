@@ -1,5 +1,5 @@
 import readDirectoryEntry from "../../fabric/type/file/readDirectoryEntry.js"
-import { handleEffect } from "./dataTransferEffects.js"
+// import { handleEffect } from "./dataTransferEffects.js"
 
 const TYPE_STANDARD = {
   "application/x-javascript": "text/javascript",
@@ -37,15 +37,14 @@ export default function dataTransfertImport(e, options) {
     throw new TypeError(`dataTransfer argument must be a DataTransfer instance`)
   }
 
-  handleEffect(e, options)
+  // handleEffect(e, options)
 
   const out = {
     files: {},
     folders: [],
     strings: [],
     objects: [],
-    paths: undefined,
-    data: undefined,
+    json: undefined,
     effect: dataTransfer.dropEffect,
 
     undones: [],
@@ -62,13 +61,8 @@ export default function dataTransfertImport(e, options) {
   for (const dataItem of dataTransfer.items) {
     const item = normalizeDataTransferItem(dataItem, dataTransfer)
     if (item.kind === "string") {
-      if (
-        item.type === "application/42-paths+json" &&
-        item.object.userAgent === navigator.userAgent
-      ) {
-        out.paths = item.object.paths
-      } else if (item.type === "application/json") {
-        out.data = item.object
+      if (item.type === "application/json") {
+        out.json = item.object
       } else if (item.object) {
         out.objects.push(item.object)
       } else {
