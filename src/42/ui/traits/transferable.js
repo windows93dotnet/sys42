@@ -375,9 +375,10 @@ class IframeDropzoneHint {
     this.x = rect.innerX
     this.y = rect.innerY
     this.el = document.createElement("div")
+
     this.el.style = `
       position: fixed;
-      z-index: ${100_000 + index};
+      z-index: ${100_000 + index /* TODO: calculate top zIndex */};
       top: ${rect.top}px;
       left: ${rect.left}px;
       width: ${rect.width}px;
@@ -507,7 +508,7 @@ if (inIframe) {
     })
     .on(
       "42_TF_^_START",
-      async ({ x, y, items, dropzoneId, itemsConfig }, { iframe }) => {
+      async ({ x, y, items, dropzoneId, itemsConfig, details }, { iframe }) => {
         const iframeCoord = getIframeInnerCoord(iframe)
         context.parentX = iframeCoord.innerX
         context.parentY = iframeCoord.innerY
@@ -521,7 +522,10 @@ if (inIframe) {
         system.transfer.items = itemsHint
         system.transfer.itemsConfig = itemsConfig
         system.transfer.items.dropzoneId = dropzoneId
+        system.transfer.items.details = details
+
         system.transfer.items.start(x, y, items)
+
         for (const item of system.transfer.items) {
           document.documentElement.append(item.ghost)
         }
