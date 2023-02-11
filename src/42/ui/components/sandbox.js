@@ -1,7 +1,6 @@
 import Component from "../classes/Component.js"
 import Resource from "../../fabric/classes/Resource.js"
 import create from "../create.js"
-import traverse from "../../fabric/type/object/traverse.js"
 import { forkPlan } from "../normalize.js"
 
 const _setResource = Symbol("setResource")
@@ -132,13 +131,12 @@ export class Sandbox extends Component {
     const options = { head, body }
 
     if (this.content) {
-      const undones = []
-      traverse(this.content, (key) => {
-        // Ensure sandboxed content can execute rpc functions in top
-        if (key === "dialog") undones.push(import("./dialog.js"))
-        if (key === "popup") undones.push(import("../popup.js"))
-      })
-      await Promise.all(undones)
+      // Ensure sandboxed content can execute rpc/ipc functions in top
+      await Promise.all([
+        import("./dialog.js"),
+        import("../popup.js"),
+        import("../traits/transferable.js"),
+      ])
       const content = forkPlan(this.content, this.stage)
       content.plugins ??= []
       if (!content.plugins.includes("ipc")) content.plugins.push("ipc")
