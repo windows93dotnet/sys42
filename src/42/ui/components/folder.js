@@ -188,10 +188,10 @@ export class Folder extends Component {
     return dir
   }
 
-  render({ transferable }) {
+  render({ transferable, selectable }) {
     const common = {
       entry: "currentView",
-      selectable: "{{selectable}}",
+      selectable,
       multiselectable: "{{multiselectable}}",
       selection: "{{selection}}",
       selectionKey: "path",

@@ -390,19 +390,19 @@ export default class App extends UI {
     this.reactive
       .on("prerender", (queue) => {
         for (const [loc, , deleted] of queue) {
-          if (
-            !deleted &&
-            loc.startsWith("/$files/") &&
-            loc.lastIndexOf("/") === 7
-          ) {
-            let $file = this.reactive.get(loc, option)
+          if (!deleted && loc.startsWith("/$files/")) {
+            if (loc.lastIndexOf("/") === 7) {
+              let $file = this.reactive.get(loc, option)
 
-            if (!($file instanceof FileAgent)) {
-              $file = new FileAgent($file, manifest)
-              this.reactive.set(loc, $file, option)
+              if (!($file instanceof FileAgent)) {
+                $file = new FileAgent($file, manifest)
+                this.reactive.set(loc, $file, option)
+              }
+
+              this.emit("decode", $file)
+            } else if (loc.endsWith("/path")) {
+              this.emit("decode", this.reactive.get(loc.slice(0, -5), option))
             }
-
-            this.emit("decode", $file)
           }
         }
       })
