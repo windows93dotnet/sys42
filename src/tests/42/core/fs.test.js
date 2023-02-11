@@ -10,7 +10,7 @@ const { clone, parallel, shell, stream } = test.utils
 const drivers = [
   "memory", //
   // "localstorage",
-  // "indexeddb",
+  "indexeddb",
 ]
 
 async function checkError(

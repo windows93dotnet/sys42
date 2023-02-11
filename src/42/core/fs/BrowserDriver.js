@@ -100,9 +100,7 @@ export default class BrowserDriver extends Driver {
     if (id === -1) return this.open(mask)
 
     inode[2].a = Date.now()
-    requestIdleCallback(() => {
-      disk.set(filename, inode, { silent: true })
-    })
+    disk.set(filename, inode, { silent: true })
 
     if (this.mask !== mask) {
       const driver = await this.getDriver(mask)
@@ -172,14 +170,13 @@ export default class BrowserDriver extends Driver {
     if (!disk.has(filename)) throw new FileSystemError(ENOENT, filename)
     else if (disk.isDir(filename)) throw new FileSystemError(EISDIR, filename)
 
-    let id
     const inode = disk.get(filename)
 
     disk.delete(filename)
 
     if (inode) {
-      id = inode[0]
-      const mask = inode[1]
+      const [id, mask] = inode
+
       if (this.mask !== mask) {
         const driver = await this.getDriver(mask)
         await driver.delete(filename)
