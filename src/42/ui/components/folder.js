@@ -46,48 +46,7 @@ export class Folder extends Component {
       selectable: { type: "any", default: true },
     },
 
-    // dropzone: true,
     on: [
-      // drag n drop
-      // ===========
-      // {
-      //   async drop(e) {
-      //     const { files, folders, paths } = await dt.import(e)
-      //     if (paths) io.movePaths(paths, this.el.path)
-      //     else if (files || folders) {
-      //       const fs = await import("../../core/fs.js").then((m) => m.default)
-      //       const undones = []
-
-      //       for (const path of folders) {
-      //         undones.push(fs.writeDir(this.el.path + path))
-      //       }
-
-      //       for (const [path, file] of Object.entries(files)) {
-      //         undones.push(fs.write(this.el.path + path, file))
-      //       }
-
-      //       await Promise.all(undones)
-      //     }
-      //   },
-      // },
-      // {
-      //   selector: "ui-icon",
-      //   pointerdown(e, target) {
-      //     if (e.button === 2) this.el.ensureSelected(target.path)
-      //     // this.el.ensureSelected(target.path)
-      //   },
-      //   // dragstart(e, target) {
-      //   //   this.el.ensureSelected(target.path)
-      //   //   dt.export(e, { paths: this.el.selection })
-      //   // },
-      //   //   // drag(e) {
-      //   //   //   console.log(e.x, e.y)
-      //   //   // },
-      //   //   // async dragend(e) {
-      //   //   //   console.log("dragend", e.dataTransfer.dropEffect)
-      //   //   // },
-      // },
-
       // icon actions
       // ============
       {
@@ -253,14 +212,29 @@ export class Folder extends Component {
                 const res = transferable?.import?.(details)
                 if (res !== undefined) return res
 
-                const { paths, files, effect, isOriginDropzone } = details
-
-                console.log(paths, files, effect)
+                const { paths, files, folders, effect, isOriginDropzone } =
+                  details
 
                 if (isOriginDropzone && effect === "move") return "revert"
 
-                if (effect === "copy") io.copyPaths(paths, this.path)
-                else io.movePaths(paths, this.path)
+                if (paths) {
+                  if (effect === "copy") io.copyPaths(paths, this.path)
+                  else io.movePaths(paths, this.path)
+                } else if (files || folders) {
+                  import("../../core/fs.js").then(async ({ fs }) => {
+                    const undones = []
+
+                    for (const path of folders) {
+                      undones.push(fs.writeDir(this.path + path))
+                    }
+
+                    for (const [path, file] of Object.entries(files)) {
+                      undones.push(fs.write(this.path + path, file))
+                    }
+
+                    await Promise.all(undones)
+                  })
+                }
 
                 return "vanish"
               },

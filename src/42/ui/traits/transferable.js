@@ -18,7 +18,7 @@ import keyboard from "../../core/devices/keyboard.js"
 import listen from "../../fabric/event/listen.js"
 import arrify from "../../fabric/type/any/arrify.js"
 import defer from "../../fabric/type/promise/defer.js"
-import dragInsideWindow from "../../core/dt/dragInsideWindow.js"
+import dragEntrance from "../../core/dt/dragEntrance.js"
 import parseMimetype from "../../fabric/type/file/parseMimetype.js"
 
 const DEFAULTS = {
@@ -579,7 +579,7 @@ if (inIframe) {
 
 if (!inIframe) {
   let started
-  dragInsideWindow({
+  dragEntrance({
     async start({ x, y, dataTransfer }) {
       cleanHints()
 
