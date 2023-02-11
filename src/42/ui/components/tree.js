@@ -220,7 +220,6 @@ export class Tree extends Component {
   }
 
   async render({ selectable }) {
-    // await this.stage.waitlistTraits.done()
     return {
       selectable: selectable
         ? configure(
@@ -231,8 +230,8 @@ export class Tree extends Component {
                 aria: { selected: true },
               },
               draggerIgnoreItems: true,
-              key: "{{../selectionKey}}",
-              selection: "{{../selection}}",
+              key: "{{selectionKey}}",
+              selection: "{{selection}}",
             },
             selectable
           )
