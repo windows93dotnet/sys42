@@ -28,7 +28,7 @@
 
   const demos = {}
 
-  demos.File = ({ inIframe }) => [
+  demos.File = (/* { inIframe } */) => [
     {
       tag: ".demo.scroll-x-auto.flex-h.pa.gap.inset.paper",
       selectable: {},
@@ -55,8 +55,10 @@
     },
 
     {
-      tag: "ui-folder.inset.paper",
-      path: inIframe ? "/tests/fixtures/formats/" : "/",
+      tag: "ui-explorer",
+      // tag: "ui-folder.inset.paper",
+      // path: inIframe ? "/tests/fixtures/formats/" : "/",
+      path: "/",
     },
   ]
 

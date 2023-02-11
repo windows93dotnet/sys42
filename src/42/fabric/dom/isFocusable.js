@@ -2,6 +2,8 @@ export const isVisible = (el) =>
   Boolean(el.offsetWidth || el.offsetHeight || el.getClientRects().length > 0)
 
 export function isFocusable(el) {
+  if (el === window) return true
+
   if (
     !el ||
     el.tabIndex < 0 ||

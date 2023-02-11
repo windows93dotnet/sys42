@@ -1,16 +1,13 @@
 import Storable from "../../fabric/classes/Storable.js"
 import FileSystemError from "./FileSystemError.js"
 import configure from "../configure.js"
-import assertPath from "../../core/path/assertPath.js"
 import joinPath from "../../core/path/core/joinPath.js"
 import sortPath from "../../core/path/core/sortPath.js"
 import emittable from "../../fabric/traits/emittable.js"
 import isDirDescriptor from "./isDirDescriptor.js"
 import isGlob from "../path/isGlob.js"
 import glob, { Glob } from "../../core/path/glob.js"
-import normalizeDirname from "./normalizeDirname.js"
 import normalizeFilename from "./normalizeFilename.js"
-import tokenizePath from "../../core/path/utils/tokenizePath.js"
 
 const DEFAULTS = {
   name: "fileindex",
@@ -52,31 +49,6 @@ export default class FileIndex extends Storable {
 
     return this.on("change", { signal, off: true }, (path, type) => {
       if (path === pattern) fn(path, type)
-    })
-  }
-
-  watchDir(dirname, options, fn) {
-    dirname = normalizeDirname(assertPath(dirname))
-
-    if (typeof options === "function") fn = options
-    const signal = options?.signal
-
-    const tokens = tokenizePath(dirname)
-
-    return this.on("change", { signal, off: true }, (path, type) => {
-      if (path.startsWith(dirname)) {
-        const changed = options?.directChild
-          ? `${dirname}${tokenizePath(path).at(tokens.length)}`
-          : path
-        const hasPath = this.has(changed)
-        if (
-          (type === "set" && !hasPath) ||
-          (type === "delete" && hasPath) ||
-          type === "clear"
-        ) {
-          fn(changed, type, path)
-        }
-      }
     })
   }
 

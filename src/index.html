@@ -6,6 +6,15 @@
 
 <style>
   @import "./42/themes/default/fonts/tomo.css";
+
+  :root {
+  }
+  body {
+    --bg: #000;
+    --fg: #0ff;
+    overflow: hidden;
+  }
+
   a,
   pre {
     font-family: tomo-web, monospace;
@@ -20,11 +29,6 @@
     height: min-content;
     display: block;
     margin: 0;
-    overflow: hidden;
-  }
-  body {
-    background-color: #000 !important;
-    color: #0ff !important;
     overflow: hidden;
   }
   main a {
@@ -53,6 +57,11 @@
 </main>
 
 <script type="module">
+  import trap from "./42/fabric/type/error/trap.js"
+  trap()
+</script>
+
+<script type="module">
   import system from "./42/system.js"
   import fs from "./42/core/fs.js"
   import disk from "./42/core/disk.js"
@@ -70,4 +79,17 @@
   })
 
   await fs.deleteDir(system.HOME + "/.ui").catch(() => {})
+
+  import explorer from "./42/ui/components/explorer.js"
+  explorer("/", { view: "tree" })
+</script>
+
+<script type="_module">
+  import ui from "./42/ui.js"
+
+  ui({
+    tag: "ui-folder.box-fit",
+    view: "tree",
+    path: "/",
+  })
 </script>

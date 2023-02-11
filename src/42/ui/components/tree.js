@@ -106,7 +106,7 @@ export class Tree extends Component {
     }
   }
 
-  async renderGroup(path = "") {
+  async renderGroup(addr = "") {
     const { itemTemplate, id } = this
 
     return {
@@ -124,11 +124,11 @@ export class Tree extends Component {
         role: "none", // TODO: Check if needed
 
         computed: {
-          path: `{{"${path}" + @index}}`,
-          expanded: `{{includes(@component/expandeds, path)}}`,
+          addr: `{{"${addr}" + @index}}`,
+          expanded: `{{includes(@component/expandeds, addr)}}`,
         },
 
-        id: `${id}-item-{{path}}`,
+        id: `${id}-item-{{addr}}`,
 
         content: [
           {
@@ -141,9 +141,9 @@ export class Tree extends Component {
                   on: {
                     selector: '.ui-tree__pictos, [role="treeitem"]',
                     repeatable: true,
-                    pointerdown: `{{toggleItem(path)}}`,
-                    ArrowRight: `{{expandItem(path, true)}}`,
-                    ArrowLeft: `{{reduceItem(path, true)}}`,
+                    pointerdown: `{{toggleItem(addr)}}`,
+                    ArrowRight: `{{expandItem(addr, true)}}`,
+                    ArrowLeft: `{{reduceItem(addr, true)}}`,
                   },
                 },
                 else: {
@@ -151,7 +151,7 @@ export class Tree extends Component {
                     selector: '[role="treeitem"]',
                     repeatable: true,
                     ArrowRight: `{{navigable.next()}}`,
-                    ArrowLeft: `{{focusAbove(path)}}`,
+                    ArrowLeft: `{{focusAbove(addr)}}`,
                   },
                 },
               },
@@ -186,7 +186,7 @@ export class Tree extends Component {
                   : { content: "{{render(label)}}" },
                 {
                   role: "treeitem",
-                  id: `${id}-trigger-{{path}}`,
+                  id: `${id}-trigger-{{addr}}`,
                   aria: {
                     expanded: "{{items ? expanded ?? false : undefined}}",
                   },
@@ -203,7 +203,7 @@ export class Tree extends Component {
           {
             if: `{{items && expanded}}`,
             tag: "ul.ui-tree__group",
-            id: `${id}-group-{{path}}`,
+            id: `${id}-group-{{addr}}`,
             role: "group",
             // animate: {
             //   to: {
@@ -212,7 +212,7 @@ export class Tree extends Component {
             //     initial: false,
             //   },
             // },
-            content: `{{renderGroup("${path}" + @index + "_") |> render(^^)}}`,
+            content: `{{renderGroup("${addr}" + @index + "_") |> render(^^)}}`,
           },
         ],
       },

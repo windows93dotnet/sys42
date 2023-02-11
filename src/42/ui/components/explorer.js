@@ -106,8 +106,7 @@ export class Explorer extends Component {
   }
 
   // async getItemsLength() {
-  //   await this.folder.ready
-  //   console.log(this.folder.currentView)
+  //   await this.dialog.ready
   //   return this.folder.currentView.items.length
   // }
 
@@ -185,18 +184,20 @@ export class Explorer extends Component {
         multiselectable: "{{multiselectable}}",
       },
       {
-        tag: ".message",
         entry: "message",
+        tag: ".message",
       },
       {
         if: "{{!isPicker}}",
         tag: "footer.w-full.ma-t-xs.ma-0.box-h",
         content: [
-          {
-            tag: ".pa-y-xs.pa-x-md.ma-r-xs.inset-shallow.panel.item-shrink",
-            content:
-              "{{folder.currentView.items.length}} {{pluralize('item', folder.currentView.items.length)}}",
-          },
+          // {
+          //   tag: ".pa-y-xs.pa-x-md.ma-r-xs.inset-shallow.panel.item-shrink",
+          //   // content:
+          //   //   "{{folder.currentView.items.length}} {{pluralize('item', folder.currentView.items.length)}}",
+          //   // content:
+          //   //   "{{getItemsLength(path)}} {{pluralize('item', folder.currentView.items.length)}}",
+          // },
           {
             tag: "input.inset-shallow.panel",
             value: "{{displaySelection(selection)}}",

@@ -178,7 +178,6 @@ output,
 :where(body) {
   background: var(--bg);
   color: var(--fg);
-  /* user-select: auto; */
 }
 
 :where(body.in-iframe) {
@@ -260,8 +259,7 @@ output,
   padding: var(--breath);
 }
 
-.panel,
-body {
+.panel, :where(body) {
   --bg: var(--panel-bg);
   --fg: var(--panel-fg);
   text-shadow: var(--panel-tsh, none);
