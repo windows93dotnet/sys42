@@ -117,6 +117,21 @@ test.ui(async (t) => {
           .click()
       }
     ),
+    launch(
+      t,
+      "#filePickerOpen",
+      false,
+      {
+        ok: true,
+        dir: "/",
+        selection: ["/style.css"],
+        files: [files[0]],
+      },
+      async (dialog) => {
+        await t.puppet('[path="/style.css"]', dialog).dblclick()
+        return false
+      }
+    ),
 
     // /* Save
     // ======= */

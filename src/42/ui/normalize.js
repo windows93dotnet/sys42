@@ -68,6 +68,7 @@ const PLAN_KEYWORDS = new Set([
 const TRAIT_KEYWORDS = new Set([
   "emittable",
   "movable",
+  "navigable",
   "positionable",
   "selectable",
   "transferable",
@@ -519,7 +520,8 @@ export function normalizePlugins(stage, plugins, options) {
 
 export function normalizeTraits(plan, stage) {
   const list = []
-  const traits = plan.traits ?? {}
+  plan.traits ??= {}
+  const { traits } = plan
 
   for (const key of TRAIT_KEYWORDS) if (key in plan) traits[key] = plan[key]
 
