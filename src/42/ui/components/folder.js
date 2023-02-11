@@ -4,7 +4,7 @@ import "./grid.js"
 import Component from "../classes/Component.js"
 import configure from "../../core/configure.js"
 import disk from "../../core/disk.js"
-import io from "../../io.js"
+import run from "../../run.js"
 import normalizeDirname from "../../core/fs/normalizeDirname.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
 import contextmenu from "../invocables/contextmenu.js"
@@ -52,17 +52,17 @@ export class Folder extends Component {
       // ============
       {
         "selector": 'ui-icon[aria-description="file"]',
-        "dblclick || Enter || Space": "{{io.launchFiles(target.path)}}",
+        "dblclick || Enter || Space": "{{run.launchFiles(target.path)}}",
       },
       {
         "selector": 'ui-icon[aria-description="folder"]',
-        "dblclick || Enter || Space": "{{io.launchFolders(target.path)}}",
+        "dblclick || Enter || Space": "{{run.launchFolders(target.path)}}",
       },
       {
         prevent: true,
-        [io.createFolder.meta.shortcut]: "{{io.createFolder(path)}}",
-        [io.deleteFiles.meta.shortcut]: "{{io.deleteFiles(selection)}}",
-        [io.renameFiles.meta.shortcut]: "{{io.renameFiles(selection)}}",
+        [run.createFolder.meta.shortcut]: "{{run.createFolder(path)}}",
+        [run.deleteFiles.meta.shortcut]: "{{run.deleteFiles(selection)}}",
+        [run.renameFiles.meta.shortcut]: "{{run.renameFiles(selection)}}",
       },
       {
         disrupt: true,
@@ -140,16 +140,16 @@ export class Folder extends Component {
       }
 
       if (hasFolders) {
-        menu = hasFiles ? io.fileContextMenu : io.folderContextMenu
-      } else menu = io.fileContextMenu
+        menu = hasFiles ? run.fileContextMenu : run.folderContextMenu
+      } else menu = run.fileContextMenu
 
       contextmenu(icon, e, menu, this.stage)
     } else {
       const menu = [
-        { ...io.createFolder.meta, click: "{{io.createFolder(path)}}" },
-        { ...io.createFile.meta, click: "{{io.createFile(path)}}" },
+        { ...run.createFolder.meta, click: "{{run.createFolder(path)}}" },
+        { ...run.createFile.meta, click: "{{run.createFile(path)}}" },
         "---",
-        { label: "Select all", click: "{{selectAll()}}" }, //
+        { label: "Select all", click: "{{selectAll()}}" },
       ]
       contextmenu(this, e, menu, this.stage)
     }
@@ -225,8 +225,8 @@ export class Folder extends Component {
                 if (isOriginDropzone && effect === "move") return "revert"
 
                 if (paths) {
-                  if (effect === "copy") io.copyPaths(paths, this.path)
-                  else io.movePaths(paths, this.path)
+                  if (effect === "copy") run.copyPaths(paths, this.path)
+                  else run.movePaths(paths, this.path)
                 } else if (files || folders) {
                   import("../../core/fs.js").then(async ({ fs }) => {
                     const undones = []
