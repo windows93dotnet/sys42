@@ -185,7 +185,7 @@ export class DropzoneHint {
       {
         items: system.transfer.items,
         effect: system.transfer.effect,
-        kind: system.transfer.items.kind,
+        kind: system.transfer.items.kind ?? [],
         index: this.newIndex,
         isOriginDropzone: this.isOriginDropzone,
         dropzone: this,

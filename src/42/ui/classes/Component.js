@@ -311,14 +311,24 @@ export default class Component extends HTMLElement {
 
     if (this.render) {
       const renderConfig = { ...config }
+
+      // [1] not needed anymore if used in render
+
       for (const key of propsKeys) {
-        Object.defineProperty(renderConfig, key, { get: () => this[key] })
+        Object.defineProperty(renderConfig, key, {
+          get: () => {
+            if (key in plan.traits) delete plan.traits[key] // [1]
+            delete plan[key] // [1]
+            return this[key]
+          },
+        })
       }
 
       for (const [key, val] of Object.entries(plan)) {
         Object.defineProperty(renderConfig, key, {
           get() {
-            delete plan[key] // not needed anymore if used in render
+            if (key in plan.traits) delete plan.traits[key] // [1]
+            delete plan[key] // [1]
             return val
           },
         })
