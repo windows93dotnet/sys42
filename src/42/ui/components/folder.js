@@ -237,14 +237,26 @@ export class Folder extends Component {
               dropzone: "dim",
               findNewIndex: false,
               kind: "$file",
+              accept: { mimetype: "*" },
+              effects: ["move", "copy"],
             },
             transferable,
             {
+              export({ items }) {
+                items.details = { paths: [], dataTypes: [] }
+                for (const item of items) {
+                  items.details.dataTypes.push(item.target.infos.mime)
+                  items.details.paths.push(item.target.path)
+                }
+              },
               import: (details) => {
                 const res = transferable?.import?.(details)
                 if (res !== undefined) return res
 
-                const { paths, effect, isOriginDropzone } = details
+                const { paths, files, effect, isOriginDropzone } = details
+
+                console.log(paths, files, effect)
+
                 if (isOriginDropzone && effect === "move") return "revert"
 
                 if (effect === "copy") io.copyPaths(paths, this.path)

@@ -51,6 +51,7 @@ export class ItemsHint extends Array {
     super()
     this.config = { ...options }
     this.kind = this.config.kind
+    this.details = {}
   }
 
   startAnimation() {

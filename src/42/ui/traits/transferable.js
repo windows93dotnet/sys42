@@ -28,7 +28,7 @@ const DEFAULTS = {
   handlerSelector: undefined,
   accept: undefined,
   findNewIndex: true,
-  effectAllowed: ["move", "copy", "link"],
+  effects: ["move", "copy", "link"],
 
   items: "stack",
   dropzone: "slide",
@@ -80,9 +80,9 @@ function setEffect(options) {
           applyEffect(effect ?? "none", options)
         })
     } else {
-      const { effectAllowed } = system.transfer.currentZone.config
+      const { effects } = system.transfer.currentZone.config
       for (const [key, effect] of keyToEffect) {
-        if (key in keys && effectAllowed.includes(effect)) {
+        if (key in keys && effects.includes(effect)) {
           return applyEffect(effect, options)
         }
       }
@@ -90,7 +90,7 @@ function setEffect(options) {
       applyEffect(
         system.transfer.currentZone.isOriginDropzone
           ? "move" // sort
-          : effectAllowed[0],
+          : effects[0],
         options
       )
     }
@@ -206,7 +206,7 @@ function checkMimetype(mimetype) {
   for (const { type, subtype } of mimetype) {
     let ok = false
 
-    for (const item of system.transfer.items.dataTypes) {
+    for (const item of system.transfer.items.details.dataTypes) {
       if (
         (type === "*" || item.type === type) &&
         (subtype === "*" || item.subtype === subtype)
@@ -225,7 +225,7 @@ function checkAccept(dropzone) {
   if (dropzone.isIframe) return true
   const { accept } = dropzone.config
 
-  if (system.transfer.items.dataTypes) {
+  if (system.transfer.items.details.dataTypes) {
     if (accept.mimetype) return Boolean(checkMimetype(accept.mimetype))
     return false
   }
@@ -329,10 +329,10 @@ function serializeItems({ hideGhost, x = 0, y = 0 }) {
     items.push(exportedItem)
   }
 
-  const { dropzoneId, dataTypes } = system.transfer.items
+  const { dropzoneId, details } = system.transfer.items
   const { itemsConfig } = system.transfer
 
-  return { items, dropzoneId, itemsConfig, dataTypes }
+  return { items, dropzoneId, itemsConfig, details }
 }
 
 function deserializeItems(items, parentX = 0, parentY = 0) {
@@ -445,7 +445,7 @@ if (inIframe) {
   ipc
     .on(
       "42_TF_v_ENTER",
-      async ({ x, y, items, itemsConfig, dropzoneId, dataTypes }) => {
+      async ({ x, y, items, itemsConfig, dropzoneId, details }) => {
         enterReady = defer()
         deserializeItems(items)
 
@@ -454,7 +454,7 @@ if (inIframe) {
         system.transfer.items = itemsHint
         system.transfer.itemsConfig = itemsConfig
         system.transfer.items.dropzoneId = dropzoneId
-        system.transfer.items.dataTypes = dataTypes
+        system.transfer.items.details = details
         system.transfer.items.start(x, y, items)
 
         activateZones(x, y)
@@ -596,7 +596,7 @@ if (!inIframe) {
       const itemsConfig = { type: "invisible" }
       const { itemsHint } = await makeHints({ itemsConfig })
       system.transfer.items = itemsHint
-      system.transfer.items.dataTypes = dataTypes
+      system.transfer.items.details.dataTypes = dataTypes
       system.transfer.itemsConfig = itemsConfig
       system.transfer.items.start(x, y, items)
 
@@ -687,14 +687,14 @@ class Transferable extends Trait {
       ).map((x) => parseMimetype(x))
     }
 
-    dropzoneConfig.effectAllowed ??= arrify(
-      options.effectAllowed ??
+    dropzoneConfig.effects ??= arrify(
+      options.effects ??
         (this.list
           ? ["move", "copy"]
           : options.accept &&
             Object.keys(options.accept).every((x) => x === "mimetype")
           ? ["copy"]
-          : this.config.effectAllowed)
+          : this.config.effects)
     )
 
     const ms = this.config.animationSpeed
@@ -790,6 +790,7 @@ class Transferable extends Trait {
           }
 
           system.transfer.items.start(x, y, rects)
+          if (this.config.export) await this.config.export(system.transfer)
 
           if (inIframe) {
             context.isOriginIframe = true
