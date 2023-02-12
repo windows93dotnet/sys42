@@ -52,17 +52,7 @@ async function prepareManifest(manifest, options) {
       options ??= {}
       options.skipNormalize = true
     } else {
-      const disk = await import("../../core/disk.js") //
-        .then((m) => m.default)
-      let dirPath = new URL(document.URL).pathname
-      if (!dirPath.endsWith("/")) dirPath = getDirname(dirPath) + "/"
-      const dirNode = disk.get(dirPath)
-      for (const key of Object.keys(dirNode)) {
-        if (key.endsWith(".app.json5")) {
-          manifest = dirPath + key
-          break
-        }
-      }
+      manifest = new URL("./app.json5", document.URL).pathname
     }
   }
 
