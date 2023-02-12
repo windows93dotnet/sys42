@@ -2,7 +2,6 @@
 import inTop from "../../core/env/realm/inTop.js"
 import Component from "../classes/Component.js"
 import uid from "../../core/uid.js"
-import toTitleCase from "../../fabric/type/string/case/toTitleCase.js"
 
 function seq(el, dir) {
   const items = [
@@ -93,7 +92,7 @@ export class Menu extends Component {
           { tag: "span", content: item.label },
           { tag: "kbd", aria: { hidden: true }, content: item.shortcut },
         ]
-      } else {
+      } else if (item.label) {
         item.label = [
           { tag: "span", content: item.label }, //
         ]
@@ -121,7 +120,6 @@ export class Menu extends Component {
       } else if (item.tag?.startsWith("checkbox")) {
         item.role = "menuitemcheckbox"
       } else if (item.tag?.startsWith("radio")) {
-        item.label[0].content ??= toTitleCase(item.value)
         item.role = "menuitemradio"
         item.on ??= []
         item.on.push({
