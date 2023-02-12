@@ -380,6 +380,7 @@ export default class App extends UI {
           : content,
         state: manifest.state,
         initiator: manifest.initiator,
+        actions: manifest.actions,
       })
     } else {
       const content = {
@@ -400,6 +401,7 @@ export default class App extends UI {
           : content,
         state: manifest.state,
         initiator: manifest.initiator,
+        actions: manifest.actions,
       })
     }
 

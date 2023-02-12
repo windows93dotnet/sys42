@@ -75,12 +75,12 @@ const editor = {
               },
             ]
           : []),
-        "---",
-        {
-          $id: "exit",
-          label: "Exit",
-          click: "{{editor.exit()}}",
-        },
+        // "---",
+        // {
+        //   $id: "exit",
+        //   label: "Exit",
+        //   click: "{{editor.exit()}}",
+        // },
       ],
     },
     {
