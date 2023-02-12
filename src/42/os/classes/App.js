@@ -377,7 +377,7 @@ export default class App extends UI {
       if (manifest.traits) content.traits = manifest.traits
 
       super(el, {
-        tag: ".box-v.app-frame",
+        tag: ".box-v.app-frame.panel",
         content: manifest.menubar
           ? [{ tag: "ui-menubar", items: manifest.menubar }, content]
           : content,
@@ -397,7 +397,7 @@ export default class App extends UI {
       if (manifest.traits) content.traits = manifest.traits
 
       super({
-        tag: ".box-fit.box-v.app-frame",
+        tag: ".box-fit.box-v.app-frame.panel",
         content: manifest.menubar
           ? [{ tag: "ui-menubar", items: manifest.menubar }, content]
           : content,
