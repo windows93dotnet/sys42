@@ -148,19 +148,26 @@ function makeSandbox(manifest) {
     }
   }
 
-  if (manifest.stylesheet) {
-    for (const stylesheet of arrify(manifest.stylesheet)) {
+  if (manifest.styles) {
+    for (const stylesheet of arrify(manifest.styles)) {
       const { href } = new URL(stylesheet, manifest.dirURL)
       out.sandbox.head += `<link rel="stylesheet" href="${href}" />\n`
     }
   }
 
+  if (manifest.scripts) {
+    for (const script of arrify(manifest.scripts)) {
+      const { href } = new URL(script, manifest.dirURL)
+      out.sandbox.head += `<script src="${href}"></script>\n`
+    }
+  }
+
   let appScript = ""
 
-  if (manifest.script) {
+  if (manifest.modules) {
     appScript += `await Promise.all([`
-    for (const script of arrify(manifest.script)) {
-      const { href } = new URL(script, manifest.dirURL)
+    for (const module of arrify(manifest.modules)) {
+      const { href } = new URL(module, manifest.dirURL)
       appScript += `import("${href}"),`
     }
 
@@ -168,7 +175,7 @@ function makeSandbox(manifest) {
   }
 
   const script = escapeTemplate(
-    manifest.script && !manifest.content
+    manifest.modules && !manifest.content
       ? `\
     window.$manifest = ${JSON.stringify(manifest)}
     ${appScript}
@@ -251,7 +258,7 @@ export async function launch(manifestPath, options) {
   ])
 
   const { id, sandbox } = makeSandbox(manifest)
-  if (manifest.script && !manifest.content) {
+  if (manifest.modules && !manifest.content) {
     ui(
       document.documentElement,
       {
