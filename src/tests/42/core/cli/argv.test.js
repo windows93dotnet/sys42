@@ -1,6 +1,6 @@
 import test from "../../../../42/test.js"
-import argv from "../../../../42/os/cli/argv.js"
-import parseCommand from "../../../../42/os/cli/parseCommand.js"
+import argv from "../../../../42/core/cli/argv.js"
+import parseCommand from "../../../../42/core/cli/parseCommand.js"
 import JSON5 from "../../../../42/core/formats/json5.js"
 
 import configure from "../../../../42/core/configure.js"
