@@ -1,7 +1,7 @@
 import listen from "../../fabric/event/listen.js"
 import ensureElement from "../../fabric/dom/ensureElement.js"
-// import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
-// import appendCSS from "../../fabric/dom/appendCSS.js"
+import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
+import appendCSS from "../../fabric/dom/appendCSS.js"
 import configure from "../../core/configure.js"
 import setTemp from "../../fabric/dom/setTemp.js"
 import Canceller from "../../fabric/classes/Canceller.js"
@@ -40,10 +40,10 @@ export default class Dragger {
       this.hoverScroll = new HoverScroll(this.el, this.config.hoverScroll)
     }
 
-    // if (this.config.selector) {
-    //   this.config.selector = ensureScopeSelector(this.config.selector, this.el)
-    //   appendCSS(`${this.config.selector} { touch-action: none; }`, { signal })
-    // } else setTemp(this.el, { signal, style: { "touch-action": "none" } })
+    if (this.config.selector) {
+      this.config.selector = ensureScopeSelector(this.config.selector, this.el)
+      appendCSS(`${this.config.selector} { touch-action: none; }`, { signal })
+    } else setTemp(this.el, { signal, style: { "touch-action": "none" } })
 
     let distX = 0
     let distY = 0
@@ -162,7 +162,6 @@ export default class Dragger {
     listen(this.el, {
       signal,
       selector: this.config.selector,
-      touchstart: false,
       pointerdown: (e, target) => {
         if (e.target.hasPointerCapture(e.pointerId)) {
           e.target.releasePointerCapture(e.pointerId) // https://stackoverflow.com/a/70976018
