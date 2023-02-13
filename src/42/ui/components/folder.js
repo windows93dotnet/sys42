@@ -56,11 +56,11 @@ export class Folder extends Component {
       // ============
       {
         "selector": 'ui-icon[aria-description="file"]',
-        "dblclick || Enter || Space": "{{os.launchFiles(target.path)}}",
+        "dblclick || Enter || Space": "{{os.launchFile(target.path)}}",
       },
       {
         "selector": 'ui-icon[aria-description="folder"]',
-        "dblclick || Enter || Space": "{{os.launchFolders(target.path)}}",
+        "dblclick || Enter || Space": "{{os.launchFolder(target.path)}}",
       },
       {
         "selector": 'ui-icon[aria-description="shortcut"]',
@@ -69,8 +69,8 @@ export class Folder extends Component {
       {
         prevent: true,
         [os.createFolder.meta.shortcut]: "{{os.createFolder(path)}}",
-        [os.deleteFiles.meta.shortcut]: "{{os.deleteFiles(selection)}}",
-        [os.renameFiles.meta.shortcut]: "{{os.renameFiles(selection)}}",
+        [os.deleteFile.meta.shortcut]: "{{os.deleteFile(selection)}}",
+        [os.renameFile.meta.shortcut]: "{{os.renameFile(selection)}}",
       },
       {
         disrupt: true,
@@ -243,8 +243,8 @@ export class Folder extends Component {
                 if (isOriginDropzone && effect === "move") return "revert"
 
                 if (paths) {
-                  if (effect === "copy") os.copyPaths(paths, this.path)
-                  else os.movePaths(paths, this.path)
+                  if (effect === "copy") os.copyPath(paths, this.path)
+                  else os.movePath(paths, this.path)
                 } else if (files || folders) {
                   import("../../core/fs.js").then(async ({ fs }) => {
                     const undones = []
