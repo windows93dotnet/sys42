@@ -85,26 +85,31 @@ class AppsManager extends ConfigFile {
     const openers = {}
 
     for (const path of arrify(paths)) {
+      if (path.endsWith("/")) {
+        import("../../ui/components/explorer.js").then(({ explorer }) =>
+          explorer(path)
+        )
+        continue
+      }
+
       const apps = mimetypesManager.getApps(path)
 
       if (apps?.length) {
         openers[apps[0]] ??= []
         openers[apps[0]].push(path)
       } else {
-        import("../../ui/invocables/alert.js").then(({ default: alert }) =>
+        import("../../ui/invocables/alert.js").then(({ alert }) =>
           alert("No app available to open this type of file")
         )
       }
     }
 
-    const entries = Object.entries(openers)
-
-    for (const [appName, paths] of entries) {
-      this.exec(appName, { $files: paths })
+    for (const [appName, paths] of Object.entries(openers)) {
+      this.launch(appName, { $files: paths })
     }
   }
 
-  async exec(appName, state) {
+  async launch(appName, state) {
     await this.ready
     if (appName in this.value === false) {
       throw new Error(`Unknown app: ${appName}`)
@@ -130,7 +135,7 @@ class AppsManager extends ConfigFile {
       const menuItem = {
         label: appName,
         click: () => {
-          this.exec(appName)
+          this.launch(appName)
         },
       }
 

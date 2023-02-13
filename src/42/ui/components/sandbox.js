@@ -155,7 +155,7 @@ export class Sandbox extends Component {
     if (!this.path) return
 
     this.toggleAttribute("loading", true)
-    this.message("loading...")
+    // this.message("loading...")
 
     this.#cancel = this.stage.cancel.fork()
     const { signal } = this.#cancel
@@ -164,7 +164,7 @@ export class Sandbox extends Component {
 
     try {
       await this.resource.go(this.path, { signal })
-      this.message()
+      // this.message()
     } catch {
       this.message(
         create("div", "Impossible to embed this URL"),
