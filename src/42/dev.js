@@ -50,7 +50,7 @@ if (inTop && inAutomated) {
       )
     },
     clear() {
-      fetch("/?clear").then(() => location.reload())
+      fetch("/?clear-site-data").then(() => location.reload())
     },
     pause() {
       dev.sse.enabled = false
