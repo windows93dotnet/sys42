@@ -1,8 +1,11 @@
+/* eslint-disable complexity */
 import Component from "../classes/Component.js"
 import getPathInfos from "../../core/path/getPathInfos.js"
 import fs from "../../core/fs.js"
+import decodeINI from "../../core/formats/ini/decodeINI.js"
 import themeManager from "../../os/managers/themeManager.js"
 import mimetypesManager from "../../os/managers/mimetypesManager.js"
+import getStemname from "../../core/path/core/getStemname.js"
 
 let ready
 
@@ -72,6 +75,27 @@ class Icon extends Component {
       this.stage.waitlistPending.push(undones)
       await undones
       ready = true
+    }
+
+    if (path.endsWith(".desktop")) {
+      const ini = decodeINI(await fs.readText(path))["Desktop Entry"]
+      const icon = ini.Icon
+
+      const infos = { name: ini.Name || getStemname(path) }
+
+      if (ini.Exec) infos.exec = ini.Exec
+
+      infos.description = "shortcut"
+
+      if (this.small) {
+        infos.image16x16 ??= await fs.getURL(
+          await themeManager.getIconPath(icon, "16x16")
+        )
+      } else {
+        infos.image ??= await fs.getURL(await themeManager.getIconPath(icon))
+      }
+
+      return infos
     }
 
     const infos = getPathInfos(path, {

@@ -8,7 +8,7 @@ import trailZeros from "../fabric/type/number/trailZeros.js"
 import dispatch from "../fabric/event/dispatch.js"
 import queueTask from "../fabric/type/function/queueTask.js"
 import { round, floor, ceil } from "../fabric/type/number/precision.js"
-import run from "../run.js"
+import os from "../os/actions.js"
 
 const types = {}
 
@@ -209,7 +209,11 @@ types.fs = {
   },
 }
 
-types.run = run
+types.os = os
+
+types.os.exec = async (...args) =>
+  import("../exec.js") //
+    .then(({ exec }) => exec(...args))
 
 types.ui = {
   render(item) {

@@ -4,11 +4,11 @@ import "./grid.js"
 import Component from "../classes/Component.js"
 import configure from "../../core/configure.js"
 import disk from "../../core/disk.js"
-import run from "../../run.js"
+import os from "../../os/actions.js"
 import normalizeDirname from "../../core/fs/normalizeDirname.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
 import contextmenu from "../invocables/contextmenu.js"
-// import fs from "../../core/fs.js"
+import getBasename from "../../core/path/core/getBasename.js"
 
 const _forgetWatch = Symbol("Folder.forgetWatch")
 const _updatePath = Symbol("Folder.updatePath")
@@ -43,6 +43,10 @@ export class Folder extends Component {
         type: "boolean",
         default: true,
       },
+      showHiddenFiles: {
+        type: "boolean",
+        default: false,
+      },
       transferable: { type: "any", trait: true, default: true },
       selectable: { type: "any", default: true },
     },
@@ -52,24 +56,32 @@ export class Folder extends Component {
       // ============
       {
         "selector": 'ui-icon[aria-description="file"]',
-        "dblclick || Enter || Space": "{{run.launchFiles(target.path)}}",
+        "dblclick || Enter || Space": "{{os.launchFiles(target.path)}}",
       },
       {
         "selector": 'ui-icon[aria-description="folder"]',
-        "dblclick || Enter || Space": "{{run.launchFolders(target.path)}}",
+        "dblclick || Enter || Space": "{{os.launchFolders(target.path)}}",
+      },
+      {
+        "selector": 'ui-icon[aria-description="shortcut"]',
+        "dblclick || Enter || Space": "{{os.exec(target.infos.exec)}}",
       },
       {
         prevent: true,
-        [run.createFolder.meta.shortcut]: "{{run.createFolder(path)}}",
-        [run.deleteFiles.meta.shortcut]: "{{run.deleteFiles(selection)}}",
-        [run.renameFiles.meta.shortcut]: "{{run.renameFiles(selection)}}",
+        [os.createFolder.meta.shortcut]: "{{os.createFolder(path)}}",
+        [os.deleteFiles.meta.shortcut]: "{{os.deleteFiles(selection)}}",
+        [os.renameFiles.meta.shortcut]: "{{os.renameFiles(selection)}}",
       },
       {
         disrupt: true,
         contextmenu: "{{displayContextmenu(e, target)}}",
       },
     ],
-  };
+  }
+
+  xxx(target) {
+    console.log(target)
+  }
 
   [_updatePath](initial) {
     const path = normalizeDirname(this.path)
@@ -140,14 +152,14 @@ export class Folder extends Component {
       }
 
       if (hasFolders) {
-        menu = hasFiles ? run.fileContextMenu : run.folderContextMenu
-      } else menu = run.fileContextMenu
+        menu = hasFiles ? os.fileContextMenu : os.folderContextMenu
+      } else menu = os.fileContextMenu
 
       contextmenu(icon, e, menu, this.stage)
     } else {
       const menu = [
-        { ...run.createFolder.meta, click: "{{run.createFolder(path)}}" },
-        { ...run.createFile.meta, click: "{{run.createFile(path)}}" },
+        { ...os.createFolder.meta, click: "{{os.createFolder(path)}}" },
+        { ...os.createFile.meta, click: "{{os.createFile(path)}}" },
         "---",
         { label: "Select all", click: "{{selectAll()}}" },
       ]
@@ -164,14 +176,20 @@ export class Folder extends Component {
     try {
       dir = await (this.glob
         ? disk.glob(
-            path.endsWith("*") || path.includes(".") ? path : path + "*"
+            path.endsWith("*") || //
+              (!path.startsWith(".") && path.includes("."))
+              ? path
+              : path + "*"
           )
         : disk.readDir(path, { absolute: true }))
-      // dir = await fs.readDir(path, { absolute: true })
       this.err = undefined
     } catch (err) {
       this.err = err.message
       dir = []
+    }
+
+    if (this.showHiddenFiles !== true) {
+      dir = dir.filter((item) => !getBasename(item).startsWith("."))
     }
 
     if (this.view === "tree") {
@@ -225,8 +243,8 @@ export class Folder extends Component {
                 if (isOriginDropzone && effect === "move") return "revert"
 
                 if (paths) {
-                  if (effect === "copy") run.copyPaths(paths, this.path)
-                  else run.movePaths(paths, this.path)
+                  if (effect === "copy") os.copyPaths(paths, this.path)
+                  else os.movePaths(paths, this.path)
                 } else if (files || folders) {
                   import("../../core/fs.js").then(async ({ fs }) => {
                     const undones = []

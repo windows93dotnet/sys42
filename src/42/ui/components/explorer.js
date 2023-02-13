@@ -95,6 +95,7 @@ export class Explorer extends Component {
   }
 
   open(path) {
+    console.log(777)
     if (keyboard.keys.Control) return
     open(path)
   }
