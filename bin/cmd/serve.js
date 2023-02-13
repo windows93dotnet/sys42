@@ -81,7 +81,7 @@ export default async function serve() {
     async handler(req, reply) {
       const { url } = req
 
-      if ("clear" in req.query) {
+      if ("clear-site-data" in req.query) {
         task.log(`🧽 clear site data`)
         reply.header("Clear-Site-Data", '"cache", "storage"')
       }
