@@ -673,7 +673,7 @@ function normalizeOn(plan) {
 }
 
 /* plan
-====== */
+======= */
 
 export function objectifyPlan(plan, key = "content") {
   if (plan != null) {
@@ -684,29 +684,25 @@ export function objectifyPlan(plan, key = "content") {
   return {}
 }
 
-// import log from "../core/log.js"
-
 export function forkPlan(plan, stage) {
   if (
     (plan?.content === undefined && plan?.items === undefined) ||
     plan?.scope
   ) {
-    // log(plan)
     plan = { content: plan }
   }
-  // if (plan?.scope) plan = { content: plan }
 
   plan = { ...plan }
 
   if (stage) {
     const data = stage.reactive?.data
-    if (!isEmptyObject(data)) plan.state = merge({}, data)
+    if (data && !isEmptyObject(data)) plan.state = merge({}, data)
     if (stage.id) plan.initiator = stage.id
     if (stage.scope) plan.scope = stage.scope
     if (stage.scopeChain) plan.scopeChain = merge([], stage.scopeChain)
     if (stage.plugins) plan.plugins = Object.keys(stage.plugins)
-    const actions = stage.actions.value
-    if (!isEmptyObject(actions)) {
+    const actions = stage.actions?.value
+    if (actions && !isEmptyObject(actions)) {
       plan.actions = merge({}, actions)
       plan.actionsScope = "/"
     }

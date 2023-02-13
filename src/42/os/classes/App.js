@@ -10,7 +10,6 @@ import postrenderAutofocus from "../../ui/postrenderAutofocus.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
 import arrify from "../../fabric/type/any/arrify.js"
 import template from "../../core/formats/template.js"
-import getDirname from "../../core/path/core/getDirname.js"
 import Emitter from "../../fabric/classes/Emitter.js"
 import resolve from "../../fabric/json/resolve.js"
 import transferable from "../../ui/traits/transferable.js"
@@ -60,7 +59,7 @@ async function prepareManifest(manifest, options) {
     const fs = await import("../../core/fs.js") //
       .then((m) => m.default)
 
-    const manifestPath = new URL(manifest, location).pathname
+    const manifestPath = new URL(manifest, document.baseURI).pathname
 
     manifest = await fs.read.json5(manifestPath)
     manifest.manifestPath = manifestPath
@@ -73,14 +72,14 @@ async function prepareManifest(manifest, options) {
   manifest = configure(manifest, options)
 
   if (inTop) {
-    // manifest.permissions ??= "app"
-    // if (manifest.permissions !== "app") {
-    //   console.warn("TODO: ask user for permissions")
-    //   manifest.trusted = true
-    // }
+    manifest.permissions ??= "app"
+    if (manifest.permissions !== "app") {
+      console.warn("TODO: ask user for permissions")
+      manifest.trusted = true
+    }
 
-    manifest.permissions ??= "trusted"
-    manifest.trusted = true
+    // manifest.permissions ??= "trusted"
+    // manifest.trusted = true
   }
 
   manifest.state ??= {}

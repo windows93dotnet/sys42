@@ -64,8 +64,8 @@ async function normaliseDecode(manifest) {
 export async function normalizeManifest(manifest, options) {
   manifest.slug ??= toKebabCase(manifest.name)
 
-  manifest.manifestPath ??= document.URL
-  manifest.manifestURL ??= new URL(manifest.manifestPath, location).href
+  manifest.manifestPath ??= document.baseURI
+  manifest.manifestURL ??= new URL(manifest.manifestPath, document.baseURI).href
   manifest.dir ??= getDirname(manifest.manifestPath) + "/"
   manifest.dirURL ??= getDirname(manifest.manifestURL) + "/"
 
