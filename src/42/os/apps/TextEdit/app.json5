@@ -21,10 +21,16 @@
           "application/xml",
         ],
       },
+      // {
+      //   description: "Desktop Entry",
+      //   accept: {
+      //     "text/plain": [".directory", ".desktop"],
+      //   },
+      // },
     ],
   },
 
-  preload: ["../../../ui/components/tabs.js"],
+  // preload: ["../../../ui/components/tabs.js"],
 
   $ref: "./app.js",
 }
