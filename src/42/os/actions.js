@@ -8,31 +8,31 @@ const createFolder = async (path, options) =>
   import("./actions/createPath.js") //
     .then((m) => m.default(path, { ...options, folder: true }))
 
-const deleteFiles = async (path) =>
-  import("./actions/deletePaths.js") //
+const deleteFile = async (path) =>
+  import("./actions/deletePath.js") //
     .then((m) => m.default(path))
 
-const deleteFolders = async (path) =>
-  import("./actions/deletePaths.js") //
+const deleteFolder = async (path) =>
+  import("./actions/deletePath.js") //
     .then((m) => m.default(path))
 
-const launchFiles = async (...args) =>
-  import("./actions/launchPaths.js").then((m) => m.default(...args))
+const launchFile = async (...args) =>
+  import("./actions/launchPath.js").then((m) => m.default(...args))
 
-const launchFolders = async (...args) =>
-  import("./actions/launchPaths.js").then((m) => m.default(...args))
+const launchFolder = async (...args) =>
+  import("./actions/launchPath.js").then((m) => m.default(...args))
 
-const renameFiles = async (...args) =>
-  import("./actions/renamePaths.js").then((m) => m.default(...args))
+const renameFile = async (...args) =>
+  import("./actions/renamePath.js").then((m) => m.default(...args))
 
-const renameFolders = async (...args) =>
-  import("./actions/renamePaths.js").then((m) => m.default(...args))
+const renameFolder = async (...args) =>
+  import("./actions/renamePath.js").then((m) => m.default(...args))
 
-const movePaths = async (...args) =>
-  import("./actions/movePaths.js").then((m) => m.default(...args))
+const movePath = async (...args) =>
+  import("./actions/movePath.js").then((m) => m.default(...args))
 
-const copyPaths = async (...args) =>
-  import("./actions/copyPaths.js").then((m) => m.default(...args))
+const copyPath = async (...args) =>
+  import("./actions/copyPath.js").then((m) => m.default(...args))
 
 createFile.meta = {
   label: "Create File…",
@@ -43,62 +43,62 @@ createFolder.meta = {
   shortcut: "F10",
 }
 
-deleteFiles.meta = {
+deleteFile.meta = {
   label: "Delete File",
   shortcut: "Del",
 }
 
-deleteFolders.meta = {
+deleteFolder.meta = {
   label: "Delete Folder",
   shortcut: "Del",
 }
 
-launchFiles.meta = {
+launchFile.meta = {
   label: "Open File…",
   shortcut: "Ctrl+O",
   picto: "file",
 }
 
-launchFolders.meta = {
+launchFolder.meta = {
   label: "Open Folder…",
   shortcut: "Ctrl+K Ctrl+O",
   picto: "folder-open",
 }
 
-renameFiles.meta = {
+renameFile.meta = {
   label: "Rename…",
   shortcut: "F2",
 }
 
-renameFolders.meta = { ...renameFiles.meta }
+renameFolder.meta = { ...renameFile.meta }
 
 const fileContextMenu = [
-  { ...launchFiles.meta, click: "{{os.launchFiles(selection)}}" },
+  { ...launchFile.meta, click: "{{os.launchFile(selection)}}" },
   "---",
-  { ...deleteFiles.meta, click: "{{os.deleteFiles(selection)}}" },
+  { ...deleteFile.meta, click: "{{os.deleteFile(selection)}}" },
   "---",
-  { ...renameFiles.meta, click: "{{os.renameFiles(selection)}}" },
+  { ...renameFile.meta, click: "{{os.renameFile(selection)}}" },
 ]
 
 const folderContextMenu = [
-  { ...launchFolders.meta, click: "{{os.launchFolders(selection)}}" },
+  { ...launchFolder.meta, click: "{{os.launchFolder(selection)}}" },
   "---",
-  { ...deleteFolders.meta, click: "{{os.deleteFolders(selection)}}" },
+  { ...deleteFolder.meta, click: "{{os.deleteFolder(selection)}}" },
   "---",
-  { ...renameFiles.meta, click: "{{os.renameFiles(selection)}}" },
+  { ...renameFile.meta, click: "{{os.renameFile(selection)}}" },
 ]
 
 export default {
   createFile,
   createFolder,
-  deleteFiles,
-  deleteFolders,
-  launchFiles,
-  launchFolders,
-  renameFiles,
-  renameFolders,
-  movePaths,
-  copyPaths,
+  deleteFile,
+  deleteFolder,
+  launchFile,
+  launchFolder,
+  renameFile,
+  renameFolder,
+  movePath,
+  copyPath,
 
   fileContextMenu,
   folderContextMenu,
