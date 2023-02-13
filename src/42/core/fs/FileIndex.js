@@ -1,4 +1,5 @@
 import Storable from "../../fabric/classes/Storable.js"
+import Locator from "../../fabric/classes/Locator.js"
 import FileSystemError from "./FileSystemError.js"
 import configure from "../configure.js"
 import joinPath from "../../core/path/core/joinPath.js"
@@ -8,17 +9,20 @@ import isDirDescriptor from "./isDirDescriptor.js"
 import isGlob from "../path/isGlob.js"
 import glob, { Glob } from "../../core/path/glob.js"
 import normalizeFilename from "./normalizeFilename.js"
+import inTop from "../env/realm/inTop.js"
 
 const DEFAULTS = {
   name: "fileindex",
-  sep: "/",
+  delimiter: "/",
   hashmap: true,
   // durability: "relaxed",
 }
 
-export default class FileIndex extends Storable {
-  constructor(root = Object.create(null), options) {
-    super(root, configure(DEFAULTS, options))
+const ParentClass = inTop ? Storable : Locator
+
+export default class FileIndex extends ParentClass {
+  constructor(value = Object.create(null), options) {
+    super(value, configure(DEFAULTS, options))
     emittable(this)
   }
 
@@ -53,7 +57,7 @@ export default class FileIndex extends Storable {
   }
 
   glob(patterns, options) {
-    const paths = glob.locate(this.root, patterns)
+    const paths = glob.locate(this.value, patterns)
     return options?.sort === false ? paths : sortPath(paths, options?.sort)
   }
 
@@ -99,12 +103,12 @@ export default class FileIndex extends Storable {
         if (isDirDescriptor(desc)) {
           if (recursive) {
             names.push(...this.readDir(`${path}/${key}`, options, res))
-          } else names.push(res + this.sep)
+          } else names.push(res + this.delimiter)
         } else names.push(res)
       }
     }
 
-    if (parent && names.length === 0) names.push(parent + this.sep)
+    if (parent && names.length === 0) names.push(parent + this.delimiter)
 
     return sortPath(names)
   }

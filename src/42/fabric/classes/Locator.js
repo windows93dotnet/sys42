@@ -5,8 +5,14 @@ import deallocate from "../locator/deallocate.js"
 import merge from "../type/object/merge.js"
 
 export default class Locator {
+  #allocateConfig
+
   constructor(value = {}, options) {
     this.value = value
+
+    this.#allocateConfig = options?.hashmap ? { hashmap: true } : undefined
+    this.value ??= options?.hashmap ? Object.create(null) : {}
+
     this.delimiter =
       typeof options === "string" //
         ? options
@@ -22,7 +28,7 @@ export default class Locator {
   }
 
   set(path, val) {
-    allocate(this.value, path, val, this.delimiter)
+    allocate(this.value, path, val, this.delimiter, this.#allocateConfig)
   }
 
   delete(path) {
