@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 import allocate from "../../fabric/locator/allocate.js"
-import settings from "../../core/settings.js"
+import settings from "../settings.js"
 import locate from "../../fabric/locator/locate.js"
 import isHashmapLike from "../../fabric/type/any/is/isHashmapLike.js"
 
