@@ -13,6 +13,7 @@ import template from "../../core/formats/template.js"
 import Emitter from "../../fabric/classes/Emitter.js"
 import resolve from "../../fabric/json/resolve.js"
 import transferable from "../../ui/traits/transferable.js"
+import ipc from "../../core/ipc.js"
 
 import editor from "./App/editor.js"
 import preinstall from "./App/preinstall.js"
@@ -238,8 +239,18 @@ async function shell(manifestPath, options) {
   return new App(manifest)
 }
 
-// Execute App sandboxed inside a dialog
+if (inTop) {
+  ipc.on("42_APP_LAUNCH", ({ manifestPath, options }) =>
+    launch(manifestPath, options)
+  )
+}
+
+// Execute App sandboxed
 export async function launch(manifestPath, options) {
+  if (!inTop) {
+    return void ipc.emit("42_APP_LAUNCH", { manifestPath, options })
+  }
+
   const [manifest, dialog] = await Promise.all([
     prepareManifest(manifestPath, options),
     await import("../../ui/components/dialog.js") //
@@ -275,7 +286,7 @@ export async function launch(manifestPath, options) {
     picto = item.src
   }
 
-  return dialog(
+  dialog(
     {
       id,
       class: `app__${manifest.slug}`,

@@ -20,7 +20,7 @@ export default async function scan() {
   system.config.files = files
 
   const scannedFiles = sortPath(
-    await globby(task.glob, { ...GLOBBY_DEFAULTS, cwd })
+    await globby(task.glob, { ...GLOBBY_DEFAULTS, cwd, dot: true })
   )
 
   if (scannedFiles.length === 0) {
