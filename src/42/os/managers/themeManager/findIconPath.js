@@ -3,6 +3,8 @@
 /* eslint-disable complexity */
 
 import disk from "../../../core/disk.js"
+import fs from "../../../core/fs.js"
+import decodeINI from "../../../core/formats/ini/decodeINI.js"
 import locate from "../../../fabric/locator/locate.js"
 import getDirBasePair from "../../../core/path/core/getDirBasePair.js"
 import parseMimetype from "../../../fabric/type/file/parseMimetype.js"
@@ -90,7 +92,12 @@ function searchIcon(themePath, obj, val) {
   }
 }
 
-export default function findIconPath(themePath, val, size) {
+export default async function findIconPath(themePath, val, size) {
+  if (val.isDir && disk.has(val.pathname + ".directory")) {
+    const ini = decodeINI(await fs.readText(val.pathname + ".directory"))
+    val = ini["Desktop Entry"]?.Icon
+  }
+
   const dirNode = disk.get(themePath)
   if (!dirNode) return
 
