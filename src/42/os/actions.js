@@ -1,40 +1,38 @@
 // @read https://www.electronjs.org/docs/latest/api/menu#examples
 
-const run = {}
-
 const createFile = async (path, options) =>
-  import("./os/runners/createPath.js") //
+  import("./actions/createPath.js") //
     .then((m) => m.default(path, options))
 
 const createFolder = async (path, options) =>
-  import("./os/runners/createPath.js") //
+  import("./actions/createPath.js") //
     .then((m) => m.default(path, { ...options, folder: true }))
 
 const deleteFiles = async (path) =>
-  import("./os/runners/deletePaths.js") //
+  import("./actions/deletePaths.js") //
     .then((m) => m.default(path))
 
 const deleteFolders = async (path) =>
-  import("./os/runners/deletePaths.js") //
+  import("./actions/deletePaths.js") //
     .then((m) => m.default(path))
 
 const launchFiles = async (...args) =>
-  import("./os/runners/launchPaths.js").then((m) => m.default(...args))
+  import("./actions/launchPaths.js").then((m) => m.default(...args))
 
 const launchFolders = async (...args) =>
-  import("./os/runners/launchPaths.js").then((m) => m.default(...args))
+  import("./actions/launchPaths.js").then((m) => m.default(...args))
 
 const renameFiles = async (...args) =>
-  import("./os/runners/renamePaths.js").then((m) => m.default(...args))
+  import("./actions/renamePaths.js").then((m) => m.default(...args))
 
 const renameFolders = async (...args) =>
-  import("./os/runners/renamePaths.js").then((m) => m.default(...args))
+  import("./actions/renamePaths.js").then((m) => m.default(...args))
 
 const movePaths = async (...args) =>
-  import("./os/runners/movePaths.js").then((m) => m.default(...args))
+  import("./actions/movePaths.js").then((m) => m.default(...args))
 
 const copyPaths = async (...args) =>
-  import("./os/runners/copyPaths.js").then((m) => m.default(...args))
+  import("./actions/copyPaths.js").then((m) => m.default(...args))
 
 createFile.meta = {
   label: "Create File…",
@@ -75,22 +73,22 @@ renameFiles.meta = {
 renameFolders.meta = { ...renameFiles.meta }
 
 const fileContextMenu = [
-  { ...launchFiles.meta, click: "{{run.launchFiles(selection)}}" },
+  { ...launchFiles.meta, click: "{{os.launchFiles(selection)}}" },
   "---",
-  { ...deleteFiles.meta, click: "{{run.deleteFiles(selection)}}" },
+  { ...deleteFiles.meta, click: "{{os.deleteFiles(selection)}}" },
   "---",
-  { ...renameFiles.meta, click: "{{run.renameFiles(selection)}}" },
+  { ...renameFiles.meta, click: "{{os.renameFiles(selection)}}" },
 ]
 
 const folderContextMenu = [
-  { ...launchFolders.meta, click: "{{run.launchFolders(selection)}}" },
+  { ...launchFolders.meta, click: "{{os.launchFolders(selection)}}" },
   "---",
-  { ...deleteFolders.meta, click: "{{run.deleteFolders(selection)}}" },
+  { ...deleteFolders.meta, click: "{{os.deleteFolders(selection)}}" },
   "---",
-  { ...renameFiles.meta, click: "{{run.renameFiles(selection)}}" },
+  { ...renameFiles.meta, click: "{{os.renameFiles(selection)}}" },
 ]
 
-export default Object.assign(run, {
+export default {
   createFile,
   createFolder,
   deleteFiles,
@@ -104,4 +102,4 @@ export default Object.assign(run, {
 
   fileContextMenu,
   folderContextMenu,
-})
+}

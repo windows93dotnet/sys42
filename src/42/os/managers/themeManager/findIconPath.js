@@ -93,8 +93,8 @@ function searchIcon(themePath, obj, val) {
 }
 
 export default async function findIconPath(themePath, val, size) {
-  if (val.isDir && disk.has(val.pathname + ".directory")) {
-    const ini = decodeINI(await fs.readText(val.pathname + ".directory"))
+  if (val.isDir && disk.has(val.filename + ".directory")) {
+    const ini = decodeINI(await fs.readText(val.filename + ".directory"))
     val = ini["Desktop Entry"]?.Icon
   }
 
