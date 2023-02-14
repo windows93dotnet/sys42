@@ -1,4 +1,5 @@
 import Component from "../classes/Component.js"
+import defer from "../../fabric/type/promise/defer.js"
 import toggleFullscreen from "../../fabric/browser/toggleFullscreen.js"
 
 // @src https://www.30secondsofcode.org/js/s/format-seconds
@@ -82,6 +83,12 @@ export class Player extends Component {
     },
   }
 
+  async load(url) {
+    this.ready = defer()
+    this.media.src = url
+    return this.ready
+  }
+
   render() {
     let rafId
 
@@ -114,14 +121,15 @@ export class Player extends Component {
                 // console.groupEnd()
                 this.elapsed = 0
                 this.duration = 0
-                this.audio = false
+                // this.audio = false
               },
               "loadedmetadata": () => {
                 this.elapsed = this.media.currentTime
                 this.duration = this.media.duration
-                this.audio = this.media.videoHeight === 0
+                // this.audio = this.media.videoHeight === 0
                 this.media.volume = this.volume
                 // console.log(this.media.getVideoPlaybackQuality())
+                this.ready?.resolve()
               },
               "play || pause": () => {
                 this.paused = this.media.paused
@@ -200,6 +208,14 @@ export class Player extends Component {
         },
       ],
     }
+  }
+
+  play() {
+    this.media.play()
+  }
+
+  pause() {
+    this.media.pause()
   }
 
   playPause() {

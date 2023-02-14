@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 /* eslint-disable max-depth */
 import Reactive from "./classes/Reactive.js"
 import resolveScope from "./resolveScope.js"
@@ -58,6 +59,7 @@ const PLAN_KEYWORDS = new Set([
   "schema",
   "scope",
   "scopeChain",
+  "start",
   "state",
   "tag",
   "traits",
@@ -827,6 +829,10 @@ export function normalizePlan(plan = {}, stage, options) {
       normalizeData(plan.plugins, stage, (res) => {
         normalizePlugins(stage, res)
       })
+    }
+
+    if (plan.start) {
+      stage.waitlistPostrender.push(plan.start)
     }
   }
 

@@ -73,14 +73,14 @@ async function prepareManifest(manifest, options) {
   manifest = configure(manifest, options)
 
   if (inTop) {
-    manifest.permissions ??= "app"
-    if (manifest.permissions !== "app") {
-      console.warn("TODO: ask user for permissions")
-      manifest.trusted = true
-    }
+    // manifest.permissions ??= "app"
+    // if (manifest.permissions !== "app") {
+    //   console.warn("TODO: ask user for permissions")
+    //   manifest.trusted = true
+    // }
 
-    // manifest.permissions ??= "trusted"
-    // manifest.trusted = true
+    manifest.permissions ??= "trusted"
+    manifest.trusted = true
   }
 
   manifest.state ??= {}
@@ -391,6 +391,7 @@ export default class App extends UI {
         state: manifest.state,
         initiator: manifest.initiator,
         actions: manifest.actions,
+        start: manifest.start,
       })
     } else {
       const content = {
@@ -412,6 +413,7 @@ export default class App extends UI {
         state: manifest.state,
         initiator: manifest.initiator,
         actions: manifest.actions,
+        start: manifest.start,
       })
     }
 
