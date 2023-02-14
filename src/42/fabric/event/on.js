@@ -61,7 +61,7 @@ export function parseShortcut(source) {
       if (buffer in aliases) buffer = aliases[buffer]
       const item = { event: "keydown" }
 
-      if (buffer === "Enter") item.key = buffer
+      if (buffer === "Enter") item.key = "enter"
       else if (buffer === "Return") {
         item.key = "enter"
         item.code = "Enter"
