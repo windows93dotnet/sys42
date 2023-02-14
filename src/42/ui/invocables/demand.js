@@ -19,7 +19,7 @@ export async function demand(options) {
 
   content = { tag: ".ui-dialog-modal__content.box-v", content }
 
-  let src // = config.img
+  let src = config.img
 
   if (config.icon) {
     const { themeManager } = await import("../../os/managers/themeManager.js")
