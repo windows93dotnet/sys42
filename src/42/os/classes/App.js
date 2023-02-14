@@ -265,7 +265,7 @@ export async function launch(manifestPath, options) {
       {
         id,
         tag: `ui-sandbox`,
-        class: `app__${manifest.slug} box-fit`,
+        class: `app__${manifest.slug} box-fit transferable-ignore`,
         style: { zIndex: -1 },
         ...sandbox,
       },
