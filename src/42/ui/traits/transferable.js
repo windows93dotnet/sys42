@@ -137,6 +137,7 @@ function activateZones(x, y) {
 
   const iframes = document.querySelectorAll("iframe")
   for (let i = 0, l = iframes.length; i < l; i++) {
+    if (iframes[i].closest(".transferable-ignore")) continue
     const dropzone = new IframeDropzoneHint(iframes[i], i)
     system.transfer.dropzones.set(dropzone.el, dropzone)
   }
