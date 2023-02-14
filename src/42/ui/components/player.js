@@ -93,8 +93,8 @@ export class Player extends Component {
     let rafId
 
     const loop = () => {
-      this.elapsed = this.media.currentTime
       rafId = requestAnimationFrame(loop)
+      this.elapsed = this.media.currentTime
     }
 
     return {

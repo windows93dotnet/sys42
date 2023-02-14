@@ -179,7 +179,7 @@ function makeSandbox(manifest) {
     )
     window.$files = window.$app.state.$files
     ${appScript}
-    $app.emitDecode()
+    $app.start()
     `
   )
 
@@ -187,21 +187,20 @@ function makeSandbox(manifest) {
   return out
 }
 
-// Execute App
 async function init(manifestPath, options) {
   let manifest = await prepareManifest(manifestPath, options)
   manifest = await resoleManifest(manifest)
   return new App(manifest)
 }
 
-// Execute App inside element
 async function mount(el, manifestPath, options) {
   let manifest = await prepareManifest(manifestPath, options)
   manifest = await resoleManifest(manifest)
-  return new App(el ?? true, manifest)
+  const app = new App(el ?? true, manifest)
+  app.start()
+  return app
 }
 
-// Execute App sandboxed in a top level page
 async function shell(manifestPath, options) {
   let manifest = await prepareManifest(manifestPath, options)
 
@@ -236,7 +235,9 @@ async function shell(manifestPath, options) {
   // It's safe to resolve $ref keywords with potential javascript functions
   manifest = await resoleManifest(manifest)
 
-  return new App(manifest)
+  const app = new App(manifest)
+  app.start()
+  return app
 }
 
 if (inTop) {
@@ -391,7 +392,6 @@ export default class App extends UI {
         state: manifest.state,
         initiator: manifest.initiator,
         actions: manifest.actions,
-        start: manifest.start,
       })
     } else {
       const content = {
@@ -413,7 +413,6 @@ export default class App extends UI {
         state: manifest.state,
         initiator: manifest.initiator,
         actions: manifest.actions,
-        start: manifest.start,
       })
     }
 
@@ -465,11 +464,11 @@ export default class App extends UI {
     }
 
     editor.init(this)
-
-    this.emitDecode()
   }
 
-  emitDecode() {
+  async start() {
+    await this.ready
+    this.manifest.start?.()
     queueTask(() => {
       for (const $file of this.state.$files) {
         this.emit("decode", $file)
