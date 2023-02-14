@@ -108,7 +108,7 @@ export class Dialog extends Component {
     return this.close(true)
   }
 
-  render({ content, label, picto, footer }) {
+  render({ content, label, picto, footer, plugins }) {
     const buttons = [
       {
         tag: "button.ui-dialog__close",
@@ -145,6 +145,8 @@ export class Dialog extends Component {
         content: footer,
       })
     }
+
+    plan.plugins = plugins
 
     return plan
   }

@@ -680,7 +680,13 @@ function normalizeOn(plan) {
 export function objectifyPlan(plan, key = "content") {
   if (plan != null) {
     if (typeof plan === "object" && !Array.isArray(plan)) return plan
-    return { [key]: plan }
+    const out = { [key]: plan }
+    if (plan.plugins) {
+      out.plugins = plan.plugins
+      delete plan.plugins
+    }
+
+    return out
   }
 
   return {}
