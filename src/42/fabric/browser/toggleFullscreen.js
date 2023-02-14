@@ -1,6 +1,6 @@
 import ensureElement from "../dom/ensureElement.js"
 
-export default function toggleFullscreen(el = document.documentElement) {
+export function toggleFullscreen(el = document.documentElement) {
   el = ensureElement(el)
   if (document.fullscreenElement) {
     document.exitFullscreen()
@@ -12,3 +12,5 @@ export default function toggleFullscreen(el = document.documentElement) {
     })
   }
 }
+
+export default toggleFullscreen
