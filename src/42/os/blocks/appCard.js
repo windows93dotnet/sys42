@@ -43,7 +43,7 @@ export default function appCard(manifest) {
           },
           {
             if: "{{copyright}}",
-            tag: "p.ma-b-0.opacity-half",
+            tag: "p.ma-b-0.opacity-half.txt-wrap",
             content: "{{copyright}}",
           },
         ],

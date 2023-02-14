@@ -26,6 +26,7 @@ export default function render(plan, stage, options) {
   if (stage?.pluginHandlers) {
     for (const pluginHandle of stage.pluginHandlers) {
       const res = pluginHandle(plan, stage, options)
+      // if (res !== undefined) return res
       if (res !== undefined) plan = res
     }
   }
