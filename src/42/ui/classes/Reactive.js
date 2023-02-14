@@ -233,6 +233,7 @@ export default class Reactive extends Emitter {
   }
 
   import({ add, remove }, ...rest) {
+    if (this.stage.signal.aborted) return
     const queue = new Set()
 
     for (const loc of remove) {
