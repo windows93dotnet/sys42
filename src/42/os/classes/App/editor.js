@@ -267,7 +267,10 @@ editor.init = (app) => {
 
     async fullscreen() {
       await import("../../../fabric/browser/toggleFullscreen.js") //
-        .then((m) => m.default())
+        .then(({ toggleFullscreen }) => {
+          const screen = document.querySelector(".screen")
+          toggleFullscreen(screen ?? undefined)
+        })
     },
     async about() {
       await Promise.all([

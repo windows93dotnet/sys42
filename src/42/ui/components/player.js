@@ -110,6 +110,7 @@ export class Player extends Component {
             crossorigin: true,
             src: "{{path}}",
             autoplay: "{{autoplay}}",
+            disabled: "{{duration === 0}}",
             on: {
               "contextmenu": false,
               "click": "{{playPause()}}",
@@ -211,6 +212,7 @@ export class Player extends Component {
   }
 
   play() {
+    if (this.duration === 0) return
     this.media.play()
   }
 
@@ -219,6 +221,7 @@ export class Player extends Component {
   }
 
   playPause() {
+    if (this.duration === 0) return
     if (this.media.paused) this.media.play()
     else this.media.pause()
   }
