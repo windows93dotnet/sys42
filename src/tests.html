@@ -61,7 +61,9 @@
 
   testRunner(
     [
-      "/tests/42/core/cli/argv.test.js",
+      // Utilities tests
+
+      // "/tests/42/core/cli/argv.test.js",
       // "/tests/42/core/console/formats/highlight.test.js",
       // "/tests/42/core/console/parseLogTemplate.test.js",
       // "/tests/42/core/db/Database.test.js",
@@ -112,6 +114,8 @@
       // "/tests/42/fabric/type/string/sdbm.test.js",
       // "/tests/42/fabric/type/string/textPosition.test.js",
 
+      // GUI tests (slow and can sometimes crash the browser)
+
       "/tests/42/ui/components/folder.test.js",
       "/tests/42/ui/components/icon.test.js",
       "/tests/42/ui/components/menu.test.js",
@@ -124,6 +128,6 @@
       "/tests/42/ui/popup.test.js",
       // // "/tests/42/ui/xss.test.js",
     ],
-    { verbose: 2, cnt: !true }
+    { verbose: 2 }
   )
 </script>

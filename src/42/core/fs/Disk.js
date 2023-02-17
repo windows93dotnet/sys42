@@ -65,8 +65,8 @@ if (inTop) {
       this.value = await ipc.send("42_DISK_INIT")
 
       ipc.on("42_DISK_CHANGE", ([path, type, inode]) => {
-        // this[type](path)
-        console.log("42_DISK_CHANGE", path, type, inode)
+        if (type === "set") this[type](path, inode)
+        else this[type](path)
       })
 
       globalThis.addEventListener("pagehide", () => ipc.emit("42_DISK_CLOSE"))
