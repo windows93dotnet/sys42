@@ -78,7 +78,8 @@ export default async function renderProps(el, props, plan) {
   let data
 
   if (stage.reactive.has(stage.scope)) {
-    data = stage.reactive.get(stage.scope) ?? {} // TODO: check why ui-picto has undefined state
+    // TODO: check why ui-picto has undefined state
+    data = stage.reactive.get(stage.scope, { silent: true }) ?? {}
   } else {
     data = {}
     stage.reactive.set(stage.scope, data, { silent: true })
@@ -142,6 +143,10 @@ export default async function renderProps(el, props, plan) {
       val = item.default
     }
 
+    // if (scope === "/$ui/tree/b05lr0okjhaz/items") {
+    //   console.warn(456, key, val[0])
+    // }
+
     if (item.update) {
       const type = typeof item.update
       if (type === "string" || type === "symbol") {
@@ -165,6 +170,7 @@ export default async function renderProps(el, props, plan) {
 
       const silent = options?.silent ?? false
       fromWrite = true
+
       stage.reactive.set(scope, ref ?? value, { silent })
       if (silent) fromWrite = false
     }
