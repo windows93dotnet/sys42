@@ -6,9 +6,7 @@ import NodesRange from "../../fabric/range/NodesRange.js"
 import removeRange from "./removeRange.js"
 import register from "../register.js"
 import Canceller from "../../fabric/classes/Canceller.js"
-import {
-  normalizePlanWithoutStage /* , objectifyPlan */,
-} from "../normalize.js"
+import { normalizePlanWithoutStage } from "../normalize.js"
 import { arrayDiff } from "../../fabric/json/diff.js"
 import renderAnimation from "./renderAnimation.js"
 

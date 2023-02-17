@@ -212,7 +212,7 @@ export class Tree extends Component {
             //     initial: false,
             //   },
             // },
-            content: `{{renderGroup("${addr}" + @index + "_") |> render(^^)}}`,
+            content: `{{renderGroup(addr + "_") |> render(^^)}}`,
           },
         ],
       },
