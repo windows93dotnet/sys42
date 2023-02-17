@@ -29,7 +29,6 @@ export class Folder extends Component {
         type: "string",
         fromView: true,
         default: "grid",
-        update: _updatePath,
       },
       selection: {
         type: "array",
@@ -46,6 +45,7 @@ export class Folder extends Component {
       showHiddenFiles: {
         type: "boolean",
         default: false,
+        update: "refresh",
       },
       transferable: { type: "any", trait: true, default: true },
       selectable: { type: "any", default: true },
@@ -77,11 +77,7 @@ export class Folder extends Component {
         contextmenu: "{{displayContextmenu(e, target)}}",
       },
     ],
-  }
-
-  xxx(target) {
-    console.log(target)
-  }
+  };
 
   [_updatePath](initial) {
     const path = normalizeDirname(this.path)
