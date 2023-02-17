@@ -43,6 +43,10 @@ export class Explorer extends Component {
         type: "array",
         default: [],
       },
+      showHiddenFiles: {
+        type: "boolean",
+        default: true,
+      },
     },
 
     on: [
@@ -95,7 +99,6 @@ export class Explorer extends Component {
   }
 
   open(path) {
-    console.log(777)
     if (keyboard.keys.Control) return
     open(path)
   }
@@ -126,6 +129,12 @@ export class Explorer extends Component {
             label: "View",
             items: [
               { label: "Select all", click: "{{folder.selectAll()}}" }, //
+              {
+                label: "Show hidden files",
+                tag: "checkbox",
+                bind: "showHiddenFiles",
+                shortcut: "Ctrl+H",
+              },
             ],
           },
         ],
@@ -141,20 +150,34 @@ export class Explorer extends Component {
             disabled: "{{path === '/'}}",
           },
           {
-            tag: "input",
-            bind: "path",
-            debounce: true,
-            compact: true,
-            prose: false,
-            enterKeyHint: "go",
-            on: {
-              Enter: "{{go(target.value)}}",
-              focus({ target }) {
-                const { length } = target.value
-                target.selectionStart = length
-                target.selectionEnd = length
+            tag: ".box-h",
+            content: [
+              {
+                tag: "input",
+                bind: "path",
+                debounce: true,
+                compact: true,
+                prose: false,
+                enterKeyHint: "go",
+                on: {
+                  Enter: "{{go(target.value)}}",
+                  focus({ target }) {
+                    const { length } = target.value
+                    target.selectionStart = length
+                    target.selectionEnd = length
+                  },
+                },
               },
-            },
+              {
+                tag: "button",
+                picto: "loop",
+                aria: { label: "Refresh" },
+                // click: "{{folder.refresh()}}", // TODO: fix unfound ui entries
+                click: () => {
+                  this.folder.refresh()
+                },
+              },
+            ],
           },
           {
             tag: ".toggle-group",
@@ -183,6 +206,7 @@ export class Explorer extends Component {
         glob: "{{glob}}",
         selection: "{{selection}}",
         multiselectable: "{{multiselectable}}",
+        showHiddenFiles: "{{showHiddenFiles}}",
       },
       {
         entry: "message",

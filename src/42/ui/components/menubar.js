@@ -27,7 +27,7 @@ export class Menubar extends Menu {
     if (this.parentElement) {
       renderOn(
         this.parentElement,
-        { on: extractShortcuts(plan.items) },
+        { on: extractShortcuts(plan.items, this.stage) },
         this.stage
       )
     }
