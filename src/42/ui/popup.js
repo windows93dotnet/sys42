@@ -146,12 +146,18 @@ export const popup = rpc(
       if (event.defaultPrevented) return
       unsee(el)
       if (el.contains(document.activeElement)) document.activeElement.blur()
-      queueTask(() => deferred.resolve({ opener, focusBack, ...options }))
-      requestIdleCallback(async () => {
-        await stage.reactive.pendingUpdate
-        stage.cancel()
-        dispatch(el, "uipopupclose")
-        el.remove()
+      queueTask(() => {
+        deferred.resolve({ opener, focusBack, ...options })
+        requestIdleCallback(async () => {
+          await stage.pendingDone
+          dispatch(el, "uipopupclose")
+          el.remove()
+
+          // TODO: wait for ipc.plugin export instead of setTimeout
+          setTimeout(() => {
+            stage.cancel("ui popup closed")
+          }, 1000)
+        })
       })
     }
 
