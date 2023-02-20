@@ -18,7 +18,7 @@ function isFrozenStringArray(array, allowUndefined) {
     if (
       !(
         typeof element === "string" ||
-        (allowUndefined && typeof element === "undefined")
+        (allowUndefined && element === undefined)
       )
     ) {
       return false

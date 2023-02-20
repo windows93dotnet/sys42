@@ -1,8 +1,5 @@
 node_modules
-dist
-.bin
-.vscode
 .trash
-.tmp
+.vscode
 src/files.cbor
 src/tests/fixtures/formats/tmp/

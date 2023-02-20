@@ -1,4 +1,3 @@
 .trash
-src/42/**/vendor/*
 **/*.css
 **/*.min.js
