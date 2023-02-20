@@ -141,13 +141,22 @@ export default class BrowserDriver extends Driver {
       }
 
       inode[2].m = Date.now()
-      // inode[2].c = inode[2].m
       disk.set(filename, inode)
     } else {
       id = uid()
       // @read https://man7.org/linux/man-pages/man7/inode.7.html
+      // @read https://www.thegeekdiary.com/unix-linux-access-control-lists-acls-basics/
       const time = Date.now()
-      inode = [id, this.mask, { b: time, a: time, c: time, m: time }]
+      inode = [
+        id,
+        this.mask,
+        {
+          b: time, // File creation (birth)
+          a: time, // Last access
+          c: time, // Last status change
+          m: time, // Last modification
+        },
+      ]
       disk.set(filename, inode)
     }
 

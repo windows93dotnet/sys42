@@ -108,11 +108,10 @@ There is currently a lot of `TODO` comments, if you are looking for something to
 
 For new features, we'll appreciate if you provide unit tests and respect the project's philosophy and coding style.
 
-Also, please, before submiting a bug, note that we're currently only supporting latest Node, Firefox and Chrome.
+Also, before submiting a bug, please note that we're currently only supporting latest Node, Firefox and Chrome.
 
 - There is plans for testing compatibility with older Firefox and Chrome.
 - There is plans for testing compatibility with Deno and Electron.
-- There is no plans for testing compatibility with Safari.
 
 ## Code of Conduct
 
@@ -131,8 +130,6 @@ Many thanks to all authors who shared that knowledge! We tried to mention licens
 
 We know it's far from a perfect solution when considering open source contribution.
 But the project modularity nature is a bit too much entangled to use most existing 3rd party modules.
-
-## How to use
 
 <pre id="a1" style="font-size: 70%; line-height:1.2;">
 [1] sys42 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY. Without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the License for more details.
