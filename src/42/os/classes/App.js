@@ -91,6 +91,7 @@ async function prepareManifest(manifest, options) {
 
 async function resoleManifest(manifest) {
   manifest.$defs ??= {}
+  if (manifest.ui) manifest.$ref = manifest.ui // ui extends the manifest with a javascript file
   Object.assign(manifest.$defs, editor.menubar(manifest))
   return resolve(manifest, { strict: false, baseURI: manifest.dirURL })
 }
