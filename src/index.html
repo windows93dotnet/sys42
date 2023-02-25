@@ -4,92 +4,68 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" href="/style.css" id="theme" />
 
-<style>
-  @import "./42/themes/default/fonts/tomo.css";
+<script type="module">
+  import ui from "./42/ui.js"
+  import disk from "./42/core/disk.js"
 
-  :root {
-  }
-  body {
-    --bg: #000;
-    --fg: #0ff;
-    overflow: hidden;
+  const demos = [{ tag: "li > a", content: "desktop", href: "/desktop/" }]
+  const CLEAN_REG = /^\/demos\/ui\/|(\.plugin)?\.demo\.html$/g
+
+  for (const href of disk.glob("**/*.demo.html")) {
+    demos.push({ tag: "li > a", content: href.replace(CLEAN_REG, ""), href })
   }
 
-  a,
-  pre {
-    font-family: tomo-web, monospace;
-    font-size: calc(8px * 1);
-    text-decoration: none;
-    color: #0ff;
-  }
-  pre {
-    line-height: 1.5;
-    font-size: calc(8px * 1);
-    width: min-content;
-    height: min-content;
-    display: block;
-    margin: 0;
-    overflow: hidden;
-  }
-  main a {
-    pointer-events: auto;
-    margin-bottom: 0.8rem;
-  }
-  main div a {
-    display: block;
-  }
-  main div a:hover {
-    color: #fff;
-  }
-</style>
-
-<main class="box-fit box-center scroll-auto">
-  <a href="/">
-    <pre>
+  ui({
+    tag: "body.pa-xxl",
+    content: [
+      {
+        tag: "a.unstyled",
+        href: "/",
+        content: {
+          tag: "pre.ma-0",
+          content: `\
 ╷ ┌───┐
 └─┤ ┌─┘
   └─┴─╴
-    </pre>
-  </a>
-  <a href="/desktop/">desktop</a>
-  <a href="/tests.html">tests</a>
-  <br />
-</main>
-
-<script type="module">
-  import trap from "./42/fabric/type/error/trap.js"
-  trap()
-</script>
-
-<script type="module">
-  import system from "./42/system.js"
-  import fs from "./42/core/fs.js"
-  import disk from "./42/core/disk.js"
-  import create from "./42/ui/create.js"
-
-  system.DEV = true
-
-  const main = document.querySelector("main")
-  const div = create("div")
-  main.append(div)
-  const CLEAN_REG = /^\/demos\/|(\.plugin)?\.demo\.html$/g
-
-  disk.glob("**/*.demo.html").forEach((href) => {
-    div.append(create("a", href.replace(CLEAN_REG, ""), { href }))
+ sys42\n\n`,
+        },
+      },
+      "---",
+      {
+        tag: "a",
+        content: "Run automated tests",
+        href: "/tests.html",
+      },
+      "---",
+      { tag: "strong", content: "Demos / Manual tests" },
+      { tag: "ul", content: demos },
+    ],
   })
-
-  await fs.deleteDir(system.HOME + "/.ui").catch(() => {})
-
-  // import explorer from "./42/ui/components/explorer.js"
-  // explorer("/", { view: "tree" })
 </script>
 
-<script type="_module">
+<!-- <script type="module">
   import ui from "./42/ui.js"
+  import disk from "./42/core/disk.js"
+  import getDirBasePair from "./42/core/path/core/getDirBasePair.js"
+
+  const items = []
+  const CLEAN_REG = /^\/demos\/ui\/|(\.plugin)?\.demo\.html$/g
+
+  const dirs = {}
+
+  for (const href of disk.glob("**/*.demo.html")) {
+    const { dir, base } = getDirBasePair(href.replace(CLEAN_REG, ""))
+    const label = { tag: "a", content: base, href }
+    if (dir === ".") items.push({ label })
+    else if (dir in dirs) dirs[dir].push({ label })
+    else {
+      dirs[dir] = [{ label }]
+      items.push({ label: dir, items: dirs[dir] })
+    }
+  }
 
   ui({
-    tag: "ui-folder.box-fit",
-    view: "tree",
-    path: "/",
+    tag: "ui-tree",
+    items,
   })
-</script>
+</script> -->
