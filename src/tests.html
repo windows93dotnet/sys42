@@ -4,51 +4,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" href="/style.css" id="theme" />
 
-<style>
-  @import "./42/themes/default/fonts/tomo.css";
-  a,
-  pre {
-    font-family: tomo-web, monospace;
-    font-size: calc(8px * 1);
-    text-decoration: none;
-    color: #0ff;
-  }
-  pre {
-    line-height: 1.5;
-    font-size: calc(8px * 1);
-    width: min-content;
-    height: min-content;
-    display: block;
-    margin: 0;
-    overflow: hidden;
-  }
-  body {
-    background-color: #000 !important;
-    color: #0ff !important;
-    overflow: hidden;
-  }
-  main a {
-    pointer-events: auto;
-    margin-bottom: 0.8rem;
-  }
-  main div a {
-    display: block;
-  }
-  main div a:hover {
-    color: #fff;
-  }
-</style>
-
-<main class="box-fit box-center scroll-auto">
-  <a href="/">
-    <pre>
+<body class="pa-xxl">
+  <a href="/" class="unstyled">
+    <pre class="ma-0">
 ╷ ┌───┐
 └─┤ ┌─┘
   └─┴─╴
- tests
+ sys42
     </pre>
   </a>
-</main>
+  <hr />
+  <strong>Open the browser console to show tests results.</strong>
+  <br />
+  <br />
+  <div class="message warning pa">
+    ⚠️ Some tests can hang or crash the browser on reload.<br />
+    Use browser's Task Manager to kill the process if it happen.
+  </div>
+</body>
 
 <script type="module">
   import system from "./42/system.js"
@@ -63,7 +36,7 @@
     [
       // Utilities tests
 
-      // "/tests/42/core/cli/argv.test.js",
+      "/tests/42/core/cli/argv.test.js",
       // "/tests/42/core/console/formats/highlight.test.js",
       // "/tests/42/core/console/parseLogTemplate.test.js",
       // "/tests/42/core/db/Database.test.js",
@@ -116,17 +89,17 @@
 
       // GUI tests (slow and can sometimes crash the browser)
 
-      "/tests/42/ui/components/folder.test.js",
-      "/tests/42/ui/components/icon.test.js",
-      "/tests/42/ui/components/menu.test.js",
-      "/tests/42/ui/invocables/demands.test.js",
-      // "/tests/42/ui/invocables/filePicker.test.js",
-      // "/tests/42/ui/plugins/ipc.plugin.test.js",
-      "/tests/42/ui/components.test.js",
-      // "/tests/42/ui/create.test.js",
-      // "/tests/42/ui/filters.test.js",
-      "/tests/42/ui/popup.test.js",
-      // // "/tests/42/ui/xss.test.js",
+      // "/tests/42/ui/components/folder.test.js",
+      // "/tests/42/ui/components/icon.test.js",
+      // "/tests/42/ui/components/menu.test.js",
+      // "/tests/42/ui/invocables/demands.test.js",
+      // // "/tests/42/ui/invocables/filePicker.test.js",
+      // // "/tests/42/ui/plugins/ipc.plugin.test.js",
+      // "/tests/42/ui/components.test.js",
+      // // "/tests/42/ui/create.test.js",
+      // // "/tests/42/ui/filters.test.js",
+      // "/tests/42/ui/popup.test.js",
+      // // // "/tests/42/ui/xss.test.js",
     ],
     { verbose: 2 }
   )

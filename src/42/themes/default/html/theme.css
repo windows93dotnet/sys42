@@ -113,7 +113,7 @@
   padding: var(--unit-sm) var(--unit-md);
   background-color: var(--bg);
   color: var(--fg);
-  white-space: pre-wrap;
+  /* white-space: pre-wrap; */
 }
 
 .message {
