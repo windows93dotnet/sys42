@@ -195,6 +195,16 @@ test("transform", "split() + join()", async (t) => {
     .pipeTo(stream.ws.sink((item) => t.is(item, "a+b+c+d")))
 })
 
+test("transform", "split() + join()", "include: true", async (t) => {
+  t.plan(1)
+  await stream.rs
+    .source(["a\nb\n", "c\nd"])
+    .pipeThrough(stream.ts.text())
+    .pipeThrough(stream.ts.split("\n", { include: true }))
+    .pipeThrough(stream.ts.join("+"))
+    .pipeTo(stream.ws.sink((item) => t.is(item, `a\n+b\n+c\n+d`)))
+})
+
 test("transform", "combine()", async (t) => {
   t.plan(1)
   await stream.rs
@@ -261,6 +271,26 @@ test("transform", "cut()", async (t) => {
     .pipeTo(stream.ws.sink((item) => t.eq(item, expected)))
 
   t.eq(parts, [20, 20, 20, 20, 4])
+})
+
+test("transform", "cut()", "exact: true", async (t) => {
+  t.plan(2)
+
+  const chunks = [new Uint8Array(42), new Uint8Array(42)]
+  chunks[0].fill(1)
+  chunks[1].fill(2)
+
+  const expected = t.utils.combine(...chunks).buffer
+
+  const parts = []
+
+  await stream.rs
+    .array(chunks)
+    .pipeThrough(stream.ts.cut(20, { exact: false }))
+    .pipeThrough(stream.ts.each((x) => parts.push(x.length)))
+    .pipeTo(stream.ws.sink((item) => t.eq(item, expected)))
+
+  t.eq(parts, [20, 20, 2, 20, 20, 2])
 })
 
 if ("CompressionStream" in globalThis) {
