@@ -251,7 +251,7 @@ export function tsFilter(cb) {
 
 export function tsSplit(delimiter = "\n", options) {
   let buffer = ""
-  const end = options?.exclude ? "" : delimiter
+  const end = options?.include ? delimiter : ""
   return new TransformStream(
     {
       transform(chunk, controller) {
@@ -292,8 +292,14 @@ export function tsCut(size, options) {
   return new TransformStream(
     {
       transform:
-        options?.exact === true
+        options?.exact === false
           ? async (chunk, controller) => {
+              for (let i = 0, l = chunk.length; i < l; i += size) {
+                controller.enqueue(chunk.slice(i, i + size))
+                await 0
+              }
+            }
+          : async (chunk, controller) => {
               let i = 0
 
               if (prevArr) {
@@ -315,20 +321,14 @@ export function tsCut(size, options) {
                 } else controller.enqueue(chunk.slice(i, i + size))
                 await 0
               }
-            }
-          : async (chunk, controller) => {
-              for (let i = 0, l = chunk.length; i < l; i += size) {
-                controller.enqueue(chunk.slice(i, i + size))
-                await 0
-              }
             },
       flush:
-        options?.exact === true
-          ? (controller) => {
+        options?.exact === false
+          ? undefined
+          : (controller) => {
               if (prevArr) controller.enqueue(prevArr)
               if (prevStr) controller.enqueue(prevStr)
-            }
-          : undefined,
+            },
     },
     { highWaterMark: 1 },
     { highWaterMark: 0 }
