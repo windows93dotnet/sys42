@@ -10,7 +10,7 @@ test.suite.serial()
 const check = {
   iframe: 1,
   sandbox: 1,
-  childWindow: 1,
+  childWindow: 0,
   dedicatedWorker: 1,
   sharedWorker: 1,
   serviceWorker: 1,
