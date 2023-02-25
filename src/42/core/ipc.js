@@ -355,6 +355,8 @@ export class Receiver extends Emitter {
       this.origin = source
       origins.set(source, this)
     } else if ("port" in source) {
+      source.port.addEventListener("message", messageHandler, options)
+      source.port.start?.()
       this.#addSource(source.port)
     } else if (
       globalThis.HTMLIFrameElement &&
@@ -371,7 +373,7 @@ export class Receiver extends Emitter {
       const options = { signal: this.#cancel.signal }
       source.addEventListener("message", messageHandler, options)
       source.start?.()
-      this.#addSource(source.contentWindow)
+      if (source.contentWindow) this.#addSource(source.contentWindow)
     }
   }
 
@@ -412,7 +414,7 @@ if (realm.inTop) {
   globalThis.addEventListener("pagehide", () => ipc.emit(CLOSE))
 }
 
-if (realm.inWindow && !realm.inSharedWorker) {
+if (realm.inWindow) {
   globalThis.addEventListener("message", messageHandler)
 }
 
