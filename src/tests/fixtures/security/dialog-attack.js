@@ -10,24 +10,43 @@ import {
   normalizePlugins,
 } from "../../../42/ui/normalize.js"
 import forceOpener from "../../../42/ui/forceOpener.js"
-import uid from "../../../42/core/uid.js"
 import { autofocus } from "../../../42/fabric/dom/focus.js"
 import nextCycle from "../../../42/fabric/type/promise/nextCycle.js"
 import queueTask from "../../../42/fabric/type/function/queueTask.js"
 import postrenderAutofocus from "../../../42/ui/postrenderAutofocus.js"
+import emittable from "../../../42/fabric/traits/emittable.js"
 
 const _axis = Symbol("axis")
+
+const rootSelector = ":is(:root, ui-workspace[active])"
+
+const zIndexSelector = `${rootSelector} > :is(ui-dialog, ui-menu)`
+
+function getHeaderOffset(el) {
+  const styles = getComputedStyle(el)
+  const paddingTop = Number.parseInt(styles.paddingTop, 10)
+  const borderTopWidth = Number.parseInt(styles.borderTopWidth, 10)
+  return paddingTop + borderTopWidth
+}
+
+function activateIfFocused() {
+  queueTask(() => {
+    if (this.el?.contains(document.activeElement)) this.el.activate()
+  })
+}
 
 export class Dialog extends Component {
   static plan = {
     tag: "ui-dialog",
-
-    id: true,
     role: "dialog",
+    id: true,
 
     traits: {
-      emittable: true,
-      movable: { handler: ".ui-dialog__title" },
+      // emittable: true,
+      movable: {
+        handlerSelector: ".ui-dialog__title",
+        zIndexSelector,
+      },
     },
 
     props: {
@@ -37,7 +56,6 @@ export class Dialog extends Component {
       active: {
         type: "boolean",
         reflect: true,
-        default: true,
       },
       x: {
         type: "number",
@@ -47,6 +65,12 @@ export class Dialog extends Component {
         type: "number",
         update: _axis,
       },
+      // label: {
+      //   type: "any",
+      // },
+      content: {
+        type: "any",
+      },
     },
 
     defaults: {
@@ -55,23 +79,24 @@ export class Dialog extends Component {
     },
 
     on: [
-      { "pointerdown || focusin": "{{activate()}}" },
+      { pointerdown: "{{activate()}}" },
+      { focusin: activateIfFocused },
       globalThis,
-      {
-        "blur || uiiframeblur"() {
-          queueTask(() => {
-            if (this.el?.contains(document.activeElement)) this.el.activate()
-          })
-        },
-      },
+      { "blur || uiiframeblur": activateIfFocused },
     ],
-  };
+  }
+
+  constructor(...args) {
+    super(...args)
+    emittable(this)
+  }
 
   [_axis]() {
-    this.style.transform = `translate(${this.x}px, ${this.y}px)`
+    this.style.translate = `${this.x}px ${this.y}px`
   }
 
   async close(ok = false) {
+    if (!this.stage) return
     const event = dispatch(this, "uidialogbeforeclose", { cancelable: true })
     if (event.defaultPrevented) return
     const data = omit(this.stage.reactive.data, ["$ui", "$computed"])
@@ -87,7 +112,7 @@ export class Dialog extends Component {
     return this.close(true)
   }
 
-  render({ content, label, footer }) {
+  render({ content, label, picto, footer, plugins }) {
     const buttons = [
       {
         tag: "button.ui-dialog__close",
@@ -97,14 +122,18 @@ export class Dialog extends Component {
       },
     ]
 
-    const id = uid()
+    const id = this.id + "-title"
     this.setAttribute("aria-labelledby", id)
 
     const plan = [
       {
         tag: "header.ui-dialog__header",
         content: [
-          { tag: "h2.ui-dialog__title", id, content: label },
+          {
+            tag: "h2.ui-dialog__title",
+            id,
+            content: picto ? [{ tag: "ui-picto", value: picto }, label] : label,
+          },
           ...buttons,
         ],
       },
@@ -121,16 +150,22 @@ export class Dialog extends Component {
       })
     }
 
+    plan.plugins = plugins
+
     return plan
   }
 
   activate() {
-    for (const item of document.querySelectorAll("ui-dialog")) {
+    for (const item of document.querySelectorAll(
+      `${rootSelector} > ui-dialog:not(#${this.id})`
+    )) {
       item.active = false
     }
 
+    if (this.active) return
+
     this.active = true
-    this.style.zIndex = maxZIndex("ui-dialog, ui-menu") + 1
+    this.style.zIndex = maxZIndex(zIndexSelector) + 1
 
     if (!this.contains(document.activeElement)) {
       postrenderAutofocus(this) ||
@@ -140,11 +175,33 @@ export class Dialog extends Component {
   }
 
   setup() {
-    const rect = this.getBoundingClientRect()
-    this.x ??= Math.round(rect.x)
-    this.y ??= Math.round(rect.y)
-    this.style.top = 0
-    this.style.left = 0
+    if (this.x === undefined) {
+      let { x, y } = this.getBoundingClientRect()
+
+      x = Math.round(x)
+      y = Math.round(y)
+
+      let offset
+      for (const item of document.querySelectorAll(
+        `${rootSelector} > ui-dialog:not(#${this.id})`
+      )) {
+        if (item.x !== undefined) {
+          if (x === item.x && y === item.y) {
+            offset ??=
+              this.querySelector(":scope > .ui-dialog__header").clientHeight +
+              getHeaderOffset(this)
+            x += offset
+            y += offset
+          }
+        }
+      }
+
+      this.x = x
+      this.y = y
+      this.style.top = 0
+      this.style.left = 0
+    }
+
     this.activate()
 
     this.emit("open", this)
@@ -166,8 +223,8 @@ export const dialog = rpc(
 
     const el = new Dialog(plan, stage)
     const { opener } = el
-    await el.ready
 
+    await el.ready
     document.documentElement.append(el)
 
     return el.once("close").then((res) => ({ res, opener }))
@@ -178,6 +235,7 @@ export const dialog = rpc(
     async marshalling(plan = {}, stage) {
       plan = objectifyPlan(plan)
 
+      plan.content ??= ""
       forceOpener(plan)
 
       if (rpc.inTop) {
