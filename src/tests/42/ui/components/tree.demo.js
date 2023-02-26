@@ -51,19 +51,69 @@ async function recursiveFolders(dir) {
 window.app = await ui({
   // plugins: ["markdown", "persist"],
   plugins: ["markdown"],
-  // tag: "body.box-fit.box-center._gap._box-v._ground",
   tag: "body.box-fit.box-center",
-  // style: { padding: "90px" },
 
   content: [
-    // "## ui-tree",
-    // {
-    //   tag: "ui-tree.inset.paper.resize",
-    //   style: { width: "256px", height: "128px" },
-    //   items: content,
-    // },
+    "## ui-tree",
+    {
+      tag: "ui-tree.inset.paper.resize",
+      style: { width: "256px", height: "128px" },
+      items: content,
+    },
 
-    // "### itemTemplate",
+    "### lazy loading",
+
+    {
+      tag: "ui-tree.inset.paper.resize",
+      style: { width: "256px", height: "256px" },
+      selection: ["Hello"],
+      items: [
+        {
+          label: "Foo",
+          expanded: true,
+          async items() {
+            await sleep(500)
+            return [
+              { label: "Bar" }, //
+              { label: "Baz" },
+              {
+                label: "Derp",
+                // expanded: true,
+                items: [
+                  {
+                    label: "Foo",
+                    items: [
+                      { label: ["Bar", "\n\n", "Derp"] }, //
+                      { label: "Baz" },
+                    ],
+                  },
+                  { label: "Hello" },
+                  { label: "World" },
+                  {
+                    label: "Foo",
+                    items: [
+                      { label: "Bar" }, //
+                      { label: "Baz" },
+                    ],
+                  },
+                ],
+              },
+            ]
+          },
+        },
+        { label: "Hello" },
+        { label: "World" },
+        {
+          label: "Subtree",
+          items: [
+            { label: "Bar" }, //
+            { label: "Baz" },
+          ],
+        },
+      ],
+    },
+
+    "### itemTemplate",
 
     { tag: "text.ma-y" },
 
@@ -72,7 +122,6 @@ window.app = await ui({
       id: "tree-demo",
       style: { width: "256px", height: "650px" },
       selection: ["/tests/fixtures/formats/example.json"],
-      // expandeds: ["3", /* "3_2", */ "4_0", "3_1", "4", "3_3"],
       expandeds: ["3", "3_3_3", "3_3"],
       itemTemplate: {
         tag: "ui-icon",
@@ -83,57 +132,6 @@ window.app = await ui({
     },
 
     { tag: "text.ma-y" },
-
-    // "### lazy loading",
-    // {
-    //   tag: "ui-tree.inset.paper.resize",
-    //   style: { width: "256px", height: "256px" },
-    //   selection: ["Hello"],
-    //   items: [
-    //     {
-    //       label: "Foo",
-    //       expanded: true,
-    //       async items() {
-    //         await sleep(500)
-    //         return [
-    //           { label: "Bar" }, //
-    //           { label: "Baz" },
-    //           {
-    //             label: "Derp",
-    //             // expanded: true,
-    //             items: [
-    //               {
-    //                 label: "Foo",
-    //                 items: [
-    //                   { label: ["Bar", "\n\n", "Derp"] }, //
-    //                   { label: "Baz" },
-    //                 ],
-    //               },
-    //               { label: "Hello" },
-    //               { label: "World" },
-    //               {
-    //                 label: "Foo",
-    //                 items: [
-    //                   { label: "Bar" }, //
-    //                   { label: "Baz" },
-    //                 ],
-    //               },
-    //             ],
-    //           },
-    //         ]
-    //       },
-    //     },
-    //     { label: "Hello" },
-    //     { label: "World" },
-    //     {
-    //       label: "Subtree",
-    //       items: [
-    //         { label: "Bar" }, //
-    //         { label: "Baz" },
-    //       ],
-    //     },
-    //   ],
-    // },
   ],
 })
 
