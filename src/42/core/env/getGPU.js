@@ -4,6 +4,8 @@ const GPU_VENDOR_REGEX = /(intel|nvidia|sis|amd|apple|powervr)\W? (.+)/i
 const GPU_RENDERER_REGEX = /(((?:radeon|adreno|geforce|mali).+))/i
 const GPU_CLEANUP_REGEX = / ?(\(.+?\)| direct3d.+| opengl.+|\/.+$| gpu$)/gi
 
+import inFirefox from "./browser/inFirefox.js"
+
 export default function getGPU() {
   const gpu = {
     supported: "WebGLRenderingContext" in globalThis,
@@ -23,9 +25,15 @@ export default function getGPU() {
 
   if (gl) {
     gpu.active = true
-    const info = gl.getExtension("WEBGL_debug_renderer_info")
-    gpu.vendor = gl.getParameter(info.UNMASKED_VENDOR_WEBGL)
-    const renderer = gl.getParameter(info.UNMASKED_RENDERER_WEBGL) ?? ""
+    let renderer
+    if (inFirefox) {
+      renderer = gl.getParameter(gl.RENDERER)
+    } else {
+      const info = gl.getExtension("WEBGL_debug_renderer_info")
+      gpu.vendor = gl.getParameter(info.UNMASKED_VENDOR_WEBGL)
+      renderer = gl.getParameter(info.UNMASKED_RENDERER_WEBGL) ?? ""
+    }
+
     const vendorMathes = renderer.match(GPU_VENDOR_REGEX)
     const modelMathes = renderer.match(GPU_RENDERER_REGEX)
     if (vendorMathes) gpu.vendor = vendorMathes[1]
