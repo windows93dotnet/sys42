@@ -44,8 +44,6 @@ export default async function testRunner(testFiles, options) {
     })
   )
 
-  if (config.cnt) config.runner.oneach = () => console.log(" ")
-
   await sbs.run(config.runner)
 
   sbs.root.ms = performance.now() - time
