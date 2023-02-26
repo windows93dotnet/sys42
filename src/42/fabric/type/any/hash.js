@@ -1,7 +1,7 @@
 import mark from "./mark.js"
 import sdbm from "../string/sdbm.js"
 
-const seed = 0x30_96_a3_56_9d_f9
+const MAGIC_NUMBER = 0x30_96_a3_56_9d_f9
 
 /**
  * Non-cryptographic hash function.
@@ -15,6 +15,6 @@ export default function hash(val) {
   const n = sdbm(mark(val))
   return (
     String.fromCharCode(97 + (n % 26)) + //
-    (n.toString(36).slice(1, 5) + (n * seed).toString(36).slice(1, 8))
+    (n.toString(36).slice(1, 5) + (n * MAGIC_NUMBER).toString(36).slice(1, 8))
   ).padEnd(12, "0")
 }

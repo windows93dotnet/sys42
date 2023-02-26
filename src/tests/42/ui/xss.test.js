@@ -122,7 +122,7 @@ dialog(
         },
         {
           tag: "ui-sandbox",
-          permissions: "trusted",
+          permissions: "app",
           path: "/tests/fixtures/security/importmap-rpc-attack.html",
         },
       ],
