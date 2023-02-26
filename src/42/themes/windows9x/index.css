@@ -1,7 +1,3 @@
-/* stylelint-disable indentation */
-/* stylelint-disable shorthand-property-no-redundant-values */
-/* stylelint-disable no-duplicate-selectors */
-
 /**
  * Name: Windows9x
  * Author: zombectro
@@ -19,44 +15,7 @@
 @import url("../default/fonts/sserife.css");
 /* @import url("../default/fonts/fixedsys.css"); */
 @import url("../default/fonts/tomo.css");
-@import url("../default/themes/inc/pixel-font.css");
-
-:root {
-  --cursor-default: url("../../../themes/windows9x/cursors/default.cur"), default;
-  /* --cursor-context-menu: url("../../../themes/windows9x/cursors/context-menu.cur"), context-menu; */
-  --cursor-help: url("../../../themes/windows9x/cursors/help.cur"), help;
-  --cursor-pointer: url("../../../themes/windows9x/cursors/pointer.cur"), pointer;
-  --cursor-progress: url("../../../themes/windows9x/cursors/progress.cur"), progress;
-  --cursor-wait: url("../../../themes/windows9x/cursors/wait.cur"), wait;
-  --cursor-cell: url("../../../themes/windows9x/cursors/cell.cur"), cell;
-  /* --cursor-crosshair: url("../../../themes/windows9x/cursors/crosshair.cur"), crosshair; */
-  --cursor-text: url("../../../themes/windows9x/cursors/text.cur"), text;
-  /* --cursor-vertical-text: url("../../../themes/windows9x/cursors/vertical-text.cur"), vertical-text; */
-  --cursor-alias: url("../../../themes/windows9x/cursors/alias.cur"), alias;
-  --cursor-copy: url("../../../themes/windows9x/cursors/copy.cur"), copy;
-  --cursor-move: url("../../../themes/windows9x/cursors/move.cur"), move;
-  --cursor-no-drop: url("../../../themes/windows9x/cursors/no-drop.cur"), no-drop;
-  --cursor-not-allowed: url("../../../themes/windows9x/cursors/not-allowed.cur"), not-allowed;
-  --cursor-grab: url("../../../themes/windows9x/cursors/grab.cur"), grab;
-  --cursor-grabbing: url("../../../themes/windows9x/cursors/grabbing.cur"), grabbing;
-  /* --cursor-all-scroll: url("../../../themes/windows9x/cursors/all-scroll.cur"), all-scroll; */
-  /* --cursor-col-resize: url("../../../themes/windows9x/cursors/col-resize.cur"), col-resize; */
-  /* --cursor-row-resize: url("../../../themes/windows9x/cursors/row-resize.cur"), row-resize; */
-  /* --cursor-n-resize: url("../../../themes/windows9x/cursors/n-resize.cur"), n-resize; */
-  /* --cursor-e-resize: url("../../../themes/windows9x/cursors/e-resize.cur"), e-resize; */
-  /* --cursor-s-resize: url("../../../themes/windows9x/cursors/s-resize.cur"), s-resize; */
-  /* --cursor-w-resize: url("../../../themes/windows9x/cursors/w-resize.cur"), w-resize;  */
-  /* --cursor-ne-resize: url("../../../themes/windows9x/cursors/ne-resize.cur"), ne-resize; */
-  /* --cursor-nw-resize: url("../../../themes/windows9x/cursors/nw-resize.cur"), nw-resize; */
-  /* --cursor-se-resize: url("../../../themes/windows9x/cursors/se-resize.cur"), se-resize; */
-  /* --cursor-sw-resize: url("../../../themes/windows9x/cursors/sw-resize.cur"), sw-resize; */
-  --cursor-ew-resize: url("../../../themes/windows9x/cursors/ew-resize.cur"), ew-resize;
-  --cursor-ns-resize: url("../../../themes/windows9x/cursors/ns-resize.cur"), ns-resize;
-  --cursor-nesw-resize: url("../../../themes/windows9x/cursors/nesw-resize.cur"), nesw-resize;
-  --cursor-nwse-resize: url("../../../themes/windows9x/cursors/nwse-resize.cur"), nwse-resize;
-  /* --cursor-zoom-in: url("../../../themes/windows9x/cursors/zoom-in.cur"), zoom-in; */
-  /* --cursor-zoom-out: url("../../../themes/windows9x/cursors/zoom-out.cur"), zoom-out; */
-}
+@import url("../default/plugins/pixel-font.css");
 
 :root {
   /* The active caption bar */
@@ -176,9 +135,48 @@
   --tabs-gap: 0;
   /* --tabs-overlap: 2px;
   --tabs-active-overlap: 0; */
-}
 
-:root {
+  /* cursors
+  ---------- */
+
+  --cursor-default: url("../../../themes/windows9x/cursors/default.cur"), default;
+  /* --cursor-context-menu: url("../../../themes/windows9x/cursors/context-menu.cur"), context-menu; */
+  --cursor-help: url("../../../themes/windows9x/cursors/help.cur"), help;
+  --cursor-pointer: url("../../../themes/windows9x/cursors/pointer.cur"), pointer;
+  --cursor-progress: url("../../../themes/windows9x/cursors/progress.cur"), progress;
+  --cursor-wait: url("../../../themes/windows9x/cursors/wait.cur"), wait;
+  --cursor-cell: url("../../../themes/windows9x/cursors/cell.cur"), cell;
+  /* --cursor-crosshair: url("../../../themes/windows9x/cursors/crosshair.cur"), crosshair; */
+  --cursor-text: url("../../../themes/windows9x/cursors/text.cur"), text;
+  /* --cursor-vertical-text: url("../../../themes/windows9x/cursors/vertical-text.cur"), vertical-text; */
+  --cursor-alias: url("../../../themes/windows9x/cursors/alias.cur"), alias;
+  --cursor-copy: url("../../../themes/windows9x/cursors/copy.cur"), copy;
+  --cursor-move: url("../../../themes/windows9x/cursors/move.cur"), move;
+  --cursor-no-drop: url("../../../themes/windows9x/cursors/no-drop.cur"), no-drop;
+  --cursor-not-allowed: url("../../../themes/windows9x/cursors/not-allowed.cur"), not-allowed;
+  --cursor-grab: url("../../../themes/windows9x/cursors/grab.cur"), grab;
+  --cursor-grabbing: url("../../../themes/windows9x/cursors/grabbing.cur"), grabbing;
+  /* --cursor-all-scroll: url("../../../themes/windows9x/cursors/all-scroll.cur"), all-scroll; */
+  /* --cursor-col-resize: url("../../../themes/windows9x/cursors/col-resize.cur"), col-resize; */
+  /* --cursor-row-resize: url("../../../themes/windows9x/cursors/row-resize.cur"), row-resize; */
+  /* --cursor-n-resize: url("../../../themes/windows9x/cursors/n-resize.cur"), n-resize; */
+  /* --cursor-e-resize: url("../../../themes/windows9x/cursors/e-resize.cur"), e-resize; */
+  /* --cursor-s-resize: url("../../../themes/windows9x/cursors/s-resize.cur"), s-resize; */
+  /* --cursor-w-resize: url("../../../themes/windows9x/cursors/w-resize.cur"), w-resize;  */
+  /* --cursor-ne-resize: url("../../../themes/windows9x/cursors/ne-resize.cur"), ne-resize; */
+  /* --cursor-nw-resize: url("../../../themes/windows9x/cursors/nw-resize.cur"), nw-resize; */
+  /* --cursor-se-resize: url("../../../themes/windows9x/cursors/se-resize.cur"), se-resize; */
+  /* --cursor-sw-resize: url("../../../themes/windows9x/cursors/sw-resize.cur"), sw-resize; */
+  --cursor-ew-resize: url("../../../themes/windows9x/cursors/ew-resize.cur"), ew-resize;
+  --cursor-ns-resize: url("../../../themes/windows9x/cursors/ns-resize.cur"), ns-resize;
+  --cursor-nesw-resize: url("../../../themes/windows9x/cursors/nesw-resize.cur"), nesw-resize;
+  --cursor-nwse-resize: url("../../../themes/windows9x/cursors/nwse-resize.cur"), nwse-resize;
+  /* --cursor-zoom-in: url("../../../themes/windows9x/cursors/zoom-in.cur"), zoom-in; */
+  /* --cursor-zoom-out: url("../../../themes/windows9x/cursors/zoom-out.cur"), zoom-out; */
+
+  /* variables
+  ------------ */
+
   --ff-sans: sserife, sserife-fallback;
   --fs-sans: 11px;
   --lh-sans: 1.27272727;
@@ -297,6 +295,12 @@
 
   --separator-v-bdw: 0 1px 0 1px;
   --separator-v-bdc: transparent var(--ButtonHilight) transparent var(--ButtonShadow);
+
+  --gradient-dir: right;
+}
+
+:root:dir(rtl) {
+  --gradient-dir: left;
 }
 
 img { image-rendering: pixelated; }
@@ -386,18 +390,6 @@ input[type="number" i]:disabled::-webkit-inner-spin-button {
   border-image: var(--btn-default-bdi);
 }
 
-/* :where(.check-cont label) {
-  padding-inline: 2px;
-  padding-block: 0;
-  margin-block: calc(var(--ctrl-pa-y));
-  line-height: 14px;
-}
-
-.check-cont:focus-within label {
-  outline: var(--ctrl-o);
-  outline-offset: -1px;
-} */
-
 ui-menu {
   padding: 2px;
 }
@@ -407,7 +399,7 @@ ui-menu hr {
   margin-bottom: 2px;
 }
 
-/* ui-dialog {
+ui-dialog {
   --_activity-border: var(--InactiveBorder);
   box-shadow:
     inset 1px 1px 1px 0 var(--_activity-border),
@@ -416,7 +408,7 @@ ui-menu hr {
 
 ui-dialog[active] {
   --_activity-border: var(--ActiveBorder);
-} */
+}
 
 .ui-dialog__header {
   padding: 0;
@@ -424,14 +416,6 @@ ui-dialog[active] {
   display: flex;
   color: var(--InactiveTitleText);
   background-color: var(--GradientInactiveTitle);
-}
-
-:root {
-  --gradient-dir: right;
-}
-
-:root:dir(rtl) {
-  --gradient-dir: left;
 }
 
 .ui-dialog__title {
@@ -638,47 +622,43 @@ ui-tabs[side="right"] .ui-tabs__tab[aria-selected="true"]:first-of-type::after {
 /* scrollbars
 ============= */
 
-*::-webkit-scrollbar { background: var(--Scrollbar) var(--screentone-url) repeat; }
+::-webkit-scrollbar { background: var(--Scrollbar) var(--screentone-url) repeat; }
 
-*::-webkit-scrollbar,
-*::-webkit-scrollbar-thumb,
-*::-webkit-scrollbar-button {
+::-webkit-scrollbar,
+::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-button {
   width: var(--addon-w);
   height: var(--addon-w);
 }
 
-*::-webkit-scrollbar-thumb,
-*::-webkit-scrollbar-button {
+::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-button {
   color: var(--ButtonText);
   background: var(--ButtonFace);
   border: 2px solid;
   border-image: var(--outset-bdi);
 }
 
-*::-webkit-scrollbar-corner { background: var(--ButtonFace); }
-*::-webkit-scrollbar-track-piece:active { background: var(--ButtonDkShadow); }
-*::-webkit-scrollbar-button { display: block; }
+::-webkit-scrollbar-corner { background: var(--ButtonFace); }
+::-webkit-scrollbar-track-piece:active { background: var(--ButtonDkShadow); }
+::-webkit-scrollbar-button { display: block; }
 
-*::-webkit-scrollbar-button:hover:active {
-  border: 1px solid var(--ButtonShadow);
-}
-
-*::-webkit-scrollbar-button:vertical:decrement {
+::-webkit-scrollbar-button:vertical:decrement {
   background: var(--ButtonFace) var(--scrollbar-up-bg);
   background-origin: border-box;
 }
 
-*::-webkit-scrollbar-button:vertical:increment {
+::-webkit-scrollbar-button:vertical:increment {
   background: var(--ButtonFace) var(--scrollbar-down-bg);
   background-origin: border-box;
 }
 
-*::-webkit-scrollbar-button:horizontal:decrement {
+::-webkit-scrollbar-button:horizontal:decrement {
   background: var(--ButtonFace) var(--scrollbar-left-bg);
   background-origin: border-box;
 }
 
-*::-webkit-scrollbar-button:horizontal:increment {
+::-webkit-scrollbar-button:horizontal:increment {
   background: var(--ButtonFace) var(--scrollbar-right-bg);
   background-origin: border-box;
 }
@@ -686,39 +666,40 @@ ui-tabs[side="right"] .ui-tabs__tab[aria-selected="true"]:first-of-type::after {
 /* active
 --------- */
 
-*::-webkit-scrollbar-button:hover:active {
+::-webkit-scrollbar-button:active {
+  border: 1px solid var(--ButtonShadow);
   background-position-y: 1px;
 }
 
-*::-webkit-scrollbar-button:vertical:decrement:active {
+::-webkit-scrollbar-button:vertical:decrement:active {
   background-position-x: 1px;
 }
 
-*::-webkit-scrollbar-button:vertical:increment:active {
+::-webkit-scrollbar-button:vertical:increment:active {
   background-position-x: -15px;
 }
 
-*::-webkit-scrollbar-button:horizontal:decrement:active {
+::-webkit-scrollbar-button:horizontal:decrement:active {
   background-position-x: -31px;
 }
 
-*::-webkit-scrollbar-button:horizontal:increment:active {
+::-webkit-scrollbar-button:horizontal:increment:active {
   background-position-x: -47px;
 }
 
 /* disabled
 ----------- */
 
-*::-webkit-scrollbar-button:horizontal:disabled {
+::-webkit-scrollbar-button:horizontal:disabled {
   background-position-y: -16px;
 }
 
-*::-webkit-scrollbar-button:vertical:disabled {
+::-webkit-scrollbar-button:vertical:disabled {
   background-position-y: -16px;
 }
 
-*::-webkit-scrollbar-button:end:decrement,
-*::-webkit-scrollbar-button:start:increment {
+::-webkit-scrollbar-button:end:decrement,
+::-webkit-scrollbar-button:start:increment {
   display: none;
 }
 

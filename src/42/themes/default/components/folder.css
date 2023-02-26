@@ -19,19 +19,3 @@ ui-explorer {
 ui-explorer > * {
   min-height: 0;
 }
-
-.ui-error {
-  padding: var(--unit);
-  max-width: 100%;
-}
-
-.ui-error * {
-  max-width: 100%;
-}
-
-.ui-error samp {
-  display: block;
-  white-space: pre;
-  height: min-content;
-  padding: var(--unit-md);
-}

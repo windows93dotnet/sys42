@@ -1,8 +1,8 @@
 @font-face {
   font-family: fixedsys;
   src:
-    url("./fixedsys/FSEX300.woff2") format("woff2") /*,
-    url("./fixedsys/FSEX300.ttf") format("truetype") */;
+    url("./fixedsys/FSEX300.woff2") format("woff2"),
+    url("./fixedsys/FSEX300.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
