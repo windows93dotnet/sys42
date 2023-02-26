@@ -2,22 +2,9 @@
 /* stylelint-disable max-line-length */
 
 /*
-
 @read https://github.com/suitcss/suit/blob/master/doc/naming-conventions.md
 @read https://dev.to/visuellverstehen/common-mistakes-when-writing-css-with-bem-4921
 @read https://picocss.com
-
-States
-======
-- 🎯 focus
-- ⚠️ invalid
-- 🚫 disabled
-- 👇 active
-- 🚩 current
-- 💾 default
-- ☑️ checked / visited
-- ☑️👇 toggled button active
-
 */
 
 :root {
@@ -45,7 +32,7 @@ States
   --ctrl-o: 1px solid var(--ctrl-oc, rgb(80 80 80 / 0.5));
   --ctrl-oo: -2px;
 
-  --ctrl🚫-alpha: 0.5;
+  --ctrl-disabled-alpha: 0.5;
 
   /* field
   ======== */
@@ -58,35 +45,35 @@ States
   --fld-o: var(--ctrl-o);
   --fld-oo: var(--ctrl-oo);
 
-  --fld🎯-fg: var(--ctrl🎯-fg, var(--fld-fg));
-  --fld🎯-bg: var(--ctrl🎯-bg, var(--fld-bg));
-  --fld🎯-bdw: var(--ctrl🎯-bdw, var(--fld-bdw));
-  --fld🎯-bds: var(--ctrl🎯-bds, var(--fld-bds));
-  --fld🎯-bdc: var(--ctrl🎯-bdc, var(--fld-bdc));
-  --fld🎯-bdi: var(--ctrl🎯-bdi, var(--fld-bdi));
-  --fld🎯-br: var(--ctrl🎯-br, var(--fld-br));
-  --fld🎯-tsh: var(--ctrl🎯-tsh, var(--fld-tsh));
-  --fld🎯-bsh: var(--ctrl🎯-bsh, var(--fld-bsh));
+  --fld-focus-fg: var(--ctrl-focus-fg, var(--fld-fg));
+  --fld-focus-bg: var(--ctrl-focus-bg, var(--fld-bg));
+  --fld-focus-bdw: var(--ctrl-focus-bdw, var(--fld-bdw));
+  --fld-focus-bds: var(--ctrl-focus-bds, var(--fld-bds));
+  --fld-focus-bdc: var(--ctrl-focus-bdc, var(--fld-bdc));
+  --fld-focus-bdi: var(--ctrl-focus-bdi, var(--fld-bdi));
+  --fld-focus-br: var(--ctrl-focus-br, var(--fld-br));
+  --fld-focus-tsh: var(--ctrl-focus-tsh, var(--fld-tsh));
+  --fld-focus-bsh: var(--ctrl-focus-bsh, var(--fld-bsh));
 
-  --fld🚫-fg: var(--ctrl🚫-fg, var(--fld-fg));
-  --fld🚫-bg: var(--ctrl🚫-bg, var(--fld-bg));
-  --fld🚫-bdw: var(--ctrl🚫-bdw, var(--fld-bdw));
-  --fld🚫-bds: var(--ctrl🚫-bds, var(--fld-bds));
-  --fld🚫-bdc: var(--ctrl🚫-bdc, var(--fld-bdc));
-  --fld🚫-bdi: var(--ctrl🚫-bdi, var(--fld-bdi));
-  --fld🚫-br: var(--ctrl🚫-br, var(--fld-br));
-  --fld🚫-tsh: var(--ctrl🚫-tsh, var(--fld-tsh));
-  --fld🚫-bsh: var(--ctrl🚫-bsh, var(--fld-bsh));
+  --fld-disabled-fg: var(--ctrl-disabled-fg, var(--fld-fg));
+  --fld-disabled-bg: var(--ctrl-disabled-bg, var(--fld-bg));
+  --fld-disabled-bdw: var(--ctrl-disabled-bdw, var(--fld-bdw));
+  --fld-disabled-bds: var(--ctrl-disabled-bds, var(--fld-bds));
+  --fld-disabled-bdc: var(--ctrl-disabled-bdc, var(--fld-bdc));
+  --fld-disabled-bdi: var(--ctrl-disabled-bdi, var(--fld-bdi));
+  --fld-disabled-br: var(--ctrl-disabled-br, var(--fld-br));
+  --fld-disabled-tsh: var(--ctrl-disabled-tsh, var(--fld-tsh));
+  --fld-disabled-bsh: var(--ctrl-disabled-bsh, var(--fld-bsh));
 
-  --fld⚠️-fg: var(--ctrl⚠-fg, var(--fld-fg));
-  --fld⚠️-bg: var(--ctrl⚠-bg, var(--fld-bg));
-  --fld⚠️-bdw: var(--ctrl⚠-bdw, var(--fld-bdw));
-  --fld⚠️-bds: var(--ctrl⚠-bds, var(--fld-bds));
-  --fld⚠️-bdc: var(--ctrl⚠-bdc, var(--fld-bdc));
-  --fld⚠️-bdi: var(--ctrl⚠-bdi, var(--fld-bdi));
-  --fld⚠️-br: var(--ctrl⚠-br, var(--fld-br));
-  --fld⚠️-tsh: var(--ctrl⚠-tsh, var(--fld-tsh));
-  --fld⚠️-bsh: var(--ctrl⚠-bsh, var(--fld-bsh));
+  --fld-invalid-fg: var(--ctrl-invalid-fg, var(--fld-fg));
+  --fld-invalid-bg: var(--ctrl-invalid-bg, var(--fld-bg));
+  --fld-invalid-bdw: var(--ctrl-invalid-bdw, var(--fld-bdw));
+  --fld-invalid-bds: var(--ctrl-invalid-bds, var(--fld-bds));
+  --fld-invalid-bdc: var(--ctrl-invalid-bdc, var(--fld-bdc));
+  --fld-invalid-bdi: var(--ctrl-invalid-bdi, var(--fld-bdi));
+  --fld-invalid-br: var(--ctrl-invalid-br, var(--fld-br));
+  --fld-invalid-tsh: var(--ctrl-invalid-tsh, var(--fld-tsh));
+  --fld-invalid-bsh: var(--ctrl-invalid-bsh, var(--fld-bsh));
 
   /* button
   ========= */
@@ -99,69 +86,69 @@ States
   --btn-oo: var(--ctrl-oo);
   --btn-pa: var(--ctrl-pa-y) var(--ctrl-pa-x);
 
-  --btn🎯-fg: var(--ctrl🎯-fg, var(--btn-fg));
-  --btn🎯-bg: var(--ctrl🎯-bg, var(--btn-bg));
-  --btn🎯-pa: var(--ctrl🎯-pa, var(--btn-pa));
-  --btn🎯-bdw: var(--ctrl🎯-bdw, var(--btn-bdw));
-  --btn🎯-bds: var(--ctrl🎯-bds, var(--btn-bds));
-  --btn🎯-bdc: var(--ctrl🎯-bdc, var(--btn-bdc));
-  --btn🎯-bdi: var(--ctrl🎯-bdi, var(--btn-bdi));
-  --btn🎯-br: var(--ctrl🎯-br, var(--btn-br));
-  --btn🎯-tsh: var(--ctrl🎯-tsh, var(--btn-tsh));
-  --btn🎯-bsh: var(--ctrl🎯-bsh, var(--btn-bsh));
+  --btn-focus-fg: var(--ctrl-focus-fg, var(--btn-fg));
+  --btn-focus-bg: var(--ctrl-focus-bg, var(--btn-bg));
+  --btn-focus-pa: var(--ctrl-focus-pa, var(--btn-pa));
+  --btn-focus-bdw: var(--ctrl-focus-bdw, var(--btn-bdw));
+  --btn-focus-bds: var(--ctrl-focus-bds, var(--btn-bds));
+  --btn-focus-bdc: var(--ctrl-focus-bdc, var(--btn-bdc));
+  --btn-focus-bdi: var(--ctrl-focus-bdi, var(--btn-bdi));
+  --btn-focus-br: var(--ctrl-focus-br, var(--btn-br));
+  --btn-focus-tsh: var(--ctrl-focus-tsh, var(--btn-tsh));
+  --btn-focus-bsh: var(--ctrl-focus-bsh, var(--btn-bsh));
 
-  --btn🚫-fg: var(--ctrl🚫-fg, var(--btn-fg));
-  --btn🚫-bg: var(--ctrl🚫-bg, var(--btn-bg));
-  --btn🚫-bdw: var(--ctrl🚫-bdw, var(--btn-bdw));
-  --btn🚫-bds: var(--ctrl🚫-bds, var(--btn-bds));
-  --btn🚫-bdc: var(--ctrl🚫-bdc, var(--btn-bdc));
-  --btn🚫-bdi: var(--ctrl🚫-bdi, var(--btn-bdi));
-  --btn🚫-br: var(--ctrl🚫-br, var(--btn-br));
-  --btn🚫-tsh: var(--ctrl🚫-tsh, var(--btn-tsh));
-  --btn🚫-bsh: var(--ctrl🚫-bsh, var(--btn-bsh));
+  --btn-disabled-fg: var(--ctrl-disabled-fg, var(--btn-fg));
+  --btn-disabled-bg: var(--ctrl-disabled-bg, var(--btn-bg));
+  --btn-disabled-bdw: var(--ctrl-disabled-bdw, var(--btn-bdw));
+  --btn-disabled-bds: var(--ctrl-disabled-bds, var(--btn-bds));
+  --btn-disabled-bdc: var(--ctrl-disabled-bdc, var(--btn-bdc));
+  --btn-disabled-bdi: var(--ctrl-disabled-bdi, var(--btn-bdi));
+  --btn-disabled-br: var(--ctrl-disabled-br, var(--btn-br));
+  --btn-disabled-tsh: var(--ctrl-disabled-tsh, var(--btn-tsh));
+  --btn-disabled-bsh: var(--ctrl-disabled-bsh, var(--btn-bsh));
 
-  --btn☑️🚫-fg: var(--btn🚫-fg);
-  --btn☑️🚫-bg: var(--btn🚫-bg);
-  --btn☑️🚫-bdw: var(--btn🚫-bdw);
-  --btn☑️🚫-bds: var(--btn🚫-bds);
-  --btn☑️🚫-bdc: var(--btn🚫-bdc);
-  --btn☑️🚫-bdi: var(--btn🚫-bdi);
-  --btn☑️🚫-br: var(--btn🚫-br);
-  --btn☑️🚫-tsh: var(--btn🚫-tsh);
-  --btn☑️🚫-bsh: var(--btn🚫-bsh);
+  --btn-toggled-disabled-fg: var(--btn-disabled-fg);
+  --btn-toggled-disabled-bg: var(--btn-disabled-bg);
+  --btn-toggled-disabled-bdw: var(--btn-disabled-bdw);
+  --btn-toggled-disabled-bds: var(--btn-disabled-bds);
+  --btn-toggled-disabled-bdc: var(--btn-disabled-bdc);
+  --btn-toggled-disabled-bdi: var(--btn-disabled-bdi);
+  --btn-toggled-disabled-br: var(--btn-disabled-br);
+  --btn-toggled-disabled-tsh: var(--btn-disabled-tsh);
+  --btn-toggled-disabled-bsh: var(--btn-disabled-bsh);
 
-  --btn👇-fg: var(--highlight-fg);
-  --btn👇-bg: var(--highlight-bg);
-  --btn👇-pa: var(--btn-pa);
-  --btn👇-bdw: var(--btn-bdw);
-  --btn👇-bds: var(--btn-bds);
-  --btn👇-bdc: var(--btn-bdc);
-  --btn👇-bdi: var(--btn-bdi);
-  --btn👇-br: var(--btn-br);
-  --btn👇-tsh: var(--btn-tsh);
-  --btn👇-bsh: var(--btn-bsh);
+  --btn-active-fg: var(--highlight-fg);
+  --btn-active-bg: var(--highlight-bg);
+  --btn-active-pa: var(--btn-pa);
+  --btn-active-bdw: var(--btn-bdw);
+  --btn-active-bds: var(--btn-bds);
+  --btn-active-bdc: var(--btn-bdc);
+  --btn-active-bdi: var(--btn-bdi);
+  --btn-active-br: var(--btn-br);
+  --btn-active-tsh: var(--btn-tsh);
+  --btn-active-bsh: var(--btn-bsh);
 
-  --btn☑️-fg: var(--highlight-fg);
-  --btn☑️-bg: var(--highlight-bg);
-  --btn☑️-pa: var(--btn-pa);
-  --btn☑️-bdw: var(--btn-bdw);
-  --btn☑️-bds: var(--btn-bds);
-  --btn☑️-bdc: var(--btn-bdc);
-  --btn☑️-bdi: var(--btn-bdi);
-  --btn☑️-br: var(--btn-br);
-  --btn☑️-tsh: var(--btn-tsh);
-  --btn☑️-bsh: var(--btn-bsh);
+  --btn-toggled-fg: var(--highlight-fg);
+  --btn-toggled-bg: var(--highlight-bg);
+  --btn-toggled-pa: var(--btn-pa);
+  --btn-toggled-bdw: var(--btn-bdw);
+  --btn-toggled-bds: var(--btn-bds);
+  --btn-toggled-bdc: var(--btn-bdc);
+  --btn-toggled-bdi: var(--btn-bdi);
+  --btn-toggled-br: var(--btn-br);
+  --btn-toggled-tsh: var(--btn-tsh);
+  --btn-toggled-bsh: var(--btn-bsh);
 
-  --btn☑️👇-fg: var(--btn☑️-fg);
-  --btn☑️👇-bg: var(--btn☑️-bg);
-  --btn☑️👇-pa: var(--btn☑️-pa);
-  --btn☑️👇-bdw: var(--btn☑️-bdw);
-  --btn☑️👇-bds: var(--btn☑️-bds);
-  --btn☑️👇-bdc: var(--btn☑️-bdc);
-  --btn☑️👇-bdi: var(--btn☑️-bdi);
-  --btn☑️👇-br: var(--btn☑️-br);
-  --btn☑️👇-tsh: var(--btn☑️-tsh);
-  --btn☑️👇-bsh: var(--btn☑️-bsh);
+  --btn-toggled-active-fg: var(--btn-toggled-fg);
+  --btn-toggled-active-bg: var(--btn-toggled-bg);
+  --btn-toggled-active-pa: var(--btn-toggled-pa);
+  --btn-toggled-active-bdw: var(--btn-toggled-bdw);
+  --btn-toggled-active-bds: var(--btn-toggled-bds);
+  --btn-toggled-active-bdc: var(--btn-toggled-bdc);
+  --btn-toggled-active-bdi: var(--btn-toggled-bdi);
+  --btn-toggled-active-br: var(--btn-toggled-br);
+  --btn-toggled-active-tsh: var(--btn-toggled-tsh);
+  --btn-toggled-active-bsh: var(--btn-toggled-bsh);
 
   /* checkable
   ============ */
@@ -175,25 +162,25 @@ States
   --check-tsh: var(--fld-tsh);
   --check-bsh: var(--fld-bsh);
 
-  --check🎯-fg: var(--check-fg);
-  --check🎯-bg: var(--check-bg);
-  --check🎯-bdw: var(--check-bdw);
-  --check🎯-bds: var(--check-bds);
-  --check🎯-bdc: var(--check-bdc);
-  --check🎯-bdi: var(--check-bdi);
-  --check🎯-br: var(--check-br);
-  --check🎯-tsh: var(--check-tsh);
-  --check🎯-bsh: var(--check-bsh);
+  --check-focus-fg: var(--check-fg);
+  --check-focus-bg: var(--check-bg);
+  --check-focus-bdw: var(--check-bdw);
+  --check-focus-bds: var(--check-bds);
+  --check-focus-bdc: var(--check-bdc);
+  --check-focus-bdi: var(--check-bdi);
+  --check-focus-br: var(--check-br);
+  --check-focus-tsh: var(--check-tsh);
+  --check-focus-bsh: var(--check-bsh);
 
-  --check🚫-fg: var(--ctrl🚫-fg, var(--check-fg));
-  --check🚫-bg: var(--ctrl🚫-bg, var(--check-bg));
-  --check🚫-bdw: var(--check-bdw);
-  --check🚫-bds: var(--check-bds);
-  --check🚫-bdc: var(--check-bdc);
-  --check🚫-bdi: var(--check-bdi);
-  --check🚫-br: var(--check-br);
-  --check🚫-tsh: var(--ctrl🚫-tsh, var(--check-tsh));
-  --check🚫-bsh: var(--check-bsh);
+  --check-disabled-fg: var(--ctrl-disabled-fg, var(--check-fg));
+  --check-disabled-bg: var(--ctrl-disabled-bg, var(--check-bg));
+  --check-disabled-bdw: var(--check-bdw);
+  --check-disabled-bds: var(--check-bds);
+  --check-disabled-bdc: var(--check-bdc);
+  --check-disabled-bdi: var(--check-bdi);
+  --check-disabled-br: var(--check-br);
+  --check-disabled-tsh: var(--ctrl-disabled-tsh, var(--check-tsh));
+  --check-disabled-bsh: var(--check-bsh);
 
   --check-o: 1px solid var(--check-oc, var(--check-fg));
   --check-oo: 2px;
@@ -220,12 +207,12 @@ States
   --fieldset__legend-fg: var(--panel--fg);
   --fieldset__legend-pa: 0.5ch;
 
-  --option☑️-bg: var(--highlight-bg);
-  --option☑️-fg: var(--highlight-fg);
-  --option☑️-tsh: var(--highlight-fg);
-  --option☑️🚫-bg: var(--ctrl🚫-bg);
-  --option☑️🚫-fg: var(--ctrl🚫-fg);
-  --option☑️🚫-tsh: var(--ctrl🚫-tsh);
+  --option-toggled-bg: var(--highlight-bg);
+  --option-toggled-fg: var(--highlight-fg);
+  --option-toggled-tsh: var(--highlight-fg);
+  --option-toggled-disabled-bg: var(--ctrl-disabled-bg);
+  --option-toggled-disabled-fg: var(--ctrl-disabled-fg);
+  --option-toggled-disabled-tsh: var(--ctrl-disabled-tsh);
 
   /* pictos
   ========= */
@@ -269,7 +256,7 @@ States
 }
 
 :where(:disabled:not(form,fieldset),[aria-disabled="true"]) {
-  opacity: var(--ctrl🚫-alpha);
+  opacity: var(--ctrl-disabled-alpha);
 }
 
 :where(:focus, .focus) {
@@ -471,15 +458,15 @@ input:not(
 ):where(:focus,.focus),
 :where(selectmenu:focus-within),
 :where(.field:focus-within,.field.focus) {
-  --fg: var(--fld🎯-fg);
-  --bg: var(--fld🎯-bg);
-  --fld-bdw: var(--fld🎯-bdw);
-  --fld-bds: var(--fld🎯-bds);
-  --fld-bdc: var(--fld🎯-bdc);
-  --fld-bdi: var(--fld🎯-bdi);
-  --fld-br: var(--fld🎯-br);
-  --fld-tsh: var(--fld🎯-tsh);
-  --fld-bsh: var(--fld🎯-bsh);
+  --fg: var(--fld-focus-fg);
+  --bg: var(--fld-focus-bg);
+  --fld-bdw: var(--fld-focus-bdw);
+  --fld-bds: var(--fld-focus-bds);
+  --fld-bdc: var(--fld-focus-bdc);
+  --fld-bdi: var(--fld-focus-bdi);
+  --fld-br: var(--fld-focus-br);
+  --fld-tsh: var(--fld-focus-tsh);
+  --fld-bsh: var(--fld-focus-bsh);
 
   outline: var(--fld-o);
   outline-offset: var(--fld-oo);
@@ -499,16 +486,16 @@ select,
 selectmenu,
 textarea
 ):is(:invalid,.invalid) {
-  --fg: var(--fld⚠️-fg);
-  --bg: var(--fld⚠️-bg);
-  --fld-bdw: var(--fld⚠️-bdw);
-  --fld-bds: var(--fld⚠️-bds);
-  --fld-bdc: var(--fld⚠️-bdc);
-  --fld-bdi: var(--fld⚠️-bdi);
-  --fld-br: var(--fld⚠️-br);
-  --fld-tsh: var(--fld⚠️-tsh);
-  --fld-bsh: var(--fld⚠️-bsh);
-  --fld-caret: var(--fld⚠️-caret);
+  --fg: var(--fld-invalid-fg);
+  --bg: var(--fld-invalid-bg);
+  --fld-bdw: var(--fld-invalid-bdw);
+  --fld-bds: var(--fld-invalid-bds);
+  --fld-bdc: var(--fld-invalid-bdc);
+  --fld-bdi: var(--fld-invalid-bdi);
+  --fld-br: var(--fld-invalid-br);
+  --fld-tsh: var(--fld-invalid-tsh);
+  --fld-bsh: var(--fld-invalid-bsh);
+  --fld-caret: var(--fld-invalid-caret);
 }
 
 select:where([multiple],[size]):is(:focus,.focus) {
@@ -530,23 +517,23 @@ textarea
 ):is(:disabled,:not([type="file"]):read-only,[aria-disabled="true"]),
 :where(select:is(:disabled,[aria-disabled="true"])),
 :where(selectmenu:is(:disabled,[aria-disabled="true"])) {
-  --fg: var(--fld🚫-fg);
-  --bg: var(--fld🚫-bg);
-  --fld-bdw: var(--fld🚫-bdw);
-  --fld-bds: var(--fld🚫-bds);
-  --fld-bdc: var(--fld🚫-bdc);
-  --fld-bdi: var(--fld🚫-bdi);
-  --fld-br: var(--fld🚫-br);
-  --fld-tsh: var(--fld🚫-tsh);
-  --fld-bsh: var(--fld🚫-bsh);
+  --fg: var(--fld-disabled-fg);
+  --bg: var(--fld-disabled-bg);
+  --fld-bdw: var(--fld-disabled-bdw);
+  --fld-bds: var(--fld-disabled-bds);
+  --fld-bdc: var(--fld-disabled-bdc);
+  --fld-bdi: var(--fld-disabled-bdi);
+  --fld-br: var(--fld-disabled-br);
+  --fld-tsh: var(--fld-disabled-tsh);
+  --fld-bsh: var(--fld-disabled-bsh);
 }
 
 :is(:disabled,[aria-disabled="true"]) label,
 :is(:disabled,[aria-disabled="true"]) legend,
 :is(:disabled,[aria-disabled="true"]) + label {
-  opacity: var(--ctrl🚫-alpha);
-  color: var(--ctrl🚫-fg);
-  text-shadow: var(--ctrl🚫-tsh, none);
+  opacity: var(--ctrl-disabled-alpha);
+  color: var(--ctrl-disabled-fg);
+  text-shadow: var(--ctrl-disabled-tsh, none);
 }
 
 /* field and button
@@ -695,16 +682,16 @@ input[type="reset"],
 input[type="submit"]
 ):where(:focus,:hover),
 :where(input:is([type="checkbox"],[type="radio"]):focus + label.button) {
-  --fg: var(--btn🎯-fg);
-  --bg: var(--btn🎯-bg);
-  padding: var(--btn🎯-pa);
-  border-width: var(--btn🎯-bdw);
-  border-style: var(--btn🎯-bds, solid);
-  border-color: var(--btn🎯-bdc);
-  border-image: var(--btn🎯-bdi);
-  border-radius: var(--btn🎯-br);
-  text-shadow: var(--btn🎯-tsh, none);
-  box-shadow: var(--btn🎯-bsh);
+  --fg: var(--btn-focus-fg);
+  --bg: var(--btn-focus-bg);
+  padding: var(--btn-focus-pa);
+  border-width: var(--btn-focus-bdw);
+  border-style: var(--btn-focus-bds, solid);
+  border-color: var(--btn-focus-bdc);
+  border-image: var(--btn-focus-bdi);
+  border-radius: var(--btn-focus-br);
+  text-shadow: var(--btn-focus-tsh, none);
+  box-shadow: var(--btn-focus-bsh);
 }
 
 :where(
@@ -726,16 +713,16 @@ input[type="button"],
 input[type="reset"],
 input[type="submit"]
 ):where(:active:focus:not([aria-expanded])) {
-  --fg: var(--btn👇-fg);
-  --bg: var(--btn👇-bg);
-  padding: var(--btn👇-pa);
-  border-width: var(--btn👇-bdw);
-  border-style: var(--btn👇-bds, solid);
-  border-color: var(--btn👇-bdc);
-  border-image: var(--btn👇-bdi);
-  border-radius: var(--btn👇-br);
-  text-shadow: var(--btn👇-tsh, none);
-  box-shadow: var(--btn👇-bsh);
+  --fg: var(--btn-active-fg);
+  --bg: var(--btn-active-bg);
+  padding: var(--btn-active-pa);
+  border-width: var(--btn-active-bdw);
+  border-style: var(--btn-active-bds, solid);
+  border-color: var(--btn-active-bdc);
+  border-image: var(--btn-active-bdi);
+  border-radius: var(--btn-active-br);
+  text-shadow: var(--btn-active-tsh, none);
+  box-shadow: var(--btn-active-bsh);
 }
 
 :where(
@@ -746,16 +733,16 @@ input[type="reset"],
 input[type="submit"]
 ):where([aria-pressed="true"],[aria-selected="true"],[aria-expanded="true"]),
 :where(input:is([type="checkbox"],[type="radio"]):checked + label.button) {
-  --fg: var(--btn☑️-fg);
-  --bg: var(--btn☑️-bg);
-  padding: var(--btn☑️-pa);
-  border-width: var(--btn☑️-bdw);
-  border-style: var(--btn☑️-bds, solid);
-  border-color: var(--btn☑️-bdc);
-  border-image: var(--btn☑️-bdi);
-  border-radius: var(--btn☑️-br);
-  text-shadow: var(--btn☑️-tsh, none);
-  box-shadow: var(--btn☑️-bsh);
+  --fg: var(--btn-toggled-fg);
+  --bg: var(--btn-toggled-bg);
+  padding: var(--btn-toggled-pa);
+  border-width: var(--btn-toggled-bdw);
+  border-style: var(--btn-toggled-bds, solid);
+  border-color: var(--btn-toggled-bdc);
+  border-image: var(--btn-toggled-bdi);
+  border-radius: var(--btn-toggled-br);
+  text-shadow: var(--btn-toggled-tsh, none);
+  box-shadow: var(--btn-toggled-bsh);
 }
 
 :where(
@@ -766,16 +753,16 @@ input[type="reset"],
 input[type="submit"]
 ):where([aria-pressed]:active),
 :where(input:is([type="checkbox"],[type="radio"]) + label.button:active) {
-  --fg: var(--btn☑️👇-fg);
-  --bg: var(--btn☑️👇-bg);
-  padding: var(--btn☑️👇-pa);
-  border-width: var(--btn☑️👇-bdw);
-  border-style: var(--btn☑️👇-bds, solid);
-  border-color: var(--btn☑️👇-bdc);
-  border-image: var(--btn☑️👇-bdi);
-  border-radius: var(--btn☑️👇-br);
-  text-shadow: var(--btn☑️👇-tsh, none);
-  box-shadow: var(--btn☑️👇-bsh);
+  --fg: var(--btn-toggled-active-fg);
+  --bg: var(--btn-toggled-active-bg);
+  padding: var(--btn-toggled-active-pa);
+  border-width: var(--btn-toggled-active-bdw);
+  border-style: var(--btn-toggled-active-bds, solid);
+  border-color: var(--btn-toggled-active-bdc);
+  border-image: var(--btn-toggled-active-bdi);
+  border-radius: var(--btn-toggled-active-br);
+  text-shadow: var(--btn-toggled-active-tsh, none);
+  box-shadow: var(--btn-toggled-active-bsh);
 }
 
 :where(
@@ -786,17 +773,17 @@ input[type="reset"],
 input[type="submit"]
 ):where(:disabled,[aria-disabled="true"]),
 :where(input:is([type="checkbox"],[type="radio"]):disabled + label.button) {
-  --fg: var(--btn🚫-fg);
-  --bg: var(--btn🚫-bg);
-  border-width: var(--btn🚫-bdw);
-  border-style: var(--btn🚫-bds, solid);
-  border-color: var(--btn🚫-bdc);
-  border-image: var(--btn🚫-bdi);
-  border-radius: var(--btn🚫-br);
-  text-shadow: var(--btn🚫-tsh, none);
-  box-shadow: var(--btn🚫-bsh);
+  --fg: var(--btn-disabled-fg);
+  --bg: var(--btn-disabled-bg);
+  border-width: var(--btn-disabled-bdw);
+  border-style: var(--btn-disabled-bds, solid);
+  border-color: var(--btn-disabled-bdc);
+  border-image: var(--btn-disabled-bdi);
+  border-radius: var(--btn-disabled-br);
+  text-shadow: var(--btn-disabled-tsh, none);
+  box-shadow: var(--btn-disabled-bsh);
 
-  opacity: var(--ctrl🚫-alpha);
+  opacity: var(--ctrl-disabled-alpha);
 }
 
 :where(
@@ -807,15 +794,15 @@ input[type="reset"],
 input[type="submit"]
 ):is([aria-pressed="true"]):is(:disabled,[aria-disabled="true"]),
 :where(input:is([type="checkbox"],[type="radio"]):checked:disabled + label.button) {
-  --fg: var(--btn☑️🚫-fg);
-  --bg: var(--btn☑️🚫-bg);
-  border-width: var(--btn☑️🚫-bdw);
-  border-style: var(--btn☑️🚫-bds, solid);
-  border-color: var(--btn☑️🚫-bdc);
-  border-image: var(--btn☑️🚫-bdi);
-  border-radius: var(--btn☑️🚫-br);
-  text-shadow: var(--btn☑️🚫-tsh, none);
-  box-shadow: var(--btn☑️🚫-bsh);
+  --fg: var(--btn-toggled-disabled-fg);
+  --bg: var(--btn-toggled-disabled-bg);
+  border-width: var(--btn-toggled-disabled-bdw);
+  border-style: var(--btn-toggled-disabled-bds, solid);
+  border-color: var(--btn-toggled-disabled-bdc);
+  border-image: var(--btn-toggled-disabled-bdi);
+  border-radius: var(--btn-toggled-disabled-br);
+  text-shadow: var(--btn-toggled-disabled-tsh, none);
+  box-shadow: var(--btn-toggled-disabled-bsh);
 }
 
 /* https://twitter.com/overflowhidden/status/1260837671762571265 */
@@ -867,7 +854,7 @@ input[type="submit"]
 
 button[type="submit"]:not(:active,:disabled),
 .btn-default:not(:active,:disabled) {
-  border-image: var(--btn💾-bdi);
+  border-image: var(--btn-default-bdi);
 }
 
 /* select
@@ -900,15 +887,15 @@ select:not([multiple],[size]) :where(optgroup,option) {
 }
 
 :is(select,select:focus):not(:disabled) option:is(:hover,:focus,:active,:checked) {
-  background: var(--option☑️-bg);
-  color: var(--option☑️-fg);
-  text-shadow: var(--option☑️-tsh, none);
+  background: var(--option-toggled-bg);
+  color: var(--option-toggled-fg);
+  text-shadow: var(--option-toggled-tsh, none);
 }
 
 :is(select:disabled) option:checked {
-  background: var(--option☑️🚫-bg);
-  color: var(--option☑️🚫-fg);
-  text-shadow: var(--option☑️🚫-tsh, none);
+  background: var(--option-toggled-disabled-bg);
+  color: var(--option-toggled-disabled-fg);
+  text-shadow: var(--option-toggled-disabled-tsh, none);
 }
 
 select:is([multiple],[size]) optgroup { font-size: 0; }
@@ -1016,15 +1003,15 @@ input[type="radio"]:not([role="menuitemradio"])) {
 }
 
 :where(input[type="checkbox"],input[type="radio"]):focus {
-  --check-fg: var(--check🎯-fg);
-  --check-bg: var(--check🎯-bg);
-  --check-bdw: var(--check🎯-bdw);
-  --check-bds: var(--check🎯-bds);
-  --check-bdc: var(--check🎯-bdc);
-  --check-bdi: var(--check🎯-bdi);
-  --check-br: var(--check🎯-br);
-  --check-tsh: var(--check🎯-tsh);
-  --check-bsh: var(--check🎯-bsh);
+  --check-fg: var(--check-focus-fg);
+  --check-bg: var(--check-focus-bg);
+  --check-bdw: var(--check-focus-bdw);
+  --check-bds: var(--check-focus-bds);
+  --check-bdc: var(--check-focus-bdc);
+  --check-bdi: var(--check-focus-bdi);
+  --check-br: var(--check-focus-br);
+  --check-tsh: var(--check-focus-tsh);
+  --check-bsh: var(--check-focus-bsh);
   /* outline: var(--check-o);
   outline-offset: var(--check-oo); */
 
@@ -1034,15 +1021,15 @@ input[type="radio"]:not([role="menuitemradio"])) {
 }
 
 :where(input[type="checkbox"],input[type="radio"]):disabled {
-  --check-fg: var(--check🚫-fg);
-  --check-bg: var(--check🚫-bg);
-  --check-bdw: var(--check🚫-bdw);
-  --check-bds: var(--check🚫-bds);
-  --check-bdc: var(--check🚫-bdc);
-  --check-bdi: var(--check🚫-bdi);
-  --check-br: var(--check🚫-br);
-  --check-tsh: var(--check🚫-tsh);
-  --check-bsh: var(--check🚫-bsh);
+  --check-fg: var(--check-disabled-fg);
+  --check-bg: var(--check-disabled-bg);
+  --check-bdw: var(--check-disabled-bdw);
+  --check-bds: var(--check-disabled-bds);
+  --check-bdc: var(--check-disabled-bdc);
+  --check-bdi: var(--check-disabled-bdi);
+  --check-br: var(--check-disabled-br);
+  --check-tsh: var(--check-disabled-tsh);
+  --check-bsh: var(--check-disabled-bsh);
 }
 
 /* :where(label :is(

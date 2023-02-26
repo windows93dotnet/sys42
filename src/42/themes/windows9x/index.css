@@ -123,9 +123,9 @@
   --outset-shallow-bdi-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(255 255 255)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(128 128 128)" d="M6 0h1v7H0V6h6z"/></svg>');
   --tabs__tab-bdi-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(255 255 255)" d="M2 0h3v1H2z  M1 1h1v1H1z M0 2h1v3H0z"/><path fill="rgb(223 223 223)" d="M2 1h3v1H2z M1 2h1v3H1z"/><path fill="rgb(128 128 128)" d="M5 2h1v3H5z M2 5h3v1H2z"/><path fill="rgb(64 64 64)" d="M6 2h1v3H6z M5 1h1v1H5z M5 5h1v1H5z M2 6h3v1H2z M1 5h1v1H1z"/><path fill="rgb(212 208 200)" d="M2 2h3v3H2z"/></svg>');
 
-  --btn☑️-bdi-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(64 64 64)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(128 128 128)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(223 223 223)" d="M5 1h1v5H1V5h4z"/><path fill="rgb(255 255 255)" d="M6 0h1v7H0V6h6z"/></svg>');
-  --btn👇-bdi-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(64 64 64)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(128 128 128)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(128 128 128)" d="M5 1h1v5H1V5h4z"/><path fill="rgb(64 64 64)" d="M6 0h1v7H0V6h6z"/></svg>');
-  --btn💾-bdi-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(64 64 64)" d="M7 0v7H0V0h7Z"/><path fill="rgb(255 255 255)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(223 223 223)" d="M2 2h2v1H3v1H2Z"/><path fill="rgb(128 128 128)" d="M4 2h1v3H2V4h2z"/></svg>');
+  --btn-toggled-bdi-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(64 64 64)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(128 128 128)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(223 223 223)" d="M5 1h1v5H1V5h4z"/><path fill="rgb(255 255 255)" d="M6 0h1v7H0V6h6z"/></svg>');
+  --btn-active-bdi-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(64 64 64)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(128 128 128)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(128 128 128)" d="M5 1h1v5H1V5h4z"/><path fill="rgb(64 64 64)" d="M6 0h1v7H0V6h6z"/></svg>');
+  --btn-default-bdi-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(64 64 64)" d="M7 0v7H0V0h7Z"/><path fill="rgb(255 255 255)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(223 223 223)" d="M2 2h2v1H3v1H2Z"/><path fill="rgb(128 128 128)" d="M4 2h1v3H2V4h2z"/></svg>');
   --fieldset-bdi-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="7px" height="7px"><path fill="rgb(128 128 128)" d="M0 0h6v1H1v5H0Z"/><path fill="rgb(255 255 255)" d="M1 1h4v1H2v3H1Z"/><path fill="rgb(128 128 128)" d="M5 1h1v5H1V5h4z"/><path fill="rgb(255 255 255)" d="M6 0h1v7H0V6h6z"/></svg>');
   --radio-bdi-url: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"><path fill="rgb(64 64 64)" d="M4 1h4v1h2v1H8V2H4v1H3v1H2v4h1v1H2V8H1V4h1V2h2z"/><path fill="rgb(128 128 128)" d="M4 0h4v1h2v1H8V1H4v1H2v2H1v4h1v2H1V8H0V4h1V2h1V1h2z"/><path fill="rgb(223 223 223)" d="M9 3h1v1h1v4h-1v2H8v1H4v-1H2V9h2v1h4V9h1V8h1V4H9z"/><path fill="rgb(255 255 255)" d="M10 2h1v2h1v4h-1v2h-1v1H8v1H4v-1H2v-1h2v1h4v-1h2V8h1V4h-1z"/></svg>');
 
@@ -135,9 +135,9 @@
   --outset-bdi: var(--outset-bdi-url) 2 / 2px;
   --outset-shallow-bdi: var(--outset-shallow-bdi-url) 1 / 1px;
 
-  --btn☑️-bdi: var(--btn☑️-bdi-url) 2 / 2px;
-  --btn👇-bdi: var(--btn👇-bdi-url) 2 / 2px;
-  --btn💾-bdi: var(--btn💾-bdi-url) 3 / 3px;
+  --btn-toggled-bdi: var(--btn-toggled-bdi-url) 2 / 2px;
+  --btn-active-bdi: var(--btn-active-bdi-url) 2 / 2px;
+  --btn-default-bdi: var(--btn-default-bdi-url) 3 / 3px;
   --fieldset-bdi: var(--fieldset-bdi-url) 2 / 2px;
   --radio-bdi: var(--radio-bdi-url) 4 / 4px;
 
@@ -218,17 +218,17 @@
 
   --ctrl-o: 1px dotted;
   --ctrl-oo: -3px;
-  --ctrl🚫-alpha: 1;
-  --ctrl🚫-bg: var(--ButtonFace);
-  --ctrl🚫-fg: var(--GrayText);
-  --ctrl🚫-tsh: 1px 1px 0 var(--ButtonHilight);
+  --ctrl-disabled-alpha: 1;
+  --ctrl-disabled-bg: var(--ButtonFace);
+  --ctrl-disabled-fg: var(--GrayText);
+  --ctrl-disabled-tsh: 1px 1px 0 var(--ButtonHilight);
 
   --fld-bg: var(--Window);
   --fld-fg: var(--WindowText);
   --fld-bdw: 2px;
   --fld-bdc: var(--ButtonShadow);
 
-  --fld⚠️-bg: #dfc8c8;
+  --fld-invalid-bg: #dfc8c8;
 
   --btn-bg: var(--ButtonFace);
   --btn-fg: var(--ButtonText);
@@ -240,25 +240,25 @@
 
   /* --btn--primary-bg: var(--ButtonAlternateFace); */
 
-  --btn👇-fg: var(--btn-fg);
-  --btn👇-bg: var(--btn-bg);
-  --btn👇-pa:
+  --btn-active-fg: var(--btn-fg);
+  --btn-active-bg: var(--btn-bg);
+  --btn-active-pa:
     calc(var(--ctrl-pa-y) + 1px)
     calc(var(--ctrl-pa-x) - 1px)
     calc(var(--ctrl-pa-y) - 1px)
     calc(var(--ctrl-pa-x) + 1px);
-  --btn☑️👇-pa: var(--btn👇-pa);
-  --btn☑️-pa: var(--ctrl-pa-y) var(--ctrl-pa-x);
+  --btn-toggled-active-pa: var(--btn-active-pa);
+  --btn-toggled-pa: var(--ctrl-pa-y) var(--ctrl-pa-x);
 
-  --btn☑️-fg: var(--btn-fg);
-  --btn☑️-bg: var(--btn-bg) var(--screentone-url);
-  --btn☑️🚫-bdi: var(--btn☑️-bdi);
+  --btn-toggled-fg: var(--btn-fg);
+  --btn-toggled-bg: var(--btn-bg) var(--screentone-url);
+  --btn-toggled-disabled-bdi: var(--btn-toggled-bdi);
 
   --check-o: none;
   --check-size: 13px;
 
   --link-fg: var(--Hilight);
-  --link👇-fg: #f00;
+  --link-active-fg: #f00;
 
   --highlight-bg: var(--Hilight);
   --highlight-fg: var(--HilightText);
@@ -286,7 +286,7 @@
   --range__thumb-bg: var(--ButtonFace);
   --range__thumb-bdi: var(--btn-bdi);
 
-  --range🚫__thumb-bg: var(--ButtonFace) var(--screentone-url);
+  --range-disabled__thumb-bg: var(--ButtonFace) var(--screentone-url);
 
   --progress__value-bg:
     0 0 / 10px 50px
@@ -383,7 +383,7 @@ input[type="number" i]:disabled::-webkit-inner-spin-button {
 }
 
 :is(button, .button):not(:active,[role="tab"],[aria-selected="true"]):focus {
-  border-image: var(--btn💾-bdi);
+  border-image: var(--btn-default-bdi);
 }
 
 /* :where(.check-cont label) {
