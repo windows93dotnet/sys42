@@ -149,6 +149,16 @@ export default function addUtilities(item, isExecutionContext) {
 
   item.utils.decay = decay
 
+  item.utils.invisible = (el) => {
+    el.style = `
+      position: absolute;
+      overflow: auto;
+      margin: 0;
+      inset: 0;
+      opacity: 0.001;`
+    return el
+  }
+
   item.utils.dest = (options) => {
     const el = create(
       options?.tag ?? "section",

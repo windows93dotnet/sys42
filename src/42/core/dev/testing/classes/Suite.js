@@ -1,8 +1,7 @@
 import serial from "../../../../fabric/type/promise/serial.js"
-import nextCycle from "../../../../fabric/type/promise/nextCycle.js"
 import parallel from "../../../../fabric/type/promise/parallel.js"
 import groupBy from "../../../../fabric/type/array/groupBy.js"
-import noop from "../../../../fabric/type/function/noop.js"
+import idle from "../../../../fabric/type/promise/idle.js"
 import ExecutionContext from "../ExecutionContext.js"
 import serializeError from "../../../../fabric/type/error/serializeError.js"
 
@@ -76,8 +75,6 @@ export default class Suite {
   }
 
   async runTest(test, options = {}) {
-    const { oneach = noop } = options
-
     if (options.nested !== true) {
       this.currentTest = test
       this.root.currentTest = test
@@ -89,7 +86,7 @@ export default class Suite {
       return
     }
 
-    await nextCycle()
+    await idle({ timeout: 3000 })
 
     if (this.beforeEach) await this.warnOnThrow(this.beforeEach, "beforeEach")
 
@@ -154,7 +151,7 @@ export default class Suite {
 
     if (t.logs.length > 0) test.logs.push(...t.logs)
 
-    oneach(test)
+    if (options.oneach) requestAnimationFrame(() => options.oneach(test))
 
     if (this.afterEach) await this.warnOnThrow(this.afterEach, "afterEach")
   }
