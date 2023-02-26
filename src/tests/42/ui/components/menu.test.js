@@ -7,7 +7,7 @@ import inTop from "../../../../42/core/env/realm/inTop.js"
 import "../../../../42/ui/components/dialog.js"
 import "../../../../42/ui/popup.js"
 
-const manual = 1
+const manual = 0
 
 const __ = inTop ? "Top" : "Iframe"
 

@@ -8,18 +8,25 @@
   <a href="/" class="unstyled">
     <pre class="ma-0">
 ╷ ┌───┐
-└─┤ ┌─┘
-  └─┴─╴
+└─┤ ┌─┘   <output class="test-filename txt-pre"></output>
+  └─┴─╴   <output class="test-title txt-pre"></output>
  sys42
     </pre>
   </a>
-  <hr />
-  <strong>Open the browser console to show tests results.</strong>
+  <div class="results message">
+    <div>passed: <output class="passed txt-pre">0</output></div>
+    <div>failed: <output class="failed txt-pre">0</output></div>
+    <div>skipped: <output class="skipped txt-pre">0</output></div>
+  </div>
   <br />
-  <br />
-  <div class="message warning pa">
-    ⚠️ Some tests can hang or crash the browser on reload.<br />
-    Use browser's Task Manager to kill the process if it happen.
+  <div class="notice">
+    <strong>Open the browser console to show tests results.</strong>
+    <br />
+    <br />
+    <div class="message warning pa">
+      ⚠️ Some tests can hang or crash the browser on reload.<br />
+      Use browser's Task Manager to kill the process if it happen.
+    </div>
   </div>
 </body>
 
@@ -32,14 +39,21 @@
 
   system.DEV = true
 
-  testRunner(
+  const testFilename = document.querySelector(".test-filename")
+  const testTitle = document.querySelector(".test-title")
+  const results = document.querySelector(".results")
+  const passed = document.querySelector(".passed")
+  const failed = document.querySelector(".failed")
+  const skipped = document.querySelector(".skipped")
+
+  await testRunner(
     [
       // Utilities tests
 
       // "/tests/42/core/cli/argv.test.js",
       // "/tests/42/core/console/formats/highlight.test.js",
       // "/tests/42/core/console/parseLogTemplate.test.js",
-      // "/tests/42/core/db/Database.test.js",
+      "/tests/42/core/db/Database.test.js",
       // "/tests/42/core/dev/puppet.test.js",
       // "/tests/42/core/formats/base64.test.js",
       // "/tests/42/core/formats/template/parseExpression.test.js",
@@ -99,8 +113,31 @@
       // "/tests/42/ui/create.test.js",
       // "/tests/42/ui/filters.test.js",
       // "/tests/42/ui/popup.test.js",
-      "/tests/42/ui/xss.test.js",
+      // "/tests/42/ui/xss.test.js",
+      // "/tests/42/ui.test.js",
     ],
-    { verbose: 2 }
+    {
+      verbose: 2,
+      runner: {
+        oneach(test) {
+          testFilename.textContent = test.stackframe.filename //
+            .replace(location.origin, "")
+
+          try {
+            testTitle.textContent = test.title.join()
+          } catch {}
+
+          passed.textContent = test.suite.root.stats.passed
+          failed.textContent = test.suite.root.stats.failed
+          skipped.textContent = test.suite.root.stats.skipped
+        },
+      },
+    }
   )
+
+  if (system.testing.root.ok) results.classList.add("success")
+  else results.classList.add("error")
+
+  testFilename.textContent = ""
+  testTitle.textContent = ""
 </script>
