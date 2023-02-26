@@ -18,14 +18,14 @@
   --fld-fg: #000;
   --fld-bsc: #666;
   --fld-oc: #666;
-  --fld⚠️-bsc: #f00;
+  --fld-invalid-bsc: #f00;
 
   --btn-bg: #c0c0c0;
   --btn-fg: #000;
   --btn-bsc: #666;
 
   --link-fg: #034575;
-  --link👇-fg: #c00;
+  --link-active-fg: #c00;
 
   --highlight-bg: #b5d5ff;
   --highlight-fg: #000;

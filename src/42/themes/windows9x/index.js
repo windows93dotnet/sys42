@@ -13,9 +13,9 @@ const imagesKeys = [
   "--outset-bdi-url",
   "--outset-shallow-bdi-url",
 
-  "--btn☑️-bdi-url",
-  "--btn👇-bdi-url",
-  "--btn💾-bdi-url",
+  "--btn-toggled-bdi-url",
+  "--btn-active-bdi-url",
+  "--btn-default-bdi-url",
   "--fieldset-bdi-url",
   "--radio-bdi-url",
   "--tabs__tab-bdi-url",

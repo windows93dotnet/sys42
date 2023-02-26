@@ -20,12 +20,12 @@
   --btn-br: 0.6rem;
   --select-br: var(--btn-br);
   --ctrl-oc: #fff;
-  --ctrl🎯-bg: var(--highlight-bg);
-  --ctrl⚠-bg: var(--invalid-bg);
+  --ctrl-focus-bg: var(--highlight-bg);
+  --ctrl-invalid-bg: var(--invalid-bg);
 
   --check-oo: 0;
   --check-br: 5px;
-  --check🎯-bg: var(--highlight-bg);
+  --check-focus-bg: var(--highlight-bg);
   --check-size: 18px;
 
   --addon-w: 23px;
@@ -39,7 +39,7 @@
   --btn--primary-bg: #fff;
   --btn--primary-fg: var(--bg);
 
-  --btn☑️👇-bg: rgba(0 0 0 / 0.3);
+  --btn-toggled-active-bg: rgba(0 0 0 / 0.3);
 
   --fieldset-ma-y: var(--unit-md);
   --fieldset-ma-x: var(--unit-md);
@@ -50,7 +50,7 @@
 
   --range__track-inactive-c: var(--highlight-bg);
   --range__track-o: none;
-  --range🎯__thumb-bsh: 0 0 0 var(--unit-md) var(--highlight-bg);
+  --range-focus__thumb-bsh: 0 0 0 var(--unit-md) var(--highlight-bg);
 
   --tooltip-offset-y: var(--unit-sm);
   --tooltip-offset-x: var(--unit-sm);

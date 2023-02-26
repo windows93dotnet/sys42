@@ -413,29 +413,29 @@ hr[aria-orientation="vertical"] {
 }
 
 :where(a:visited) {
-  color: var(--link☑️-fg, var(--link-fg, inherit));
-  text-decoration: var(--link☑️-td, var(--link-td));
-  text-shadow: var(--link☑️-tsh, var(--link-tsh, none));
+  color: var(--link-toggled-fg, var(--link-fg, inherit));
+  text-decoration: var(--link-toggled-td, var(--link-td));
+  text-shadow: var(--link-toggled-tsh, var(--link-tsh, none));
 }
 
 :where(a[aria-current="page"]),
 :where(a[aria-current="location"]) {
-  color: var(--link🚩-fg, var(--link👇-fg, var(--link-fg, inherit)));
-  text-decoration: var(--link🚩-td, var(--link👇-td, var(--link-td)));
-  text-shadow: var(--link🚩-tsh, var(--link👇-tsh, var(--link-tsh, none)));
+  color: var(--link-current-fg, var(--link-active-fg, var(--link-fg, inherit)));
+  text-decoration: var(--link-current-td, var(--link-active-td, var(--link-td)));
+  text-shadow: var(--link-current-tsh, var(--link-active-tsh, var(--link-tsh, none)));
 }
 
 :where(a:active) {
-  color: var(--link👇-fg, var(--link-fg, inherit));
-  text-decoration: var(--link👇-td, var(--link-td));
-  text-shadow: var(--link👇-tsh, var(--link-tsh, none));
+  color: var(--link-active-fg, var(--link-fg, inherit));
+  text-decoration: var(--link-active-td, var(--link-td));
+  text-shadow: var(--link-active-tsh, var(--link-tsh, none));
 }
 
 :where(a:focus),
 :where(a:hover) {
-  color: var(--link🎯-fg, var(--link-fg, inherit));
-  text-decoration: var(--link🎯-td, var(--link-td));
-  text-shadow: var(--link🎯-tsh, var(--link-tsh, none));
+  color: var(--link-focus-fg, var(--link-fg, inherit));
+  text-decoration: var(--link-focus-td, var(--link-td));
+  text-shadow: var(--link-focus-tsh, var(--link-tsh, none));
 }
 
 :where(a:focus) {
