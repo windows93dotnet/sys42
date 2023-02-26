@@ -1,6 +1,8 @@
 import test from "../../../../42/test.js"
 import Database from "../../../../42/core/db/Database.js"
 
+test.suite.serial()
+
 const file = new File(["hello file"], "a/b.txt", {
   type: "text/html",
 })
@@ -104,7 +106,7 @@ test("default store with to auto increment", async (t) => {
   t.is(await db.store.get(1), "hello")
 })
 
-test("add() + delete() + get()", async (t) => {
+test("add() + get()", async (t) => {
   t.false("store" in db, "no default store for database with schema")
 
   const toji = {
@@ -120,8 +122,11 @@ test("add() + delete() + get()", async (t) => {
   t.eq(await db.users.keys(), [1, 2, 3, 4, 5])
   t.eq(await db.users.index("role").count("major"), 1)
   t.eq(await db.users.index("role").count("pilot"), 4)
-  t.is(await db.users.delete(id), undefined)
-  t.is(await db.users.get(id), undefined)
+})
+
+test.serial("delete()", async (t) => {
+  t.is(await db.users.delete(5), undefined)
+  t.is(await db.users.get(5), undefined)
   t.eq(await db.users.index("role").count("pilot"), 3)
 })
 
