@@ -31,10 +31,7 @@ export function renderTag(tag, plan, stage) {
     throw new DOMException(`Disallowed tag: ${localName}`, "SecurityError")
   }
 
-  if (plan.entry) {
-    addEntry(stage.component, plan.entry, el)
-    delete plan.entry
-  }
+  if (plan.entry) addEntry(stage.component, plan.entry, el)
 
   if (HAS_OPTIONS.has(localName)) renderOptions(el, plan, stage)
 
