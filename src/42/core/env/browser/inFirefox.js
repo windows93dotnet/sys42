@@ -1,5 +1,2 @@
-/* globals InstallTrigger */
-
-// @src https://stackoverflow.com/a/9851769
-export default typeof InstallTrigger !== "undefined" &&
-  navigator.userAgent.includes(" Firefox/")
+export default navigator.userAgent.includes(" Firefox/") ||
+  navigator.userAgent.includes("FxiOS")
