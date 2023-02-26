@@ -16,6 +16,14 @@ const check = {
   serviceWorker: 1,
 }
 
+if (test.env.browser.isFirefox) {
+  // TODO: check firefox compatibility with worker modules
+  // https://caniuse.com/mdn-api_worker_worker_ecmascript_modules
+  check.dedicatedWorker = 0
+  check.sharedWorker = 0
+  check.serviceWorker = 0
+}
+
 const expectedKeys = [
   "realm",
   "runtime",
