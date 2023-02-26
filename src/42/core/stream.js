@@ -7,6 +7,10 @@
 // @read https://github.com/SocketDev/wormhole-crypto
 // @read https://github.com/surma/observables-with-streams
 
+if ("DecompressionStream" in globalThis === false) {
+  await import("./env/polyfills/globalThis.DecompressionStream.min.js")
+}
+
 import combine from "../fabric/type/typedarray/combine.js"
 import nextCycle from "../fabric/type/promise/nextCycle.js"
 import sleep from "../fabric/type/promise/sleep.js"
