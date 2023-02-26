@@ -1,6 +1,9 @@
 :root {
   --tree-indent: var(--unit-lg);
   --tree-graph-alpha: 0.4;
+  --tree-graph-bg-color: var(--bg);
+  --tree-graph-fg-color: currentColor;
+  --tree-graph-bd-color: currentColor;
   --tree__label-gap: var(--unit-sm);
 }
 
@@ -10,11 +13,6 @@ ui-tree {
   display: block;
   padding-left: calc(var(--tree-indent) - 3px);
   padding-top: 4px;
-
-  --tree-graph-bg-color: var(--bg);
-  --tree-graph-fg-color: currentColor;
-  --tree-graph-bd-color: rgba(0 0 0 / var(--tree-graph-alpha));
-  /* --tree-graph-bd-color: currentColor; */
 }
 
 ui-tree:focus {
