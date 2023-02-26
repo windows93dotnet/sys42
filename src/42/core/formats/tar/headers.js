@@ -1,3 +1,4 @@
+// TODO: remove Buffer dependency (using BinaryData.js)
 import Buffer from "../../../fabric/classes/Buffer.js"
 
 const ZEROS = "0000000000000000000"
