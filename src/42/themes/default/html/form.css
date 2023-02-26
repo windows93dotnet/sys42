@@ -1,5 +1,4 @@
 /* stylelint-disable no-duplicate-selectors */
-/* stylelint-disable max-line-length */
 
 /*
 @read https://github.com/suitcss/suit/blob/master/doc/naming-conventions.md
@@ -368,7 +367,7 @@ legend.label {
 ========== */
 
 body { cursor: var(--cursor-default, default); }
-*::-webkit-scrollbar { cursor: var(--cursor-default, default); }
+::-webkit-scrollbar { cursor: var(--cursor-default, default); }
 a { cursor: var(--cursor-pointer, pointer); }
 
 :where(input, textarea) {
@@ -391,6 +390,7 @@ button,
 .label,
 .button,
 select,
+selectmenu,
 form[disabled],
 fieldset[disabled]
 ) {
@@ -666,7 +666,6 @@ a.button {
 
   text-align: center;
   user-select: none;
-  /* cursor: var(--cursor-default); */
 }
 
 :where(button,.button,.solid):empty::before,
@@ -924,12 +923,7 @@ select:is([multiple],[size]) optgroup::before {
 
 selectmenu {
   position: relative;
-  cursor: var(--cursor-default);
 }
-
-/* selectmenu:open {
-  background-color: red;
-} */
 
 selectmenu::part(button) {
   position: absolute;
@@ -1012,10 +1006,7 @@ input[type="radio"]:not([role="menuitemradio"])) {
   --check-br: var(--check-focus-br);
   --check-tsh: var(--check-focus-tsh);
   --check-bsh: var(--check-focus-bsh);
-  /* outline: var(--check-o);
-  outline-offset: var(--check-oo); */
 
-  outline: 1px solid red;
   outline: var(--check-o);
   outline-offset: var(--check-oo);
 }
@@ -1031,15 +1022,6 @@ input[type="radio"]:not([role="menuitemradio"])) {
   --check-tsh: var(--check-disabled-tsh);
   --check-bsh: var(--check-disabled-bsh);
 }
-
-/* :where(label :is(
-input[type="checkbox"],
-input[type="radio"]
-)) {
-  vertical-align: middle;
-  margin-top: -3px;
-  margin-right: var(--unit-md);
-} */
 
 :where(:is(
 input[type="checkbox"],
@@ -1118,10 +1100,6 @@ input[type="color" i]::-webkit-color-swatch { border: none; }
 /* groups
 ========= */
 
-.ctrl-check {
-  display: flex;
-}
-
 .ctrl-group {
   --_negative-gap: calc(-1 * var(--ctrl-group-gap));
   margin-left: var(--_negative-gap);
@@ -1133,13 +1111,18 @@ input[type="color" i]::-webkit-color-swatch { border: none; }
   margin-top: var(--ctrl-group-gap);
 }
 
-/* .ctrl-group > fieldset[role="none"] > :is(button,.button) { */
-/* .ctrl-group > fieldset[role="none"] > :not(label, .label) {
-  width: 100%;
-} */
-
 .ctrl-group > :where(label,.label):not(:first-child) {
   padding-left: var(--unit);
+}
+
+.toggle-group {
+  display: flex;
+}
+
+.toggle-group input:is([type="checkbox"],[type="radio"]) {
+  position: absolute;
+  clip: rect(0, 0, 0, 0);
+  pointer-events: none;
 }
 
 /* fieldset
@@ -1164,14 +1147,6 @@ fieldset:not([role="none"],.unstyled) > fieldset + fieldset {
   margin-top: var(--fieldset-ma-y);
 }
 
-/* fieldset:not([role="none"],.unstyled) > :where(
-p,div,fieldset:is([role="none"],.unstyled)) {
-  position: relative;
-  margin: 0;
-  margin-top: var(--unit);
-  --ctrl-w: 100%;
-} */
-
 fieldset:not([role="none"],.unstyled) > legend + *,
 fieldset:not([role="none"],.unstyled) > :first-child { margin-top: 0; }
 
@@ -1191,19 +1166,6 @@ p,div:not([class]),fieldset:is([role="none"],.unstyled)) {
 :is(fieldset.form-aligned, .form-aligned fieldset:not([role="none"],.unstyled)) > :is(
 p,div:not([class]),fieldset:is([role="none"],.unstyled)) > :only-child {
   grid-column: 2;
-}
-
-/* toggle-group
-=============== */
-
-.toggle-group {
-  display: flex;
-}
-
-.toggle-group input:is([type="checkbox"],[type="radio"]) {
-  position: absolute;
-  clip: rect(0, 0, 0, 0);
-  pointer-events: none;
 }
 
 /* truncate

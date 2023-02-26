@@ -1,5 +1,6 @@
 :root {
-  /* --progress-h: var(--ctrl-h); */
+  --progress-h: var(--ctrl-h);
+  --progress-w: var(--ctrl-w);
   --progress-pa: 2px;
   --progress-bg: var(--fld-bg, #fff);
   --progress-br: var(--fld-br);
@@ -13,19 +14,19 @@
   --progress__value-br: var(--fld-br);
   --progress__value-bsh: var(--fld-bsh);
   --progress__wait-bg: var(--progress__value-bg);
-  /* --progress__wait-anim: progress-wait 14s infinite steps(25); */
+  --progress__wait-anim: progress-wait 4s infinite steps(25);
 }
 
 @keyframes progress-wait {
-  from { transform: translateX(-50%); }
+  0% { transform: translateX(-50%); }
   50% { transform: translateX(50%); }
-  to { transform: translateX(-50%); }
+  100% { transform: translateX(-50%); }
 }
 
 :where(progress) {
-  height: var(--progress-h, var(--ctrl-h));
-  min-height: var(--progress-h, var(--ctrl-h));
-  width: var(--progress-w, var(--ctrl-w));
+  height: var(--progress-h);
+  min-height: var(--progress-h);
+  width: var(--progress-w);
   background: var(--progress-bg);
   border-width: var(--progress-bdw);
   border-style: var(--progress-bds);
@@ -61,7 +62,6 @@ progress:not([value])::after {
   position: absolute;
   top: var(--progress-pa);
   bottom: var(--progress-pa);
-  /* bottom: 0; */
   left: var(--progress-pa);
   right: var(--progress-pa);
   background: var(--progress__wait-bg);

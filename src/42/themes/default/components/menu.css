@@ -141,7 +141,6 @@ ui-menubar > li > button > kbd {
 }
 
 ui-menu > li > button > :first-child:not(ui-picto) {
-  /* margin-left: calc(calc(var(--gap) + var(--menu-picto-size)) - var(--unit-xs)); */
   margin-left: calc(calc(var(--gap) + var(--menu-picto-size)));
 }
 
@@ -161,7 +160,7 @@ ui-menu > li > button > :first-child:not(ui-picto) {
 
 /* debug */
 
-body.debug ui-menu {
+/* body.debug ui-menu {
   box-shadow: 0 0 7px 0 #0004;
 }
 
@@ -175,8 +174,4 @@ body.debug :is(ui-menu, ui-menubar) > li > button[aria-haspopup][aria-expanded="
 
 body.debug .aim-polygon {
   fill: rgb(255 255 0 / 0.5) !important;
-}
-
-/* body.debug :is(ui-menu, ui-menubar) ui-picto {
-  background-color: tan !important;
 } */

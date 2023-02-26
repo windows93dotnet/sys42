@@ -11,7 +11,6 @@ ui-tree {
   padding-left: calc(var(--tree-indent) - 3px);
   padding-top: 4px;
 
-  /* --tree-graph-bg-color: var(--paper-bg); */
   --tree-graph-bg-color: var(--bg);
   --tree-graph-fg-color: currentColor;
   --tree-graph-bd-color: rgba(0 0 0 / var(--tree-graph-alpha));

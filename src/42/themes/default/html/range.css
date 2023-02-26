@@ -126,7 +126,6 @@
 
 :where(input[type="range" i]).focus::-webkit-slider-runnable-track,
 :where(input[type="range" i]):focus::-webkit-slider-runnable-track {
-  /* --_range__track-bg: var(--range-focus__track-bg, var(--range_gradient)); */
   --range__track-h: var(--range-focus__track-h);
   --range__track-bdw: var(--range-focus__track-bdw);
   --range__track-bds: var(--range-focus__track-bds);
@@ -140,7 +139,6 @@
 
 :where(input[type="range" i]).focus::-moz-range-track,
 :where(input[type="range" i]):focus::-moz-range-track {
-  /* --_range__track-bg: var(--range-focus__track-bg, var(--range_gradient)); */
   --range__track-h: var(--range-focus__track-h);
   --range__track-bdw: var(--range-focus__track-bdw);
   --range__track-bds: var(--range-focus__track-bds);
@@ -154,7 +152,6 @@
 
 :where(input[type="range" i]).focus::-ms-track,
 :where(input[type="range" i]):focus::-ms-track {
-  /* --_range__track-bg: var(--range-focus__track-bg, var(--range_gradient)); */
   --range__track-h: var(--range-focus__track-h);
   --range__track-bdw: var(--range-focus__track-bdw);
   --range__track-bds: var(--range-focus__track-bds);
@@ -170,7 +167,6 @@
 ----------------- */
 
 :where(input[type="range" i]):disabled::-webkit-slider-runnable-track {
-  /* --_range__track-bg: var(--range-disabled__track-bg, var(--range_gradient)); */
   --range__track-h: var(--range-disabled__track-h);
   --range__track-bdw: var(--range-disabled__track-bdw);
   --range__track-bds: var(--range-disabled__track-bds);
@@ -180,7 +176,6 @@
 }
 
 :where(input[type="range" i]):disabled::-moz-range-track {
-  /* --_range__track-bg: var(--range-disabled__track-bg, var(--range_gradient)); */
   --range__track-h: var(--range-disabled__track-h);
   --range__track-bdw: var(--range-disabled__track-bdw);
   --range__track-bds: var(--range-disabled__track-bds);
@@ -190,7 +185,6 @@
 }
 
 :where(input[type="range" i]):disabled::-ms-track {
-  /* --_range__track-bg: var(--range-disabled__track-bg, var(--range_gradient)); */
   --range__track-h: var(--range-disabled__track-h);
   --range__track-bdw: var(--range-disabled__track-bdw);
   --range__track-bds: var(--range-disabled__track-bds);

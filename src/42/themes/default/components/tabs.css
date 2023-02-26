@@ -160,8 +160,16 @@ ui-tabs {
   align-items: center;
   justify-content: center;
   column-gap: var(--tabs__label-gap);
+
+  /* not working because setting a container change element width */
   /* container: tab / inline-size; */
 }
+
+/* @container tab (max-width: 35px) {
+  .ui-tabs__tab:not([aria-selected="true"]) .ui-tabs__close {
+    display: none;
+  }
+} */
 
 .ui-tabs__label::after {
   content: "";
@@ -186,12 +194,6 @@ ui-tabs {
   width: var(--picto-size);
   height: var(--picto-size);
   min-width: 0;
-}
-
-@container tab (max-width: 35px) {
-  .ui-tabs__tab:not([aria-selected="true"]) .ui-tabs__close {
-    display: none;
-  }
 }
 
 /* balanced
