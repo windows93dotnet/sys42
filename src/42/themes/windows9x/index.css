@@ -208,6 +208,8 @@
   --tooltip-offset-y: 5px;
   --tooltip-filter: drop-shadow(2px 2px 1px #0005);
 
+  --tree-graph-bd-color: var(--GrayText);
+
   --ctrl-group-gap: 0;
   --ctrl-pa-x: 4px;
   --ctrl-pa-y: 2px;
