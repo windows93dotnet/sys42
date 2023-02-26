@@ -182,7 +182,13 @@ test.ui(async (t) => {
         t.is(await fs.readText("/hello.txt"), "hello world")
       })
       .finally(() => {
-        fs.delete("/hello.txt").catch(t.noop)
+        requestIdleCallback(async () => {
+          try {
+            await fs.delete("/hello.txt").catch(t.noop)
+          } catch (err) {
+            console.log(err)
+          }
+        })
       }),
   ])
 })

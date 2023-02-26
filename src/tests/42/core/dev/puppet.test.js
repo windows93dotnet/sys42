@@ -32,7 +32,7 @@ test.serial.skip("auto release keys", async (t) => {
 test.serial("auto wait for element", async (t) => {
   const stub = t.stub()
   const id = t.utils.uid()
-  const el = t.utils.decay(create("button", { id }))
+  const el = t.utils.decay(t.utils.invisible(create("button", { id })))
   el.addEventListener("pointerdown", stub)
   el.addEventListener("pointerup", stub)
 
@@ -54,7 +54,7 @@ test.serial("auto wait for element", async (t) => {
 
 test.serial("auto wait for element", "throws on timeout", async (t) => {
   const id = t.utils.uid()
-  const el = t.utils.decay(create("button", { id }))
+  const el = t.utils.decay(t.utils.invisible(create("button", { id })))
 
   const promise = puppet(`#${id}`, { timeout: 50 }) //
     .dispatch("pointerdown")
