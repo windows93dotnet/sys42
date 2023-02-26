@@ -221,7 +221,7 @@ export default class Reactive extends Emitter {
   export(changes, deleteds) {
     if (this.stage.signal.aborted) return
 
-    // TODO: find a way to export only necessary data (e.g. using a keyword list in ui definition)
+    // TODO: find a way to export only necessary data (e.g. using a keyword list in ui plan)
     const data = { add: [], remove: [] }
     for (const loc of changes) {
       if (deleteds.has(loc)) data.remove.push(loc)

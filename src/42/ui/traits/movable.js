@@ -97,8 +97,8 @@ class Movable extends Trait {
           }
 
           const hasCoordProps =
-            target.constructor.definition?.props?.x &&
-            target.constructor.definition?.props?.y
+            target.constructor.plan?.props?.x &&
+            target.constructor.plan?.props?.y
 
           const style = {
             zIndex: maxZIndex(this.config.zIndexSelector) + 1,
