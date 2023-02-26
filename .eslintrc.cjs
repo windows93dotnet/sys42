@@ -1,5 +1,4 @@
 module.exports = {
-  // parser: "@babel/eslint-parser",
   root: true,
   parserOptions: {
     requireConfigFile: false,
@@ -8,8 +7,6 @@ module.exports = {
   },
   extends: [
     "xo",
-    // "plugin:import/errors",
-    // "plugin:import/warnings",
     "plugin:import/recommended",
     "plugin:unicorn/recommended",
     "prettier",
@@ -62,35 +59,32 @@ module.exports = {
     "no-warning-comments": 0,
     "capitalized-comments": 0,
     "default-param-last": 0,
+    "no-bitwise": 0,
+    "lines-between-class-members": 0,
     "new-cap": [2, { properties: false }],
+    "no-promise-executor-return": 0,
+    "no-constant-condition": [2, { checkLoops: false }],
     "no-unused-expressions": [
       1,
       { allowTaggedTemplates: true, allowTernary: true },
     ],
-    "no-promise-executor-return": 0,
-    "no-constant-condition": [2, { checkLoops: false }],
 
     "no-labels": [2, { allowLoop: true }],
-
-    "no-bitwise": 0,
-
-    "lines-between-class-members": 0,
+    "getter-return": [2, { allowImplicit: true }],
 
     // usefull with Arrow functions
     // @read https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/void#non-leaking_arrow_functions
     "no-void": 0,
     "no-return-assign": [2, "except-parens"],
 
-    "getter-return": [2, { allowImplicit: true }],
+    // too many legitimate uses
+    "no-await-in-loop": 0,
 
     // make debug harder with autofix
     "unicorn/no-lonely-if": 0,
 
     // can't ignore performance gain
     "unicorn/prefer-math-trunc": 0,
-
-    // too many legitimate uses
-    "no-await-in-loop": 0,
 
     /* TODO: consider using theses rules */
     "unicorn/no-unsafe-regex": 0,
@@ -102,8 +96,6 @@ module.exports = {
     "unicorn/no-null": 0,
     "no-eq-null": 0,
     "eqeqeq": [2, "always", { null: "ignore" }],
-
-    "unicorn/prefer-export-from": [2, { ignoreUsedVariables: true }],
 
     // Allow `await 0` as queueMicroTack
     "unicorn/no-unnecessary-await": 0,
@@ -123,7 +115,6 @@ module.exports = {
     "unicorn/consistent-destructuring": 0,
     "unicorn/require-array-join-separator": 0,
     "unicorn/prefer-switch": 0,
-    // "unicorn/prefer-node-protocol": 0,
     "unicorn/prefer-prototype-methods": 0,
     "unicorn/escape-case": 0,
     "unicorn/filename-case": 0,
@@ -144,7 +135,8 @@ module.exports = {
     "unicorn/prefer-spread": 0,
     "unicorn/error-message": 0,
 
-    "import/no-unresolved": [2, { ignore: ["^https?://", "^node:"] }],
+    "unicorn/prefer-export-from": [2, { ignoreUsedVariables: true }],
+    "import/no-unresolved": [2, { ignore: ["^/", "^https?://", "^node:"] }],
     "import/extensions": [2, "always", { ignorePackages: true }],
     "import/no-named-as-default": 0,
     "import/no-named-as-default-member": 0,
