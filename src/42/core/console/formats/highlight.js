@@ -15,7 +15,7 @@ const DEFAULTS = {
     function: "bright.red",
     comment: "dim.bright.magenta",
     operator: "bright.green",
-    punctuation: "white.dim",
+    punctuation: "grey",
     keyword: "bright.green",
     builtin: "bright.blue",
   },

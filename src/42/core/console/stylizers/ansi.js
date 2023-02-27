@@ -1,7 +1,6 @@
 // @thanks https://github.com/chalk/chalk
 
 import chainable from "../../../fabric/traits/chainable.js"
-// import toggleable from "../../../fabric/traits/toggleable.js"
 import SGR from "../../../fabric/constants/SGR.js"
 import Color from "../../../fabric/classes/Color.js"
 
@@ -87,7 +86,6 @@ const ansi = chainable(GETTERS, color, ({ entries }, str) => {
     .join("\n")
 })
 
-// toggleable(ansi)
 ansi.isDevtool = false
 ansi.isAnsi = true
 

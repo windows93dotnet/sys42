@@ -1,6 +1,5 @@
 import Callable from "../../fabric/classes/Callable.js"
 import chainable from "../../fabric/traits/chainable.js"
-// import toggleable from "../../fabric/traits/toggleable.js"
 import configure from "../configure.js"
 import noop from "../../fabric/type/function/noop.js"
 import parseLogTemplate from "./parseLogTemplate.js"
@@ -174,7 +173,6 @@ export default class Logger extends Callable {
 
     this.stylizer = stylizer
     this.console = globalThis.console
-    // toggleable(this)
   }
 
   getMainStyles(entries) {

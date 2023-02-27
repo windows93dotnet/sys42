@@ -42,16 +42,16 @@ line string /*1*/ /c/i\`,
 {dim.bright.magenta // "single" 'line' \`comment\` 1 /a/i}
 {dim.bright.magenta /* "multi"
 'line' \`comment\` 2 /b/i */}
-{bright.green const} abcd {bright.green =} {magenta -21} {bright.green +} {magenta 8}{white.dim ;}
-{bright.green let} s {bright.green =} {yellow.dim "}{yellow 1//}{yellow.dim "}{white.dim ;}
-{bright.green const} b {bright.green =} {bright.blue JSON}{white.dim .}{bright.red stringify}{white.dim (\\{}
-  {yellow.dim "}{yellow x}{yellow.dim "}{white.dim :} {yellow.dim \`}{yellow multi
-line string /*1*/ /c/i}{yellow.dim \`}{white.dim ,}
-  r{white.dim :} {cyan /d "-0"\\/**/i}{white.dim ,} {dim.bright.magenta /**/}
-  n{white.dim :} {magenta }{dim.magenta 0x}{magenta 0000} {bright.green *} {magenta 0}{white.dim .}{magenta 5}{white.dim ,}
-  t{white.dim :} {bright.cyan true}{white.dim ,}
-  f{white.dim :} {bright.magenta false}{white.dim ,}
-{white.dim \\});}
+{bright.green const} abcd {bright.green =} {magenta -21} {bright.green +} {magenta 8}{grey ;}
+{bright.green let} s {bright.green =} {yellow.dim "}{yellow 1//}{yellow.dim "}{grey ;}
+{bright.green const} b {bright.green =} {bright.blue JSON}{grey .}{bright.red stringify}{grey (\\{}
+  {yellow.dim "}{yellow x}{yellow.dim "}{grey :} {yellow.dim \`}{yellow multi
+line string /*1*/ /c/i}{yellow.dim \`}{grey ,}
+  r{grey :} {cyan /d "-0"\\/**/i}{grey ,} {dim.bright.magenta /**/}
+  n{grey :} {magenta }{dim.magenta 0x}{magenta 0000} {bright.green *} {magenta 0}{grey .}{magenta 5}{grey ,}
+  t{grey :} {bright.cyan true}{grey ,}
+  f{grey :} {bright.magenta false}{grey ,}
+{grey \\});}
 `
   )
 })
@@ -82,14 +82,14 @@ class Test {
   t.is(
     str,
     `\
-{bright.green class} Test {white.dim \\{}
-  {bright.red foo}{white.dim (} x{white.dim ,} y {bright.green =} {magenta 0}{white.dim )} {white.dim \\{\\}}
-  {bright.green async} {bright.red bar}{white.dim (}x{white.dim ,} y {bright.green =} {magenta 0} {white.dim )} {white.dim \\{\\}}
-  {bright.red $} {white.dim (} {white.dim )} {white.dim \\{\\}}
-  {bright.red awaitFoo}{white.dim ()\\{\\}}
-  {bright.red Example}{white.dim (\\{} props{white.dim :} {white.dim \\{} a{white.dim :} _A{white.dim ,} b{white.dim \\}} {white.dim \\}} {bright.green =} Props{white.dim )} {white.dim \\{\\}}
-  {bright.red f}{white.dim (}x {bright.green =} {bright.red fun}{white.dim (),} y {bright.green =} {magenta 0}{white.dim )} {white.dim \\{\\}}
-{white.dim \\}}`
+{bright.green class} Test {grey \\{}
+  {bright.red foo}{grey (} x{grey ,} y {bright.green =} {magenta 0}{grey )} {grey \\{\\}}
+  {bright.green async} {bright.red bar}{grey (}x{grey ,} y {bright.green =} {magenta 0} {grey )} {grey \\{\\}}
+  {bright.red $} {grey (} {grey )} {grey \\{\\}}
+  {bright.red awaitFoo}{grey ()\\{\\}}
+  {bright.red Example}{grey (\\{} props{grey :} {grey \\{} a{grey :} _A{grey ,} b{grey \\}} {grey \\}} {bright.green =} Props{grey )} {grey \\{\\}}
+  {bright.red f}{grey (}x {bright.green =} {bright.red fun}{grey (),} y {bright.green =} {magenta 0}{grey )} {grey \\{\\}}
+{grey \\}}`
   )
 })
 
@@ -122,10 +122,10 @@ Infinity
     str,
     `\
 {magenta 42}
-{magenta 3}{white.dim .}{magenta 14159}
+{magenta 3}{grey .}{magenta 14159}
 {magenta 4e10}
-{magenta 3}{white.dim .}{magenta 2}{dim.magenta E+}{magenta 6}
-{magenta 2}{white.dim .}{magenta 1}{dim.magenta e-}{magenta 10}
+{magenta 3}{grey .}{magenta 2}{dim.magenta E+}{magenta 6}
+{magenta 2}{grey .}{magenta 1}{dim.magenta e-}{magenta 10}
 {magenta }{dim.magenta 0b}{magenta 1101}
 {magenta }{dim.magenta 0o}{magenta 571}
 {magenta }{dim.magenta 0x}{magenta babe}
@@ -135,12 +135,12 @@ Infinity
 {magenta 123}{dim.magenta n}{magenta }
 {magenta }{dim.magenta 0x}{magenta 123}{dim.magenta n}{magenta }
 {magenta 1}{dim.magenta _}{magenta 000}{dim.magenta _}{magenta 000}{dim.magenta _}{magenta 000}{dim.magenta _}{magenta 000}
-{magenta 1}{dim.magenta _}{magenta 000}{dim.magenta _}{magenta 000}{white.dim .}{magenta 220}{dim.magenta _}{magenta 720}
+{magenta 1}{dim.magenta _}{magenta 000}{dim.magenta _}{magenta 000}{grey .}{magenta 220}{dim.magenta _}{magenta 720}
 {magenta }{dim.magenta 0b}{magenta 0101}{dim.magenta _}{magenta 0110}{dim.magenta _}{magenta 0011}{dim.magenta _}{magenta 1000}
 {magenta }{dim.magenta 0o}{magenta 12}{dim.magenta _}{magenta 34}{dim.magenta _}{magenta 56}
 {magenta }{dim.magenta 0x}{magenta 40}{dim.magenta _}{magenta 76}{dim.magenta _}{magenta 38}{dim.magenta _}{magenta 6A}{dim.magenta _}{magenta 73}
 {magenta 4}{dim.magenta _}{magenta 642}{dim.magenta _}{magenta 473}{dim.magenta _}{magenta 943}{dim.magenta _}{magenta 484}{dim.magenta _}{magenta 686}{dim.magenta _}{magenta 707}{dim.magenta n}{magenta }
-{magenta 0}{white.dim .}{magenta 000}{dim.magenta _}{magenta 001}
+{magenta 0}{grey .}{magenta 000}{dim.magenta _}{magenta 001}
 {magenta 1e10}{dim.magenta _}{magenta 000}`
   )
 })
@@ -182,19 +182,19 @@ test("stringify.inspect", 2, (t) => {
   t.is(
     str,
     `\
-{white.dim \\{}
-  object{white.dim :} {white.dim \\{\\},}
-  circular{white.dim :} {dim.bright.magenta /* [↖] */} {white.dim \\{} $ref{white.dim :} {yellow.dim "}{yellow #}{yellow.dim "} {white.dim \\},}
-  map{white.dim :} {bright.green new} {bright.blue Map}{white.dim ([}
-    {white.dim [} {yellow.dim "}{yellow prop}{yellow.dim "}{white.dim ,} {yellow.dim "}{yellow value}{yellow.dim "} {white.dim ],}
-  {white.dim ]),}
-  array{white.dim :} {white.dim [}
-    {magenta -0}{white.dim ,}
-    {magenta Infinity}{white.dim ,}
-    {magenta NaN}{white.dim ,}
-  {white.dim ],}
-  {white.dim [}{bright.blue Symbol}{white.dim (}{yellow.dim "}{yellow foo}{yellow.dim "}{white.dim )]:} {yellow.dim "}{yellow foo}{yellow.dim "}{white.dim ,}
-{white.dim \\}}`
+{grey \\{}
+  object{grey :} {grey \\{\\},}
+  circular{grey :} {dim.bright.magenta /* [↖] */} {grey \\{} $ref{grey :} {yellow.dim "}{yellow #}{yellow.dim "} {grey \\},}
+  map{grey :} {bright.green new} {bright.blue Map}{grey ([}
+    {grey [} {yellow.dim "}{yellow prop}{yellow.dim "}{grey ,} {yellow.dim "}{yellow value}{yellow.dim "} {grey ],}
+  {grey ]),}
+  array{grey :} {grey [}
+    {magenta -0}{grey ,}
+    {magenta Infinity}{grey ,}
+    {magenta NaN}{grey ,}
+  {grey ],}
+  {grey [}{bright.blue Symbol}{grey (}{yellow.dim "}{yellow foo}{yellow.dim "}{grey )]:} {yellow.dim "}{yellow foo}{yellow.dim "}{grey ,}
+{grey \\}}`
   )
 })
 
@@ -206,7 +206,7 @@ test("primitives", (t) => {
   trace(str, 0)
   t.is(
     str,
-    "{white.dim [\\{\\},} {white.dim [}{magenta 1}{white.dim ],} {magenta NaN}{white.dim ,} {magenta Infinity}{white.dim ,} {bright.magenta false}{white.dim ,} {bright.cyan true}{white.dim ,} {magenta null}{white.dim ,} {magenta undefined}{white.dim ,} {magenta 1}{white.dim ,} {magenta this}{white.dim ]}"
+    "{grey [\\{\\},} {grey [}{magenta 1}{grey ],} {magenta NaN}{grey ,} {magenta Infinity}{grey ,} {bright.magenta false}{grey ,} {bright.cyan true}{grey ,} {magenta null}{grey ,} {magenta undefined}{grey ,} {magenta 1}{grey ,} {magenta this}{grey ]}"
   )
 })
 
@@ -224,12 +224,12 @@ function derp(ctx) {
   t.is(
     str,
     `\
-{bright.green function} {bright.red derp}{white.dim (}ctx{white.dim )} {white.dim \\{}
-  {bright.green if} {white.dim (}ctx{white.dim )} {white.dim \\{}
-    {bright.green const} s {bright.green =} {bright.blue Symbol}{white.dim (}ctx{white.dim )}
-    {bright.cyan console}{white.dim .}{bright.red log}{white.dim (}s{white.dim )}
-  {white.dim \\}}
-{white.dim \\}}`
+{bright.green function} {bright.red derp}{grey (}ctx{grey )} {grey \\{}
+  {bright.green if} {grey (}ctx{grey )} {grey \\{}
+    {bright.green const} s {bright.green =} {bright.blue Symbol}{grey (}ctx{grey )}
+    {bright.cyan console}{grey .}{bright.red log}{grey (}s{grey )}
+  {grey \\}}
+{grey \\}}`
   )
 })
 
@@ -240,7 +240,7 @@ test("ignore keyword as properties", (t) => {
   trace(str, 0)
   t.is(
     str,
-    "{white.dim \\{}console{white.dim :}{magenta 1}{white.dim ,}true{white.dim :}{magenta 1}{white.dim ,}catch{white.dim :}{magenta 1}{white.dim ,}await{white.dim :}{magenta 1}{white.dim ,}Array{white.dim :}{magenta 1}{white.dim ,}delete{white.dim :}{magenta 1}{white.dim ,}b{white.dim :}{magenta 1}{white.dim \\}}"
+    "{grey \\{}console{grey :}{magenta 1}{grey ,}true{grey :}{magenta 1}{grey ,}catch{grey :}{magenta 1}{grey ,}await{grey :}{magenta 1}{grey ,}Array{grey :}{magenta 1}{grey ,}delete{grey :}{magenta 1}{grey ,}b{grey :}{magenta 1}{grey \\}}"
   )
 })
 
@@ -255,7 +255,7 @@ test("bug: comment before function", (t) => {
   trace(str, 0)
   t.is(
     str,
-    "{dim.bright.magenta /* returnTrue */} {white.dim ()} {bright.green =}{bright.green >} {bright.cyan true}"
+    "{dim.bright.magenta /* returnTrue */} {grey ()} {bright.green =}{bright.green >} {bright.cyan true}"
   )
 })
 

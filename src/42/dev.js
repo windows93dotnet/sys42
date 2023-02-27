@@ -12,7 +12,7 @@ log.verbose = config.verbose
 function greet() {
   log.if(config.verbose).cyanBright(`\
 ╷ ┌───┐
-└─┤ ┌─┘  {white type} {cyanBright sys42}{cyan .dev.help()}
+└─┤ ┌─┘  {reset type} {grey sys42.dev.help()} {reset for help}
   └─┴─╴`)
 }
 
@@ -35,14 +35,13 @@ if (inTop && inAutomated) {
     sse: serverSentEvents("/42-dev"),
     help() {
       log(log.esc`\
-{cyanBright sys42}{cyan .dev.test(options)} {grey ..} run tests
-{cyanBright sys42}{cyan .dev.clear(options)} {grey .} clear site data
-{cyanBright sys42}{cyan .dev.tree(element)} {grey ..} display accessibility tree
-{cyanBright sys42}{cyan .dev.env(full)} {grey ......} display env
-{cyanBright sys42}{cyan .dev.pause()} {grey ........} pause live-reload
-{cyanBright sys42}{cyan .dev.resume()} {grey .......} resume live-reload
-{cyanBright sys42}{cyan .dev.toggle()} {grey .......} toggle live-reload
-{cyanBright sys42}{cyan .dev.technicolor()} {grey ..} technicolor`)
+{grey sys42.dev.test(options)} {grey.dim ..} run tests
+{grey sys42.dev.clear(options)} {grey.dim .} clear site data
+{grey sys42.dev.env(full)} {grey.dim ......} display env
+{grey sys42.dev.pause()} {grey.dim ........} pause live-reload
+{grey sys42.dev.resume()} {grey.dim .......} resume live-reload
+{grey sys42.dev.toggle()} {grey.dim .......} toggle live-reload
+{grey sys42.dev.technicolor()} {grey.dim ..} technicolor`)
     },
     technicolor() {
       log.color("#000")(
@@ -74,12 +73,6 @@ if (inTop && inAutomated) {
       if (!full) return log(String(env))
       log(env)
     },
-    // async tree(el = document.body) {
-    //   const printAccessibilityTree = await import(
-    //     "./type/aom/printAccessibilityTree.js"
-    //   ).then((m) => m.default)
-    //   printAccessibilityTree(el)
-    // },
   }
 
   system.dev = dev
