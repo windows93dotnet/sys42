@@ -9,6 +9,7 @@ import Canceller from "../../fabric/classes/Canceller.js"
 import { normalizePlanWithoutStage } from "../normalize.js"
 import { arrayDiff } from "../../fabric/json/diff.js"
 import renderAnimation from "./renderAnimation.js"
+// import nextCycle from "../../fabric/type/promise/nextCycle.js"
 
 const PLACEHOLDER = "[each]"
 const ITEM = "[#]"
@@ -60,7 +61,7 @@ export default function renderEach(plan, stage) {
   const animTo = eachPlan?.animate?.to
   const animFrom = eachPlan?.animate?.from
 
-  register(stage, stage.scope, (array) => {
+  register(stage, stage.scope, async (array) => {
     const container = lastItem?.parentElement
 
     if (!array || !Array.isArray(array) || array.length === 0) {
@@ -210,6 +211,8 @@ export default function renderEach(plan, stage) {
         ),
         (lastItem = document.createComment(ITEM))
       )
+
+      // await nextCycle()
     }
 
     if (endItem) endItem.after(fragment)

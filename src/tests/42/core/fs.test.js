@@ -426,6 +426,7 @@ const makeSuite = (driver) => {
   //   })
   // }
 
+  // TODO: make this test faster
   test("no driver mounted", async (t) => {
     t.timeout(2000)
     fs.config.places = {}
