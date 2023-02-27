@@ -19,12 +19,12 @@ function resolve(path) {
 export const CLI_TASKS = [
   ["🚀", "serve", "cyanBright"],
   ["🔭", "watch", "blueBright"],
-  ["🧪", "test", "green"],
-  ["🪐", "coverage", "yellow"],
-  ["🛸", "annex", "cyan"],
-  ["📦", "build", "yellowBright"],
+  // ["🧪", "test", "green"],
+  // ["🪐", "coverage", "yellow"],
+  // ["🛸", "annex", "cyan"],
+  // ["📦", "build", "yellowBright"],
   ["🔬", "scan", "magentaBright"],
-  ["⚡", "run", "magenta"],
+  // ["⚡", "run", "magenta"],
 ]
 
 const SUBCOMMANDS = CLI_TASKS.map((x) => x[1])

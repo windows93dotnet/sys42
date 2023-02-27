@@ -36,7 +36,7 @@ async function greet() {
   for (let i = 0, l = CLI_TASKS.length; i < l; i++) {
     const [icon, name, color] = CLI_TASKS[i]
     const active = config.run.includes(name) && !config.ignore.includes(name)
-    const line = i >= l / 2 ? line2 : line1
+    const line = line2 // i >= l / 2 ? line2 : line1
     line.push(`${icon} {${active ? color : "grey"} ${name}}  `)
   }
 
