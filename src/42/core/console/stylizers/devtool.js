@@ -2,7 +2,6 @@ import inWorker from "../../env/realm/inWorker.js"
 import inWindow from "../../env/realm/inWindow.js"
 import inOpaqueOrigin from "../../env/realm/inOpaqueOrigin.js"
 import settings from "../../settings.js"
-// import toggleable from "../../../fabric/traits/toggleable.js"
 import chainable from "../../../fabric/traits/chainable.js"
 import Color from "../../../fabric/classes/Color.js"
 
@@ -11,10 +10,11 @@ const capitalize = (word) => word[0].toUpperCase() + word.slice(1)
 const DEFAULTS = {
   css: "font: 8px/12px tomo, monospace;",
   colors: {
-    dim: "rgba(160,160,160,0.8)", // should work on light and dark theme
+    // TODO: fix dim as the only color indication
+    dim: "rgba(0,160,160,0.8)", // should work on light and dark theme
 
     black: "#232634",
-    blackBright: "#616673",
+    blackBright: "#6e7483",
 
     red: "#ff5c57",
     redBright: "#f0562c",
@@ -22,8 +22,8 @@ const DEFAULTS = {
     green: "#5af78e",
     greenBright: "#00ff9a",
 
-    yellow: "#f3f99d",
-    yellowBright: "#ffd751",
+    yellow: "#ccc47a",
+    yellowBright: "#dabd3f",
 
     blue: "#57c7ff",
     blueBright: "#2a9bff",
@@ -34,7 +34,7 @@ const DEFAULTS = {
     cyan: "#9aedfe",
     cyanBright: "#0ff",
 
-    white: "#f1f1f0",
+    white: "#d4d4c4",
     whiteBright: "#fff",
   },
 }
@@ -212,7 +212,6 @@ devtool.configure = (options) => {
 
 devtool.configure()
 
-// toggleable(devtool)
 devtool.isDevtool = true
 devtool.isAnsi = false
 

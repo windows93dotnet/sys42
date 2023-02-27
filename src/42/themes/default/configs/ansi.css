@@ -1,6 +1,6 @@
 :root {
   --ansi-black: #232634;
-  --ansi-blackBright: #616673;
+  --ansi-blackBright: #6e7483;
 
   --ansi-red: #ff5c57;
   --ansi-redBright: #f0562c;
@@ -8,8 +8,8 @@
   --ansi-green: #5af78e;
   --ansi-greenBright: #00ff9a;
 
-  --ansi-yellow: #f3f99d;
-  --ansi-yellowBright: #ffd751;
+  --ansi-yellow: #ccc47a;
+  --ansi-yellowBright: #dabd3f;
 
   --ansi-blue: #57c7ff;
   --ansi-blueBright: #2a9bff;
@@ -20,13 +20,13 @@
   --ansi-cyan: #9aedfe;
   --ansi-cyanBright: #0ff;
 
-  --ansi-white: #f1f1f0;
+  --ansi-white: #d4d4c4;
   --ansi-whiteBright: #fff;
 
   --ansi-fg: #eff0eb;
   --ansi-bg: var(--ansi-black);
   --ansi-cursor: var(--ansi-greenBright);
-  --ansi-dim: 0.6;
+  --ansi-dim: 0.7;
 }
 
 .ansi-black { color: var(--ansi-black); }

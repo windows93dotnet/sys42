@@ -27,8 +27,8 @@ const getSuiteTitle = ({ title, skip }, highlightLast) =>
     .filter((x) => x !== ".")
     .map(
       (x, i, arr) =>
-        `{${skip ? "magenta.dim" : "white"}${
-          skip ? "" : highlightLast && i === arr.length - 1 ? "" : ".dim"
+        `{${skip ? "magenta.dim" : ""}${
+          skip ? "" : highlightLast && i === arr.length - 1 ? "reset" : "dim"
         } ${escapeLog(x)}}`
     )
     .join(` {${skip ? "magenta.dim" : "grey"} ›} `)
@@ -38,7 +38,7 @@ const getTestTitle = ({ title, ok, skip }) =>
     .map(
       (x) => `{${skip ? "magenta.dim" : ok ? "reset" : "red"} ${escapeLog(x)}}`
     )
-    .join(` {${skip ? "magenta.dim" : "white.dim"} ·} `)
+    .join(` {${skip ? "magenta.dim" : "dim"} ·} `)
     .replace(/\n/g, "␤")
 
 const getStats = (suite, config, isRootSuite) => {
@@ -59,7 +59,7 @@ const getStats = (suite, config, isRootSuite) => {
 
   let end = ``
   if (isRootSuite || (config.serial && ms > 1)) {
-    end = ` {grey.dim •} {white.dim ${Math.round(ms)}}{grey ms}`
+    end = ` {grey.dim •} {grey ${Math.round(ms)}}{grey ms}`
   }
 
   let numbers = ""
