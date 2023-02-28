@@ -12,15 +12,16 @@ sys42
 ## ⚠️ WIP
 
 This project is a work in progress. \
-The API is not 100% stable yet, and the documentation is missing.
+The API is not 100% stable yet, and the documentation is missing. \
+You can check the tests and demos files to learn more on how to use it.
 
 ---
 
 ## Does this answer the Ultimate Question ?
 
-**tl;dr**: Nope, but it can help you build interfaces and desktop-like apps using web technologies, as depicted by [Atwood's Law](https://blog.codinghorror.com/the-principle-of-least-power/).
+**tl;dr**: Nope, but it can help you build interfaces and desktop-like apps using web technologies.
 
-This project started as a cleanup of the [Windows93](https://windows93.xyz) codebase, a platform mimicking vintage desktop interfaces.
+This project started as a cleanup of the [Windows93](https://windows93.xyz) codebase, a platform website mimicking vintage desktop interfaces.
 
 Here is a glimpse of what's inside :
 
@@ -28,9 +29,9 @@ Here is a glimpse of what's inside :
 
 Most of the files in this repository are standalone javascript and css modules/utilities.
 
-- `core` contain core modules, mostly abstractions to help using various Web APIs
+- `core` contain system modules, mostly abstractions to help using various Web APIs
 - `core/dev/testing` contain a testing framework (think ava.js/tap)
-- `fabric/dom` contain element manipulation modules (think jQuery)
+- `fabric/dom` contain DOM element manipulation modules (think jQuery)
 - `fabric/type` contain javascript's primitives manipulation modules (think lodash)
 - `os` contain modules for making a WebOS (think [Windows93](https://windows93.xyz))
 - `themes` contain themes, assets and css utilities (think bootstrap/tailwind)
@@ -108,7 +109,7 @@ ui({ tag: "ui-picto", value: "puzzle", tooltip: "Modules" })
 ```
 
 Using an html tag \
-_⚠️ This can work for some components but isn't widely tested at this time_
+⚠️ _This can work for some components but isn't widely tested at this time_
 
 ```html
 <script type="module" src="/42/ui/components/picto.js"></script>
@@ -136,31 +137,26 @@ We tried to have as few dependencies as possible for this project.
 
 But we also wanted to gather many useful tools for making desktop-like applications, so that project _MAY_ include some copy-pasted code.
 
-Also, modern browser supports ES Modules, so we tried to to skip building javascript file using bundlers. That mean that the few dependencies we use are not fetched using npm but injected in the codebase using our [CLI dev tool](#cli-dev-tool).
+Also, now that all modern browser supports ES Modules, we tried to to skip building javascript file using bundlers, and go back to a readable _View page source_. \
+That mean that the few dependencies we're using are not fetched using npm but injected in the codebase using our [CLI dev tool](#cli-dev-tool).
 
 For consistant naming and API we refactored (and sometimes improved) many usefull scripts and styles from npm, github, stackoverflow, blogs and books.
 
-> Some original API were too good and didn't need any changes. We did some rewrite from scratch when original scripts didn't fit well our codebase, either because original implementation was too big, too old (no ES modules) or not specific enough. \
-> While doing that, an habit emmerged: STDD (Stolen Test Driven Development).
-
-Many thanks to all authors who shared that knowledge! We tried to mention licenses and credits as much as possible, but please contact us if you think we forgot you or if you disagree with license usage.
-
-We are aware it's not a perfect solution when considering open source contribution.
-But the project modularity nature is a bit too much entangled to use most existing 3rd party modules.
+Many thanks to all authors who shared that knowledge! We tried to mention licenses and credits as much as possible, but please [contact us](mailto:contact@windows93.net) if you think we forgot you or if you disagree with license usage.
 
 ## Fantasy OS with iframes as isolated app processes
 
-Making a Fantasy OS require to execute 3rd party apps in a sandbox with user's selected permissions. \
+A Fantasy OS should allow to execute 3rd party apps with the user allowing or disallowing permissions. \
 The iframe's `sandbox` attribute can help to do that. \
 You can read more about this in [docs/iframes.md](./docs/iframes.md).
 
 It should also allow the creation of apps directly from the OS code editor. \
-Service Worker will help to do that (not ready at this time). \
+Service Worker will help to do that (we made proof of concept but it's not ready at this time). \
 More about this soon...
 
 ## Tomorrow is teh future
 
-The project is still in an experimental phase, here are the current list of priorities, the order should change with maturity.
+The project being in an experimental phase, here are the current list of priorities, the order should change with maturity.
 
 - DX (developer experience) with consistant API and function naming/signature
 - DRY and modularity
@@ -212,16 +208,23 @@ npm ln
 
 A config file nammed `.42rc.js` allow to edit options for commands.
 
-More commands was prototyped and will be included soon :
+More commands was prototyped and will be included soon:
 
-- The `annex` command allow to fetch modules from npm/github as described in the [Batteries included](#batteries-included) section (you can still see the annex options we used in the current [config file](./.42rc.js)).
-- The `test` command will execute test in various environments. \
+- The `annex` command will allow to fetch dependencies from npm/github as described in the [Batteries included](#batteries-included) section (you can still see the annex options we used in the current [config file](./.42rc.js)).
+- The `test` command will execute tests in various environments. \
   (NodeJS and headless browsers using playwright).
+
+<br>
 
 ---
 
-**Thanks for your attention, many things are comming next, stay tuned <3**
+**Thanks for your attention, many things are comming next** \
+**Stay tuned <3**
 
-<pre id="disclaimer" style="font-size: 70%; line-height:1.2;">
+---
+
+<br>
+
+<pre id="disclaimer" style="font-size: 80%; line-height:1.4;">
 [1] If you didn't get that Windows93 private joke, be aware that <strong>sys42</strong> is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY. Without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the License for more details.
 </pre>
