@@ -17,84 +17,8 @@ export default {
     watch: {
       glob: ["src/**/*"],
       globDev: ["src/**/*", "bin/**/*", "scripts/**/*"],
-      ignore: [
-        "**/dynamicImport.js",
-        "**/themes/**/fonts/**",
-        "**/scripts/pictos/**",
-      ],
+      ignore: ["**/themes/**/fonts/**", "**/scripts/pictos/**"],
       graph: false,
-    },
-
-    test: {
-      // glob: [
-      //   "**/fs.test.js",
-      // ],
-      ignore: [
-        "**/normalizeAnnexDeclaration.test.js", //
-        // "**/signature.test.js",
-        "**/http.test.js",
-        "**/load.test.js",
-      ],
-
-      frontend: {
-        glob: [
-          // "**/template.test.js",
-          // "**/i18n.test.js",
-          // "**/rename.test.js",
-          "**/ui.test.js",
-          // "**/shortcuts.test.js",
-          // "**/fs.test.js",
-        ],
-        ignore: [
-          // "**/fs.test.js",
-          "**/repeater.test.js",
-          // "**/Database.test.js",
-          "**/formatFilename.test.js", //
-        ],
-      },
-
-      backend: {
-        ignore: [
-          "**/html.test.js",
-          "**/ui.test.js",
-          "**/shortcuts.test.js",
-          "**/ui/**/*.test.js",
-          "**/dom/**/*.test.js",
-          "**/traceBitmap.test.js",
-          "**/isSerializable.test.js",
-        ],
-      },
-      node: {
-        // glob: [
-        //   "**/bin/**/*.test.js", //
-        // ],
-        ignore: [
-          "**/load.test.js", //
-          "**/Database.test.js",
-        ],
-      },
-      deno: {
-        ignore: [
-          "**/bin/tests/**", //
-        ],
-      },
-      run: [
-        "browser", //
-        // "chromium",
-        // "firefox",
-        // "node",
-        // "deno",
-      ],
-    },
-
-    coverage: {
-      ignore: [
-        // "**/*.test.js", //
-        "**/*.{demo,test}.js",
-        "**/{tests,polyfill,vendor}/**/*.js",
-        "**/html.js", //
-        "**/svg.js",
-      ],
     },
   },
 
