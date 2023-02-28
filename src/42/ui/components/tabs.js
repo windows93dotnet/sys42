@@ -168,4 +168,4 @@ export class Tabs extends Component {
   }
 }
 
-Component.define(Tabs)
+export default Component.define(Tabs)

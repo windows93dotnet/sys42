@@ -43,4 +43,4 @@ export class Layout extends Component {
   }
 }
 
-Component.define(Layout)
+export default Component.define(Layout)

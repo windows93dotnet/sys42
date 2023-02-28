@@ -121,4 +121,4 @@ export class Grid extends Component {
   }
 }
 
-Component.define(Grid)
+export default Component.define(Grid)

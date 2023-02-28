@@ -129,4 +129,4 @@ export class Picto extends Component {
   }
 }
 
-Component.define(Picto)
+export default Component.define(Picto)

@@ -48,7 +48,7 @@ export class Player extends Component {
       },
       audio: {
         type: "boolean",
-        toView: true,
+        reflect: true,
       },
       waveform: {
         type: "boolean",
@@ -239,4 +239,4 @@ export class Player extends Component {
   }
 }
 
-Component.define(Player)
+export default Component.define(Player)
