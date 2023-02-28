@@ -36,4 +36,4 @@ export class Menubar extends Menu {
   }
 }
 
-Component.define(Menubar)
+export default Component.define(Menubar)

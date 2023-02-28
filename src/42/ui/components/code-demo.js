@@ -50,4 +50,4 @@ export class CodeDemo extends Component {
   }
 }
 
-Component.define(CodeDemo)
+export default Component.define(CodeDemo)

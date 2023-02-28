@@ -149,4 +149,4 @@ export class Accordion extends Component {
   }
 }
 
-Component.define(Accordion)
+export default Component.define(Accordion)

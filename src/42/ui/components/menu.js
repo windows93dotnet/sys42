@@ -153,4 +153,4 @@ export class Menu extends Component {
   }
 }
 
-Component.define(Menu)
+export default Component.define(Menu)

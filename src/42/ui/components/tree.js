@@ -245,4 +245,4 @@ export class Tree extends Component {
   }
 }
 
-Component.define(Tree)
+export default Component.define(Tree)
