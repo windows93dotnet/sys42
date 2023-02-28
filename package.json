@@ -7,13 +7,12 @@
     "42": "bin/42.js"
   },
   "engines": {
-    "node": "^19.0.0"
+    "node": "^18.0.0"
   },
   "scripts": {
     "pretest": "eslint '{src,bin}/**/*.{js,html}'",
-    "fmt": "prettier --loglevel silent '{src,cli}/**/*.{js,md,html}' --write",
-    "test": "./bin/42.js test",
-    "dev": "./bin/42.js serve watch"
+    "format": "prettier --loglevel silent '{src,cli}/**/*.{js,md,html}' --write",
+    "dev": "./bin/42.js"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.19.1",
