@@ -4,6 +4,7 @@ import { addEntry } from "../normalize.js"
 import preload from "../../core/load/preload.js"
 import renderControl from "./renderControl.js"
 import renderOptions from "./renderOptions.js"
+import renderTooltip from "./renderTooltip.js"
 import ALLOWED_HTML_TAGS from "../../fabric/constants/ALLOWED_HTML_TAGS.js"
 import ALLOWED_SVG_TAGS from "../../fabric/constants/ALLOWED_SVG_TAGS.js"
 
@@ -32,6 +33,7 @@ export function renderTag(tag, plan, stage) {
   }
 
   if (plan.entry) addEntry(stage.component, plan.entry, el)
+  if (plan.tooltip) renderTooltip(el, plan.tooltip, stage)
 
   if (HAS_OPTIONS.has(localName)) renderOptions(el, plan, stage)
 

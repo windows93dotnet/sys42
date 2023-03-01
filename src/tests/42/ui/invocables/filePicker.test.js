@@ -184,9 +184,9 @@ test.ui(async (t) => {
       .finally(() => {
         requestIdleCallback(async () => {
           try {
-            await fs.delete("/hello.txt").catch(t.noop)
+            await fs.delete("/hello.txt")
           } catch (err) {
-            console.log(err)
+            console.warn(err)
           }
         })
       }),

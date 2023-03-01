@@ -369,6 +369,7 @@ legend.label {
 body { cursor: var(--cursor-default, default); }
 ::-webkit-scrollbar { cursor: var(--cursor-default, default); }
 a { cursor: var(--cursor-pointer, pointer); }
+a.button { cursor: var(--cursor-default, default); }
 
 :where(input, textarea) {
   cursor: var(--cursor-text, text);

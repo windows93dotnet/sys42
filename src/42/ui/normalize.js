@@ -61,6 +61,7 @@ const PLAN_KEYWORDS = new Set([
   "start",
   "state",
   "tag",
+  "tooltip",
   "traits",
   // TODO: implement once https://vuejs.org/api/built-in-directives.html#v-once
   // TODO: implement memo https://vuejs.org/api/built-in-directives.html#v-memo
@@ -843,7 +844,6 @@ export function normalizePlan(plan = {}, stage, options) {
 ====== */
 
 export function normalizeStage(stage = {}) {
-  // TODO: write protect stage.trusted
   stage = { ...stage }
   stage.scope ??= "/"
   stage.steps ??= "?"

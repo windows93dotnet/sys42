@@ -1,3 +1,4 @@
+import renderTooltip from "./renderTooltip.js"
 import defer from "../../fabric/type/promise/defer.js"
 import { addEntry } from "../normalize.js"
 
@@ -7,6 +8,7 @@ export default function renderComponent(el, plan, stage, options) {
   const tag = el.localName
 
   if (plan.entry) addEntry(stage.component, plan.entry, el)
+  if (plan.tooltip) renderTooltip(el, plan.tooltip, stage)
 
   if (customElements.get(tag) === undefined) {
     el.toggleAttribute("data-no-init", true)
