@@ -10,11 +10,13 @@ test.suite.serial()
 const check = {
   iframe: 1,
   sandbox: 1,
-  childWindow: 0,
+  childWindow: 0, // [1]
   dedicatedWorker: 1,
-  sharedWorker: 1,
-  serviceWorker: 1,
+  sharedWorker: 0, // [1]
+  serviceWorker: 0, // [1]
 }
+
+// [1] Can make the browser crash on reload
 
 if (test.env.browser.isFirefox) {
   // TODO: check firefox compatibility with worker modules

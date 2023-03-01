@@ -19,6 +19,21 @@ export default class Suite {
   constructor(title, filename, root) {
     this.title = title
     this.filename = filename
+
+    this.root = root
+    if (!this.root) {
+      this.root = {
+        stats: dummyRootStats,
+      }
+    }
+
+    this.testsOptions = Object.create(null)
+
+    this.reset()
+    this.init()
+  }
+
+  reset() {
     this.stats = {
       ok: undefined,
       total: 0,
@@ -29,14 +44,6 @@ export default class Suite {
       onlies: 0,
     }
 
-    this.root = root
-    if (!this.root) {
-      this.root = {
-        stats: dummyRootStats,
-      }
-    }
-
-    this.testsOptions = Object.create(null)
     this.suites = []
     this.tests = []
     this.onlies = new Set()
@@ -50,7 +57,6 @@ export default class Suite {
     this.serial = false
     this.cumulated = 0
     this.running = false
-    this.init()
   }
 
   get ok() {
@@ -187,15 +193,18 @@ export default class Suite {
       }
     }
 
-    const tests = groupBy(this.tests, (test) =>
-      options?.serial || test.serial || this.afterEach || this.beforeEach
-        ? "serial"
-        : "parallel"
-    )
+    // const tests = groupBy(this.tests, (test) =>
+    //   options?.serial || test.serial || this.afterEach || this.beforeEach
+    //     ? "serial"
+    //     : "parallel"
+    // )
 
-    const suites = groupBy(this.suites, (suite) =>
-      options?.serial || suite.serial ? "serial" : "parallel"
-    )
+    // const suites = groupBy(this.suites, (suite) =>
+    //   options?.serial || suite.serial ? "serial" : "parallel"
+    // )
+
+    const tests = groupBy(this.tests, () => "serial")
+    const suites = groupBy(this.suites, () => "serial")
 
     const p = []
     const s = []

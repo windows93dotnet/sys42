@@ -67,7 +67,10 @@ export async function launch(t, open, close, ...rest) {
 
   if (hasExpected) t.eq(await res, expected)
 
-  await t.sleep(1)
+  // await t.timeout("reset")
+  // await t.utils.idle()
+  // await t.timeout("reset")
+  await t.sleep(20)
   return res
 }
 
