@@ -72,24 +72,26 @@ ui-dialog:focus {
 
 .ui-dialog__title {
   flex: 1;
-  padding: 0 var(--unit-md);
   display: inline-flex;
   margin: 0;
+  padding: 0 var(--unit-md);
   font-size: inherit;
   font-weight: inherit;
   position: relative;
   user-select: none;
+  overflow: hidden;
+  align-items: center;
+  gap: var(--unit-sm);
+}
 
+.ui-dialog__title__text {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  gap: var(--unit-sm);
-
-  align-items: center;
 }
 
 .ui-dialog__title::before {
-  content: var(--ZERO_WIDTH_SPACE);
-  speak: none;
-  margin-right: calc(-1 * var(--unit-sm));
+  content: "";
+  margin-inline-start: calc(-1 * var(--unit-sm));
+  height: var(--picto-size);
 }
