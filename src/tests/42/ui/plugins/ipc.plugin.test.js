@@ -185,6 +185,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
   })
 
   await t.puppet(btnIncr.incr3).click()
+  await t.sleep(1)
   await system.once("ipc.plugin:end-of-update")
 
   t.eq(pickValues(btnIncr), {
@@ -197,6 +198,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
   })
 
   await t.puppet(btnIncr.dialogIncr1).click()
+  await t.sleep(1)
   await system.once("ipc.plugin:end-of-update")
 
   t.eq(pickValues(btnIncr), {
@@ -209,6 +211,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
   })
 
   await t.puppet(btnIncr.dialogIncr2).click()
+  await t.sleep(1)
   await system.once("ipc.plugin:end-of-update")
 
   t.eq(pickValues(btnIncr), {
@@ -221,6 +224,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
   })
 
   await t.puppet(btnIncr.dialogIncr3).click()
+  await t.sleep(1)
   await system.once("ipc.plugin:end-of-update")
 
   t.eq(pickValues(btnIncr), {

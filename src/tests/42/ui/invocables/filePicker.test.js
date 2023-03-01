@@ -132,7 +132,11 @@ test.ui(async (t) => {
         return false
       }
     ),
+  ])
 
+  t.timeout("reset")
+
+  await Promise.all([
     // /* Save
     // ======= */
 
@@ -181,14 +185,12 @@ test.ui(async (t) => {
       .then(async () => {
         t.is(await fs.readText("/hello.txt"), "hello world")
       })
-      .finally(() => {
-        requestIdleCallback(async () => {
-          try {
-            await fs.delete("/hello.txt")
-          } catch (err) {
-            console.warn(err)
-          }
-        })
+      .finally(async () => {
+        try {
+          await fs.delete("/hello.txt")
+        } catch (err) {
+          console.warn(err)
+        }
       }),
   ])
 })

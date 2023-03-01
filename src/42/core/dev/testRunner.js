@@ -1,7 +1,5 @@
 import { sbs } from "../../test.js"
 import configure from "../configure.js"
-import inFrontend from "../env/runtime/inFrontend.js"
-import htmlTest from "./testing/htmlTest.js"
 
 const DEFAULTS = {
   verbose: 1,
@@ -32,15 +30,14 @@ export default async function testRunner(testFiles, options) {
 
   sbs.started = true
   sbs.ran = false
+  sbs.root.reset()
 
   const time = performance.now()
 
   await Promise.all(
     testFiles.map((url) => {
       url = new URL(url, location.href)
-      return url.href.endsWith(".html")
-        ? inFrontend && htmlTest(url, options)
-        : import(/* @vite-ignore */ url)
+      return import(url)
     })
   )
 
@@ -52,6 +49,6 @@ export default async function testRunner(testFiles, options) {
 
   if (config.serialize) return sbs.serialize(config.serializer)
   if (config.report) {
-    sbs.report(await sbs.serialize(config.serializer), config.reporter)
+    await sbs.report(await sbs.serialize(config.serializer), config.reporter)
   }
 }
