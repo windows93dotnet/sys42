@@ -3,8 +3,11 @@ const { ELEMENT_NODE } = Node
 export function getContainingBlock(el) {
   let parent = el.parentNode
   while (parent && parent.nodeType === ELEMENT_NODE) {
-    const { transform, filter, perspective, contain } = getComputedStyle(parent)
+    const { translate, transform, filter, perspective, contain } =
+      getComputedStyle(parent)
+
     if (
+      translate !== "none" || // TODO: check other transform shortcuts
       transform !== "none" ||
       filter !== "none" ||
       perspective !== "none" ||
@@ -30,13 +33,13 @@ export default function setRelativeToViewport(el, x = 0, y = 0) {
 
     let { borderLeftWidth, borderTopWidth } = getComputedStyle(containingBlock)
 
-    borderLeftWidth = Number.parseInt(borderLeftWidth, 10)
-    borderTopWidth = Number.parseInt(borderTopWidth, 10)
+    borderLeftWidth = Number.parseInt(borderLeftWidth, 10) | 0
+    borderTopWidth = Number.parseInt(borderTopWidth, 10) | 0
 
-    el.style.left = x - rect.left - borderLeftWidth
-    el.style.top = y - rect.top - borderTopWidth
+    el.style.left = x - rect.left - borderLeftWidth + "px"
+    el.style.top = y - rect.top - borderTopWidth + "px"
   } else {
-    el.style.left = x
-    el.style.top = y
+    el.style.left = x + "px"
+    el.style.top = y + "px"
   }
 }
