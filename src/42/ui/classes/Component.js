@@ -316,6 +316,7 @@ export default class Component extends HTMLElement {
 
       for (const key of propsKeys) {
         Object.defineProperty(renderConfig, key, {
+          enumerable: true,
           get: () => {
             if (key in plan.traits) delete plan.traits[key] // [1]
             delete plan[key] // [1]
@@ -326,6 +327,7 @@ export default class Component extends HTMLElement {
 
       for (const [key, val] of Object.entries(plan)) {
         Object.defineProperty(renderConfig, key, {
+          enumerable: true,
           get() {
             if (key in plan.traits) delete plan.traits[key] // [1]
             delete plan[key] // [1]

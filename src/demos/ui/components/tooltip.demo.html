@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>ui-tooltip</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/style.css" id="theme" />
+
+<script type="module">
+  import trap from "../../../42/fabric/type/error/trap.js"
+  trap()
+</script>
+
+<script type="module">
+  import ui from "../../../42/ui.js"
+
+  // const collision = "flipfit"
+  // const collision = "flipfit-my"
+  // const collision = "autofit-at"
+  // const collision = "autofit-at"
+  const collision = "autofit-my"
+  // const collision = "auto-my"
+  // const collision = "autofit"
+  // const collision = "flipfit-at"
+  // const collision = "flip"
+  const opt = { collision, open: true }
+
+  ui({
+    tag: "body.ground",
+    content: [
+      {
+        tag: "h2.txt-center.pa",
+        content: "Drag the square and try to hide the tooltips",
+      },
+      {
+        tag: ".box-fit.box-center > .box-grid.pa.outset.panel",
+        movable: true,
+        width: 255,
+        height: 255,
+        style: {
+          "--cols": 3,
+          "--ratio": 1,
+          "--edge": 1,
+          "--gap": 0,
+          // "position": "fixed",
+          // "top": 0,
+          // "left": 0,
+          // "translate": "250px 150px",
+        },
+        // prettier-ignore
+        content: [
+          {tag: "div.pa.txt-center", content: "Left Top"},
+          {tag: "ui-tooltip", content: "Right Bottom", my: "right bottom", at: "left top", ...opt },
+          {tag: "div.pa.txt-center", content: "Center Top"},
+          {tag: "ui-tooltip", content: "Center Bottom", my: "center bottom", at: "center top", ...opt },
+          {tag: "div.pa.txt-center", content: "Right Top"},
+          {tag: "ui-tooltip", content: "Left Bottom", my: "left bottom", at: "right top", ...opt },
+          {tag: "div.pa.txt-center", content: "Left Center"},
+          {tag: "ui-tooltip", content: "Right Center", my: "right center", at: "left center", ...opt },
+          {tag: "div.pa.txt-center", content: "Center"},
+          {tag: "ui-tooltip", content: "Center", my: "center", at: "center", ...opt },
+          {tag: "div.pa.txt-center", content: "Right Center"},
+          {tag: "ui-tooltip", content: "Left Center", my: "left center", at: "right center", ...opt },
+          {tag: "div.pa.txt-center", content: "Left Bottom"},
+          {tag: "ui-tooltip", content: "Right Top", my: "right top", at: "left bottom", ...opt },
+          {tag: "div.pa.txt-center", content: "Center Bottom"},
+          {tag: "ui-tooltip", content: "Center Top", my: "center top", at: "center bottom", ...opt },
+          {tag: "div.pa.txt-center", content: "Right Bottom"},
+          {tag: "ui-tooltip", content: "Left Top", my: "left top", at: "right bottom", ...opt },
+        ],
+      },
+    ],
+  })
+</script>

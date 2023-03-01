@@ -13,7 +13,7 @@
 /* tooltip
 ========== */
 
-:where(.tooltip, [role="tooltip"]) {
+ui-tooltip {
   --bg: var(--tooltip-bg);
   --fg: var(--tooltip-fg);
   --bdw: var(--tooltip-bdw);
@@ -42,59 +42,37 @@
   min-height: min-content;
   max-width: min(32ch, 100%);
 
-  bottom: calc(100% + var(--tail-h) + calc(-1 * var(--tooltip-offset-y)));
-  right: calc(-1 * var(--tooltip-offset-x));
-}
-
-ui-tooltip {
   aspect-ratio: 0;
   bottom: auto;
   right: auto;
 }
 
-:is(.tooltip, [role="tooltip"]).tail-tc,
-:is(.tooltip, [role="tooltip"]).tail-tl,
-:is(.tooltip, [role="tooltip"]).tail-tr {
+ui-tooltip.tail-tc,
+ui-tooltip.tail-tl,
+ui-tooltip.tail-tr {
   margin-top: var(--tail-h);
 }
 
-:is(.tooltip, [role="tooltip"]).tail-bc,
-:is(.tooltip, [role="tooltip"]).tail-bl,
-:is(.tooltip, [role="tooltip"]).tail-br {
+ui-tooltip.tail-bc,
+ui-tooltip.tail-bl,
+ui-tooltip.tail-br {
   margin-top: calc(-1 * var(--tail-h));
 }
 
-:is(.tooltip, [role="tooltip"]).tail-cl {
+ui-tooltip.tail-cl {
   margin-left: var(--tail-w);
 }
 
-:is(.tooltip, [role="tooltip"]).tail-cr {
+ui-tooltip.tail-cr {
   margin-left: calc(-1 * var(--tail-w));
 }
 
-:is(.tooltip, [role="tooltip"]).tail-tr,
-:is(.tooltip, [role="tooltip"]).tail-br {
+ui-tooltip.tail-tr,
+ui-tooltip.tail-br {
   margin-left: var(--tail-offset-x);
 }
 
-:is(.tooltip, [role="tooltip"]).tail-tl,
-:is(.tooltip, [role="tooltip"]).tail-bl {
+ui-tooltip.tail-tl,
+ui-tooltip.tail-bl {
   margin-left: calc(-1 * var(--tail-offset-x));
-}
-
-/* states
-========= */
-
-:where(ui-tooltip,.tooltip,[role="tooltip"]) {
-  position: absolute;
-  z-index: var(--z-tooltips);
-  opacity: 0;
-  pointer-events: none;
-}
-
-:where(ui-tooltip,.tooltip,[role="tooltip"]).open:not(:empty),
-:where(ui-tooltip,.tooltip,[role="tooltip"]):not(:empty):where(:hover,:focus,.focus),
-:where(:hover,:focus,.focus) + :where(ui-tooltip,.tooltip,[role="tooltip"]):not(:empty) {
-  opacity: 1;
-  pointer-events: auto;
 }
