@@ -43,30 +43,3 @@
     ],
   })
 </script>
-
-<!-- <script type="module">
-  import ui from "./42/ui.js"
-  import disk from "./42/core/disk.js"
-  import getDirBasePair from "./42/core/path/core/getDirBasePair.js"
-
-  const items = []
-  const CLEAN_REG = /^\/demos\/ui\/|(\.plugin)?\.demo\.html$/g
-
-  const dirs = {}
-
-  for (const href of disk.glob("**/*.demo.html")) {
-    const { dir, base } = getDirBasePair(href.replace(CLEAN_REG, ""))
-    const label = { tag: "a", content: base, href }
-    if (dir === ".") items.push({ label })
-    else if (dir in dirs) dirs[dir].push({ label })
-    else {
-      dirs[dir] = [{ label }]
-      items.push({ label: dir, items: dirs[dir] })
-    }
-  }
-
-  ui({
-    tag: "ui-tree",
-    items,
-  })
-</script> -->
