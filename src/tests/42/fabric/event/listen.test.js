@@ -3,7 +3,7 @@ import { normalizeListen } from "../../../../42/fabric/event/listen.js"
 
 const { task, PLACEHOLDER } = test
 
-const el = test.utils.dest({ tag: "button", connect: true })
+const el = test.utils.dest({ tag: "button#listen-test", connect: true })
 
 test.tasks(
   [
@@ -35,11 +35,11 @@ test.tasks(
     }),
 
     task({
-      args: ["button", { click() {} }],
+      args: ["button#listen-test", { click() {} }],
       expected: [
         {
           el,
-          selector: "button",
+          selector: "button#listen-test",
           listeners: [
             {
               events: { click: PLACEHOLDER },

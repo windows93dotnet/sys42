@@ -20,18 +20,24 @@
       <div><output class="test-title d-contents truncate"></output></div>
     </div>
   </div>
-  <div class="box-h gap">
-    <div class="parallel-results message">
-      <strong>Parallel tests (fast)</strong><br />
-      <div>passed: <output class="parallel-passed txt-pre">0</output></div>
-      <div>failed: <output class="parallel-failed txt-pre">0</output></div>
-      <div>skipped: <output class="parallel-skipped txt-pre">0</output></div>
+  <div class="box-h gap w-prose">
+    <div>
+      <div class="parallel-results message">
+        <strong>Parallel tests (fast)</strong><br />
+        <div>passed: <output class="parallel-passed txt-pre">0</output></div>
+        <div>failed: <output class="parallel-failed txt-pre">0</output></div>
+        <div>skipped: <output class="parallel-skipped txt-pre">0</output></div>
+      </div>
+      <a class="button w-full" href="/tests.html">run</a>
     </div>
-    <div class="serial-results message">
-      <strong>Serial tests (slow and instable)</strong><br />
-      <div>passed: <output class="serial-passed txt-pre">0</output></div>
-      <div>failed: <output class="serial-failed txt-pre">0</output></div>
-      <div>skipped: <output class="serial-skipped txt-pre">0</output></div>
+    <div>
+      <div class="serial-results message">
+        <strong>Serial tests (slow and instable)</strong><br />
+        <div>passed: <output class="serial-passed txt-pre">0</output></div>
+        <div>failed: <output class="serial-failed txt-pre">0</output></div>
+        <div>skipped: <output class="serial-skipped txt-pre">0</output></div>
+      </div>
+      <a class="button w-full" href="/tests.html?serial-tests">run</a>
     </div>
   </div>
   <br />
@@ -41,13 +47,13 @@
     <br />
     <hr class="bd-0 bd-b opacity-half" />
     <div class="opacity-half">
-      Some tests sometimes make the browser hang or crash, it seems to be
-      garbage collection related.<br />
+      Some serial tests using iframes often make the browser hang or crash, it
+      seems to be garbage collection related.<br />
       Use the browser <strong>Task manager</strong> to end the process when it
       happen.<br />
       <br />
-      If the browser freeze on reload try disabling hardware acceleration.<br />
-      In chrome got to <strong>chrome://settings/system</strong> and uncheck
+      If the browser hang on reload try disabling hardware acceleration.<br />
+      In chrome go to <strong>chrome://settings/system</strong> and uncheck
       <strong>Use hardware acceleration when available</strong>
     </div>
   </div>
@@ -64,11 +70,51 @@
 
   system.DEV = true
 
+  async function run(ctx) {
+    if (!ctx.enabled) return
+
+    await fetch("/?clear-site-data")
+
+    log()
+    log("🧪 " + ctx.label)
+
+    await testRunner(ctx.tests, {
+      verbose: 2,
+      runner: {
+        ...ctx.runner,
+        oneach(test) {
+          testFilename.textContent = test.stackframe.filename //
+            .replace(location.origin, "")
+
+          try {
+            testTitle.textContent = test.title.join()
+          } catch {}
+
+          ctx.passed.textContent = test.suite.root.stats.passed
+          ctx.failed.textContent = test.suite.root.stats.failed
+          ctx.skipped.textContent = test.suite.root.stats.skipped
+        },
+      },
+    })
+
+    if (system.testing.root.ok) ctx.results.classList.add("success")
+    else ctx.results.classList.add("error")
+
+    testFilename.textContent = ""
+    testTitle.textContent = ""
+
+    system.testing.root.reset()
+    await idle()
+    await fetch("/?clear-site-data")
+    await idle()
+  }
+
   const testFilename = document.querySelector(".test-filename")
   const testTitle = document.querySelector(".test-title")
 
   const parallelTests = {
-    enabled: 0,
+    enabled: 1,
+    label: "Parallel tests",
     passed: document.querySelector(".parallel-passed"),
     failed: document.querySelector(".parallel-failed"),
     skipped: document.querySelector(".parallel-skipped"),
@@ -77,132 +123,91 @@
 
   const serialTests = {
     enabled: 1,
+    label: "Serial tests",
     passed: document.querySelector(".serial-passed"),
     failed: document.querySelector(".serial-failed"),
     skipped: document.querySelector(".serial-skipped"),
     results: document.querySelector(".serial-results"),
+    runner: {
+      serial: true,
+    },
   }
 
-  function makeProgressDisplay(ctx) {
-    return (test) => {
-      testFilename.textContent = test.stackframe.filename //
-        .replace(location.origin, "")
+  parallelTests.tests = [
+    "/tests/42/core/cli/argv.test.js",
+    "/tests/42/core/console/formats/highlight.test.js",
+    "/tests/42/core/console/parseLogTemplate.test.js",
+    "/tests/42/core/db/Database.test.js",
+    "/tests/42/core/dev/puppet.test.js",
+    "/tests/42/core/formats/base64.test.js",
+    "/tests/42/core/formats/template/parseExpression.test.js",
+    "/tests/42/core/formats/cbor.test.js",
+    "/tests/42/core/formats/ieee754.test.js",
+    "/tests/42/core/formats/ini.test.js",
+    "/tests/42/core/formats/tar.test.js",
+    "/tests/42/core/formats/template.test.js",
+    "/tests/42/core/path/core/sortPath.test.js",
+    "/tests/42/core/path/getPathInfos.test.js",
+    "/tests/42/core/path/glob.test.js",
+    "/tests/42/core/path/rename.test.js",
+    "/tests/42/core/path/shortenFilename.test.js",
+    "/tests/42/core/configure.test.js",
+    "/tests/42/core/expr.test.js",
+    "/tests/42/core/fs.test.js",
+    "/tests/42/core/i18n.test.js",
+    "/tests/42/core/log.test.js",
+    "/tests/42/core/stream.test.js",
+    "/tests/42/fabric/classes/BinaryData.test.js",
+    "/tests/42/fabric/classes/Buffer.test.js",
+    "/tests/42/fabric/classes/Color.test.js",
+    "/tests/42/fabric/dom/on.test.js",
+    "/tests/42/fabric/event/listen.test.js",
+    "/tests/42/fabric/locator/allocate.test.js",
+    "/tests/42/fabric/svg/traceBitmap.test.js",
+    "/tests/42/fabric/traits/chainable.test.js",
+    "/tests/42/fabric/traits/emittable.test.js",
+    "/tests/42/fabric/type/any/clone.test.js",
+    "/tests/42/fabric/type/any/equal.test.js",
+    "/tests/42/fabric/type/any/hash.test.js",
+    "/tests/42/fabric/type/any/mark.test.js",
+    "/tests/42/fabric/type/any/stringify.test.js",
+    "/tests/42/fabric/type/file/bytesize.test.js",
+    "/tests/42/fabric/type/file/checksum.test.js",
+    "/tests/42/fabric/type/json/diff.test.js",
+    "/tests/42/fabric/type/json/patch.test.js",
+    "/tests/42/fabric/type/json/resolve.test.js",
+    "/tests/42/fabric/type/number/isMultipleOf.test.js",
+    "/tests/42/fabric/type/number/precision.test.js",
+    "/tests/42/fabric/type/string/count.test.js",
+    "/tests/42/fabric/type/string/letters.test.js",
+    "/tests/42/fabric/type/string/occurrences.test.js",
+    "/tests/42/fabric/type/string/sdbm.test.js",
+    "/tests/42/fabric/type/string/textPosition.test.js",
+    "/tests/42/ui/components.test.js",
+    "/tests/42/ui/create.test.js",
+    "/tests/42/ui/filters.test.js",
+    "/tests/42/ui.test.js",
+    "/tests/42/ui/components/folder.test.js",
+    "/tests/42/ui/components/icon.test.js",
+  ]
 
-      try {
-        testTitle.textContent = test.title.join()
-      } catch {}
+  serialTests.tests = [
+    "/tests/42/core/ipc.test.js",
+    "/tests/42/ui/components/menu.test.js",
+    "/tests/42/ui/invocables/demands.test.js",
+    "/tests/42/ui/invocables/filePicker.test.js",
+    "/tests/42/ui/plugins/ipc.plugin.test.js",
+    "/tests/42/ui/popup.test.js",
+    "/tests/42/ui/xss.test.js",
+  ]
 
-      ctx.passed.textContent = test.suite.root.stats.passed
-      ctx.failed.textContent = test.suite.root.stats.failed
-      ctx.skipped.textContent = test.suite.root.stats.skipped
-    }
+  const params = new URLSearchParams(location.search)
+
+  if (params.has("all-tests") || !params.has("serial-tests")) {
+    await run(parallelTests)
   }
 
-  if (parallelTests.enabled) {
-    log("\nParallel tests")
-
-    await testRunner(
-      [
-        "/tests/42/core/cli/argv.test.js",
-        "/tests/42/core/console/formats/highlight.test.js",
-        "/tests/42/core/console/parseLogTemplate.test.js",
-        "/tests/42/core/db/Database.test.js",
-        "/tests/42/core/dev/puppet.test.js",
-        "/tests/42/core/formats/base64.test.js",
-        "/tests/42/core/formats/template/parseExpression.test.js",
-        "/tests/42/core/formats/cbor.test.js",
-        "/tests/42/core/formats/ieee754.test.js",
-        "/tests/42/core/formats/ini.test.js",
-        "/tests/42/core/formats/tar.test.js",
-        "/tests/42/core/formats/template.test.js",
-        "/tests/42/core/path/core/sortPath.test.js",
-        "/tests/42/core/path/getPathInfos.test.js",
-        "/tests/42/core/path/glob.test.js",
-        "/tests/42/core/path/rename.test.js",
-        "/tests/42/core/path/shortenFilename.test.js",
-        "/tests/42/core/configure.test.js",
-        "/tests/42/core/expr.test.js",
-        "/tests/42/core/fs.test.js",
-        "/tests/42/core/i18n.test.js",
-        "/tests/42/core/log.test.js",
-        "/tests/42/core/stream.test.js",
-        "/tests/42/fabric/classes/BinaryData.test.js",
-        "/tests/42/fabric/classes/Buffer.test.js",
-        "/tests/42/fabric/classes/Color.test.js",
-        "/tests/42/fabric/dom/on.test.js",
-        "/tests/42/fabric/event/listen.test.js",
-        "/tests/42/fabric/locator/allocate.test.js",
-        "/tests/42/fabric/svg/traceBitmap.test.js",
-        "/tests/42/fabric/traits/chainable.test.js",
-        "/tests/42/fabric/traits/emittable.test.js",
-        "/tests/42/fabric/type/any/clone.test.js",
-        "/tests/42/fabric/type/any/equal.test.js",
-        "/tests/42/fabric/type/any/hash.test.js",
-        "/tests/42/fabric/type/any/mark.test.js",
-        "/tests/42/fabric/type/any/stringify.test.js",
-        "/tests/42/fabric/type/file/bytesize.test.js",
-        "/tests/42/fabric/type/file/checksum.test.js",
-        "/tests/42/fabric/type/json/diff.test.js",
-        "/tests/42/fabric/type/json/patch.test.js",
-        "/tests/42/fabric/type/json/resolve.test.js",
-        "/tests/42/fabric/type/number/isMultipleOf.test.js",
-        "/tests/42/fabric/type/number/precision.test.js",
-        "/tests/42/fabric/type/string/count.test.js",
-        "/tests/42/fabric/type/string/letters.test.js",
-        "/tests/42/fabric/type/string/occurrences.test.js",
-        "/tests/42/fabric/type/string/sdbm.test.js",
-        "/tests/42/fabric/type/string/textPosition.test.js",
-        "/tests/42/ui/components.test.js",
-        "/tests/42/ui/create.test.js",
-        "/tests/42/ui/filters.test.js",
-        "/tests/42/ui.test.js",
-        "/tests/42/ui/components/folder.test.js",
-        "/tests/42/ui/components/icon.test.js",
-      ],
-      {
-        verbose: 2,
-        runner: { oneach: makeProgressDisplay(parallelTests) },
-      }
-    )
-
-    if (system.testing.root.ok) parallelTests.results.classList.add("success")
-    else parallelTests.results.classList.add("error")
-
-    system.testing.root.reset()
-    await idle()
-    await fetch("/?clear-site-data")
-    await idle()
+  if (params.has("serial-tests")) {
+    await run(serialTests)
   }
-
-  if (serialTests.enabled) {
-    log("\nSerial tests")
-
-    await testRunner(
-      [
-        "/tests/42/core/ipc.test.js",
-        "/tests/42/ui/components/menu.test.js",
-        "/tests/42/ui/invocables/demands.test.js",
-        "/tests/42/ui/invocables/filePicker.test.js",
-        "/tests/42/ui/plugins/ipc.plugin.test.js",
-        "/tests/42/ui/popup.test.js",
-        // "/tests/42/ui/xss.test.js",
-      ],
-      {
-        verbose: 2,
-        runner: {
-          serial: true,
-          oneach: makeProgressDisplay(serialTests),
-        },
-      }
-    )
-
-    if (system.testing.root.ok) serialTests.results.classList.add("success")
-    else serialTests.results.classList.add("error")
-    await fetch("/?clear-site-data")
-  }
-
-  testFilename.textContent = ""
-  testTitle.textContent = ""
-
-  system.testing.root.reset()
 </script>

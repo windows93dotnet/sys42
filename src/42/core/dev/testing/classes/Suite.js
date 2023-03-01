@@ -193,18 +193,15 @@ export default class Suite {
       }
     }
 
-    // const tests = groupBy(this.tests, (test) =>
-    //   options?.serial || test.serial || this.afterEach || this.beforeEach
-    //     ? "serial"
-    //     : "parallel"
-    // )
+    const tests = groupBy(this.tests, (test) =>
+      options?.serial || test.serial || this.afterEach || this.beforeEach
+        ? "serial"
+        : "parallel"
+    )
 
-    // const suites = groupBy(this.suites, (suite) =>
-    //   options?.serial || suite.serial ? "serial" : "parallel"
-    // )
-
-    const tests = groupBy(this.tests, () => "serial")
-    const suites = groupBy(this.suites, () => "serial")
+    const suites = groupBy(this.suites, (suite) =>
+      options?.serial || suite.serial ? "serial" : "parallel"
+    )
 
     const p = []
     const s = []
