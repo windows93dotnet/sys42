@@ -40,8 +40,8 @@
   --ButtonDkShadow: rgb(64 64 64);
 
   /* Other window colors */
-  --ActiveBorder: rgb(212 208 200);
-  --InactiveBorder: rgb(212 208 200);
+  --ActiveBorder: var(--ButtonFace);
+  --InactiveBorder: var(--ButtonFace);
   --MenuBar: rgb(236 233 216);
   --Menu: rgb(212 208 200);
   --WindowFrame: rgb(0 0 0);
@@ -301,7 +301,7 @@
   --gradient-dir: right;
 }
 
-:root:dir(rtl) {
+[dir="rtl"] {
   --gradient-dir: left;
 }
 
@@ -421,7 +421,7 @@ ui-dialog[active] {
 }
 
 .ui-dialog__title {
-  padding: 3px 5px;
+  padding: 2px 5px;
   font-weight: 800;
   background-image:
     linear-gradient(

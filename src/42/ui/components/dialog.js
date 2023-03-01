@@ -121,6 +121,8 @@ export class Dialog extends Component {
     const id = this.id + "-title"
     this.setAttribute("aria-labelledby", id)
 
+    label = { tag: "span.ui-dialog__title__text", content: label }
+
     const plan = [
       {
         tag: "header.ui-dialog__header",
