@@ -120,6 +120,8 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
   })
 
   t.timeout("reset")
+  await t.utils.idle()
+  t.timeout("reset")
 
   const sandbox1 = app.el.querySelector("#sandbox1 iframe").contentDocument
   const sandbox2 = app.el.querySelector("#sandbox2 iframe").contentDocument
@@ -161,6 +163,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
   })
 
   await t.puppet(btnIncr.incr1).click()
+  await t.sleep(1)
   await system.once("ipc.plugin:end-of-update")
 
   t.eq(pickValues(btnIncr), {
@@ -173,6 +176,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
   })
 
   await t.puppet(btnIncr.incr2).click()
+  await t.sleep(1)
   await system.once("ipc.plugin:end-of-update")
 
   t.eq(pickValues(btnIncr), {

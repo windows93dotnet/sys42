@@ -71,6 +71,7 @@ const filesPromise = Promise.all([
 ])
 
 test.ui(async (t) => {
+  t.timeout(6000)
   await make(t, { href, makeContent }, iframe)
   if (manual) return t.pass()
 

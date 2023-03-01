@@ -166,7 +166,7 @@ export default function addUtilities(item, isExecutionContext) {
     )
     const suiteTitle = item.suite.title
     idRegistry[suiteTitle] ??= 0
-    el.id = suiteTitle + "/" + idRegistry[suiteTitle]++
+    el.id ||= suiteTitle + "/" + idRegistry[suiteTitle]++
     el.style = `
       position: absolute;
       overflow: auto;
