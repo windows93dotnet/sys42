@@ -149,7 +149,10 @@ async function messageHandler(e) {
 }
 
 function ping(target, port, origin) {
-  origin ??= location.origin === "null" ? "*" : location.origin
+  origin ??=
+    location.origin === "null" || location.origin === "http://localhost:8000"
+      ? "*"
+      : location.origin
   target.postMessage({ type: PING }, origin, [port])
 }
 

@@ -14,36 +14,73 @@
   import ipc from "../../42/core/ipc.js"
   import fs from "../../42/core/fs.js"
 
+  // await fetch("/?clear-site-data")
+
+  localStorage.setItem("secret", "hello secret")
+
   if (!(await fs.access("/test.html"))) {
     const html = `\
   <link rel="stylesheet" href="/test.css">
-  I'm a sandboxed iframe.<br>
+  I'm a sandboxed iframe.<br />
   The HTML and CSS are served from browser storage.
+  <hr />
   <script>
-  try {
-    window.top.document.body.append("XSS")
-    console.error('Sandboxing failed')
-  } catch {}
+  if (localStorage.getItem('secret') === "hello secret") {
+    document.body.append('Sandboxing failed')
+  } else {
+    try {
+      window.top.document.body.append("XSS")
+      document.body.append('Sandboxing failed')
+    } catch {
+      document.body.append('Sandboxing succeed')
+    }
+  }
   </${"script"}>`
-    const css = "body{background:tan}"
+    const css = "body { background: tan; font-family: sans-serif; }"
 
     await fs.write("/test.html", html)
     await fs.write("/test.css", css)
   }
 
   ipc
-    .from("http://localhost:8000")
+    .from("http://localhost:8000", { origin: "*" })
     .on("42_PROXY_REQUEST_URL", async (url) => fs.read(url))
 
   await ui(
     {
       tag: "body.box-center",
-      content: {
-        tag: "iframe.inset",
-        style: { width: "256px", height: "256px" },
-        sandbox: "allow-scripts allow-same-origin",
-        src: "http://localhost:8000/vhost.html?path=/test.html",
-      },
+      content: [
+        {
+          tag: "h2.ma-b-0",
+          content: "Service Worker virtual host experiment",
+        },
+        {
+          tag: "div",
+          content: [
+            "This is a proof of concept to try to overcome the fact that Service Worker don't work in sandboxed iframes.",
+            "\n\n",
+            {
+              tag: "a",
+              href: "https://github.com/w3c/ServiceWorker/issues/1390",
+              content: "https://github.com/w3c/ServiceWorker/issues/1390",
+            },
+            "\n\n",
+            "\n\n",
+            "To try it you need to serve the src/ folder on localhost:8000, if you have php you can do:",
+            "\n\n",
+            { tag: "pre.ma-0", content: "php -S localhost:8000" },
+            "\n\n",
+            "⚠️ this can make the browser crash for unknown reasons (maybe a bug in ipc.js)",
+          ],
+        },
+        {
+          tag: "iframe.ma-t.inset",
+          style: { width: "512px", height: "256px" },
+          sandbox: "allow-scripts allow-same-origin",
+          // sandbox: "allow-scripts",
+          src: "http://localhost:8000/vhost.html?path=/test.html",
+        },
+      ],
     },
     { trusted: true }
   )
