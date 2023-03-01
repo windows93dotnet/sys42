@@ -1,7 +1,7 @@
 import listen from "../fabric/event/listen.js"
 import { addPercentProp } from "../fabric/dom/setControlData.js"
 
-let wheelForget
+let forgetWheel
 
 const numericSelector = 'input:is([type="range"],[type="number"])'
 
@@ -27,18 +27,18 @@ listen(
     selector: numericSelector,
     capture: true,
     blur() {
-      wheelForget?.()
+      forgetWheel?.()
     },
     focus(e, target) {
-      wheelForget = listen({
+      forgetWheel = listen({
         passive: false,
         wheel({ deltaY }) {
           if (target === document.activeElement && target.matches(":hover")) {
-            const step = Number(target.step) || 1
+            const step = Number(target.step) | 1
             const value = Number(target.value) + (deltaY > 0 ? -step : step)
             if (target.max !== "" && value > Number(target.max)) return
             if (target.min !== "" && value <= Number(target.min)) return
-            target.value = value
+            target.value = value // TODO: round to step decimal precision
             target.dispatchEvent(new Event("input", { bubbles: true }))
             // target.dispatchEvent(new Event("change", { bubbles: true }))
             return false
