@@ -3,7 +3,7 @@
 <title>vhost</title>
 
 <script type="module">
-  import ipc from "https://localhost:4200/42/core/ipc.js"
+  import ipc from "/42/core/ipc.js"
 
   const bus = ipc.to(window.parent, { origin: "*" })
 
