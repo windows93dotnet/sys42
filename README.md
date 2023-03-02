@@ -1,21 +1,15 @@
-<pre style="text-align: center; line-height: 1; background: transparent">
-
+```
 ╷ ┌───┐
 └─┤ ┌─┘
   └─┴─╴
 sys42
-
-</pre>
-
----
+```
 
 ## ⚠️ WIP
 
 This project is a work in progress. \
 The API is not 100% stable yet, and the documentation is missing. \
 You can check the tests and demos files to learn more on how to use it.
-
----
 
 ## Does this answer the Ultimate Question ?
 
@@ -94,27 +88,27 @@ It has reactive templates inspired by Vue.js.
 All our UI components are written using Web Components.
 You can declare most components using 3 way.
 
-Using a factory function
+With a factory function
 
 ```js
 import picto from "/42/ui/components/picto.js"
 document.body.append(picto({ value: "puzzle", tooltip: "Modules" }))
 ```
 
-Using the `ui` function
+With the `ui` function
 
 ```js
 import ui from "/42/ui.js"
 ui({ tag: "ui-picto", value: "puzzle", tooltip: "Modules" })
 ```
 
-Using an html tag \
-⚠️ _This can work for some components but isn't widely tested at this time_
+With an html tag
 
 ```html
 <script type="module" src="/42/ui/components/picto.js"></script>
 <ui-picto value="puzzle" tooltip="Modules"></ui-picto>
 ```
+⚠️ _This can work for some components but isn't widely tested at this time_
 
 ## Project Philosophies
 
@@ -218,13 +212,13 @@ More commands was prototyped and will be included soon:
 
 ---
 
-**Thanks for your attention, many things are comming next** \
+**More things are comming soon** \
 **Stay tuned <3**
 
 ---
 
 <br>
 
-<pre id="disclaimer" style="font-size: 80%; line-height:1.4;">
+<div id="disclaimer">
 [1] If you didn't get that Windows93 private joke, be aware that <strong>sys42</strong> is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY. Without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the License for more details.
-</pre>
+</div>
