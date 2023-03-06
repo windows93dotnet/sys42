@@ -170,6 +170,7 @@ export class Player extends Component {
                 input: (e, { value }) => {
                   this.elapsed = value
                   if (!this.paused) cancelAnimationFrame(rafId)
+                  this.media.currentTime = value
                 },
                 change: (e, { value }) => {
                   this.media.currentTime = value
