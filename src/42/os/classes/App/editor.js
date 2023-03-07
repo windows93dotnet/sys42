@@ -2,124 +2,135 @@ import supportInstall from "../../../core/env/supportInstall.js"
 // import inPWA from "../../../core/env/runtime/inPWA.js"
 
 const editor = {
-  menubar: (manifest) => [
-    {
-      $id: "FileMenu",
-      label: "File",
-      items: [
+  makeDefs(manifest) {
+    return {
+      transferableTabs: {
+        $id: "transferableTabs",
+        kind: "42_TR_APP_TAB",
+        accept: "42_TR_ICON",
+      },
+      menubar: [
         {
-          $id: "newFile",
-          label: "New",
-          picto: "file",
-          shortcut: "Alt+N",
-          click: "{{editor.newFile()}}",
+          $id: "FileMenu",
+          label: "File",
+          items: [
+            {
+              $id: "newFile",
+              label: "New",
+              picto: "file",
+              shortcut: "Alt+N",
+              click: "{{editor.newFile()}}",
+            },
+            {
+              $id: "openFile",
+              label: "Open…",
+              picto: "folder-open",
+              shortcut: "Ctrl+O",
+              click: "{{editor.openFile()}}",
+            },
+            {
+              $id: "saveFile",
+              disabled: "{{$files.length === 0}}",
+              label: "Save",
+              picto: "save",
+              shortcut: "Ctrl+S",
+              click: "{{editor.saveFile()}}",
+            },
+            {
+              $id: "saveFileAs",
+              disabled: "{{$files.length === 0}}",
+              label: "Save As…",
+              shortcut: "Ctrl+Shift+S",
+              click: "{{editor.saveFileAs()}}",
+            },
+            {
+              $id: "saveAll",
+              // disabled: "{{$files.length === 0}}",
+              disabled: true,
+              label: "Save All",
+              click: "{{editor.saveAll()}}",
+            },
+            "---",
+            {
+              $id: "importFile",
+              label: "Import…",
+              picto: "import",
+              click: "{{editor.importFile()}}",
+            },
+            {
+              $id: "exportFile",
+              disabled: "{{$files.length === 0}}",
+              label: "Export…",
+              picto: "export",
+              click: "{{editor.exportFile()}}",
+            },
+            ...(manifest.multiple
+              ? [
+                  "---",
+                  {
+                    $id: "closeFile",
+                    disabled: "{{$files.length === 0}}",
+                    label: "Close",
+                    shortcut: "Alt+W",
+                    click: "{{editor.closeFile()}}",
+                  },
+                  {
+                    $id: "closeAll",
+                    disabled: "{{$files.length === 0}}",
+                    label: "Close All",
+                    click: "{{editor.closeAll()}}",
+                  },
+                ]
+              : []),
+            // "---",
+            // {
+            //   $id: "exit",
+            //   label: "Exit",
+            //   click: "{{editor.exit()}}",
+            // },
+          ],
         },
         {
-          $id: "openFile",
-          label: "Open…",
-          picto: "folder-open",
-          shortcut: "Ctrl+O",
-          click: "{{editor.openFile()}}",
+          $id: "ViewMenu",
+          label: "View",
+          items: [
+            {
+              $id: "fullscreen",
+              label: "Full Screen",
+              click: "{{editor.fullscreen()}}",
+              disabled: !document.fullscreenEnabled,
+            },
+            {
+              $id: "openInNewTab",
+              label: "Open in New Tab",
+              click: "{{editor.openInNewTab()}}",
+            },
+          ],
         },
         {
-          $id: "saveFile",
-          disabled: "{{$files.length === 0}}",
-          label: "Save",
-          picto: "save",
-          shortcut: "Ctrl+S",
-          click: "{{editor.saveFile()}}",
+          $id: "HelpMenu",
+          label: "Help",
+          items: [
+            {
+              $id: "install",
+              label: "Install on {{editor.getOS()}} desktop",
+              click: "{{editor.install()}}",
+              disabled: !supportInstall,
+              title: supportInstall
+                ? undefined
+                : "Not supported in this browser",
+            },
+            "---",
+            {
+              $id: "about",
+              label: "About",
+              click: "{{editor.about()}}",
+            },
+          ],
         },
-        {
-          $id: "saveFileAs",
-          disabled: "{{$files.length === 0}}",
-          label: "Save As…",
-          shortcut: "Ctrl+Shift+S",
-          click: "{{editor.saveFileAs()}}",
-        },
-        {
-          $id: "saveAll",
-          // disabled: "{{$files.length === 0}}",
-          disabled: true,
-          label: "Save All",
-          click: "{{editor.saveAll()}}",
-        },
-        "---",
-        {
-          $id: "importFile",
-          label: "Import…",
-          picto: "import",
-          click: "{{editor.importFile()}}",
-        },
-        {
-          $id: "exportFile",
-          disabled: "{{$files.length === 0}}",
-          label: "Export…",
-          picto: "export",
-          click: "{{editor.exportFile()}}",
-        },
-        ...(manifest.multiple
-          ? [
-              "---",
-              {
-                $id: "closeFile",
-                disabled: "{{$files.length === 0}}",
-                label: "Close",
-                shortcut: "Alt+W",
-                click: "{{editor.closeFile()}}",
-              },
-              {
-                $id: "closeAll",
-                disabled: "{{$files.length === 0}}",
-                label: "Close All",
-                click: "{{editor.closeAll()}}",
-              },
-            ]
-          : []),
-        // "---",
-        // {
-        //   $id: "exit",
-        //   label: "Exit",
-        //   click: "{{editor.exit()}}",
-        // },
       ],
-    },
-    {
-      $id: "ViewMenu",
-      label: "View",
-      items: [
-        {
-          $id: "fullscreen",
-          label: "Full Screen",
-          click: "{{editor.fullscreen()}}",
-          disabled: !document.fullscreenEnabled,
-        },
-        {
-          $id: "openInNewTab",
-          label: "Open in New Tab",
-          click: "{{editor.openInNewTab()}}",
-        },
-      ],
-    },
-    {
-      $id: "HelpMenu",
-      label: "Help",
-      items: [
-        {
-          $id: "install",
-          label: "Install on {{editor.getOS()}} desktop",
-          click: "{{editor.install()}}",
-          disabled: !supportInstall,
-          title: supportInstall ? undefined : "Not supported in this browser",
-        },
-        "---",
-        {
-          $id: "about",
-          label: "About",
-          click: "{{editor.about()}}",
-        },
-      ],
-    },
-  ],
+    }
+  },
 }
 
 editor.init = (app) => {

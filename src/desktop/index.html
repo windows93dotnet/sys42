@@ -32,10 +32,12 @@
             // path: "$HOME/desktop/",
             path: "/tests/fixtures/formats/",
             transferable: {
-              accept: { kind: ["$file", "$app"] },
+              accept: { kind: ["42_TR_ICON", "42_TR_APP_TAB"] },
               import({ kind }) {
-                console.log("desktop import", ...kind)
-                // return "revert"
+                if (kind.includes("42_TR_APP_TAB")) {
+                  console.log("TODO: make app tab import")
+                  return "revert"
+                }
               },
             },
           },
