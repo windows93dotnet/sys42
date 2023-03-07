@@ -1,5 +1,5 @@
 {
-  name: "MediaPLayer",
+  name: "MediaPlayer",
   command: "player",
   categories: ["music", "utilities", "entertainment"],
 
