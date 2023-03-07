@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url"
 import { lilconfig } from "lilconfig"
 
 // import fs from "node:fs/promises"
@@ -6,14 +7,13 @@ import { Log } from "../../src/42/core/log.js"
 import normalizeConfig from "./userConfig/normalizeConfig.js"
 import normalizePaths from "./userConfig/normalizePaths.js"
 import configure from "../../src/42/core/configure.js"
-import cwd from "../../src/42/core/path/cwd.js"
 
 import normalizeTestContexts, {
   TEST_CTX,
 } from "./userConfig/normalizeTestContexts.js"
 
 function resolve(path) {
-  return decodeURI(new URL(path, import.meta.url).pathname)
+  return fileURLToPath(new URL(path, import.meta.url))
 }
 
 export const CLI_TASKS = [
@@ -39,7 +39,7 @@ const dirBin = dirRoot + "/bin"
 const DEFAULTS = {
   dev: false,
   greet: true,
-  cwd: cwd(),
+  cwd: process.cwd(),
   host: "",
   verbose: 1,
   ignore: "**/_*",

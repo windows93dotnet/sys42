@@ -1,9 +1,10 @@
 #! /usr/bin/env node
 
 import { spawn } from "node:child_process"
+import { fileURLToPath } from "node:url"
 
 function resolve(path) {
-  return decodeURI(new URL(path, import.meta.url).pathname)
+  return fileURLToPath(new URL(path, import.meta.url))
 }
 
 let child
