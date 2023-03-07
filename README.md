@@ -108,6 +108,7 @@ With an html tag
 <script type="module" src="/42/ui/components/picto.js"></script>
 <ui-picto value="puzzle" tooltip="Modules"></ui-picto>
 ```
+
 ⚠️ _This can work for some components but isn't widely tested at this time_
 
 ## Project Philosophies
@@ -178,7 +179,8 @@ Just be kind. No insults, disrespect, spam or provocative material of any kind w
 ## CLI dev tool
 
 The project has a NodeJS CLI dev tool nammed `42`. \
-It is developed and tested on Node 19 but should work in Node 18.
+It is developed and tested on Linux using Node 19 but should work in Node 18.
+(It's not working on Windows at the moment).
 
 ```bash
 npm install
