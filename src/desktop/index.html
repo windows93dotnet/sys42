@@ -13,8 +13,6 @@
   import os from "../42/os.js"
   import ui from "../42/ui.js"
 
-  import disk from "../42/core/disk.js"
-
   import trap from "../42/fabric/type/error/trap.js"
   trap((err) => {
     os.desktop.state.errors.push(err)
@@ -55,10 +53,9 @@
               ...(await os.apps.makeMenu()),
               "---",
               {
-                label: "Format",
-                async click() {
-                  await disk.format()
-                  location.reload()
+                label: "Format Disk",
+                click() {
+                  fetch("/?clear-site-data").then(() => location.reload())
                 },
               },
             ],
