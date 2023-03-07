@@ -50,7 +50,7 @@ export class ItemsHint extends Array {
   constructor(options) {
     super()
     this.config = { ...options }
-    this.kind = this.config.kind
+    this.kind = this.config.kind ?? []
     this.details = {}
   }
 

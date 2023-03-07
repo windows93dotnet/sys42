@@ -56,7 +56,6 @@ export default {
       content: [
         {
           tag: "textarea.size-full",
-          // entry: "textbox",
           bind: "text",
           label: "{{path}}",
           class: "{{/monospace ? 'font-mono' : ''}}",
@@ -71,18 +70,6 @@ export default {
       ],
     },
     closable: true,
-    transferable: {
-      kind: ["$file", "$app"],
-      accept: "$file",
-      import({ paths, index, isOriginDropzone }) {
-        if (isOriginDropzone) return
-
-        index ??= $files.length
-        $files.splice(index, 0, ...paths)
-        $app.state.$current = index
-
-        return "vanish"
-      },
-    },
+    transferable: { $ref: "transferableTabs" },
   },
 }

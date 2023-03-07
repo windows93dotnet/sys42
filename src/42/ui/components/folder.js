@@ -216,7 +216,7 @@ export class Folder extends Component {
               selector: ":scope ui-icon",
               dropzone: "dim",
               findNewIndex: false,
-              kind: "$file",
+              kind: "42_TR_ICON",
               accept: { mimetype: "*" },
               effects: ["move", "copy"],
             },

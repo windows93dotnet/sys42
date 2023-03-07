@@ -92,7 +92,7 @@ async function prepareManifest(manifest, options) {
 async function resoleManifest(manifest) {
   manifest.$defs ??= {}
   if (manifest.ui) manifest.$ref = manifest.ui // ui extends the manifest with a javascript file
-  Object.assign(manifest.$defs, editor.menubar(manifest))
+  Object.assign(manifest.$defs, editor.makeDefs(manifest))
   return resolve(manifest, { strict: false, baseURI: manifest.dirURL })
 }
 
@@ -342,26 +342,42 @@ export default class App extends UI {
       }
 
       if (mimetype.length > 0) {
+        const transferImport = ({ paths, files, index, isOriginDropzone }) => {
+          if (isOriginDropzone) return
+
+          if (!files && !paths) return
+
+          if (manifest.multiple !== true) this.state.$files.length = 0
+          index ??= this.state.$files.length
+
+          if (files) {
+            this.state.$files.splice(index, 0, ...Object.values(files))
+          } else {
+            this.state.$files.splice(index, 0, ...paths)
+          }
+
+          this.state.$current = index
+          return "vanish"
+        }
+
+        Object.assign(manifest.$defs.transferableTabs, {
+          accept: { mimetype },
+          export({ items }) {
+            items.details = { paths: [], dataTypes: [] }
+            for (const item of items) {
+              // TODO: add mimetype initems.details.dataTypes
+              items.details.paths.push(item.data.path)
+            }
+          },
+          import: transferImport,
+        })
+
         transferableConfig = {
           items: false,
           findNewIndex: false,
           dropzone: "dim",
           accept: { mimetype },
-          import: ({ paths, files, index }) => {
-            if (!files && !paths) return
-
-            if (manifest.multiple !== true) this.state.$files.length = 0
-            index ??= this.state.$files.length
-
-            if (files) {
-              this.state.$files.splice(index, 0, ...Object.values(files))
-            } else {
-              this.state.$files.splice(index, 0, ...paths)
-            }
-
-            this.state.$current = index
-            return "vanish"
-          },
+          import: transferImport,
         }
       }
     }
