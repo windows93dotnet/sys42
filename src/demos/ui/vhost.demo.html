@@ -10,6 +10,7 @@
 </script>
 
 <script type="module">
+  import "../../42/ui/components/dialog.js"
   import ui from "../../42/ui.js"
   import ipc from "../../42/core/ipc.js"
   import fs from "../../42/core/fs.js"
@@ -18,13 +19,20 @@
 
   localStorage.setItem("secret", "hello secret")
 
-  if (!(await fs.access("/test.html"))) {
-    const html = `\
+  // if (!(await fs.access("/test.html"))) {
+  const html = `\
   <link rel="stylesheet" href="/test.css">
   I'm a sandboxed iframe.<br />
   The HTML and CSS are served from browser storage.
   <hr />
-  <script>
+  <script type="module">
+  // import dialog from "../../42/ui/components/dialog.js"
+  // dialog('hello')
+
+  import ipc from "../../42/core/ipc.js"
+
+  ipc.emit('hello')
+
   if (localStorage.getItem('secret') === "hello secret") {
     document.body.append('Sandboxing failed')
   } else {
@@ -36,14 +44,14 @@
     }
   }
   </${"script"}>`
-    const css = "body { background: tan; font-family: sans-serif; }"
+  const css = "body { background: tan; font-family: sans-serif; }"
 
-    await fs.write("/test.html", html)
-    await fs.write("/test.css", css)
-  }
+  await fs.write("/test.html", html)
+  await fs.write("/test.css", css)
+  // }
 
   ipc
-    .from("http://localhost:8000", { origin: "*" })
+    .from("http://localhost:3000", { origin: "*" })
     .on("42_PROXY_REQUEST_URL", async (url) => fs.read(url))
 
   await ui(
@@ -66,19 +74,15 @@
             },
             "\n\n",
             "\n\n",
-            "To try it you need to serve the src/ folder on localhost:8000, if you have php you can do:",
-            "\n\n",
-            { tag: "pre.ma-0", content: "php -S localhost:8000" },
-            "\n\n",
             "⚠️ this can make the browser crash for unknown reasons (maybe a bug in ipc.js)",
           ],
         },
         {
           tag: "iframe.ma-t.inset",
           style: { width: "512px", height: "256px" },
-          sandbox: "allow-scripts allow-same-origin",
+          // sandbox: "allow-scripts allow-same-origin",
           // sandbox: "allow-scripts",
-          src: "http://localhost:8000/vhost.html?path=/test.html",
+          src: "http://localhost:3000/42-vhost.html?path=/test.html",
         },
       ],
     },
