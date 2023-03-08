@@ -75,11 +75,13 @@ test("readable", "tee()", async (t) => {
 
 test.serial("readable", "get()", async (t) => {
   t.timeout(1000)
-  const actual = await stream.ws.collect(
-    http
-      .source("/tests/fixtures/stream/data.json")
-      .pipeThrough(stream.ts.text())
-  )
+  const actual = (
+    await stream.ws.collect(
+      http
+        .source("/tests/fixtures/stream/data.json")
+        .pipeThrough(stream.ts.text())
+    )
+  ).replaceAll("\r\n", "\n")
 
   const expected = `\
 {
