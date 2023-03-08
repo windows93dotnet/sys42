@@ -6,6 +6,10 @@ import memoize from "../../../src/42/fabric/type/function/memoize.js"
 
 const getUserAgent = memoize(parseUserAgent)
 
+let { devScript } = system.config.paths.files
+devScript = devScript.replace(system.config.paths.dirs.src, "")
+devScript = devScript.replaceAll("\\", "/")
+
 export default function makeDevScript(asset, ua) {
   const entry = asset.filename.slice(system.config.paths.dirs.src.length)
   const config = { entry, verbose: system.config.verbose }
@@ -31,9 +35,6 @@ export default function makeDevScript(asset, ua) {
   }
 
   const dataConfig = escapeHTML(JSON.stringify(config))
-
-  let { devScript } = system.config.paths.files
-  devScript = devScript.replace(system.config.paths.dirs.src, "")
 
   return `<!-- [42] --><script async type="module" data-config="${dataConfig}" src="${devScript}"></script>`
 }

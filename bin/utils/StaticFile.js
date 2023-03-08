@@ -1,10 +1,11 @@
 import fs from "node:fs/promises"
+import { fileURLToPath } from "node:url"
 import getPathInfos from "../../src/42/core/path/getPathInfos.js"
 
 class StaticFile {
   constructor(filename, index = "index.html") {
     const infos = getPathInfos(filename, { index, headers: true })
-    this.filename = infos.filename
+    this.filename = fileURLToPath(`file://${infos.filename}`)
     this.search = infos.search
     this.dir = infos.dir
     this.base = infos.base

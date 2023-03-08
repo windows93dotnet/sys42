@@ -27,7 +27,7 @@ const getPathInfos = memoize((filename, options) => {
   const isFileProtocol = out.protocol === "file:"
   if (isFileProtocol) out.origin = "file://" // firefox fix
   out.isURI = !isFileProtocol
-  out.isDir = !out.isURI && out.pathname.endsWith("/")
+  out.isDir = !out.isURI && (out.pathname.endsWith("/"))
   out.isFile = !out.isURI && !out.isDir
 
   if (index && out.isDir) {

@@ -5,7 +5,8 @@
   "type": "module",
   "license": "MIT",
   "bin": {
-    "42": "bin/42.js"
+    "42": "bin/42.js",
+    "sys42": "bin/42.js"
   },
   "engines": {
     "node": "^18.0.0"
@@ -13,7 +14,7 @@
   "scripts": {
     "pretest": "eslint '{src,bin}/**/*.{js,html}'",
     "format": "prettier --loglevel silent '{src,cli}/**/*.{js,md,html}' --write",
-    "dev": "./bin/42.js"
+    "dev": "node ./bin/42.js"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.19.1",
