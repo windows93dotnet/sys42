@@ -3,13 +3,14 @@
 <title>vhost</title>
 
 <script type="module">
+  import "./42/ui/components/dialog.js"
   import ipc from "/42/core/ipc.js"
 
   const bus = ipc.to(window.parent, { origin: "*" })
 
   ipc.on("42_REQUEST_URL", async (url) => bus.send("42_PROXY_REQUEST_URL", url))
 
-  navigator.serviceWorker?.register("/vhost.sw.js", { type: "module" })
+  navigator.serviceWorker?.register("/42-vhost.sw.js", { type: "module" })
   await navigator.serviceWorker.ready
 
   const params = new URLSearchParams(location.search)

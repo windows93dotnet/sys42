@@ -29,12 +29,14 @@ self.addEventListener("fetch", (e) => {
         .matchAll()
         .then((clients) => {
           for (const client of clients) {
-            if (client.url.startsWith(location.origin + "/vhost.html")) {
+            if (client.url.startsWith(location.origin + "/42-vhost.html")) {
               return client
             }
           }
         })
-        .then((client) => ipc.to(client).send("42_REQUEST_URL", pathname))
+        .then((client) =>
+          ipc.to(client, { origin: "*" }).send("42_REQUEST_URL", pathname)
+        )
         .then((args) => new Response(args, { headers: infos.headers }))
     )
   }

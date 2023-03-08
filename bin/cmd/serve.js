@@ -23,8 +23,6 @@ data: ${typeof data === "object" ? JSON.stringify(data) : data}
 
 const clients = new Set()
 
-const host = task.host.replace(/https?:\/\//, "")
-
 const needDevScript =
   system.config.run.includes("test") || system.config.run.includes("watch")
 
@@ -36,7 +34,9 @@ system
     for (const s of clients) sendEvent(s, "reload")
   })
 
-export default async function serve() {
+async function startServer(port) {
+  const host = task.host.replace(/https?:\/\//, "")
+
   const server = fastify({
     // http2: true,
     // https: task.ssl,
@@ -91,9 +91,7 @@ export default async function serve() {
 
       const asset = new StaticFile(srcPath + url)
 
-      if (req.headers.origin === "http://localhost:8000") {
-        reply.header("access-control-allow-origin", req.headers.origin)
-      } else if (req.headers.host === host) {
+      if (req.headers.host === host) {
         reply.header("access-control-allow-origin", "null")
       }
 
@@ -152,7 +150,13 @@ export default async function serve() {
     },
   })
 
-  server.listen({ port: task.port }, async () => {
-    task.log(` serve {white ${task.host}}`)
+  server.listen({ port }, async () => {
+    if (port === task.port) task.log(` serve {white ${task.host}}`)
   })
+}
+
+export default async function serve() {
+  startServer(task.port)
+  // TODO: make a CLI option for vhost proxy
+  startServer(3000) // vhost proxy
 }
