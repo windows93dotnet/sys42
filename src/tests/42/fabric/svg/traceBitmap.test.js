@@ -47,7 +47,7 @@ test.setup(async () => {
   ctx.drawImage(image, 0, 0)
   shared.ctx = ctx
 
-  expecteds = expecteds.trimEnd().split("\n")
+  expecteds = expecteds.trimEnd().split(/\r?\n/)
   shared.expecteds = expecteds
 })
 

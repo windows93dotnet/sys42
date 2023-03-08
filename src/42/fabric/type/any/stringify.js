@@ -328,6 +328,7 @@ class Stringifier {
     const source = val
       .toString()
       .replace(/\s*\[native code]\s*/, ' "[native code]" ')
+      .replaceAll("\r\n", "\n")
 
     const keys = Object.keys(val)
 
