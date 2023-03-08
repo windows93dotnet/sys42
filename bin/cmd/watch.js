@@ -1,9 +1,9 @@
+import path from "node:path"
 import chokidar from "chokidar"
 
 import system from "../../src/42/system.js"
 import { format } from "../../src/42/core/log.js"
 import debounce from "../../src/42/fabric/type/function/debounce.js"
-import joinPath from "../../src/42/core/path/core/joinPath.js"
 import graph from "../utils/graph.js"
 import lookupTestfiles from "../utils/graph/lookupTestfiles.js"
 
@@ -69,7 +69,8 @@ async function refresh(event, filename) {
     system.emit("backend:restart")
   } else {
     const relative = filename.replace(cwd, "")
-    const url = filename.replace(src, "")
+    const url = filename.replace(src, "").replaceAll('\\', "/")
+
     if (task.graph) {
       if (graphResult) {
         const testFiles = lookupTestfiles(graphResult, relative)
@@ -112,9 +113,9 @@ export default async function watch() {
         pollInterval: 8,
       },
     })
-    .on("all", (event, path) => {
+    .on("all", (event, filename) => {
       if (event === "addDir") return
-      const filename = joinPath(cwd, path)
+      filename = path.join(cwd, filename)
 
       if (doubleSave.has(filename)) {
         system.emit("watch:reload")

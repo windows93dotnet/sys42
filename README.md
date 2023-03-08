@@ -178,9 +178,8 @@ Just be kind. No insults, disrespect, spam or provocative material of any kind w
 
 ## CLI dev tool
 
-The project has a NodeJS CLI dev tool nammed `42`. \
+The project has a NodeJS CLI dev tool nammed `sys42`. \
 It is developed and tested on Linux using Node 19 but should work in Node 18.
-(It's not working on Windows at the moment).
 
 ```bash
 npm install
@@ -189,17 +188,17 @@ npm ln
 
 ```bash
 # start a dev server and watch files for live reload
-42 serve watch
+sys42 serve watch
 ```
 
 ```bash
 # generate the files.cbor file index
-42 scan
+sys42 scan
 ```
 
 ```bash
 # shortcut to start the serve, watch and scan command
-42
+sys42
 ```
 
 A config file nammed `.42rc.js` allow to edit options for commands.

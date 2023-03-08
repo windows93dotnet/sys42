@@ -1,3 +1,4 @@
+import { pathToFileURL } from "node:url"
 import system from "../../src/42/system.js"
 import fastify from "fastify"
 import disableCache from "fastify-disablecache"
@@ -5,6 +6,8 @@ import disableCache from "fastify-disablecache"
 import StaticFile from "../utils/StaticFile.js"
 import makeDevScript from "./serve/makeDevScript.js"
 const task = system.config.tasks.serve
+
+const srcPath = pathToFileURL(system.config.paths.dirs.src).href
 
 const errorPage = (asset, status, stack) =>
   makeDevScript(asset) +
@@ -86,7 +89,7 @@ export default async function serve() {
         reply.header("Clear-Site-Data", '"cache", "storage"')
       }
 
-      const asset = new StaticFile(system.config.paths.dirs.src + url)
+      const asset = new StaticFile(srcPath + url)
 
       if (req.headers.origin === "http://localhost:8000") {
         reply.header("access-control-allow-origin", req.headers.origin)

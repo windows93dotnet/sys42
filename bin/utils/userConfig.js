@@ -1,4 +1,4 @@
-import { fileURLToPath } from "node:url"
+import { fileURLToPath, pathToFileURL } from "node:url"
 import { lilconfig } from "lilconfig"
 
 // import fs from "node:fs/promises"
@@ -156,7 +156,7 @@ const lilconfigOptions = {
   cache: false,
   loaders: {
     async ".js"(filepath) {
-      return (await import(/* graph-ignore */ filepath)).default
+      return (await import(/* graph-ignore */ pathToFileURL(filepath))).default
     },
   },
 }
