@@ -6,7 +6,7 @@
   import "./42/ui/components/dialog.js"
   import ipc from "/42/core/ipc.js"
 
-  const bus = ipc.to(window.parent, { origin: "*" })
+  const bus = ipc.to(window.parent)
 
   ipc.on("42_REQUEST_URL", async (url) => bus.send("42_PROXY_REQUEST_URL", url))
 

@@ -149,18 +149,15 @@ async function messageHandler(e) {
 }
 
 function ping(target, port, origin) {
-  origin ??=
-    location.origin === "null" || location.origin === "http://localhost:3000"
-      ? "*"
-      : location.origin
+  origin ??= document.referrer
   target.postMessage({ type: PING }, origin, [port])
 }
 
 function autoTarget(port, options) {
   if (realm.inIframe) {
-    ping(window.parent, port, options.origin)
+    ping(window.parent, port, options.targetOrigin)
   } else if (realm.inChildWindow) {
-    ping(window.opener, port, options.origin)
+    ping(window.opener, port, options.targetOrigin)
   } else if (realm.inDedicatedWorker) {
     self.postMessage({ type: PING }, [port])
   }
@@ -168,7 +165,7 @@ function autoTarget(port, options) {
 
 function normalizeTarget(target, port, options) {
   if (globalThis.HTMLIFrameElement && target instanceof HTMLIFrameElement) {
-    // default "options.origin" use wildcard only if iframe is sandboxed
+    // default "options.targetOrigin" use wildcard only if iframe is sandboxed
     // without "allow-same-origin" and is from same origin.
     const iframeOrigin = target.src
       ? new URL(target.src).origin
@@ -176,15 +173,15 @@ function normalizeTarget(target, port, options) {
       ? location.origin
       : undefined
 
-    options.origin ??= target.sandbox.contains("allow-same-origin")
+    options.targetOrigin ??= target.sandbox.contains("allow-same-origin")
       ? iframeOrigin
       : target.hasAttribute("sandbox") && iframeOrigin === location.origin
       ? "*"
       : iframeOrigin
 
-    ping(target.contentWindow, port, options.origin)
+    ping(target.contentWindow, port, options.targetOrigin)
   } else if (target.self === target) {
-    ping(target, port, options.origin)
+    ping(target, port, options.targetOrigin)
   } else {
     target.postMessage({ type: PING }, [port])
   }

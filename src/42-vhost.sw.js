@@ -3,25 +3,13 @@ import getPathInfos from "./42/core/path/getPathInfos.js"
 
 const LIST = new Set(["/test.html", "/test.css"])
 
-self.addEventListener("install", () => {
-  // Activate worker immediately
-  self.skipWaiting()
-})
-
-self.addEventListener("activate", () => {
-  // Become available to all pages
-  self.clients.claim()
-})
+self.addEventListener("install", () => self.skipWaiting())
+self.addEventListener("activate", () => self.clients.claim())
 
 self.addEventListener("fetch", (e) => {
   const { pathname } = new URL(e.request.url)
 
-  if (
-    LIST.has(pathname)
-    // e.request.referrer.startsWith(location.origin) ||
-    // (e.request.destination === "iframe" &&
-    //   !e.request.url.endsWith("/vhost.html"))
-  ) {
+  if (LIST.has(pathname)) {
     const infos = getPathInfos(pathname, { headers: true })
 
     e.respondWith(
@@ -34,9 +22,7 @@ self.addEventListener("fetch", (e) => {
             }
           }
         })
-        .then((client) =>
-          ipc.to(client, { origin: "*" }).send("42_REQUEST_URL", pathname)
-        )
+        .then((client) => ipc.to(client).send("42_REQUEST_URL", pathname))
         .then((args) => new Response(args, { headers: infos.headers }))
     )
   }
