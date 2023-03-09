@@ -1,6 +1,4 @@
-/* eslint-disable no-implicit-coercion */
 import test from "../../../42/test.js"
-import env from "../../../42/core/env.js"
 import ipc from "../../../42/core/ipc.js"
 import ui from "../../../42/ui.js"
 import timeout from "../../../42/fabric/type/promise/timeout.js"
@@ -24,191 +22,165 @@ if (test.env.browser.isFirefox) {
   check.serviceWorker = 0
 }
 
-test.serial("realms", async (t, { decay, dest }) => {
-  t.timeout(2000)
+const realm = {
+  inChildWindow: false,
+  inDedicatedWorker: false,
+  inIframe: false,
+  inOpaqueOrigin: false,
+  inServiceWorker: false,
+  inSharedWorker: false,
+  inTop: false,
+  inWindow: false,
+  inWorker: false,
+}
 
-  const targets = {}
+const realms = {
+  top: {
+    ...realm,
+    inTop: true,
+    inWindow: true,
+  },
+  iframe: {
+    ...realm,
+    inIframe: true,
+    inWindow: true,
+  },
+  sandbox: {
+    ...realm,
+    inIframe: true,
+    inOpaqueOrigin: true,
+    inWindow: true,
+  },
+  childWindow: {
+    ...realm,
+    inChildWindow: true,
+    inTop: true,
+    inWindow: true,
+  },
+  dedicatedWorker: {
+    ...realm,
+    inDedicatedWorker: true,
+    inWorker: true,
+  },
+  sharedWorker: {
+    ...realm,
+    inSharedWorker: true,
+    inWorker: true,
+  },
+  serviceWorker: {
+    ...realm,
+    inServiceWorker: true,
+    inWorker: true,
+  },
+}
 
-  const list = Object.entries(check).map(([key, val]) => {
-    if (!val) return
-    return Promise.race([
-      timeout(1900, `${key} timed out`),
-      new Promise((resolve) =>
-        ipc.on(`42_ENV_${key.toUpperCase()}`, (data) => {
-          if (key === "childWindow") targets.childWindow.close()
-          t.timeout("reset")
-          resolve(data)
-        })
-      ),
-    ])
-  })
+const runtime = {
+  inAutomated: false,
+  inBackend: false,
+  inBrowser: false,
+  inDeno: false,
+  inElectron: false,
+  inFrontend: false,
+  inNode: false,
+  inPWA: false,
+}
 
-  if (check.iframe || check.sandbox) {
-    await decay(
+const view = {
+  ...runtime,
+  inBrowser: true,
+  inFrontend: true,
+}
+
+const worker = {
+  ...runtime,
+  inFrontend: true,
+}
+
+const contexts = {
+  iframe(t, { decay, dest }) {
+    return decay(
       ui(
         dest({ connect: true }),
-        [
-          check.iframe && {
-            tag: "iframe",
-            src: "/tests/fixtures/ipc/emit.html?e=42_ENV_IFRAME",
-          },
-          check.sandbox && {
-            tag: "ui-sandbox",
-            permissions: "app",
-            path: "/tests/fixtures/ipc/emit.html?e=42_ENV_SANDBOX",
-          },
-        ],
+        {
+          tag: "iframe",
+          src: "/tests/fixtures/ipc/emit.html?e=42_ENV_IFRAME",
+        },
         { trusted: true }
       )
     )
-  }
+  },
 
-  if (check.childWindow) {
-    targets.childWindow = window.open(
+  sandbox(t, { decay, dest }) {
+    return decay(
+      ui(dest({ connect: true }), {
+        tag: "ui-sandbox",
+        permissions: "app",
+        path: "/tests/fixtures/ipc/emit.html?e=42_ENV_SANDBOX",
+      })
+    )
+  },
+
+  async childWindow(t, { decay }) {
+    const target = window.open(
       "/tests/fixtures/ipc/emit.html?e=42_ENV_CHILDWINDOW",
       "_blank"
     )
-    decay(targets.childWindow)
+    decay(target)
     await t.utils.nextCycle()
     window.focus()
-  }
+    return target
+  },
 
-  if (check.dedicatedWorker) {
-    targets.dedicatedWorker = new Worker(
+  dedicatedWorker(t, { decay }) {
+    const target = new Worker(
       "/tests/fixtures/ipc/emit.js?e=42_ENV_DEDICATEDWORKER",
       { type: "module" }
     )
-    decay(ipc.from(targets.dedicatedWorker))
-    decay(targets.dedicatedWorker)
-  }
+    decay(ipc.from(target))
+    decay(target)
+    return target
+  },
 
-  if (check.sharedWorker) {
-    targets.sharedWorker = new SharedWorker(
+  sharedWorker(t, { decay }) {
+    const target = new SharedWorker(
       "/tests/fixtures/ipc/emit.js?e=42_ENV_SHAREDWORKER",
       { type: "module" }
     )
-    decay(ipc.from(targets.sharedWorker))
-    decay(targets.sharedWorker.port)
-  }
+    decay(ipc.from(target))
+    decay(target.port)
+    return target
+  },
 
-  if (check.serviceWorker) {
+  async serviceWorker(t, { decay }) {
     const registration = await navigator.serviceWorker.register(
       "/tests/fixtures/ipc/emit.js?e=42_ENV_SERVICEWORKER",
       { type: "module" }
     )
     decay(registration)
-  }
+    return registration
+  },
+}
 
-  const realms = {
-    top: {
-      inChildWindow: false,
-      inDedicatedWorker: false,
-      inIframe: false,
-      inOpaqueOrigin: false,
-      inServiceWorker: false,
-      inSharedWorker: false,
-      inTop: true,
-      inWindow: true,
-      inWorker: false,
-    },
-    iframe: {
-      inChildWindow: false,
-      inDedicatedWorker: false,
-      inIframe: true,
-      inOpaqueOrigin: false,
-      inServiceWorker: false,
-      inSharedWorker: false,
-      inTop: false,
-      inWindow: true,
-      inWorker: false,
-    },
-    sandbox: {
-      inChildWindow: false,
-      inDedicatedWorker: false,
-      inIframe: true,
-      inOpaqueOrigin: true,
-      inServiceWorker: false,
-      inSharedWorker: false,
-      inTop: false,
-      inWindow: true,
-      inWorker: false,
-    },
-    childWindow: {
-      inChildWindow: true,
-      inDedicatedWorker: false,
-      inIframe: false,
-      inOpaqueOrigin: false,
-      inServiceWorker: false,
-      inSharedWorker: false,
-      inTop: true,
-      inWindow: true,
-      inWorker: false,
-    },
-    dedicatedWorker: {
-      inChildWindow: false,
-      inDedicatedWorker: true,
-      inIframe: false,
-      inOpaqueOrigin: false,
-      inServiceWorker: false,
-      inSharedWorker: false,
-      inTop: false,
-      inWindow: false,
-      inWorker: true,
-    },
-    sharedWorker: {
-      inChildWindow: false,
-      inDedicatedWorker: false,
-      inIframe: false,
-      inOpaqueOrigin: false,
-      inServiceWorker: false,
-      inSharedWorker: true,
-      inTop: false,
-      inWindow: false,
-      inWorker: true,
-    },
-    serviceWorker: {
-      inChildWindow: false,
-      inDedicatedWorker: false,
-      inIframe: false,
-      inOpaqueOrigin: false,
-      inServiceWorker: true,
-      inSharedWorker: false,
-      inTop: false,
-      inWindow: false,
-      inWorker: true,
-    },
-  }
+for (const [key, val] of Object.entries(check)) {
+  if (!val) continue
+  test.serial(key, "emit", async (t, utils) => {
+    const ctx = contexts[key]
 
-  const view = {
-    inAutomated: false,
-    inBackend: false,
-    inBrowser: true,
-    inDeno: false,
-    inElectron: false,
-    inFrontend: true,
-    inNode: false,
-    inPWA: false,
-  }
+    const emitted = Promise.race([
+      timeout(1900, `${key} timed out`),
+      new Promise((resolve) =>
+        ipc.on(`42_ENV_${key.toUpperCase()}`, (data) => {
+          if (key === "childWindow") ctx.target.close()
+          t.timeout("reset")
+          resolve(data)
+        })
+      ),
+    ])
 
-  const worker = {
-    inAutomated: false,
-    inBackend: false,
-    inBrowser: false,
-    inDeno: false,
-    inElectron: false,
-    inFrontend: true,
-    inNode: false,
-    inPWA: false,
-  }
+    ctx.target = await ctx(t, utils)
+    const res = await emitted
 
-  t.alike(env.runtime, view)
-  t.alike(env.realm, realms.top)
-
-  const res = await Promise.all(list)
-
-  Object.entries(check).forEach(([key, val], i) => {
-    if (!val) return
-    t.alike(res[i].runtime, key.endsWith("Worker") ? worker : view)
-    t.alike(res[i].realm, realms[key])
+    t.alike(res.runtime, key.endsWith("Worker") ? worker : view)
+    t.alike(res.realm, realms[key])
   })
-})
+}
