@@ -41,14 +41,15 @@
     fs.write("/test.css", css),
   ])
 
-  const useIpc = 0
+  const useIpc = 1
 
   if (useIpc) {
     ipc
-      .from("http://localhost:3000", { origin: "*" })
+      .from("http://localhost:3000")
       .on("42_PROXY_REQUEST_URL", async (url) => fs.read(url))
   } else {
     globalThis.addEventListener("message", async (e) => {
+      console.log(e)
       if (e.data.type === "42_PROXY_REQUEST_URL") {
         e.source.postMessage(
           {

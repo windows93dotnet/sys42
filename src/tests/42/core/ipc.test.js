@@ -10,13 +10,11 @@ test.suite.serial()
 const check = {
   iframe: 1,
   sandbox: 1,
-  childWindow: 0, // [1]
+  childWindow: 1,
   dedicatedWorker: 1,
-  sharedWorker: 0, // [1]
-  serviceWorker: 0, // [1]
+  sharedWorker: 1,
+  serviceWorker: 1,
 }
-
-// [1] Can make the browser crash on reload
 
 if (test.env.browser.isFirefox) {
   // TODO: check firefox compatibility with worker modules
@@ -81,12 +79,12 @@ test.serial("realms", async (t, { decay, dest }) => {
         [
           check.iframe && {
             tag: "iframe",
-            src: "/tests/fixtures/ipc/rsvp.html?e=42_ENV_IFRAME",
+            src: "/tests/fixtures/ipc/emit.html?e=42_ENV_IFRAME",
           },
           check.sandbox && {
             tag: "ui-sandbox",
             permissions: "app",
-            path: "/tests/fixtures/ipc/rsvp.html?e=42_ENV_SANDBOX",
+            path: "/tests/fixtures/ipc/emit.html?e=42_ENV_SANDBOX",
           },
         ],
         { trusted: true }
@@ -96,7 +94,7 @@ test.serial("realms", async (t, { decay, dest }) => {
 
   if (check.childWindow) {
     targets.childWindow = window.open(
-      "/tests/fixtures/ipc/rsvp.html?e=42_ENV_CHILDWINDOW",
+      "/tests/fixtures/ipc/emit.html?e=42_ENV_CHILDWINDOW",
       "_blank"
     )
     decay(targets.childWindow)
@@ -106,7 +104,7 @@ test.serial("realms", async (t, { decay, dest }) => {
 
   if (check.dedicatedWorker) {
     targets.dedicatedWorker = new Worker(
-      "/tests/fixtures/ipc/rsvp.js?e=42_ENV_DEDICATEDWORKER",
+      "/tests/fixtures/ipc/emit.js?e=42_ENV_DEDICATEDWORKER",
       { type: "module" }
     )
     decay(ipc.from(targets.dedicatedWorker))
@@ -115,7 +113,7 @@ test.serial("realms", async (t, { decay, dest }) => {
 
   if (check.sharedWorker) {
     targets.sharedWorker = new SharedWorker(
-      "/tests/fixtures/ipc/rsvp.js?e=42_ENV_SHAREDWORKER",
+      "/tests/fixtures/ipc/emit.js?e=42_ENV_SHAREDWORKER",
       { type: "module" }
     )
     decay(ipc.from(targets.sharedWorker))
@@ -124,7 +122,7 @@ test.serial("realms", async (t, { decay, dest }) => {
 
   if (check.serviceWorker) {
     const registration = await navigator.serviceWorker.register(
-      "/tests/fixtures/ipc/rsvp.js?e=42_ENV_SERVICEWORKER",
+      "/tests/fixtures/ipc/emit.js?e=42_ENV_SERVICEWORKER",
       { type: "module" }
     )
     decay(registration)
