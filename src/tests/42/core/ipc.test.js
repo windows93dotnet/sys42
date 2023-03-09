@@ -24,35 +24,6 @@ if (test.env.browser.isFirefox) {
   check.serviceWorker = 0
 }
 
-const expectedKeys = [
-  "realm",
-  "runtime",
-  "browser",
-  "engine",
-  "os",
-  "device",
-  "cpu",
-  "memory",
-  "gpu",
-  "network",
-  "languages",
-]
-
-test("env", "keys", (t) => {
-  t.eq(Object.keys(env), expectedKeys)
-  t.eq(Object.keys(structuredClone(env)), expectedKeys)
-  t.eq(Object.keys(JSON.parse(JSON.stringify(env))), expectedKeys)
-})
-
-test("env", "toPrimitive", (t) => {
-  t.true(String(env).includes(" on "))
-  t.true((env + "").includes(" on "))
-  t.true((env + 2).includes(" on "))
-  t.true((env + 2).endsWith("2"))
-  t.isNaN(Number(env))
-  t.isNaN(+env)
-})
-
 test.serial("realms", async (t, { decay, dest }) => {
   t.timeout(2000)
 
