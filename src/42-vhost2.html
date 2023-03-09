@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>vhost</title>
+
+<script type="module">
+  navigator.serviceWorker?.register("/42-vhost.sw2.js", { type: "module" })
+
+  navigator.serviceWorker.addEventListener("message", (e) => {
+    if (e.data.type === "42_REQUEST_URL") {
+      window.parent.postMessage(
+        { ...e.data, type: "42_PROXY_REQUEST_URL" },
+        "*"
+      )
+    }
+  })
+
+  globalThis.addEventListener("message", (e) => {
+    if (e.data.type === "42_PROXY_REPLY") {
+      navigator.serviceWorker.controller.postMessage({
+        ...e.data,
+        type: "42_RESPONSE",
+      })
+    }
+  })
+
+  await navigator.serviceWorker.ready
+  const params = new URLSearchParams(location.search)
+
+  const iframe = document.createElement("iframe")
+  iframe.style = `
+    border: 0;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;`
+  iframe.src = params.get("path")
+  document.body.append(iframe)
+</script>
