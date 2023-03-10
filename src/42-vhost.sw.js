@@ -10,11 +10,11 @@ self.addEventListener("fetch", (e) => {
   const { pathname } = new URL(e.request.url)
 
   if (LIST.has(pathname)) {
-    const infos = getPathInfos(pathname, { headers: true })
+    const { headers } = getPathInfos(pathname, { headers: true })
 
     e.respondWith(
       self.clients
-        .matchAll()
+        .matchAll({ type: "window" })
         .then((clients) => {
           for (const client of clients) {
             if (client.url.startsWith(location.origin + "/42-vhost.html")) {
@@ -22,8 +22,12 @@ self.addEventListener("fetch", (e) => {
             }
           }
         })
-        .then((client) => ipc.to(client).send("42_REQUEST_URL", pathname))
-        .then((args) => new Response(args, { headers: infos.headers }))
+        .then(async (client) => {
+          const bus = ipc.to(client)
+          const buffer = await bus.send("42_VHOST_PROXY_REQ", pathname)
+          bus.destroy()
+          return new Response(buffer, { headers })
+        })
     )
   }
 })

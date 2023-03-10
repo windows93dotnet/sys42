@@ -8,7 +8,7 @@
 
   const bus = ipc.to(window.parent)
 
-  ipc.on("42_REQUEST_URL", async (url) => bus.send("42_PROXY_REQUEST_URL", url))
+  ipc.on("42_VHOST_PROXY_REQ", async (url) => bus.send("42_VHOST_REQ", url))
 
   navigator.serviceWorker?.register("/42-vhost.sw.js", { type: "module" })
   await navigator.serviceWorker.ready

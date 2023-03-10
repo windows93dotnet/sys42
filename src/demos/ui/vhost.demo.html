@@ -41,23 +41,23 @@
     fs.write("/test.css", css),
   ])
 
-  const useIpc = 1
+  const useIpc = 0
+
+  const vhostOrigin = "http://localhost:3000"
 
   if (useIpc) {
-    ipc
-      .from("http://localhost:3000")
-      .on("42_PROXY_REQUEST_URL", async (url) => fs.read(url))
+    ipc.from(vhostOrigin).on("42_VHOST_REQ", async (url) => fs.read(url))
   } else {
-    globalThis.addEventListener("message", async (e) => {
-      console.log(e)
-      if (e.data.type === "42_PROXY_REQUEST_URL") {
-        e.source.postMessage(
+    globalThis.addEventListener("message", async ({ data, source, origin }) => {
+      if (origin !== vhostOrigin) return
+      if (data.type === "42_VHOST_REQ") {
+        source.postMessage(
           {
-            ...e.data,
-            type: "42_PROXY_REPLY",
-            file: await fs.read(e.data.pathname),
+            ...data,
+            type: "42_VHOST_RES",
+            file: await fs.read(data.pathname),
           },
-          "*"
+          vhostOrigin
         )
       }
     })
@@ -91,8 +91,8 @@
           style: { width: "512px", height: "256px" },
           sandbox: "allow-scripts allow-same-origin",
           src: useIpc
-            ? "http://localhost:3000/42-vhost.html?path=/test.html"
-            : "http://localhost:3000/42-vhost2.html?path=/test.html",
+            ? `${vhostOrigin}/42-vhost.html?path=/test.html`
+            : `${vhostOrigin}/42-vhost2.html?path=/test.html`,
         },
       ],
     },
