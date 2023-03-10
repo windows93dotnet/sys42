@@ -6,19 +6,19 @@
   navigator.serviceWorker?.register("/42-vhost.sw2.js", { type: "module" })
 
   navigator.serviceWorker.addEventListener("message", (e) => {
-    if (e.data.type === "42_REQUEST_URL") {
+    if (e.data.type === "42_VHOST_PROXY_REQ") {
       window.parent.postMessage(
-        { ...e.data, type: "42_PROXY_REQUEST_URL" },
-        "*"
+        { ...e.data, type: "42_VHOST_REQ" },
+        document.referrer
       )
     }
   })
 
   globalThis.addEventListener("message", (e) => {
-    if (e.data.type === "42_PROXY_REPLY") {
+    if (e.data.type === "42_VHOST_RES") {
       navigator.serviceWorker.controller.postMessage({
         ...e.data,
-        type: "42_RESPONSE",
+        type: "42_VHOST_PROXY_RES",
       })
     }
   })

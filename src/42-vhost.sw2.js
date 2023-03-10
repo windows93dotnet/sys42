@@ -6,18 +6,13 @@ const LIST = new Set(["/test.html", "/test.css"])
 
 const queue = new Map()
 
-self.addEventListener("install", () => {
-  self.skipWaiting()
-})
-
-self.addEventListener("activate", () => {
-  self.clients.claim()
-})
+self.addEventListener("install", () => self.skipWaiting())
+self.addEventListener("activate", () => self.clients.claim())
 
 self.addEventListener("message", (e) => {
-  console.log(e.data)
   if (queue.has(e.data.id)) {
     const deferred = queue.get(e.data.id)
+    queue.delete(e.data.id)
     deferred.resolve(e.data.file)
   }
 })
@@ -26,11 +21,11 @@ self.addEventListener("fetch", (e) => {
   const { pathname } = new URL(e.request.url)
 
   if (LIST.has(pathname)) {
-    const infos = getPathInfos(pathname, { headers: true })
+    const { headers } = getPathInfos(pathname, { headers: true })
 
     e.respondWith(
       self.clients
-        .matchAll()
+        .matchAll({ type: "window" })
         .then((clients) => {
           for (const client of clients) {
             if (client.url.startsWith(location.origin + "/42-vhost2.html")) {
@@ -40,12 +35,12 @@ self.addEventListener("fetch", (e) => {
         })
         .then((client) => {
           const id = uid()
-          client.postMessage({ type: "42_REQUEST_URL", id, pathname })
+          client.postMessage({ type: "42_VHOST_PROXY_REQ", id, pathname })
           const deferred = defer()
           queue.set(id, deferred)
           return deferred
         })
-        .then((file) => new Response(file, { headers: infos.headers }))
+        .then((buffer) => new Response(buffer, { headers }))
     )
   }
 })
