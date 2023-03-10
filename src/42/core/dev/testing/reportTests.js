@@ -65,12 +65,12 @@ const getStats = (suite, config, isRootSuite) => {
   let numbers = ""
 
   if (stats.failed) {
-    numbers += `{red ✖ ${stats.failed}}`
+    numbers += `{red ✗ ${stats.failed}}`
     if (stats.passed) numbers += " {grey +} "
   }
 
   if (stats.passed) {
-    numbers += `{green ✔ ${stats.passed}}`
+    numbers += `{green ✓ ${stats.passed}}`
   }
 
   if (stats.ran === 0) {
@@ -168,7 +168,7 @@ const displayTest = (test, config, options) => {
 
   let prefix =
     test.icon +
-    (test.skip ? "{magenta.dim ~} " : test.ok ? "{green ✔} " : "{red ✖} ")
+    (test.skip ? "{magenta.dim ~} " : test.ok ? "{green ✓} " : "{red ✗} ")
 
   if (showError || config.verbose > 2) {
     if (showError) prefix = `\n${prefix}`
@@ -208,7 +208,7 @@ const displaySuiteHeader = (suite, config) => {
   log
     .prefix(
       config.icon +
-        (suite.skip ? "{magenta.dim ~} " : suite.ok ? "{green ✔} " : "{red ✖} ")
+        (suite.skip ? "{magenta.dim ~} " : suite.ok ? "{green ✓} " : "{red ✗} ")
     )
     [suite.ok ? "log" : "groupCollapsed"](title + stats)
 }
