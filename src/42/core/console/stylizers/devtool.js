@@ -8,7 +8,9 @@ import Color from "../../../fabric/classes/Color.js"
 const capitalize = (word) => word[0].toUpperCase() + word.slice(1)
 
 const DEFAULTS = {
-  css: "font: 8px/12px tomo, monospace;",
+  css: document.fonts.check("8px tomo")
+    ? "font: 8px/12px tomo, monospace;"
+    : "",
   colors: {
     // TODO: fix dim as the only color indication
     dim: "rgba(0,160,160,0.8)", // should work on light and dark theme
