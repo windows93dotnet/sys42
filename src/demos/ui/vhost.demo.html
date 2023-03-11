@@ -41,11 +41,11 @@
     fs.write("/test.css", css),
   ])
 
-  const useIpc = 0
+  const experiment = 3
 
   const vhostOrigin = "http://localhost:3000"
 
-  if (useIpc) {
+  if (experiment === 1) {
     ipc.from(vhostOrigin).on("42_VHOST_REQ", async (url) => fs.read(url))
   } else {
     globalThis.addEventListener("message", async ({ data, source, origin }) => {
@@ -90,9 +90,10 @@
           tag: "iframe.ma-t.inset",
           style: { width: "512px", height: "256px" },
           sandbox: "allow-scripts allow-same-origin",
-          src: useIpc
-            ? `${vhostOrigin}/42-vhost.html?path=/test.html`
-            : `${vhostOrigin}/42-vhost2.html?path=/test.html`,
+          src:
+            experiment === 1
+              ? `${vhostOrigin}/42-vhost.html?path=/test.html`
+              : `${vhostOrigin}/42-vhost${experiment}.html?path=/test.html`,
         },
       ],
     },
