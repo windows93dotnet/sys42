@@ -1,7 +1,7 @@
 // @src https://github.com/cheton/is-electron
 // https://github.com/electron/electron/issues/2288
 
-function inElectron() {
+function isElectron() {
   // Renderer process
   if (
     typeof window !== "undefined" &&
@@ -32,4 +32,5 @@ function inElectron() {
   return false
 }
 
-export default inElectron()
+export const inElectron = isElectron()
+export default inElectron

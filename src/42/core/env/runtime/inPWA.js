@@ -2,7 +2,8 @@
 
 import inWindow from "../realm/inWindow.js"
 
-export default inWindow &&
+export const inPWA =
+  inWindow &&
   Boolean(
     globalThis.matchMedia?.(
       "(display-mode: browser), (display-mode: fullscreen)"
@@ -10,3 +11,4 @@ export default inWindow &&
       globalThis.navigator?.standalone ||
       globalThis.document?.referrer.includes("android-app://")
   )
+export default inPWA

@@ -1,1 +1,3 @@
-export default typeof window !== "undefined" && window.self === window
+export const inWindow =
+  globalThis.window !== undefined && globalThis.window === globalThis.self
+export default inWindow

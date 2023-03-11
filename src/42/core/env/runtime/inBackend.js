@@ -1,4 +1,5 @@
 import isNode from "./inNode.js"
 import isDeno from "./inDeno.js"
 
-export default isNode || isDeno
+export const inBackend = isNode || isDeno
+export default inBackend

@@ -1,1 +1,2 @@
-export default Boolean(globalThis.opener)
+export const inChildWindow = globalThis.opener !== null
+export default inChildWindow
