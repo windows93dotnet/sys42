@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>vhost</title>
+
+<script type="module">
+  navigator.serviceWorker?.register("/42-vhost.sw3.js", { type: "module" })
+
+  const map = new Map()
+
+  navigator.serviceWorker.addEventListener("message", (e) => {
+    if (e.data.type === "42_VHOST_PROXY_REQ") {
+      map.set(e.data.id, e.ports[0])
+      window.parent.postMessage(
+        { ...e.data, type: "42_VHOST_REQ" },
+        document.referrer
+      )
+    }
+  })
+
+  globalThis.addEventListener("message", (e) => {
+    if (e.data.type === "42_VHOST_RES") {
+      const port = map.get(e.data.id)
+      port.postMessage(e.data.file)
+    }
+  })
+
+  await navigator.serviceWorker.ready
+  const params = new URLSearchParams(location.search)
+
+  const iframe = document.createElement("iframe")
+  iframe.style = `
+    border: 0;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;`
+  iframe.src = params.get("path")
+  document.body.append(iframe)
+</script>
