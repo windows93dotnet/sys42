@@ -1,3 +1,5 @@
-export default typeof self !== "undefined" &&
-  typeof ServiceWorkerGlobalScope !== "undefined" &&
+export const inServiceWorker =
+  globalThis.self !== undefined &&
+  globalThis.ServiceWorkerGlobalScope !== undefined &&
   self instanceof ServiceWorkerGlobalScope
+export default inServiceWorker
