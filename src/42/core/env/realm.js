@@ -1,25 +1,31 @@
-import inWindow from "./realm/inWindow.js"
-import inChildWindow from "./realm/inChildWindow.js"
+// Importing env/realm modules in a Service Worker can make Linux Chrome crash for unknown reason.
+// Declaring env variables directly here seems to be a valid workaround for this bug.
 
-import inTop from "./realm/inTop.js"
-import inIframe from "./realm/inIframe.js"
-import inOpaqueOrigin from "./realm/inOpaqueOrigin.js"
-
-import inWorker from "./realm/inWorker.js"
-import inSharedWorker from "./realm/inSharedWorker.js"
-import inServiceWorker from "./realm/inServiceWorker.js"
-import inDedicatedWorker from "./realm/inDedicatedWorker.js"
+const windowExist = globalThis.window !== undefined
+const selfExist = globalThis.self !== undefined
 
 export default {
-  inWindow,
-  inChildWindow,
+  inWindow: windowExist && window === window.self,
+  inChildWindow: globalThis.opener !== null,
 
-  inTop,
-  inIframe,
-  inOpaqueOrigin,
+  inTop: windowExist && window === window.top,
+  inIframe: windowExist && window !== window.top,
+  inOpaqueOrigin: globalThis.origin === "null",
 
-  inWorker,
-  inSharedWorker,
-  inServiceWorker,
-  inDedicatedWorker,
+  inWorker:
+    selfExist &&
+    globalThis.WorkerGlobalScope !== undefined &&
+    self instanceof WorkerGlobalScope,
+  inSharedWorker:
+    selfExist &&
+    globalThis.SharedWorkerGlobalScope !== undefined &&
+    self instanceof SharedWorkerGlobalScope,
+  inServiceWorker:
+    selfExist &&
+    globalThis.ServiceWorkerGlobalScope !== undefined &&
+    self instanceof ServiceWorkerGlobalScope,
+  inDedicatedWorker:
+    selfExist &&
+    globalThis.DedicatedWorkerGlobalScope !== undefined &&
+    self instanceof DedicatedWorkerGlobalScope,
 }

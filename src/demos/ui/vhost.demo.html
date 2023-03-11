@@ -41,27 +41,9 @@
     fs.write("/test.css", css),
   ])
 
-  const experiment = 3
-
   const vhostOrigin = "http://localhost:3000"
 
-  if (experiment === 1) {
-    ipc.from(vhostOrigin).on("42_VHOST_REQ", async (url) => fs.read(url))
-  } else {
-    globalThis.addEventListener("message", async ({ data, source, origin }) => {
-      if (origin !== vhostOrigin) return
-      if (data.type === "42_VHOST_REQ") {
-        source.postMessage(
-          {
-            ...data,
-            type: "42_VHOST_RES",
-            file: await fs.read(data.pathname),
-          },
-          vhostOrigin
-        )
-      }
-    })
-  }
+  ipc.from(vhostOrigin).on("42_VHOST_REQ", async (url) => fs.read(url))
 
   await ui(
     {
@@ -81,19 +63,13 @@
               href: "https://github.com/w3c/ServiceWorker/issues/1390",
               content: "https://github.com/w3c/ServiceWorker/issues/1390",
             },
-            "\n\n",
-            "\n\n",
-            "⚠️ this can make the browser crash for unknown reasons (maybe a bug in ipc.js)",
           ],
         },
         {
           tag: "iframe.ma-t.inset",
           style: { width: "512px", height: "256px" },
           sandbox: "allow-scripts allow-same-origin",
-          src:
-            experiment === 1
-              ? `${vhostOrigin}/42-vhost.html?path=/test.html`
-              : `${vhostOrigin}/42-vhost${experiment}.html?path=/test.html`,
+          src: `${vhostOrigin}/42-vhost.html?path=/test.html`,
         },
       ],
     },
