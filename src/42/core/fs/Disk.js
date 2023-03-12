@@ -3,7 +3,6 @@
 import FileIndex from "./FileIndex.js"
 import Canceller from "../../fabric/classes/Canceller.js"
 import CBOR from "../formats/cbor.js"
-import inTop from "../env/realm/inTop.js"
 import ipc from "../ipc.js"
 
 export const MASKS = {
@@ -16,7 +15,7 @@ export const MASKS = {
 
 let ExportedClass
 
-if (inTop) {
+if (ipc.inTop) {
   const populate = async () => {
     const url = new URL("/files.cbor", import.meta.url)
     const res = await fetch(url)
@@ -62,14 +61,18 @@ if (inTop) {
 } else {
   class DiskIPC extends FileIndex {
     async init() {
-      this.value = await ipc.send("42_DISK_INIT")
+      // Sync file index with top-level realm
+      const [value] = await ipc.send("42_DISK_INIT")
+      this.value = value
 
       ipc.on("42_DISK_CHANGE", ([path, type, inode]) => {
         if (type === "set") this[type](path, inode)
         else this[type](path)
       })
 
-      globalThis.addEventListener("pagehide", () => ipc.emit("42_DISK_CLOSE"))
+      if (!ipc.inWorker) {
+        globalThis.addEventListener("pagehide", () => ipc.emit("42_DISK_CLOSE"))
+      }
     }
   }
 

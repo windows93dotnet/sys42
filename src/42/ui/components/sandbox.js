@@ -17,6 +17,16 @@ const DEFAULTS = {
   body: /* html */ `<body class="in-iframe">`,
 }
 
+const vhosts = new Map()
+async function makeVhost(origin) {
+  const [ipc, fs] = await Promise.all([
+    import("../../core/ipc.js").then(({ ipc }) => ipc),
+    import("../../core/fs.js").then(({ fs }) => fs),
+  ])
+
+  ipc.from(origin).on("42_VHOST_REQ", async (url) => fs.read(url))
+}
+
 export class Sandbox extends Component {
   static plan = {
     tag: "ui-sandbox",
@@ -26,6 +36,11 @@ export class Sandbox extends Component {
     props: {
       permissions: {
         type: "any",
+        fromView: true,
+        update: _setResource,
+      },
+      vhost: {
+        type: "string",
         fromView: true,
         update: _setResource,
       },
@@ -105,6 +120,7 @@ export class Sandbox extends Component {
     this.resource = new Resource({ permissions })
 
     const { sandbox } = this.resource.el
+
     if (
       this.stage.trusted !== true &&
       permissions !== "web" &&
@@ -115,6 +131,15 @@ export class Sandbox extends Component {
         '"scripts" and "same-origin" permissions are forbiden in untrusted context',
         "SecurityError"
       )
+    }
+
+    if (this.vhost) {
+      const { origin } = new URL(this.vhost)
+      if (origin && origin !== location.origin) {
+        // Safe to use allow-same-origin if vhost is from another origin
+        sandbox.add("allow-same-origin")
+        vhosts.set(this.vhost, makeVhost(origin))
+      }
     }
 
     this.querySelector(":scope > .ui-sandbox__scene") //
@@ -152,6 +177,7 @@ export class Sandbox extends Component {
 
     if (this.script) return this.resource.script(this.script, options)
     if (this.html) return this.resource.html(this.html, options)
+
     if (!this.path) return
 
     this.toggleAttribute("loading", true)
@@ -162,8 +188,11 @@ export class Sandbox extends Component {
 
     this.resource.config.checkIframable = this.check
 
+    if (this.vhost) await vhosts.get(this.vhost)
+    const path = this.vhost ? this.vhost + this.path : this.path
+
     try {
-      await this.resource.go(this.path, { signal })
+      await this.resource.go(path, { signal })
       // this.message()
     } catch {
       this.message(
