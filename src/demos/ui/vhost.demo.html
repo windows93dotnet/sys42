@@ -10,40 +10,44 @@
 </script>
 
 <script type="module">
-  import "../../42/ui/components/dialog.js"
   import ui from "../../42/ui.js"
-  import ipc from "../../42/core/ipc.js"
   import fs from "../../42/core/fs.js"
 
   localStorage.setItem("secret", "hello secret")
 
   const html = `\
   <link rel="stylesheet" href="/test.css">
-  I'm a sandboxed iframe.<br />
+  <h1>Sandboxed iframe</h1>
   The HTML and CSS are served from browser storage.
   <hr />
   <script type="module">
   if (localStorage.getItem('secret') === "hello secret") {
-    document.body.append('Sandboxing failed')
+    document.body.append('❌ Sandboxing failed')
+    document.body.className = "fail"
   } else {
     try {
       window.top.document.body.append("XSS")
-      document.body.append('Sandboxing failed')
+      document.body.append('❌ Sandboxing failed')
+      document.body.className = "fail"
     } catch {
-      document.body.append('Sandboxing succeed')
+      document.body.append('✔️ Sandboxing succeed')
+      document.body.className = "success"
     }
   }
   </${"script"}>`
-  const css = "body { background: tan; font-family: sans-serif; }"
+  const css = `
+    body { font-family: sans-serif; }
+    hr { border: none; border-bottom: 1px solid }
+    .success { background: YellowGreen; }
+    .fail { background: YellowGreen; }
+  `
 
   await Promise.all([
     fs.write("/test.html", html), //
     fs.write("/test.css", css),
   ])
 
-  const vhostOrigin = "http://localhost:3000"
-
-  ipc.from(vhostOrigin).on("42_VHOST_REQ", async (url) => fs.read(url))
+  navigator.serviceWorker?.register("/42.sw.js", { type: "module" })
 
   await ui(
     {
@@ -66,10 +70,11 @@
           ],
         },
         {
-          tag: "iframe.ma-t.inset",
+          tag: "ui-sandbox.ma-t.inset",
           style: { width: "512px", height: "256px" },
-          sandbox: "allow-scripts allow-same-origin",
-          src: `${vhostOrigin}/42-vhost.html?path=/test.html`,
+          permissions: "app",
+          vhost: "http://localhost:3000/42-vhost.html?path=",
+          path: "/test.html",
         },
       ],
     },
