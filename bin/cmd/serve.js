@@ -87,6 +87,7 @@ async function startServer(port) {
       if ("clear-site-data" in req.query) {
         task.log(`🧽 clear site data`)
         reply.header("Clear-Site-Data", '"cache", "storage"')
+        if ("empty" in req.query) return reply.send("")
       }
 
       const asset = new StaticFile(srcPath + url)

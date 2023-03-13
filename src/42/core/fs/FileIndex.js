@@ -9,7 +9,7 @@ import isDirDescriptor from "./isDirDescriptor.js"
 import isGlob from "../path/isGlob.js"
 import glob, { Glob } from "../../core/path/glob.js"
 import normalizeFilename from "./normalizeFilename.js"
-import inTop from "../env/realm/inTop.js"
+import inIframe from "../env/realm/inIframe.js"
 
 const DEFAULTS = {
   name: "fileindex",
@@ -18,7 +18,7 @@ const DEFAULTS = {
   // durability: "relaxed",
 }
 
-const ParentClass = inTop ? Storable : Locator
+const ParentClass = inIframe ? Locator : Storable
 
 export default class FileIndex extends ParentClass {
   constructor(value = Object.create(null), options) {

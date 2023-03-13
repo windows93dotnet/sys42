@@ -38,8 +38,8 @@
   const css = `
     body { font-family: sans-serif; }
     hr { border: none; border-bottom: 1px solid }
-    .success { background: YellowGreen; }
-    .fail { background: YellowGreen; }
+    .success { background: yellowgreen; }
+    .fail { background: pink; }
   `
 
   await Promise.all([
@@ -47,7 +47,17 @@
     fs.write("/test.css", css),
   ])
 
-  navigator.serviceWorker?.register("/42.sw.js", { type: "module" })
+  const registration = await navigator.serviceWorker //
+    .register("/42.sw.js", { type: "module" })
+  if (registration) {
+    registration.addEventListener("updatefound", () => {
+      console.log("Service Worker update found!")
+    })
+  }
+
+  await navigator.serviceWorker.ready
+  // console.log(navigator.serviceWorker.controller)
+  // navigator.serviceWorker.controller.postMessage("42_SW_DISK_INIT")
 
   await ui(
     {
@@ -69,11 +79,39 @@
             },
           ],
         },
+        "\n\n",
+        {
+          tag: "button",
+          content: "Clear top and vhost site-data",
+          async click() {
+            const iframe = document.createElement("iframe")
+            iframe.style = `display:none`
+            document.documentElement.append(iframe)
+            const clearVhost = (url) =>
+              new Promise((resolve, reject) => {
+                iframe.onload = resolve
+                iframe.onerror = reject
+                iframe.src = url
+              })
+
+            await Promise.all([
+              clearVhost("http://localhost:3000/?empty&clear-site-data"),
+              fetch("/?empty&clear-site-data"),
+            ])
+            location.reload()
+          },
+        },
         {
           tag: "ui-sandbox.ma-t.inset",
           style: { width: "512px", height: "256px" },
           permissions: "app",
-          vhost: "http://localhost:3000/42-vhost.html?path=",
+          vhost: "http://localhost:3000/42/os/network/vhost.html?path=",
+          path: "/test.html",
+        },
+        {
+          tag: "ui-sandbox.ma-t.inset",
+          style: { width: "512px", height: "256px" },
+          permissions: "trusted",
           path: "/test.html",
         },
       ],
