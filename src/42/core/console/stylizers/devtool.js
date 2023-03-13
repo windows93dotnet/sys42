@@ -1,6 +1,3 @@
-import inWorker from "../../env/realm/inWorker.js"
-import inWindow from "../../env/realm/inWindow.js"
-import inOpaqueOrigin from "../../env/realm/inOpaqueOrigin.js"
 import settings from "../../settings.js"
 import chainable from "../../../fabric/traits/chainable.js"
 import Color from "../../../fabric/classes/Color.js"
@@ -68,24 +65,17 @@ SGR.STYLES.del = SGR.STYLES.strikethrough
 let colors
 let states
 
-const bc = inWindow && !inOpaqueOrigin && new BroadcastChannel("devtool")
-
 const setColors = (...options) => {
   colors = {}
-  if (bc) {
-    const computedStyle = globalThis.top.getComputedStyle(
-      globalThis.top.document.documentElement
-    )
 
-    for (const [key, value] of Object.entries(DEFAULTS.colors)) {
-      // get ansi css variables if defined
-      const cssValue = computedStyle.getPropertyValue(`--ansi-${key}`)
-      colors[key] = cssValue ? cssValue.trim() : value
-    }
+  const computedStyle = getComputedStyle(document.documentElement)
+  for (const [key, value] of Object.entries(DEFAULTS.colors)) {
+    // get ansi css variables if defined
+    const cssValue = computedStyle.getPropertyValue(`--ansi-${key}`)
+    colors[key] = cssValue ? cssValue.trim() : value
+  }
 
-    Object.assign(colors, ...options)
-    bc.postMessage({ colors })
-  } else Object.assign(colors, DEFAULTS.colors, ...options)
+  Object.assign(colors, ...options)
 }
 
 const setStates = () => {
@@ -191,20 +181,6 @@ const devtool = chainable(GETTERS, color, ({ entries }, str) => {
 
   return [`%c${str}`, openCss]
 })
-
-if (bc && inWorker) {
-  bc.onmessage = ({ data }) => {
-    if (data.colors) {
-      devtool.configure({ colors: data.colors })
-    }
-  }
-
-  bc.postMessage("devtool-worker:active")
-} else if (bc && inWindow) {
-  bc.onmessage = ({ data }) => {
-    if (data === "devtool-worker:active") bc.postMessage({ colors })
-  }
-}
 
 devtool.configure = (options) => {
   devtool.config = configure(options)

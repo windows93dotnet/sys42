@@ -15,7 +15,31 @@ export const MASKS = {
 
 let ExportedClass
 
-if (ipc.inTop) {
+if (ipc.inIframe) {
+  class DiskIPC extends FileIndex {
+    synced = false
+
+    async init() {
+      if (this.synced) return
+
+      // Sync file index with top-level realm
+      const [value] = await ipc.send("42_DISK_INIT")
+      this.value = value
+      this.synced = true
+
+      ipc.on("42_DISK_CHANGE", ([path, type, inode]) => {
+        if (type === "set") this[type](path, inode)
+        else this[type](path)
+      })
+
+      if (!ipc.inWorker) {
+        globalThis.addEventListener("pagehide", () => ipc.emit("42_DISK_CLOSE"))
+      }
+    }
+  }
+
+  ExportedClass = DiskIPC
+} else {
   const populate = async () => {
     const url = new URL("/files.cbor", import.meta.url)
     const res = await fetch(url)
@@ -25,6 +49,8 @@ if (ipc.inTop) {
   let instance
 
   class Disk extends FileIndex {
+    synced = false
+
     constructor() {
       if (instance) return instance
 
@@ -47,6 +73,9 @@ if (ipc.inTop) {
           await this.ready
           return this.value
         })
+        .on("42_DISK_SYNC", async (_, { emit }) => {
+          this.on("change", (...args) => emit("42_DISK_CHANGE", args))
+        })
         .on("42_DISK_CLOSE", async (_, { port }) => {
           if (ports.has(port)) {
             const cancel = ports.get(port)
@@ -55,28 +84,33 @@ if (ipc.inTop) {
           }
         })
     }
-  }
 
-  ExportedClass = Disk
-} else {
-  class DiskIPC extends FileIndex {
-    async init() {
-      // Sync file index with top-level realm
-      const [value] = await ipc.send("42_DISK_INIT")
-      this.value = value
+    async init(isVhost) {
+      if (ipc.inTop) {
+        await super.init()
+        this.synced = true
+      } else {
+        if (isVhost) {
+          const [value] = await ipc.send("42_DISK_INIT")
+          this.value = value
+          this.synced = true
+        } else {
+          await super.init()
+          this.synced = true
+          if (ipc.inWorker) ipc.emit("42_DISK_SYNC")
+        }
 
-      ipc.on("42_DISK_CHANGE", ([path, type, inode]) => {
-        if (type === "set") this[type](path, inode)
-        else this[type](path)
-      })
-
-      if (!ipc.inWorker) {
-        globalThis.addEventListener("pagehide", () => ipc.emit("42_DISK_CLOSE"))
+        if (ipc.inWorker) {
+          ipc.on("42_DISK_CHANGE", ([path, type, inode]) => {
+            if (type === "set") this[type](path, inode)
+            else this[type](path)
+          })
+        }
       }
     }
   }
 
-  ExportedClass = DiskIPC
+  ExportedClass = Disk
 }
 
 export { ExportedClass as Disk }
