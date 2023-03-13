@@ -19,12 +19,14 @@ const DEFAULTS = {
 
 const vhosts = new Map()
 async function makeVhost(origin) {
-  const [ipc, fs] = await Promise.all([
+  const [disk, ipc, fs] = await Promise.all([
+    import("../../core/disk.js").then(({ disk }) => disk),
     import("../../core/ipc.js").then(({ ipc }) => ipc),
     import("../../core/fs.js").then(({ fs }) => fs),
   ])
 
   ipc.from(origin).on("42_VHOST_REQ", async (url) => fs.read(url))
+  await disk.ready
 }
 
 export class Sandbox extends Component {

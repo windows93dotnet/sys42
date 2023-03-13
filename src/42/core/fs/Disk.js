@@ -85,27 +85,28 @@ if (ipc.inIframe) {
         })
     }
 
-    async init(isVhost) {
-      if (ipc.inTop) {
-        await super.init()
-        this.synced = true
-      } else {
-        if (isVhost) {
+    async init(target) {
+      if (target) {
+        if (target === true) {
           const [value] = await ipc.send("42_DISK_INIT")
           this.value = value
           this.synced = true
         } else {
-          await super.init()
+          const value = await ipc.to(target).sendOnce("42_DISK_INIT")
+          this.value = value
           this.synced = true
-          if (ipc.inWorker) ipc.emit("42_DISK_SYNC")
         }
+      } else {
+        await super.init()
+        this.synced = true
+        if (ipc.inWorker) ipc.emit("42_DISK_SYNC")
+      }
 
-        if (ipc.inWorker) {
-          ipc.on("42_DISK_CHANGE", ([path, type, inode]) => {
-            if (type === "set") this[type](path, inode)
-            else this[type](path)
-          })
-        }
+      if (ipc.inWorker) {
+        ipc.on("42_DISK_CHANGE", ([path, type, inode]) => {
+          if (type === "set") this[type](path, inode)
+          else this[type](path)
+        })
       }
     }
   }
