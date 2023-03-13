@@ -45,9 +45,10 @@ async function messageHandler(e) {
       ? source.opener
         ? ["ChildWindow", undefined]
         : ["Iframe", undefined, findIframe(source)]
-      : source instanceof ServiceWorker
+      : globalThis.ServiceWorker !== undefined &&
+        source instanceof ServiceWorker
       ? ["ServiceWorker", source]
-      : target instanceof Worker
+      : globalThis.Worker !== undefined && target instanceof Worker
       ? ["DedicatedWorker", target]
       : target instanceof MessagePort && sources.has(target)
       ? ["SharedWorker", target]
@@ -249,6 +250,12 @@ export class Sender extends Emitter {
     return reply
   }
 
+  async sendOnce(event, data, transfer) {
+    const res = await this.send(event, data, transfer)
+    this.destroy()
+    return res
+  }
+
   destroy() {
     this.off("*")
     this.port.close()
@@ -397,10 +404,6 @@ ipc.iframes = new Map()
 ipc.from = (source, options) => new Receiver(source, options)
 ipc.to = (target, options) => new Sender(target, options)
 
-if (realm.inWindow && !realm.inOpaqueOrigin) {
-  navigator.serviceWorker?.addEventListener("message", messageHandler)
-}
-
 if (realm.inTop) {
   ipc
     .on(HANDSHAKE, (data, meta) => {
@@ -414,8 +417,12 @@ if (realm.inTop) {
   globalThis.addEventListener("pagehide", () => ipc.emit(CLOSE))
 }
 
-if (realm.inWindow) {
+if (realm.inWindow || realm.inServiceWorker) {
   globalThis.addEventListener("message", messageHandler)
+}
+
+if (realm.inWindow && !realm.inOpaqueOrigin) {
+  navigator.serviceWorker?.addEventListener("message", messageHandler)
 }
 
 Object.assign(ipc, realm)

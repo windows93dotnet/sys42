@@ -2,26 +2,32 @@
 <meta charset="utf-8" />
 <title>vhost</title>
 
-<script type="module">
-  import ipc from "../../core/ipc.js"
-
-  const bus = ipc.to(window.parent)
-
-  ipc.on("42_DISK_INIT", () => bus.send("42_DISK_INIT"))
-  ipc.on("42_VHOST_PROXY_REQ", async (url) => bus.send("42_VHOST_REQ", url))
-
-  navigator.serviceWorker?.register("/42.sw.js?vhost", { type: "module" })
-  await navigator.serviceWorker.ready
-
-  const params = new URLSearchParams(location.search)
-
-  const iframe = document.createElement("iframe")
-  iframe.style = `
+<style>
+  iframe {
     border: 0;
     position: fixed;
     inset: 0;
     width: 100%;
-    height: 100%;`
-  iframe.src = params.get("path")
-  document.body.append(iframe)
+    height: 100%;
+  }
+</style>
+
+<iframe></iframe>
+
+<script type="module">
+  navigator.serviceWorker?.register("/42.sw.js?vhost", { type: "module" })
+  await navigator.serviceWorker.ready
+
+  const { ipc } = await import("../../core/ipc.js")
+
+  const bus = ipc.to(window.parent)
+
+  ipc.on("42_DISK_INIT", () => bus.send("42_DISK_INIT"))
+  ipc.on("42_VHOST_PROXY_REQ", (url) => bus.send("42_VHOST_REQ", url))
+
+  const { controller } = navigator.serviceWorker
+  if (controller) await ipc.to(controller).sendOnce("42_SW_DISK_INIT")
+
+  const params = new URLSearchParams(location.search)
+  document.querySelector("iframe").src = params.get("path")
 </script>
