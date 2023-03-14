@@ -1,4 +1,4 @@
-import BinaryData from "../../../../42/fabric/classes/BinaryData.js"
+import BinaryData from "../../../../42/fabric/binary/BinaryData.js"
 import test from "../../../../42/test.js"
 
 function stringToBuffer(str) {

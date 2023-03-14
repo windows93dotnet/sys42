@@ -4,7 +4,7 @@
 // @src https://github.com/mafintosh/tar-stream/blob/master/headers.js
 
 // TODO: remove Buffer dependency (using BinaryData.js)
-import Buffer from "../../../fabric/classes/Buffer.js"
+import Buffer from "../../../fabric/binary/Buffer.js"
 
 const ZEROS = "0000000000000000000"
 const SEVENS = "7777777777777777777"
