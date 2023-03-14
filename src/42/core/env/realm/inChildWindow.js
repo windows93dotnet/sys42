@@ -1,2 +1,3 @@
-export const inChildWindow = globalThis.opener !== null
+export const inChildWindow =
+  globalThis.window !== undefined && globalThis.opener !== null
 export default inChildWindow

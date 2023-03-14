@@ -6,7 +6,7 @@ const selfExist = globalThis.self !== undefined
 
 export default {
   inWindow: windowExist && window === window.self,
-  inChildWindow: globalThis.opener !== null,
+  inChildWindow: windowExist && globalThis.opener !== null,
 
   inTop: windowExist && window === window.top,
   inIframe: windowExist && window !== window.top,
