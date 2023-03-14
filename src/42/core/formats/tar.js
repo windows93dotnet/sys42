@@ -88,7 +88,10 @@ function createConsumer(carrier, enqueue) {
         consume()
       }
     } else if (absorb.pointer > offset + 512) {
-      header = headers.decode(absorb.view.slice(offset, offset + 512))
+      header = headers.decode(
+        absorb.view.slice(offset, offset + 512),
+        carrier.options
+      )
 
       if (header?.size === 0 || header?.type === "directory") {
         enqueue(header)
@@ -103,13 +106,13 @@ function createConsumer(carrier, enqueue) {
   return { absorb, consume }
 }
 
-export function extract() {
+export function extract(options) {
   let absorb
   let consume
 
-  const carrier = {}
+  const carrier = { options }
 
-  const second = new TransformStream({
+  const tsExtract = new TransformStream({
     start(controller) {
       const consumer = createConsumer(carrier, (chunk) =>
         controller.enqueue(chunk)
@@ -128,13 +131,20 @@ export function extract() {
     },
   })
 
-  const first = new TransformStream()
+  const ts = new TransformStream()
 
-  const [a, b] = first.readable.tee()
+  let { readable } = ts
+
+  if (options?.gzip) {
+    readable = readable.pipeThrough(new DecompressionStream("gzip"))
+  }
+
+  const [a, b] = readable.tee()
+
   carrier.readable = a
-  Object.defineProperty(first, "readable", { value: b.pipeThrough(second) })
+  Object.defineProperty(ts, "readable", { value: b.pipeThrough(tsExtract) })
 
-  return first
+  return ts
 }
 
 export default { extract }

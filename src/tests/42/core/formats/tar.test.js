@@ -34,7 +34,7 @@ test.tasks(
 
     task({
       url: "/tests/fixtures/tar/one-file.tar.gz",
-      gzip: true,
+      options: { gzip: true },
       files: ["hello world\n"],
       headers: [
         {
@@ -55,6 +55,7 @@ test.tasks(
     }),
 
     task({
+      // only: true,
       url: "/tests/fixtures/tar/multi-file.tar",
       files: ["i am file-1\n", "i am file-2\n"],
       headers: [
@@ -239,34 +240,110 @@ test.tasks(
     }),
 
     task({
+      url: "/tests/fixtures/tar/invalid.tgz",
+      // options: { gzip: true },
+      throws:
+        "Invalid tar header. Maybe the tar is corrupted or it needs to be gunzipped?",
+    }),
+
+    task({
+      title: "space prefixed",
       url: "/tests/fixtures/tar/space.tar",
       length: 4,
+    }),
+
+    task({
+      skip: true,
+      title: "gnu long path",
+      url: "/tests/fixtures/tar/gnu-long-path.tar",
+    }),
+
+    task({
+      title: "base 256 uid and gid",
+      url: "/tests/fixtures/tar/base-256-uid-gid.tar",
+      headers: [
+        {
+          uid: 116_435_139,
+          gid: 1_876_110_778,
+        },
+      ],
+    }),
+
+    task({
+      url: "/tests/fixtures/tar/unknown-format.tar",
+      options: { allowUnknownFormat: true },
+      files: ["i am file-1\n", "i am file-2\n"],
+      headers: [
+        {
+          name: "file-1.txt",
+          mode: 0o644,
+          uid: 501,
+          gid: 20,
+          size: 12,
+          mtime: 1_387_580_181_000,
+          type: "file",
+          linkname: null,
+          uname: "maf",
+          gname: "staff",
+          devmajor: 0,
+          devminor: 0,
+        },
+        {
+          name: "file-2.txt",
+          mode: 0o644,
+          uid: 501,
+          gid: 20,
+          size: 12,
+          mtime: 1_387_580_181_000,
+          type: "file",
+          linkname: null,
+          uname: "maf",
+          gname: "staff",
+          devmajor: 0,
+          devminor: 0,
+        },
+      ],
+    }),
+
+    task({
+      url: "/tests/fixtures/tar/unknown-format.tar",
+      throws: "Invalid tar header: unknown format.",
     }),
 
     // task({
     //   only: true,
     //   url: "/tests/fixtures/tar/huge.tar.gz",
-    //   gzip: true,
+    //   options: { gzip: true },
     //   length: 1,
-    // }),
-
-    // task({
-    //   only: true,
-    //   url: "/tests/fixtures/tar/invalid.tgz",
-    //   gzip: true,
-    //   throws: true,
     // }),
   ],
 
-  (test, { url, gzip, files, headers, length }) => {
-    test("extract", getBasename(url), async (t) => {
+  (test, { title, url, options, files, headers, length, throws }) => {
+    if (throws) {
+      test("extract", "throws", title ?? getBasename(url), async (t) => {
+        t.timeout(1000)
+        await t.throws(
+          () =>
+            stream.ws.collect(
+              http
+                .source(url)
+                .pipeThrough(stream.ts.cut(321))
+                .pipeThrough(tar.extract(options))
+            ),
+          throws
+        )
+      })
+      return
+    }
+
+    test("extract", title ?? getBasename(url), async (t) => {
       t.timeout(1000)
-      let rs = http.source(url)
-      if (gzip) rs = rs.pipeThrough(stream.ts.decompress())
 
       const items = await stream.ws.collect(
-        rs.pipeThrough(stream.ts.cut(321)).pipeThrough(tar.extract())
-        // rs.pipeThrough(tar.extract())
+        http
+          .source(url)
+          .pipeThrough(stream.ts.cut(321))
+          .pipeThrough(tar.extract(options))
       )
 
       if (files) {
@@ -288,13 +365,22 @@ test.tasks(
       }
 
       if (headers) {
-        t.eq(
-          items.map((header) => ({ ...header })),
-          headers
-        )
+        if (Object.keys(headers[0]).length === 12) {
+          t.eq(
+            items.map((header) => ({ ...header })),
+            headers
+          )
+        } else {
+          t.hasSubset(
+            items.map((header) => ({ ...header })),
+            headers
+          )
+        }
       }
 
-      t.is(items.length, length ?? files?.length ?? headers.length)
+      length ??= files?.length ?? headers?.length
+
+      if (length !== undefined) t.is(items.length, length)
     })
   }
 )
