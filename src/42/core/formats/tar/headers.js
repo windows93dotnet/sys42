@@ -240,7 +240,7 @@ export function encode(opts) {
   return buf
 }
 
-export function decode(buf, filenameEncoding, allowUnknownFormat) {
+export function decode(buf, { filenameEncoding, allowUnknownFormat } = {}) {
   let typeflag = buf[156] === 0 ? 0 : buf[156] - ZERO_OFFSET
 
   let name = decodeStr(buf, 0, 100, filenameEncoding)
