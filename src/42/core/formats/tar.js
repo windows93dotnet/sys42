@@ -1,14 +1,57 @@
 import { AbsorbArrayBuffer } from "../stream/absorb.js"
 import headers from "./tar/headers.js"
+import getBasename from "../path/core/getBasename.js"
+
+// @src https://deno.land/std@0.162.0/streams/buffer.ts?source#L247
+function tsRange(start = 0, end = Infinity) {
+  let offsetStart = 0
+  let offsetEnd = 0
+  return new TransformStream({
+    transform(chunk, controller) {
+      offsetStart = offsetEnd
+      offsetEnd += chunk.byteLength
+      if (offsetEnd > start) {
+        if (offsetStart < start) {
+          chunk = chunk.slice(start - offsetStart)
+        }
+
+        if (offsetEnd >= end) {
+          chunk = chunk.slice(0, chunk.byteLength - offsetEnd + end)
+          controller.enqueue(chunk)
+          controller.terminate()
+        } else {
+          controller.enqueue(chunk)
+        }
+      }
+    },
+  })
+}
 
 function overflow(size) {
   size &= 511
   return size && 512 - size
 }
 
-function makeFile(buffer, header, enqueue) {
-  const file = new File([buffer], header.name, { lastModified: header.mtime })
-  enqueue({ header, file })
+function makeFile(carrier, offset, header, enqueue) {
+  Object.defineProperties(header, {
+    file: {
+      async value() {
+        const res = new Response(header.stream)
+        return new File([await res.arrayBuffer()], getBasename(header.name), {
+          lastModified: header.mtime,
+        })
+      },
+    },
+
+    stream: {
+      get() {
+        const [a, b] = carrier.readable.tee()
+        carrier.readable = a
+        return b.pipeThrough(tsRange(offset, offset + header.size))
+      },
+    },
+  })
+  enqueue(header)
   return header.size + overflow(header.size)
 }
 
@@ -20,7 +63,7 @@ function mixinPax(header, pax) {
   return header
 }
 
-function createConsumer(enqueue) {
+function createConsumer(carrier, enqueue) {
   const absorb = new AbsorbArrayBuffer()
 
   let offset = 0
@@ -30,9 +73,8 @@ function createConsumer(enqueue) {
   function consume() {
     if (header) {
       if (header.type === "file" && absorb.pointer >= offset + header.size) {
-        const buffer = absorb.view.slice(offset, offset + header.size)
         if (pax) mixinPax(header, pax)
-        offset += makeFile(buffer, header, enqueue)
+        offset += makeFile(carrier, offset, header, enqueue)
         header = undefined
         consume()
       } else if (
@@ -49,7 +91,7 @@ function createConsumer(enqueue) {
       header = headers.decode(absorb.view.slice(offset, offset + 512))
 
       if (header?.size === 0 || header?.type === "directory") {
-        enqueue({ header })
+        enqueue(header)
         header = undefined
       }
 
@@ -65,9 +107,13 @@ export function extract() {
   let absorb
   let consume
 
-  return new TransformStream({
+  const carrier = {}
+
+  const second = new TransformStream({
     start(controller) {
-      const consumer = createConsumer((chunk) => controller.enqueue(chunk))
+      const consumer = createConsumer(carrier, (chunk) =>
+        controller.enqueue(chunk)
+      )
       absorb = consumer.absorb
       consume = consumer.consume
     },
@@ -81,6 +127,14 @@ export function extract() {
       absorb = undefined
     },
   })
+
+  const first = new TransformStream()
+
+  const [a, b] = first.readable.tee()
+  carrier.readable = a
+  Object.defineProperty(first, "readable", { value: b.pipeThrough(second) })
+
+  return first
 }
 
 export default { extract }
