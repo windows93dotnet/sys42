@@ -1,4 +1,4 @@
-import { AbsorbArrayBuffer } from "../stream/absorb.js"
+import Buffer from "../../fabric/binary/Buffer.js"
 import headers from "./tar/headers.js"
 import getBasename from "../path/core/getBasename.js"
 
@@ -64,7 +64,7 @@ function mixinPax(header, pax) {
 }
 
 function createConsumer(carrier, enqueue) {
-  const absorb = new AbsorbArrayBuffer()
+  const buffer = new Buffer()
 
   let offset = 0
   let header
@@ -72,7 +72,7 @@ function createConsumer(carrier, enqueue) {
 
   function consume() {
     if (header) {
-      if (absorb.pointer < offset + header.size) return
+      if (buffer.length < offset + header.size) return
 
       if (header.type === "file") {
         if (pax) mixinPax(header, pax)
@@ -80,16 +80,15 @@ function createConsumer(carrier, enqueue) {
         header = undefined
         consume()
       } else if (header.type === "pax-header") {
-        const buffer = absorb.view.slice(offset, offset + header.size)
-        pax = headers.decodePax(buffer)
+        pax = headers.decodePax(buffer.slice(offset, offset + header.size))
+        // const size = header.size + overflow(header.size)
         const size = header.size + overflow(header.size)
         offset += size
         header = undefined
         consume()
       } else if (header.type === "gnu-long-path") {
-        const buffer = absorb.view.slice(offset, offset + header.size)
         header.name = headers.decodeLongPath(
-          buffer,
+          buffer.slice(offset, offset + header.size),
           carrier.options?.filenameEncoding
         )
         const size = header.size + overflow(header.size)
@@ -97,9 +96,9 @@ function createConsumer(carrier, enqueue) {
         header = undefined
         consume()
       }
-    } else if (absorb.pointer > offset + 512) {
+    } else if (buffer.length > offset + 512) {
       header = headers.decode(
-        absorb.view.slice(offset, offset + 512),
+        buffer.slice(offset, offset + 512),
         carrier.options
       )
 
@@ -113,11 +112,11 @@ function createConsumer(carrier, enqueue) {
     }
   }
 
-  return { absorb, consume }
+  return { buffer, consume }
 }
 
 export function extract(options) {
-  let absorb
+  let buffer
   let consume
 
   const carrier = { options, missing: 0 }
@@ -127,11 +126,11 @@ export function extract(options) {
       const consumer = createConsumer(carrier, (chunk) =>
         controller.enqueue(chunk)
       )
-      absorb = consumer.absorb
+      buffer = consumer.buffer
       consume = consumer.consume
     },
     async transform(chunk) {
-      absorb.add(chunk)
+      buffer.write(chunk)
       consume()
     },
     flush() {
@@ -139,9 +138,8 @@ export function extract(options) {
         throw new Error("Unexpected end of data")
       }
 
-      delete absorb.memory
-      delete absorb.view
-      absorb = undefined
+      delete buffer.memory
+      buffer = undefined
     },
   })
 
