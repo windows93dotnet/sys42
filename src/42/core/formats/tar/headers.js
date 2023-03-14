@@ -1,3 +1,8 @@
+/* spell-checker: disable */
+
+//! Copyright (c) 2014 Mathias Buus. MIT License.
+// @src https://github.com/mafintosh/tar-stream/blob/master/headers.js
+
 // TODO: remove Buffer dependency (using BinaryData.js)
 import Buffer from "../../../fabric/classes/Buffer.js"
 

@@ -1,9 +1,13 @@
+/* spell-checker: disable */
+
 import test from "../../../../42/test.js"
 import tar from "../../../../42/core/formats/tar.js"
 import getBasename from "../../../../42/core/path/core/getBasename.js"
 
 const { stream, http } = test.utils
 const { task } = test
+
+// @src https://github.com/mafintosh/tar-stream/blob/master/test/extract.js
 
 test.tasks(
   [
@@ -247,7 +251,9 @@ test.tasks(
     // }),
 
     // task({
+    //   only: true,
     //   url: "/tests/fixtures/tar/invalid.tgz",
+    //   gzip: true,
     //   throws: true,
     // }),
   ],
@@ -260,15 +266,30 @@ test.tasks(
 
       const items = await stream.ws.collect(
         rs.pipeThrough(stream.ts.cut(321)).pipeThrough(tar.extract())
+        // rs.pipeThrough(tar.extract())
       )
 
       if (files) {
-        t.eq(await Promise.all(items.map(({ file }) => file.text())), files)
+        t.eq(
+          await Promise.all(
+            items.map(async ({ file }) => (await file()).text())
+          ),
+          files
+        )
+
+        t.eq(
+          await Promise.all(
+            items.map(async (item) =>
+              stream.ws.collect(item.stream.pipeThrough(stream.ts.text()))
+            )
+          ),
+          files
+        )
       }
 
       if (headers) {
         t.eq(
-          items.map(({ header }) => header),
+          items.map((header) => ({ ...header })),
           headers
         )
       }
