@@ -108,7 +108,7 @@ export default class Buffer {
     const arr = new Uint8Array(
       this.memory.buffer.slice(offset, offset + length)
     )
-    this.offset = arr.byteLength
+    this.offset = offset + arr.byteLength
     return arr
   }
 

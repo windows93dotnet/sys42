@@ -273,7 +273,6 @@ test.tasks(
     }),
 
     task({
-      title: "base 256 uid and gid",
       url: "/tests/fixtures/tar/base-256-uid-gid.tar",
       headers: [
         {
@@ -284,7 +283,6 @@ test.tasks(
     }),
 
     task({
-      title: "base 256 size",
       url: "/tests/fixtures/tar/base-256-size.tar",
       headers: [
         {
