@@ -66,48 +66,40 @@ function mixinPax(header, pax) {
 function createConsumer(carrier, enqueue) {
   const buffer = new Buffer()
 
-  let offset = 0
   let header
   let pax
 
   function consume() {
     if (header) {
-      if (buffer.length < offset + header.size) return
+      if (buffer.length < buffer.offset + header.size) return
 
       if (header.type === "file") {
         if (pax) mixinPax(header, pax)
-        offset += makeFile(carrier, offset, header, enqueue)
+        buffer.offset += makeFile(carrier, buffer.offset, header, enqueue)
         header = undefined
         consume()
       } else if (header.type === "pax-header") {
-        pax = headers.decodePax(buffer.slice(offset, offset + header.size))
-        // const size = header.size + overflow(header.size)
-        const size = header.size + overflow(header.size)
-        offset += size
+        pax = headers.decodePax(buffer.readBytes(header.size))
+        buffer.offset += overflow(header.size)
         header = undefined
         consume()
       } else if (header.type === "gnu-long-path") {
         header.name = headers.decodeLongPath(
-          buffer.slice(offset, offset + header.size),
+          buffer.readBytes(header.size),
           carrier.options?.filenameEncoding
         )
-        const size = header.size + overflow(header.size)
-        offset += size
+        buffer.offset += overflow(header.size)
         header = undefined
         consume()
       }
-    } else if (buffer.length > offset + 512) {
-      header = headers.decode(
-        buffer.slice(offset, offset + 512),
-        carrier.options
-      )
+    } else if (buffer.length > buffer.offset + 512) {
+      header = headers.decode(buffer.readBytes(512), carrier.options)
 
       if (header?.size === 0 || header?.type === "directory") {
         enqueue(header)
         header = undefined
       }
 
-      offset += 512
       consume()
     }
   }
@@ -134,7 +126,7 @@ export function extract(options) {
       consume()
     },
     flush() {
-      if (carrier.missing && options?.allowIncomplete !== true) {
+      if (buffer.length < buffer.offset && options?.allowIncomplete !== true) {
         throw new Error("Unexpected end of data")
       }
 
