@@ -72,18 +72,28 @@ function createConsumer(carrier, enqueue) {
 
   function consume() {
     if (header) {
-      if (header.type === "file" && absorb.pointer >= offset + header.size) {
+      if (absorb.pointer < offset + header.size) return
+
+      if (header.type === "file") {
         if (pax) mixinPax(header, pax)
         offset += makeFile(carrier, offset, header, enqueue)
         header = undefined
         consume()
-      } else if (
-        header.type === "pax-header" &&
-        absorb.pointer >= offset + header.size
-      ) {
+      } else if (header.type === "pax-header") {
         const buffer = absorb.view.slice(offset, offset + header.size)
         pax = headers.decodePax(buffer)
-        offset += header.size + overflow(header.size)
+        const size = header.size + overflow(header.size)
+        offset += size
+        header = undefined
+        consume()
+      } else if (header.type === "gnu-long-path") {
+        const buffer = absorb.view.slice(offset, offset + header.size)
+        header.name = headers.decodeLongPath(
+          buffer,
+          carrier.options?.filenameEncoding
+        )
+        const size = header.size + overflow(header.size)
+        offset += size
         header = undefined
         consume()
       }
@@ -110,7 +120,7 @@ export function extract(options) {
   let absorb
   let consume
 
-  const carrier = { options }
+  const carrier = { options, missing: 0 }
 
   const tsExtract = new TransformStream({
     start(controller) {
@@ -125,6 +135,10 @@ export function extract(options) {
       consume()
     },
     flush() {
+      if (carrier.missing && options?.allowIncomplete !== true) {
+        throw new Error("Unexpected end of data")
+      }
+
       delete absorb.memory
       delete absorb.view
       absorb = undefined

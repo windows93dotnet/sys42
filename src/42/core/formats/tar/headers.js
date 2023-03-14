@@ -18,7 +18,7 @@ const MAGIC_OFFSET = 257
 const VERSION_OFFSET = 263
 
 function toString(bytes, encoding) {
-  return new TextDecoder().decode(bytes, encoding)
+  return new TextDecoder(encoding).decode(bytes)
 }
 
 function clamp(index, len, defaultValue) {
@@ -302,4 +302,4 @@ export function decode(buf, { filenameEncoding, allowUnknownFormat } = {}) {
   }
 }
 
-export default { encode, decode, decodePax }
+export default { encode, decode, decodePax, decodeLongPath }
