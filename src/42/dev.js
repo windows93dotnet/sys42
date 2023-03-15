@@ -13,7 +13,10 @@ function greet() {
   log.if(config.verbose).cyanBright(`\
 ╷ ┌───┐
 └─┤ ┌─┘  {reset type} {grey sys42.dev.help()} {reset for help}
-  └─┴─╴`)
+  └─┴─╴  `)
+  log(
+    `\n{cyan recommended devtool log filter: {reset -/both\\sallow-scripts|Clear-Site-Data|Skipping\\sunsupported/}}\n`
+  )
 }
 
 if (inTop && inAutomated) {
