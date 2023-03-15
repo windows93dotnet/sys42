@@ -23,8 +23,7 @@ if (ipc.inIframe) {
       if (this.synced) return
 
       // Sync file index with top-level realm
-      const [value] = await ipc.send("42_DISK_INIT")
-      this.value = value
+      this.value = await ipc.send("42_DISK_INIT")
       this.synced = true
 
       ipc.on("42_DISK_CHANGE", ([path, type, inode]) => {
