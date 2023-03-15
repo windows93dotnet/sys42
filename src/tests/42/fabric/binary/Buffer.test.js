@@ -5,46 +5,101 @@ function stringToBuffer(str) {
   return new TextEncoder().encode(str).buffer
 }
 
-test("BinaryData", (t) => {
+test("Buffer.at", (t) => {
   const buf = new Buffer()
 
   t.is(buf.length, 0)
 
-  t.is(buf.at(-1), 0)
-  t.is(buf.at(0), 0)
-  t.is(buf.at(1), 0)
-  t.is(buf.at(999), 0)
-  t.is(buf.at(0x00_ff_ff), 0)
+  t.is(buf.at(0), undefined)
+  t.is(buf.at(-1), undefined)
+  t.is(buf.at(1), undefined)
 
+  t.is(buf.at(0x00_ff_ff), undefined)
   // outside of first memory page
   t.is(buf.at(0x01_00_00), undefined)
 
-  buf.write("hello")
+  buf.writeText("hello")
   t.is(String.fromCharCode(buf.at(0)), "h")
   t.is(String.fromCharCode(buf.at(-1)), "o")
+  t.is(String.fromCharCode(buf.at(1)), "e")
+  t.is(String.fromCharCode(buf.at(4)), "o")
+  t.is(buf.at(5), undefined)
 })
 
-test("BinaryData.read", (t) => {
+test("Buffer", "text stream", (t) => {
+  const str = "😋" // \ud83d\ude0b
+  const bytes = new TextEncoder().encode(str)
+  const buf = Buffer.of(bytes)
+  t.is(buf.peekText(4), "😋")
+  t.is(buf.peekText(4, 0, "ascii"), "\xf0\u0178\u02dc\u2039")
+  t.is(buf.peekText(1, 0), "�")
+  t.is(buf.peekText(1, 1), "�")
+  t.is(buf.peekText(1, 2), "�")
+  t.is(buf.peekText(1, 3), "�")
+  t.is(buf.peekText(1, 4), "\x00")
+
+  t.is(buf.readText(1), "")
+  t.is(buf.readText(1), "")
+  t.is(buf.readText(1), "")
+  t.is(buf.readText(1), "😋")
+  t.is(buf.readText(1), "\x00")
+
+  buf.go(0)
+
+  t.is(buf.readText(1, 0), "")
+  t.is(buf.readText(1, 1), "")
+  t.is(buf.readText(1, 0), "") // reset decoder stream position
+  t.is(buf.readText(1, 1), "")
+  t.is(buf.readText(1, 2), "")
+  t.is(buf.readText(1, 3), "😋")
+  t.is(buf.readText(1, 4), "\x00")
+})
+
+test("Buffer.slice & Buffer.subarray", (t) => {
   const buf = new Buffer()
-  buf.write("hello world")
-  t.is(buf.read(), "hello world")
+
+  buf.writeText("hello")
+
+  const a = buf.slice(2, 4)
+
+  t.eq(a, new Uint8Array([0x6c, 0x6c]))
+  t.eq(buf.peekText(), "hello")
+
+  a[0] = 0x6b
+
+  t.eq(buf.peekText(), "hello")
+
+  const b = buf.subarray(2, 4)
+
+  t.eq(b, new Uint8Array([0x6c, 0x6c]))
+  t.eq(buf.peekText(), "hello")
+
+  b[0] = 0x6b
+
+  t.eq(buf.peekText(), "heklo")
+})
+
+test("Buffer.read", (t) => {
+  const buf = new Buffer()
+  buf.writeText("hello world")
+  t.is(buf.readText(), "hello world")
   buf.offset = 0
 
-  t.is(buf.read(1), "h")
-  t.is(buf.read(1), "e")
-  t.is(buf.read(2, 0), "he")
-  t.is(buf.read(2), "ll")
-  t.is(buf.read(), "o world")
+  t.is(buf.readText(1), "h")
+  t.is(buf.readText(1), "e")
+  t.is(buf.readText(2, 0), "he")
+  t.is(buf.readText(2), "ll")
+  t.is(buf.readText(), "o world")
 })
 
-test("BinaryData.write", (t) => {
+test("Buffer.write", (t) => {
   const buf = new Buffer()
   t.eq(buf.value, new ArrayBuffer())
 
-  buf.write("hello")
+  buf.writeText("hello")
   t.eq(buf.value, stringToBuffer("hello"))
 
-  buf.write(" world")
+  buf.writeText(" world")
   t.eq(buf.value, stringToBuffer("hello world"))
 
   buf.write(stringToBuffer("!!!"))
@@ -57,7 +112,7 @@ test("BinaryData.write", (t) => {
   t.eq(buf.value, stringToBuffer("lorem ipsum dolor"))
 })
 
-test("BinaryData.write", "auto grow", (t) => {
+test("Buffer.write", "auto grow", (t) => {
   const buf = new Buffer()
 
   t.eq(buf.value, new ArrayBuffer())
@@ -70,7 +125,7 @@ test("BinaryData.write", "auto grow", (t) => {
   t.eq(buf.value, data.buffer)
 })
 
-test("BinaryData.writeUint16", (t) => {
+test("Buffer.writeUint16", (t) => {
   const buf = new Buffer()
 
   buf.writeUint16(42)
@@ -87,7 +142,7 @@ test("BinaryData.writeUint16", (t) => {
   t.eq(buf.toUint16Array(), new Uint16Array([42, 256]))
 })
 
-test("BinaryData.writeBigInt64", (t) => {
+test("Buffer.writeBigInt64", (t) => {
   const buf = new Buffer()
 
   buf.writeBigInt64(42n)

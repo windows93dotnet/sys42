@@ -79,13 +79,13 @@ function createConsumer(carrier, enqueue) {
         header = undefined
         consume()
       } else if (header.type === "pax-header") {
-        pax = headers.decodePax(buffer.readBytes(header.size))
+        pax = headers.decodePax(buffer.read(header.size))
         buffer.offset += overflow(header.size)
         header = undefined
         consume()
       } else if (header.type === "gnu-long-path") {
         header.name = headers.decodeLongPath(
-          buffer.readBytes(header.size),
+          buffer.read(header.size),
           carrier.options?.filenameEncoding
         )
         buffer.offset += overflow(header.size)
@@ -93,7 +93,7 @@ function createConsumer(carrier, enqueue) {
         consume()
       }
     } else if (buffer.length > buffer.offset + 512) {
-      header = headers.decode(buffer.readBytes(512), carrier.options)
+      header = headers.decode(buffer.read(512), carrier.options)
 
       if (header?.size === 0 || header?.type === "directory") {
         enqueue(header)
