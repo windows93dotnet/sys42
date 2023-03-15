@@ -43,7 +43,9 @@ export default async function createPath(path = "/", options) {
     },
   })
 
-  if (name) {
+  if (name.includes("\\")) {
+    alert("Sorry... This includes a backslash")
+  } else {
     const fs = await import("../../core/fs.js") //
       .then((m) => m.default)
 
