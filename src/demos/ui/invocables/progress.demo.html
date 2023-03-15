@@ -4,6 +4,55 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" href="/style.css" id="theme" />
 
-<script
-  type="module"
-  src="../../../tests/42/ui/invocables/progress.test.js"></script>
+<script type="module">
+  import ui from "../../../42/ui.js"
+  import http from "../../../42/core/http.js"
+  import stream from "../../../42/core/stream.js"
+  import progress from "../../../42/ui/invocables/progress.js"
+
+  const makeDemo = () => ({
+    tag: ".w-full.pa-xl",
+    content: [
+      {
+        tag: "button",
+        label: "Progress",
+        id: "progress",
+        async click() {
+          const p = progress(100, { _icon: "error" })
+          const state = await p.state
+          state.value = 30
+          state.description = "0/1"
+        },
+      },
+      {
+        tag: "button",
+        label: "Progress as TransformStream",
+        id: "progressStream",
+        async click() {
+          http
+            .source("/tests/fixtures/stream/html_standard.html.gz", {
+              cors: "no-cors",
+            })
+            .size((total, rs) => {
+              rs.pipeThrough(stream.ts.cut(10_000))
+                .pipeThrough(stream.ts.pressure(100))
+                .pipeThrough(progress(total, { keep: !true }))
+                .pipeTo(stream.ws.sink())
+                .catch(() => {
+                  console.log("canceled pipeline")
+                })
+            })
+        },
+      },
+    ],
+  })
+
+  ui({
+    id: "invocableDemo",
+    tag: ".box-fit.desktop",
+    content: {
+      tag: ".box-v.full",
+      content: [makeDemo()],
+    },
+  })
+</script>
