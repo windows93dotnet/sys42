@@ -220,7 +220,8 @@ export function encode(opts) {
   buf.write(encodeOct(opts.uid, 6), 108)
   buf.write(encodeOct(opts.gid, 6), 116)
   buf.write(encodeOct(opts.size, 11), 124)
-  buf.write(encodeOct((opts.mtime.getTime() / 1000) | 0, 11), 136)
+  // buf.write(encodeOct((opts.mtime.getTime() / 1000) | 0, 11), 136)
+  buf.write(encodeOct((opts.mtime / 1000) | 0, 11), 136)
 
   buf[156] = ZERO_OFFSET + toTypeflag(opts.type)
 
