@@ -6,6 +6,7 @@
 // @read https://web.dev/websocketstream/
 // @read https://github.com/SocketDev/wormhole-crypto
 // @read https://github.com/surma/observables-with-streams
+// @read https://www.sitepen.com/blog/a-guide-to-faster-web-app-io-and-data-operations-with-streams
 
 if ("DecompressionStream" in globalThis === false) {
   await import("./env/polyfills/globalThis.DecompressionStream.min.js")

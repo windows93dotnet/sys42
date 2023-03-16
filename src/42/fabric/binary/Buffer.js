@@ -11,9 +11,10 @@ export default class Buffer {
 
   static isLittleEndianMachine = isLittleEndianMachine
 
-  static of(value) {
+  static from(value) {
     const buffer = new Buffer()
-    buffer.write(value)
+    if (typeof value === "string") buffer.writeText(value)
+    else buffer.write(value)
     return buffer
   }
 
@@ -155,6 +156,14 @@ export default class Buffer {
     const arr = this.#arr.subarray(offset, end)
     const decoder = encoding ? new TextDecoder(encoding) : this.decoder
     return decoder.decode(arr)
+  }
+
+  toString() {
+    return this.decoder.decode(this.#arr.subarray(0, this.#length))
+  }
+
+  [Symbol.iterator]() {
+    return this.#arr.subarray(0, this.#length)[Symbol.iterator]()
   }
 }
 

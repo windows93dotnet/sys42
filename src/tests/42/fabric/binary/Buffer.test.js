@@ -5,6 +5,21 @@ function stringToBuffer(str) {
   return new TextEncoder().encode(str).buffer
 }
 
+test("Buffer[Symbol.iterator]", async (t) => {
+  let str = ""
+  for (const byte of Buffer.from("hello world")) {
+    str += String.fromCharCode(byte)
+  }
+
+  t.is(str, "hello world")
+})
+
+test("Buffer.toString", async (t) => {
+  const buf = Buffer.from("hello world")
+  const file = new File([buf], "hello.txt")
+  t.is(await file.text(), "hello world")
+})
+
 test("Buffer.at", (t) => {
   const buf = new Buffer()
 
@@ -29,7 +44,7 @@ test("Buffer.at", (t) => {
 test("Buffer", "text stream", (t) => {
   const str = "😋" // \ud83d\ude0b
   const bytes = new TextEncoder().encode(str)
-  const buf = Buffer.of(bytes)
+  const buf = Buffer.from(bytes)
   t.is(buf.peekText(4), "😋")
   t.is(buf.peekText(4, 0, "ascii"), "\xf0\u0178\u02dc\u2039")
   t.is(buf.peekText(1, 0), "�")
