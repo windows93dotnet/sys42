@@ -1,6 +1,6 @@
-import headers from "./headers.js"
 import Buffer from "../../../fabric/binary/Buffer.js"
 import defer from "../../../fabric/type/promise/defer.js"
+import { encodeTarHeader } from "./encodeTarHeader.js"
 
 const END_OF_TAR = new Uint8Array(1024)
 
@@ -57,7 +57,7 @@ export function tsTarPack() {
       header.name ??= file.name
       header.size ??= file.size
       header.mtime ??= file.lastModified
-      writer.write(headers.encode(normalizeHeader(header)))
+      writer.write(encodeTarHeader(normalizeHeader(header)))
       writer.releaseLock()
       await file.stream().pipeTo(ts.writable, { preventClose: true })
       writer = ts.writable.getWriter()
@@ -65,7 +65,7 @@ export function tsTarPack() {
     } else {
       const buf = Buffer.from(file)
       header.size ??= buf.length
-      writer.write(headers.encode(normalizeHeader(header)))
+      writer.write(encodeTarHeader(normalizeHeader(header)))
       writer.write(buf)
       overflow(writer, header.size)
     }

@@ -1,6 +1,10 @@
 import Buffer from "../../../fabric/binary/Buffer.js"
-import headers from "./headers.js"
 import getBasename from "../../path/core/getBasename.js"
+import {
+  decodeTarHeader,
+  decodePax,
+  decodeLongPath,
+} from "./decodeTarHeader.js"
 
 // @src https://deno.land/std@0.162.0/streams/buffer.ts?source#L247
 function tsRange(start = 0, end = Infinity) {
@@ -79,12 +83,12 @@ function createConsumer(carrier, enqueue) {
         header = undefined
         consume()
       } else if (header.type === "pax-header") {
-        pax = headers.decodePax(buffer.read(header.size))
+        pax = decodePax(buffer.read(header.size))
         buffer.offset += overflow(header.size)
         header = undefined
         consume()
       } else if (header.type === "gnu-long-path") {
-        header.name = headers.decodeLongPath(
+        header.name = decodeLongPath(
           buffer.read(header.size),
           carrier.options?.filenameEncoding
         )
@@ -93,7 +97,7 @@ function createConsumer(carrier, enqueue) {
         consume()
       }
     } else if (buffer.length > buffer.offset + 512) {
-      header = headers.decode(buffer.read(512), carrier.options)
+      header = decodeTarHeader(buffer.read(512), carrier.options)
 
       if (header?.size === 0 || header?.type === "directory") {
         enqueue(header)
