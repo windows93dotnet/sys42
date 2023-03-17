@@ -212,7 +212,7 @@ test("large object", async (t) => {
   t.timeout(1000)
 
   const [buffer, json] = await Promise.all([
-    t.utils.load.buffer("/tests/fixtures/formats/cbor/large-object.cbor"),
+    t.utils.load.arrayBuffer("/tests/fixtures/formats/cbor/large-object.cbor"),
     t.utils.load.json("/tests/fixtures/formats/cbor/large-object.json"),
   ])
 

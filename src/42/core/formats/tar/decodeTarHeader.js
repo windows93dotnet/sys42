@@ -3,12 +3,14 @@
 //! Copyright (c) 2014 Mathias Buus. MIT License.
 // @src https://github.com/mafintosh/tar-stream/blob/master/headers.js
 
-import Buffer from "../../../fabric/binary/BufferNode.js"
+import Buffer from "../../../fabric/binary/Buffer.js"
+
+const encoder = new TextEncoder()
 
 const ZERO_OFFSET = "0".charCodeAt(0)
-const USTAR_MAGIC = Buffer.from("ustar\x00", "binary")
-const GNU_MAGIC = Buffer.from("ustar\x20", "binary")
-const GNU_VER = Buffer.from("\x20\x00", "binary")
+const USTAR_MAGIC = encoder.encode("ustar\x00")
+const GNU_MAGIC = encoder.encode("ustar\x20")
+const GNU_VER = encoder.encode("\x20\x00")
 const MAGIC_OFFSET = 257
 const VERSION_OFFSET = 263
 
@@ -119,16 +121,15 @@ export function decodeLongPath(buf, encoding) {
 }
 
 export function decodePax(buf) {
-  buf = Buffer.from(buf)
   const result = {}
 
   while (buf.length > 0) {
     let i = 0
     while (i < buf.length && buf[i] !== 32) i++
-    const len = Number.parseInt(buf.slice(0, i).toString(), 10)
+    const len = Number.parseInt(toString(buf.slice(0, i)), 10)
     if (!len) return result
 
-    const b = buf.slice(i + 1, len - 1).toString()
+    const b = toString(buf.slice(i + 1, len - 1))
     const keyIndex = b.indexOf("=")
     if (keyIndex === -1) return result
     result[b.slice(0, keyIndex)] = b.slice(keyIndex + 1)
@@ -171,13 +172,15 @@ export function decodeTarHeader(
     )
   }
 
-  if (USTAR_MAGIC.compare(buf, MAGIC_OFFSET, MAGIC_OFFSET + 6) === 0) {
+  if (
+    Buffer.equals(USTAR_MAGIC, buf.subarray(MAGIC_OFFSET, MAGIC_OFFSET + 6))
+  ) {
     // ustar (posix) format.
     // prepend prefix, if present.
     if (buf[345]) name = decodeStr(buf, 345, 155, filenameEncoding) + "/" + name
   } else if (
-    GNU_MAGIC.compare(buf, MAGIC_OFFSET, MAGIC_OFFSET + 6) === 0 &&
-    GNU_VER.compare(buf, VERSION_OFFSET, VERSION_OFFSET + 2) === 0
+    Buffer.equals(GNU_MAGIC, buf.subarray(MAGIC_OFFSET, MAGIC_OFFSET + 6)) &&
+    Buffer.equals(GNU_VER, buf.subarray(VERSION_OFFSET, VERSION_OFFSET + 2))
   ) {
     // 'gnu'/'oldgnu' format. Similar to ustar, but has support for incremental and
     // multi-volume tarballs.

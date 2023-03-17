@@ -3,13 +3,16 @@
 //! Copyright (c) 2014 Mathias Buus. MIT License.
 // @src https://github.com/mafintosh/tar-stream/blob/master/headers.js
 
-import Buffer from "../../../fabric/binary/BufferNode.js"
+import Buffer from "../../../fabric/binary/Buffer.js"
+import { countBytes } from "../../../fabric/type/string/count.js"
+
+const encoder = new TextEncoder()
 
 const ZEROS = "0000000000000000000"
 const SEVENS = "7777777777777777777"
 const ZERO_OFFSET = "0".charCodeAt(0)
-const USTAR_MAGIC = Buffer.from("ustar\x00", "binary")
-const USTAR_VER = Buffer.from("00", "binary")
+const USTAR_MAGIC = encoder.encode("ustar\x00")
+const USTAR_VER = encoder.encode("00")
 const MASK = 0o7777
 const MAGIC_OFFSET = 257
 const VERSION_OFFSET = 263
@@ -32,8 +35,8 @@ function toTypeflag(flag) {
 
 function cksum(block) {
   let sum = 8 * 32
-  for (let i = 0; i < 148; i++) sum += block[i]
-  for (let j = 156; j < 512; j++) sum += block[j]
+  for (let i = 0; i < 148; i++) sum += block.peekByte(i)
+  for (let j = 156; j < 512; j++) sum += block.peekByte(j)
   return sum
 }
 
@@ -44,7 +47,7 @@ function encodeOct(val, n) {
 }
 
 function addLength(str) {
-  const len = Buffer.byteLength(str)
+  const len = countBytes(str)
   let digits = Math.floor(Math.log(len) / Math.log(10)) + 1
   if (len + digits >= 10 ** digits) digits++
   return len + digits + str
@@ -66,50 +69,49 @@ export function encodePax(opts) {
 }
 
 export function encodeTarHeader(opts) {
-  const buf = Buffer.alloc(512)
+  const buf = new Buffer(512)
   let { name } = opts
   let prefix = ""
 
   if (opts.typeflag === 5 && name[name.length - 1] !== "/") name += "/"
-  if (Buffer.byteLength(name) !== name.length) return null // utf-8
+  if (countBytes(name) !== name.length) return null // utf-8
 
-  while (Buffer.byteLength(name) > 100) {
+  while (countBytes(name) > 100) {
     const i = name.indexOf("/")
     if (i === -1) return null
     prefix += prefix ? "/" + name.slice(0, i) : name.slice(0, i)
     name = name.slice(i + 1)
   }
 
-  if (Buffer.byteLength(name) > 100 || Buffer.byteLength(prefix) > 155) {
+  if (countBytes(name) > 100 || countBytes(prefix) > 155) {
     return null
   }
 
-  if (opts.linkname && Buffer.byteLength(opts.linkname) > 100) return null
+  if (opts.linkname && countBytes(opts.linkname) > 100) return null
 
-  buf.write(name)
-  buf.write(encodeOct(opts.mode & MASK, 6), 100)
-  buf.write(encodeOct(opts.uid, 6), 108)
-  buf.write(encodeOct(opts.gid, 6), 116)
-  buf.write(encodeOct(opts.size, 11), 124)
-  // buf.write(encodeOct((opts.mtime.getTime() / 1000) | 0, 11), 136)
-  buf.write(encodeOct((opts.mtime / 1000) | 0, 11), 136)
+  buf.writeText(name, 0)
+  buf.writeText(encodeOct(opts.mode & MASK, 6), 100)
+  buf.writeText(encodeOct(opts.uid, 6), 108)
+  buf.writeText(encodeOct(opts.gid, 6), 116)
+  buf.writeText(encodeOct(opts.size, 11), 124)
+  buf.writeText(encodeOct((opts.mtime / 1000) | 0, 11), 136)
 
-  buf[156] = ZERO_OFFSET + toTypeflag(opts.type)
+  buf.writeByte(ZERO_OFFSET + toTypeflag(opts.type), 156)
 
-  if (opts.linkname) buf.write(opts.linkname, 157)
+  if (opts.linkname) buf.writeText(opts.linkname, 157)
 
-  USTAR_MAGIC.copy(buf, MAGIC_OFFSET)
-  USTAR_VER.copy(buf, VERSION_OFFSET)
-  if (opts.uname) buf.write(opts.uname, 265)
-  if (opts.gname) buf.write(opts.gname, 297)
-  buf.write(encodeOct(opts.devmajor || 0, 6), 329)
-  buf.write(encodeOct(opts.devminor || 0, 6), 337)
+  buf.write(USTAR_MAGIC, MAGIC_OFFSET)
+  buf.write(USTAR_VER, VERSION_OFFSET)
+  if (opts.uname) buf.writeText(opts.uname, 265)
+  if (opts.gname) buf.writeText(opts.gname, 297)
+  buf.writeText(encodeOct(opts.devmajor || 0, 6), 329)
+  buf.writeText(encodeOct(opts.devminor || 0, 6), 337)
 
-  if (prefix) buf.write(prefix, 345)
+  if (prefix) buf.writeText(prefix, 345)
 
-  buf.write(encodeOct(cksum(buf), 6), 148)
+  buf.writeText(encodeOct(cksum(buf), 6), 148)
 
-  return buf
+  return buf.value
 }
 
 export default encodeTarHeader

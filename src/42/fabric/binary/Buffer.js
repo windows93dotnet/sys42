@@ -2,8 +2,15 @@
 // @read https://chromestatus.com/feature/4668361878274048
 // @read https://deno.land/std@0.179.0/streams/buffer.ts?source
 
+import equalsArrayBufferView from "./equalsArrayBufferView.js"
+
 const isLittleEndianMachine =
   new Uint8Array(new Uint16Array([1]).buffer)[0] === 1
+
+const supportResize = ArrayBuffer.prototype.resize !== undefined
+
+const MAX_BYTE_LENGTH = 0xff_ff_ff_fe // 2 ** 32 - 2
+const MEMORY_PAGE = 0x01_00_00
 
 export default class Buffer {
   #arr
@@ -18,10 +25,20 @@ export default class Buffer {
     return buffer
   }
 
+  static equals(a, b) {
+    return equalsArrayBufferView(a, b)
+  }
+
   constructor(options) {
-    this.memory = new WebAssembly.Memory({ initial: 1 })
+    const length = typeof options === "number" ? options : 0
+    this.memory = supportResize
+      ? { buffer: new ArrayBuffer(length, { maxByteLength: MAX_BYTE_LENGTH }) }
+      : new WebAssembly.Memory({
+          initial: 1 + Math.ceil((length - MEMORY_PAGE) / MEMORY_PAGE),
+        })
     this.#arr = new Uint8Array(this.memory.buffer)
-    this.#length = 0
+    this.#length = length
+    this.writeOffset = 0
     this.offset = 0
 
     this.encoding = options?.encoding ?? "utf8"
@@ -44,11 +61,16 @@ export default class Buffer {
   }
   set length(n) {
     this.#length = n
+    this.writeOffset = n
     if (n > this.memory.buffer.byteLength) {
-      const remain = n - this.memory.buffer.byteLength
-      this.memory.grow(Math.ceil(remain / 0x01_00_00))
-      this.#arr = new Uint8Array(this.memory.buffer)
-      this.#view = undefined
+      if (supportResize) {
+        this.memory.buffer.resize(n)
+      } else {
+        const remain = n - this.memory.buffer.byteLength
+        this.memory.grow(Math.ceil(remain / MEMORY_PAGE))
+        this.#arr = new Uint8Array(this.memory.buffer)
+        this.#view = undefined
+      }
     }
   }
 
@@ -93,10 +115,10 @@ export default class Buffer {
 
   // byte
   // ----
-  writeByte(value, offset = this.length) {
-    const len = offset + 1
+  writeByte(value, writeOffset = this.writeOffset) {
+    const len = writeOffset + 1
     if (len > this.length) this.length = len
-    this.#arr[offset] = value
+    this.#arr[writeOffset] = value
     return 1
   }
   readByte(offset = this.offset) {
@@ -109,10 +131,10 @@ export default class Buffer {
 
   // bytes
   // -----
-  write(value, offset = this.#length) {
-    const len = offset + value.byteLength
+  write(value, writeOffset = this.writeOffset) {
+    const len = writeOffset + value.byteLength
     if (len > this.#length) this.length = len
-    this.#arr.set(new Uint8Array(value), offset)
+    this.#arr.set(new Uint8Array(value), writeOffset)
   }
   read(length, offset = this.offset) {
     const arr = this.#arr.subarray(offset, offset + length)
@@ -137,29 +159,37 @@ export default class Buffer {
     return this.#decoder
   }
 
-  writeText(string, offset = this.#length) {
+  writeText(string, writeOffset = this.writeOffset) {
     const arr = this.encoder.encode(string)
-    const len = offset + arr.byteLength
+    const len = writeOffset + arr.byteLength
     if (len > this.#length) this.length = len
-    this.#arr.set(arr, offset)
+    this.#arr.set(arr, writeOffset)
   }
   readText(length, offset = this.offset, encoding) {
-    const end = length === undefined ? this.length : offset + length
-    const arr = this.#arr.subarray(offset, end)
-    if (end !== this.offset + 1) this.#decoder = undefined // reset decoder stream position
+    if (offset >= this.#length) return
+    const end =
+      length === undefined
+        ? this.length
+        : Math.min(offset + length, this.length)
+    const arr = this.memory.buffer.slice(offset, end)
+    if (end < this.offset) this.#decoder = undefined // reset decoder stream position
     this.offset = end
     const decoder = encoding ? new TextDecoder(encoding) : this.decoder
     return decoder.decode(arr, { stream: true })
   }
   peekText(length, offset = this.offset, encoding) {
-    const end = length === undefined ? this.length : offset + length
-    const arr = this.#arr.subarray(offset, end)
+    if (offset >= this.#length) return
+    const end =
+      length === undefined
+        ? this.length
+        : Math.min(offset + length, this.length)
+    const arr = this.memory.buffer.slice(offset, end)
     const decoder = encoding ? new TextDecoder(encoding) : this.decoder
     return decoder.decode(arr)
   }
 
   toString() {
-    return this.decoder.decode(this.#arr.subarray(0, this.#length))
+    return this.decoder.decode(this.memory.buffer.slice(0, this.#length))
   }
 
   [Symbol.iterator]() {
@@ -192,10 +222,14 @@ for (const getKey of Reflect.ownKeys(DataView.prototype)) {
       const BPE = BinaryArray.BYTES_PER_ELEMENT
       const setKey = `set${key}`
 
-      p[`write${key}`] = function (value, offset = this.length, littleEndian) {
-        const len = offset + BPE
+      p[`write${key}`] = function (
+        value,
+        writeOffset = this.writeOffset,
+        littleEndian
+      ) {
+        const len = writeOffset + BPE
         if (len > this.length) this.length = len
-        this.view[setKey](offset, value, littleEndian)
+        this.view[setKey](writeOffset, value, littleEndian)
         return BPE
       }
 

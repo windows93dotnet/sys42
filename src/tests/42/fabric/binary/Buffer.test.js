@@ -51,13 +51,15 @@ test("Buffer", "text stream", (t) => {
   t.is(buf.peekText(1, 1), "�")
   t.is(buf.peekText(1, 2), "�")
   t.is(buf.peekText(1, 3), "�")
-  t.is(buf.peekText(1, 4), "\x00")
+  t.is(buf.peekText(1, 4), undefined)
+
+  t.is(buf.peekText(10, 0), "😋")
 
   t.is(buf.readText(1), "")
   t.is(buf.readText(1), "")
   t.is(buf.readText(1), "")
   t.is(buf.readText(1), "😋")
-  t.is(buf.readText(1), "\x00")
+  t.is(buf.readText(1), undefined)
 
   buf.go(0)
 
@@ -67,7 +69,7 @@ test("Buffer", "text stream", (t) => {
   t.is(buf.readText(1, 1), "")
   t.is(buf.readText(1, 2), "")
   t.is(buf.readText(1, 3), "😋")
-  t.is(buf.readText(1, 4), "\x00")
+  t.is(buf.readText(1, 4), undefined)
 })
 
 test("Buffer.slice & Buffer.subarray", (t) => {
