@@ -1,4 +1,5 @@
 /* spell-checker: disable */
+// @src https://github.com/mafintosh/tar-stream/blob/master/test/extract.js
 
 import test from "../../../../../42/test.js"
 import tsTarExtract from "../../../../../42/core/formats/tar/tsTarExtract.js"
@@ -6,8 +7,6 @@ import getBasename from "../../../../../42/core/path/core/getBasename.js"
 
 const { stream, http } = test.utils
 const { task } = test
-
-// @src https://github.com/mafintosh/tar-stream/blob/master/test/extract.js
 
 test.tasks(
   [

@@ -20,6 +20,7 @@ export default class Buffer {
 
   static from(value) {
     const buffer = new Buffer()
+    if (value == null) return buffer
     if (typeof value === "string") buffer.writeText(value)
     else buffer.write(value)
     return buffer
