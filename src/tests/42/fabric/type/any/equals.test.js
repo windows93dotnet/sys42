@@ -1,22 +1,22 @@
 import test from "../../../../../42/test.js"
-import equal from "../../../../../42/fabric/type/any/equal.js"
+import equals from "../../../../../42/fabric/type/any/equals.js"
 
 test("simple", (t) => {
-  t.true(equal(3, 3))
-  t.true(equal(undefined, undefined))
-  t.true(equal(null, null))
-  t.true(equal("derp", "derp"))
-  t.true(equal([], []))
-  t.true(equal({}, {}))
-  t.true(equal([], new Array()))
-  t.true(equal({}, new Object()))
-  t.true(equal({ a: [2, 3], b: [4] }, { a: [2, 3], b: [4] }))
+  t.true(equals(3, 3))
+  t.true(equals(undefined, undefined))
+  t.true(equals(null, null))
+  t.true(equals("derp", "derp"))
+  t.true(equals([], []))
+  t.true(equals({}, {}))
+  t.true(equals([], new Array()))
+  t.true(equals({}, new Object()))
+  t.true(equals({ a: [2, 3], b: [4] }, { a: [2, 3], b: [4] }))
 
-  t.false(equal({ x: 5, y: [6] }, { x: 5, y: 6 }))
-  t.false(equal([{ a: 3 }, { b: 4 }], [{ a: "3" }, { b: "4" }]))
-  t.false(equal("3", 3))
-  t.false(equal("3", [3]))
-  t.false(equal(undefined, null))
+  t.false(equals({ x: 5, y: [6] }, { x: 5, y: 6 }))
+  t.false(equals([{ a: 3 }, { b: 4 }], [{ a: "3" }, { b: "4" }]))
+  t.false(equals("3", 3))
+  t.false(equals("3", [3]))
+  t.false(equals(undefined, null))
 })
 
 test("don't mutate", (t) => {
@@ -25,32 +25,32 @@ test("don't mutate", (t) => {
 
   a = t.stays("3")
   b = t.stays(3)
-  t.true(equal(a, a))
-  t.false(equal(a, b))
+  t.true(equals(a, a))
+  t.false(equals(a, b))
 
   a = t.stays(["3"])
   b = t.stays([3])
-  t.true(equal(a, a))
-  t.false(equal(a, b))
+  t.true(equals(a, a))
+  t.false(equals(a, b))
 
   a = t.stays({ a: "3" })
   b = t.stays({ a: 3 })
-  t.true(equal(a, a))
-  t.false(equal(a, b))
+  t.true(equals(a, a))
+  t.false(equals(a, b))
 })
 
 test("0 -0", (t) => {
-  t.false(equal(0, -0))
-  t.true(equal(new Set([0]), new Set([-0])))
+  t.false(equals(0, -0))
+  t.true(equals(new Set([0]), new Set([-0])))
 })
 
 test("Object.create(null)", (t) => {
   const actual = Object.create(null)
   actual.a = 1
   actual.b = 2
-  t.true(equal(actual, Object.assign(Object.create(null), { a: 1, b: 2 })))
+  t.true(equals(actual, Object.assign(Object.create(null), { a: 1, b: 2 })))
 
-  t.false(equal(actual, { a: 1, b: 2 }))
+  t.false(equals(actual, { a: 1, b: 2 }))
 })
 
 test("Object.create(null)", "{proto:false}", (t) => {
@@ -59,26 +59,26 @@ test("Object.create(null)", "{proto:false}", (t) => {
   actual.a = 1
   actual.b = 2
   t.true(
-    equal(actual, Object.assign(Object.create(null), { a: 1, b: 2 }), options)
+    equals(actual, Object.assign(Object.create(null), { a: 1, b: 2 }), options)
   )
-  t.true(equal(actual, { a: 1, b: 2 }, options))
+  t.true(equals(actual, { a: 1, b: 2 }, options))
 
   t.false(
-    equal(actual, Object.assign(Object.create(null), { a: 1, b: 3 }), options)
+    equals(actual, Object.assign(Object.create(null), { a: 1, b: 3 }), options)
   )
-  t.false(equal(actual, { a: 1, b: 3 }, options))
+  t.false(equals(actual, { a: 1, b: 3 }, options))
 })
 
 test("sparse Array", (t) => {
   const arr = new Array()
   arr[3] = "string"
-  t.true(equal(arr, [, , , "string"]))
-  t.true(equal([, , ,], [, , ,]))
-  t.true(equal([null, null, null], [null, null, null]))
-  t.true(equal([undefined, undefined], [undefined, undefined]))
+  t.true(equals(arr, [, , , "string"]))
+  t.true(equals([, , ,], [, , ,]))
+  t.true(equals([null, null, null], [null, null, null]))
+  t.true(equals([undefined, undefined], [undefined, undefined]))
 
-  t.false(equal([, , ,], [undefined, undefined, undefined]))
-  t.false(equal([, , ,], [null, null, null]))
+  t.false(equals([, , ,], [undefined, undefined, undefined]))
+  t.false(equals([, , ,], [null, null, null]))
 })
 
 test("key order in object don't matter", (t) => {
@@ -90,12 +90,12 @@ test("key order in object don't matter", (t) => {
     y: 2,
     x: 1,
   }
-  t.true(equal(a, b))
+  t.true(equals(a, b))
 })
 
 test("function with different declaration name are not equal", (t) => {
   t.true(
-    equal(
+    equals(
       () => 1,
       () => 1
     )
@@ -103,7 +103,7 @@ test("function with different declaration name are not equal", (t) => {
 
   const a = () => 1
   const b = () => 1
-  t.false(equal(a, b))
+  t.false(equals(a, b))
 })
 
 test("function with different declaration name are not equal", 2, (t) => {
@@ -113,7 +113,7 @@ test("function with different declaration name are not equal", 2, (t) => {
   const b = {
     y: () => 1,
   }
-  t.false(equal(a.x, b.y))
+  t.false(equals(a.x, b.y))
 })
 
 test("references Object", (t) => {
@@ -123,13 +123,13 @@ test("references Object", (t) => {
   a.y = a.x
   b = { x: 1 }
   b.y = b.x
-  t.true(equal(a, b))
+  t.true(equals(a, b))
 
   a = { x: 1 }
   a.y = a.x
   b = { x: 1 }
   b.y = { x: 1 }
-  t.false(equal(a, b))
+  t.false(equals(a, b))
 })
 
 const symbolA = Symbol("a")
@@ -563,13 +563,13 @@ if ("File" in globalThis) {
 function runTask({ test, title }, assert, a, b) {
   test.serial(title, assert, a, b, (t) => {
     t.timeout(2000)
-    t[assert](equal(a, b))
-    t[assert](equal({ a }, { a: b }), "in object")
-    t[assert](equal([a], [b]), "in array")
-    t[assert](equal(new Map([["a", a]]), new Map([["a", b]])), "in map")
-    t[assert](equal(new Set([a]), new Set([b])), "in set")
+    t[assert](equals(a, b))
+    t[assert](equals({ a }, { a: b }), "in object")
+    t[assert](equals([a], [b]), "in array")
+    t[assert](equals(new Map([["a", a]]), new Map([["a", b]])), "in map")
+    t[assert](equals(new Set([a]), new Set([b])), "in set")
     t[assert](
-      equal(
+      equals(
         { x: [{ a }], y: new Map([["a", a]]), z: new Set([a]) },
         { x: [{ a: b }], y: new Map([["a", b]]), z: new Set([b]) }
       ),

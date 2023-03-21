@@ -4,14 +4,14 @@
 // @thanks https://github.com/epoberezkin/fast-deep-equal
 // @related https://github.com/substack/node-deep-equal
 
+import equalsArrayBufferView from "../../binary/equalsArrayBufferView.js"
+
 const PRIMITIVES = new Set(["boolean", "number", "string"])
 
 const checkNode = "Node" in globalThis
 const checkBlob = "Blob" in globalThis
 
-const TypedArray = Reflect.getPrototypeOf(Uint8Array)
-
-const compareObjects = (a, b, config) => {
+function equalsObject(a, b, config) {
   const keysA = Reflect.ownKeys(a)
   const keysB = Reflect.ownKeys(b)
   const l = keysA.length
@@ -34,7 +34,7 @@ const compareObjects = (a, b, config) => {
   return true
 }
 
-const compareArrays = (a, b, config) => {
+function equalsArray(a, b, config) {
   if (a.length !== b.length) return false
 
   if (config.visited.has(a) && config.visited.has(b)) return true
@@ -48,9 +48,9 @@ const compareArrays = (a, b, config) => {
   return true
 }
 
-const compareCollections = (a, b, config) => {
+function equalsCollection(a, b, config) {
   if (a.size !== b.size) return false
-  if (!compareArrays(a.keys(), b.keys(), config)) return false
+  if (!equalsArray(a.keys(), b.keys(), config)) return false
 
   if (config.visited.has(a) && config.visited.has(b)) return true
   config.visited.add(a)
@@ -65,17 +65,7 @@ const compareCollections = (a, b, config) => {
   return true
 }
 
-const compareTypedArrays = (a, b) => {
-  const l = a.length
-  if (l !== b.length) return false
-  for (let i = 0; i < l; i++) {
-    if (a[i] !== b[i]) return false
-  }
-
-  return true
-}
-
-const compareArrayBuffers = (a, b) => {
+function equalsArrayBuffer(a, b) {
   if (a.byteLength !== b.byteLength) return false
   const dataViewA = new Uint8Array(a)
   const dataViewB = new Uint8Array(b)
@@ -94,7 +84,7 @@ const compareBlob = (a, b) =>
   a.webkitRelativePath === b.webkitRelativePath
 
 const deep = (compare, a, b, visited) =>
-  compare(a, b, visited) && compareObjects(a, b, visited)
+  compare(a, b, visited) && equalsObject(a, b, visited)
 
 function walk(a, b, config) {
   if (Object.is(a, b)) return true
@@ -112,33 +102,33 @@ function walk(a, b, config) {
     const protoB = Object.getPrototypeOf(b)
 
     if (config.proto && protoA !== protoB) return false
-    if (protoA === null) return compareObjects(a, b, config)
+    if (protoA === null) return equalsObject(a, b, config)
 
     if (typeA === "object") {
       typeA = Array.isArray(a)
       typeB = Array.isArray(b)
-      if (typeA && typeB) return deep(compareArrays, a, b, config)
+      if (typeA && typeB) return deep(equalsArray, a, b, config)
       if (typeA !== typeB) return false
 
       if (protoA.constructor && protoA.constructor.name !== "Object") {
         typeA = a instanceof Map
         typeB = b instanceof Map
-        if (typeA && typeB) return deep(compareCollections, a, b, config)
+        if (typeA && typeB) return deep(equalsCollection, a, b, config)
         if (typeA !== typeB) return false
 
         typeA = a instanceof Set
         typeB = b instanceof Set
-        if (typeA && typeB) return deep(compareCollections, a, b, config)
+        if (typeA && typeB) return deep(equalsCollection, a, b, config)
         if (typeA !== typeB) return false
 
         typeA = a instanceof ArrayBuffer
         typeB = b instanceof ArrayBuffer
-        if (typeA && typeB) return compareArrayBuffers(a, b)
+        if (typeA && typeB) return equalsArrayBuffer(a, b)
         if (typeA !== typeB) return false
 
-        typeA = a instanceof TypedArray
-        typeB = b instanceof TypedArray
-        if (typeA && typeB) return compareTypedArrays(a, b)
+        typeA = ArrayBuffer.isView(a)
+        typeB = ArrayBuffer.isView(b)
+        if (typeA && typeB) return equalsArrayBufferView(a, b)
         if (typeA !== typeB) return false
 
         if (checkNode) {
@@ -164,18 +154,18 @@ function walk(a, b, config) {
         if (toStringA !== toStringB) return false
       }
 
-      return compareObjects(a, b, config)
+      return equalsObject(a, b, config)
     }
 
     if (typeA === "function" && a.toString() === b.toString()) {
-      return compareObjects(a, b, config)
+      return equalsObject(a, b, config)
     }
   }
 
   return false
 }
 
-export default function equal(a, b, options) {
+export default function equals(a, b, options) {
   const config = {}
   config.visited = new WeakSet()
   config.proto = options?.proto ?? true

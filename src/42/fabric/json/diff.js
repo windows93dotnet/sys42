@@ -4,7 +4,7 @@
 //! Copyright (c) 2017 Greg Sexton. Apache License, Version 2.0.
 // @src https://github.com/gregsexton/json-patch-gen
 
-import equal from "../type/any/equal.js"
+import equals from "../type/any/equals.js"
 import joinJSONPointer from "./joinJSONPointer.js"
 import isHashmapLike from "../type/any/is/isHashmapLike.js"
 
@@ -218,7 +218,7 @@ function valueDiff(a, b, path, options, parents = {}) {
   }
 
   if (isHashmapLike(a) === false || isHashmapLike(b) === false) {
-    return equal(a, b) ? [] : replaceWithB(path, b)
+    return equals(a, b) ? [] : replaceWithB(path, b)
   }
 
   let acc = []
