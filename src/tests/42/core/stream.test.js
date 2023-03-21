@@ -1,6 +1,7 @@
 import test from "../../../42/test.js"
 import stream from "../../../42/core/stream.js"
 import http from "../../../42/core/http.js"
+import combineArrayBufferView from "../../../42/fabric/binary/combineArrayBufferView.js"
 
 test.serial("verify polyfills", async (t) => {
   t.timeout(1000)
@@ -228,7 +229,7 @@ test("transform", "cut()", async (t) => {
   chunks[0].fill(1)
   chunks[1].fill(2)
 
-  const expected = t.utils.combine(...chunks).buffer
+  const expected = combineArrayBufferView(...chunks).buffer
 
   const parts = []
 
@@ -248,7 +249,7 @@ test("transform", "cut()", "exact: true", async (t) => {
   chunks[0].fill(1)
   chunks[1].fill(2)
 
-  const expected = t.utils.combine(...chunks).buffer
+  const expected = combineArrayBufferView(...chunks).buffer
 
   const parts = []
 

@@ -1,4 +1,4 @@
-export default async function ensureBuffer(val) {
+export async function ensureArrayBuffer(val) {
   const buffer =
     val instanceof ArrayBuffer
       ? val
@@ -14,3 +14,5 @@ export default async function ensureBuffer(val) {
 
   return buffer
 }
+
+export default ensureArrayBuffer

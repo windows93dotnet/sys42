@@ -1,5 +1,5 @@
-import test from "../../../../../42/test.js"
-import checksum from "../../../../../42/fabric/type/file/checksum.js"
+import test from "../../../../42/test.js"
+import checksum from "../../../../42/fabric/binary/checksum.js"
 
 test.suite.timeout(1000)
 

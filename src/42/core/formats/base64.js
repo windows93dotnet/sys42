@@ -1,7 +1,7 @@
 //! Copyright (c) 2014 Jameson Little. MIT License.
 // @src https://github.com/beatgammit/base64-js
 
-import ensureBuffer from "../../fabric/type/file/ensureBuffer.js"
+import ensureArrayBuffer from "../../fabric/binary/ensureArrayBuffer.js"
 
 const lookup = []
 const revLookup = []
@@ -144,7 +144,7 @@ export function fromArrayBuffer(buffer) {
 }
 
 export async function base64Encode(val) {
-  const buffer = await ensureBuffer(val)
+  const buffer = await ensureArrayBuffer(val)
   return fromArrayBuffer(buffer)
 }
 

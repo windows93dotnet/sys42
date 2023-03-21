@@ -3,7 +3,7 @@
 
 import render from "../ui/render.js"
 import locate from "../fabric/locator/locate.js"
-import bytesize from "../fabric/type/file/bytesize.js"
+import bytesize from "../fabric/binary/bytesize.js"
 import trailZeros from "../fabric/type/number/trailZeros.js"
 import dispatch from "../fabric/event/dispatch.js"
 import queueTask from "../fabric/type/function/queueTask.js"

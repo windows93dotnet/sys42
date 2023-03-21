@@ -1,7 +1,6 @@
 import allKeys from "../../../fabric/type/object/allKeys.js"
 import arrify from "../../../fabric/type/any/arrify.js"
 import clone from "../../../fabric/type/any/clone.js"
-import combine from "../../../fabric/type/typedarray/combine.js"
 import create from "../../../ui/create.js"
 import defer from "../../../fabric/type/promise/defer.js"
 import documentReady from "../../../fabric/dom/documentReady.js"
@@ -196,7 +195,6 @@ export default function addUtilities(item, isExecutionContext) {
     allKeys,
     arrify,
     clone,
-    combine,
     defer,
     documentReady,
     hashmap,

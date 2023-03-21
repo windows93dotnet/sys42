@@ -1,7 +1,7 @@
 // @thanks https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API/Non-cryptographic_uses_of_subtle_crypto
 
-import ensureBuffer from "./ensureBuffer.js"
-import { fromArrayBuffer } from "../../../core/formats/base64.js"
+import ensureArrayBuffer from "./ensureArrayBuffer.js"
+import { fromArrayBuffer } from "../../core/formats/base64.js"
 
 /**
  * Cryptographic hash function.
@@ -15,7 +15,7 @@ export default async function checksum(val, options) {
   const algo = options?.algo ?? "SHA-256"
   const output = options?.output ?? "base64"
 
-  const buffer = await ensureBuffer(val)
+  const buffer = await ensureArrayBuffer(val)
   const digest = await crypto.subtle.digest(algo, buffer)
 
   if (output === "base64") return fromArrayBuffer(digest)

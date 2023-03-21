@@ -12,7 +12,7 @@ if ("DecompressionStream" in globalThis === false) {
   await import("./env/polyfills/globalThis.DecompressionStream.min.js")
 }
 
-import combine from "../fabric/type/typedarray/combine.js"
+import combineArrayBufferView from "../fabric/binary/combineArrayBufferView.js"
 import nextCycle from "../fabric/type/promise/nextCycle.js"
 import sleep from "../fabric/type/promise/sleep.js"
 
@@ -240,7 +240,9 @@ export function cutPipe(size, options) {
 
               if (prevArr) {
                 i = size - prevArr.length
-                controller.enqueue(combine(prevArr, chunk.slice(0, i)))
+                controller.enqueue(
+                  combineArrayBufferView(prevArr, chunk.slice(0, i))
+                )
                 prevArr = undefined
               }
 

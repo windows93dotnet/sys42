@@ -2,7 +2,7 @@ import demand from "./demand.js"
 import uid from "../../core/uid.js"
 import listen from "../../fabric/event/listen.js"
 import defer from "../../fabric/type/promise/defer.js"
-import bytesize from "../../fabric/type/file/bytesize.js"
+import bytesize from "../../fabric/binary/bytesize.js"
 import paintThrottle from "../../fabric/type/function/paintThrottle.js"
 
 const DEFAULT = {
