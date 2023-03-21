@@ -87,7 +87,7 @@ function createConsumer(carrier, enqueue) {
   return { buffer, consume }
 }
 
-export function tsTarExtract(options) {
+export function tarExtractPipe(options) {
   let buffer
   let consume
 
@@ -131,4 +131,4 @@ export function tsTarExtract(options) {
   return ts
 }
 
-export default tsTarExtract
+export default tarExtractPipe

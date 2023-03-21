@@ -70,7 +70,7 @@ function writeHeader(writer, header) {
   writer.write(encodeTarHeader(newHeader))
 }
 
-export function tsTarPack() {
+export function tarPackPipe() {
   const ts = new TransformStream()
 
   let writer = ts.writable.getWriter()
@@ -126,4 +126,4 @@ export function tsTarPack() {
   return ts
 }
 
-export default tsTarPack
+export default tarPackPipe

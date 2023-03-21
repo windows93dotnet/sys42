@@ -2,7 +2,7 @@
 // @src https://github.com/mafintosh/tar-stream/blob/master/test/extract.js
 
 import test from "../../../../../42/test.js"
-import tsTarExtract from "../../../../../42/core/formats/tar/tsTarExtract.js"
+import tarExtractPipe from "../../../../../42/core/formats/tar/tarExtractPipe.js"
 import getBasename from "../../../../../42/core/path/core/getBasename.js"
 
 const { stream, http } = test.utils
@@ -491,7 +491,7 @@ test.tasks(
               http
                 .source(url)
                 .pipeThrough(stream.pipe.cut(321))
-                .pipeThrough(tsTarExtract(options))
+                .pipeThrough(tarExtractPipe(options))
             ),
           throws
         )
@@ -506,7 +506,7 @@ test.tasks(
         http
           .source(url)
           .pipeThrough(stream.pipe.cut(321))
-          .pipeThrough(tsTarExtract(options))
+          .pipeThrough(tarExtractPipe(options))
       )
 
       if (files) {

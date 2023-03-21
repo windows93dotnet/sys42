@@ -1,4 +1,4 @@
-import tsTarExtract from "./tar/tsTarExtract.js"
+import tarExtractPipe from "./tar/tarExtractPipe.js"
 import http from "../http.js"
 
 async function extract(url, options) {
@@ -6,7 +6,7 @@ async function extract(url, options) {
   const items = []
   await http
     .source(url)
-    .pipeThrough(tsTarExtract(options))
+    .pipeThrough(tarExtractPipe(options))
     .pipeTo(new WritableStream({ write: (item) => items.push(item) }))
   return items
 }

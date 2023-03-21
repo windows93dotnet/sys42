@@ -2,7 +2,7 @@
 // @src https://github.com/mafintosh/tar-stream/blob/master/test/pack.js
 
 import test from "../../../../../42/test.js"
-import tsTarPack from "../../../../../42/core/formats/tar/tsTarPack.js"
+import tarPackPipe from "../../../../../42/core/formats/tar/tarPackPipe.js"
 import getBasename from "../../../../../42/core/path/core/getBasename.js"
 
 const { stream, load } = test.utils
@@ -11,7 +11,7 @@ const { task } = test
 test("pack", "File without header", async (t) => {
   t.timeout(1000)
 
-  const pack = tsTarPack()
+  const pack = tarPackPipe()
 
   pack.add(
     new File(["hello world\n"], "test.txt", {
@@ -190,7 +190,7 @@ test.tasks(
     test("pack", title ?? getBasename(url), async (t) => {
       t.timeout(1000)
 
-      const pack = tsTarPack()
+      const pack = tarPackPipe()
 
       for (let i = 0, l = headers.length; i < l; i++) {
         pack.add(headers[i], files?.[i])
