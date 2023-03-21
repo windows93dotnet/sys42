@@ -20,9 +20,9 @@ test("writable", "collect()", async (t) => {
 
 test.serial("writable", "collect()", "more than 64KiB", async (t) => {
   t.timeout(1000)
-  const orignal = new Uint8Array(new Array(65_536 + 1).fill(0)).buffer
-  const actual = await stream.ws.collect(stream.rs.source(orignal))
-  t.eq(actual, orignal)
+  const original = new Uint8Array(new Array(65_536 + 1).fill(0)).buffer
+  const actual = await stream.ws.collect(stream.rs.source(original))
+  t.eq(actual, original)
 })
 
 test("writable", "collect()", "text", async (t) => {

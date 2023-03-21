@@ -16,9 +16,6 @@ import combine from "../fabric/type/typedarray/combine.js"
 import nextCycle from "../fabric/type/promise/nextCycle.js"
 import sleep from "../fabric/type/promise/sleep.js"
 
-import pump from "./stream/pump.js"
-export { default as pump } from "./stream/pump.js"
-
 import absorb from "./stream/absorb.js"
 export { default as absorb } from "./stream/absorb.js"
 
@@ -381,7 +378,6 @@ export function tsCombine(a, ...transforms) {
 }
 
 const stream = {
-  pump,
   absorb,
 
   readable: {

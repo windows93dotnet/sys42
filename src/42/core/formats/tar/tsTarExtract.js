@@ -7,7 +7,7 @@ import {
 } from "./decodeTarHeader.js"
 
 // @src https://deno.land/std@0.162.0/streams/buffer.ts?source#L247
-function tsRange(start = 0, end = Infinity) {
+function slicePipe(start = 0, end = Infinity) {
   let offsetStart = 0
   let offsetEnd = 0
   return new TransformStream({
@@ -51,7 +51,7 @@ function makeFile(carrier, offset, header, enqueue) {
       get() {
         const [a, b] = carrier.readable.tee()
         carrier.readable = a
-        return b.pipeThrough(tsRange(offset, offset + header.size))
+        return b.pipeThrough(slicePipe(offset, offset + header.size))
       },
     },
   })
