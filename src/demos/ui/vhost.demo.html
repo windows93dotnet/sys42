@@ -10,8 +10,13 @@
 </script>
 
 <script type="module">
+  import system from "../../42/system.js"
   import ui from "../../42/ui.js"
   import fs from "../../42/core/fs.js"
+
+  system.network ??= {
+    vhost: "http://localhost:3000/42/os/network/vhost.html?path=",
+  }
 
   localStorage.setItem("secret", "hello secret")
 
@@ -59,63 +64,53 @@
   // console.log(navigator.serviceWorker.controller)
   // navigator.serviceWorker.controller.postMessage("42_SW_DISK_INIT")
 
-  await ui(
-    {
-      tag: "body.box-center",
-      content: [
-        {
-          tag: "h2.ma-b-0",
-          content: "Service Worker virtual host experiment",
-        },
-        {
-          tag: "div",
-          content: [
-            "This is a proof of concept to try to overcome the fact that Service Worker don't work in sandboxed iframes.",
-            "\n\n",
-            {
-              tag: "a",
-              href: "https://github.com/w3c/ServiceWorker/issues/1390",
-              content: "https://github.com/w3c/ServiceWorker/issues/1390",
-            },
-          ],
-        },
-        "\n\n",
-        {
-          tag: "button",
-          content: "Clear top and vhost site-data",
-          async click() {
-            const iframe = document.createElement("iframe")
-            iframe.style = `display:none`
-            document.documentElement.append(iframe)
-            const clearVhost = (url) =>
-              new Promise((resolve, reject) => {
-                iframe.onload = resolve
-                iframe.onerror = reject
-                iframe.src = url
-              })
-
-            await Promise.all([
-              clearVhost("http://localhost:3000/?empty&clear-site-data"),
-              fetch("/?empty&clear-site-data"),
-            ])
-            location.reload()
+  await ui({
+    tag: "body.box-center",
+    content: [
+      {
+        tag: "h2.ma-b-0",
+        content: "Service Worker virtual host experiment",
+      },
+      {
+        tag: "div",
+        content: [
+          "This is a proof of concept to try to overcome the fact that Service Worker don't work in sandboxed iframes.",
+          "\n\n",
+          {
+            tag: "a",
+            href: "https://github.com/w3c/ServiceWorker/issues/1390",
+            content: "https://github.com/w3c/ServiceWorker/issues/1390",
           },
+        ],
+      },
+      "\n\n",
+      {
+        tag: "button",
+        content: "Clear top and vhost site-data",
+        async click() {
+          const iframe = document.createElement("iframe")
+          iframe.style = `display:none`
+          document.documentElement.append(iframe)
+          const clearVhost = (url) =>
+            new Promise((resolve, reject) => {
+              iframe.onload = resolve
+              iframe.onerror = reject
+              iframe.src = url
+            })
+
+          await Promise.all([
+            clearVhost("http://localhost:3000/?empty&clear-site-data"),
+            fetch("/?empty&clear-site-data"),
+          ])
+          location.reload()
         },
-        {
-          tag: "ui-sandbox.ma-t.inset",
-          style: { width: "512px", height: "160px" },
-          permissions: "app",
-          vhost: "http://localhost:3000/42/os/network/vhost.html?path=",
-          path: "/test.html",
-        },
-        {
-          tag: "ui-sandbox.ma-t.inset",
-          style: { width: "512px", height: "160px" },
-          permissions: "trusted",
-          path: "/test.html",
-        },
-      ],
-    },
-    { trusted: true }
-  )
+      },
+      {
+        tag: "ui-sandbox.ma-t.inset",
+        style: { width: "512px", height: "160px" },
+        permissions: "app",
+        path: "/test.html",
+      },
+    ],
+  })
 </script>

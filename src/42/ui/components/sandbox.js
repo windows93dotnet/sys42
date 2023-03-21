@@ -1,3 +1,4 @@
+import system from "../../system.js"
 import Component from "../classes/Component.js"
 import Resource from "../../fabric/classes/Resource.js"
 import create from "../create.js"
@@ -17,7 +18,6 @@ const DEFAULTS = {
   body: /* html */ `<body class="in-iframe">`,
 }
 
-const vhosts = new Map()
 async function makeVhost(origin) {
   const [disk, ipc, fs] = await Promise.all([
     import("../../core/disk.js").then(({ disk }) => disk),
@@ -29,6 +29,17 @@ async function makeVhost(origin) {
   await disk.ready
 }
 
+if (system.network?.vhost) {
+  const vhostOrigin = new URL(system.network.vhost).origin
+  if (vhostOrigin === location.origin) {
+    // Unsafe to use vhost if from same origin
+    delete system.network.vhost
+  } else {
+    system.network.vhostOrigin = vhostOrigin
+    makeVhost(system.network.vhostOrigin)
+  }
+}
+
 export class Sandbox extends Component {
   static plan = {
     tag: "ui-sandbox",
@@ -38,11 +49,6 @@ export class Sandbox extends Component {
     props: {
       permissions: {
         type: "any",
-        fromView: true,
-        update: _setResource,
-      },
-      vhost: {
-        type: "string",
         fromView: true,
         update: _setResource,
       },
@@ -135,15 +141,6 @@ export class Sandbox extends Component {
       )
     }
 
-    if (this.vhost) {
-      const { origin } = new URL(this.vhost)
-      if (origin && origin !== location.origin) {
-        // Safe to use allow-same-origin if vhost is from another origin
-        sandbox.add("allow-same-origin")
-        vhosts.set(this.vhost, makeVhost(origin))
-      }
-    }
-
     this.querySelector(":scope > .ui-sandbox__scene") //
       .replaceChildren(this.resource.el)
   }
@@ -183,19 +180,23 @@ export class Sandbox extends Component {
     if (!this.path) return
 
     this.toggleAttribute("loading", true)
-    // this.message("loading...")
 
     this.#cancel = this.stage.cancel.fork()
     const { signal } = this.#cancel
 
     this.resource.config.checkIframable = this.check
 
-    if (this.vhost) await vhosts.get(this.vhost)
-    const path = this.vhost ? this.vhost + this.path : this.path
+    let { path } = this
+
+    if (system.network?.vhostOrigin && this.path.endsWith(".html")) {
+      if (new URL(path, location).origin === location.origin) {
+        this.resource.el.sandbox.add("allow-same-origin")
+        path = system.network.vhost + this.path
+      }
+    }
 
     try {
       await this.resource.go(path, { signal })
-      // this.message()
     } catch {
       this.message(
         create("div", "Impossible to embed this URL"),
