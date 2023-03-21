@@ -7,79 +7,45 @@ test.serial("verify polyfills", async (t) => {
   t.plan(1)
   const res = await fetch("/tests/fixtures/stream/data.json")
   await res.body
-    .pipeThrough(stream.ts.text())
-    .pipeThrough(stream.ts.json())
-    .pipeThrough(stream.ts.each((item) => t.eq(item, { a: 1 })))
-    .pipeTo(stream.ws.sink())
+    .pipeThrough(stream.pipe.text())
+    .pipeThrough(stream.pipe.each((item) => t.eq(JSON.parse(item), { a: 1 })))
+    .pipeTo(stream.sink())
 })
 
 test("writable", "collect()", async (t) => {
-  const actual = await stream.ws.collect(stream.rs.source(["ab", "c"]))
+  const actual = await stream.collect(stream.source(["ab", "c"]))
   t.eq(actual, new Uint8Array([0x61, 0x62, 0x63]).buffer)
 })
 
 test.serial("writable", "collect()", "more than 64KiB", async (t) => {
   t.timeout(1000)
   const original = new Uint8Array(new Array(65_536 + 1).fill(0)).buffer
-  const actual = await stream.ws.collect(stream.rs.source(original))
+  const actual = await stream.collect(stream.source(original))
   t.eq(actual, original)
 })
 
 test("writable", "collect()", "text", async (t) => {
-  const actual = await stream.ws.collect(
-    stream.rs.source(["ab", "c"]).pipeThrough(stream.ts.text())
+  const actual = await stream.collect(
+    stream.source(["ab", "c"]).pipeThrough(stream.pipe.text())
   )
   t.is(actual, "abc")
 })
 
 test("writable", "sink()", async (t) => {
   t.plan(1)
-  await stream.rs
+  await stream
     .source(["ab", "c"])
-    .pipeThrough(stream.ts.text())
-    .pipeTo(stream.ws.sink((data) => t.is(data, "abc")))
-})
-
-test.cb("writable", "sample()", async (t) => {
-  t.plan(2)
-  const actual = await stream.ws.sample(
-    stream.rs.source(["ab", "c"]),
-    (branch) => {
-      branch.pipeThrough(stream.ts.text()).pipeTo(
-        stream.ws.sink((data) => {
-          t.is(data, "abc")
-          t.end()
-        })
-      )
-    }
-  )
-  t.eq(actual, new Uint8Array([0x61, 0x62, 0x63]).buffer)
-})
-
-test("readable", "tee()", async (t) => {
-  t.plan(3)
-  const res = await stream.rs.tee(stream.rs.source(["ab", "c"]), (a, b) => [
-    a.pipeThrough(stream.ts.text()).pipeTo(
-      stream.ws.sink((data) => {
-        t.is(data, "abc")
-      })
-    ),
-    b.pipeTo(
-      stream.ws.sink((data) => {
-        t.eq(data, new Uint8Array([0x61, 0x62, 0x63]).buffer)
-      })
-    ),
-  ])
-  t.eq(res, [undefined, undefined])
+    .pipeThrough(stream.pipe.text())
+    .pipeTo(stream.sink((data) => t.is(data, "abc")))
 })
 
 test.serial("readable", "get()", async (t) => {
   t.timeout(1000)
   const actual = (
-    await stream.ws.collect(
+    await stream.collect(
       http
         .source("/tests/fixtures/stream/data.json")
-        .pipeThrough(stream.ts.text())
+        .pipeThrough(stream.pipe.text())
     )
   ).replaceAll("\r\n", "\n")
 
@@ -94,10 +60,10 @@ test.serial("readable", "get()", async (t) => {
 
 test("readable", "wrap()", async (t) => {
   t.timeout(1000)
-  const actual = await stream.ws.collect(
-    stream.rs
-      .wrap(stream.rs.source(["ab", "c"]), { before: "[", after: "]" })
-      .pipeThrough(stream.ts.text())
+  const actual = await stream.collect(
+    stream
+      .wrap(stream.source(["ab", "c"]), { before: "[", after: "]" })
+      .pipeThrough(stream.pipe.text())
   )
 
   t.is(actual, "[abc]")
@@ -105,11 +71,11 @@ test("readable", "wrap()", async (t) => {
 
 // don't work with "node:stream/web"
 test.noop("transform", "arrayBuffer() + text()", async (t) => {
-  const actual = await stream.ws.collect(
-    stream.rs
+  const actual = await stream.collect(
+    stream.source
       .array(["hello \ud83c", "\udf0d"])
-      .pipeThrough(stream.ts.arrayBuffer())
-      .pipeThrough(stream.ts.text())
+      .pipeThrough(stream.pipe.arrayBuffer())
+      .pipeThrough(stream.pipe.text())
   )
 
   t.is(actual, "hello 🌍")
@@ -146,12 +112,12 @@ test("transform", "arrayBuffer() + text()", 2, async (t) => {
 
   for (const source of sources) {
     t.is(
-      await stream.ws.collect(
-        stream.rs
+      await stream.collect(
+        stream.source
           .array(source)
-          .pipeThrough(stream.ts.text())
-          .pipeThrough(stream.ts.arrayBuffer())
-          .pipeThrough(stream.ts.text())
+          .pipeThrough(stream.pipe.text())
+          .pipeThrough(stream.pipe.arrayBuffer())
+          .pipeThrough(stream.pipe.text())
       ),
       "h🌍"
     )
@@ -161,76 +127,76 @@ test("transform", "arrayBuffer() + text()", 2, async (t) => {
 test("transform", "each()", async (t) => {
   t.plan(2)
   const expected = ["a", "b"]
-  await stream.rs
+  await stream
     .source(["a", "b"])
-    .pipeThrough(stream.ts.text())
-    .pipeThrough(stream.ts.each((item, i) => t.is(item, expected[i])))
-    .pipeTo(stream.ws.sink())
+    .pipeThrough(stream.pipe.text())
+    .pipeThrough(stream.pipe.each((item, i) => t.is(item, expected[i])))
+    .pipeTo(stream.sink())
 })
 
 test("transform", "map()", async (t) => {
   t.plan(3)
-  await stream.rs
+  await stream
     .source(["a", "b"])
-    .pipeThrough(stream.ts.text())
-    .pipeThrough(stream.ts.map((item) => item + "!"))
-    .pipeThrough(stream.ts.each((item) => t.true(/[ab]!/.test(item))))
-    .pipeTo(stream.ws.sink((item) => t.is(item, "a!b!")))
+    .pipeThrough(stream.pipe.text())
+    .pipeThrough(stream.pipe.map((item) => item + "!"))
+    .pipeThrough(stream.pipe.each((item) => t.true(/[ab]!/.test(item))))
+    .pipeTo(stream.sink((item) => t.is(item, "a!b!")))
 })
 
 test("transform", "map()", 2, async (t) => {
   t.plan(1)
-  await stream.rs
+  await stream
     .source(["💦", "💦"])
-    .pipeThrough(stream.ts.text())
-    .pipeThrough(stream.ts.map((item) => item + "!"))
-    .pipeTo(stream.ws.sink((item) => t.is(item, "💦!💦!")))
+    .pipeThrough(stream.pipe.text())
+    .pipeThrough(stream.pipe.map((item) => item + "!"))
+    .pipeTo(stream.sink((item) => t.is(item, "💦!💦!")))
 })
 
 test("transform", "split() + join()", async (t) => {
   t.plan(1)
-  await stream.rs
+  await stream
     .source(["a\nb\n", "c\nd"])
-    .pipeThrough(stream.ts.text())
-    .pipeThrough(stream.ts.split())
-    .pipeThrough(stream.ts.join("+"))
-    .pipeTo(stream.ws.sink((item) => t.is(item, "a+b+c+d")))
+    .pipeThrough(stream.pipe.text())
+    .pipeThrough(stream.pipe.split("\n"))
+    .pipeThrough(stream.pipe.join("+"))
+    .pipeTo(stream.sink((item) => t.is(item, "a+b+c+d")))
 })
 
 test("transform", "split() + join()", "include: true", async (t) => {
   t.plan(1)
-  await stream.rs
+  await stream
     .source(["a\nb\n", "c\nd"])
-    .pipeThrough(stream.ts.text())
-    .pipeThrough(stream.ts.split("\n", { include: true }))
-    .pipeThrough(stream.ts.join("+"))
-    .pipeTo(stream.ws.sink((item) => t.is(item, `a\n+b\n+c\n+d`)))
+    .pipeThrough(stream.pipe.text())
+    .pipeThrough(stream.pipe.split("\n", { include: true }))
+    .pipeThrough(stream.pipe.join("+"))
+    .pipeTo(stream.sink((item) => t.is(item, `a\n+b\n+c\n+d`)))
 })
 
-test("transform", "combine()", async (t) => {
+test("transform", "pipeline()", async (t) => {
   t.plan(1)
-  await stream.rs
+  await stream
     .source(["💦", "💦"])
     .pipeThrough(
-      stream.ts.combine([
-        stream.ts.text(), //
-        stream.ts.map((item) => item + "!"),
-        stream.ts.map((item) => item + "?"),
+      stream.pipeline([
+        stream.pipe.text(), //
+        stream.pipe.map((item) => item + "!"),
+        stream.pipe.map((item) => item + "?"),
       ])
     )
-    .pipeTo(stream.ws.sink((item) => t.is(item, "💦!?💦!?")))
+    .pipeTo(stream.sink((item) => t.is(item, "💦!?💦!?")))
 })
 
-test("transform", "combine()", "with readable", async (t) => {
+test("transform", "pipeline()", "with readable", async (t) => {
   t.plan(1)
-  await stream.ts
-    .combine([
-      stream.rs.source(["💦", "💦"]),
-      stream.ts.text(),
-      stream.ts.map((item) => item + "!"),
-      stream.ts.map((item) => item + "?"),
+  await stream
+    .pipeline([
+      stream.source(["💦", "💦"]),
+      stream.pipe.text(),
+      stream.pipe.map((item) => item + "!"),
+      stream.pipe.map((item) => item + "?"),
     ])
-    .pipeTo(stream.ws.sink((item) => t.is(item, "💦!?💦!?")))
+    .pipeTo(stream.sink((item) => t.is(item, "💦!?💦!?")))
 })
 
 test("transform", "text() + arrayBuffer()", async (t) => {
@@ -241,18 +207,18 @@ test("transform", "text() + arrayBuffer()", async (t) => {
 
   t.plan(1 + chunks.length + bytes.length)
 
-  await stream.rs
+  await stream
     .source(chunks)
-    .pipeThrough(stream.ts.text())
-    .pipeThrough(stream.ts.each((x) => t.is(x, chunks[i++])))
-    .pipeThrough(stream.ts.arrayBuffer())
+    .pipeThrough(stream.pipe.text())
+    .pipeThrough(stream.pipe.each((x) => t.is(x, chunks[i++])))
+    .pipeThrough(stream.pipe.arrayBuffer())
     .pipeThrough(
-      stream.ts.each((x) => {
+      stream.pipe.each((x) => {
         for (const byte of x) t.is(byte, bytes[j++])
       })
     )
-    .pipeThrough(stream.ts.text())
-    .pipeTo(stream.ws.sink((item) => t.is(item, "abc")))
+    .pipeThrough(stream.pipe.text())
+    .pipeTo(stream.sink((item) => t.is(item, "abc")))
 })
 
 test("transform", "cut()", async (t) => {
@@ -266,11 +232,11 @@ test("transform", "cut()", async (t) => {
 
   const parts = []
 
-  await stream.rs
+  await stream.source
     .array(chunks)
-    .pipeThrough(stream.ts.cut(20))
-    .pipeThrough(stream.ts.each((x) => parts.push(x.length)))
-    .pipeTo(stream.ws.sink((item) => t.eq(item, expected)))
+    .pipeThrough(stream.pipe.cut(20))
+    .pipeThrough(stream.pipe.each((x) => parts.push(x.length)))
+    .pipeTo(stream.sink((item) => t.eq(item, expected)))
 
   t.eq(parts, [20, 20, 20, 20, 4])
 })
@@ -286,11 +252,11 @@ test("transform", "cut()", "exact: true", async (t) => {
 
   const parts = []
 
-  await stream.rs
+  await stream.source
     .array(chunks)
-    .pipeThrough(stream.ts.cut(20, { exact: false }))
-    .pipeThrough(stream.ts.each((x) => parts.push(x.length)))
-    .pipeTo(stream.ws.sink((item) => t.eq(item, expected)))
+    .pipeThrough(stream.pipe.cut(20, { exact: false }))
+    .pipeThrough(stream.pipe.each((x) => parts.push(x.length)))
+    .pipeTo(stream.sink((item) => t.eq(item, expected)))
 
   t.eq(parts, [20, 20, 2, 20, 20, 2])
 })
@@ -300,8 +266,8 @@ if ("CompressionStream" in globalThis) {
     t.timeout(1000)
     const original = new TextEncoder().encode("💦💦")
 
-    const compressed = await stream.ws.collect(
-      stream.rs.source(["💦", "💦"]).pipeThrough(stream.ts.compress())
+    const compressed = await stream.collect(
+      stream.source(["💦", "💦"]).pipeThrough(stream.pipe.compress())
     )
 
     t.true(
@@ -309,8 +275,8 @@ if ("CompressionStream" in globalThis) {
       "less byteLength in compressed"
     )
 
-    const decompressed = await stream.ws.collect(
-      stream.rs.source(compressed).pipeThrough(stream.ts.decompress())
+    const decompressed = await stream.collect(
+      stream.source(compressed).pipeThrough(stream.pipe.decompress())
     )
 
     t.true(
@@ -334,9 +300,10 @@ test.serial("ndjson", async (t) => {
   ]
   await http
     .source("/tests/fixtures/stream/data.ndjson")
-    .pipeThrough(stream.ts.text())
-    .pipeThrough(stream.ts.split(/(?:\r?\n)+/))
-    .pipeThrough(stream.ts.json())
-    .pipeThrough(stream.ts.each((val, i) => t.eq(val, expecteds[i])))
-    .pipeTo(stream.ws.sink())
+    .pipeThrough(stream.pipe.text())
+    .pipeThrough(stream.pipe.split(/(?:\r?\n)+/))
+    .pipeThrough(
+      stream.pipe.each((val, i) => t.eq(JSON.parse(val), expecteds[i]))
+    )
+    .pipeTo(stream.sink())
 })

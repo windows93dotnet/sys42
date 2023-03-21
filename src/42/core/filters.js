@@ -262,13 +262,13 @@ types.field = {
 
   async sink(rs, field = this.el) {
     if (rs === undefined) return
-    const [stream, sinkField] = await Promise.all([
+    const [stream, fieldSink] = await Promise.all([
       import("./stream.js").then((m) => m.default),
-      import("./stream/sinkField.js").then((m) => m.default),
+      import("./stream/sinks/fieldSink.js").then((m) => m.default),
     ])
     return rs
-      .pipeThrough(stream.ts.text())
-      .pipeTo(sinkField(field))
+      .pipeThrough(stream.pipe.text())
+      .pipeTo(fieldSink(field))
       .catch((err) => dispatch(this.el, err))
   },
 }

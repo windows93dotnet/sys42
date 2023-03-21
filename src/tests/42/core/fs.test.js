@@ -165,28 +165,32 @@ const makeSuite = (driver) => {
     }
     chunks.mixeds = [chunks.strings[0], chunks.buffers[1], chunks.buffers[2]]
 
-    await stream.rs.array(chunks.strings).pipeTo(fs.sink(path + 1))
+    await stream.source.array(chunks.strings).pipeTo(fs.sink(path + 1))
     t.eq(await fs.read(path + 1, "utf-8"), content)
-    await stream.rs.array(chunks.buffers).pipeTo(fs.sink(path + 2))
+    await stream.source.array(chunks.buffers).pipeTo(fs.sink(path + 2))
     t.eq(await fs.read(path + 2, "utf-8"), content)
-    await stream.rs.array(chunks.mixeds).pipeTo(fs.sink(path + 3))
+    await stream.source.array(chunks.mixeds).pipeTo(fs.sink(path + 3))
     t.eq(await fs.read(path + 3, "utf-8"), content)
 
     // sink with encoding
-    await stream.rs.array(chunks.strings).pipeTo(fs.sink(path + 10, "utf-8"))
+    await stream.source
+      .array(chunks.strings)
+      .pipeTo(fs.sink(path + 10, "utf-8"))
     t.eq(await fs.read(path + 10, "utf-8"), content)
-    await stream.rs.array(chunks.buffers).pipeTo(fs.sink(path + 20, "utf-8"))
+    await stream.source
+      .array(chunks.buffers)
+      .pipeTo(fs.sink(path + 20, "utf-8"))
     t.eq(await fs.read(path + 20, "utf-8"), content)
-    await stream.rs.array(chunks.mixeds).pipeTo(fs.sink(path + 30, "utf-8"))
+    await stream.source.array(chunks.mixeds).pipeTo(fs.sink(path + 30, "utf-8"))
     t.eq(await fs.read(path + 30, "utf-8"), content)
 
     // intermediate folder creation
     const dir = decayDir(`42-${d}-sink-dir`) + "/"
-    await stream.rs.array(chunks.strings).pipeTo(fs.sink(dir + path + 1))
+    await stream.source.array(chunks.strings).pipeTo(fs.sink(dir + path + 1))
     t.eq(await fs.read(dir + path + 1, "utf-8"), content)
-    await stream.rs.array(chunks.buffers).pipeTo(fs.sink(dir + path + 2))
+    await stream.source.array(chunks.buffers).pipeTo(fs.sink(dir + path + 2))
     t.eq(await fs.read(dir + path + 2, "utf-8"), content)
-    await stream.rs.array(chunks.mixeds).pipeTo(fs.sink(dir + path + 3))
+    await stream.source.array(chunks.mixeds).pipeTo(fs.sink(dir + path + 3))
     t.eq(await fs.read(dir + path + 3, "utf-8"), content)
   })
 
@@ -195,8 +199,8 @@ const makeSuite = (driver) => {
     const content = "hello 🌍"
     const { buffer } = new TextEncoder().encode(content)
     await fs.write(path, content)
-    t.eq(await stream.ws.collect(fs.source(path, "utf-8")), content)
-    t.eq(await stream.ws.collect(fs.source(path)), buffer)
+    t.eq(await stream.collect(fs.source(path, "utf-8")), content)
+    t.eq(await stream.collect(fs.source(path)), buffer)
   })
 
   /* cbor

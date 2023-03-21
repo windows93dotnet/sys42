@@ -1,35 +1,11 @@
 import Buffer from "../../../fabric/binary/Buffer.js"
 import getBasename from "../../path/core/getBasename.js"
+import slicePipe from "../../stream/pipes/slicePipe.js"
 import {
   decodeTarHeader,
   decodePax,
   decodeLongPath,
 } from "./decodeTarHeader.js"
-
-// @src https://deno.land/std@0.162.0/streams/buffer.ts?source#L247
-function slicePipe(start = 0, end = Infinity) {
-  let offsetStart = 0
-  let offsetEnd = 0
-  return new TransformStream({
-    transform(chunk, controller) {
-      offsetStart = offsetEnd
-      offsetEnd += chunk.byteLength
-      if (offsetEnd > start) {
-        if (offsetStart < start) {
-          chunk = chunk.slice(start - offsetStart)
-        }
-
-        if (offsetEnd >= end) {
-          chunk = chunk.slice(0, chunk.byteLength - offsetEnd + end)
-          controller.enqueue(chunk)
-          controller.terminate()
-        } else {
-          controller.enqueue(chunk)
-        }
-      }
-    },
-  })
-}
 
 function overflow(size) {
   size &= 511

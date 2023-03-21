@@ -487,10 +487,10 @@ test.tasks(
         t.timeout(1000)
         await t.throws(
           () =>
-            stream.ws.collect(
+            stream.collect(
               http
                 .source(url)
-                .pipeThrough(stream.ts.cut(321))
+                .pipeThrough(stream.pipe.cut(321))
                 .pipeThrough(tsTarExtract(options))
             ),
           throws
@@ -502,10 +502,10 @@ test.tasks(
     test("extract", title ?? getBasename(url), async (t) => {
       t.timeout(1000)
 
-      const items = await stream.ws.collect(
+      const items = await stream.collect(
         http
           .source(url)
-          .pipeThrough(stream.ts.cut(321))
+          .pipeThrough(stream.pipe.cut(321))
           .pipeThrough(tsTarExtract(options))
       )
 
@@ -520,7 +520,7 @@ test.tasks(
         t.eq(
           await Promise.all(
             items.map(async (item) =>
-              stream.ws.collect(item.stream.pipeThrough(stream.ts.text()))
+              stream.collect(item.stream.pipeThrough(stream.pipe.text()))
             )
           ),
           files

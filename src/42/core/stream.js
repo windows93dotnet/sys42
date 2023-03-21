@@ -17,27 +17,41 @@ import nextCycle from "../fabric/type/promise/nextCycle.js"
 import sleep from "../fabric/type/promise/sleep.js"
 
 import absorb from "./stream/absorb.js"
-export { default as absorb } from "./stream/absorb.js"
+export { absorb }
 
-/* readable
-=========== */
+export async function collect(rs, encoding = "auto") {
+  const buffer = absorb(encoding)
+  await rs.pipeTo(new WritableStream({ write: (chunk) => buffer.add(chunk) }))
+  return buffer.value
+}
 
-export function rsArray(data, queuingStrategy) {
-  let i = 0
-  const l = data.length
+export function wrap(stream, { before, after }, queuingStrategy) {
+  let reader
+  let encoder
   return new ReadableStream(
     {
       async pull(controller) {
-        if (i < l) {
-          controller.enqueue(data[i++])
-        } else controller.close()
+        if (!reader) {
+          encoder = new TextEncoder()
+          reader = stream.getReader()
+          if (before) controller.enqueue(encoder.encode(before))
+        }
+
+        const { value, done } = await reader.read()
+        if (done) {
+          if (after) controller.enqueue(encoder.encode(after))
+          controller.close()
+        } else controller.enqueue(value)
       },
     },
     queuingStrategy
   )
 }
 
-export function rsSource(data, queuingStrategy) {
+/* sources
+========== */
+
+export function source(data, queuingStrategy) {
   if (data instanceof Response) return data.body
   if (data instanceof ReadableStream) return data
   if (Array.isArray(data)) {
@@ -63,30 +77,22 @@ export function rsSource(data, queuingStrategy) {
   return new Blob([data]).stream()
 }
 
-export function rsWrap(stream, { before, after }, queuingStrategy) {
-  let reader
-  let encoder
+export function arraySource(data, queuingStrategy) {
+  let i = 0
+  const l = data.length
   return new ReadableStream(
     {
       async pull(controller) {
-        if (!reader) {
-          encoder = new TextEncoder()
-          reader = stream.getReader()
-          if (before) controller.enqueue(encoder.encode(before))
-        }
-
-        const { value, done } = await reader.read()
-        if (done) {
-          if (after) controller.enqueue(encoder.encode(after))
-          controller.close()
-        } else controller.enqueue(value)
+        if (i < l) {
+          controller.enqueue(data[i++])
+        } else controller.close()
       },
     },
     queuingStrategy
   )
 }
 
-export function rsIterator(iterator, queuingStrategy) {
+export function iteratorSource(iterator, queuingStrategy) {
   return new ReadableStream(
     {
       async pull(controller) {
@@ -99,21 +105,10 @@ export function rsIterator(iterator, queuingStrategy) {
   )
 }
 
-export async function rsTee(rs, fn) {
-  const x = await fn(...rs.tee())
-  return Array.isArray(x) ? Promise.all(x) : undefined
-}
+/* sinks
+======== */
 
-/* writable
-=========== */
-
-export async function wsCollect(rs, encoding = "auto") {
-  const buffer = absorb(encoding)
-  await rs.pipeTo(new WritableStream({ write: (chunk) => buffer.add(chunk) }))
-  return buffer.value
-}
-
-export function wsSink(cb, encoding = "auto") {
+export function sink(cb, encoding = "auto") {
   if (typeof cb !== "function") return new WritableStream()
   const buffer = absorb(encoding)
   return new WritableStream({
@@ -122,13 +117,7 @@ export function wsSink(cb, encoding = "auto") {
   })
 }
 
-export async function wsSample(rs, fn) {
-  const [a, b] = rs.tee()
-  fn(a)
-  return wsCollect(b)
-}
-
-export function wsEach(cb) {
+export function eachSink(cb) {
   let i = 0
   const ws = new WritableStream({
     async write(chunk, controller) {
@@ -139,83 +128,28 @@ export function wsEach(cb) {
   return ws
 }
 
-/* transform
-============ */
+/* pipes
+======== */
 
 const DEFAULT_WATERMARK = [{ highWaterMark: 1 }, { highWaterMark: 0 }]
 
-export function tsText(encoding) {
+export function textPipe(encoding) {
   return new TextDecoderStream(encoding)
 }
 
-export function tsArrayBuffer(encoding) {
+export function arrayBufferPipe(encoding) {
   return new TextEncoderStream(encoding)
 }
 
-export function tsCompress(type = "gzip") {
+export function compressPipe(type = "gzip") {
   return new CompressionStream(type)
 }
 
-export function tsDecompress(type = "gzip") {
+export function decompressPipe(type = "gzip") {
   return new DecompressionStream(type)
 }
 
-export function tsJSON() {
-  return new TransformStream(
-    {
-      transform(chunk, controller) {
-        controller.enqueue(JSON.parse(chunk))
-      },
-    },
-    ...DEFAULT_WATERMARK
-  )
-}
-
-// @src https://github.com/jakearchibald/streaming-html-spec/blob/master/ParseTransform.js
-// Apache License 2.0
-// TODO: test using document.implementation.createHTMLDocument()
-export function tsDOM() {
-  let controller
-  // Create iframe for piping the response
-  const iframe = document.createElement("iframe")
-  iframe.style.display = "none"
-  document.body.append(iframe)
-
-  // Give the iframe a body
-  iframe.contentDocument.write("<!DOCTYPE html><body>")
-
-  function queueChildNodes() {
-    for (const node of iframe.contentDocument.body.childNodes) {
-      node.remove()
-      controller.enqueue(node)
-    }
-  }
-
-  const observer = new MutationObserver(() => queueChildNodes())
-
-  observer.observe(iframe.contentDocument.body, {
-    childList: true,
-  })
-
-  return new TransformStream(
-    {
-      start(c) {
-        controller = c
-      },
-      transform(chunk) {
-        iframe.contentDocument.write(chunk)
-      },
-      flush() {
-        queueChildNodes()
-        iframe.contentDocument.close()
-        iframe.remove()
-      },
-    },
-    ...DEFAULT_WATERMARK
-  )
-}
-
-export function tsMap(cb) {
+export function mapPipe(cb) {
   let i = 0
   return new TransformStream(
     {
@@ -227,7 +161,7 @@ export function tsMap(cb) {
   )
 }
 
-export function tsEach(cb) {
+export function eachPipe(cb) {
   let i = 0
   return new TransformStream(
     {
@@ -240,7 +174,7 @@ export function tsEach(cb) {
   )
 }
 
-export function tsFilter(cb) {
+export function filterPipe(cb) {
   return new TransformStream(
     {
       async transform(chunk, controller) {
@@ -251,7 +185,7 @@ export function tsFilter(cb) {
   )
 }
 
-export function tsSplit(delimiter = "\n", options) {
+export function splitPipe(delimiter = "", options) {
   let buffer = ""
   const end = options?.include ? delimiter : ""
   return new TransformStream(
@@ -270,7 +204,7 @@ export function tsSplit(delimiter = "\n", options) {
   )
 }
 
-export function tsJoin(delimiter = "\n") {
+export function joinPipe(delimiter = "") {
   let buffer = ""
   let first = false
   return new TransformStream(
@@ -288,7 +222,7 @@ export function tsJoin(delimiter = "\n") {
   )
 }
 
-export function tsCut(size, options) {
+export function cutPipe(size, options) {
   let prevArr
   let prevStr
   return new TransformStream(
@@ -332,12 +266,11 @@ export function tsCut(size, options) {
               if (prevStr) controller.enqueue(prevStr)
             },
     },
-    { highWaterMark: 1 },
-    { highWaterMark: 0 }
+    ...DEFAULT_WATERMARK
   )
 }
 
-export function tsPercent(total, cb) {
+export function percentPipe(total, cb) {
   let bytes = 0
   return new TransformStream(
     {
@@ -351,7 +284,7 @@ export function tsPercent(total, cb) {
   )
 }
 
-export function tsPressure(fn = nextCycle) {
+export function pressurePipe(fn = nextCycle) {
   if (typeof fn === "number") {
     const ms = fn
     fn = async () => sleep(ms)
@@ -368,7 +301,7 @@ export function tsPressure(fn = nextCycle) {
   )
 }
 
-export function tsCombine(a, ...transforms) {
+export function pipeline(a, ...transforms) {
   if (Array.isArray(a)) [a, ...transforms] = a
   let readable = a.readable || a
   transforms.forEach((transform) => {
@@ -379,43 +312,31 @@ export function tsCombine(a, ...transforms) {
 
 const stream = {
   absorb,
+  collect,
+  pipeline,
+  wrap,
 
-  readable: {
-    array: rsArray,
-    source: rsSource,
-    iterator: rsIterator,
-    wrap: rsWrap,
-    tee: rsTee,
-  },
+  source,
+  sink,
 
-  writable: {
-    collect: wsCollect,
-    sink: wsSink,
-    sample: wsSample,
-    each: wsEach,
-  },
-
-  transform: {
-    text: tsText,
-    arrayBuffer: tsArrayBuffer,
-    compress: tsCompress,
-    decompress: tsDecompress,
-    json: tsJSON,
-    dom: tsDOM,
-    map: tsMap,
-    each: tsEach,
-    filter: tsFilter,
-    split: tsSplit,
-    join: tsJoin,
-    cut: tsCut,
-    percent: tsPercent,
-    pressure: tsPressure,
-    combine: tsCombine,
+  pipe: {
+    text: textPipe,
+    arrayBuffer: arrayBufferPipe,
+    compress: compressPipe,
+    decompress: decompressPipe,
+    map: mapPipe,
+    each: eachPipe,
+    filter: filterPipe,
+    split: splitPipe,
+    join: joinPipe,
+    cut: cutPipe,
+    percent: percentPipe,
+    pressure: pressurePipe,
   },
 }
 
-stream.rs = stream.readable
-stream.ws = stream.writable
-stream.ts = stream.transform
+stream.source.array = arraySource
+stream.source.iterator = iteratorSource
+stream.sink.each = eachSink
 
 export default stream

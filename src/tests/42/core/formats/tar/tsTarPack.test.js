@@ -20,7 +20,7 @@ test("pack", "File without header", async (t) => {
   )
 
   const [actual, expected] = await Promise.all([
-    stream.ws.collect(pack.stream()),
+    stream.collect(pack.stream()),
     load.arrayBuffer("/tests/fixtures/tar/hello-world.tar"),
   ])
 
@@ -197,7 +197,7 @@ test.tasks(
       }
 
       const [actual, expected] = await Promise.all([
-        stream.ws.collect(pack.stream()),
+        stream.collect(pack.stream()),
         load.arrayBuffer(url),
       ])
 

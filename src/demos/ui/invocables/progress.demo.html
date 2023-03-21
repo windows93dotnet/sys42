@@ -34,10 +34,10 @@
               cors: "no-cors",
             })
             .size((total, rs) => {
-              rs.pipeThrough(stream.ts.cut(10_000))
-                .pipeThrough(stream.ts.pressure(100))
+              rs.pipeThrough(stream.pipe.cut(10_000))
+                .pipeThrough(stream.pipe.pressure(100))
                 .pipeThrough(progress(total, { keep: !true }))
-                .pipeTo(stream.ws.sink())
+                .pipeTo(stream.sink())
                 .catch(() => {
                   console.log("canceled pipeline")
                 })
