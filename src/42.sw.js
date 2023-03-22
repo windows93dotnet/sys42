@@ -64,7 +64,7 @@ function proxy(e) {
   e.respondWith(
     (async () => {
       const inode = disk.get(pathname)
-      if (!inode) return cacheOrNetwork(e)
+      if (!inode) return network(e)
 
       const { headers } = getPathInfos(pathname, { headers: true })
 
@@ -82,6 +82,8 @@ self.addEventListener("fetch", isVhost ? proxy : serve)
 self.addEventListener("install", (e) => {
   e.waitUntil(
     (async () => {
+      if (isVhost) return self.skipWaiting()
+
       const [res, cache] = await Promise.all([
         fetch(`/42-kits/${VERSION}.tar.gz`),
         caches.open(VERSION),
@@ -91,24 +93,23 @@ self.addEventListener("install", (e) => {
 
       const undones = []
 
-      await res.body.pipeThrough(tarExtractPipe({ gzip: true })).pipeTo(
-        new WritableStream({
-          write(item) {
-            if (item.type === "file") {
-              const { headers } = getPathInfos(item.name, { headers: true })
-              headers["Content-Length"] = item.size
-              const res = new Response(item.stream(), { headers })
+      const sink = new WritableStream({
+        async write(item) {
+          if (item.type === "file") {
+            const { headers } = getPathInfos(item.name, { headers: true })
+            headers["Content-Length"] = item.size
+            const res = new Response(item.file, { headers })
 
-              if (item.name.endsWith("index.html")) {
-                undones.push(cache.put(getBasename(item.name), res.clone()))
-              }
-
-              undones.push(cache.put(item.name, res))
+            if (item.name.endsWith("index.html")) {
+              undones.push(cache.put(getBasename(item.name), res.clone()))
             }
-          },
-        })
-      )
 
+            undones.push(cache.put(item.name, res))
+          }
+        },
+      })
+
+      await res.body.pipeThrough(tarExtractPipe({ gzip: true })).pipeTo(sink)
       await Promise.all(undones)
       await self.skipWaiting()
     })()
@@ -118,13 +119,13 @@ self.addEventListener("install", (e) => {
 self.addEventListener("activate", (e) => {
   e.waitUntil(
     (async () => {
+      await self.registration.navigationPreload.enable() // [1]
       const cacheNames = await caches.keys()
       await Promise.all(
         cacheNames.map((cacheName) =>
           cacheName === VERSION ? undefined : caches.delete(cacheName)
         )
       )
-      await self.registration.navigationPreload.enable() // [1]
     })()
   )
   self.clients.claim()

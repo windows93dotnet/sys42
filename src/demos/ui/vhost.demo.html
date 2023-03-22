@@ -23,8 +23,10 @@
 
   const html = `\
   <link rel="stylesheet" href="/test.css">
-  <h1>Sandboxed iframe</h1>
-  The HTML and CSS are served from browser storage.
+  <h1>
+  <img src="/42/themes/default/icons/32x32/emblems/info.png" style="vertical-align:text-bottom">
+  Sandboxed iframe</h1>
+  The HTML and CSS are served from browser storage..
   <hr />
   <script type="module">
   if (localStorage.getItem('secret') === "hello secret") {
