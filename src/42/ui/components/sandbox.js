@@ -25,7 +25,7 @@ async function makeVhost(origin) {
     import("../../core/fs.js").then(({ fs }) => fs),
   ])
 
-  ipc.from(origin).on("42_VHOST_REQ", async (url) => fs.read(url))
+  ipc.from(origin).on("42_VHOST_REQ", async (path) => fs.open(path))
   await disk.ready
 }
 

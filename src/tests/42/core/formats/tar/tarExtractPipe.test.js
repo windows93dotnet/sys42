@@ -520,7 +520,7 @@ test.tasks(
         t.eq(
           await Promise.all(
             items.map(async (item) =>
-              stream.collect(item.stream.pipeThrough(stream.pipe.text()))
+              stream.collect(item.stream().pipeThrough(stream.pipe.text()))
             )
           ),
           files

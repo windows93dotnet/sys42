@@ -16,7 +16,7 @@ function makeFile(carrier, offset, header, enqueue) {
   Object.defineProperties(header, {
     file: {
       async value() {
-        const res = new Response(header.stream)
+        const res = new Response(header.stream())
         return new File([await res.arrayBuffer()], getBasename(header.name), {
           lastModified: header.mtime,
         })
@@ -24,7 +24,7 @@ function makeFile(carrier, offset, header, enqueue) {
     },
 
     stream: {
-      get() {
+      value() {
         const [a, b] = carrier.readable.tee()
         carrier.readable = a
         return b.pipeThrough(slicePipe(offset, offset + header.size))

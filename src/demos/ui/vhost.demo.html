@@ -11,6 +11,7 @@
 
 <script type="module">
   import system from "../../42/system.js"
+  import connect from "../../42/os/network/connect.js"
   import ui from "../../42/ui.js"
   import fs from "../../42/core/fs.js"
 
@@ -52,17 +53,7 @@
     fs.write("/test.css", css),
   ])
 
-  const registration = await navigator.serviceWorker //
-    .register("/42.sw.js", { type: "module" })
-  if (registration) {
-    registration.addEventListener("updatefound", () => {
-      console.log("Service Worker update found!")
-    })
-  }
-
-  await navigator.serviceWorker.ready
-  // console.log(navigator.serviceWorker.controller)
-  // navigator.serviceWorker.controller.postMessage("42_SW_DISK_INIT")
+  await connect()
 
   await ui({
     tag: "body.box-center",
