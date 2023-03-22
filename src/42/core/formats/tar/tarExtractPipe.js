@@ -1,6 +1,5 @@
 import Buffer from "../../../fabric/binary/Buffer.js"
 import getBasename from "../../path/core/getBasename.js"
-import slicePipe from "../../stream/pipes/slicePipe.js"
 import {
   decodeTarHeader,
   decodePax,
@@ -12,26 +11,20 @@ function overflow(size) {
   return size && 512 - size
 }
 
-function makeFile(carrier, offset, header, enqueue) {
+function makeFile(buffer, header, controller) {
+  const { offset } = buffer
   Object.defineProperties(header, {
     file: {
-      async value() {
-        const res = new Response(header.stream())
-        return new File([await res.arrayBuffer()], getBasename(header.name), {
-          lastModified: header.mtime,
-        })
-      },
-    },
-
-    stream: {
-      value() {
-        const [a, b] = carrier.readable.tee()
-        carrier.readable = a
-        return b.pipeThrough(slicePipe(offset, offset + header.size))
+      get() {
+        return new File(
+          [buffer.toArrayBuffer(offset, offset + header.size)],
+          getBasename(header.name),
+          { lastModified: header.mtime }
+        )
       },
     },
   })
-  enqueue(header)
+  controller.enqueue(header)
   return header.size + overflow(header.size)
 }
 
@@ -43,7 +36,7 @@ function mixinPax(header, pax) {
   return header
 }
 
-function createConsumer(carrier, enqueue) {
+function createConsumer(options, controller) {
   const buffer = new Buffer()
 
   let header
@@ -55,7 +48,7 @@ function createConsumer(carrier, enqueue) {
 
       if (header.type === "file") {
         if (pax) mixinPax(header, pax)
-        buffer.offset += makeFile(carrier, buffer.offset, header, enqueue)
+        buffer.offset += makeFile(buffer, header, controller)
         header = undefined
         consume()
       } else if (header.type === "pax-header") {
@@ -66,17 +59,17 @@ function createConsumer(carrier, enqueue) {
       } else if (header.type === "gnu-long-path") {
         header.name = decodeLongPath(
           buffer.read(header.size),
-          carrier.options?.filenameEncoding
+          options?.filenameEncoding
         )
         buffer.offset += overflow(header.size)
         header = undefined
         consume()
       }
     } else if (buffer.length > buffer.offset + 512) {
-      header = decodeTarHeader(buffer.read(512), carrier.options)
+      header = decodeTarHeader(buffer.read(512), options)
 
       if (header?.size === 0 || header?.type === "directory") {
-        enqueue(header)
+        controller.enqueue(header)
         header = undefined
       }
 
@@ -91,13 +84,9 @@ export function tarExtractPipe(options) {
   let buffer
   let consume
 
-  const carrier = { options, missing: 0 }
-
   const tsExtract = new TransformStream({
     start(controller) {
-      const consumer = createConsumer(carrier, (chunk) =>
-        controller.enqueue(chunk)
-      )
+      const consumer = createConsumer(options, controller)
       buffer = consumer.buffer
       consume = consumer.consume
     },
@@ -109,9 +98,6 @@ export function tarExtractPipe(options) {
       if (buffer.length < buffer.offset && options?.allowIncomplete !== true) {
         throw new Error("Unexpected end of data")
       }
-
-      delete buffer.memory
-      buffer = undefined
     },
   })
 
@@ -123,10 +109,9 @@ export function tarExtractPipe(options) {
     readable = readable.pipeThrough(new DecompressionStream("gzip"))
   }
 
-  const [a, b] = readable.tee()
+  readable = readable.pipeThrough(tsExtract)
 
-  carrier.readable = a
-  Object.defineProperty(ts, "readable", { value: b.pipeThrough(tsExtract) })
+  Object.defineProperty(ts, "readable", { value: readable })
 
   return ts
 }

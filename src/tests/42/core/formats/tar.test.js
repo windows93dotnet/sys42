@@ -7,7 +7,7 @@ test("tar", async (t) => {
   const items = await tar.extract("/tests/fixtures/tar/multi-file.tar")
   const files = []
   const headers = items.map((item) => {
-    files.push(item.file().then((file) => file.text()))
+    files.push(item.file.text())
     return { ...item }
   })
   t.eq(headers, [

@@ -511,18 +511,7 @@ test.tasks(
 
       if (files) {
         t.eq(
-          await Promise.all(
-            items.map(async ({ file }) => (await file()).text())
-          ),
-          files
-        )
-
-        t.eq(
-          await Promise.all(
-            items.map(async (item) =>
-              stream.collect(item.stream().pipeThrough(stream.pipe.text()))
-            )
-          ),
+          await Promise.all(items.map(async ({ file }) => file.text())),
           files
         )
       }
