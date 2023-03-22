@@ -16,6 +16,9 @@ import combineArrayBufferView from "../fabric/binary/combineArrayBufferView.js"
 import nextCycle from "../fabric/type/promise/nextCycle.js"
 import sleep from "../fabric/type/promise/sleep.js"
 
+import slicePipe from "./stream/pipes/slicePipe.js"
+export { slicePipe }
+
 import absorb from "./stream/absorb.js"
 export { absorb }
 
@@ -133,21 +136,10 @@ export function eachSink(cb) {
 
 const DEFAULT_WATERMARK = [{ highWaterMark: 1 }, { highWaterMark: 0 }]
 
-export function textPipe(encoding) {
-  return new TextDecoderStream(encoding)
-}
-
-export function arrayBufferPipe(encoding) {
-  return new TextEncoderStream(encoding)
-}
-
-export function compressPipe(type = "gzip") {
-  return new CompressionStream(type)
-}
-
-export function decompressPipe(type = "gzip") {
-  return new DecompressionStream(type)
-}
+export const textPipe = (encoding) => new TextDecoderStream(encoding)
+export const arrayBufferPipe = () => new TextEncoderStream()
+export const compressPipe = (type = "gzip") => new CompressionStream(type)
+export const decompressPipe = (type = "gzip") => new DecompressionStream(type)
 
 export function mapPipe(cb) {
   let i = 0
@@ -331,6 +323,7 @@ const stream = {
     filter: filterPipe,
     split: splitPipe,
     join: joinPipe,
+    slice: slicePipe,
     cut: cutPipe,
     percent: percentPipe,
     pressure: pressurePipe,

@@ -174,6 +174,26 @@ test("transform", "split() + join()", "include: true", async (t) => {
     .pipeTo(stream.sink((item) => t.is(item, `a\n+b\n+c\n+d`)))
 })
 
+test("transform", "slice()", async (t) => {
+  t.plan(3)
+  const chunks = ["cd", "efgh"]
+  await stream
+    .source(["abcd", "efghijk"])
+    .pipeThrough(stream.pipe.slice(2, 8))
+    .pipeThrough(stream.pipe.text())
+    .pipeThrough(stream.pipe.each((chunk) => t.is(chunk, chunks.shift())))
+    .pipeTo(stream.sink((item) => t.is(item, `cdefgh`)))
+})
+
+test("transform", "slice()", "optional end param", async (t) => {
+  t.plan(1)
+  await stream
+    .source(["abcd", "efghijk"])
+    .pipeThrough(stream.pipe.slice(2))
+    .pipeThrough(stream.pipe.text())
+    .pipeTo(stream.sink((item) => t.is(item, `cdefghijk`)))
+})
+
 test("transform", "pipeline()", async (t) => {
   t.plan(1)
   await stream
