@@ -69,7 +69,7 @@ async function refresh(event, filename) {
     system.emit("backend:restart")
   } else {
     const relative = filename.replace(cwd, "")
-    const url = filename.replace(src, "").replaceAll('\\', "/")
+    const url = filename.replace(src, "").replaceAll("\\", "/")
 
     if (task.graph) {
       if (graphResult) {
@@ -106,6 +106,7 @@ export default async function watch() {
         system.config.paths.files.scan,
         system.config.paths.dirs.dist,
         system.config.paths.dirs.tmp,
+        system.config.paths.dirs.kits,
       ],
       ignoreInitial: true,
       awaitWriteFinish: {
