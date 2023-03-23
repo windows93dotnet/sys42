@@ -65,7 +65,7 @@ export function encodePax(opts) {
     }
   }
 
-  return Buffer.from(result)
+  return encoder.encode(result)
 }
 
 export function encodeTarHeader(opts) {
@@ -111,7 +111,7 @@ export function encodeTarHeader(opts) {
 
   buf.writeText(encodeOct(cksum(buf), 6), 148)
 
-  return buf.value
+  return buf.toUint8Array()
 }
 
 export default encodeTarHeader

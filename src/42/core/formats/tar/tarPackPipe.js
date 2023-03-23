@@ -1,4 +1,5 @@
 import Buffer from "../../../fabric/binary/Buffer.js"
+import inNode from "../../env/runtime/inNode.js"
 import defer from "../../../fabric/type/promise/defer.js"
 import { encodeTarHeader, encodePax } from "./encodeTarHeader.js"
 
@@ -70,24 +71,26 @@ function writeHeader(writer, header) {
   writer.write(encodeTarHeader(newHeader))
 }
 
-export function tarPackPipe() {
+export function tarPackPipe(options) {
   const ts = new TransformStream()
 
   let writer = ts.writable.getWriter()
-  let busy
+  const queue = []
 
   ts.add = async function (header, file) {
-    await busy
-    busy = defer()
+    const prev = queue.at(-1)
+    const busy = defer()
+    queue.push(busy)
+    await prev
 
-    if (header instanceof File) {
+    if (globalThis.File && header instanceof File) {
       file = header
       header = {}
     }
 
     file ??= header.file
 
-    if (file instanceof File) {
+    if (globalThis.File && file instanceof File) {
       header.name ??= file.name
       header.size ??= file.size
       header.mtime ??= file.lastModified
@@ -106,7 +109,7 @@ export function tarPackPipe() {
       const buf = Buffer.from(file)
       header.size ??= buf.length
       writeHeader(writer, header)
-      writer.write(buf)
+      writer.write(buf.toUint8Array())
       overflow(writer, header.size)
     }
 
@@ -115,13 +118,31 @@ export function tarPackPipe() {
 
   ts.stream = function () {
     queueMicrotask(async () => {
-      await 0
-      await busy
-      writer.write(END_OF_TAR)
+      await Promise.all(queue)
+      await writer.write(END_OF_TAR)
       writer.close()
     })
+
     return ts.readable
   }
+
+  let { readable } = ts
+
+  if (inNode) {
+    readable = readable.pipeThrough(
+      new TransformStream({
+        transform(chunk, controller) {
+          controller.enqueue(new Uint8Array(chunk))
+        },
+      })
+    )
+  }
+
+  if (options?.gzip) {
+    readable = readable.pipeThrough(new CompressionStream("gzip"))
+  }
+
+  Object.defineProperty(ts, "readable", { value: readable })
 
   return ts
 }

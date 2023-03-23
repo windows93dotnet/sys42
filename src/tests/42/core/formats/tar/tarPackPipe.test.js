@@ -46,6 +46,26 @@ test.tasks(
     }),
 
     task({
+      // file compressed using CompressionStream differ from linux tar
+      // TODO: make one-file gzip fixture
+      skip: true,
+      url: "/tests/fixtures/tar/one-file.tar.gz",
+      options: { gzip: true },
+      files: ["hello world\n"],
+      headers: [
+        {
+          name: "test.txt",
+          mtime: 1_387_580_181_000,
+          mode: 0o644,
+          uname: "maf",
+          gname: "staff",
+          uid: 501,
+          gid: 20,
+        },
+      ],
+    }),
+
+    task({
       url: "/tests/fixtures/tar/one-file.tar",
       files: [
         new File(["hello world\n"], "test.txt", {
@@ -186,11 +206,11 @@ test.tasks(
     }),
   ],
 
-  (test, { title, url, headers, files }) => {
+  (test, { title, url, headers, options, files }) => {
     test("pack", title ?? getBasename(url), async (t) => {
       t.timeout(1000)
 
-      const pack = tarPackPipe()
+      const pack = tarPackPipe(options)
 
       for (let i = 0, l = headers.length; i < l; i++) {
         pack.add(headers[i], files?.[i])
@@ -201,7 +221,7 @@ test.tasks(
         load.arrayBuffer(url),
       ])
 
-      t.is(actual.byteLength & 511, 0)
+      if (options?.gzip !== true) t.is(actual.byteLength & 511, 0)
 
       t.eq(actual, expected)
     })
