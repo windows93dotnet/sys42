@@ -11,12 +11,12 @@
 
 <script type="module">
   import system from "../../42/system.js"
-  import connect from "../../42/os/network/connect.js"
+  import connect from "../../42/os/network/client/connect.js"
   import ui from "../../42/ui.js"
   import fs from "../../42/core/fs.js"
 
   system.network ??= {
-    vhost: "http://localhost:3000/42/os/network/vhost.html?path=",
+    vhost: "http://localhost:3000/42/os/network/client/vhost.html?path=",
   }
 
   localStorage.setItem("secret", "hello secret")
