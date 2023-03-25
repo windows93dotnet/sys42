@@ -4,6 +4,7 @@ import tokenizePath from "../../core/path/utils/tokenizePath.js"
 import getBasename from "../../core/path/core/getBasename.js"
 import getDirname from "../../core/path/core/getDirname.js"
 import prompt from "../../ui/invocables/prompt.js"
+import alert from "../../ui/invocables/alert.js"
 import incrementFilename from "../../core/fs/incrementFilename.js"
 
 export default async function createPath(path = "/", options) {
@@ -18,33 +19,36 @@ export default async function createPath(path = "/", options) {
   path = resolvePath(path)
   if (path !== "/") path += "/"
 
-  value = incrementFilename(value, path)
-
-  let name = await prompt("Enter the name", {
-    label: options?.folder ? "Create Folder" : "Create File",
-    value,
-    afterfield: {
-      tag: ".message.ma-y-sm",
-      role: "status",
-      aria: { live: "polite" },
-      content: "{{message}}",
-    },
-    field: {
-      on: {
-        async input({ target }) {
-          if (target.value.includes("/")) {
-            this.state.message =
-              "Using slashes in name\nwill create sub-folders"
-            await this.reactive.pendingUpdate
-            target.nextElementSibling.setAttribute("aria-live", "off")
-          } else if (this.state.message) this.state.message = ""
+  async function promptUser(val = incrementFilename(value, path)) {
+    return prompt("Enter the name", {
+      label: options?.folder ? "Create Folder" : "Create File",
+      value: val,
+      afterfield: {
+        tag: ".message.ma-y-sm",
+        role: "status",
+        aria: { live: "polite" },
+        content: "{{message}}",
+      },
+      field: {
+        on: {
+          async input({ target }) {
+            if (target.value.includes("/")) {
+              this.state.message =
+                "Using slashes in name\nwill create sub-folders"
+              await this.reactive.pendingUpdate
+              target.nextElementSibling.setAttribute("aria-live", "off")
+            } else if (this.state.message) this.state.message = ""
+          },
         },
       },
-    },
-  })
+    })
+  }
+
+  let name = await promptUser()
 
   if (name.includes("\\")) {
-    alert("Sorry... This includes a backslash")
+    await alert("Name cannot include a backslash", {icon: "error", label: "Error"})
+    await promptUser(name)
   } else {
     const fs = await import("../../core/fs.js") //
       .then((m) => m.default)
