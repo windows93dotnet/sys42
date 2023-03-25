@@ -2189,18 +2189,7 @@ test("find component actions", "ignore base class methods", async (t) => {
   const expected1 = 'Template action didn\'t resolve as a function: "/init"'
   const expected2 = 'Template filter is not a function: "init"'
 
-  try {
-    await t.utils.decay(
-      ui(t.utils.dest(true), {
-        tag: "ui-t-child-cpn",
-        content: "{{init()}}",
-      })
-    )
-  } catch (err) {
-    t.is(err.message, expected1)
-  }
-
-  await new Promise((resolve) => {
+  const promise = new Promise((resolve) => {
     t.utils.on({
       error(e) {
         if (e.message === expected2) {
@@ -2213,6 +2202,19 @@ test("find component actions", "ignore base class methods", async (t) => {
       },
     })
   })
+
+  try {
+    await t.utils.decay(
+      ui(t.utils.dest(true), {
+        tag: "ui-t-child-cpn",
+        content: "{{init()}}",
+      })
+    )
+  } catch (err) {
+    t.is(err.message, expected1)
+  }
+
+  await promise
 })
 
 /* --------- */
@@ -2229,22 +2231,7 @@ Component.define(
 test("actions", "above root path", async (t) => {
   t.plan(1)
 
-  t.utils.decay(
-    ui(t.utils.dest({ connect: true }), {
-      content: {
-        tag: "ui-t-actions-above-root",
-        content: [{ tag: "button#child-e2", click: "{{../../../../x()}}" }],
-      },
-
-      actions: {
-        x() {
-          this.state.from = ["x", "ui"]
-        },
-      },
-    })
-  )
-
-  await new Promise((resolve) => {
+  const promise = new Promise((resolve) => {
     t.utils.on({
       error(e) {
         if (e.message.startsWith("Action")) {
@@ -2260,6 +2247,23 @@ test("actions", "above root path", async (t) => {
       },
     })
   })
+
+  t.utils.decay(
+    ui(t.utils.dest({ connect: true }), {
+      content: {
+        tag: "ui-t-actions-above-root",
+        content: [{ tag: "button#child-e2", click: "{{../../../../x()}}" }],
+      },
+
+      actions: {
+        x() {
+          this.state.from = ["x", "ui"]
+        },
+      },
+    })
+  )
+
+  await promise
 })
 
 /* --------- */

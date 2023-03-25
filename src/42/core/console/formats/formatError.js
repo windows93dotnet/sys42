@@ -1,6 +1,5 @@
 /* eslint-disable complexity */
 import { esc, escapeLog } from "../logUtils.js"
-import normalizeError from "../../../fabric/type/error/normalizeError.js"
 import serializeError from "../../../fabric/type/error/serializeError.js"
 import formatEntries from "./formatEntries.js"
 import formatFilename from "./formatFilename.js"
@@ -32,7 +31,7 @@ export default function formatError(error, options) {
   const obj =
     error instanceof Error ||
     ("ErrorEvent" in globalThis && error instanceof ErrorEvent)
-      ? serializeError(normalizeError(error))
+      ? serializeError(error)
       : error
 
   let out = `{${colors.message} ${escapeLog(obj.message)}}\n`

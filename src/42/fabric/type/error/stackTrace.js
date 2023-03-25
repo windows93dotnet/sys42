@@ -31,6 +31,15 @@ const errorEventToStackframe = (err) =>
   })
 
 const addErrorEventStackFrame = (err, stackFrames) => {
+  if (
+    err.errorEvent.filename === "" &&
+    err.errorEvent.lineno === 0 &&
+    err.errorEvent.colno === 0
+  ) {
+    // ignore if not usefull
+    return
+  }
+
   const e = errorEventToStackframe(err.errorEvent)
 
   for (const s of stackFrames) {
