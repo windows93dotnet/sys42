@@ -12,11 +12,14 @@
 <script type="module">
   import os from "../42/os.js"
   import ui from "../42/ui.js"
+  import connect from "../42/os/network/client/connect.js"
 
   import trap from "../42/fabric/type/error/trap.js"
   trap((err) => {
     os.desktop.state.errors.push(err)
   })
+
+  await connect()
 
   document.body.classList.add("desktop")
 

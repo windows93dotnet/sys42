@@ -1,7 +1,7 @@
 // @thanks https://github.com/mkxml/fileSize-calculator/blob/master/test/test.js
 
-import test from "../../../../../42/test.js"
-import bytesize from "../../../../../42/fabric/type/file/bytesize.js"
+import test from "../../../../42/test.js"
+import bytesize from "../../../../42/fabric/binary/bytesize.js"
 
 test("IEC / SI", (t) => {
   // IEC

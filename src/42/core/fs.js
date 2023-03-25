@@ -16,6 +16,8 @@ const DEFAULTS = {
 // TODO: https://web.dev/file-system-access/
 // TODO: https://emscripten.org/docs/api_reference/Filesystem-API.html#id2
 
+// @read https://web.dev/persistent-storage/
+
 if (inTop) {
   ipc.on("IPCDriver", async ({ type, args }) => fs[type](...args))
 }

@@ -7,7 +7,7 @@
 import locate from "../locator/locate.js"
 import exists from "../locator/exists.js"
 import arrify from "../type/any/arrify.js"
-import equal from "../type/any/equal.js"
+import equals from "../type/any/equals.js"
 import splitJSONPointer from "./splitJSONPointer.js"
 
 function splice(str, index, count, add = "") {
@@ -199,7 +199,7 @@ export function replace(obj, path, val, options) {
 export function test(obj, path, expected) {
   const actual = locate.run(obj, splitJSONPointer(path))
 
-  if (equal(actual, expected) === false) {
+  if (equals(actual, expected) === false) {
     throw Object.assign(
       new Error(`patch test failed: value at ${path} is not like expected`),
       { actual, expected }

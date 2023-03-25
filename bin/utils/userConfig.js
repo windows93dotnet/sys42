@@ -1,7 +1,6 @@
 import { fileURLToPath, pathToFileURL } from "node:url"
 import { lilconfig } from "lilconfig"
 
-// import fs from "node:fs/promises"
 import CLI from "../classes/CLI.js"
 import { Log } from "../../src/42/core/log.js"
 import normalizeConfig from "./userConfig/normalizeConfig.js"
@@ -24,6 +23,7 @@ export const CLI_TASKS = [
   // ["🛸", "annex", "cyan"],
   // ["📦", "build", "yellowBright"],
   ["🔬", "scan", "magentaBright"],
+  ["🧰", "kit", "redBright"],
   // ["⚡", "run", "magenta"],
 ]
 
@@ -69,6 +69,13 @@ const DEFAULTS = {
       verbose: undefined,
       glob: "**/*",
       stringify: "min",
+    },
+
+    kit: {
+      verbose: undefined,
+      glob: "**/*",
+      ignore: ["tests/**", "**/*.test.js"],
+      maxSize: 1.5 * 1024 ** 2, // 1.5 MiB
     },
 
     test: {
@@ -170,7 +177,7 @@ export default async function userConfig(args) {
   const ignore = []
 
   if (args.filter((x) => SUBCOMMANDS.includes(x)).length === 0) {
-    args.push("watch", "scan", /* "test", "coverage", */ "serve")
+    args.push("watch", "scan", "kit", /* "test", "coverage", */ "serve")
   } else if (args.includes("--dev") && !args.includes("watch")) {
     args.push("watch")
   }

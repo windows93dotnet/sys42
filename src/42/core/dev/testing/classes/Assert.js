@@ -4,7 +4,7 @@
 // @thanks https://github.com/avajs/ava
 // @thanks https://github.com/substack/tape
 
-import equal from "../../../../fabric/type/any/equal.js"
+import equals from "../../../../fabric/type/any/equals.js"
 import clone from "../../../../fabric/type/any/clone.js"
 import pluralize from "../../../../fabric/type/string/pluralize.js"
 import * as is from "../../../../fabric/type/any/is.js"
@@ -75,7 +75,7 @@ export const checkError = (err, expected) => {
 
     if (val instanceof RegExp) {
       if (!err[key].match(val)) return false
-    } else if (!equal(err[key], val)) return false
+    } else if (!equals(err[key], val)) return false
   }
 
   return true
@@ -171,7 +171,7 @@ export default class Assert {
     } else clearTimeoutNative(this.#timeoutId)
 
     for (const { actual, expected, error } of this.#stayings) {
-      if (equal(actual, expected) === false) {
+      if (equals(actual, expected) === false) {
         const clonedActual = clone(actual)
         error.actual = clonedActual
         error.expected = expected
@@ -303,7 +303,7 @@ export default class Assert {
   is(actual, expected, message, nested) {
     if (nested !== true) this.#addCall()
     if (!Object.is(actual, expected)) {
-      if (equal(actual, expected)) {
+      if (equals(actual, expected)) {
         throw new AssertionError(
           message,
           "Values are deeply equal but are not the same"
@@ -329,7 +329,7 @@ export default class Assert {
 
   eq(actual, expected, message) {
     this.#addCall()
-    if (equal(actual, expected, { placeholder: PLACEHOLDER }) === false) {
+    if (equals(actual, expected, { placeholder: PLACEHOLDER }) === false) {
       const clonedActual = clone(actual)
       throw new AssertionError(message, "Values are not deeply equal", {
         actual: clonedActual,
@@ -340,7 +340,7 @@ export default class Assert {
 
   notEq(actual, expected, message) {
     this.#addCall()
-    if (equal(actual, expected)) {
+    if (equals(actual, expected)) {
       throw new AssertionError(message, "Values are deeply equal", {
         actual,
         expected,
@@ -351,7 +351,7 @@ export default class Assert {
   any(actual, expected, message) {
     this.#addCall()
     for (const item of expected) {
-      if (equal(actual, item, { placeholder: PLACEHOLDER })) return
+      if (equals(actual, item, { placeholder: PLACEHOLDER })) return
     }
 
     const clonedActual = clone(actual)
@@ -365,7 +365,7 @@ export default class Assert {
   // simplify deep equal test for objects created using Object.create(null)
   alike(actual, expected, message) {
     this.#addCall()
-    if (equal(actual, expected, { proto: false }) === false) {
+    if (equals(actual, expected, { proto: false }) === false) {
       const clonedActual = clone(actual)
       throw new AssertionError(message, "Values are not deeply alike", {
         actual: clonedActual,
@@ -376,7 +376,7 @@ export default class Assert {
 
   notAlike(actual, expected, message) {
     this.#addCall()
-    if (equal(actual, expected, { proto: false })) {
+    if (equals(actual, expected, { proto: false })) {
       throw new AssertionError(message, "Values are deeply alike", {
         actual,
         expected,
@@ -483,7 +483,7 @@ export default class Assert {
       })
     }
 
-    if (actual.some((item) => equal(item, expected)) === false) {
+    if (actual.some((item) => equals(item, expected)) === false) {
       throw new AssertionError(message, `Value does not contain expectation`, {
         actual,
         expected,

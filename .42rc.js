@@ -6,6 +6,7 @@ export default {
     },
     dirs: {
       src: "src",
+      kits: "src/42-kits",
     },
   },
 

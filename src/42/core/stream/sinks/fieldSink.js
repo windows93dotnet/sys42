@@ -1,9 +1,9 @@
-import nextCycle from "../../fabric/type/promise/nextCycle.js"
-import repaint from "../../fabric/type/promise/repaint.js"
-import defer from "../../fabric/type/promise/defer.js"
-import listen from "../../fabric/event/listen.js"
+import nextCycle from "../../../fabric/type/promise/nextCycle.js"
+import repaint from "../../../fabric/type/promise/repaint.js"
+import defer from "../../../fabric/type/promise/defer.js"
+import listen from "../../../fabric/event/listen.js"
 
-export default function sinkField(el, options) {
+export function fieldSink(el, options) {
   let size = options?.size ?? 0x03_ff
   let pendingEdits // debounce
   let pendingScroll // throttle
@@ -75,3 +75,5 @@ export default function sinkField(el, options) {
     },
   })
 }
+
+export default fieldSink

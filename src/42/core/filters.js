@@ -3,7 +3,7 @@
 
 import render from "../ui/render.js"
 import locate from "../fabric/locator/locate.js"
-import bytesize from "../fabric/type/file/bytesize.js"
+import bytesize from "../fabric/binary/bytesize.js"
 import trailZeros from "../fabric/type/number/trailZeros.js"
 import dispatch from "../fabric/event/dispatch.js"
 import queueTask from "../fabric/type/function/queueTask.js"
@@ -262,13 +262,13 @@ types.field = {
 
   async sink(rs, field = this.el) {
     if (rs === undefined) return
-    const [stream, sinkField] = await Promise.all([
+    const [stream, fieldSink] = await Promise.all([
       import("./stream.js").then((m) => m.default),
-      import("./stream/sinkField.js").then((m) => m.default),
+      import("./stream/sinks/fieldSink.js").then((m) => m.default),
     ])
     return rs
-      .pipeThrough(stream.ts.text())
-      .pipeTo(sinkField(field))
+      .pipeThrough(stream.pipe.text())
+      .pipeTo(fieldSink(field))
       .catch((err) => dispatch(this.el, err))
   },
 }

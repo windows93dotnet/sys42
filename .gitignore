@@ -1,5 +1,6 @@
 node_modules
 .trash
 .vscode
+src/42-kits
 src/files.cbor
 src/tests/fixtures/formats/tmp/

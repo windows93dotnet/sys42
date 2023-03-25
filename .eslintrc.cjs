@@ -97,6 +97,10 @@ module.exports = {
     "no-eq-null": 0,
     "eqeqeq": [2, "always", { null: "ignore" }],
 
+    // browser Buffer !== node Buffer
+    "no-buffer-constructor": 0,
+    "unicorn/no-new-buffer": 0,
+
     // Allow `await 0` as queueMicroTack
     "unicorn/no-unnecessary-await": 0,
 

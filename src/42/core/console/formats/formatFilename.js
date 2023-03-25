@@ -6,7 +6,7 @@ import isObject from "../../../fabric/type/any/is/isObject.js"
 import configure from "../../configure.js"
 import { esc } from "../logUtils.js"
 import shortenFilename from "../../../core/path/shortenFilename.js"
-import bytesize from "../../../fabric/type/file/bytesize.js"
+import bytesize from "../../../fabric/binary/bytesize.js"
 
 const DEFAULTS = {
   appendFullPath: !true,
