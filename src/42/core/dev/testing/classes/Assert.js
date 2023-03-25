@@ -383,7 +383,6 @@ export default class Assert {
       })
     }
   }
-
   match(string, regex, message, details) {
     this.#addCall()
     string = String(string)
@@ -470,6 +469,21 @@ export default class Assert {
         message ?? err.nested ?? err.message,
         undefined,
         details
+      )
+    }
+  }
+
+  hasKey(obj, needle, message, details) {
+    this.#addCall()
+    if (!(needle in obj)) {
+      throw new AssertionError(
+        message,
+        `Object don't have a "${needle}" property`,
+        {
+          keys: Object.keys(obj),
+          needle,
+          ...details,
+        }
       )
     }
   }
