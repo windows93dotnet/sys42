@@ -19,10 +19,12 @@ export default async function createPath(path = "/", options) {
   path = resolvePath(path)
   if (path !== "/") path += "/"
 
-  async function promptUser(val = incrementFilename(value, path)) {
-    return prompt("Enter the name", {
+  value = incrementFilename(value, path)
+
+  async function promptUser(value) {
+    const name = await prompt("Enter the name", {
       label: options?.folder ? "Create Folder" : "Create File",
-      value: val,
+      value,
       afterfield: {
         tag: ".message.ma-y-sm",
         role: "status",
@@ -42,14 +44,21 @@ export default async function createPath(path = "/", options) {
         },
       },
     })
+
+    if (name?.includes("\\")) {
+      await alert("Name cannot include a backslash", {
+        icon: "error",
+        label: "Error",
+      })
+      return promptUser(name)
+    }
+
+    return name
   }
 
-  let name = await promptUser()
+  let name = await promptUser(value)
 
-  if (name.includes("\\")) {
-    await alert("Name cannot include a backslash", {icon: "error", label: "Error"})
-    await promptUser(name)
-  } else {
+  if (name) {
     const fs = await import("../../core/fs.js") //
       .then((m) => m.default)
 
