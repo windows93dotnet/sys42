@@ -383,6 +383,7 @@ export default class Assert {
       })
     }
   }
+
   match(string, regex, message, details) {
     this.#addCall()
     string = String(string)

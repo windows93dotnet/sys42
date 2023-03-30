@@ -132,7 +132,7 @@ We tried to have as few dependencies as possible for this project.
 
 But we also wanted to gather many useful tools for making desktop-like applications, so that project _MAY_ include some copy-pasted code.
 
-Also, now that all modern browser supports ES Modules, we tried to to skip building javascript file using bundlers, and go back to a readable _View page source_. \
+Also, now that all modern browser supports ES Modules, we tried to skip building javascript file using bundlers, and go back to a readable _View page source_. \
 That mean that the few dependencies we're using are not fetched using npm but injected in the codebase using our [CLI dev tool](#cli-dev-tool).
 
 For consistant naming and API we refactored (and sometimes improved) many usefull scripts and styles from npm, github, stackoverflow, blogs and books.
