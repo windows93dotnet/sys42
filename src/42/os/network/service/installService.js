@@ -5,17 +5,18 @@ import getPathInfos from "../../../core/path/getPathInfos.js"
 import getDriver from "../../../core/fs/getDriver.js"
 import Disk from "../../../core/fs/Disk.js"
 import installKit from "./installKit.js"
+import serverSentEvents from "../../../core/dev/serverSentEvents.js"
 
 const disk = new Disk()
 const isVhost = new URLSearchParams(location.search).has("vhost")
-const vhostURL = new URL("../client/vhost.html", import.meta.url).href
+const VHOST_URL = new URL("../client/vhost.html", import.meta.url).href
 
 ipc.on("42_SW_DISK_INIT", async () => disk.init(await getVhostClient()))
 
 async function getVhostClient() {
   const clients = await self.clients.matchAll({ type: "window" })
   for (const client of clients) {
-    if (client.url.startsWith(vhostURL)) return client
+    if (client.url.startsWith(VHOST_URL)) return client
   }
 }
 
@@ -70,6 +71,41 @@ function proxy(e) {
   )
 }
 
+function initDev() {
+  const logIcon = isVhost ? "🌐🛰️" : "🌍🛰️"
+  const sse = serverSentEvents("/42-dev")
+  sse
+    .on("connect", () => {
+      console.log(`${logIcon}🔭 connect`)
+    })
+    .on("disconnect", () => {
+      console.log(`${logIcon}🔭💥 disconnected {grey /42-dev}`)
+    })
+    .on("error", (msg) => {
+      console.log(`${logIcon}🔭💥 ${msg}`)
+    })
+    .on("change", ({ data }) => {
+      console.log(`${logIcon}🔭 change ${data}`)
+    })
+    .on("reload", () => {
+      console.log(`${logIcon}🔭 reload`)
+    })
+
+  for (const event of [
+    "activate",
+    "controllerchange",
+    "error",
+    "install",
+    "message",
+    "statechange",
+    "updatefound",
+  ]) {
+    self.addEventListener(event, () => {
+      console.log(`${logIcon} -(${event})`)
+    })
+  }
+}
+
 export function installService(options) {
   self.addEventListener("fetch", isVhost ? proxy : serve)
 
@@ -103,21 +139,7 @@ export function installService(options) {
     self.clients.claim()
   })
 
-  if (options?.dev) {
-    for (const event of [
-      "activate",
-      "controllerchange",
-      "error",
-      "install",
-      "message",
-      "statechange",
-      "updatefound",
-    ]) {
-      self.addEventListener(event, () => {
-        console.log((isVhost ? "🌐🛰️" : "📡🛰️") + ` ${event}`)
-      })
-    }
-  }
+  if (options?.dev) initDev()
 }
 
 export default installService

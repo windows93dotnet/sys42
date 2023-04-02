@@ -1,6 +1,7 @@
 import configure from "../configure.js"
 import Emitter from "../../fabric/classes/Emitter.js"
 import Canceller from "../../fabric/classes/Canceller.js"
+import inWindow from "../env/realm/inWindow.js"
 
 const DEFAULTS = {
   withCredentials: false,
@@ -58,17 +59,19 @@ export class ServerSentEvents extends Emitter {
       this.cancel
     )
 
-    const options = {
-      capture: true,
-      signal: this.cancel.signal,
-    }
+    if (inWindow) {
+      const options = {
+        capture: true,
+        signal: this.cancel.signal,
+      }
 
-    if (this.#beforeunload) {
-      window.removeEventListener("beforeunload", this.#beforeunload, options)
-    }
+      if (this.#beforeunload) {
+        window.removeEventListener("beforeunload", this.#beforeunload, options)
+      }
 
-    this.#beforeunload = () => this.destroy()
-    window.addEventListener("beforeunload", this.#beforeunload, options)
+      this.#beforeunload = () => this.destroy()
+      window.addEventListener("beforeunload", this.#beforeunload, options)
+    }
 
     return this
   }
