@@ -122,7 +122,7 @@ test.tasks(
     task({
       input: `--aaa='{"a":1}' --aa={a:1} -b [2,3] -c [;] 5 -d null`,
       options: {
-        jsonParse: JSON5.parse,
+        parseValue: JSON5.parse,
       },
       expected: {
         aaa: { a: 1 },

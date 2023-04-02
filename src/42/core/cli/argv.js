@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
-import allocate from "../../fabric/locator/allocate.js"
 import settings from "../settings.js"
+import allocate from "../../fabric/locator/allocate.js"
 import locate from "../../fabric/locator/locate.js"
 import isHashmapLike from "../../fabric/type/any/is/isHashmapLike.js"
 
@@ -25,7 +25,7 @@ export const DEFAULTS = {
   splitSmallOption: true,
   autoBoolean: true,
   autocast: true,
-  jsonParse: JSON.parse,
+  parseValue: JSON.parse,
   aliases: {},
   presets: {},
   schema: {},
@@ -59,7 +59,7 @@ function autocast(config, val) {
     if (val === "undefined") return
 
     try {
-      return config.jsonParse(val)
+      return config.parseValue(val)
     } catch {}
   }
 
