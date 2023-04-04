@@ -1,16 +1,18 @@
 // @read https://bugs.chromium.org/p/chromium/issues/detail?id=468227#c15
 
-import ipc from "../../../core/ipc.js"
-import configure from "../../../core/configure.js"
-import parseURLQuery from "../../../fabric/url/parseURLQuery.js"
-import getPathInfos from "../../../core/path/getPathInfos.js"
-import serverSentEvents from "../../../core/dev/serverSentEvents.js"
-import getDriver from "../../../core/fs/getDriver.js"
-import Disk from "../../../core/fs/Disk.js"
-import kit from "./installKit.js"
+import ipc from "../../core/ipc.js"
+import configure from "../../core/configure.js"
+import parseURLQuery from "../../fabric/url/parseURLQuery.js"
+import getPathInfos from "../../core/path/getPathInfos.js"
+import serverSentEvents from "../../core/dev/serverSentEvents.js"
+import getDriver from "../../core/fs/getDriver.js"
+import Disk from "../../core/fs/Disk.js"
+import kit from "./service/kit.js"
+
+const service = {}
 
 const disk = new Disk()
-const VHOST_URL = new URL("../client/vhost.html", import.meta.url).href
+const VHOST_URL = new URL("./client/vhost.html", import.meta.url).href
 
 async function getVhostClient() {
   const clients = await self.clients.matchAll({ type: "window" })
@@ -98,7 +100,7 @@ function initDev(config) {
   }
 }
 
-export function installService(options) {
+service.install = (options) => {
   const config = configure(options, parseURLQuery(location.search))
 
   ipc.on("42_SW_DISK_INIT", async () => disk.init(await getVhostClient()))
@@ -137,4 +139,5 @@ export function installService(options) {
   if (config.dev) initDev(config)
 }
 
-export default installService
+export { service }
+export default service

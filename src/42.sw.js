@@ -1,6 +1,6 @@
-import installService from "/42/os/network/service/installService.js"
+import service from "/42/os/network/service.js"
 
-installService({
+service.install({
   version: "0.0.0",
   dev: true,
 })

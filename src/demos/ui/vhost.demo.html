@@ -11,7 +11,7 @@
 
 <script type="module">
   import system from "../../42/system.js"
-  import connect from "../../42/os/network/client/connect.js"
+  import client from "../../42/os/network/client.js"
   import ui from "../../42/ui.js"
   import fs from "../../42/core/fs.js"
 
@@ -55,7 +55,7 @@
     fs.write("/test.css", css),
   ])
 
-  await connect()
+  await client.connect()
 
   await ui({
     tag: "body.box-center",
