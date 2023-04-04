@@ -2,16 +2,27 @@ import inTop from "./core/env/realm/inTop.js"
 import inAutomated from "./core/env/runtime/inAutomated.js"
 import system from "./system.js"
 import log from "./core/log.js"
+import clearSiteData from "./os/network/client/clearSiteData.js"
+import configure from "./core/configure.js"
 
 import getScriptData from "./core/dev/getScriptData.js"
-const { config } = getScriptData(import.meta.url) ?? { config: {} }
+import parseURLQuery from "./fabric/url/parseURLQuery.js"
 
-// config.verbose = 2
+const DEFAULT = {
+  // verbose: 2
+}
+
+const config = configure(
+  DEFAULT,
+  getScriptData(import.meta.url)?.config,
+  parseURLQuery(import.meta.url)
+)
+
 log.verbose = config.verbose
 
 function greet() {
   log.if(config.verbose).cyanBright(`\
-╷ ┌───┐
+╷ ┌───┐  ${config.service ? "{dim.grey from service worker}" : ""}
 └─┤ ┌─┘  {reset type} {grey sys42.dev.help()} {reset for help}
   └─┴─╴  `)
   log(
@@ -26,25 +37,25 @@ if (inTop && inAutomated) {
     testRunner(config.testFiles, { ...config.testRunner, report: false })
   }
 } else if (!inAutomated) {
-  if (inTop || config.verbose > 2) greet()
+  if (inTop || config.verbose > 1) greet()
 
   const dev = {
     help() {
       log(log.esc`\
-{grey sys42.dev.test(options)} {grey.dim ..} run tests
-{grey sys42.dev.clear(options)} {grey.dim .} clear site data
-{grey sys42.dev.pause()} {grey.dim ........} pause live-reload
-{grey sys42.dev.resume()} {grey.dim .......} resume live-reload
-{grey sys42.dev.toggle()} {grey.dim .......} toggle live-reload
-{grey sys42.dev.technicolor()} {grey.dim ..} technicolor`)
+{grey sys42.dev.test(options)} {dim.grey ..} run tests
+{grey sys42.dev.clear(options)} {dim.grey .} clear site data
+{grey sys42.dev.pause()} {dim.grey ........} pause live-reload
+{grey sys42.dev.resume()} {dim.grey .......} resume live-reload
+{grey sys42.dev.toggle()} {dim.grey .......} toggle live-reload
+{grey sys42.dev.technicolor()} {dim.grey ..} technicolor`)
     },
     technicolor() {
       log.color("#000")(
         `\n         ▄▄████▄▄\n  █ ▄ ▄▄██{bg.c3ff00 ▀▄  ▄▀}██\n  {0ff ▄} ▀▀▀▀██{bg.c3ff00  ▀  ▀ }██\n  {0ff ▀ █▄██}██{bg.c3ff00  ▄  ▄ }██\n  {f0f █ ▄ ▄▄}██{bg.c3ff00   ▀▀  }██\n  ▄ {f0f ▀▀▀▀}██{bg.c3ff00 ▄████▄}██\n  ▀ █▄███▀▀    ▀▀█\n`
       )
     },
-    clear() {
-      fetch("/?clear-site-data").then(() => location.reload())
+    async clear(options) {
+      await clearSiteData(options)
     },
     async test(options = config.testRunner) {
       const testRunner = await import("./core/dev/testRunner.js") //

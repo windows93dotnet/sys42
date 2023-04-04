@@ -11,8 +11,7 @@ devScript = devScript.replace(system.config.paths.dirs.src, "")
 devScript = devScript.replaceAll("\\", "/")
 
 export default function makeDevScript(asset, ua) {
-  const entry = asset.filename.slice(system.config.paths.dirs.src.length)
-  const config = { entry, verbose: system.config.verbose }
+  const config = { verbose: system.config.verbose }
 
   if (system.testFiles) {
     const { engine } = getUserAgent(ua)

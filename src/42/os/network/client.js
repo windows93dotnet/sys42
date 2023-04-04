@@ -41,7 +41,8 @@ client.connect = async (url = "/42.sw.js") => {
       .to(controller)
       .sendOnce("42_SW_GET_CONFIG")
       .then((config) => {
-        if (config.dev) import("../../dev.js")
+        // eslint-disable-next-line import/no-unresolved
+        if (config.dev) import("../../dev.js?verbose=2&service")
       })
   }
 

@@ -12,6 +12,7 @@
 <script type="module">
   import system from "../../42/system.js"
   import client from "../../42/os/network/client.js"
+  import clearSiteData from "../../42/os/network/client/clearSiteData.js"
   import ui from "../../42/ui.js"
   import fs from "../../42/core/fs.js"
 
@@ -80,22 +81,8 @@
       {
         tag: "button",
         content: "Clear top and vhost site-data",
-        async click() {
-          const iframe = document.createElement("iframe")
-          iframe.style = `display:none`
-          document.documentElement.append(iframe)
-          const clearVhost = (url) =>
-            new Promise((resolve, reject) => {
-              iframe.onload = resolve
-              iframe.onerror = reject
-              iframe.src = url
-            })
-
-          await Promise.all([
-            clearVhost("http://localhost:3000/?empty&clear-site-data"),
-            fetch("/?empty&clear-site-data"),
-          ])
-          location.reload()
+        click() {
+          clearSiteData({ reload: true })
         },
       },
       {

@@ -44,8 +44,6 @@ kit.install = async (version, options) => {
 }
 
 kit.update = async (path) => {
-  console.log("kit update", { version: kit.version, path })
-
   kit.cache ??= await caches.open(kit.version)
 
   if (path.endsWith("index.html")) {

@@ -77,26 +77,30 @@ function initDev(config) {
 
   serverSentEvents("/42-dev")
     .on("connect", () => {
-      console.log(`${logIcon}🔭 connect`)
+      if (config.verbose > 1) console.log(`${logIcon}🔭 connect`)
     })
     .on("disconnect", () => {
-      console.log(`${logIcon}🔭💥 disconnected {grey /42-dev}`)
+      if (config.verbose > 1) {
+        console.log(`${logIcon}🔭💥 disconnected {grey /42-dev}`)
+      }
     })
     .on("error", (msg) => {
-      console.log(`${logIcon}🔭💥 ${msg}`)
+      if (config.verbose > 1) console.log(`${logIcon}🔭💥 ${msg}`)
     })
     .on("change", ({ data }) => {
-      console.log(`${logIcon}🔭 change ${data}`)
+      if (config.verbose > 1) console.log(`${logIcon}🔭 change ${data}`)
       kit.update(data)
     })
     .on("reload", () => {
-      console.log(`${logIcon}🔭 reload`)
+      if (config.verbose > 1) console.log(`${logIcon}🔭 reload`)
     })
 
-  for (const event of ["activate", "error", "install", "message"]) {
-    self.addEventListener(event, () => {
-      console.log(`${logIcon} -(${event})`)
-    })
+  if (config.verbose > 2) {
+    for (const event of ["activate", "error", "install", "message"]) {
+      self.addEventListener(event, () => {
+        console.log(`${logIcon} -(${event})`)
+      })
+    }
   }
 }
 
@@ -136,7 +140,7 @@ service.install = (options) => {
     self.clients.claim() // Should be moved inside waitUntil ?
   })
 
-  if (config.dev) initDev(config)
+  if (!config.vhost && config.dev) initDev(config)
 }
 
 export { service }
