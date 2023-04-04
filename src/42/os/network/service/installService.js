@@ -1,17 +1,16 @@
 // @read https://bugs.chromium.org/p/chromium/issues/detail?id=468227#c15
 
 import ipc from "../../../core/ipc.js"
+import configure from "../../../core/configure.js"
+import parseURLQuery from "../../../fabric/url/parseURLQuery.js"
 import getPathInfos from "../../../core/path/getPathInfos.js"
+import serverSentEvents from "../../../core/dev/serverSentEvents.js"
 import getDriver from "../../../core/fs/getDriver.js"
 import Disk from "../../../core/fs/Disk.js"
-import installKit from "./installKit.js"
-import serverSentEvents from "../../../core/dev/serverSentEvents.js"
+import kit from "./installKit.js"
 
 const disk = new Disk()
-const isVhost = new URLSearchParams(location.search).has("vhost")
 const VHOST_URL = new URL("../client/vhost.html", import.meta.url).href
-
-ipc.on("42_SW_DISK_INIT", async () => disk.init(await getVhostClient()))
 
 async function getVhostClient() {
   const clients = await self.clients.matchAll({ type: "window" })
@@ -71,10 +70,10 @@ function proxy(e) {
   )
 }
 
-function initDev() {
-  const logIcon = isVhost ? "🌐🛰️" : "🌍🛰️"
-  const sse = serverSentEvents("/42-dev")
-  sse
+function initDev(config) {
+  const logIcon = config.vhost ? "🌐🛰️" : "🌍🛰️"
+
+  serverSentEvents("/42-dev")
     .on("connect", () => {
       console.log(`${logIcon}🔭 connect`)
     })
@@ -86,20 +85,13 @@ function initDev() {
     })
     .on("change", ({ data }) => {
       console.log(`${logIcon}🔭 change ${data}`)
+      kit.update(data)
     })
     .on("reload", () => {
       console.log(`${logIcon}🔭 reload`)
     })
 
-  for (const event of [
-    "activate",
-    "controllerchange",
-    "error",
-    "install",
-    "message",
-    "statechange",
-    "updatefound",
-  ]) {
+  for (const event of ["activate", "error", "install", "message"]) {
     self.addEventListener(event, () => {
       console.log(`${logIcon} -(${event})`)
     })
@@ -107,13 +99,18 @@ function initDev() {
 }
 
 export function installService(options) {
-  self.addEventListener("fetch", isVhost ? proxy : serve)
+  const config = configure(options, parseURLQuery(location.search))
+
+  ipc.on("42_SW_DISK_INIT", async () => disk.init(await getVhostClient()))
+  ipc.on("42_SW_GET_CONFIG", async () => config)
+
+  self.addEventListener("fetch", config.vhost ? proxy : serve)
 
   self.addEventListener("install", (e) => {
     e.waitUntil(
       (async () => {
-        if (!isVhost && options?.version) await installKit(options?.version)
-        await self.skipWaiting()
+        if (!config.vhost && config.version) await kit.install(config.version)
+        await self.skipWaiting() // TODO: test this on sw update
       })()
     )
   })
@@ -124,22 +121,20 @@ export function installService(options) {
         // @read https://developers.google.com/web/updates/2017/02/navigation-preload
         await self.registration.navigationPreload.enable()
 
-        if (!options?.version) return
+        if (!config.version) return
 
         const cacheNames = await caches.keys()
         await Promise.all(
           cacheNames.map((cacheName) =>
-            cacheName === options?.version
-              ? undefined
-              : caches.delete(cacheName)
+            cacheName === config.version ? undefined : caches.delete(cacheName)
           )
         )
       })()
     )
-    self.clients.claim()
+    self.clients.claim() // Should be moved inside waitUntil ?
   })
 
-  if (options?.dev) initDev()
+  if (config.dev) initDev(config)
 }
 
 export default installService

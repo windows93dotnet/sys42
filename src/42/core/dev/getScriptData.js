@@ -3,12 +3,9 @@ export default function getScriptData(url) {
   const selector = `script[src$="${pathname}"]`
   const script = document.querySelector(selector)
 
-  const data = {}
+  if (!script) return
 
-  if (!script) {
-    console.warn(`${selector} not found`)
-    return data
-  }
+  const data = {}
 
   for (const [key, val] of Object.entries(script.dataset)) {
     try {

@@ -2,17 +2,23 @@ import tarExtractPipe from "../../../core/formats/tar/tarExtractPipe.js"
 import getPathInfos from "../../../core/path/getPathInfos.js"
 import getDirname from "../../../core/path/core/getDirname.js"
 
-export async function installKit(version, options) {
+const kit = {}
+
+kit.install = async (version, options) => {
   if (await caches.has(version)) return
+
+  kit.version = version
 
   const kitsFolder = options?.dirname ?? "42-kits"
 
   const [res, cache] = await Promise.all([
     fetch(`/${kitsFolder}/${version}.tar.gz`),
-    caches.open(version),
+    kit.cache ?? caches.open(version),
   ])
 
   if (!res.ok) return
+
+  kit.cache = cache
 
   const undones = []
 
@@ -37,4 +43,19 @@ export async function installKit(version, options) {
   await Promise.all(undones)
 }
 
-export default installKit
+kit.update = async (path) => {
+  console.log("kit update", { version: kit.version, path })
+
+  kit.cache ??= await caches.open(kit.version)
+
+  if (path.endsWith("index.html")) {
+    const res = await fetch(path)
+    await Promise.all([
+      kit.cache.put(getDirname(path) + "/", res.clone()),
+      kit.cache.put(path, res),
+    ])
+  } else await kit.cache.add(path)
+}
+
+export { kit }
+export default kit

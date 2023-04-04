@@ -47,6 +47,13 @@ function makeGraphResult() {
   })
 }
 
+// TODO: improve kit regeneration for performance
+let remakeBusy
+const remakeKit = debounce(async () => {
+  await remakeBusy
+  remakeBusy = system.tasks.kit()
+}, 500)
+
 async function refresh(event, filename) {
   if (ignored.has(filename)) return
 
@@ -80,6 +87,8 @@ async function refresh(event, filename) {
 
     system.emit("watch:change", url, relative, filename)
   }
+
+  if (system.config.run.includes("kit")) remakeKit()
 }
 
 refresh.change = debounce(refresh, 250, true)
