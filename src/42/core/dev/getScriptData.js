@@ -1,5 +1,6 @@
 export default function getScriptData(url) {
-  const { pathname } = new URL(url, document.URL)
+  const { href } = new URL(url, document.URL)
+  const pathname = href.replace(document.URL, "")
   const selector = `script[src$="${pathname}"]`
   const script = document.querySelector(selector)
 

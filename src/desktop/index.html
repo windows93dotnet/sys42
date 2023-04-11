@@ -19,7 +19,7 @@
     os.desktop.state.errors.push(err)
   })
 
-  await client.connect()
+  await client.connect({ verbose: 2 })
 
   document.body.classList.add("desktop")
 

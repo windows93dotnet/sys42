@@ -39,8 +39,13 @@ kit.install = async (version, options) => {
     },
   })
 
-  await res.body.pipeThrough(tarExtractPipe({ gzip: true })).pipeTo(sink)
-  await Promise.all(undones)
+  try {
+    await res.body.pipeThrough(tarExtractPipe({ gzip: true })).pipeTo(sink)
+    await Promise.all(undones)
+  } catch (err) {
+    await caches.delete(version)
+    throw err
+  }
 }
 
 kit.update = async (path) => {

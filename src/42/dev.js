@@ -9,7 +9,7 @@ import getScriptData from "./core/dev/getScriptData.js"
 import parseURLQuery from "./fabric/url/parseURLQuery.js"
 
 const DEFAULT = {
-  // verbose: 2
+  verbose: 2,
 }
 
 const config = configure(
@@ -96,6 +96,11 @@ if (inTop && inAutomated) {
     dev.toggle = () => {
       dev.sse.enabled = !dev.sse.enabled
       log(dev.sse.enabled ? "resumed" : "paused")
+    }
+
+    dev.connect = () => {
+      loaded = false
+      dev.sse.connect()
     }
 
     dev.sse

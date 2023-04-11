@@ -1,8 +1,23 @@
+/* eslint-disable import/no-unresolved */
+import system from "../../system.js"
 import ipc from "../../core/ipc.js"
+import isHashmapLike from "../../fabric/type/any/is/isHashmapLike.js"
 
 const client = {}
 
-client.connect = async (url = "/42.sw.js") => {
+client.connect = async (options) => {
+  let url = typeof options === "string" ? options : options?.url ?? "/42.sw.js"
+
+  if (isHashmapLike(options)) {
+    const query = []
+    for (const [key, val] of Object.entries(options)) {
+      if (key === "url") continue
+      query.push(`${key}=${encodeURIComponent(val)}`)
+    }
+
+    if (query.length > 0) url += `?${query.join("&")}`
+  }
+
   const registration = await navigator.serviceWorker //
     .register(url, { type: "module" })
 
@@ -41,8 +56,12 @@ client.connect = async (url = "/42.sw.js") => {
       .to(controller)
       .sendOnce("42_SW_GET_CONFIG")
       .then((config) => {
-        // eslint-disable-next-line import/no-unresolved
-        if (config.dev) import("../../dev.js?verbose=2&service")
+        // if (config.dev) {
+        //   if (system.dev) system.dev.connect()
+        //   else import("../../dev.js?verbose=2&service")
+        // }
+
+        if (config.dev && !system.dev) import("../../dev.js?verbose=2&service")
       })
   }
 
