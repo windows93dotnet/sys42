@@ -48,8 +48,8 @@ kit.install = async (version, options) => {
   }
 }
 
-kit.update = async (path) => {
-  kit.cache ??= await caches.open(kit.version)
+kit.update = async (path, version = kit.version) => {
+  kit.cache ??= await caches.open(version)
 
   if (path.endsWith("index.html")) {
     const res = await fetch(path)

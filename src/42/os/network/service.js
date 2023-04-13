@@ -4,7 +4,6 @@ import ipc from "../../core/ipc.js"
 import configure from "../../core/configure.js"
 import parseURLQuery from "../../fabric/url/parseURLQuery.js"
 import getPathInfos from "../../core/path/getPathInfos.js"
-import serverSentEvents from "../../core/dev/serverSentEvents.js"
 import getDriver from "../../core/fs/getDriver.js"
 import Disk from "../../core/fs/Disk.js"
 import kit from "./service/kit.js"
@@ -72,43 +71,18 @@ function proxy(e) {
   )
 }
 
-function initDev(config) {
-  const logIcon = config.vhost ? "🌐🛰️" : "🌍🛰️"
-
-  serverSentEvents("/42-dev")
-    .on("connect", () => {
-      if (config.verbose > 1) console.log(`${logIcon}🔭 connect`)
-    })
-    .on("disconnect", () => {
-      if (config.verbose > 1) {
-        console.log(`${logIcon}🔭💥 disconnected {grey /42-dev}`)
-      }
-    })
-    .on("error", (msg) => {
-      if (config.verbose > 1) console.log(`${logIcon}🔭💥 ${msg}`)
-    })
-    .on("change", ({ data }) => {
-      if (config.verbose > 1) console.log(`${logIcon}🔭 change ${data}`)
-      kit.update(data)
-    })
-    .on("reload", () => {
-      if (config.verbose > 1) console.log(`${logIcon}🔭 reload`)
-    })
-
-  if (config.verbose > 2) {
-    for (const event of ["activate", "error", "install", "message"]) {
-      self.addEventListener(event, () => {
-        console.log(`${logIcon} -(${event})`)
-      })
-    }
-  }
-}
-
 service.install = (options) => {
   const config = configure(options, parseURLQuery(location.search))
 
-  ipc.on("42_SW_DISK_INIT", async () => disk.init(await getVhostClient()))
   ipc.on("42_SW_GET_CONFIG", async () => config)
+
+  ipc.on("42_SW_DISK_INIT", async () =>
+    disk.init(config.vhost ? await getVhostClient() : undefined)
+  )
+
+  if (!config.vhost && config.dev) {
+    ipc.on("42_SW_CACHE_BUST", async (path) => kit.update(path, config.version))
+  }
 
   self.addEventListener("fetch", config.vhost ? proxy : serve)
 
@@ -140,7 +114,14 @@ service.install = (options) => {
     self.clients.claim() // Should be moved inside waitUntil ?
   })
 
-  if (!config.vhost && config.dev) initDev(config)
+  if (config.dev && config.verbose > 2) {
+    const logIcon = config.vhost ? "🌐🛰️" : "🌍🛰️"
+    for (const event of ["activate", "error", "install", "message"]) {
+      self.addEventListener(event, () => {
+        console.log(`${logIcon} -(${event})`)
+      })
+    }
+  }
 }
 
 export { service }

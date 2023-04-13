@@ -67,10 +67,12 @@ if (inTop && inAutomated) {
   system.dev = dev
 
   if (inTop) {
-    const [liveReload, serverSentEvents] = await Promise.all([
+    const [liveReload, serverSentEvents, client] = await Promise.all([
       import("./core/dev/liveReload.js") //
         .then((m) => m.default),
       import("./core/dev/serverSentEvents.js") //
+        .then((m) => m.default),
+      import("./os/network/client.js") //
         .then((m) => m.default),
     ])
 
@@ -98,11 +100,6 @@ if (inTop && inAutomated) {
       log(dev.sse.enabled ? "resumed" : "paused")
     }
 
-    dev.connect = () => {
-      loaded = false
-      dev.sse.connect()
-    }
-
     dev.sse
       .on("connect", () => {
         if (inTop && dev.sse.enabled && loaded) location.reload()
@@ -111,8 +108,9 @@ if (inTop && inAutomated) {
       })
       .on("disconnect", () => sseLog(`💥 disconnected {grey /42-dev}`))
       .on("error", (msg) => sseLog(`💥 ${msg}`))
-      .on("change", ({ data }) => {
+      .on("change", async ({ data }) => {
         sseLog(` change ${log.format.file(data)}`)
+        await client.bus?.send("42_SW_CACHE_BUST", data)
         liveReload(data)
       })
       .on("reload", () => {

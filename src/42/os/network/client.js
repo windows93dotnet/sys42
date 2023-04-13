@@ -1,72 +1,69 @@
 /* eslint-disable import/no-unresolved */
 import system from "../../system.js"
 import ipc from "../../core/ipc.js"
+import listen from "../../fabric/event/listen.js"
 import isHashmapLike from "../../fabric/type/any/is/isHashmapLike.js"
 
-const client = {}
+class Client {
+  get controller() {
+    return navigator.serviceWorker.controller
+  }
 
-client.connect = async (options) => {
-  let url = typeof options === "string" ? options : options?.url ?? "/42.sw.js"
+  #bus
+  get bus() {
+    if (!navigator.serviceWorker.controller) return
+    this.#bus ??= ipc.to(navigator.serviceWorker.controller)
+    return this.#bus
+  }
 
-  if (isHashmapLike(options)) {
-    const query = []
-    for (const [key, val] of Object.entries(options)) {
-      if (key === "url") continue
-      query.push(`${key}=${encodeURIComponent(val)}`)
+  async connect(options) {
+    let url =
+      typeof options === "string" ? options : options?.url ?? "/42.sw.js"
+
+    if (isHashmapLike(options)) {
+      const query = []
+      for (const [key, val] of Object.entries(options)) {
+        if (key === "url") continue
+        query.push(`${key}=${encodeURIComponent(val)}`)
+      }
+
+      if (query.length > 0) url += `?${query.join("&")}`
     }
 
-    if (query.length > 0) url += `?${query.join("&")}`
-  }
+    this.registration = await navigator.serviceWorker //
+      .register(url, { type: "module" })
 
-  const registration = await navigator.serviceWorker //
-    .register(url, { type: "module" })
+    const hasController = navigator.serviceWorker.controller
 
-  const hasController = navigator.serviceWorker.controller
+    if (this.registration) {
+      // prevent hard refresh to disable service worker https://stackoverflow.com/a/62596701
+      if (this.registration.active && !hasController) location.reload()
 
-  if (registration) {
-    // prevent hard refresh to disable service worker https://stackoverflow.com/a/62596701
-    if (registration.active && !hasController) location.reload()
-
-    registration.addEventListener("updatefound", () => {
-      console.log("Service Worker update found!")
-    })
-  }
-
-  if (!hasController) {
-    await new Promise((resolve) => {
-      const controller = new AbortController()
-      const { signal } = controller
-      navigator.serviceWorker.addEventListener(
-        "controllerchange",
-        () => {
-          if (navigator.serviceWorker.controller) {
-            controller.abort()
-            resolve()
-          }
-        },
-        { signal }
-      )
-    })
-  }
-
-  const { controller } = navigator.serviceWorker
-
-  if (controller) {
-    ipc
-      .to(controller)
-      .sendOnce("42_SW_GET_CONFIG")
-      .then((config) => {
-        // if (config.dev) {
-        //   if (system.dev) system.dev.connect()
-        //   else import("../../dev.js?verbose=2&service")
-        // }
-
-        if (config.dev && !system.dev) import("../../dev.js?verbose=2&service")
+      this.registration.addEventListener("updatefound", () => {
+        console.log("Service Worker update found!")
       })
-  }
+    }
 
-  return { registration, controller }
+    if (!hasController) {
+      await new Promise((resolve) => {
+        const forget = listen(navigator.serviceWorker, {
+          controllerchange() {
+            if (navigator.serviceWorker.controller) {
+              forget()
+              resolve()
+            }
+          },
+        })
+      })
+    }
+
+    this.bus.send("42_SW_GET_CONFIG").then((config) => {
+      if (config.dev && !system.dev) import("../../dev.js?verbose=2&service")
+    })
+  }
 }
+
+const client = new Client()
 
 export { client }
 export default client
