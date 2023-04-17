@@ -1893,6 +1893,24 @@ test("each", "#", "string array", async (t) => {
   )
 })
 
+test("each", "#", "throws on invalid #", async (t) => {
+  await t.throws(
+    async () =>
+      t.utils.decay(
+        ui(t.utils.dest(), {
+          content: {
+            scope: "arr",
+            each: "{{#000}}\n",
+          },
+          state: {
+            arr: [{ a: "x" }, { a: "y" }],
+          },
+        })
+      ),
+    /Invalid #/
+  )
+})
+
 test("each", "@last", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
