@@ -74,6 +74,7 @@
     if (!ctx.enabled) return
 
     await fetch("/?clear-site-data")
+    if (!system.dev) await import("./42/dev.js")
 
     log()
     log("🧪 " + ctx.label)

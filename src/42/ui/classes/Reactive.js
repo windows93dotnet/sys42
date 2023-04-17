@@ -79,18 +79,19 @@ export default class Reactive extends Emitter {
       },
 
       get: (path, { key, chain, parent }) => {
-        if (key.startsWith("@") || key.startsWith("#")) {
+        if (key.startsWith("@")) {
           const parts = key.split(":")
-          if (key.startsWith("#")) {
-            return parts[1].padStart(parts[0].length, "0")
-          }
-
           const index = Number(parts[1])
           if (key.startsWith("@index")) return index
           if (key.startsWith("@first")) return index === 0
           if (key.startsWith("@last")) {
             return index === parent[chain.at(-1)].length - 1
           }
+        }
+
+        if (key.startsWith("#")) {
+          const parts = key.split(":")
+          return parts[1].padStart(parts[0].length, "0")
         }
 
         if (exists(this.data, `$computed${path}`, delimiter)) {
