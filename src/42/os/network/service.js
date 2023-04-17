@@ -1,4 +1,5 @@
 // @read https://bugs.chromium.org/p/chromium/issues/detail?id=468227#c15
+// [1] TODO: Use ignoreSearch option when this bug will be fixed https://bugs.chromium.org/p/chromium/issues/detail?id=682677
 
 import ipc from "../../core/ipc.js"
 import configure from "../../core/configure.js"
@@ -24,9 +25,9 @@ async function fromNetwork(e) {
   return (await e.preloadResponse) ?? fetch(e.request)
 }
 
-async function fromCacheOrNetwork(e) {
+async function fromCacheOrNetwork(e, pathname) {
   return (
-    (await caches.match(e.request)) ??
+    (await caches.match(pathname)) ?? // [1]
     (await e.preloadResponse) ??
     fetch(e.request)
   )
@@ -41,7 +42,7 @@ function serve(e) {
     (async () => {
       if (!disk.synced) await disk.init()
       const inode = disk.get(pathname)
-      if (!inode) return fromCacheOrNetwork(e)
+      if (!inode) return fromCacheOrNetwork(e, pathname)
 
       const driver = await getDriver(inode[1])
       const blob = await driver.open(pathname)
