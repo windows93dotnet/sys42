@@ -2,6 +2,7 @@ import configure from "../configure.js"
 import Emitter from "../../fabric/classes/Emitter.js"
 import Canceller from "../../fabric/classes/Canceller.js"
 import inWindow from "../env/realm/inWindow.js"
+import defer from "../../fabric/type/promise/defer.js"
 
 const DEFAULTS = {
   withCredentials: false,
@@ -12,9 +13,10 @@ const IGNORE_EVENTS = new Set(["error", "open", "connect", "disconnect"])
 
 export class ServerSentEvents extends Emitter {
   #sse
-  #timerID
+  #timerId
   #attempt = 0
   #beforeunload
+  #offline
 
   constructor(url, options) {
     super()
@@ -22,12 +24,14 @@ export class ServerSentEvents extends Emitter {
     this.enabled = true
     this.config = configure(DEFAULTS, options)
     this.cancel = new Canceller(options?.signal)
+    this.ready = defer()
   }
 
   #reconnect() {
+    this.ready = defer()
     if (++this.#attempt < this.config.maxAttempt) {
-      clearTimeout(this.#timerID)
-      this.#timerID = setTimeout(
+      clearTimeout(this.#timerId)
+      this.#timerId = setTimeout(
         () => this.connect(),
         500 + this.#attempt * this.#attempt * 100
       )
@@ -38,6 +42,21 @@ export class ServerSentEvents extends Emitter {
 
   connect() {
     this.#sse?.close()
+
+    if (!navigator.onLine) {
+      if (this.#offline) return this
+      this.#offline = true
+      const { signal } = this.cancel
+      globalThis.addEventListener("online", () => this.connect(), {
+        once: true,
+        signal,
+      })
+      return this
+    }
+
+    this.ready.resolve()
+    this.#offline = false
+
     this.#sse = new EventSource(this.url, this.config)
 
     this.#sse.addEventListener(
@@ -76,8 +95,10 @@ export class ServerSentEvents extends Emitter {
     return this
   }
 
-  #addListener(event) {
+  async #addListener(event) {
+    if (!this.#sse) this.connect()
     if (!IGNORE_EVENTS.has(event)) {
+      await this.ready
       this.#sse.addEventListener(
         event,
         (...args) => {
@@ -88,14 +109,12 @@ export class ServerSentEvents extends Emitter {
     }
   }
 
-  on(event, fn, returnOff) {
-    if (!this.#sse) this.connect()
+  on(event, options, fn) {
     this.#addListener(event)
-    return super.on(event, fn, returnOff)
+    return super.on(event, options, fn)
   }
 
   once(event, fn) {
-    if (!this.#sse) this.connect()
     this.#addListener(event)
     return super.once(event, fn)
   }
