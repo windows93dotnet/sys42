@@ -72,9 +72,12 @@ if (inTop) {
  * Remote procedure call
  * @see https://en.wikipedia.org/wiki/Remote_procedure_call
  */
-export default function rpc(fn, options) {
-  const marshalling = options?.marshalling
-  const unmarshalling = options?.unmarshalling
+export default function rpc(fn, options = {}) {
+  const { marshalling, unmarshalling } = options
+  options.module = options.module
+    ? new URL(options.module).pathname // remove origin to allow vhost calls
+    : undefined
+
   const id = hash([fn, options])
 
   if (!inTop) {

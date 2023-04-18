@@ -16,8 +16,10 @@
   import ui from "../../42/ui.js"
   import fs from "../../42/core/fs.js"
 
+  import "../../42/ui/components/dialog.js"
+
   system.network ??= {
-    vhost: "http://localhost:3000/42/os/network/client/vhost.html?path=",
+    vhost: "http://localhost:3000/42/os/network/client/vhost.html",
   }
 
   localStorage.setItem("secret", "hello secret")
@@ -27,9 +29,13 @@
   <h1>
   <img src="/42/themes/default/icons/32x32/emblems/info.png" style="vertical-align:text-bottom">
   Sandboxed iframe</h1>
-  The HTML and CSS are served from browser storage..
+  The HTML and CSS are served from browser storage.
   <hr />
   <script type="module">
+  import dialog from "/42/ui/components/dialog.js"
+
+  dialog({label: "Hello", content: "from virtual host sandbox"})
+
   if (localStorage.getItem('secret') === "hello secret") {
     document.body.append('❌ Sandboxing failed')
     document.body.className = "fail"

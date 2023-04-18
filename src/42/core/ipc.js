@@ -1,9 +1,13 @@
 /* eslint-disable complexity */
 import realm from "./env/realm.js"
+import inVhost from "./env/realm/inVhost.js"
 import uid from "./uid.js"
 import defer from "../fabric/type/promise/defer.js"
 import Emitter from "../fabric/classes/Emitter.js"
 import Canceller from "../fabric/classes/Canceller.js"
+
+const defaultTargetOrigin = new URLSearchParams(location.search) //
+  .get("targetOrigin")
 
 const sources = new WeakMap()
 const origins = new Map()
@@ -149,14 +153,14 @@ async function messageHandler(e) {
   }
 }
 
-function ping(target, port, origin) {
-  origin ??= document.referrer
-  target.postMessage({ type: PING }, origin, [port])
+function ping(target, port, targetOrigin) {
+  targetOrigin ??= inVhost ? defaultTargetOrigin : document.referrer
+  target.postMessage({ type: PING }, targetOrigin, [port])
 }
 
 function autoTarget(port, options) {
   if (realm.inIframe) {
-    ping(window.parent, port, options.targetOrigin)
+    ping(inVhost ? window.top : window.parent, port, options.targetOrigin)
   } else if (realm.inChildWindow) {
     ping(window.opener, port, options.targetOrigin)
   } else if (realm.inDedicatedWorker) {

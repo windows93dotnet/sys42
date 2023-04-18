@@ -15,7 +15,7 @@
 <iframe></iframe>
 
 <script type="module">
-  navigator.serviceWorker?.register("/42.sw.js?vhost", { type: "module" })
+  navigator.serviceWorker.register("/42.sw.js?vhost", { type: "module" })
   await navigator.serviceWorker.ready
 
   const { ipc } = await import("../../../core/ipc.js")
@@ -29,5 +29,6 @@
   if (controller) await ipc.to(controller).sendOnce("42_SW_DISK_INIT")
 
   const params = new URLSearchParams(location.search)
-  document.querySelector("iframe").src = params.get("path")
+  document.querySelector("iframe").src =
+    params.get("path") + "?targetOrigin=" + params.get("origin")
 </script>
