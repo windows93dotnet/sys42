@@ -80,13 +80,8 @@ export default class Emitter {
 
   emit(events, ...args) {
     for (const event of events.split(SPLIT_REGEX)) {
-      if (event in this[_EVENTS]) {
-        this[_EVENTS][event].forEach((fn) => fn(...args))
-      }
-
-      if ("*" in this[_EVENTS]) {
-        this[_EVENTS]["*"].forEach((fn) => fn(event, ...args))
-      }
+      this[_EVENTS][event]?.forEach((fn) => fn(...args))
+      this[_EVENTS]["*"]?.forEach((fn) => fn(event, ...args))
     }
 
     return this
@@ -96,13 +91,8 @@ export default class Emitter {
   send(events, ...args) {
     const undones = []
     for (const event of events.split(SPLIT_REGEX)) {
-      if (event in this[_EVENTS]) {
-        this[_EVENTS][event].forEach((fn) => undones.push(fn(...args)))
-      }
-
-      if ("*" in this[_EVENTS]) {
-        this[_EVENTS]["*"].forEach((fn) => undones.push(fn(event, ...args)))
-      }
+      this[_EVENTS][event]?.forEach((fn) => undones.push(fn(...args)))
+      this[_EVENTS]["*"]?.forEach((fn) => undones.push(fn(event, ...args)))
     }
 
     return Promise.all(undones)
