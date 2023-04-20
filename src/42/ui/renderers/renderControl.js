@@ -57,6 +57,8 @@ function getBindScope(stage, bind) {
 export default function renderControl(el, stage, plan) {
   el.id ||= hash(stage.steps)
 
+  const isRadioButton = el.type === "radio"
+
   if (plan.bind) {
     let changeFromInput
     let scopeFrom
@@ -99,13 +101,13 @@ export default function renderControl(el, stage, plan) {
       )
     }
 
-    if (el.type === "radio") {
+    if (isRadioButton) {
       el.value = plan.value
       el.checked = plan.checked
     }
 
     if (scopeTo) {
-      if (el.type === "radio") {
+      if (isRadioButton) {
         if (plan.checked) stage.reactive.set(scopeTo, plan.value)
       } else if ("value" in plan) {
         stage.reactive.set(scopeTo, plan.value)
@@ -120,9 +122,7 @@ export default function renderControl(el, stage, plan) {
 
   const labelPlan =
     plan.label ??
-    (el.type === "radio"
-      ? toTitleCase(el.value)
-      : toTitleCase(getBasename(el.name)))
+    (isRadioButton ? toTitleCase(el.value) : toTitleCase(getBasename(el.name)))
 
   const role = el.getAttribute("role")
 
@@ -140,7 +140,7 @@ export default function renderControl(el, stage, plan) {
     return label
   }
 
-  const isCheckField = el.type === "radio" || el.type === "checkbox"
+  const isCheckField = isRadioButton || el.type === "checkbox"
 
   const field = isCheckField
     ? create(".check-cont")
