@@ -91,7 +91,7 @@ test("arguments are deeply merged", (t) => {
 
 test("dynamic id", (t) => {
   const el = create("div", { id: true })
-  t.match(el.id, /^[a-z][\da-z]{7}$/)
+  t.match(el.id, /^[a-z][\dA-Za-z]{7}$/)
 })
 
 test("classes", (t) => {

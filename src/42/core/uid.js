@@ -1,23 +1,42 @@
-const { random, round } = Math
+/** {@link https://stackoverflow.com/q/72334889 Source} */
+class EntropyPool {
+  #entropy
+  #index
+  #size
+  constructor(size = 1024) {
+    this.#entropy = new Uint32Array(size)
+    this.#size = size
+    this.#index = 0
+    crypto.getRandomValues(this.#entropy)
+  }
+  next() {
+    const value = this.#entropy[this.#index++]
+    if (this.#index === this.#size) {
+      crypto.getRandomValues(this.#entropy)
+      this.#index = 0
+    }
 
-// [1] always start with a letter for element's id
-export function uid(size = 8, radix = 36, r = random) {
-  const n = r()
-  return (
-    String.fromCharCode(97 + round(n * 25)) + // [1]
-    round(n * radix ** (size - 1)).toString(radix)
-  ).padStart(size, "a")
+    return value
+  }
 }
 
-//! Copyright 2017 Andrey Sitnik <andrey@sitnik.ru>. MIT License.
-// @src https://github.com/ai/nanoid/blob/main/async/index.browser.js
+const pool = new EntropyPool()
 
-export const secure = (size = 21) => {
-  let id = ""
-  const bytes = crypto.getRandomValues(new Uint8Array(size))
-
+/**
+ * Cryptographic unique string ID generator.
+ * URL and element ID friendly (the first char is always a lowercase letter).
+ * {@link https://github.com/ai/nanoid/blob/main/async/index.browser.js Source}
+ * @license Copyright 2017 Andrey Sitnik <andrey@sitnik.ru>. MIT License.
+ *
+ * @param {number} size the desired string length
+ * @returns {string} alphanumeric string
+ */
+export function uid(size = 8) {
+  if (size < 4) size = 4
+  let id = String.fromCharCode(97 + (pool.next() % 26))
+  size--
   while (size--) {
-    const byte = bytes[size] & 61
+    const byte = pool.next() & 61
     id +=
       byte < 36 //
         ? byte.toString(36)
@@ -26,7 +45,5 @@ export const secure = (size = 21) => {
 
   return id
 }
-
-uid.secure = secure
 
 export default uid
