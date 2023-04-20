@@ -2,13 +2,13 @@ import segmentize from "../type/string/segmentize.js"
 
 /**
  * Set value in object using path
- * @param {Object} obj
+ * @param {object} obj
  * @param {string} path
  * @param {*} val
- * @param {Object|string} [options] - Delimiter if string
+ * @param {object|string} [options] delimiter if string
  * @param {string|array<string>} [options.delimiter=.]
  * @param {boolean} [options.hashmap=false]
- * @returns {Object} obj
+ * @returns {object} obj
  */
 export default function allocate(obj, path, val, options) {
   if (typeof options === "string") options = { delimiter: options }

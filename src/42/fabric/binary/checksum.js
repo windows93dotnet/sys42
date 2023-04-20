@@ -5,10 +5,10 @@ import { fromArrayBuffer } from "../../core/formats/base64.js"
 
 /**
  * Cryptographic hash function.
- * Hashes input value and returns the digest as an hex string.
+ * Hashes input value and returns the digest as an base64 or hex string.
  *
  * @param {string | File | Blob | ArrayBuffer | TypedArray} val
- * @param {string} algorithm
+ * @param {{ algo?: string; output?: number }} options
  * @returns {string}
  */
 export default async function checksum(val, options) {

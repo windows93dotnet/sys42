@@ -1,10 +1,10 @@
 /**
  * Function that count occurrences of a substring in a string
  *
- * @param {string} str  The string
- * @param {string} search  The sub string to search for
+ * @param {string} str
+ * @param {string} search the sub string to search for
  * @param {object} [options]
- * @param {boolean} [options.overlap=false]  Allow overlapping
+ * @param {boolean} [options.overlap=false] allow overlapping
  * @returns {number}
  *
  * @author Vitim.us https://gist.github.com/victornpb/7736865
