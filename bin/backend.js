@@ -2,11 +2,13 @@ import { fileURLToPath } from "node:url"
 import fs from "node:fs/promises"
 
 import system from "../src/42/system.js"
-import userConfig, { CLI_TASKS } from "./utils/userConfig.js"
 import inNode from "../src/42/core/env/runtime/inNode.js"
 import trap from "../src/42/fabric/type/error/trap.js"
-import log from "../src/42/core/log.js"
 import propagateConfig from "./utils/propagateConfig.js"
+
+globalThis.crypto ??= (await import("node:crypto")).webcrypto
+const { default: userConfig, CLI_TASKS } = await import("./utils/userConfig.js")
+const { default: log } = await import("../src/42/core/log.js")
 
 function resolve(path) {
   return fileURLToPath(new URL(path, import.meta.url))
