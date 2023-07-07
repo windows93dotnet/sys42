@@ -167,31 +167,32 @@ test.ui(async (t) => {
 
     launch(t, "#filePickerSaveContent", ".ui-dialog__close", { ok: false }),
     launch(t, "#filePickerSaveContent", ".ui-dialog__decline", { ok: false }),
-    launch(
-      t,
-      "#filePickerSaveContent",
-      ".ui-dialog__agree",
-      {
-        ok: true,
-        saved: true,
-        path: "/hello.txt",
-        // dir: "/",
-        // base: "hello.txt",
-      },
-      async (dialog) => {
-        await t.sleep(100) // TODO: remove this
-        t.is(dialog.querySelector('[name$="/name"]').value, "hello.txt")
-      },
-    )
-      .then(async () => {
-        t.is(await fs.readText("/hello.txt"), "hello world")
-      })
-      .finally(async () => {
-        try {
-          await fs.delete("/hello.txt")
-        } catch (err) {
-          console.warn(err)
-        }
-      }),
   ])
+
+  await launch(
+    t,
+    "#filePickerSaveContent",
+    ".ui-dialog__agree",
+    {
+      ok: true,
+      saved: true,
+      path: "/hello.txt",
+      // dir: "/",
+      // base: "hello.txt",
+    },
+    async (dialog) => {
+      await t.sleep(100) // TODO: remove this
+      t.is(dialog.querySelector('[name$="/name"]').value, "hello.txt")
+    },
+  )
+    .then(async () => {
+      t.is(await fs.readText("/hello.txt"), "hello world")
+    })
+    .finally(async () => {
+      try {
+        await fs.delete("/hello.txt")
+      } catch (err) {
+        console.error(err.message)
+      }
+    })
 })

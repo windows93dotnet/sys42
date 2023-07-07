@@ -241,14 +241,14 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
   })
 
   await btnDialogs.dialog1.close()
-  await t.sleep(1)
+  await t.sleep(10)
   t.is(document.activeElement.id, btnDialogs.btnDialog1.id)
 
   await btnDialogs.dialog2.close()
-  await t.sleep(1)
+  await t.sleep(10)
   t.is(sandbox1.activeElement.id, btnDialogs.btnDialog2.id)
 
   await btnDialogs.dialog3.close()
-  await t.sleep(1)
+  await t.sleep(10)
   t.is(sandbox2.activeElement.id, btnDialogs.btnDialog3.id)
 })

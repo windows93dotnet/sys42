@@ -281,7 +281,7 @@ textarea.box-fit {
 .scroll-x-auto { overflow-x: auto; overflow-y: hidden; }
 .scroll-xy { overflow: scroll; }
 .scroll-xy-auto, .scroll-1 { overflow: auto; }
-.noscroll, .scroll-0 { overflow: hidden; }
+.scroll-0 { overflow: hidden; }
 
 /* align
 ======== */
