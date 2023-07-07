@@ -143,7 +143,7 @@ export const arrayDiff = function (a, b, options, path = [], parents = {}) {
       if (Object.hasOwn(patches, idx)) {
         patch = patches[idx]
         if (patch.op === "replace") {
-          patchIdx = patch.path[patch.path.length - 1]
+          patchIdx = patch.path.at(-1)
           patches[idx] = valueDiff(
             a[patchIdx],
             patch.value,

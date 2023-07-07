@@ -15,7 +15,7 @@ export default function parseCSSUrl(text) {
   let urlMatch
   let url
 
-  text = text.replace(commentRegexp, "")
+  text = text.replaceAll(commentRegexp, "")
 
   while ((urlMatch = urlsRegexp.exec(text))) {
     // Match 3, 5, 6 group if '[@import] url(path)', match 9, 11, 12 group if '@import path'

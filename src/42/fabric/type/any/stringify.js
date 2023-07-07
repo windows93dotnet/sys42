@@ -88,7 +88,7 @@ const PRESETS = {
     clean: (res) =>
       res
         .replace(IGNORE_UNICODE_REGEX, unescapeUnicode)
-        .replace(TRAILING_WHITESPACES_REGEX, (_, wp) =>
+        .replaceAll(TRAILING_WHITESPACES_REGEX, (_, wp) =>
           wp ? `${wp}␊\n` : "\n",
         ),
   },

@@ -6,7 +6,7 @@ export const SMALL_WORDS =
 export const toTitleCase = (str) => {
   if (!str) return ""
   str = toCapitalCase(str)
-  return str.replace(SMALL_WORDS, (_) => (_ === str ? _ : _.toLowerCase()))
+  return str.replaceAll(SMALL_WORDS, (_) => (_ === str ? _ : _.toLowerCase()))
 }
 
 export default toTitleCase

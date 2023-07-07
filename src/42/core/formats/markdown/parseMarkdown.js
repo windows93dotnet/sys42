@@ -17,20 +17,20 @@ export default function parseMarkdown(text) {
   }
 
   text
-    .replace(/^#{4} (.*$)/gim, makeTokenizer("h4"))
-    .replace(/^### (.*$)/gim, makeTokenizer("h3"))
-    .replace(/^## (.*$)/gim, makeTokenizer("h2"))
-    .replace(/^# (.*$)/gim, makeTokenizer("h1"))
-    .replace(/^> (.*$)/gim, makeTokenizer("blockquote"))
-    .replace(/\*\*(.*?)\*\*/gim, makeTokenizer("strong"))
+    .replaceAll(/^#{4} (.*$)/gim, makeTokenizer("h4"))
+    .replaceAll(/^### (.*$)/gim, makeTokenizer("h3"))
+    .replaceAll(/^## (.*$)/gim, makeTokenizer("h2"))
+    .replaceAll(/^# (.*$)/gim, makeTokenizer("h1"))
+    .replaceAll(/^> (.*$)/gim, makeTokenizer("blockquote"))
+    .replaceAll(/\*\*(.*?)\*\*/gim, makeTokenizer("strong"))
     // .replace(/\*([^*]*?)\*/gim, makeTokenizer("em"))
     // .replace(/ {2}$/gim, (_, index) => handleToken(_, index, { tag: "br" }))
     // .replace(/\n/gim, (_, index) => handleToken(_, index, { tag: "br" }))
     // .replace(/\n\n/gim, (_, index) => handleToken(_, index, { tag: "br" }))
-    .replace(/!\[(.*?)]\((.*?)\)/gim, (_, alt, src, index) =>
+    .replaceAll(/!\[(.*?)]\((.*?)\)/gim, (_, alt, src, index) =>
       handleToken(_, index, { tag: "img", alt, src }),
     )
-    .replace(/\[(.*?)]\((.*?)\)/gim, (_, content, href, index) =>
+    .replaceAll(/\[(.*?)]\((.*?)\)/gim, (_, content, href, index) =>
       handleToken(_, index, { tag: "a", href, content }),
     )
 

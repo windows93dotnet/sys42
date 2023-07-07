@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prefer-at */
 export function postrenderAutofocus(el) {
   const items = el.querySelectorAll(":scope [data-autofocus]")
 

@@ -45,8 +45,8 @@ const CLEAN_KEY_REGEX = /^\.[^.]|\n.*?$/g
 const isSubtree = (val) => isArray(val) || isPlainObject(val)
 
 const sortLeaves = (a, b) => {
-  a = String(a).replace(CLEAN_KEY_REGEX, "")
-  b = String(b).replace(CLEAN_KEY_REGEX, "")
+  a = String(a).replaceAll(CLEAN_KEY_REGEX, "")
+  b = String(b).replaceAll(CLEAN_KEY_REGEX, "")
   return a.localeCompare(b)
 }
 

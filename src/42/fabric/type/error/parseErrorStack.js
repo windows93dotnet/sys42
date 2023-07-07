@@ -20,7 +20,7 @@ function extractLocation(urlLike) {
   if (!urlLike.includes(":")) return [urlLike]
 
   const regExp = /(.+?)(?::(\d+))?(?::(\d+))?$/
-  const parts = regExp.exec(urlLike.replace(/[()]/g, ""))
+  const parts = regExp.exec(urlLike.replaceAll(/[()]/g, ""))
   return [parts[1], parts[2] || undefined, parts[3] || undefined]
 }
 
@@ -33,11 +33,11 @@ function parseV8OrIE(error) {
     if (line.includes("(eval ")) {
       // Throw away eval information until we implement stacktrace.js/stackframe#8
       line = line
-        .replace(/eval code/g, "eval")
-        .replace(/(\(eval at [^()]*)|(\),.*$)/g, "")
+        .replaceAll("eval code", "eval")
+        .replaceAll(/(\(eval at [^()]*)|(\),.*$)/g, "")
     }
 
-    let sanitizedLine = line.replace(/^\s+/, "").replace(/\(eval code/g, "(")
+    let sanitizedLine = line.replace(/^\s+/, "").replaceAll("(eval code", "(")
 
     // capture and preseve the parenthesized location "(/foo/my bar.js:12:87)" in
     // case it has spaces in it, as the string is split on \s+ later on
@@ -74,7 +74,7 @@ function parseFFOrSafari(error) {
   return filtered.map((line) => {
     // Throw away eval information until we implement stacktrace.js/stackframe#8
     if (line.includes(" > eval")) {
-      line = line.replace(
+      line = line.replaceAll(
         / line (\d+)(?: > eval line \d+)* > eval:\d+:\d+/g,
         ":$1",
       )
@@ -178,7 +178,7 @@ function parseOpera11(error) {
     const functionName =
       functionCall
         .replace(/<anonymous function(: (\w+))?>/, "$2")
-        .replace(/\([^)]*\)/g, "") || undefined
+        .replaceAll(/\([^)]*\)/g, "") || undefined
     let argsRaw
     if (functionCall.match(/\(([^)]*)\)/)) {
       argsRaw = functionCall.replace(/^[^(]+\(([^)]*)\)$/, "$1")

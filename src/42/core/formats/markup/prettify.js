@@ -52,7 +52,7 @@ const removeEmptyLines = (nonFormattedString) =>
   // - 1 or more spaces or tabs at the end of line
   // - empty lines
   // with empty string
-  nonFormattedString.trim().replace(/(^(\s|\t)+|(( |\t)+)$)/gm, "")
+  nonFormattedString.trim().replaceAll(/(^(\s|\t)+|(( |\t)+)$)/gm, "")
 
 /**
  * @param {string} markup

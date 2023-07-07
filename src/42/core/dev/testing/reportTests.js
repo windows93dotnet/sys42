@@ -39,7 +39,7 @@ const getTestTitle = ({ title, ok, skip }) =>
       (x) => `{${skip ? "magenta.dim" : ok ? "reset" : "red"} ${escapeLog(x)}}`,
     )
     .join(` {${skip ? "magenta.dim" : "dim"} ·} `)
-    .replace(/\n/g, "␤")
+    .replaceAll("\n", "␤")
 
 const getStats = (suite, config, isRootSuite) => {
   let begin = ""

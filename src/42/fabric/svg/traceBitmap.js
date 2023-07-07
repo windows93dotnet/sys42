@@ -99,7 +99,7 @@ function tracePath(w, h, directions, visiteds, pixelHoles) {
       if (x === startX && y === startY) {
         move = { h: -1 }
       } else {
-        move = counterclockwise(moves[moves.length - 1])
+        move = counterclockwise(moves.at(-1))
         if (
           visiteds[y][x] !== true &&
           directions[y][x - 1].junction === 2 &&

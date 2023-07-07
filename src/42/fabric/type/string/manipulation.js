@@ -30,7 +30,7 @@ export default {
   titleCase: toTitleCase,
   upperCase: toUpperCase,
 
-  nospace: (str) => str.replace(/\s+/g, "_"),
+  nospace: (str) => str.replaceAll(/\s+/g, "_"),
   slice: (str, ...rest) => str.slice(...rest),
   split: (str, delimiter) => str.split(delimiter),
   repeat: (str, num) => str.repeat(num),

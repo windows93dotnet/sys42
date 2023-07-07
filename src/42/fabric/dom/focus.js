@@ -47,7 +47,7 @@ export function focusInside(el) {
   const items = el.querySelectorAll(
     ":scope [autofocus], :scope [data-autofocus]",
   )
-  if (items.length > 0 && attemptFocus(items[items.length - 1])) return true
+  if (items.length > 0 && attemptFocus(items.at(-1))) return true
   return focusInsideFirst(el)
 }
 

@@ -7,7 +7,7 @@ export const charCodeToHex = (code) =>
   `\\x${code.toString(16).padStart(2, "0")}`
 
 export const escapeUnicode = (str, ignoreList = []) =>
-  str.replace(/[^\u0020-~]/g, (char) => {
+  str.replaceAll(/[^\u0020-~]/g, (char) => {
     const code = char.charCodeAt(0)
     if (ignoreList.includes(code)) return char
     // prettier-ignore

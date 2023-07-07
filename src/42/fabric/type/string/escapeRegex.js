@@ -1,2 +1,3 @@
-export const escapeRegExp = (str) => str.replace(/[$()*+.?[\\\]^{|}]/g, "\\$&")
+export const escapeRegExp = (str) =>
+  str.replaceAll(/[$()*+.?[\\\]^{|}]/g, "\\$&")
 export default escapeRegExp

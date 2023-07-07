@@ -50,7 +50,7 @@ export class Grid extends Component {
     const next = this._items[index === -1 ? 0 : index + this.itemsPerLine]
     if (next) next.focus()
     else if (index !== this._items.length - 1) {
-      this._items[this._items.length - 1].focus()
+      this._items.at(-1).focus()
     }
   }
 

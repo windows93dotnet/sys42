@@ -14,7 +14,7 @@ export default function textPosition(text) {
   function toPoint(offset) {
     let index = -1
 
-    if (offset > -1 && offset < indices[indices.length - 1]) {
+    if (offset > -1 && offset < indices.at(-1)) {
       while (++index < indices.length) {
         if (indices[index] > offset) {
           return {
@@ -42,7 +42,7 @@ export default function textPosition(text) {
       offset = (indices[line - 2] ?? 0) + column - 1
     }
 
-    return offset > -1 && offset < indices[indices.length - 1] ? offset : -1
+    return offset > -1 && offset < indices.at(-1) ? offset : -1
   }
 
   return { toPoint, toOffset }

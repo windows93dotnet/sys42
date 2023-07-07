@@ -73,7 +73,7 @@ export function encodeTarHeader(opts) {
   let { name } = opts
   let prefix = ""
 
-  if (opts.typeflag === 5 && name[name.length - 1] !== "/") name += "/"
+  if (opts.typeflag === 5 && name.at(-1) !== "/") name += "/"
   if (countBytes(name) !== name.length) return null // utf-8
 
   while (countBytes(name) > 100) {

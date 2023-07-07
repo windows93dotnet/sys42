@@ -38,7 +38,7 @@ export default function getGPU() {
     const modelMathes = renderer.match(GPU_RENDERER_REGEX)
     if (vendorMathes) gpu.vendor = vendorMathes[1]
     gpu.model = modelMathes ? modelMathes[1] : renderer
-    gpu.model = gpu.model.replace(GPU_CLEANUP_REGEX, "")
+    gpu.model = gpu.model.replaceAll(GPU_CLEANUP_REGEX, "")
   }
 
   return gpu

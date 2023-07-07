@@ -110,17 +110,17 @@ export const parseGlob = (source) => {
 
   if (
     tokens.length > 1 &&
-    tokens[tokens.length - 1].type === "sep" &&
-    tokens[tokens.length - 2].type === "all"
+    tokens.at(-1).type === "sep" &&
+    tokens.at(-2).type === "all"
   ) {
-    tokens[tokens.length - 1].regex = "/?"
+    tokens.at(-1).regex = "/?"
   } else if (
     tokens.length > 2 &&
-    tokens[tokens.length - 1].type === "multi" &&
-    tokens[tokens.length - 2].type === "sep" &&
-    tokens[tokens.length - 3].type === "all"
+    tokens.at(-1).type === "multi" &&
+    tokens.at(-2).type === "sep" &&
+    tokens.at(-3).type === "all"
   ) {
-    tokens[tokens.length - 2].regex = "/?"
+    tokens.at(-2).regex = "/?"
   }
 
   flush()

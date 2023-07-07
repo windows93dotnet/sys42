@@ -109,7 +109,7 @@ const makePattern = (pattern) => {
   const fragmentsKeys = Object.keys(fragments)
 
   // Replace special characters with placeholders
-  pattern = pattern.replace(
+  pattern = pattern.replaceAll(
     /(\\)?(\?+|#+|\*{1,2})({[^}]+})?/g,
     (_, escaped, glob, filter) => {
       let out = ""

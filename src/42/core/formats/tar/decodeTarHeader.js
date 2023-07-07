@@ -189,7 +189,7 @@ export function decodeTarHeader(
   }
 
   // to support old tar versions that use trailing / to indicate dirs
-  if (typeflag === 0 && name && name[name.length - 1] === "/") typeflag = 5
+  if (typeflag === 0 && name && name.at(-1) === "/") typeflag = 5
 
   return {
     name,

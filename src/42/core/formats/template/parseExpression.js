@@ -20,13 +20,13 @@ function stripComments(source) {
   return (
     source
       // replace "/" in quotes with non-printable ASCII '\1' char
-      .replace(/("([^"\\]|\\")*")|('([^'\\]|\\')*')/g, (m) =>
-        m.replace(/\//g, "\x01"),
+      .replaceAll(/("([^"\\]|\\")*")|('([^'\\]|\\')*')/g, (m) =>
+        m.replaceAll("/", "\x01"),
       )
       // clear comments
-      .replace(/(\/\*[^*]+\*\/)|(\/\/[^\n]+)/g, "")
+      .replaceAll(/(\/\*[^*]+\*\/)|(\/\/[^\n]+)/g, "")
       // restore "/" in quotes
-      .replace(/\1/g, "/")
+      .replaceAll("", "/")
   )
 }
 

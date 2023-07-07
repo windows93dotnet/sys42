@@ -38,7 +38,7 @@ export default function ensureCurrentSuite(titled) {
   let exist
 
   const moduleTitle = shortenFilename(parentModule.url)
-    .replace(TITLE_REGEX, "")
+    .replaceAll(TITLE_REGEX, "")
     .replace(/^\//, "")
     .replace(/\?.*$/, "")
     .replace(/\.(test|demo)\.html/, " (html)")

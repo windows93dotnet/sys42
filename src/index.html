@@ -13,7 +13,7 @@
   const CLEAN_REG = /^\/demos\/ui\/|(\.plugin)?\.demo\.html$/g
 
   for (const href of disk.glob("**/*.demo.html")) {
-    demos.push({ tag: "li > a", content: href.replace(CLEAN_REG, ""), href })
+    demos.push({ tag: "li > a", content: href.replaceAll(CLEAN_REG, ""), href })
   }
 
   ui({
