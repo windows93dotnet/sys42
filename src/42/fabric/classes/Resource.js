@@ -22,7 +22,7 @@ const CSP = `default-src ${location.origin} 'unsafe-inline' data: blob:;`
 
 const { href: errorCatcher } = new URL(
   "./Resource/raiseErrorTop.js",
-  import.meta.url
+  import.meta.url,
 )
 
 const SUPPORTED_FEATURES = document.featurePolicy?.features() ?? undefined
@@ -145,7 +145,7 @@ export default class Resource {
         else {
           throw new DOMException(
             `Sandbox token not supported: ${token}`,
-            "SecurityError"
+            "SecurityError",
           )
         }
       }
@@ -209,7 +209,7 @@ export default class Resource {
     if (this.config.permissions === "web" && url.origin === location.origin) {
       throw new DOMException(
         `"web" permissions is only allowed for different origin`,
-        "SecurityError"
+        "SecurityError",
       )
     }
 
@@ -238,7 +238,7 @@ export default class Resource {
               this.el.removeAttribute("src")
               end(true)
             },
-          })
+          }),
         )
       }
 
@@ -253,7 +253,7 @@ export default class Resource {
             signal,
             load: () => end(true),
             error: () => end(false),
-          })
+          }),
         )
       }
     })

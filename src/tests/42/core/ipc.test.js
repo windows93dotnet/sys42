@@ -105,8 +105,8 @@ const contexts = {
           tag: "iframe",
           src: "/tests/fixtures/ipc/emit.html?e=42_ENV_IFRAME",
         },
-        { trusted: true }
-      )
+        { trusted: true },
+      ),
     )
   },
 
@@ -116,14 +116,14 @@ const contexts = {
         tag: "ui-sandbox",
         permissions: "app",
         path: "/tests/fixtures/ipc/emit.html?e=42_ENV_SANDBOX",
-      })
+      }),
     )
   },
 
   async childWindow(t, { decay }) {
     const target = window.open(
       "/tests/fixtures/ipc/emit.html?e=42_ENV_CHILDWINDOW",
-      "_blank"
+      "_blank",
     )
     decay(target)
     await t.utils.nextCycle()
@@ -134,7 +134,7 @@ const contexts = {
   dedicatedWorker(t, { decay }) {
     const target = new Worker(
       "/tests/fixtures/ipc/emit.js?e=42_ENV_DEDICATEDWORKER",
-      { type: "module" }
+      { type: "module" },
     )
     decay(ipc.from(target))
     decay(target)
@@ -144,7 +144,7 @@ const contexts = {
   sharedWorker(t, { decay }) {
     const target = new SharedWorker(
       "/tests/fixtures/ipc/emit.js?e=42_ENV_SHAREDWORKER",
-      { type: "module" }
+      { type: "module" },
     )
     decay(ipc.from(target))
     decay(target.port)
@@ -154,7 +154,7 @@ const contexts = {
   async serviceWorker(t, { decay }) {
     const registration = await navigator.serviceWorker.register(
       "/tests/fixtures/ipc/emit.js?e=42_ENV_SERVICEWORKER",
-      { type: "module" }
+      { type: "module" },
     )
     decay(registration)
     return registration
@@ -173,7 +173,7 @@ for (const [key, val] of Object.entries(check)) {
           if (key === "childWindow") ctx.target.close()
           t.timeout("reset")
           resolve(data)
-        })
+        }),
       ),
     ])
 

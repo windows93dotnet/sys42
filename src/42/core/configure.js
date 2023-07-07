@@ -41,7 +41,7 @@ export default function configure(...options) {
       merge(config, opt, memory)
     } else if (!(opt == null || typeof opt === "boolean")) {
       throw new TypeError(
-        `Arguments must be objects, boolean or nullish: ${typeof opt}`
+        `Arguments must be objects, boolean or nullish: ${typeof opt}`,
       )
     }
   }

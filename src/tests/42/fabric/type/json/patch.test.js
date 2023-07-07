@@ -20,17 +20,17 @@ patch(${t.utils.stringify.line(doc)}, ${t.utils.stringify(patches)})\n`
         t.throws(
           () => patch(doc, patches, { strict: true }),
           false,
-          message + `\nshould throw: "${error}"`
+          message + `\nshould throw: "${error}"`,
         )
       } else {
         t.eq(
           patch(doc, patches, { strict: true }),
           expected,
-          message + `\nexpected: ${t.utils.stringify(expected)}`
+          message + `\nexpected: ${t.utils.stringify(expected)}`,
         )
       }
     })
-  }
+  },
 )
 
 test("use `-` keyword only on array-likes", (t) => {
@@ -45,7 +45,7 @@ test("use `-` keyword only on array-likes", (t) => {
       op: "remove",
       path: "/-",
     },
-    { strict: true }
+    { strict: true },
   )
   t.eq(patched, b)
 
@@ -56,7 +56,7 @@ test("use `-` keyword only on array-likes", (t) => {
       op: "remove",
       path: "/-",
     },
-    { strict: true }
+    { strict: true },
   )
   t.eq(patched, [1])
 
@@ -67,7 +67,7 @@ test("use `-` keyword only on array-likes", (t) => {
       op: "remove",
       path: "/-",
     },
-    { strict: true }
+    { strict: true },
   )
   t.eq(patched, "a")
 })
@@ -83,7 +83,7 @@ test("string - add", (t) => {
       path: "/5",
       value: " world",
     },
-    { strict: true }
+    { strict: true },
   )
   t.eq(patched, b)
 
@@ -96,8 +96,8 @@ test("string - add", (t) => {
         path: "/-",
         value: " world",
       },
-      { strict: true }
-    )
+      { strict: true },
+    ),
   )
 })
 
@@ -112,7 +112,7 @@ test("string - insert", (t) => {
       path: "/5",
       value: " derp",
     },
-    { strict: true }
+    { strict: true },
   )
   t.eq(patched, b)
 })
@@ -128,7 +128,7 @@ test("string - replace", (t) => {
       path: "/5",
       value: " derp",
     },
-    { strict: true }
+    { strict: true },
   )
   t.eq(patched, b)
 })
@@ -144,7 +144,7 @@ test("string - replace", (t) => {
       path: "/5",
       value: " world",
     },
-    { strict: true }
+    { strict: true },
   )
   t.eq(patched, b)
 
@@ -157,8 +157,8 @@ test("string - replace", (t) => {
         path: "/5",
         value: 6,
       },
-      { strict: true }
-    )
+      { strict: true },
+    ),
   )
 })
 
@@ -173,7 +173,7 @@ test("string - replace", (t) => {
       path: "/5",
       value: " world",
     },
-    { strict: true }
+    { strict: true },
   )
   t.eq(patched, b)
 
@@ -186,8 +186,8 @@ test("string - replace", (t) => {
         path: "/5",
         value: 6,
       },
-      { strict: true }
-    )
+      { strict: true },
+    ),
   )
 })
 
@@ -200,7 +200,7 @@ test("string - replace", 2, (t) => {
       op: "remove",
       path: "/1",
     },
-    { strict: true }
+    { strict: true },
   )
   t.eq(patched, "ac")
 })
@@ -216,7 +216,7 @@ test("string in object", (t) => {
       path: "/x/5",
       value: " world",
     },
-    { strict: true }
+    { strict: true },
   )
   t.eq(patched, b)
 })

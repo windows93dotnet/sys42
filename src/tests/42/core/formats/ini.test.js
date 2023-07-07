@@ -115,7 +115,7 @@ e=3
     test("encode", str, (t) => {
       t.is(ini.encode(obj, options), str)
     })
-  }
+  },
 )
 
 test.tasks(
@@ -146,7 +146,7 @@ test.tasks(
       if (tokens) t.eq(parseINI(str), tokens)
       if (obj) t.alike(ini.decode(str), obj)
     })
-  }
+  },
 )
 
 test("proto", (t) => {
@@ -258,7 +258,7 @@ test("decode example", (t) => {
 test.skip(async (t) => {
   const res = await t.utils.load.text(
     new URL("../../../fixtures/formats/theme/liac.theme", import.meta.url),
-    "ascii"
+    "ascii",
   )
 
   t.log.clean(res)
@@ -272,8 +272,8 @@ test.skip(async (t) => {
   const res = await t.utils.load.text(
     new URL(
       "../../../fixtures/formats/desktop/example.desktop",
-      import.meta.url
-    )
+      import.meta.url,
+    ),
   )
 
   t.log.clean(
@@ -286,7 +286,7 @@ test.skip(async (t) => {
         if (val.includes(";")) return val.split(";").filter(Boolean)
         return val
       },
-    })
+    }),
   )
 
   t.pass()

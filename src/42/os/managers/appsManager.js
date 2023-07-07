@@ -26,7 +26,7 @@ class AppsManager extends ConfigFile {
     await Promise.all(
       disk
         .glob("**/*app.json5")
-        .map((manifestPath) => this.add(manifestPath, { save: false }))
+        .map((manifestPath) => this.add(manifestPath, { save: false })),
     )
 
     return this.value
@@ -51,11 +51,11 @@ class AppsManager extends ConfigFile {
 
             const { pathname } = new URL(
               "../../themes/default/icons",
-              import.meta.url
+              import.meta.url,
             )
 
             const dest = `${pathname}/${sizes}${src.slice(
-              src.indexOf(sizes) + sizes.length
+              src.indexOf(sizes) + sizes.length,
             )}`
 
             fs.link(src, dest)
@@ -87,7 +87,7 @@ class AppsManager extends ConfigFile {
     for (const path of arrify(paths)) {
       if (path.endsWith("/")) {
         import("../../ui/components/explorer.js").then(({ explorer }) =>
-          explorer(path)
+          explorer(path),
         )
         continue
       }
@@ -99,7 +99,7 @@ class AppsManager extends ConfigFile {
         openers[apps[0]].push(path)
       } else {
         import("../../ui/invocables/alert.js").then(({ alert }) =>
-          alert("No app available to open this type of file")
+          alert("No app available to open this type of file"),
         )
       }
     }

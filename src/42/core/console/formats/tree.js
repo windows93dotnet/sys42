@@ -143,7 +143,7 @@ export default function tree(obj, options, stats = {}) {
 
           t += `\n${addStyle(
             indent + prefix,
-            config.colors.punctuation
+            config.colors.punctuation,
           )}${addStyle(trace, config.colors.subtrees)}${
             config.classify ? addStyle(".", config.colors.punctuation) : ""
           }`
@@ -154,14 +154,14 @@ export default function tree(obj, options, stats = {}) {
 
           t += `\n${addStyle(
             indent + prefix,
-            config.colors.punctuation
+            config.colors.punctuation,
           )}${trace}`
 
           if (rest.length > 0) {
             for (const item of rest) {
               t += `\n${addStyle(
                 indent + prefixIndent,
-                config.colors.punctuation
+                config.colors.punctuation,
               )}${item}`
             }
           }

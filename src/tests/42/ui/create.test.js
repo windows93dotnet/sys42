@@ -15,12 +15,12 @@ test("abbr", "id", (t) => {
     "div#uniq",
     { class: "foo" },
     "hello",
-    create("strong", "world")
+    create("strong", "world"),
   )
   t.true(el instanceof HTMLDivElement)
   t.is(
     el.outerHTML,
-    '<div id="uniq" class="foo">hello<strong>world</strong></div>'
+    '<div id="uniq" class="foo">hello<strong>world</strong></div>',
   )
 })
 
@@ -29,12 +29,12 @@ test("abbr", "id", 2, (t) => {
     "div#uniq",
     { class: "foo", id: "overwrite" },
     "hello",
-    create("strong", "world")
+    create("strong", "world"),
   )
   t.true(el instanceof HTMLDivElement)
   t.is(
     el.outerHTML,
-    '<div id="overwrite" class="foo">hello<strong>world</strong></div>'
+    '<div id="overwrite" class="foo">hello<strong>world</strong></div>',
   )
 })
 
@@ -43,12 +43,12 @@ test("abbr", "class", (t) => {
     "div#uniq.bar",
     { class: "foo" },
     "hello",
-    create("strong", "world")
+    create("strong", "world"),
   )
   t.true(el instanceof HTMLDivElement)
   t.is(
     el.outerHTML,
-    '<div id="uniq" class="foo bar">hello<strong>world</strong></div>'
+    '<div id="uniq" class="foo bar">hello<strong>world</strong></div>',
   )
 })
 
@@ -57,7 +57,7 @@ test("abbr", "class + style", (t) => {
   t.true(el instanceof HTMLDivElement)
   t.is(
     el.outerHTML,
-    '<div id="uniq" class="bar" style="color: red;">hello</div>'
+    '<div id="uniq" class="bar" style="color: red;">hello</div>',
   )
 })
 
@@ -76,11 +76,11 @@ test("accept arrays of child nodes", (t) => {
     "div",
     { class: "foo" },
     ["hello", create("strong", "world")],
-    "what's up?"
+    "what's up?",
   )
   t.is(
     el.outerHTML,
-    `<div class="foo">hello<strong>world</strong>what's up?</div>`
+    `<div class="foo">hello<strong>world</strong>what's up?</div>`,
   )
 })
 

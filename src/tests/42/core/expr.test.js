@@ -69,7 +69,7 @@ test.tasks(
       t.is(expr.evaluate(str)(targ), res, str)
       t.is(expr.evaluate(str, { boolean: true })(targ), Boolean(res), str)
     })
-  }
+  },
 )
 
 /* assignments
@@ -109,7 +109,7 @@ test.tasks(
       t.eq(targ, expect)
       if (res !== undefined) t.eq(out, res)
     })
-  }
+  },
 )
 
 test.tasks(
@@ -185,7 +185,7 @@ test.tasks(
       t.eq(targ.a, expect.a)
       if (res !== undefined) t.eq(out, res)
     })
-  }
+  },
 )
 
 test("multi locals", (t) => {

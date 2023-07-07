@@ -134,7 +134,7 @@ export function tarPackPipe(options) {
         transform(chunk, controller) {
           controller.enqueue(new Uint8Array(chunk))
         },
-      })
+      }),
     )
   }
 

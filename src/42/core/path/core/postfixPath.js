@@ -7,7 +7,7 @@ export default function postfixPath(path, postfix) {
   const type = typeof postfix
   if (type !== "string") {
     throw new TypeError(
-      `The "postfix" argument must be a string. Received type ${type}`
+      `The "postfix" argument must be a string. Received type ${type}`,
     )
   }
 

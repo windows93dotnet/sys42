@@ -15,31 +15,31 @@ test("place.toOffset(point)", (t) => {
   t.is(
     place.toOffset({ line: undefined, column: undefined }),
     -1,
-    "should return `-1` for invalid input"
+    "should return `-1` for invalid input",
   )
 
   t.is(
     place.toOffset({ line: 4, column: 2 }),
     -1,
-    "should return `-1` for out of bounds input"
+    "should return `-1` for out of bounds input",
   )
 
   t.is(
     place.toOffset({ line: 2, column: 2 }),
     5,
-    "should return an offset (#1)"
+    "should return an offset (#1)",
   )
 
   t.is(
     place.toOffset({ line: 1, column: 1 }),
     0,
-    "should return an offset (#2)"
+    "should return an offset (#2)",
   )
 
   t.is(
     place.toOffset({ line: 3, column: 4 }),
     11,
-    "should return an offset (#3)"
+    "should return an offset (#3)",
   )
 })
 
@@ -49,25 +49,25 @@ test("place.toPoint(offset)", (t) => {
   t.eq(
     place.toPoint(-1),
     { line: undefined, column: undefined },
-    "should return an empty object for invalid input"
+    "should return an empty object for invalid input",
   )
 
   t.eq(
     place.toPoint(12),
     { line: undefined, column: undefined },
-    "should return an empty object for out of bounds input"
+    "should return an empty object for out of bounds input",
   )
 
   t.eq(
     place.toPoint(0), //
     { line: 1, column: 1 },
-    "should return a point (#1)"
+    "should return a point (#1)",
   )
 
   t.eq(
     place.toPoint(11), //
     { line: 3, column: 4 },
-    "should return a point (#2)"
+    "should return a point (#2)",
   )
 })
 
@@ -81,7 +81,7 @@ test("other tests", (t) => {
       { line: undefined, column: undefined },
       { line: undefined, column: undefined },
     ],
-    "should return points for offsets around an EOF w/o EOLs"
+    "should return points for offsets around an EOF w/o EOLs",
   )
 
   t.eq(
@@ -91,7 +91,7 @@ test("other tests", (t) => {
       place.toOffset({ line: 2, column: 2 }),
     ],
     [3, -1, -1],
-    "should return offsets for points around an EOF w/o EOLs"
+    "should return offsets for points around an EOF w/o EOLs",
   )
 
   place = textPosition("foo\n")
@@ -103,7 +103,7 @@ test("other tests", (t) => {
       { line: 2, column: 1 },
       { line: undefined, column: undefined },
     ],
-    "should return points for offsets around an EOF EOL"
+    "should return points for offsets around an EOF EOL",
   )
 
   t.eq(
@@ -113,7 +113,7 @@ test("other tests", (t) => {
       place.toOffset({ line: 2, column: 2 }),
     ],
     [3, 4, -1],
-    "should return offsets for points around an EOF EOL"
+    "should return offsets for points around an EOF EOL",
   )
 
   place = textPosition("foo\rbar")
@@ -125,7 +125,7 @@ test("other tests", (t) => {
       { line: 2, column: 1 },
       { line: 2, column: 2 },
     ],
-    "should return points for offsets around carriage returns"
+    "should return points for offsets around carriage returns",
   )
 
   t.eq(
@@ -135,7 +135,7 @@ test("other tests", (t) => {
       place.toOffset({ line: 2, column: 2 }),
     ],
     [3, 4, 5],
-    "should return offsets for points around carriage returns"
+    "should return offsets for points around carriage returns",
   )
 
   place = textPosition("foo\r\nbar")
@@ -148,7 +148,7 @@ test("other tests", (t) => {
       { line: 2, column: 1 },
       { line: 2, column: 2 },
     ],
-    "should return points for offsets around carriage returns + line feeds"
+    "should return points for offsets around carriage returns + line feeds",
   )
 
   t.eq(
@@ -158,6 +158,6 @@ test("other tests", (t) => {
       place.toOffset({ line: 2, column: 2 }),
     ],
     [3, 5, 6],
-    "should return offsets for points around carriage returns + line feeds"
+    "should return offsets for points around carriage returns + line feeds",
   )
 })

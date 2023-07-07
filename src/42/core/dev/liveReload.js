@@ -25,7 +25,7 @@ function findTopImport(href, url, rule) {
       updateElement(
         rule.parentStyleSheet.ownerNode,
         new URL(rule.parentStyleSheet.ownerNode.href),
-        "href"
+        "href",
       )
     } else {
       const el = rule.parentStyleSheet.ownerNode
@@ -99,7 +99,7 @@ export default function liveReload(path) {
     for (const el of document.querySelectorAll(
       `link[href]:not([href=""]),
         [src]:not([src=""]),
-        object[data]:not([data=""])`
+        object[data]:not([data=""])`,
     )) {
       const key = el.src ? "src" : el.href ? "href" : "data"
       let url = el[key]

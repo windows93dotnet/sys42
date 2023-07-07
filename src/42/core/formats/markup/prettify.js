@@ -76,7 +76,7 @@ const mergeAttributesWithElements = (markup) => {
       mergedLines.push(
         `${currentElement}${
           line.startsWith(">") || line.startsWith("<") ? "" : " "
-        }${line}`
+        }${line}`,
       )
       currentElement = ""
 

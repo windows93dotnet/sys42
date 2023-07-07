@@ -70,7 +70,7 @@ const list = [
     task({
       input: obj,
       expected: "{a:1,b:↖}",
-    })
+    }),
   )
 }
 
@@ -79,7 +79,7 @@ if (globalThis.navigator) {
     task({
       input: navigator,
       expected: "Navigator#[object Navigator]",
-    })
+    }),
   )
 }
 
@@ -88,7 +88,7 @@ if (globalThis.location) {
     task({
       input: location,
       expected: `Location#${location.href}`,
-    })
+    }),
   )
 }
 
@@ -103,7 +103,7 @@ if (globalThis.File) {
       input: new File(["foo"], "b", { lastModified: 1, type: "text/plain" }),
       expected:
         'new File([],"b",{size:3,type:"text/plain",lastModified:1,webkitRelativePath:""})',
-    })
+    }),
   )
 }
 
@@ -112,7 +112,7 @@ if (globalThis.Blob) {
     task({
       input: new Blob(["foo"]),
       expected: 'new Blob([],{size:3,type:""})',
-    })
+    }),
   )
 }
 
@@ -133,7 +133,7 @@ if (globalThis.document) {
     task({
       input: document.createDocumentFragment(),
       expected: "DocumentFragment##document-fragment",
-    })
+    }),
   )
 
   let el = document.createElement("div")
@@ -142,7 +142,7 @@ if (globalThis.document) {
     task({
       input: el,
       expected: '<div style="color: tan;"></div>',
-    })
+    }),
   )
 
   el = document.createElement("span")
@@ -152,7 +152,7 @@ if (globalThis.document) {
     task({
       input: el,
       expected: '<span id="foo" data-foo="bar"></span>',
-    })
+    }),
   )
 
   el = document.createElement("article")
@@ -166,7 +166,7 @@ if (globalThis.document) {
       input: el,
       startsWith:
         '<article id="very_very_long_id"><section></section><section></se',
-    })
+    }),
   )
 
   const ns = "http://www.w3.org/2000/svg"
@@ -184,7 +184,7 @@ if (globalThis.document) {
       input: el,
       expected:
         '<svg id="foo" data-foo="bar"><rect width="100%" height="100%" fill="red"></rect></svg>',
-    })
+    }),
   )
 }
 
@@ -193,7 +193,7 @@ test.tasks(list, (test, { title, input, expected, startsWith }) => {
     if (startsWith) {
       t.true(
         mark(input).startsWith(startsWith),
-        `don't starts with '${startsWith}'`
+        `don't starts with '${startsWith}'`,
       )
     } else t.is(mark(input), expected)
   })

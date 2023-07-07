@@ -8,7 +8,7 @@ test.flaky("render", async (t) => {
       state: {
         hello: "{{1+1}}",
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "2")

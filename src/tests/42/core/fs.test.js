@@ -20,7 +20,7 @@ async function checkError(
   macro = {
     errno: 2,
     code: "ENOENT",
-  }
+  },
 ) {
   await t.throws(fn, {
     name: "FileSystemError",
@@ -228,7 +228,7 @@ const makeSuite = (driver) => {
       `\
 {
   "a": 1
-}`
+}`,
     )
   })
 
@@ -342,12 +342,12 @@ const makeSuite = (driver) => {
     t.eq(await fs.readDir(`42-${d}-rd`), dirLists.base)
     t.eq(
       await fs.readDir(`42-${d}-rd`, { recursive: true }),
-      dirLists.recursive
+      dirLists.recursive,
     )
     t.eq(await fs.readDir(`42-${d}-rd`, { absolute: true }), dirLists.absolute)
     t.eq(
       await fs.readDir(`42-${d}-rd`, { absolute: true, recursive: true }),
-      dirLists.recursiveAbsolute
+      dirLists.recursiveAbsolute,
     )
 
     await fs.deleteDir(`42-${d}-rd`)
@@ -380,26 +380,26 @@ const makeSuite = (driver) => {
       t,
       `42-${d}-err`,
       () => fs.write(`42-${d}-err`, "x"),
-      eIsDir
+      eIsDir,
     )
     await checkError(
       t,
       `42-${d}-err`,
       () => fs.append(`42-${d}-err`, "x"),
-      eIsDir
+      eIsDir,
     )
 
     await checkError(
       t,
       `42-${d}-err/one`,
       () => fs.readDir(`42-${d}-err/one`),
-      eIsNotDir
+      eIsNotDir,
     )
     await checkError(
       t,
       `42-${d}-err/one`,
       () => fs.deleteDir(`42-${d}-err/one`),
-      eIsNotDir
+      eIsNotDir,
     )
     await checkError(
       t,
@@ -408,7 +408,7 @@ const makeSuite = (driver) => {
       {
         errno: 17,
         code: "EEXIST",
-      }
+      },
     )
 
     await t.notThrows(() => fs.writeDir(`42-${d}-err/b`))
@@ -441,9 +441,9 @@ const makeSuite = (driver) => {
         t.throws(
           () => fs[m]("42-foo"),
           "no driver mounted for '/tmp/42-foo'",
-          `"no driver mounted" did not throw for ${m}`
-        )
-      )
+          `"no driver mounted" did not throw for ${m}`,
+        ),
+      ),
     )
 
     fs.mount(`/tmp`, driver)

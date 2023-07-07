@@ -131,7 +131,7 @@ test.tasks(
         t.eq(parseShortcut(item), expected, item)
       }
     })
-  }
+  },
 )
 
 suite.serial("globalThis", () => {
@@ -146,7 +146,7 @@ suite.serial("globalThis", () => {
     decay(
       on(dest, {
         "Ctrl+click": stub,
-      })
+      }),
     )
 
     const bot = t.puppet(dest)
@@ -174,7 +174,7 @@ suite.serial("globalThis", () => {
       on(dest, {
         "Ctrl+click": a,
         "click": b,
-      })
+      }),
     )
 
     const bot = t.puppet(dest)
@@ -206,7 +206,7 @@ suite.serial("globalThis", () => {
     decay(
       on(dest, {
         "a a": stub,
-      })
+      }),
     )
 
     const bot = t.puppet(dest)
@@ -238,7 +238,7 @@ suite.serial("globalThis", () => {
     decay(
       on(dest, {
         "click click": stub,
-      })
+      }),
     )
 
     const bot = t.puppet(dest)

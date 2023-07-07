@@ -27,7 +27,7 @@ test.tasks(
     test(path, (t) => {
       t.eq(allocate(obj ?? {}, path, val, options), expected)
     })
-  }
+  },
 )
 
 test("proto", (t) => {

@@ -125,7 +125,7 @@ export class ItemsHint extends Array {
             ...this.revertAnimation(item),
           }).then(() => {
             item.ghost.remove()
-          })
+          }),
         )
       } else {
         item.ghost.remove()
@@ -193,13 +193,13 @@ export class ItemsHint extends Array {
 
     if (newIndex === undefined) {
       adopteds = dropzone.el.querySelectorAll(
-        `${selector}:nth-last-child(-n+${this.length})`
+        `${selector}:nth-last-child(-n+${this.length})`,
       )
     } else {
       const start = newIndex + 1
       const end = newIndex + this.length
       adopteds = dropzone.el.querySelectorAll(
-        `${selector}:nth-child(n+${start}):nth-child(-n+${end})`
+        `${selector}:nth-child(n+${start}):nth-child(-n+${end})`,
       )
     }
 
@@ -228,7 +228,7 @@ export class ItemsHint extends Array {
           }).then(() => {
             item.ghost.remove()
             dropzone.reviveTarget(rects[i].target)
-          })
+          }),
         )
       } else {
         item.ghost.remove()

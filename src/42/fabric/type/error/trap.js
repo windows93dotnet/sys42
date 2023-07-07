@@ -76,10 +76,10 @@ if (!inNode && "ReportingObserver" in globalThis) {
         "report",
         Object.assign(new Error("Report"), {
           reports: reports.map((x) => x.toJSON()),
-        })
+        }),
       )
     },
-    { types: ["crash", "csp-violation"], buffered: true }
+    { types: ["crash", "csp-violation"], buffered: true },
   )
 }
 

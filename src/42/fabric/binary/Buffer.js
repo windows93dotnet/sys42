@@ -226,7 +226,7 @@ for (const getKey of Reflect.ownKeys(DataView.prototype)) {
       p[`write${key}`] = function (
         value,
         writeOffset = this.writeOffset,
-        littleEndian
+        littleEndian,
       ) {
         const len = writeOffset + BPE
         if (len > this.length) this.length = len
@@ -242,7 +242,7 @@ for (const getKey of Reflect.ownKeys(DataView.prototype)) {
       p[`read${key}Array`] = function (
         length,
         offset = this.offset,
-        littleEndian
+        littleEndian,
       ) {
         const arr = this[`to${key}Array`](offset, offset + length, littleEndian)
         this.offset = arr.byteLength
@@ -252,7 +252,7 @@ for (const getKey of Reflect.ownKeys(DataView.prototype)) {
       p[`peek${key}Array`] = function (
         length,
         offset = this.offset,
-        littleEndian
+        littleEndian,
       ) {
         return this[`to${key}Array`](offset, offset + length, littleEndian)
       }
@@ -260,7 +260,7 @@ for (const getKey of Reflect.ownKeys(DataView.prototype)) {
       p[`to${key}Array`] = function (
         start = 0,
         end = this.length,
-        littleEndian
+        littleEndian,
       ) {
         const length = (end - start) / BPE
         const arr = new BinaryArray(length)

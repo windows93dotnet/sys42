@@ -52,7 +52,7 @@ line string /*1*/ /c/i}{yellow.dim \`}{grey ,}
   t{grey :} {bright.cyan true}{grey ,}
   f{grey :} {bright.magenta false}{grey ,}
 {grey \\});}
-`
+`,
   )
 })
 
@@ -89,7 +89,7 @@ class Test {
   {bright.red awaitFoo}{grey ()\\{\\}}
   {bright.red Example}{grey (\\{} props{grey :} {grey \\{} a{grey :} _A{grey ,} b{grey \\}} {grey \\}} {bright.green =} Props{grey )} {grey \\{\\}}
   {bright.red f}{grey (}x {bright.green =} {bright.red fun}{grey (),} y {bright.green =} {magenta 0}{grey )} {grey \\{\\}}
-{grey \\}}`
+{grey \\}}`,
   )
 })
 
@@ -141,13 +141,13 @@ Infinity
 {magenta }{dim.magenta 0x}{magenta 40}{dim.magenta _}{magenta 76}{dim.magenta _}{magenta 38}{dim.magenta _}{magenta 6A}{dim.magenta _}{magenta 73}
 {magenta 4}{dim.magenta _}{magenta 642}{dim.magenta _}{magenta 473}{dim.magenta _}{magenta 943}{dim.magenta _}{magenta 484}{dim.magenta _}{magenta 686}{dim.magenta _}{magenta 707}{dim.magenta n}{magenta }
 {magenta 0}{grey .}{magenta 000}{dim.magenta _}{magenta 001}
-{magenta 1e10}{dim.magenta _}{magenta 000}`
+{magenta 1e10}{dim.magenta _}{magenta 000}`,
   )
 })
 
 test("stringify.inspect", 1, (t) => {
   const str = highlight(
-    '`{\n  key: [ 1, 2, 3 ],\n  "two \\"word\\"": [ { a: 1, key: "ok ok" } ],\n  obj: /* [↖] */ { $ref: "#" },\n}`'
+    '`{\n  key: [ 1, 2, 3 ],\n  "two \\"word\\"": [ { a: 1, key: "ok ok" } ],\n  obj: /* [↖] */ { $ref: "#" },\n}`',
   )
   trace(str, 0)
   t.is(
@@ -157,7 +157,7 @@ test("stringify.inspect", 1, (t) => {
   key: [ 1, 2, 3 ],
   "two \\"word\\"": [ \\{ a: 1, key: "ok ok" \\} ],
   obj: /* [↖] */ \\{ $ref: "#" \\},
-\\}}{yellow.dim \`}`
+\\}}{yellow.dim \`}`,
   )
 })
 
@@ -176,7 +176,7 @@ test("stringify.inspect", 2, (t) => {
     NaN,
   ],
   [Symbol("foo")]: "foo",
-}`
+}`,
   )
   trace(str, 0)
   t.is(
@@ -194,19 +194,19 @@ test("stringify.inspect", 2, (t) => {
     {magenta NaN}{grey ,}
   {grey ],}
   {grey [}{bright.blue Symbol}{grey (}{yellow.dim "}{yellow foo}{yellow.dim "}{grey )]:} {yellow.dim "}{yellow foo}{yellow.dim "}{grey ,}
-{grey \\}}`
+{grey \\}}`,
   )
 })
 
 test("primitives", (t) => {
   const str = highlight(
     `\
-[{}, [1], NaN, Infinity, false, true, null, undefined, 1, this]`
+[{}, [1], NaN, Infinity, false, true, null, undefined, 1, this]`,
   )
   trace(str, 0)
   t.is(
     str,
-    "{grey [\\{\\},} {grey [}{magenta 1}{grey ],} {magenta NaN}{grey ,} {magenta Infinity}{grey ,} {bright.magenta false}{grey ,} {bright.cyan true}{grey ,} {magenta null}{grey ,} {magenta undefined}{grey ,} {magenta 1}{grey ,} {magenta this}{grey ]}"
+    "{grey [\\{\\},} {grey [}{magenta 1}{grey ],} {magenta NaN}{grey ,} {magenta Infinity}{grey ,} {bright.magenta false}{grey ,} {bright.cyan true}{grey ,} {magenta null}{grey ,} {magenta undefined}{grey ,} {magenta 1}{grey ,} {magenta this}{grey ]}",
   )
 })
 
@@ -218,7 +218,7 @@ function derp(ctx) {
     const s = Symbol(ctx)
     console.log(s)
   }
-}`
+}`,
   )
   trace(str, 0)
   t.is(
@@ -229,18 +229,18 @@ function derp(ctx) {
     {bright.green const} s {bright.green =} {bright.blue Symbol}{grey (}ctx{grey )}
     {bright.cyan console}{grey .}{bright.red log}{grey (}s{grey )}
   {grey \\}}
-{grey \\}}`
+{grey \\}}`,
   )
 })
 
 test("ignore keyword as properties", (t) => {
   const str = highlight(
-    `{console:1,true:1,catch:1,await:1,Array:1,delete:1,b:1}`
+    `{console:1,true:1,catch:1,await:1,Array:1,delete:1,b:1}`,
   )
   trace(str, 0)
   t.is(
     str,
-    "{grey \\{}console{grey :}{magenta 1}{grey ,}true{grey :}{magenta 1}{grey ,}catch{grey :}{magenta 1}{grey ,}await{grey :}{magenta 1}{grey ,}Array{grey :}{magenta 1}{grey ,}delete{grey :}{magenta 1}{grey ,}b{grey :}{magenta 1}{grey \\}}"
+    "{grey \\{}console{grey :}{magenta 1}{grey ,}true{grey :}{magenta 1}{grey ,}catch{grey :}{magenta 1}{grey ,}await{grey :}{magenta 1}{grey ,}Array{grey :}{magenta 1}{grey ,}delete{grey :}{magenta 1}{grey ,}b{grey :}{magenta 1}{grey \\}}",
   )
 })
 
@@ -255,7 +255,7 @@ test("bug: comment before function", (t) => {
   trace(str, 0)
   t.is(
     str,
-    "{dim.bright.magenta /* returnTrue */} {grey ()} {bright.green =}{bright.green >} {bright.cyan true}"
+    "{dim.bright.magenta /* returnTrue */} {grey ()} {bright.green =}{bright.green >} {bright.cyan true}",
   )
 })
 

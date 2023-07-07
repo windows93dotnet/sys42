@@ -103,7 +103,7 @@ export class Grid extends Component {
               key: "{{selectionKey}}",
               selection: "{{selection}}",
             },
-            selectable
+            selectable,
           )
         : false,
       content: {
@@ -114,7 +114,7 @@ export class Grid extends Component {
           itemTemplate
             ? objectifyPlan(itemTemplate)
             : { content: "{{render(.)}}" },
-          { role: "gridcell" }
+          { role: "gridcell" },
         ),
       },
     }

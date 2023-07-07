@@ -75,7 +75,7 @@ export default function formatEntries(entries, options) {
 
   const maxLen = Math.max(
     minSpaceLength,
-    Math.max(...Object.values(keysLength)) + margin
+    Math.max(...Object.values(keysLength)) + margin,
   )
 
   entries.forEach(([key, value], i) => {

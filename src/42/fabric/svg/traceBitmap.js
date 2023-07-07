@@ -54,7 +54,7 @@ const pathToString = (moves) =>
         ? "h" + move.h
         : "v" in move
         ? "v" + move.v
-        : "M" + move.x + " " + move.y
+        : "M" + move.x + " " + move.y,
     )
     .join("") + "z"
 

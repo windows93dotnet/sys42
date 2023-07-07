@@ -5,7 +5,7 @@ const checkImage = (img) => img.complete && img.width > 0
 const resolveImage = (img) => {
   if (checkImage(img)) return Promise.resolve(img)
   return Promise.reject(
-    new LoadError(`Invalid image: ${img.src}`, { url: img.src })
+    new LoadError(`Invalid image: ${img.src}`, { url: img.src }),
   )
 }
 

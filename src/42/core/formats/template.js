@@ -13,7 +13,7 @@ const parseValue = JSON5.parse
 export default function template(str, locals, options) {
   return compileTemplate(
     parseTemplate(str, parseValue), //
-    { ...options, locals }
+    { ...options, locals },
   )(locals)
 }
 

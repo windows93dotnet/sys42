@@ -8,6 +8,6 @@ export default function ensureElement(val, base = document) {
   throw new TypeError(
     `The "el" argument must be an element or a valid css selector: ${
       type === "string" ? val : type
-    }`
+    }`,
   )
 }

@@ -70,5 +70,5 @@ test.tasks(
     test(unsorted, (t) => {
       t.eq(sortPath(unsorted), expected)
     })
-  }
+  },
 )

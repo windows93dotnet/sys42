@@ -406,5 +406,5 @@ test.tasks(
         t.eq(argv(parsed, options), expected)
       })
     }
-  }
+  },
 )

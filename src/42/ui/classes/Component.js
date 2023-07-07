@@ -187,7 +187,7 @@ export default class Component extends HTMLElement {
     if (prefix === "ui") prefix = "$" + prefix
     this.stage.scope = resolveScope(
       `${prefix}/${suffix}`,
-      stepsToHash(this.stage.steps)
+      stepsToHash(this.stage.steps),
     )
   }
 
@@ -353,7 +353,7 @@ export default class Component extends HTMLElement {
             ? this.stage.scopeChain.at(0).scope
             : this.stage.scope,
           res,
-          options
+          options,
         )
       })
     }
@@ -397,7 +397,7 @@ export default class Component extends HTMLElement {
       render(plan, this.stage, {
         skipNormalize: true,
         step: this.localName,
-      })
+      }),
     )
 
     this.prepend(document.createComment("[rendered]"))

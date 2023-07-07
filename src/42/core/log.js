@@ -38,7 +38,7 @@ export const format = Object.assign(
     },
     highlight,
     tree,
-  }
+  },
 )
 
 export class Log extends Logger {
@@ -87,7 +87,7 @@ export class Log extends Logger {
 
               Object.assign(
                 data.config.stringify,
-                system.configs.stringify.presets[key]
+                system.configs.stringify.presets[key],
               )
             }
           }
@@ -103,9 +103,9 @@ export class Log extends Logger {
                   ? x
                   : highlight(
                       await stringify(x, data.config?.stringify ?? "clean"),
-                      data.config?.highlight
+                      data.config?.highlight,
                     )
-              })
+              }),
             )
           }
 
@@ -115,7 +115,7 @@ export class Log extends Logger {
               ? x
               : highlight(
                   stringify(x, data.config?.stringify ?? "clean"),
-                  data.config?.highlight
+                  data.config?.highlight,
                 )
           })
         },
@@ -157,7 +157,7 @@ export class Log extends Logger {
             }`
           }
         }
-      }
+      },
     )
 
     this.verbose = options.verbose ?? 1

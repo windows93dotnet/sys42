@@ -20,7 +20,7 @@ export async function contextmenu(el, e, plan, stage) {
       rect: { x: e.x, y: e.y },
       ...objectifyPlan(plan, "items"),
     },
-    stage
+    stage,
   )
 }
 

@@ -266,7 +266,7 @@ test.tasks(
       for await (const item of fn()) items.push(item)
       t.eq(items, res, "unexepected iterator")
     })
-  }
+  },
 )
 
 test("interupted transaction", async (t) => {
@@ -285,7 +285,7 @@ test("interupted transaction", "direction:prev", async (t) => {
 
   for await (const item of db.users.filter(
     { direction: "prev" },
-    { name: /i$/ }
+    { name: /i$/ },
   )) {
     await t.sleep(1)
     items.push(item)
@@ -311,7 +311,7 @@ test("fromEntries", async (t) => {
       b: "B",
       c: "C",
       d: "D",
-    })
+    }),
   )
   t.is(await db.strings.get("a"), "A")
   t.is(await db.strings.get("d"), "D")

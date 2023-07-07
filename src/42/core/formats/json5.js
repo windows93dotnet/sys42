@@ -14,7 +14,7 @@ function __extends(d, b) {
 var whitespace = /\s/
 var validIdentifierCharacters = /[a-zA-Z_$][a-zA-Z0-9_$]*/
 var entirelyValidIdentifier = new RegExp(
-  "^" + validIdentifierCharacters.source + "$"
+  "^" + validIdentifierCharacters.source + "$",
 )
 var number =
   /^NaN|(?:[-+]?(?:(?:Infinity)|(?:0[xX][a-fA-F0-9]+)|(?:0[bB][01]+)|(?:0[oO][0-7]+)|(?:(?:(?:[1-9]\d*|0)?\.\d+|(?:[1-9]\d*|0)\.\d*|(?:[1-9]\d*|0))(?:[E|e][+|-]?\d+)?)))/
@@ -69,7 +69,7 @@ function getLocator(source, options) {
 function locate(source, search, options) {
   if (typeof options === "number") {
     throw new Error(
-      "locate takes a { startIndex, offsetLine, offsetColumn } object as the third argument"
+      "locate takes a { startIndex, offsetLine, offsetColumn } object as the third argument",
     )
   }
   return getLocator(source, options)(search, options && options.startIndex)
@@ -164,7 +164,7 @@ var Parser = /** @class */ (function () {
     }
     if (required) {
       this.error(
-        "Expected '" + str + "' instead of '" + this.str[this.index] + "'"
+        "Expected '" + str + "' instead of '" + this.str[this.index] + "'",
       )
     }
     return null
@@ -341,7 +341,7 @@ var Parser = /** @class */ (function () {
               "Invalid " +
                 (char_1 === "x" ? "hexadecimal" : "Unicode") +
                 " escape sequence",
-              start_2
+              start_2,
             )
           value += String.fromCharCode(parseInt(code, 16))
         } else {
@@ -434,7 +434,7 @@ function stringifyProperty(
   quote,
   indentation,
   indentString,
-  newlines
+  newlines,
 ) {
   return (
     (entirelyValidIdentifier.test(key) ? key : stringifyString(key, quote)) +
@@ -456,7 +456,7 @@ function stringifyValue(value, quote, indentation, indentString, newlines) {
         quote,
         indentation + indentString,
         indentString,
-        true
+        true,
       )
     })
     if (newlines) {
@@ -478,7 +478,7 @@ function stringifyValue(value, quote, indentation, indentString, newlines) {
         quote,
         indentation + indentString,
         indentString,
-        newlines
+        newlines,
       )
     })
     if (newlines) {
@@ -525,7 +525,7 @@ function patchValue(
   indentation,
   indentString,
   quote,
-  newlines
+  newlines,
 ) {
   var type = typeof value
   if (type === "string") {
@@ -569,7 +569,7 @@ function patchNumber(raw, value) {
           ? 8
           : matchRadix[2] === "x" || matchRadix[2] === "X"
           ? 16
-          : null
+          : null,
       )
     )
   }
@@ -591,7 +591,7 @@ function patchArray(
   indentation,
   indentString,
   quote,
-  newlines
+  newlines,
 ) {
   if (value.length === 0) {
     return node.elements.length === 0 ? str.slice(node.start, node.end) : "[]"
@@ -619,7 +619,7 @@ function patchArray(
           indentation,
           indentString,
           quote,
-          newlinesInsideValue
+          newlinesInsideValue,
         )
       c = element.end
     } else {
@@ -649,7 +649,7 @@ function patchObject(
   indentation,
   indentString,
   quote,
-  newlines
+  newlines,
 ) {
   var keys = Object.keys(value)
   if (keys.length === 0) {
@@ -686,7 +686,7 @@ function patchObject(
         indentation,
         indentString,
         quote,
-        newlinesInsideValue
+        newlinesInsideValue,
       )
       started = true
     }
@@ -704,7 +704,7 @@ function patchObject(
         quote,
         indentation,
         indentString,
-        newlinesInsideValue
+        newlinesInsideValue,
       )
     started = true
   })

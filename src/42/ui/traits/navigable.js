@@ -121,7 +121,7 @@ class Navigable extends Trait {
         [shortcuts.prev]: () => this.prev(),
         [shortcuts.first]: () => this.first(),
         [shortcuts.last]: () => this.last(),
-      }
+      },
     )
   }
 

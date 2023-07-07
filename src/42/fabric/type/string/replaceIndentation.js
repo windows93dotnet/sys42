@@ -8,7 +8,7 @@ export default function replaceIndentation(str, currentIndent = "") {
   if (shortestIndent !== currentIndent) {
     str = str.replace(
       new RegExp(`\n${shortestIndent}(?!\n)`, "g"),
-      `\n${currentIndent}`
+      `\n${currentIndent}`,
     )
   }
 

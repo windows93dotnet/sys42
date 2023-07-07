@@ -48,7 +48,7 @@ export default class Emitter {
         }
       } else if (fn && this[_EVENTS][event]) {
         this[_EVENTS][event] = this[_EVENTS][event].filter(
-          (cb) => cb !== fn && cb.fn !== fn
+          (cb) => cb !== fn && cb.fn !== fn,
         )
       } else delete this[_EVENTS][event]
     }

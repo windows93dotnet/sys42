@@ -194,7 +194,7 @@ editor.init = (app) => {
       ).then(({ filePickerSave }) => filePickerSave)
 
       const { ok, path } = await filePickerSave(
-        $file.path ?? defaultFolder + emptyFile.name
+        $file.path ?? defaultFolder + emptyFile.name,
       )
 
       if (ok) {
@@ -231,8 +231,8 @@ editor.init = (app) => {
         .then(({ filePickerOpen }) =>
           filePickerOpen(
             state.$files[state.$current]?.path ?? defaultFolder, //
-            { files: false }
-          )
+            { files: false },
+          ),
         )
         .then(({ ok, selection }) => {
           if (ok && selection.length > 0) {

@@ -29,7 +29,7 @@ function walk(
   source,
   deep = true,
   visitedRefs = new WeakMap(),
-  parentTarget = {}
+  parentTarget = {},
 ) {
   const type = typeof source
 

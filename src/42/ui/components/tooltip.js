@@ -117,7 +117,7 @@ listen({
             console.log(e.relatedTarget)
             if (!tooltip.target.contains(e.relatedTarget)) clean()
           },
-        }
+        },
       )
     }
   }, 300),

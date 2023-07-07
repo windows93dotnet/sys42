@@ -28,10 +28,10 @@ export default function parseMarkdown(text) {
     // .replace(/\n/gim, (_, index) => handleToken(_, index, { tag: "br" }))
     // .replace(/\n\n/gim, (_, index) => handleToken(_, index, { tag: "br" }))
     .replace(/!\[(.*?)]\((.*?)\)/gim, (_, alt, src, index) =>
-      handleToken(_, index, { tag: "img", alt, src })
+      handleToken(_, index, { tag: "img", alt, src }),
     )
     .replace(/\[(.*?)]\((.*?)\)/gim, (_, content, href, index) =>
-      handleToken(_, index, { tag: "a", href, content })
+      handleToken(_, index, { tag: "a", href, content }),
     )
 
   if (cursor < text.length) tokens.push({ content: text.slice(cursor) })

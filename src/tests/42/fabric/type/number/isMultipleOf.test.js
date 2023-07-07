@@ -42,5 +42,5 @@ test.tasks(
     test(num, mult, (t) => {
       t.is(isMultipleOf(num, mult), expected)
     })
-  }
+  },
 )

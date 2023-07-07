@@ -91,7 +91,7 @@ function setEffect(options) {
         system.transfer.currentZone.isOriginDropzone
           ? "move" // sort
           : effects[0],
-        options
+        options,
       )
     }
   } else {
@@ -184,7 +184,7 @@ async function haltZones(x, y, mode) {
     throw new Error(
       `Unknown system.transfer.effect : ${
         type === "string" ? system.transfer.effect : type
-      }`
+      }`,
     )
   }
 
@@ -237,7 +237,7 @@ function checkAccept(dropzone) {
       system.transfer.items.every(
         typeof accept.element === "function"
           ? accept.element
-          : ({ target }) => target.matches(accept.element)
+          : ({ target }) => target.matches(accept.element),
       ) && checkKind(accept, true)
     )
   }
@@ -458,7 +458,7 @@ if (inIframe) {
         activateZones(x, y)
         setCurrentZone(x, y)
         enterReady.resolve()
-      }
+      },
     )
     .on("42_TF_v_LEAVE", async ({ x, y }) => {
       await enterReady
@@ -546,7 +546,7 @@ if (inIframe) {
         }
 
         context.fromIframe = true
-      }
+      },
     )
     .on("42_TF_^_DRAG", ({ x, y, coord }) => {
       if (context.fromIframe && system.transfer.items) {
@@ -687,7 +687,7 @@ class Transferable extends Trait {
 
     if (dropzoneConfig.accept.mimetype) {
       dropzoneConfig.accept.mimetype = arrify(
-        dropzoneConfig.accept.mimetype
+        dropzoneConfig.accept.mimetype,
       ).map((x) => parseMimetype(x))
     }
 
@@ -698,7 +698,7 @@ class Transferable extends Trait {
           : options.accept &&
             Object.keys(options.accept).every((x) => x === "mimetype")
           ? ["copy"]
-          : this.config.effects)
+          : this.config.effects),
     )
 
     const ms = this.config.animationSpeed
@@ -719,7 +719,7 @@ class Transferable extends Trait {
 
     const { itemsHint, dropzoneHint } = await makeHints(
       { itemsConfig, dropzoneConfig },
-      this.el
+      this.el,
     )
 
     if (dropzoneHint) {

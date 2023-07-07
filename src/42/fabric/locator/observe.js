@@ -63,7 +63,7 @@ export default function observe(root, options = {}) {
           if (proxies.has(val)) return proxies.get(val)
           const { proxy, revoke } = Proxy.revocable(
             val,
-            handler([...chain, key], target)
+            handler([...chain, key], target),
           )
           proxies.set(val, proxy)
           if (options.setProxyAsTarget !== false) targets.set(proxy, val)
@@ -134,7 +134,7 @@ export default function observe(root, options = {}) {
         for (const revoke of revokes) revoke()
         revokes.clear()
       },
-      { timeout: 3000 }
+      { timeout: 3000 },
     )
   }
 

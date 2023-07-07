@@ -76,7 +76,7 @@ function parseFFOrSafari(error) {
     if (line.includes(" > eval")) {
       line = line.replace(
         / line (\d+)(?: > eval line \d+)* > eval:\d+:\d+/g,
-        ":$1"
+        ":$1",
       )
     }
 
@@ -131,7 +131,7 @@ function parseOpera9(e) {
           filename: match[2],
           line: match[1],
           source: lines[i],
-        })
+        }),
       )
     }
   }
@@ -153,7 +153,7 @@ function parseOpera10(err) {
           filename: match[2],
           line: match[1],
           source: lines[i],
-        })
+        }),
       )
     }
   }
@@ -168,7 +168,7 @@ function parseOpera11(error) {
     .filter(
       (line) =>
         Boolean(line.match(FIREFOX_SAFARI_STACK_REGEX)) &&
-        !line.match(/^Error created at/)
+        !line.match(/^Error created at/),
     )
 
   return filtered.map((line) => {

@@ -64,7 +64,7 @@ test.tasks(
       t.is(res, expected)
       t.is(hash(actual), expected, "Didn't repeat")
     })
-  }
+  },
 )
 
 display()

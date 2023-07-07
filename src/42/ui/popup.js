@@ -38,7 +38,7 @@ function listenGlobalEvents() {
     {
       selector: `[role^="menuitem"]:not([aria-haspopup="menu"])`,
       click: closeAll,
-    }
+    },
   )
 }
 
@@ -65,7 +65,7 @@ function closeOthers(e, target = e.target) {
     close(
       i === 0
         ? { fromOpener: target?.id === opener && openerFrame === window.name }
-        : undefined
+        : undefined,
     )
   }
 
@@ -84,7 +84,7 @@ function closeAll(e, target = e.target) {
             fromBlur: e?.type === "blur",
             focusOut: e?.focusOut,
           }
-        : undefined
+        : undefined,
     )
   }
 
@@ -236,7 +236,7 @@ export const popup = rpc(
         if (document.activeElement === document.body) el.focus()
       }
     },
-  }
+  },
 )
 
 export default popup

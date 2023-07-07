@@ -217,7 +217,7 @@ export default class ObjectStore {
 
     const makeReq = (config, query) =>
       this.tx(config.mode).then((store) =>
-        store[config.method](query || config.query, config.direction)
+        store[config.method](query || config.query, config.direction),
       )
 
     const txPromise = makeReq(config).then((req) => {

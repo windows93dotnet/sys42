@@ -41,9 +41,9 @@ test("multiple sources", (t) => {
     configure(
       t.stays({ foo: 0 }),
       t.stays({ bar: 1, baz: 3 }),
-      t.stays({ bar: 2 })
+      t.stays({ bar: 2 }),
     ),
-    { foo: 0, bar: 2, baz: 3 }
+    { foo: 0, bar: 2, baz: 3 },
   )
   t.eq(configure({}, {}, { foo: 1 }), { foo: 1 })
 })

@@ -69,7 +69,7 @@ test("save chain call in context object", (t) => {
       foo: undefined,
       bar: undefined,
     },
-    fn
+    fn,
   )
 
   c.foo("bar")
@@ -102,7 +102,7 @@ test("properties other than `undefined` are always defined in context", (t) => {
       foo: false,
       bar: false,
     },
-    fn
+    fn,
   )
 
   c.foo("bar")
@@ -254,7 +254,7 @@ test("chainable methods", (t) => {
         t.eq(arg, 2)
       },
     },
-    () => ""
+    () => "",
   )
 
   t.is(typeof c.foo("hello"), "function")
@@ -272,7 +272,7 @@ test("chainable methods", 2, (t) => {
         t.eq(arg, 2)
       },
     },
-    () => ""
+    () => "",
   )
 
   t.is(typeof c.foo("hello").bar(2), "function")
@@ -289,7 +289,7 @@ test("chainable methods", 3, (t) => {
       t.alike(data, { foo: "hello" })
       t.eq(arg, 2)
     },
-    () => ""
+    () => "",
   )
 
   t.is(typeof c.foo("hello").bar(2), "function")
@@ -305,7 +305,7 @@ test("chainable method that return something not undefined end the chain", (t) =
         return `${data.foo} number: ${arg}`
       },
     },
-    () => ""
+    () => "",
   )
 
   t.is(c.foo("hello").bar(2), "hello number: 2")

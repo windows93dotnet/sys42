@@ -25,7 +25,7 @@ export default function mock(obj, decl) {
       Object.entries(typeof decl === "function" ? await decl() : decl).forEach(
         ([key, value]) => {
           mocks.add(new Mock(globalThis, key, value))
-        }
+        },
       )
     },
   ])

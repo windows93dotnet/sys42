@@ -11,7 +11,7 @@ export function dispatch(el, name, options) {
         message: error.message,
         error,
         ...options,
-      })
+      }),
     )
 
     return

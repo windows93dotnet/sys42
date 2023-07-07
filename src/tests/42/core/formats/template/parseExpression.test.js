@@ -358,5 +358,5 @@ test.tasks(
         t.eq(actual, parsed)
       })
     }
-  }
+  },
 )

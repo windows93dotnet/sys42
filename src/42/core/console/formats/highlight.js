@@ -84,11 +84,11 @@ export default function highlight(js, options) {
   const out = escapeLog(js)
     .replace(
       REGEX_REGEX,
-      (_, a, b) => a + REGEX_PLACEHOLDER + (_regex.list.push(b) - 1)
+      (_, a, b) => a + REGEX_PLACEHOLDER + (_regex.list.push(b) - 1),
     )
     .replace(
       STRING_REGEX,
-      ($) => STRING_PLACEHOLDER + (_string.list.push($) - 1)
+      ($) => STRING_PLACEHOLDER + (_string.list.push($) - 1),
     )
 
     .replace(
@@ -96,7 +96,7 @@ export default function highlight(js, options) {
       ($) => {
         _comment.list.push($)
         return COMMENT_PLACEHOLDER
-      }
+      },
     )
     .replace(
       FUNCTION_REGEX, //
@@ -104,61 +104,61 @@ export default function highlight(js, options) {
         if ($ === COMMENT_PLACEHOLDER) return $
         _function.list.push($)
         return FUNCTION_PLACEHOLDER
-      }
+      },
     )
     .replace(
       NUMBER_REGEX, //
       ($) => {
         _number.list.push($)
         return NUMBER_PLACEHOLDER
-      }
+      },
     )
 
     .replace(
       PUNCTUATION_REGEX, //
-      ($) => `{${colors.punctuation} ${$}}`
+      ($) => `{${colors.punctuation} ${$}}`,
     )
     .replace(
       OPERATOR_REGEX, //
       (_, ...args) =>
-        isInObject(_, args, colors) ? _ : `{${colors.operator} ${_}}`
+        isInObject(_, args, colors) ? _ : `{${colors.operator} ${_}}`,
     )
     .replace(
       /\btrue\b/g, //
       (_, ...args) =>
-        isInObject(_, args, colors) ? _ : `{${colors.true} ${_}}`
+        isInObject(_, args, colors) ? _ : `{${colors.true} ${_}}`,
     )
     .replace(
       /\bfalse\b/g, //
       (_, ...args) =>
-        isInObject(_, args, colors) ? _ : `{${colors.false} ${_}}`
+        isInObject(_, args, colors) ? _ : `{${colors.false} ${_}}`,
     )
     .replace(
       /((?:^|})\s*)(?:catch|finally)\b/, //
       (_, ...args) =>
-        isInObject(_, args, colors) ? _ : `{${colors.keyword} ${_}}`
+        isInObject(_, args, colors) ? _ : `{${colors.keyword} ${_}}`,
     )
     .replace(
       KEYWORD_REGEX, //
       (_, ...args) =>
         isInObject(_, args, colors)
           ? _
-          : `${args[0]}{${colors.keyword} ${args[1]}}`
+          : `${args[0]}{${colors.keyword} ${args[1]}}`,
     )
     .replace(
       BUILTIN_REGEX, //
       (_, ...args) =>
-        isInObject(_, args, colors) ? _ : `{${colors.builtin} ${args[0]}}`
+        isInObject(_, args, colors) ? _ : `{${colors.builtin} ${args[0]}}`,
     )
     .replace(
       /\b(NaN|null|undefined|arguments|this)\b/g, //
       (_, ...args) =>
-        isInObject(_, args, colors) ? _ : `{${colors.number} ${args[0]}}`
+        isInObject(_, args, colors) ? _ : `{${colors.number} ${args[0]}}`,
     )
     .replace(
       /\b(console)\b/g, //
       (_, ...args) =>
-        isInObject(_, args, colors) ? _ : `{${colors.console} ${args[0]}}`
+        isInObject(_, args, colors) ? _ : `{${colors.console} ${args[0]}}`,
     )
 
     .replaceAll(
@@ -172,7 +172,7 @@ export default function highlight(js, options) {
           : colors.function
 
         return `{${color} ${str}}`
-      }
+      },
     )
     .replaceAll(
       NUMBER_PLACEHOLDER, //
@@ -180,10 +180,10 @@ export default function highlight(js, options) {
         let str = _number.list[_number.i++]
         str = str.replace(
           /([Ee][+-]|(0)([BOXbox])|_|n$)/g,
-          (_, a) => `}{dim.${colors.number} ${a}}{${colors.number} `
+          (_, a) => `}{dim.${colors.number} ${a}}{${colors.number} `,
         )
         return `{${colors.number} ${str}}`
-      }
+      },
     )
     .replaceAll(
       STRING_PLACEHOLDER_REGEX, //
@@ -192,11 +192,11 @@ export default function highlight(js, options) {
         const quote = `{${colors.string}.dim ${str[0]}}`
         const body = str.slice(1, -1)
         return `${quote}{${colors.string} ${body}}${quote}`
-      }
+      },
     )
     .replaceAll(
       REGEX_PLACEHOLDER_REGEX,
-      (_, i) => `{${colors.regex} ${_regex.list[i]}}`
+      (_, i) => `{${colors.regex} ${_regex.list[i]}}`,
     )
     .replaceAll(
       COMMENT_PLACEHOLDER,
@@ -204,8 +204,8 @@ export default function highlight(js, options) {
         `{${colors.comment} ${toPlaintext(
           _comment.list[_comment.i++],
           _string,
-          _regex
-        )}}`
+          _regex,
+        )}}`,
     )
 
   _string.list.length = 0

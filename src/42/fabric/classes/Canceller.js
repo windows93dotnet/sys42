@@ -16,7 +16,7 @@ export default class Canceller extends Callable {
             name: { value: "AbortError" },
             message: { value: reason },
             stack: { value: stack },
-          }
+          },
         )
       }
 

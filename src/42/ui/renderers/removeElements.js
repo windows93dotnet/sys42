@@ -8,7 +8,7 @@ export default async function removeElements(elements, plan, stage) {
     for (const el of elements) {
       if (el.nodeType === Node.ELEMENT_NODE) {
         undones.push(
-          renderAnimation(stage, el, "to", anim).then(() => el.remove())
+          renderAnimation(stage, el, "to", anim).then(() => el.remove()),
         )
       } else el.remove()
     }

@@ -16,7 +16,7 @@ export default class Loop extends Player {
       ? () => {
           this.timerId = setTimeout(
             () => this.tick(performance.now()),
-            this.step
+            this.step,
           )
         }
       : () => {
@@ -34,7 +34,7 @@ export default class Loop extends Player {
       "pause || stop || destroy",
       this.fps
         ? () => clearTimeout(this.timerId)
-        : () => cancelAnimationFrame(this.timerId)
+        : () => cancelAnimationFrame(this.timerId),
     )
   }
 

@@ -48,7 +48,7 @@ function serve(e) {
       const blob = await driver.open(pathname)
       const { headers } = getPathInfos(pathname, { headers: true })
       return new Response(blob, { headers })
-    })()
+    })(),
   )
 }
 
@@ -68,7 +68,7 @@ function proxy(e) {
       const blob = await ipc.to(client).sendOnce("42_VHOST_PROXY_REQ", pathname)
       const { headers } = getPathInfos(pathname, { headers: true })
       return new Response(blob, { headers })
-    })()
+    })(),
   )
 }
 
@@ -78,7 +78,7 @@ service.install = (options) => {
   ipc.on("42_SW_GET_CONFIG", async () => config)
 
   ipc.on("42_SW_DISK_INIT", async () =>
-    disk.init(config.vhost ? await getVhostClient() : undefined)
+    disk.init(config.vhost ? await getVhostClient() : undefined),
   )
 
   if (!config.vhost && config.dev) {
@@ -92,7 +92,7 @@ service.install = (options) => {
       (async () => {
         if (!config.vhost && config.version) await kit.install(config.version)
         await self.skipWaiting() // TODO: test this on sw update
-      })()
+      })(),
     )
   })
 
@@ -107,10 +107,10 @@ service.install = (options) => {
         const cacheNames = await caches.keys()
         await Promise.all(
           cacheNames.map((cacheName) =>
-            cacheName === config.version ? undefined : caches.delete(cacheName)
-          )
+            cacheName === config.version ? undefined : caches.delete(cacheName),
+          ),
         )
-      })()
+      })(),
     )
     self.clients.claim() // Should be moved inside waitUntil ?
   })

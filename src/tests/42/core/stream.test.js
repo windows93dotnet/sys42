@@ -27,7 +27,7 @@ test.serial("writable", "collect()", "more than 64KiB", async (t) => {
 
 test("writable", "collect()", "text", async (t) => {
   const actual = await stream.collect(
-    stream.source(["ab", "c"]).pipeThrough(stream.pipe.text())
+    stream.source(["ab", "c"]).pipeThrough(stream.pipe.text()),
   )
   t.is(actual, "abc")
 })
@@ -46,7 +46,7 @@ test.serial("readable", "get()", async (t) => {
     await stream.collect(
       http
         .source("/tests/fixtures/stream/data.json")
-        .pipeThrough(stream.pipe.text())
+        .pipeThrough(stream.pipe.text()),
     )
   ).replaceAll("\r\n", "\n")
 
@@ -64,7 +64,7 @@ test("readable", "wrap()", async (t) => {
   const actual = await stream.collect(
     stream
       .wrap(stream.source(["ab", "c"]), { before: "[", after: "]" })
-      .pipeThrough(stream.pipe.text())
+      .pipeThrough(stream.pipe.text()),
   )
 
   t.is(actual, "[abc]")
@@ -76,7 +76,7 @@ test.noop("transform", "arrayBuffer() + text()", async (t) => {
     stream.source
       .array(["hello \ud83c", "\udf0d"])
       .pipeThrough(stream.pipe.arrayBuffer())
-      .pipeThrough(stream.pipe.text())
+      .pipeThrough(stream.pipe.text()),
   )
 
   t.is(actual, "hello 🌍")
@@ -118,9 +118,9 @@ test("transform", "arrayBuffer() + text()", 2, async (t) => {
           .array(source)
           .pipeThrough(stream.pipe.text())
           .pipeThrough(stream.pipe.arrayBuffer())
-          .pipeThrough(stream.pipe.text())
+          .pipeThrough(stream.pipe.text()),
       ),
-      "h🌍"
+      "h🌍",
     )
   }
 })
@@ -203,7 +203,7 @@ test("transform", "pipeline()", async (t) => {
         stream.pipe.text(), //
         stream.pipe.map((item) => item + "!"),
         stream.pipe.map((item) => item + "?"),
-      ])
+      ]),
     )
     .pipeTo(stream.sink((item) => t.is(item, "💦!?💦!?")))
 })
@@ -236,7 +236,7 @@ test("transform", "text() + arrayBuffer()", async (t) => {
     .pipeThrough(
       stream.pipe.each((x) => {
         for (const byte of x) t.is(byte, bytes[j++])
-      })
+      }),
     )
     .pipeThrough(stream.pipe.text())
     .pipeTo(stream.sink((item) => t.is(item, "abc")))
@@ -288,21 +288,21 @@ if ("CompressionStream" in globalThis) {
     const original = new TextEncoder().encode("💦💦")
 
     const compressed = await stream.collect(
-      stream.source(["💦", "💦"]).pipeThrough(stream.pipe.compress())
+      stream.source(["💦", "💦"]).pipeThrough(stream.pipe.compress()),
     )
 
     t.true(
       original.byteLength < compressed.byteLength,
-      "less byteLength in compressed"
+      "less byteLength in compressed",
     )
 
     const decompressed = await stream.collect(
-      stream.source(compressed).pipeThrough(stream.pipe.decompress())
+      stream.source(compressed).pipeThrough(stream.pipe.decompress()),
     )
 
     t.true(
       original.byteLength === decompressed.byteLength,
-      "decompressed byteLength is equal to original byteLength"
+      "decompressed byteLength is equal to original byteLength",
     )
 
     t.is(new TextDecoder().decode(decompressed), "💦💦")
@@ -324,7 +324,7 @@ test.serial("ndjson", async (t) => {
     .pipeThrough(stream.pipe.text())
     .pipeThrough(stream.pipe.split(/(?:\r?\n)+/))
     .pipeThrough(
-      stream.pipe.each((val, i) => t.eq(JSON.parse(val), expecteds[i]))
+      stream.pipe.each((val, i) => t.eq(JSON.parse(val), expecteds[i])),
     )
     .pipeTo(stream.sink())
 })

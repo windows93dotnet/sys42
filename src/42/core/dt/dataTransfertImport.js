@@ -82,7 +82,7 @@ export default function dataTransfertImport(e, options) {
       out.undones.push(
         item.getAsFileSystemHandle().then((res) => {
           out.fileSystemHandle = res
-        })
+        }),
       )
     }
   }

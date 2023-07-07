@@ -44,7 +44,7 @@ export async function prompt(message = "", options) {
           ...config.field,
           ...onEnter,
         },
-        config.field
+        config.field,
       ),
       config.afterfield,
     ],

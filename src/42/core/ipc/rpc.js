@@ -60,7 +60,7 @@ if (inTop) {
         ? `.\nImport this module inside a script running in the main html page:\n${info.module}`
         : ""
       throw new Error(
-        `The ${info.name} function isn't registered in the top-level realm${help}`
+        `The ${info.name} function isn't registered in the top-level realm${help}`,
       )
     })
     .on(DESTROY, (id) => {
@@ -92,7 +92,7 @@ export default function rpc(fn, options = {}) {
             if (res === false) return
             const { val, destroy } = serialize(res)
             const out = await unmarshalling(
-              await ipc.send(CALL, [id, val, info])
+              await ipc.send(CALL, [id, val, info]),
             )
             destroy()
             return out

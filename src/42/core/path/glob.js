@@ -161,7 +161,7 @@ export default function glob(paths, patterns) {
       : [false, new Glob(pattern)]
     out = (exclude ? difference : union)(
       out,
-      paths.filter((x) => reg.test(x))
+      paths.filter((x) => reg.test(x)),
     )
   }
 
@@ -222,7 +222,7 @@ glob.locate = (obj, patterns, options) => {
 
     out = (exclude ? difference : union)(
       out,
-      paths.filter((x) => reg.test(x))
+      paths.filter((x) => reg.test(x)),
     )
 
     if (exists(obj, pattern, "/")) {

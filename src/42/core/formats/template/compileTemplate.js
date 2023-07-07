@@ -12,7 +12,7 @@ export default function compileTemplate(parsed, options) {
     if (list.length > 1 || list[0].length > 1) {
       throw Object.assign(
         new Error("template syntax error, didn't reduced to one function"),
-        { parsed, list }
+        { parsed, list },
       )
     }
 

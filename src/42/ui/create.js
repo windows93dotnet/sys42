@@ -83,7 +83,7 @@ export default function create(stage, tag, ...args) {
   renderAttributes(
     tag === "body" ? (inBody ? stage.el : document.body) : el,
     stage,
-    stage === undefined ? attrs : normalizeAttrs(attrs, stage)
+    stage === undefined ? attrs : normalizeAttrs(attrs, stage),
   )
 
   el.append(...content)

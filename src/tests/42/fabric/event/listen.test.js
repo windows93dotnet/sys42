@@ -123,5 +123,5 @@ test.tasks(
     test(args, (t) => {
       t.eq(normalizeListen(args).list, expected)
     })
-  }
+  },
 )

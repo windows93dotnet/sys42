@@ -16,8 +16,8 @@ export default async function fs(args) {
 
     return Promise.all(
       disk.glob(options.glob).map(
-        (path) => fsModule[cmd](path) //
-      )
+        (path) => fsModule[cmd](path), //
+      ),
     )
   }
 }

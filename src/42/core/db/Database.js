@@ -68,7 +68,7 @@ export class Database {
       req.onsuccess = () => resolve()
       req.onerror = () =>
         reject(
-          new DatabaseError(`Couldn't delete database ${this.#config.name}`)
+          new DatabaseError(`Couldn't delete database ${this.#config.name}`),
         )
     })
   }
@@ -87,7 +87,7 @@ export class Database {
     this.stores = {}
 
     Object.keys(this.#config.stores).forEach((name) =>
-      this.#registerStore(name)
+      this.#registerStore(name),
     )
   }
 

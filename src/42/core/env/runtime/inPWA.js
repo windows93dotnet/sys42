@@ -6,9 +6,9 @@ export const inPWA =
   inWindow &&
   Boolean(
     globalThis.matchMedia?.(
-      "(display-mode: browser), (display-mode: fullscreen)"
+      "(display-mode: browser), (display-mode: fullscreen)",
     ).matches !== true ||
       globalThis.navigator?.standalone ||
-      globalThis.document?.referrer.includes("android-app://")
+      globalThis.document?.referrer.includes("android-app://"),
   )
 export default inPWA

@@ -233,16 +233,16 @@ test("misc", (t) => {
   t.eq(
     glob(
       ["foo", "one", "two", "four", "do", "once", "only"],
-      ["once", "!o*", "once"]
+      ["once", "!o*", "once"],
     ),
-    ["once"]
+    ["once"],
   )
   t.eq(
     glob(
       ["foo", "one", "two", "four", "do", "once", "only"],
-      ["*", "!o*", "once"]
+      ["*", "!o*", "once"],
     ),
-    ["foo", "two", "four", "do", "once"]
+    ["foo", "two", "four", "do", "once"],
   )
 })
 

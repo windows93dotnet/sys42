@@ -69,7 +69,7 @@ test("en", (t) => {
   system.i18n.locale = "en-US"
   t.is(
     i18n`hello ${"Marvin"}, give me ${i18n.p`${3000} coffee`}`,
-    "hello Marvin, give me 3,000 coffee"
+    "hello Marvin, give me 3,000 coffee",
   )
 })
 
@@ -78,7 +78,7 @@ test("fr", (t) => {
   system.i18n.locale = "fr-FR"
   t.is(
     i18n`hello ${"Marvin"}, give me ${i18n.p`${3000} coffee`}`,
-    "bonjour Marvin, donne moi 3\u202f000 cafés"
+    "bonjour Marvin, donne moi 3\u202f000 cafés",
   )
 })
 
@@ -88,7 +88,7 @@ test("fr", "alt", (t) => {
   const __ = i18n.for("alt")
   t.is(
     __`hello ${"Marvin"}, give me ${__.p`${3000} coffee`}`,
-    "passe moi 3\u202f000 cafés s'il te plait Marvin"
+    "passe moi 3\u202f000 cafés s'il te plait Marvin",
   )
 })
 
@@ -105,7 +105,7 @@ test('i18n.locale("fr")', (t) => {
   const __ = i18n.locale("fr")
   t.is(
     __`hello ${"Marvin"}, give me ${__.p`${3000} coffee`}`,
-    "bonjour Marvin, donne moi 3\u202f000 cafés"
+    "bonjour Marvin, donne moi 3\u202f000 cafés",
   )
 })
 
@@ -115,6 +115,6 @@ test('i18n.locale("fr")', "alt", (t) => {
   const __ = i18n.locale("fr").for("alt")
   t.is(
     __`hello ${"Marvin"}, give me ${__.p`${3000} coffee`}`,
-    "passe moi 3\u202f000 cafés s'il te plait Marvin"
+    "passe moi 3\u202f000 cafés s'il te plait Marvin",
   )
 })

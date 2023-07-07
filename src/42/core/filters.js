@@ -289,7 +289,7 @@ async function getFilter(item, group, name) {
         ? locate(m.default, name)
         : item.import
         ? locate(m, item.import)
-        : m.default
+        : m.default,
     )
   }
 

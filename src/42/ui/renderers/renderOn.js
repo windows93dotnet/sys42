@@ -10,7 +10,7 @@ import inIframe from "../../core/env/realm/inIframe.js"
 const makeEventLocals = (loc, e, target) => {
   const eventLocals = Object.defineProperties(
     { target, e, event: e },
-    { rect: { get: () => target.getBoundingClientRect() } }
+    { rect: { get: () => target.getBoundingClientRect() } },
   )
   return allocate({}, loc, eventLocals, "/")
 }

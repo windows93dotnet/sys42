@@ -112,7 +112,7 @@ const makeMethod = (method, withBody = true) =>
         body = config.body ?? body
         if (body) {
           config.body = config.headers["Content-Type"].startsWith(
-            "application/json"
+            "application/json",
           )
             ? JSON.stringify(body)
             : await normalizeBody(body)
@@ -184,7 +184,7 @@ export const makeStream = (requestMethod, withBody = true) =>
               else controller.enqueue(value)
             },
           },
-          queuingStrategy
+          queuingStrategy,
         )
 
         rs.headers = (fn) => ((onHeaders = fn), rs)

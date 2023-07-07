@@ -49,7 +49,7 @@ function legacyOpenFile(options) {
         input.remove()
         input = undefined
       },
-      { once: true }
+      { once: true },
     )
     input.click()
   })

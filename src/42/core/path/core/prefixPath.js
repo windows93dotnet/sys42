@@ -7,7 +7,7 @@ export default function prefixPath(path, prefix) {
   const type = typeof prefix
   if (type !== "string") {
     throw new TypeError(
-      `The "prefix" argument must be a string. Received type ${type}`
+      `The "prefix" argument must be a string. Received type ${type}`,
     )
   }
 

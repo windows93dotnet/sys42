@@ -157,7 +157,7 @@ export class Dialog extends Component {
 
   activate() {
     for (const item of document.querySelectorAll(
-      `${rootSelector} > ui-dialog:not(#${this.id})`
+      `${rootSelector} > ui-dialog:not(#${this.id})`,
     )) {
       item.active = false
     }
@@ -183,7 +183,7 @@ export class Dialog extends Component {
 
       let offset
       for (const item of document.querySelectorAll(
-        `${rootSelector} > ui-dialog:not(#${this.id})`
+        `${rootSelector} > ui-dialog:not(#${this.id})`,
       )) {
         if (item.x !== undefined) {
           if (x === item.x && y === item.y) {
@@ -252,7 +252,7 @@ export const dialog = rpc(
       document.querySelector(`#${opener}`)?.focus()
       return res
     },
-  }
+  },
 )
 
 export default dialog

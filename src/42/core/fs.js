@@ -58,7 +58,7 @@ function mountPlace(place, driverName, options = {}) {
     fs.config.places[place] = driverName
   } else {
     throw new Error(
-      `'${place}' is already mounted with '${fs.config.places[place]}'`
+      `'${place}' is already mounted with '${fs.config.places[place]}'`,
     )
   }
 }
@@ -200,7 +200,7 @@ export function sink(path, options) {
         await underlyingSink?.close()
       },
     },
-    options?.queuingStrategy
+    options?.queuingStrategy,
   )
 }
 
@@ -231,7 +231,7 @@ export function source(path, options) {
         }
       },
     },
-    options?.queuingStrategy
+    options?.queuingStrategy,
   )
 }
 

@@ -42,7 +42,7 @@ export const errnos = {
 Object.assign(FileSystemError, errnos)
 
 FileSystemError.codes = Object.fromEntries(
-  Object.entries(errnos).map(([key, val]) => [val, key])
+  Object.entries(errnos).map(([key, val]) => [val, key]),
 )
 
 FileSystemError.descriptions = {

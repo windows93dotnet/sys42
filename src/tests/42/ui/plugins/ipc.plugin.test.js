@@ -104,8 +104,8 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
           cnt: 0,
         },
       },
-      { trusted: true }
-    )
+      { trusted: true },
+    ),
   )
 
   t.timeout("reset")

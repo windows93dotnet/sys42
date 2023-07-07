@@ -16,7 +16,7 @@ test("pack", "File without header", async (t) => {
   pack.add(
     new File(["hello world\n"], "test.txt", {
       lastModified: 1_387_580_181_000,
-    })
+    }),
   )
 
   const [actual, expected] = await Promise.all([
@@ -225,5 +225,5 @@ test.tasks(
 
       t.eq(actual, expected)
     })
-  }
+  },
 )

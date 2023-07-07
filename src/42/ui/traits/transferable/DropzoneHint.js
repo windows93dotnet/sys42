@@ -191,7 +191,7 @@ export class DropzoneHint {
         dropzone: this,
         ...system.transfer.items.details,
       },
-      system.transfer
+      system.transfer,
     )
   }
 
@@ -236,7 +236,7 @@ export class DropzoneHint {
         item.removed = isMove
         if (item.target) {
           droppeds.append(
-            isMove ? item.target : copyElement(item, originDropzone)
+            isMove ? item.target : copyElement(item, originDropzone),
           )
         }
       }
@@ -254,7 +254,7 @@ export class DropzoneHint {
       this.el.append(droppeds)
     } else {
       const indexedElement = this.el.querySelector(
-        `${selector}:nth-child(${this.newIndex + 1})`
+        `${selector}:nth-child(${this.newIndex + 1})`,
       )
       this.el.insertBefore(droppeds, indexedElement)
     }

@@ -97,7 +97,7 @@ export default function renderControl(el, stage, plan) {
                 ? "change || Control+s"
                 : "change || Control+s || Enter"]: fn,
             }
-          : { input: fn }
+          : { input: fn },
       )
     }
 
@@ -134,7 +134,7 @@ export default function renderControl(el, stage, plan) {
         role: "none",
         ...objectifyPlan(labelPlan),
       },
-      stage
+      stage,
     )
     label.prepend(el)
     return label
@@ -159,14 +159,14 @@ export default function renderControl(el, stage, plan) {
         for: el.id,
         ...objectifyPlan(labelPlan),
       },
-      stage
+      stage,
     )
 
     if (plan.compact === true) label.classList.add("sr-only")
 
     if (plan.required) {
       label.append(
-        create("abbr", { "aria-hidden": "true", "title": "Required" }, "*")
+        create("abbr", { "aria-hidden": "true", "title": "Required" }, "*"),
       )
     }
 

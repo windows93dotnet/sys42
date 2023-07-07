@@ -9,7 +9,7 @@ const ENTITIES = {
 }
 
 const REVERSE_ENTITIES = Object.fromEntries(
-  Object.entries(ENTITIES).map(([key, val]) => [val, key])
+  Object.entries(ENTITIES).map(([key, val]) => [val, key]),
 )
 
 export const escapeHTML = (str) => str.replace(/["&'<>]/g, (x) => ENTITIES[x])

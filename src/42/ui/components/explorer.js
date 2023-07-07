@@ -245,7 +245,7 @@ export async function explorer(path = "/", options) {
 
   const parsed = parsePath(
     path.endsWith("/") ? normalizeDirname(path) : normalizeFilename(path),
-    { checkDir: true }
+    { checkDir: true },
   )
 
   if (parsed.base && selection.length === 0) {
@@ -275,8 +275,8 @@ export async function explorer(path = "/", options) {
 
         state: { path, selection, glob, view },
       },
-      options?.dialog
-    )
+      options?.dialog,
+    ),
   )
 }
 

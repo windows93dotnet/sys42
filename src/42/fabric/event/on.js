@@ -147,7 +147,7 @@ export const eventsMap = (list) => {
   for (const { el, listeners } of list) {
     for (const item of listeners) {
       const sorted = Object.entries(item.events).sort(([a], [b]) =>
-        a.length === b.length ? 0 : a.length > b.length ? -1 : 1
+        a.length === b.length ? 0 : a.length > b.length ? -1 : 1,
       )
       for (let [key, fn] of sorted) {
         fn = makeHandler(item, fn)

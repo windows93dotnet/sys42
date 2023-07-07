@@ -81,7 +81,7 @@ test("isBuffer", (t) => {
   t.notOk(Buffer.isBuffer({}), "{}")
   t.notOk(
     Buffer.isBuffer(function foo() {}),
-    "function foo () {}"
+    "function foo () {}",
   )
 })
 
@@ -107,9 +107,9 @@ test("base64", "newline in utf8 -- should not be an issue", (t) => {
   t.is(
     new Buffer(
       "LS0tCnRpdGxlOiBUaHJlZSBkYXNoZXMgbWFya3MgdGhlIHNwb3QKdGFnczoK",
-      "base64"
+      "base64",
     ).toString("utf8"),
-    "---\ntitle: Three dashes marks the spot\ntags:\n"
+    "---\ntitle: Three dashes marks the spot\ntags:\n",
   )
 })
 
@@ -117,9 +117,9 @@ test("base64", "strip newline in base64", (t) => {
   t.is(
     new Buffer(
       "LS0tCnRpdGxlOiBUaHJlZSBkYXNoZXMgbWFya3MgdGhlIHNwb3QKdGFnczoK\nICAtIHlhbWwKICAtIGZyb250LW1hdHRlcgogIC0gZGFzaGVzCmV4cGFuZWQt",
-      "base64"
+      "base64",
     ).toString("utf8"),
-    "---\ntitle: Three dashes marks the spot\ntags:\n  - yaml\n  - front-matter\n  - dashes\nexpaned-"
+    "---\ntitle: Three dashes marks the spot\ntags:\n  - yaml\n  - front-matter\n  - dashes\nexpaned-",
   )
 })
 
@@ -127,16 +127,16 @@ test("base64", "strip tab characters in base64", (t) => {
   t.is(
     new Buffer(
       "LS0tCnRpdGxlOiBUaHJlZSBkYXNoZXMgbWFya3MgdGhlIHNwb3QKdGFnczoK\t\t\t\tICAtIHlhbWwKICAtIGZyb250LW1hdHRlcgogIC0gZGFzaGVzCmV4cGFuZWQt",
-      "base64"
+      "base64",
     ).toString("utf8"),
-    "---\ntitle: Three dashes marks the spot\ntags:\n  - yaml\n  - front-matter\n  - dashes\nexpaned-"
+    "---\ntitle: Three dashes marks the spot\ntags:\n  - yaml\n  - front-matter\n  - dashes\nexpaned-",
   )
 })
 
 test("base64", "strip invalid non-alphanumeric characters", (t) => {
   t.is(
     new Buffer("!\"#$%&'()*,.:;<=>?@[\\]^`{|}~", "base64").toString("utf8"),
-    ""
+    "",
   )
 })
 
@@ -214,7 +214,7 @@ test("new buffer from array w/ negatives", (t) => {
 test("new buffer from array with mixed signed input", (t) => {
   t.equal(
     new Buffer([-255, 255, -128, 128, 512, -512, 511, -511]).toString("hex"),
-    "01ff80800000ff01"
+    "01ff80800000ff01",
   )
 })
 
@@ -429,7 +429,7 @@ test("concat() works on Uint8Array instances", (t) => {
 test("concat() works on Uint8Array instances for smaller provided totalLength", (t) => {
   const result = Buffer.concat(
     [new Uint8Array([1, 2]), new Uint8Array([3, 4])],
-    3
+    3,
   )
   const expected = Buffer.from([1, 2, 3])
   t.deepEqual(result, expected)
@@ -555,7 +555,7 @@ test("replace orphaned utf16 surrogate lead code point", (t) => {
     buf,
     new Buffer([
       0xf0, 0x9f, 0x98, 0xb8, 0xef, 0xbf, 0xbd, 0xf0, 0x9f, 0x91, 0x8d,
-    ])
+    ]),
   )
 })
 
@@ -566,7 +566,7 @@ test("replace orphaned utf16 surrogate trail code point", (t) => {
     buf,
     new Buffer([
       0xf0, 0x9f, 0x98, 0xb8, 0xef, 0xbf, 0xbd, 0xf0, 0x9f, 0x91, 0x8d,
-    ])
+    ]),
   )
 })
 
@@ -685,9 +685,9 @@ test("utf16le to utf16", (t) => {
   t.equal(
     new Buffer(
       new Buffer("abcd", "utf8").toString("utf16le"),
-      "utf16le"
+      "utf16le",
     ).toString("utf8"),
-    "abcd"
+    "abcd",
   )
 })
 
@@ -695,9 +695,9 @@ test("utf16le to utf16 with odd byte length input", (t) => {
   t.equal(
     new Buffer(
       new Buffer("abcde", "utf8").toString("utf16le"),
-      "utf16le"
+      "utf16le",
     ).toString("utf8"),
-    "abcd"
+    "abcd",
   )
 })
 
@@ -708,14 +708,14 @@ test("utf16le to hex", (t) => {
 test("ascii buffer to base64", (t) => {
   t.equal(
     new Buffer("123456!@#$%^", "ascii").toString("base64"),
-    "MTIzNDU2IUAjJCVe"
+    "MTIzNDU2IUAjJCVe",
   )
 })
 
 test("ascii buffer to hex", (t) => {
   t.equal(
     new Buffer("123456!@#$%^", "ascii").toString("hex"),
-    "31323334353621402324255e"
+    "31323334353621402324255e",
   )
 })
 
@@ -730,28 +730,28 @@ test("hex buffer to utf8", (t) => {
 test("base64 buffer to ascii", (t) => {
   t.equal(
     new Buffer("MTIzNDU2IUAjJCVe", "base64").toString("ascii"),
-    "123456!@#$%^"
+    "123456!@#$%^",
   )
 })
 
 test("hex buffer to ascii", (t) => {
   t.equal(
     new Buffer("31323334353621402324255e", "hex").toString("ascii"),
-    "123456!@#$%^"
+    "123456!@#$%^",
   )
 })
 
 test("base64 buffer to binary", (t) => {
   t.equal(
     new Buffer("MTIzNDU2IUAjJCVe", "base64").toString("binary"),
-    "123456!@#$%^"
+    "123456!@#$%^",
   )
 })
 
 test("hex buffer to binary", (t) => {
   t.equal(
     new Buffer("31323334353621402324255e", "hex").toString("binary"),
-    "123456!@#$%^"
+    "123456!@#$%^",
   )
 })
 
@@ -787,7 +787,7 @@ test("utf8 replacement chars (4 byte sequences)", (t) => {
   t.equal(new Buffer([0xff]).toString(), "\uFFFD")
   t.equal(
     new Buffer([0xff, 0x8f, 0x80, 0x84]).toString(),
-    "\uFFFD\uFFFD\uFFFD\uFFFD"
+    "\uFFFD\uFFFD\uFFFD\uFFFD",
   )
 })
 
@@ -811,7 +811,7 @@ test("utf8 replacement chars on 256 random bytes", (t) => {
       53, 127, 225, 236, 134, 219, 98, 214, 125, 148, 24, 64, 142, 111, 231,
       194, 42, 150, 185, 10, 182, 163, 244, 19, 4, 59, 135, 16,
     ]).toString(),
-    "\uFFFD\uFFFD\uFFFD\u0017\uFFFD\uFFFD\uFFFD\u002C\u001B\u0056\uFFFD\u0024\uFFFD\uFFFD\uFFFD\u0015\u005E\uFFFD\uFFFD\u002E\u0019\u001A\uFFFD\uFFFD\u0048\uFFFD\uFFFD\u0070\uFFFD\u0044\uFFFD\uFFFD\u001D\u0053\uFFFD\uFFFD\u007D\u0037\uFFFD\u0013\uFFFD\u0044\uFFFD\u003A\uFFFD\uFFFD\uFFFD\u0027\uFFFD\u0018\u005E\uFFFD\u0078\u0079\u004B\uFFFD\u0070\u0013\uFFFD\uFFFD\uFFFD\u0024\u002B\u0055\u001A\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\u0039\u004E\u000B\u0066\uFFFD\u0075\uFFFD\uFFFD\uFFFD\u005C\u0003\uFFFD\u0036\uFFFD\uFFFD\u0001\u002C\uFFFD\uFFFD\u0056\u0002\u002A\u0044\u0015\u002F\uFFFD\u0319\uFFFD\uFFFD\uFFFD\u0042\uFFFD\uFFFD\u000F\uFFFD\u0010\u0033\uFFFD\u0001\u0011\u0013\uFFFD\u004C\uFFFD\u0026\u004C\u0013\u0007\u0067\uFFFD\u0005\u006B\uFFFD\u0040\u003E\uFFFD\u0039\u0010\u0055\uFFFD\uFFFD\u0061\u0056\uFFFD\uFFFD\u0024\uFFFD\uFFFD\uFFFD\uFFFD\u0045\uFFFD\u0026\uFFFD\u0061\uFFFD\uFFFD\uFFFD\uFFFD\u0026\u0001\uFFFD\u0012\u001F\uFFFD\u0035\u002F\uFFFD\u0034\u0069\u0048\u002B\uFFFD\uFFFD\uFFFD\u0049\u005D\uFFFD\u004B\uFFFD\u0726\u0022\u003F\uFFFD\u000B\uFFFD\u004C\uFFFD\uFFFD\u006E\u004E\u0027\uFFFD\uFFFD\u0006\uFFFD\uFFFD\uFFFD\uFFFD\u0000\u0021\u0029\u007A\u0076\u005C\uFFFD\u0000\uFFFD\u006C\u0078\u0046\uFFFD\u0064\uFFFD\uFFFD\uFFFD\uFFFD\u0042\u007E\u006F\uFFFD\u0021\u0003\u0027\u0075\u001B\u006B\u0036\u0001\uFFFD\uFFFD\uFFFD\u000D\uFFFD\u0003\u0049\u0035\u007F\uFFFD\uFFFD\uFFFD\uFFFD\u0062\uFFFD\u007D\uFFFD\u0018\u0040\uFFFD\u006F\uFFFD\uFFFD\u002A\uFFFD\uFFFD\u000A\uFFFD\uFFFD\uFFFD\u0013\u0004\u003B\uFFFD\u0010"
+    "\uFFFD\uFFFD\uFFFD\u0017\uFFFD\uFFFD\uFFFD\u002C\u001B\u0056\uFFFD\u0024\uFFFD\uFFFD\uFFFD\u0015\u005E\uFFFD\uFFFD\u002E\u0019\u001A\uFFFD\uFFFD\u0048\uFFFD\uFFFD\u0070\uFFFD\u0044\uFFFD\uFFFD\u001D\u0053\uFFFD\uFFFD\u007D\u0037\uFFFD\u0013\uFFFD\u0044\uFFFD\u003A\uFFFD\uFFFD\uFFFD\u0027\uFFFD\u0018\u005E\uFFFD\u0078\u0079\u004B\uFFFD\u0070\u0013\uFFFD\uFFFD\uFFFD\u0024\u002B\u0055\u001A\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\u0039\u004E\u000B\u0066\uFFFD\u0075\uFFFD\uFFFD\uFFFD\u005C\u0003\uFFFD\u0036\uFFFD\uFFFD\u0001\u002C\uFFFD\uFFFD\u0056\u0002\u002A\u0044\u0015\u002F\uFFFD\u0319\uFFFD\uFFFD\uFFFD\u0042\uFFFD\uFFFD\u000F\uFFFD\u0010\u0033\uFFFD\u0001\u0011\u0013\uFFFD\u004C\uFFFD\u0026\u004C\u0013\u0007\u0067\uFFFD\u0005\u006B\uFFFD\u0040\u003E\uFFFD\u0039\u0010\u0055\uFFFD\uFFFD\u0061\u0056\uFFFD\uFFFD\u0024\uFFFD\uFFFD\uFFFD\uFFFD\u0045\uFFFD\u0026\uFFFD\u0061\uFFFD\uFFFD\uFFFD\uFFFD\u0026\u0001\uFFFD\u0012\u001F\uFFFD\u0035\u002F\uFFFD\u0034\u0069\u0048\u002B\uFFFD\uFFFD\uFFFD\u0049\u005D\uFFFD\u004B\uFFFD\u0726\u0022\u003F\uFFFD\u000B\uFFFD\u004C\uFFFD\uFFFD\u006E\u004E\u0027\uFFFD\uFFFD\u0006\uFFFD\uFFFD\uFFFD\uFFFD\u0000\u0021\u0029\u007A\u0076\u005C\uFFFD\u0000\uFFFD\u006C\u0078\u0046\uFFFD\u0064\uFFFD\uFFFD\uFFFD\uFFFD\u0042\u007E\u006F\uFFFD\u0021\u0003\u0027\u0075\u001B\u006B\u0036\u0001\uFFFD\uFFFD\uFFFD\u000D\uFFFD\u0003\u0049\u0035\u007F\uFFFD\uFFFD\uFFFD\uFFFD\u0062\uFFFD\u007D\uFFFD\u0018\u0040\uFFFD\u006F\uFFFD\uFFFD\u002A\uFFFD\uFFFD\u000A\uFFFD\uFFFD\uFFFD\u0013\u0004\u003B\uFFFD\u0010",
   )
 })
 

@@ -107,7 +107,7 @@ export default function renderEach(plan, stage) {
 
       const walker = document.createTreeWalker(
         container,
-        NodeFilter.SHOW_COMMENT
+        NodeFilter.SHOW_COMMENT,
       )
 
       walker.currentNode = placeholder
@@ -154,7 +154,7 @@ export default function renderEach(plan, stage) {
                   const recycled = removedElements.shift()
                   if (recycled) {
                     inert.replaceChildren(
-                      ...recycled.cloneNode(true).childNodes
+                      ...recycled.cloneNode(true).childNodes,
                     )
                     recycled.before(inert)
                   } else {
@@ -207,9 +207,9 @@ export default function renderEach(plan, stage) {
             steps: `${stage.steps},[${i}]`,
             scopeChain,
           },
-          { skipNoStage: true }
+          { skipNoStage: true },
         ),
-        (lastItem = document.createComment(ITEM))
+        (lastItem = document.createComment(ITEM)),
       )
 
       // await nextCycle()

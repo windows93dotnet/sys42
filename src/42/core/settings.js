@@ -71,7 +71,7 @@ export default function settings(name, defaults, presets) {
             }
 
             return opt
-          })
+          }),
         )
       : configure(defaults, ...options)
   }

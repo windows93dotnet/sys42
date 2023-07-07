@@ -21,7 +21,7 @@ function stripComments(source) {
     source
       // replace "/" in quotes with non-printable ASCII '\1' char
       .replace(/("([^"\\]|\\")*")|('([^'\\]|\\')*')/g, (m) =>
-        m.replace(/\//g, "\x01")
+        m.replace(/\//g, "\x01"),
       )
       // clear comments
       .replace(/(\/\*[^*]+\*\/)|(\/\/[^\n]+)/g, "")
@@ -79,7 +79,7 @@ export default function parseExpression(source, parseValue = JSON.parse) {
         if (state === "key" && tokens.at(-1)?.type === "pipe") {
           tokens.push(
             { type: "function", value: buffer },
-            { type: "functionEnd" }
+            { type: "functionEnd" },
           )
           state = "arg"
           buffer = ""
@@ -219,7 +219,7 @@ export default function parseExpression(source, parseValue = JSON.parse) {
         flush()
         tokens.push(
           { type: "assignment", value: "+=" },
-          { type: "arg", value: 1 }
+          { type: "arg", value: 1 },
         )
         state = "arg"
         current += 2
@@ -233,7 +233,7 @@ export default function parseExpression(source, parseValue = JSON.parse) {
         flush()
         tokens.push(
           { type: "assignment", value: "-=" },
-          { type: "arg", value: 1 }
+          { type: "arg", value: 1 },
         )
         state = "arg"
         current += 2

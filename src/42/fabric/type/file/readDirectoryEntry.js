@@ -1,7 +1,7 @@
 export default async function readDirectoryEntry(
   entry,
   { files = {}, folders = [] } = {},
-  options
+  options,
 ) {
   const reader = entry.createReader()
 
@@ -22,7 +22,7 @@ export default async function readDirectoryEntry(
               entry.file(resolve, reject)
             }).then((file) => {
               files[entry.fullPath.slice(1)] = file
-            })
+            }),
           )
         }
       }

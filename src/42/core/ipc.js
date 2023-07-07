@@ -66,13 +66,13 @@ async function messageHandler(e) {
         (iframe &&
           (iframe.src
             ? new URL(iframe.src).origin === location.origin
-            : iframe.srcdoc))
+            : iframe.srcdoc)),
     )
 
     if (!trusted) {
       throw new DOMException(
         `IPC_PING: untrusted origin: ${origin}`,
-        "SecurityError"
+        "SecurityError",
       )
     }
 

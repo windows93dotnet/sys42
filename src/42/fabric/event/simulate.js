@@ -36,7 +36,7 @@ for (const [key, val] of Object.entries(EVENT_TYPES)) {
         constructor(...args) {
           super(...args)
           console.warn(
-            `${event} will not dispatch using ${key} because it is undefined`
+            `${event} will not dispatch using ${key} because it is undefined`,
           )
         }
       }

@@ -59,12 +59,12 @@ test("Object.create(null)", "{proto:false}", (t) => {
   actual.a = 1
   actual.b = 2
   t.true(
-    equals(actual, Object.assign(Object.create(null), { a: 1, b: 2 }), options)
+    equals(actual, Object.assign(Object.create(null), { a: 1, b: 2 }), options),
   )
   t.true(equals(actual, { a: 1, b: 2 }, options))
 
   t.false(
-    equals(actual, Object.assign(Object.create(null), { a: 1, b: 3 }), options)
+    equals(actual, Object.assign(Object.create(null), { a: 1, b: 3 }), options),
   )
   t.false(equals(actual, { a: 1, b: 3 }, options))
 })
@@ -97,8 +97,8 @@ test("function with different declaration name are not equal", (t) => {
   t.true(
     equals(
       () => 1,
-      () => 1
-    )
+      () => 1,
+    ),
   )
 
   const a = () => 1
@@ -394,7 +394,7 @@ const tasks = [
         [a3, b3], //
         [a4, b4],
       ],
-    })
+    }),
   )
 }
 
@@ -424,7 +424,7 @@ const tasks = [
       fail: [
         [a3, b3], //
       ],
-    })
+    }),
   )
 }
 
@@ -455,7 +455,7 @@ const tasks = [
       fail: [
         [a3, b3], //
       ],
-    })
+    }),
   )
 }
 
@@ -486,7 +486,7 @@ const tasks = [
       fail: [
         [a3, b3], //
       ],
-    })
+    }),
   )
 }
 
@@ -508,7 +508,7 @@ if ("Node" in globalThis) {
           Object.assign(document.createElement("div"), { id: "y" }),
         ],
       ],
-    })
+    }),
   )
 }
 
@@ -528,7 +528,7 @@ if ("Blob" in globalThis) {
           new Blob(["xx"], { type: "text/html" }),
         ],
       ],
-    })
+    }),
   )
 }
 
@@ -556,7 +556,7 @@ if ("File" in globalThis) {
           new File(["ab"], "x", { type: "text/plain", lastModified: 2 }),
         ],
       ],
-    })
+    }),
   )
 }
 
@@ -571,9 +571,9 @@ function runTask({ test, title }, assert, a, b) {
     t[assert](
       equals(
         { x: [{ a }], y: new Map([["a", a]]), z: new Set([a]) },
-        { x: [{ a: b }], y: new Map([["a", b]]), z: new Set([b]) }
+        { x: [{ a: b }], y: new Map([["a", b]]), z: new Set([b]) },
       ),
-      "in complex"
+      "in complex",
     )
   })
 }

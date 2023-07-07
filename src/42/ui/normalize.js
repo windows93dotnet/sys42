@@ -172,8 +172,8 @@ function findComponentAction(stage, cpn, value) {
       new Error(
         `Action path is going above root by ${
           levels.length - cpnCnt
-        } level(s): ${value}`
-      )
+        } level(s): ${value}`,
+      ),
     )
   }
 }
@@ -237,7 +237,7 @@ export function normalizeTokens(tokens, stage, options) {
         const thisArg = stage
         const { value } = token
         const err = new TypeError(
-          `Template filter is not a function: "${value}"`
+          `Template filter is not a function: "${value}"`,
         )
 
         if (isPromiseLike(action)) {
@@ -486,7 +486,7 @@ export function normalizePlugins(stage, plugins, options) {
         key = plugin.name
       } else {
         throw new Error(
-          `Plugin definition must be a string, a function or an array: ${type}`
+          `Plugin definition must be a string, a function or an array: ${type}`,
         )
       }
     }
@@ -507,7 +507,7 @@ export function normalizePlugins(stage, plugins, options) {
         (async () => {
           const res = await promise
           if (typeof res === "function") stage.pluginHandlers.push(res)
-        })()
+        })(),
       )
     }
   }
@@ -533,7 +533,7 @@ export function normalizeTraits(plan, stage) {
           : `./traits/${name}.js`
       ).then((m) => {
         trait.module = m.default
-      })
+      }),
     )
   }
 
@@ -554,7 +554,7 @@ export function normalizeTraits(plan, stage) {
             traitReady.push(
               fn(stage.reactive.state).then((res) => {
                 obj[key] = res
-              })
+              }),
             )
           }
         }
@@ -569,7 +569,7 @@ export function normalizeTraits(plan, stage) {
 
           if (val.scopes) register(stage, val, fn)
           else fn(val)
-        })
+        }),
       )
     }
 
@@ -744,7 +744,7 @@ export function normalizeData(plan, stage, cb) {
       (async () => {
         const res = await plan()
         cb(res, scope)
-      })()
+      })(),
     )
   } else {
     cb(plan, stage.scope, { silent: true })

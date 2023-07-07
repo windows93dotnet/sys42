@@ -7,7 +7,7 @@ import parseErrorStack, { stackframe } from "./parseErrorStack.js"
 // @src https://github.com/tapjs/stack-utils/blob/82097544610b7360e14c496b3eb23aedda53d3d0/index.js#L5
 const nodeInternalsToRegex = (n) =>
   new RegExp(
-    `(?:\\((?:node:)?${n}(?:\\.js)?:\\d+:\\d+\\)$|^\\s*at (?:node:)?${n}(?:\\.js)?:\\d+:\\d+$)`
+    `(?:\\((?:node:)?${n}(?:\\.js)?:\\d+:\\d+\\)$|^\\s*at (?:node:)?${n}(?:\\.js)?:\\d+:\\d+$)`,
   )
 
 export async function nodeInternals() {
@@ -17,7 +17,7 @@ export async function nodeInternals() {
     .concat(
       /\((?:node:)?internal\/[^:]+:\d+:\d+\)$/,
       /\s*at (?:node:)?internal\/[^:]+:\d+:\d+$/,
-      /\/\.node-spawn-wrap-\w+-\w+\/node:\d+:\d+\)?$/
+      /\/\.node-spawn-wrap-\w+-\w+\/node:\d+:\d+\)?$/,
     )
 }
 

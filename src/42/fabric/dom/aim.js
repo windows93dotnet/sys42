@@ -74,7 +74,7 @@ class Aim {
           rect.left - 5,
           rect.bottom,
           rect.right + 5,
-          rect.bottom
+          rect.bottom,
         ) // v
       } else if (y < rect.top) {
         this.setPoints(
@@ -83,7 +83,7 @@ class Aim {
           rect.left - 5,
           rect.top,
           rect.right + 5,
-          rect.top
+          rect.top,
         ) // ^
       } else this.resetPoints()
     } else if (x < rect.left) {
@@ -93,7 +93,7 @@ class Aim {
         rect.left,
         rect.top - 5,
         rect.left,
-        rect.bottom + 5
+        rect.bottom + 5,
       ) // <
     } else if (x > rect.right) {
       this.setPoints(
@@ -102,7 +102,7 @@ class Aim {
         rect.right,
         rect.top - 5,
         rect.right,
-        rect.bottom + 5
+        rect.bottom + 5,
       ) // >
     } else this.resetPoints()
   }

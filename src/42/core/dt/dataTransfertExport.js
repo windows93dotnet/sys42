@@ -22,7 +22,7 @@ export default async function dataTransfertExport(e, options) {
 
   if (options?.image !== true) {
     dataTransfer.setDragImage(
-      ...(options?.image ? arrify(options?.image) : hidden)
+      ...(options?.image ? arrify(options?.image) : hidden),
     )
   }
 

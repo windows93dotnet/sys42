@@ -182,7 +182,7 @@ export default class Assert {
     if (this.#pending > 0) {
       throw new VerifyError(
         "An async assertion didn't resolved before test end, you should use `await` before it",
-        stackframe
+        stackframe,
       )
     }
 
@@ -190,23 +190,23 @@ export default class Assert {
       if (this.#count === 0) {
         throw new VerifyError(
           "Test finished without running any assertions",
-          stackframe
+          stackframe,
         )
       }
     } else if (this.#planned !== this.#count) {
       throw new VerifyError(
         `Planned for ${this.#planned} ${pluralize(
           "assertion",
-          this.#planned
+          this.#planned,
         )}, but got ${this.#count}`,
-        stackframe
+        stackframe,
       )
     }
 
     if (failing === true) {
       throw new VerifyError(
         "Test was expected to fail, but succeeded, you should stop marking the test as failing",
-        stackframe
+        stackframe,
       )
     }
   }
@@ -306,7 +306,7 @@ export default class Assert {
       if (equals(actual, expected)) {
         throw new AssertionError(
           message,
-          "Values are deeply equal but are not the same"
+          "Values are deeply equal but are not the same",
         )
       } else {
         throw new AssertionError(message, "Values are not the same", {
@@ -418,7 +418,7 @@ export default class Assert {
       throw new AssertionError(
         message,
         `Value is not an instance of ${expected.name}`,
-        { actual, expected }
+        { actual, expected },
       )
     }
   }
@@ -443,13 +443,13 @@ export default class Assert {
             actual[key], //
             val,
             false,
-            path
+            path,
           )
         } else if (val === PLACEHOLDER) {
           if (key in actual !== true) {
             throw new AssertionError(
               message,
-              `"${path}" is not the same as the expected one`
+              `"${path}" is not the same as the expected one`,
             )
           }
         } else {
@@ -457,7 +457,7 @@ export default class Assert {
             actual[key],
             val,
             `"${path}" is not the same as the expected one`,
-            path
+            path,
           )
         }
       })
@@ -469,7 +469,7 @@ export default class Assert {
       throw new AssertionError(
         message ?? err.nested ?? err.message,
         undefined,
-        details
+        details,
       )
     }
   }
@@ -484,7 +484,7 @@ export default class Assert {
           keys: Object.keys(obj),
           needle,
           ...details,
-        }
+        },
       )
     }
   }
@@ -509,7 +509,7 @@ export default class Assert {
   throws(fn, expected, message) {
     if (arguments.length === 2 && expected === undefined) {
       throw new TypeError(
-        `If "expected" argument is defined it can't be of type undefined`
+        `If "expected" argument is defined it can't be of type undefined`,
       )
     }
 
@@ -542,8 +542,8 @@ export default class Assert {
               message,
               "Function must throw",
               { expected },
-              stack
-            )
+              stack,
+            ),
           ),
         (error) => {
           try {
@@ -551,7 +551,7 @@ export default class Assert {
           } catch (err) {
             reject(err)
           }
-        }
+        },
       ).finally(() => this.#pending--)
     })
   }
@@ -583,10 +583,10 @@ export default class Assert {
               message,
               `Function must not throw`,
               { error },
-              stack
-            )
+              stack,
+            ),
           )
-        }
+        },
       ).finally(() => this.#pending--)
     })
   }

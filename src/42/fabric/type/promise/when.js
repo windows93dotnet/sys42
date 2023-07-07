@@ -37,8 +37,8 @@ export default async function when(target, events, options) {
           target.addEventListener(event, onevent, listenerOptions)
           if (error) target.addEventListener(error, onerror, listenerOptions)
           signal?.addEventListener("abort", onerror)
-        })
-    )
+        }),
+    ),
   )
 
   if (race || list.length === 1) return res[0]

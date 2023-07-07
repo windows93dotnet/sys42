@@ -49,7 +49,7 @@ export function toArrayBuffer(str) {
   const placeHoldersLen = lens[1]
 
   const arr = new Uint8Array(
-    ((validLen + placeHoldersLen) * 3) / 4 - placeHoldersLen
+    ((validLen + placeHoldersLen) * 3) / 4 - placeHoldersLen,
   )
 
   let curByte = 0
@@ -103,7 +103,7 @@ function encodeChunk(uint8, start, end) {
     str += tripletToBase64(
       ((uint8[i] << 16) & 0xff_00_00) +
         ((uint8[i + 1] << 8) & 0xff_00) +
-        (uint8[i + 2] & 0xff)
+        (uint8[i + 2] & 0xff),
     )
   }
 
@@ -123,7 +123,7 @@ export function fromArrayBuffer(buffer) {
     str += encodeChunk(
       uint8,
       i,
-      i + maxChunkLength > len2 ? len2 : i + maxChunkLength
+      i + maxChunkLength > len2 ? len2 : i + maxChunkLength,
     )
   }
 

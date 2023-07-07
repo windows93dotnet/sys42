@@ -102,7 +102,7 @@ const decodeOct = function (val, offset, length) {
   const end = clamp(
     indexOf(val, 32, offset, val.length),
     val.length,
-    val.length
+    val.length,
   )
   while (offset < end && val[offset] === 0) offset++
   if (end === offset) return 0
@@ -112,7 +112,7 @@ const decodeOct = function (val, offset, length) {
 const decodeStr = function (val, offset, length, encoding) {
   return toString(
     val.slice(offset, indexOf(val, 0, offset, offset + length)),
-    encoding
+    encoding,
   )
 }
 
@@ -142,7 +142,7 @@ export function decodePax(buf) {
 
 export function decodeTarHeader(
   buf,
-  { filenameEncoding, allowUnknownFormat } = {}
+  { filenameEncoding, allowUnknownFormat } = {},
 ) {
   let typeflag = buf[156] === 0 ? 0 : buf[156] - ZERO_OFFSET
 
@@ -168,7 +168,7 @@ export function decodeTarHeader(
   // valid checksum
   if (c !== decodeOct(buf, 148, 8)) {
     throw new Error(
-      "Invalid tar header. Maybe the tar is corrupted or it needs to be gunzipped?"
+      "Invalid tar header. Maybe the tar is corrupted or it needs to be gunzipped?",
     )
   }
 

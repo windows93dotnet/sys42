@@ -2,7 +2,7 @@ import test from "../../../42/test.js"
 import uid from "../../../42/core/uid.js"
 
 const alphabet = Object.fromEntries(
-  "abcdefghijklmnopqrstuvwxyz".split("").map((letter) => [letter, 0])
+  "abcdefghijklmnopqrstuvwxyz".split("").map((letter) => [letter, 0]),
 )
 
 function checkRandom(t, fn, size = 8, options) {
@@ -37,5 +37,5 @@ test.tasks(
     test.flaky(fn, async (t) => {
       checkRandom(t, fn, size)
     })
-  }
+  },
 )

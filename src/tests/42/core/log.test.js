@@ -13,7 +13,7 @@ function makeConsoleSpy(t, key = "log") {
     (...args) => {
       if (print) spy.original.method(...args)
     },
-    false
+    false,
   )
 
   return spy
@@ -452,5 +452,5 @@ test.tasks(
         } else t.pass()
       } else t.pass()
     })
-  }
+  },
 )

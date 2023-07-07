@@ -149,7 +149,7 @@ export const arrayDiff = function (a, b, options, path = [], parents = {}) {
             patch.value,
             patch.path,
             options,
-            parents
+            parents,
           )
         }
       }
@@ -201,7 +201,7 @@ function valueDiff(a, b, path, options, parents = {}) {
         Object.fromEntries(b.entries()),
         path,
         options,
-        parents
+        parents,
       )
     }
 
@@ -226,7 +226,7 @@ function valueDiff(a, b, path, options, parents = {}) {
     if (Object.hasOwn(b, key)) {
       if (key in a) {
         acc = acc.concat(
-          valueDiff(a[key], b[key], path.concat(key), options, parents)
+          valueDiff(a[key], b[key], path.concat(key), options, parents),
         )
       } else {
         acc.push({

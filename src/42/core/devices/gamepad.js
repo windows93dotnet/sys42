@@ -151,19 +151,19 @@ const update = () => {
               if (pressed) {
                 status[btnName] = value
                 document.activeElement.dispatchEvent(
-                  new GamepadEvent("buttondown", index, value, pad)
+                  new GamepadEvent("buttondown", index, value, pad),
                 )
               } else {
                 delete status[btnName]
                 document.activeElement.dispatchEvent(
-                  new GamepadEvent("buttonup", index, value, pad)
+                  new GamepadEvent("buttonup", index, value, pad),
                 )
               }
             }
 
             if (tracked.buttons[index].value !== value) {
               document.activeElement.dispatchEvent(
-                new GamepadEvent("buttonchange", index, value, pad)
+                new GamepadEvent("buttonchange", index, value, pad),
               )
             }
 
@@ -175,7 +175,7 @@ const update = () => {
               if (value === 0) delete status[axisName]
               else status[axisName] = value
               document.activeElement.dispatchEvent(
-                new GamepadEvent("axischange", index, value, pad)
+                new GamepadEvent("axischange", index, value, pad),
               )
             }
 

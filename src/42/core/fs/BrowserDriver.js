@@ -219,8 +219,8 @@ export default class BrowserDriver extends Driver {
       disk
         .readDir(filename, { absolute: true })
         .map((path) =>
-          path.endsWith("/") ? this.deleteDir(path) : this.delete(path)
-        )
+          path.endsWith("/") ? this.deleteDir(path) : this.delete(path),
+        ),
     )
 
     disk.delete(filename)

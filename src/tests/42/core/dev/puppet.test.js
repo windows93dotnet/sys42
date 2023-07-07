@@ -46,7 +46,7 @@ test.serial("auto wait for element", async (t) => {
   t.is(stub.count, 2)
   t.eq(
     stub.calls.map(({ args: [e] }) => e.type),
-    ["pointerdown", "pointerup"]
+    ["pointerdown", "pointerup"],
   )
 
   await end

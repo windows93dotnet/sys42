@@ -15,7 +15,7 @@ function resolveAction(locals, value, delimiter) {
 function ensureAction(action, value) {
   if (typeof action !== "function") {
     throw new TypeError(
-      `Template action didn't resolve as a function: "${value}"`
+      `Template action didn't resolve as a function: "${value}"`,
     )
   }
 }
@@ -67,7 +67,7 @@ function compileToken(i, list, tokens, options) {
             ensureAction(action, value)
             for (const arg of argTokens) args.push(arg(locals, res))
             return action(...args)
-          }
+          },
     )
 
     return i
@@ -94,7 +94,7 @@ function compileToken(i, list, tokens, options) {
               const res = locate(obj, value, delimiter)
               if (res !== undefined) return res
             }
-          }
+          },
     )
   } else if (type === "arg") {
     list.push(negated ? () => !value : () => value)

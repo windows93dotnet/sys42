@@ -6,7 +6,7 @@ const iframe = 0
 
 const { href } = new URL(
   "../../../../demos/ui/invocables/demands.demo.html?test=true",
-  import.meta.url
+  import.meta.url,
 )
 
 import prompt from "../../../../42/ui/invocables/prompt.js"
@@ -36,7 +36,7 @@ const makeContent = () => ({
             label: "Yo",
             icon: "warning",
             agree: "Fine !",
-          })
+          }),
         )
       },
     },
@@ -57,7 +57,7 @@ const makeContent = () => ({
           alert(new TypeError("boom"), {
             content: "Oops",
             collapsed: false,
-          })
+          }),
         )
       },
     },
@@ -81,7 +81,7 @@ const makeContent = () => ({
             icon: "question",
             agree: { picto: "check", content: "Yep" },
             decline: { picto: "cross", content: "Nope" },
-          })
+          }),
         )
       },
     },
@@ -104,7 +104,7 @@ const makeContent = () => ({
           prompt("What is the meaning of life,\nthe universe and everything?", {
             icon: "question",
             value: 42,
-          })
+          }),
         )
       },
     },
@@ -183,7 +183,7 @@ test.ui(async (t) => {
         const input = dialog.querySelector('[name="/value"]')
         t.is(input.localName, "textarea")
         await t.puppet(input).fill("derp")
-      }
+      },
     ),
   ])
 })

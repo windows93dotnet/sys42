@@ -196,11 +196,11 @@ export default class Suite {
     const tests = groupBy(this.tests, (test) =>
       options?.serial || test.serial || this.afterEach || this.beforeEach
         ? "serial"
-        : "parallel"
+        : "parallel",
     )
 
     const suites = groupBy(this.suites, (suite) =>
-      options?.serial || suite.serial ? "serial" : "parallel"
+      options?.serial || suite.serial ? "serial" : "parallel",
     )
 
     const p = []
@@ -212,7 +212,7 @@ export default class Suite {
 
     if (suites?.parallel?.length) {
       p.push(
-        parallel(suites.parallel, (suite) => this.runSuite(suite, options))
+        parallel(suites.parallel, (suite) => this.runSuite(suite, options)),
       )
     }
 
@@ -258,7 +258,7 @@ export default class Suite {
       warnings: this.warnings.map(([context, originErr, err]) => [
         context,
         serializeError(originErr).stack.find(({ filename }) =>
-          filename.endsWith(".test.js")
+          filename.endsWith(".test.js"),
         ),
         serializeError(err),
       ]),

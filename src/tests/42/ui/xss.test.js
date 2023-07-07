@@ -175,7 +175,7 @@ dialog(
 
       t.log(res)
     })
-  }
+  },
 )
 
 test.tasks(
@@ -235,5 +235,5 @@ test.tasks(
 
       t.pass()
     })
-  }
+  },
 )

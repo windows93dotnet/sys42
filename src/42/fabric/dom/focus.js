@@ -45,7 +45,7 @@ export function focusInsideLast(el) {
 
 export function focusInside(el) {
   const items = el.querySelectorAll(
-    ":scope [autofocus], :scope [data-autofocus]"
+    ":scope [autofocus], :scope [data-autofocus]",
   )
   if (items.length > 0 && attemptFocus(items[items.length - 1])) return true
   return focusInsideFirst(el)
@@ -81,7 +81,7 @@ export class TabOrder {
       this.walker = document.createTreeWalker(
         root, //
         SHOW_ELEMENT,
-        { acceptNode }
+        { acceptNode },
       )
       this.update = () => {
         this.list.length = 0

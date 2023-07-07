@@ -16,7 +16,7 @@ export default function resolveScope(scope, loc, stage) {
   } else if (loc.startsWith("#")) {
     if (!same(loc, "#")) {
       throw new Error(
-        "Invalid # character usage (expression must only include #)"
+        "Invalid # character usage (expression must only include #)",
       )
     }
 

@@ -91,7 +91,7 @@ class MimetypesManager extends ConfigFile {
     for (const mimetype in mimetypes) {
       if (Object.hasOwn(mimetypes, mimetype)) {
         const { extnames, basenames } = groupBy(mimetypes[mimetype], (item) =>
-          item.startsWith(".") ? "extnames" : "basenames"
+          item.startsWith(".") ? "extnames" : "basenames",
         )
 
         const { type, subtype } = parseMimetype(mimetype)

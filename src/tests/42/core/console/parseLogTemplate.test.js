@@ -88,5 +88,5 @@ test.tasks(
     test(input, (t) => {
       t.eq(parseLogTemplate(input), expected)
     })
-  }
+  },
 )

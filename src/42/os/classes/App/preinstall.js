@@ -132,7 +132,7 @@ export default async function preinstall(manifest) {
             const id = uid()
             system.pwa.handles.set(id, handle)
             return { id, file }
-          })
+          }),
         )
       }
 

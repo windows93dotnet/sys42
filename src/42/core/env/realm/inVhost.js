@@ -1,6 +1,6 @@
 const { pathname } = new URL(
   "../../../os/network/client/vhost.html",
-  import.meta.url
+  import.meta.url,
 )
 
 export const inVhost =

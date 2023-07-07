@@ -14,7 +14,7 @@ export default function idleThrottle(fn, timeout) {
         fn(...args)
         pending = false
       },
-      { timeout }
+      { timeout },
     )
   }
 

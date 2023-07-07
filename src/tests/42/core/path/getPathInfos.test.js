@@ -295,5 +295,5 @@ test.tasks(
     test(path, options, (t) => {
       t.eq(getPathInfos(path, options), expected)
     })
-  }
+  },
 )

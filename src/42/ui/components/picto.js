@@ -22,7 +22,7 @@ function ensureSymbol(val) {
   if (!inlineds.has(val)) {
     inlineds.add(val)
     loadSVG(
-      new URL(`../../themes/default/pictos/${val}.svg`, import.meta.url)
+      new URL(`../../themes/default/pictos/${val}.svg`, import.meta.url),
     ).then((svg) => {
       const symbol = create("symbol")
       symbol.id = svg.id

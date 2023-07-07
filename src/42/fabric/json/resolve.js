@@ -83,7 +83,7 @@ async function fetchUncacheds(carrier, options, source) {
         ...carrier,
         baseURI: path,
       })
-    })
+    }),
   )
 }
 
@@ -185,7 +185,7 @@ export default async function resolve(source, options, carrier) {
           ...carrier,
           fetch: false,
           baseURI: key,
-        })
+        }),
       )
     }
 

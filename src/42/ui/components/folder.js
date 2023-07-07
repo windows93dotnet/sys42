@@ -175,7 +175,7 @@ export class Folder extends Component {
             path.endsWith("*") || //
               (!path.startsWith(".") && path.includes("."))
               ? path
-              : path + "*"
+              : path + "*",
           )
         : disk.readDir(path, { absolute: true }))
       this.err = undefined
@@ -259,7 +259,7 @@ export class Folder extends Component {
 
                 return "vanish"
               },
-            }
+            },
           )
         : false,
     }

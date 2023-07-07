@@ -48,7 +48,7 @@ export class Chainlink extends Callable {
   constructor(previous, entries) {
     const fn = previous[FUNCTION]
     super((/* Chainlink */ ...args) =>
-      fn.call(this, makeContext(this, entries), ...args)
+      fn.call(this, makeContext(this, entries), ...args),
     )
     const descriptors = Object.getOwnPropertyDescriptors(previous)
     for (const key of Reflect.ownKeys(descriptors)) {
@@ -127,7 +127,7 @@ export default function chainable(...args) {
             ? chain(
                 chainlink,
                 // If data was accessed it replace entries
-                tracker.data ? Object.entries(tracker.data) : ctx.entries
+                tracker.data ? Object.entries(tracker.data) : ctx.entries,
               )
             : res
         },
@@ -144,6 +144,6 @@ export default function chainable(...args) {
       [DEFAULTS]: defaults,
       [FUNCTION]: fn,
     },
-    entries
+    entries,
   )
 }

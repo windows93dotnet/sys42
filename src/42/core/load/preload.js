@@ -39,7 +39,7 @@ async function fromURL(url) {
 
 export async function preload(
   url,
-  { as, crossorigin, media, type, signal, rel, prefetch } = {}
+  { as, crossorigin, media, type, signal, rel, prefetch } = {},
 ) {
   if (url instanceof Element) {
     as = url

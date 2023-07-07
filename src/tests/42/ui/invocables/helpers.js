@@ -10,7 +10,7 @@ export function log(promise) {
   responses.set(current, promise)
   if (system.testing.manual) {
     Promise.all([import("../../../../42/core/log.js"), promise]).then(
-      ([m, arg]) => m.default.inspect.async(arg)
+      ([m, arg]) => m.default.inspect.async(arg),
     )
   }
 }
@@ -100,8 +100,8 @@ export async function make(t, { href, makeContent }, iframe = true) {
             content: makeContent(),
             // plugins: ["ipc"],
           },
-      { trusted: true }
-    )
+      { trusted: true },
+    ),
   )
 
   return app

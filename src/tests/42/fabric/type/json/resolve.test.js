@@ -18,7 +18,7 @@ test("simple", async (t) => {
       foo: 1,
       bar: { $ref: "#/foo" },
       baz: { x: { $ref: "#/bar" }, y: "z" },
-    })
+    }),
   )
   t.eq(res, {
     foo: 1,
@@ -33,7 +33,7 @@ test("simple", 2, async (t) => {
       foo: 1,
       baz: { x: { $ref: "#/bar" }, y: "z" },
       bar: { $ref: "#/foo" },
-    })
+    }),
   )
   t.eq(res, {
     foo: 1,
@@ -46,7 +46,7 @@ test("undefined ref", async (t) => {
   const res = await resolve(
     t.stays({
       foo: { $ref: "#/nope" },
-    })
+    }),
   )
   t.eq(res, {
     foo: undefined,
@@ -57,7 +57,7 @@ test("undefined ref with data", async (t) => {
   const res = await resolve(
     t.stays({
       foo: { a: 1, $ref: "#/nope", b: 2 },
-    })
+    }),
   )
   t.eq(res, {
     foo: { a: 1, b: 2 },
@@ -69,7 +69,7 @@ test("object", async (t) => {
     t.stays({
       foo: { a: 1, b: null },
       bar: { $ref: "#/foo" },
-    })
+    }),
   )
   t.is(res.bar, res.foo)
   t.is(res.bar.a, 1)
@@ -83,7 +83,7 @@ test("circular object", async (t) => {
     t.stays({
       foo: { a: 1, b: null },
       bar: { $ref: "#" },
-    })
+    }),
   )
   t.is(res.bar, res)
 })
@@ -93,7 +93,7 @@ test("$ref without props", async (t) => {
     t.stays({
       foo: { a: 1 },
       bar: { $ref: "#/foo" },
-    })
+    }),
   )
   t.eq(res.foo, { a: 1 })
   t.eq(res.bar, res.foo)
@@ -105,7 +105,7 @@ test("$ref with props before $ref keyword", async (t) => {
     t.stays({
       foo: { a: 1 },
       bar: { b: 2, $ref: "#/foo" },
-    })
+    }),
   )
   t.eq(res, {
     foo: { a: 1 },
@@ -118,7 +118,7 @@ test("$ref with props after $ref keyword", async (t) => {
     t.stays({
       foo: { a: 1 },
       bar: { $ref: "#/foo", b: 2 },
-    })
+    }),
   )
   t.eq(res, {
     foo: { a: 1 },
@@ -148,7 +148,7 @@ test("data before and after $ref", "cache", async (t) => {
       cache: {
         "http://localhost:1234/": { c: 3 },
       },
-    }
+    },
   )
 
   t.eq(res, { a: 1, b: 2, c: 3 })
@@ -206,7 +206,7 @@ test("remote $ref", async (t) => {
   }
   const res = await resolve(
     { bar: { $ref: "http://example.com/data.json" } },
-    { cache }
+    { cache },
   )
   t.eq(res, { bar: { a: 1 } })
 })
@@ -220,7 +220,7 @@ test("remote $ref", 2, async (t) => {
       bar: { $ref: "http://example.com/data.json" },
       foo: { $ref: "http://example.com/data.json" },
     },
-    { cache }
+    { cache },
   )
 
   t.eq(res.bar, { a: 1 }, "res.bar")
@@ -238,7 +238,7 @@ test("remote $ref", 3, async (t) => {
       bar: { $ref: "http://example.com/data.json#/baz" },
       foo: { $ref: "http://example.com/data.json#/baz" },
     }),
-    { cache }
+    { cache },
   )
 
   t.is(res.bar.a, 1)
@@ -262,7 +262,7 @@ test("$ref in $ref", async (t) => {
           type: "object",
         },
       },
-    }
+    },
   )
   t.eq(res, {
     foo: { type: "object" },
@@ -290,7 +290,7 @@ test("circular dependencies", async (t) => {
           required: ["value"],
         },
       },
-    }
+    },
   )
 
   t.is(res.properties.nodes.items.description, "node")
@@ -611,9 +611,9 @@ test(
             items: { $ref: "#items" },
           },
         },
-      })
+      }),
     )
-  }
+  },
 )
 
 test(
@@ -634,9 +634,9 @@ test(
             items: { $dynamicRef: "#items" },
           },
         },
-      })
+      }),
     )
-  }
+  },
 )
 
 /* fetch
@@ -657,7 +657,7 @@ test.skip("fetch", "json", "not found", async (t) => {
       resolve({
         $ref: "notfound",
       }),
-    /Not Found/
+    /Not Found/,
   )
 })
 
@@ -668,7 +668,7 @@ test("fetch", "javascript", "strict", async (t) => {
       resolve({
         $ref: new URL("../../../../fixtures/json/integer.js", import.meta.url),
       }),
-    /not allowed in strict mode/
+    /not allowed in strict mode/,
   )
 })
 
@@ -676,7 +676,7 @@ test("fetch", "javascript", async (t) => {
   t.timeout(1000)
   const res = await resolve(
     { $ref: new URL("../../../../fixtures/json/integer.js", import.meta.url) },
-    { strict: false }
+    { strict: false },
   )
   t.eq(res, { type: "integer" })
 })

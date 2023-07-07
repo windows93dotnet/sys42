@@ -149,35 +149,35 @@ test("big String", (t) => {
 test("remaining Bytes", (t) => {
   t.throws(
     () => CBOR.decode(new ArrayBuffer(2)), //
-    "Remaining bytes"
+    "Remaining bytes",
   )
 })
 
 test("invalid length encoding", (t) => {
   t.throws(
     () => CBOR.decode(hex2arrayBuffer("1e")), //
-    "Invalid length encoding"
+    "Invalid length encoding",
   )
 })
 
 test("invalid length", (t) => {
   t.throws(
     () => CBOR.decode(hex2arrayBuffer("1f")), //
-    "Invalid length"
+    "Invalid length",
   )
 })
 
 test("invalid indefinite length element type", (t) => {
   t.throws(
     () => CBOR.decode(hex2arrayBuffer("5f00")),
-    "Invalid indefinite length element"
+    "Invalid indefinite length element",
   )
 })
 
 test("invalid indefinite length element length", (t) => {
   t.throws(
     () => CBOR.decode(hex2arrayBuffer("5f5f")),
-    "Invalid indefinite length element"
+    "Invalid indefinite length element",
   )
 })
 
@@ -195,7 +195,7 @@ test("tagging", (t) => {
   const decoded = CBOR.decode(
     arrayBuffer,
     (value, tag) => new TaggedValue(value, tag),
-    (value) => new SimpleValue(value)
+    (value) => new SimpleValue(value),
   )
 
   t.true(decoded[0] instanceof TaggedValue, "first item is a TaggedValue")

@@ -29,14 +29,14 @@ const getSuiteTitle = ({ title, skip }, highlightLast) =>
       (x, i, arr) =>
         `{${skip ? "magenta.dim" : ""}${
           skip ? "" : highlightLast && i === arr.length - 1 ? "reset" : "dim"
-        } ${escapeLog(x)}}`
+        } ${escapeLog(x)}}`,
     )
     .join(` {${skip ? "magenta.dim" : "grey"} ›} `)
 
 const getTestTitle = ({ title, ok, skip }) =>
   title
     .map(
-      (x) => `{${skip ? "magenta.dim" : ok ? "reset" : "red"} ${escapeLog(x)}}`
+      (x) => `{${skip ? "magenta.dim" : ok ? "reset" : "red"} ${escapeLog(x)}}`,
     )
     .join(` {${skip ? "magenta.dim" : "dim"} ·} `)
     .replace(/\n/g, "␤")
@@ -125,7 +125,7 @@ const displayTest = (test, config, options) => {
     title += showError && test.error ? "\n" : " "
     title += `${formatFilename(
       test.stackframe,
-      test.skip ? "magenta" : test.error ? "red" : "green"
+      test.skip ? "magenta" : test.error ? "red" : "green",
     )}`
   }
 
@@ -208,7 +208,11 @@ const displaySuiteHeader = (suite, config) => {
   log
     .prefix(
       config.icon +
-        (suite.skip ? "{magenta.dim ~} " : suite.ok ? "{green ✓} " : "{red ✗} ")
+        (suite.skip
+          ? "{magenta.dim ~} "
+          : suite.ok
+          ? "{green ✓} "
+          : "{red ✗} "),
     )
     [suite.ok ? "log" : "groupCollapsed"](title + stats)
 }
@@ -272,7 +276,7 @@ function displayFailedTests(failed, config) {
   if (unshown) {
     const notice = `[…] {reset.red ${unshown}} unshown failed ${pluralize(
       "test",
-      unshown
+      unshown,
     )}\n{reset.grey increase verbose level to show more errors}`
     log.red.dim(notice)
     if (inBackend) log.hr()

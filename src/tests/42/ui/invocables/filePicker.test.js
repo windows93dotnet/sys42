@@ -6,7 +6,7 @@ const iframe = 1
 
 const { href } = new URL(
   "../../../../demos/ui/invocables/filePicker.demo.html?test=true",
-  import.meta.url
+  import.meta.url,
 )
 
 preload(href, { prefetch: true })
@@ -97,7 +97,7 @@ test.ui(async (t) => {
         t.is(t.puppet.$(".ui-dialog__agree", dialog).disabled, true)
         await t.puppet('[path="/style.css"]', dialog).click()
         t.is(t.puppet.$(".ui-dialog__agree", dialog).disabled, false)
-      }
+      },
     ),
     launch(
       t,
@@ -116,7 +116,7 @@ test.ui(async (t) => {
           .target('[path="/index.html"]', dialog)
           .keydown("Control")
           .click()
-      }
+      },
     ),
     launch(
       t,
@@ -131,7 +131,7 @@ test.ui(async (t) => {
       async (dialog) => {
         await t.puppet('[path="/style.css"]', dialog).dblclick()
         return false
-      }
+      },
     ),
   ])
 
@@ -162,7 +162,7 @@ test.ui(async (t) => {
       async (dialog) => {
         await t.puppet('[path="/style.css"]', dialog).click()
         await idle()
-      }
+      },
     ),
 
     launch(t, "#filePickerSaveContent", ".ui-dialog__close", { ok: false }),
@@ -181,7 +181,7 @@ test.ui(async (t) => {
       async (dialog) => {
         await t.sleep(100) // TODO: remove this
         t.is(dialog.querySelector('[name$="/name"]').value, "hello.txt")
-      }
+      },
     )
       .then(async () => {
         t.is(await fs.readText("/hello.txt"), "hello world")

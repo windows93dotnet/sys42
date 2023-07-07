@@ -27,7 +27,7 @@ export function decodeCodePointsArray(codePoints) {
   let i = 0
   while (i < len) {
     res += String.fromCharCode(
-      ...codePoints.slice(i, (i += MAX_ARGUMENTS_LENGTH))
+      ...codePoints.slice(i, (i += MAX_ARGUMENTS_LENGTH)),
     )
   }
 
@@ -69,7 +69,7 @@ export function decodeCBOR(data, tagger = (val) => val, simpleValue = noop) {
 
     tempDataView.setUint32(
       0,
-      (sign << 16) | (exponent << 13) | (fraction << 13)
+      (sign << 16) | (exponent << 13) | (fraction << 13),
     )
     return tempDataView.getFloat32(0)
   }

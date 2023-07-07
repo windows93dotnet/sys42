@@ -124,7 +124,7 @@ const makePattern = (pattern) => {
           ? (glob ?? "") + (filter ?? "")
           : makePlaceholder(rules.push([glob, filter]) - 1)
       }`
-    }
+    },
   )
 
   const parsedPattern = parsePath(pattern)
@@ -143,7 +143,7 @@ const makePattern = (pattern) => {
         fragments[key].push(replacer)
 
         parsedPattern[key] = parsedPattern[key].slice(
-          indexOf + placeholder.length
+          indexOf + placeholder.length,
         )
       }
     })

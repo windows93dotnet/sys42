@@ -98,7 +98,7 @@ export default class RandomCheck {
       throw new AssertionError(
         `${fails.length + 1}/${config.trials} generated check failed`,
         undefined,
-        { check }
+        { check },
       )
     }
   }

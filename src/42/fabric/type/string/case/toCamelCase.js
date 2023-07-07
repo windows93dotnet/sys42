@@ -6,14 +6,14 @@ export const toCamelCase = (str, ignoreAcronyms) =>
     ? splitWord((x, i) =>
         i > 0
           ? x.slice(0, 1).toUpperCase() + x.slice(1).toLowerCase()
-          : x.toLowerCase()
+          : x.toLowerCase(),
       )(str)
     : splitWord((x, i) =>
         isUpperCase(x)
           ? x
           : i > 0
           ? x.slice(0, 1).toUpperCase() + x.slice(1).toLowerCase()
-          : x.toLowerCase()
+          : x.toLowerCase(),
       )(str)
 
 export default toCamelCase

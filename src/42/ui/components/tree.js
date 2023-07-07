@@ -190,7 +190,7 @@ export class Tree extends Component {
                   aria: {
                     expanded: "{{items ? expanded ?? false : undefined}}",
                   },
-                }
+                },
               ),
               {
                 if: "{{postlabel}}",
@@ -233,7 +233,7 @@ export class Tree extends Component {
               key: "{{selectionKey}}",
               selection: "{{selection}}",
             },
-            selectable
+            selectable,
           )
         : false,
       content: {

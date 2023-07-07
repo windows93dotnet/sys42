@@ -38,7 +38,7 @@ export default async function testRunner(testFiles, options) {
     testFiles.map((url) => {
       url = new URL(url, location.href)
       return import(url)
-    })
+    }),
   )
 
   await sbs.run(config.runner)

@@ -77,7 +77,7 @@ const makePuppet = () => {
         data.order.push(async (target) => {
           autoCleanup(data)
           data.pendingKeys.set(mark(init), () =>
-            simulate(target, "keyup", init)
+            simulate(target, "keyup", init),
           )
           simulate(target, "keydown", init)
         })
@@ -94,7 +94,7 @@ const makePuppet = () => {
                 autoCleanup(data)
                 simulate(target, "keydown", init)
                 data.pendingKeys.delete(mark(init))
-              }
+              },
         )
       },
 
@@ -103,7 +103,7 @@ const makePuppet = () => {
         data.order.push(async (target) => {
           autoCleanup(data)
           data.pendingKeys.set(mark(init), () =>
-            simulate(target, "keyup", init)
+            simulate(target, "keyup", init),
           )
           simulate(target, "keydown", init)
           await nextCycle()
@@ -238,7 +238,7 @@ const makePuppet = () => {
     function ({ data }, target, options) {
       data.order.push({ target, options })
       return this
-    }
+    },
   )
 
   instance.$ = (...args) => $.query(...args)

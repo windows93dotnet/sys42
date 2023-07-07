@@ -6,7 +6,7 @@ export default function addStack(err, stack, { prepend } = {}) {
     prepend === true
       ? err.stack.replace(
           /^[^\n]*?\n/,
-          "$&" + stack.replace(/^[^\n]*?\n/, "").trim() + "\n"
+          "$&" + stack.replace(/^[^\n]*?\n/, "").trim() + "\n",
         )
       : stack.replace(/^[^\n]*?\n/, err.stack + "\n")
   return err

@@ -94,8 +94,8 @@ test.ui.flaky("popup behavior", async (t, { decay, dest, pickValues }) => {
           cnt: 0,
         },
       },
-      { id: "popup-demo", trusted: true }
-    )
+      { id: "popup-demo", trusted: true },
+    ),
   )
 
   t.puppet("#btnDialogTop").click().run()
@@ -141,7 +141,7 @@ test.ui.flaky("popup behavior", async (t, { decay, dest, pickValues }) => {
     t.is(
       btn.getAttribute("aria-expanded"),
       "false",
-      "popup button should be closed"
+      "popup button should be closed",
     )
 
     await puppet(btn).dispatch("pointerdown").when("uipopupopen")
@@ -149,7 +149,7 @@ test.ui.flaky("popup behavior", async (t, { decay, dest, pickValues }) => {
     t.is(
       btn.getAttribute("aria-expanded"),
       "true",
-      "popup button should be open"
+      "popup button should be open",
     )
 
     let incr = document.querySelector(sel)
@@ -195,7 +195,7 @@ test.ui.flaky("popup behavior", async (t, { decay, dest, pickValues }) => {
       t.is(
         btn.getAttribute("aria-expanded"),
         "true",
-        "popup button should be open"
+        "popup button should be open",
       )
 
       await puppet(options.incr).click()
@@ -222,7 +222,7 @@ test.ui.flaky("popup behavior", async (t, { decay, dest, pickValues }) => {
     t.is(
       btn.getAttribute("aria-expanded"),
       "false",
-      "popup button should be closed"
+      "popup button should be closed",
     )
   }
 

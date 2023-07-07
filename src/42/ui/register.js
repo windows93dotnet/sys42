@@ -13,7 +13,7 @@ export default function register(stage, loc, fn) {
     scopes = loc.scopes
     renderer = async (changed) => {
       stage.waitlistPending.push(
-        loc(stage.reactive.state).then((val) => fn(val, changed))
+        loc(stage.reactive.state).then((val) => fn(val, changed)),
       )
     }
   } else {

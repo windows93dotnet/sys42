@@ -176,7 +176,7 @@ test("Buffer.writeBigInt64", (t) => {
     new Uint8Array([
       0, 0, 0, 0,  0, 0, 0, 42, //
       0, 0x1f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    ]).buffer
+    ]).buffer,
   )
 
   buf.writeBigInt64(9_007_199_254_740_992n)
@@ -189,7 +189,7 @@ test("Buffer.writeBigInt64", (t) => {
       0, 0, 0, 0,  0, 0, 0, 42, //
       0, 0x1f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
       0, 0x20, 0, 0, 0, 0, 0, 0,
-    ]).buffer
+    ]).buffer,
   )
 
   t.is(buf.readBigInt64(), 42n)
@@ -198,6 +198,6 @@ test("Buffer.writeBigInt64", (t) => {
 
   t.eq(
     buf.toBigInt64Array(),
-    new BigInt64Array([42n, 9_007_199_254_740_991n, 9_007_199_254_740_992n])
+    new BigInt64Array([42n, 9_007_199_254_740_991n, 9_007_199_254_740_992n]),
   )
 })

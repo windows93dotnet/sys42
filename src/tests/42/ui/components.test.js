@@ -186,7 +186,7 @@ test.tasks(
 
         t.is(
           app.el.innerHTML,
-          '<ui-t-props bar="3"><!--[rendered]-->foo: 1, bar: 3</ui-t-props>'
+          '<ui-t-props bar="3"><!--[rendered]-->foo: 1, bar: 3</ui-t-props>',
         )
 
         el.bar = 4
@@ -194,7 +194,7 @@ test.tasks(
 
         t.is(
           app.el.innerHTML,
-          '<ui-t-props bar="4"><!--[rendered]-->foo: 1, bar: 4</ui-t-props>'
+          '<ui-t-props bar="4"><!--[rendered]-->foo: 1, bar: 4</ui-t-props>',
         )
 
         el.setAttribute("bar", "5")
@@ -202,7 +202,7 @@ test.tasks(
 
         t.is(
           app.el.innerHTML,
-          '<ui-t-props bar="5"><!--[rendered]-->foo: 1, bar: 5</ui-t-props>'
+          '<ui-t-props bar="5"><!--[rendered]-->foo: 1, bar: 5</ui-t-props>',
         )
       },
     }),
@@ -238,7 +238,7 @@ test.tasks(
         t.is(el.bar, 3)
         t.is(
           app.el.innerHTML,
-          '<ui-t-props-state bar="3"><!--[rendered]-->foo: 1, bar: 3</ui-t-props-state>'
+          '<ui-t-props-state bar="3"><!--[rendered]-->foo: 1, bar: 3</ui-t-props-state>',
         )
 
         el.bar = 4
@@ -247,7 +247,7 @@ test.tasks(
 
         t.is(
           app.el.innerHTML,
-          '<ui-t-props-state bar="4"><!--[rendered]-->foo: 1, bar: 4</ui-t-props-state>'
+          '<ui-t-props-state bar="4"><!--[rendered]-->foo: 1, bar: 4</ui-t-props-state>',
         )
 
         el.setAttribute("bar", "5")
@@ -256,7 +256,7 @@ test.tasks(
 
         t.is(
           app.el.innerHTML,
-          '<ui-t-props-state bar="5"><!--[rendered]-->foo: 1, bar: 5</ui-t-props-state>'
+          '<ui-t-props-state bar="5"><!--[rendered]-->foo: 1, bar: 5</ui-t-props-state>',
         )
       },
     }),
@@ -341,7 +341,7 @@ test.tasks(
 
         t.match(
           app.el.innerHTML,
-          /<ui-t-css style="--foo:\s*red;"><!--\[rendered]--><\/ui-t-css>/
+          /<ui-t-css style="--foo:\s*red;"><!--\[rendered]--><\/ui-t-css>/,
         )
 
         el.foo = undefined
@@ -349,7 +349,7 @@ test.tasks(
 
         t.is(
           app.el.innerHTML,
-          '<ui-t-css style=""><!--[rendered]--></ui-t-css>'
+          '<ui-t-css style=""><!--[rendered]--></ui-t-css>',
         )
 
         el.foo = "blue"
@@ -357,7 +357,7 @@ test.tasks(
 
         t.match(
           app.el.innerHTML,
-          /<ui-t-css style="--foo:\s*blue;"><!--\[rendered]--><\/ui-t-css>/
+          /<ui-t-css style="--foo:\s*blue;"><!--\[rendered]--><\/ui-t-css>/,
         )
 
         el.foo = undefined
@@ -365,7 +365,7 @@ test.tasks(
 
         t.is(
           app.el.innerHTML,
-          '<ui-t-css style=""><!--[rendered]--></ui-t-css>'
+          '<ui-t-css style=""><!--[rendered]--></ui-t-css>',
         )
       },
     }),
@@ -391,7 +391,7 @@ test.tasks(
 
         t.match(
           app.el.innerHTML,
-          /<ui-t-css-state style="--foo:\s*red;"><!--\[rendered]--><\/ui-t-css-state>/
+          /<ui-t-css-state style="--foo:\s*red;"><!--\[rendered]--><\/ui-t-css-state>/,
         )
 
         app.reactive.set("foo", undefined)
@@ -399,7 +399,7 @@ test.tasks(
 
         t.is(
           app.el.innerHTML,
-          '<ui-t-css-state style=""><!--[rendered]--></ui-t-css-state>'
+          '<ui-t-css-state style=""><!--[rendered]--></ui-t-css-state>',
         )
 
         app.reactive.set("foo", "blue")
@@ -407,7 +407,7 @@ test.tasks(
 
         t.match(
           app.el.innerHTML,
-          /<ui-t-css-state style="--foo:\s*blue;"><!--\[rendered]--><\/ui-t-css-state>/
+          /<ui-t-css-state style="--foo:\s*blue;"><!--\[rendered]--><\/ui-t-css-state>/,
         )
 
         app.reactive.delete("foo")
@@ -415,7 +415,7 @@ test.tasks(
 
         t.is(
           app.el.innerHTML,
-          '<ui-t-css-state style=""><!--[rendered]--></ui-t-css-state>'
+          '<ui-t-css-state style=""><!--[rendered]--></ui-t-css-state>',
         )
       },
     }),
@@ -453,7 +453,7 @@ test.tasks(
 
   (
     test,
-    { title, defer, connect, component, args, html, plan, check, expected }
+    { title, defer, connect, component, args, html, plan, check, expected },
   ) => {
     test(title ?? expected ?? plan, async (t) => {
       t.timeout(1000)
@@ -482,7 +482,7 @@ test.tasks(
         await Promise.all([defer, t.utils.nextCycle()])
       }
     })
-  }
+  },
 )
 
 test("component child", async (t) => {
@@ -497,7 +497,7 @@ test("component child", async (t) => {
         },
       },
       state: { derp: 5 },
-    })
+    }),
   )
 
   t.eq(app.reactive.data, {
@@ -507,7 +507,7 @@ test("component child", async (t) => {
 
   t.is(
     app.el.innerHTML,
-    '<ui-t-props bar="4"><!--[rendered]--><em>derp:5, bar:4</em></ui-t-props>'
+    '<ui-t-props bar="4"><!--[rendered]--><em>derp:5, bar:4</em></ui-t-props>',
   )
 })
 
@@ -551,7 +551,7 @@ test("state", async (t) => {
         tag: "ui-t-state",
         x: "foo",
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "x:foo-")
@@ -575,7 +575,7 @@ test("state", "template", async (t) => {
       state: {
         y: "foo",
       },
-    })
+    }),
   )
 
   t.eq(app.reactive.data, {
@@ -605,7 +605,7 @@ test("state", "template", "not a ref", async (t) => {
       state: {
         y: "foo",
       },
-    })
+    }),
   )
 
   t.eq(app.reactive.data, {
@@ -635,7 +635,7 @@ test("state", "multiple", async (t) => {
           x: "bar",
         },
       ],
-    })
+    }),
   )
 
   t.is(app.el.textContent, "x:foo-x:bar-")
@@ -663,7 +663,7 @@ test("state", "scopped", async (t) => {
           x: "bar",
         },
       ],
-    })
+    }),
   )
 
   t.is(app.el.textContent, "x:foo-x:bar-")
@@ -687,7 +687,7 @@ test("state", "fixed", async (t) => {
           { foo: "b" },
         ],
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "x:fixed-x:fixed-")
@@ -718,7 +718,7 @@ Component.define(
     render({ content }) {
       return content
     }
-  }
+  },
 )
 
 Component.define(
@@ -730,7 +730,7 @@ Component.define(
         two: { default: 2, reflect: true },
       },
     }
-  }
+  },
 )
 
 test("custom content", async (t) => {
@@ -740,12 +740,12 @@ test("custom content", async (t) => {
         tag: "ui-one",
         content: "hi {{bar}}",
       },
-    })
+    }),
   )
 
   t.is(
     app.el.innerHTML,
-    '<ui-one bar="1" one="1"><!--[rendered]-->hi 1</ui-one>'
+    '<ui-one bar="1" one="1"><!--[rendered]-->hi 1</ui-one>',
   )
 })
 
@@ -762,12 +762,12 @@ test("custom content", 2, async (t) => {
         bar: 5,
         root: 0,
       },
-    })
+    }),
   )
 
   t.is(
     app.el.innerHTML,
-    '<ui-one one="1" bar="5"><!--[rendered]-->hi 5, root: 0</ui-one>'
+    '<ui-one one="1" bar="5"><!--[rendered]-->hi 5, root: 0</ui-one>',
   )
 })
 
@@ -794,7 +794,7 @@ bar: {{bar}}
         root: 0,
         bar: -1,
       },
-    })
+    }),
   )
 
   t.eq(app.reactive.data, {
@@ -827,7 +827,7 @@ bar: 2
 ../bar: 1
 ../../bar: -1
 /bar: -1
-</ui-two></ui-one>`
+</ui-two></ui-one>`,
   )
 })
 
@@ -861,7 +861,7 @@ test("state", "dynamic", "push", async (t) => {
           { foo: "a" }, //
         ],
       },
-    })
+    }),
   )
 
   t.eq(Object.keys(app.stage.renderers), [
@@ -916,7 +916,7 @@ test("state", "dynamic", "pop", async (t) => {
           { foo: "b" }, //
         ],
       },
-    })
+    }),
   )
 
   t.eq(Object.keys(app.stage.renderers), [
@@ -971,7 +971,7 @@ test("state", "dynamic", "textContent", async (t) => {
           { foo: "b" },
         ],
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "x:a-x:b-")
@@ -1020,7 +1020,7 @@ test("props", 1, async (t) => {
     ui(t.utils.dest(), {
       content: { tag: "ui-a" },
       state: { foo: 1 },
-    })
+    }),
   )
 
   t.eq(app.reactive.data, {
@@ -1051,7 +1051,7 @@ test("props", 2, async (t) => {
     ui(t.utils.dest(), {
       content: { tag: "ui-a", bar: 0 },
       state: { foo: 1 },
-    })
+    }),
   )
 
   t.eq(app.reactive.data, {
@@ -1076,7 +1076,7 @@ test("props", 3, async (t) => {
         { tag: "ui-a#a2", bar: -2 },
       ],
       state: { foo: 1 },
-    })
+    }),
   )
 
   t.eq(app.reactive.data, {
@@ -1093,7 +1093,7 @@ test("props", 3, async (t) => {
     app.el.innerHTML,
     `\
 <ui-a id="a1" bar="-1"><!--[rendered]-->foo: 1, bar: -1</ui-a>
-<ui-a id="a2" bar="-2"><!--[rendered]-->foo: 1, bar: -2</ui-a>`
+<ui-a id="a2" bar="-2"><!--[rendered]-->foo: 1, bar: -2</ui-a>`,
   )
 
   app.el.querySelector("#a1").bar = -3
@@ -1103,7 +1103,7 @@ test("props", 3, async (t) => {
     app.el.innerHTML,
     `\
 <ui-a id="a1" bar="-3"><!--[rendered]-->foo: 1, bar: -3</ui-a>
-<ui-a id="a2" bar="-2"><!--[rendered]-->foo: 1, bar: -2</ui-a>`
+<ui-a id="a2" bar="-2"><!--[rendered]-->foo: 1, bar: -2</ui-a>`,
   )
 
   app.state.foo = 2
@@ -1113,7 +1113,7 @@ test("props", 3, async (t) => {
     app.el.innerHTML,
     `\
 <ui-a id="a1" bar="-3"><!--[rendered]-->foo: 2, bar: -3</ui-a>
-<ui-a id="a2" bar="-2"><!--[rendered]-->foo: 2, bar: -2</ui-a>`
+<ui-a id="a2" bar="-2"><!--[rendered]-->foo: 2, bar: -2</ui-a>`,
   )
 })
 
@@ -1122,7 +1122,7 @@ test("props", 4, async (t) => {
     ui(t.utils.dest(), {
       content: { tag: "ui-a", bar: "{{foo}}" },
       state: { foo: "a" },
-    })
+    }),
   )
 
   t.eq(app.reactive.data, {
@@ -1163,7 +1163,7 @@ test.skip("props", 5, async (t) => {
     ui(t.utils.dest(), {
       content: { tag: "ui-a", bar: "{{foo |> upperCase(^^)}}" },
       state: { foo: "a" },
-    })
+    }),
   )
 
   t.eq(app.reactive.data, {
@@ -1219,7 +1219,7 @@ test("props state", 1, async (t) => {
     ui(t.utils.dest(), {
       content: { tag: "ui-b" },
       state: { foo: 1 },
-    })
+    }),
   )
 
   t.eq(app.reactive.data, {
@@ -1250,7 +1250,7 @@ test("props state", 2, async (t) => {
     ui(t.utils.dest(), {
       content: { tag: "ui-b", bar: 0 },
       state: { foo: 1 },
-    })
+    }),
   )
 
   t.eq(app.reactive.data, {
@@ -1285,7 +1285,7 @@ test("scopped", 1, async (t) => {
         { scope: "two", content: { tag: "ui-a", bar: 1 } },
       ],
       state: { foo: 1 },
-    })
+    }),
   )
 
   t.eq(app.reactive.data, {
@@ -1302,7 +1302,7 @@ test("scopped", 1, async (t) => {
     app.el.innerHTML,
     `\
 <ui-a bar="0"><!--[rendered]-->foo: , bar: 0</ui-a>
-<ui-a bar="1"><!--[rendered]-->foo: , bar: 1</ui-a>`
+<ui-a bar="1"><!--[rendered]-->foo: , bar: 1</ui-a>`,
   )
 })
 
@@ -1323,7 +1323,7 @@ test("scopped", 2, async (t) => {
         { scope: "two", content: { tag: "ui-a", bar: 3 } },
       ],
       state: { foo: 1, one: { foo: 2 } },
-    })
+    }),
   )
 
   t.eq(app.reactive.data, {
@@ -1349,7 +1349,7 @@ test("scopped", 2, async (t) => {
 <ui-a bar="2"><!--[rendered]-->foo: 2, bar: 2</ui-a>
 <ui-a bar="1"><!--[rendered]-->foo: 2, bar: 1</ui-a>
 <ui-a bar="1"><!--[rendered]-->foo: 2, bar: 1</ui-a>
-<ui-a bar="3"><!--[rendered]-->foo: , bar: 3</ui-a>`
+<ui-a bar="3"><!--[rendered]-->foo: , bar: 3</ui-a>`,
   )
 
   app.el.querySelector("ui-a:last-of-type").destroy()
@@ -1375,7 +1375,7 @@ test("scopped", 2, async (t) => {
 <ui-a bar="0"><!--[rendered]-->foo: 2, bar: 0</ui-a>
 <ui-a bar="2"><!--[rendered]-->foo: 2, bar: 2</ui-a>
 <ui-a bar="1"><!--[rendered]-->foo: 2, bar: 1</ui-a>
-<ui-a bar="1"><!--[rendered]-->foo: 2, bar: 1</ui-a>\n`
+<ui-a bar="1"><!--[rendered]-->foo: 2, bar: 1</ui-a>\n`,
   )
 })
 
@@ -1396,7 +1396,7 @@ test("array", 1, async (t) => {
         ],
       },
       state: { arr: ["a", "b"], foo: 1 },
-    })
+    }),
   )
 
   t.is(
@@ -1404,7 +1404,7 @@ test("array", 1, async (t) => {
     `\
 <!--[each]-->
 <ui-a bar="a"><!--[rendered]-->foo: , bar: a</ui-a><!--[#]-->
-<ui-a bar="b"><!--[rendered]-->foo: , bar: b</ui-a><!--[#]-->`
+<ui-a bar="b"><!--[rendered]-->foo: , bar: b</ui-a><!--[#]-->`,
   )
 
   t.eq(app.reactive.data, {
@@ -1427,7 +1427,7 @@ test("array", 1, async (t) => {
 <!--[each]-->
 <ui-a bar="a"><!--[rendered]-->foo: , bar: a</ui-a><!--[#]-->
 <ui-a bar="b"><!--[rendered]-->foo: , bar: b</ui-a><!--[#]-->
-<ui-a bar="c"><!--[rendered]-->foo: , bar: c</ui-a><!--[#]-->`
+<ui-a bar="c"><!--[rendered]-->foo: , bar: c</ui-a><!--[#]-->`,
   )
 
   t.eq(app.reactive.data, {
@@ -1451,7 +1451,7 @@ test("array", 1, async (t) => {
 <!--[each]-->
 <ui-a bar="A"><!--[rendered]-->foo: , bar: A</ui-a><!--[#]-->
 <ui-a bar="b"><!--[rendered]-->foo: , bar: b</ui-a><!--[#]-->
-<ui-a bar="c"><!--[rendered]-->foo: , bar: c</ui-a><!--[#]-->`
+<ui-a bar="c"><!--[rendered]-->foo: , bar: c</ui-a><!--[#]-->`,
   )
 
   t.eq(app.reactive.data, {
@@ -1483,7 +1483,7 @@ test("array", 1, async (t) => {
     app.el.innerHTML,
     `\
 <!--[each]-->
-<ui-a bar="A"><!--[rendered]-->foo: , bar: A</ui-a><!--[#]-->`
+<ui-a bar="A"><!--[rendered]-->foo: , bar: A</ui-a><!--[#]-->`,
   )
 
   t.eq(app.reactive.data, {
@@ -1506,7 +1506,7 @@ test("array", 1, async (t) => {
     `\
 <!--[each]-->
 <ui-a bar="A"><!--[rendered]-->foo: , bar: A</ui-a><!--[#]-->
-<ui-a bar="B"><!--[rendered]-->foo: , bar: B</ui-a><!--[#]-->`
+<ui-a bar="B"><!--[rendered]-->foo: , bar: B</ui-a><!--[#]-->`,
   )
 
   t.eq(app.reactive.data, {
@@ -1535,7 +1535,7 @@ test("array", 2, async (t) => {
         ],
       },
       state: { arr: ["a", "b"], foo: 1 },
-    })
+    }),
   )
 
   t.is(
@@ -1543,7 +1543,7 @@ test("array", 2, async (t) => {
     `\
 <!--[each]-->
 <ui-a bar="0 - a"><!--[rendered]-->foo: , bar: 0 - a</ui-a><!--[#]-->
-<ui-a bar="1 - b"><!--[rendered]-->foo: , bar: 1 - b</ui-a><!--[#]-->`
+<ui-a bar="1 - b"><!--[rendered]-->foo: , bar: 1 - b</ui-a><!--[#]-->`,
   )
 
   t.eq(app.reactive.data, {
@@ -1586,7 +1586,7 @@ test("@index", async (t) => {
       state: {
         arr: ["a", "b"],
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "0:a, 1:b")
@@ -1628,7 +1628,7 @@ Component.define(
     getList(arr) {
       return JSON.parse(arr)
     }
-  }
+  },
 )
 
 test("@index", "computed", async (t) => {
@@ -1638,7 +1638,7 @@ test("@index", "computed", async (t) => {
         tag: "ui-t-index-computed-array",
         arr: '["a", "b"]',
       },
-    })
+    }),
   )
 
   const el = app.el.querySelector("ui-t-index-computed-array")
@@ -1710,7 +1710,7 @@ test("string array", async (t) => {
       state: {
         arr: ["a", "b"],
       },
-    })
+    }),
   )
 
   await testStringArray(t, app)
@@ -1763,7 +1763,7 @@ test("string array", "using transfers", async (t) => {
       state: {
         arr: ["a", "b"],
       },
-    })
+    }),
   )
 
   await testStringArrayWithTransfers(t, app)
@@ -1783,7 +1783,7 @@ test("string array", "using transfers and async state", async (t) => {
           arr: ["a", "b"],
         }
       },
-    })
+    }),
   )
 
   await testStringArrayWithTransfers(t, app)
@@ -1821,7 +1821,7 @@ test("computed", async (t) => {
         cnt++
         return formated.split(delimiter)
       }
-    }
+    },
   )
 
   const app = await t.utils.decay(
@@ -1830,7 +1830,7 @@ test("computed", async (t) => {
         tag: "ui-t-computed",
         formated: "FOO/BAR",
       },
-    })
+    }),
   )
 
   t.eq(Object.keys(app.stage.renderers), [
@@ -1849,7 +1849,7 @@ test("computed", async (t) => {
   })
   t.is(
     app.el.innerHTML,
-    "<ui-t-computed><!--[rendered]-->foo: FOO, bar: BAR</ui-t-computed>"
+    "<ui-t-computed><!--[rendered]-->foo: FOO, bar: BAR</ui-t-computed>",
   )
 
   const updates = [
@@ -1865,7 +1865,7 @@ test("computed", async (t) => {
 
   t.is(
     app.el.innerHTML,
-    "<ui-t-computed><!--[rendered]-->foo: HELLO, bar: WORLD</ui-t-computed>"
+    "<ui-t-computed><!--[rendered]-->foo: HELLO, bar: WORLD</ui-t-computed>",
   )
   t.is(cnt, 2)
   t.eq(t.utils.omit(app.reactive.data, ["$computed"]), {
@@ -1905,7 +1905,7 @@ test("computed", "from prop with state:true", async (t) => {
         cnt++
         return formated.split(delimiter)
       }
-    }
+    },
   )
 
   const app = await t.utils.decay(
@@ -1914,7 +1914,7 @@ test("computed", "from prop with state:true", async (t) => {
         tag: "ui-t-compu-sta",
         formated: "FOO/BAR",
       },
-    })
+    }),
   )
 
   t.eq(Object.keys(app.stage.renderers), [
@@ -1929,7 +1929,7 @@ test("computed", "from prop with state:true", async (t) => {
   })
   t.is(
     app.el.innerHTML,
-    "<ui-t-compu-sta><!--[rendered]-->foo: FOO, bar: BAR</ui-t-compu-sta>"
+    "<ui-t-compu-sta><!--[rendered]-->foo: FOO, bar: BAR</ui-t-compu-sta>",
   )
 
   const updates = ["/formated", "/$ui/t-compu-sta/root/parsed"]
@@ -1949,7 +1949,7 @@ test("computed", "from prop with state:true", async (t) => {
   t.is(cnt, 2)
   t.is(
     app.el.innerHTML,
-    "<ui-t-compu-sta><!--[rendered]-->foo: HELLO, bar: WORLD</ui-t-compu-sta>"
+    "<ui-t-compu-sta><!--[rendered]-->foo: HELLO, bar: WORLD</ui-t-compu-sta>",
   )
 })
 
@@ -1982,7 +1982,7 @@ test("computed", "computed prop", async (t) => {
         cnt++
         return formated.split(delimiter)
       }
-    }
+    },
   )
 
   const app = await t.utils.decay(
@@ -1991,7 +1991,7 @@ test("computed", "computed prop", async (t) => {
         tag: "ui-t-compu-prop",
         formated: "FOO/BAR",
       },
-    })
+    }),
   )
 
   const el = app.el.querySelector("ui-t-compu-prop")
@@ -2013,7 +2013,7 @@ test("computed", "computed prop", async (t) => {
 
   t.is(
     app.el.innerHTML,
-    "<ui-t-compu-prop><!--[rendered]-->foo: FOO, bar: BAR</ui-t-compu-prop>"
+    "<ui-t-compu-prop><!--[rendered]-->foo: FOO, bar: BAR</ui-t-compu-prop>",
   )
 
   const updates = [
@@ -2029,7 +2029,7 @@ test("computed", "computed prop", async (t) => {
 
   t.is(
     app.el.innerHTML,
-    "<ui-t-compu-prop><!--[rendered]-->foo: HELLO, bar: WORLD</ui-t-compu-prop>"
+    "<ui-t-compu-prop><!--[rendered]-->foo: HELLO, bar: WORLD</ui-t-compu-prop>",
   )
   t.is(cnt, 2)
   t.eq(app.reactive.data, {
@@ -2063,7 +2063,7 @@ Component.define(
       },
       content: "{{obj.a}} - {{obj/b}}",
     }
-  }
+  },
 )
 
 test("obj", async (t) => {
@@ -2072,7 +2072,7 @@ test("obj", async (t) => {
       content: {
         tag: "ui-t-obj-prop",
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "1 - 2")
@@ -2094,7 +2094,7 @@ Component.define(
         a: 1,
       },
     }
-  }
+  },
 )
 
 test("scope chain", async (t) => {
@@ -2108,7 +2108,7 @@ test("scope chain", async (t) => {
         tag: "em",
         content: "a: {{a}} b: {{b}}",
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "a: 1 b: 2")
@@ -2150,12 +2150,12 @@ Component.define(
     render({ content }) {
       return content
     }
-  }
+  },
 )
 
 test("find component actions", async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), { tag: "ui-t-parent-cpn" })
+    ui(t.utils.dest(true), { tag: "ui-t-parent-cpn" }),
   )
 
   t.is(app.el.textContent, "parent-foo")
@@ -2166,7 +2166,7 @@ test("find component actions", "child class", async (t) => {
     ui(t.utils.dest(true), {
       tag: "ui-t-child-cpn",
       content: "{{foo()}} - {{bar()}}",
-    })
+    }),
   )
 
   t.is(app.el.textContent, "child-foo - parent-bar")
@@ -2177,7 +2177,7 @@ test("find component actions", "always ignore 'render'", async (t) => {
     ui(t.utils.dest(true), {
       tag: "ui-t-child-cpn",
       content: "{{render('hello')}}",
-    })
+    }),
   )
 
   t.is(app.el.textContent, "hello")
@@ -2208,7 +2208,7 @@ test("find component actions", "ignore base class methods", async (t) => {
       ui(t.utils.dest(true), {
         tag: "ui-t-child-cpn",
         content: "{{init()}}",
-      })
+      }),
     )
   } catch (err) {
     t.is(err.message, expected1)
@@ -2225,7 +2225,7 @@ Component.define(
       tag: "ui-t-actions-above-root",
       computed: { y: "y" },
     }
-  }
+  },
 )
 
 test("actions", "above root path", async (t) => {
@@ -2240,7 +2240,7 @@ test("actions", "above root path", async (t) => {
           e.stopImmediatePropagation()
           t.is(
             e.message,
-            "Action path is going above root by 3 level(s): ../../../../x"
+            "Action path is going above root by 3 level(s): ../../../../x",
           )
           resolve()
         }
@@ -2260,7 +2260,7 @@ test("actions", "above root path", async (t) => {
           this.state.from = ["x", "ui"]
         },
       },
-    })
+    }),
   )
 
   await promise
@@ -2300,7 +2300,7 @@ async function makeSuite(name, plan) {
           this.stage.state.args = args
         },
       }
-    }
+    },
   )
 
   Component.define(
@@ -2318,7 +2318,7 @@ async function makeSuite(name, plan) {
           this.stage.state.args = args
         },
       }
-    }
+    },
   )
 
   Component.define(
@@ -2336,7 +2336,7 @@ async function makeSuite(name, plan) {
           this.stage.state.args = args
         },
       }
-    }
+    },
   )
 
   const actions = {
@@ -2415,7 +2415,7 @@ async function makeSuite(name, plan) {
 
   async function makeApp() {
     app = await test.utils.decay(
-      ui(test.utils.dest({ connect: true }), { content, actions })
+      ui(test.utils.dest({ connect: true }), { content, actions }),
     )
   }
 
@@ -2454,7 +2454,7 @@ Component.define(
     foo(e) {
       this.text = e?.type
     }
-  }
+  },
 )
 
 test("component events inside scope", async (t) => {
@@ -2464,7 +2464,7 @@ test("component events inside scope", async (t) => {
         scope: "bar",
         tag: "ui-t-event-in-scope",
       },
-    })
+    }),
   )
 
   const cpn = app.el.querySelector("ui-t-event-in-scope")

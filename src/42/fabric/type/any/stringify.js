@@ -15,7 +15,7 @@ import {
 } from "../../json/joinJSONPointer.js"
 
 const IGNORE_UNICODE = ["↖", "…", "└", "├", "─", "│"].map(
-  (x) => `\\${escapeUnicode(x)}`
+  (x) => `\\${escapeUnicode(x)}`,
 )
 const IGNORE_UNICODE_REGEX = new RegExp(`(${IGNORE_UNICODE.join("|")})`, "g")
 const TRAILING_WHITESPACES_REGEX = /([\t ]*)\n/gm
@@ -89,7 +89,7 @@ const PRESETS = {
       res
         .replace(IGNORE_UNICODE_REGEX, unescapeUnicode)
         .replace(TRAILING_WHITESPACES_REGEX, (_, wp) =>
-          wp ? `${wp}␊\n` : "\n"
+          wp ? `${wp}␊\n` : "\n",
         ),
   },
 }
@@ -297,7 +297,7 @@ class Stringifier {
         return `${oQ}${escapeString(
           lines.slice(0, this.config.maxLines).join("\n"),
           this.config,
-          cQ
+          cQ,
         )}${cQ} /* […] ${limitMessage(unshown, "line")} */`
       }
     }
@@ -307,7 +307,7 @@ class Stringifier {
     return s.length > this.config.maxChars
       ? `${oQ}${s.slice(0, this.config.maxChars)}${cQ} /* […] ${limitMessage(
           unshown,
-          "char"
+          "char",
         )} */`
       : `${oQ}${s}${cQ}`
   }
@@ -333,7 +333,7 @@ class Stringifier {
     const keys = Object.keys(val)
 
     const currentIndent = this.config.indentSpace.repeat(
-      keys.length > 0 ? depth : depth - 1
+      keys.length > 0 ? depth : depth - 1,
     )
 
     let fnBody = replaceIndentation(source, currentIndent)
@@ -459,7 +459,7 @@ ${indentSpace.repeat(depth - 1)})`
 
     const notDisplayed = limitMessage(
       keys.length - Object.keys(el).length,
-      "prop"
+      "prop",
     )
 
     let out = ""
@@ -467,7 +467,7 @@ ${indentSpace.repeat(depth - 1)})`
       const childNodesLen = val.childNodes.length
       out += `/* ${tag} > ${childNodesLen} ${pluralize(
         "childNode",
-        childNodesLen
+        childNodesLen,
       )} | ${notDisplayed} */ `
     }
 
@@ -493,7 +493,7 @@ ${indentSpace.repeat(depth - 1)})`
                 id,
                 res.byteLength ? new Uint8Array(res) : EMPTY_BLOB,
                 depth,
-              ])
+              ]),
       )
     }
 
@@ -544,7 +544,7 @@ ${indentSpace.repeat(depth - 1)})`
           if (val && typeof val === "object") {
             this.visitedRefs.set(
               val,
-              this.joinPath([...segments, this.config.$defs, String(key)])
+              this.joinPath([...segments, this.config.$defs, String(key)]),
             )
           }
         }
@@ -774,7 +774,7 @@ const stringify = chainable(
         resolved.forEach(([uid, res, depth]) => {
           string = string.replace(
             uid,
-            res === EMPTY_BLOB ? "" : s2.walk(res, depth)
+            res === EMPTY_BLOB ? "" : s2.walk(res, depth),
           )
         })
         return s1.config.clean(string)
@@ -783,7 +783,7 @@ const stringify = chainable(
 
     const s = new Stringifier(options)
     return s.config.clean(s.walk(val))
-  }
+  },
 )
 
 export default stringify

@@ -81,7 +81,7 @@ export const test = chainable(
 
     if (typeof fn !== "function") {
       throw new TypeError(
-        `The last "test" argument must be a function. Received type ${typeof fn}`
+        `The last "test" argument must be a function. Received type ${typeof fn}`,
       )
     }
 
@@ -127,7 +127,7 @@ export const test = chainable(
         sbs.current.tests.push(test)
         const promise = inIframe
           ? sbs.root.currentTest.done.then(() =>
-              test.suite.runTest(test, { nested: true })
+              test.suite.runTest(test, { nested: true }),
             )
           : test.suite.runTest(test, { nested: true })
 
@@ -143,7 +143,7 @@ export const test = chainable(
         sbs.current.tests.push(test)
       }
     }
-  }
+  },
 )
 
 export const suite = chainable(
@@ -192,7 +192,7 @@ export const suite = chainable(
     }
 
     return suite
-  }
+  },
 )
 
 Object.defineProperty(suite, "title", {

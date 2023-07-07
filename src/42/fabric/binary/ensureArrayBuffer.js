@@ -8,7 +8,7 @@ export async function ensureArrayBuffer(val) {
 
   if (!buffer) {
     throw new TypeError(
-      `input must be a string, File, Blob, ArrayBuffer or TypedArray: ${typeof val}`
+      `input must be a string, File, Blob, ArrayBuffer or TypedArray: ${typeof val}`,
     )
   }
 

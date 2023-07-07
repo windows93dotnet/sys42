@@ -68,7 +68,7 @@ export default function render(plan, stage, options) {
           })
           loader.replaceWith(el)
           stage.scopeResolvers[stage.scope] = resolver
-        }
+        },
       )
 
       // animateFrom(loader, { height: "0", ms: 180, delay: 100 })
@@ -165,7 +165,7 @@ export default function render(plan, stage, options) {
 
   if (plan.picto?.start) {
     el.append(
-      renderComponent(create("ui-picto"), { value: plan.picto.start }, stage)
+      renderComponent(create("ui-picto"), { value: plan.picto.start }, stage),
     )
   }
 
@@ -178,14 +178,14 @@ export default function render(plan, stage, options) {
             el.nodeType === ELEMENT_NODE
               ? el.localName + (el.id ? `#${el.id}` : "")
               : undefined,
-        })
+        }),
       )
     }
   }
 
   if (plan.picto?.end) {
     el.append(
-      renderComponent(create("ui-picto"), { value: plan.picto.end }, stage)
+      renderComponent(create("ui-picto"), { value: plan.picto.end }, stage),
     )
   }
 

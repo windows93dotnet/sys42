@@ -491,9 +491,9 @@ test.tasks(
               http
                 .source(url)
                 .pipeThrough(stream.pipe.cut(321))
-                .pipeThrough(tarExtractPipe(options))
+                .pipeThrough(tarExtractPipe(options)),
             ),
-          throws
+          throws,
         )
       })
       return
@@ -506,13 +506,13 @@ test.tasks(
         http
           .source(url)
           .pipeThrough(stream.pipe.cut(321))
-          .pipeThrough(tarExtractPipe(options))
+          .pipeThrough(tarExtractPipe(options)),
       )
 
       if (files) {
         t.eq(
           await Promise.all(items.map(async ({ file }) => file.text())),
-          files
+          files,
         )
       }
 
@@ -520,12 +520,12 @@ test.tasks(
         if (Object.keys(headers[0]).length === 12) {
           t.eq(
             items.map((header) => ({ ...header })),
-            headers
+            headers,
           )
         } else {
           t.hasSubset(
             items.map((header) => ({ ...header })),
-            headers
+            headers,
           )
         }
       }
@@ -534,5 +534,5 @@ test.tasks(
 
       if (length !== undefined) t.is(items.length, length)
     })
-  }
+  },
 )

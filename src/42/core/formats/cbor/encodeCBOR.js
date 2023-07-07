@@ -127,7 +127,7 @@ export function encodeCBOR(value) {
             utf8data.push(
               0xe0 | (charCode >> 12),
               0x80 | ((charCode >> 6) & 0x3f),
-              0x80 | (charCode & 0x3f)
+              0x80 | (charCode & 0x3f),
             )
           } else {
             charCode = (charCode & 0x3_ff) << 10
@@ -138,7 +138,7 @@ export function encodeCBOR(value) {
               0xf0 | (charCode >> 18),
               0x80 | ((charCode >> 12) & 0x3f),
               0x80 | ((charCode >> 6) & 0x3f),
-              0x80 | (charCode & 0x3f)
+              0x80 | (charCode & 0x3f),
             )
           }
         }

@@ -244,7 +244,7 @@ export default class Color {
             if (hexSyntax[i + 1]) {
               res[key] = Number.parseInt(
                 `${hexSyntax[i]}${hexSyntax[i + 1]}`,
-                16
+                16,
               )
               i += 2
             }

@@ -387,7 +387,7 @@ class Positionable extends Trait {
             listen(
               document.fonts, //
               { signal },
-              { loadingdone: this.repaint }
+              { loadingdone: this.repaint },
             )
 
             await documentReady()
@@ -399,18 +399,18 @@ class Positionable extends Trait {
                 "resize scroll transitionend animationend": this.repaint,
                 "pointermove": ({ buttons }) =>
                   void (buttons > 0 && this.repaint()),
-              }
+              },
             )
             listen(
               globalThis.visualViewport,
               { signal, passive: true },
-              { "resize scroll": this.repaint }
+              { "resize scroll": this.repaint },
             )
           } else {
             listen(
               document.fonts,
               { signal, once: true },
-              { loadingdone: this.repaint }
+              { loadingdone: this.repaint },
             )
           }
         }

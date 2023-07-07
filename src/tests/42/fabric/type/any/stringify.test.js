@@ -124,7 +124,7 @@ test("function", "noline", (t) => {
   t.is(
     actual,
     `\
-function noline() {}`
+function noline() {}`,
   )
 })
 
@@ -134,7 +134,7 @@ test("function", "noline", 2, (t) => {
   t.is(
     actual,
     `\
-function noline() {}`
+function noline() {}`,
   )
 })
 
@@ -149,7 +149,7 @@ test("function", "singleLine", (t) => {
     `\
 function singleLine(arg) {
   console.log(arg)
-}`
+}`,
   )
 })
 
@@ -164,7 +164,7 @@ test("function", "singleLine", 2, (t) => {
     `\
 function singleLine2(arg) {
   console.log(arg)
-}`
+}`,
   )
 })
 
@@ -181,7 +181,7 @@ test("function", "multiLine", (t) => {
 function multiLine(arg) {
   console.log(arg)
   console.log(arg)
-}`
+}`,
   )
 })
 
@@ -198,7 +198,7 @@ test("function", "multiLine", 2, (t) => {
 function multiLine2(arg) {
   console.log(arg)
   console.log(arg)
-}`
+}`,
   )
 })
 
@@ -215,7 +215,7 @@ test("function", 2, (t) => {
     `\
 function bar(arg) {
   console.log(arg)
-}`
+}`,
   )
 })
 
@@ -239,7 +239,7 @@ test("function with properties", (t) => {
       derp: 1,
     }
   ),
-}`
+}`,
   )
 })
 
@@ -263,7 +263,7 @@ test("function with properties", 2, (t) => {
       derp: 1,
     }
   ),
-}`
+}`,
   )
 })
 
@@ -296,7 +296,7 @@ test("function with properties", (t) => {
       bar: 2,
     }
   ),
-}`
+}`,
   )
 })
 
@@ -319,7 +319,7 @@ test("function in object", (t) => {
   fun: function fun(arg) {
     console.log(arg)
   },
-}`
+}`,
   )
 })
 
@@ -338,7 +338,7 @@ test("function in object", 2, (t) => {
   x: function fun(arg) {
     console.log(arg)
   },
-}`
+}`,
   )
 })
 
@@ -356,7 +356,7 @@ test("function in object", 3, (t) => {
   fun(arg) {
     console.log(arg)
   },
-}`
+}`,
   )
 })
 
@@ -380,7 +380,7 @@ test("function in object", 4, (t) => {
       derp: 1,
     }
   ),
-}`
+}`,
   )
 })
 
@@ -398,7 +398,7 @@ test("function in object", 5, (t) => {
   fun(arg) {
     console.log(arg)
   },
-}`
+}`,
   )
 })
 
@@ -412,7 +412,7 @@ test("function in object", 6, (t) => {
     `\
 {
   fun: (arg) => console.log(arg),
-}`
+}`,
   )
 })
 
@@ -426,7 +426,7 @@ test("function in object", 7, (t) => {
     `\
 {
   fun: () => console.log("a"),
-}`
+}`,
   )
 })
 
@@ -469,7 +469,7 @@ test("deeply nested function", (t) => {
       },
     },
   },
-}`
+}`,
   )
 })
 
@@ -503,7 +503,7 @@ test("tricky function indentation", (t) => {
   b: (arg2) => {
     console.log(arg2)
   },
-}`
+}`,
   )
 })
 
@@ -521,7 +521,7 @@ test("function name", "force function name visibility", (t) => {
     `\
 /* a */ () => {
   console.log("a")
-}`
+}`,
   )
 
   t.is(
@@ -531,7 +531,7 @@ test("function name", "force function name visibility", (t) => {
   b: /* a */ () => {
     console.log("a")
   },
-}`
+}`,
   )
 })
 
@@ -553,7 +553,7 @@ test(
       `\
 () => {
   console.log("a")
-}`
+}`,
     )
 
     t.is(
@@ -563,9 +563,9 @@ test(
   b: () => {
     console.log("a")
   },
-}`
+}`,
     )
-  }
+  },
 )
 
 test("class name", "force class name visibility", (t) => {
@@ -585,7 +585,7 @@ test("class name", "force class name visibility", (t) => {
   constructor() {
     console.log("a")
   }
-}`
+}`,
   )
 
   t.is(
@@ -597,7 +597,7 @@ test("class name", "force class name visibility", (t) => {
       console.log("a")
     }
   },
-}`
+}`,
   )
 })
 test("class name", "force class name visibility", "addComments: false", (t) => {
@@ -617,7 +617,7 @@ class {
   constructor() {
     console.log("a")
   }
-}`
+}`,
   )
 
   t.is(
@@ -629,7 +629,7 @@ class {
       console.log("a")
     }
   },
-}`
+}`,
   )
 })
 
@@ -651,7 +651,7 @@ test("function name", "don't display function name twice", (t) => {
   b: function a() {
     console.log("a")
   },
-}`
+}`,
   )
 
   t.not(
@@ -661,7 +661,7 @@ test("function name", "don't display function name twice", (t) => {
   b: /* a */ function a() {
     console.log("a")
   },
-}`
+}`,
   )
 })
 
@@ -686,7 +686,7 @@ test("class name", "don't display class name twice", (t) => {
       console.log("a")
     }
   },
-}`
+}`,
   )
 
   t.not(
@@ -698,7 +698,7 @@ test("class name", "don't display class name twice", (t) => {
       console.log("a")
     }
   },
-}`
+}`,
   )
 })
 
@@ -715,7 +715,7 @@ test("function name", "object transfer", (t) => {
     `\
 {
   a: () => console.log("a"),
-}`
+}`,
   )
 
   t.is(
@@ -723,7 +723,7 @@ test("function name", "object transfer", (t) => {
     `\
 {
   b: /* a */ () => console.log("a"),
-}`
+}`,
   )
 })
 
@@ -740,7 +740,7 @@ test("function name", "object transfer", "addComments: false", (t) => {
     `\
 {
   b: () => console.log("a"),
-}`
+}`,
   )
 })
 
@@ -764,7 +764,7 @@ test("function name", "object transfer", "function propertie shortcut", (t) => {
   b: function a() {
     console.log("a")
   },
-}`
+}`,
   )
 
   t.not(
@@ -774,7 +774,7 @@ test("function name", "object transfer", "function propertie shortcut", (t) => {
   b: a() {
     console.log("a")
   },
-}`
+}`,
   )
 })
 
@@ -795,7 +795,7 @@ test("function name", "anonymous should not be visible", (t) => {
   a: /*  */ function() {
     console.log("a")
   },
-}`
+}`,
   )
 
   t.is(
@@ -805,7 +805,7 @@ test("function name", "anonymous should not be visible", (t) => {
   a: function () {
     console.log("a")
   },
-}`
+}`,
   )
 })
 
@@ -820,7 +820,7 @@ test("array", (t) => {
 [
   1,
   2,
-]`
+]`,
   )
 })
 
@@ -854,7 +854,7 @@ test("array without trailing lastComma", (t) => {
 [
   1,
   2
-]`
+]`,
   )
 })
 
@@ -881,7 +881,7 @@ test("custom array", (t) => {
 /* Foo */ [
   1,
   2,
-]`
+]`,
   )
 })
 
@@ -908,7 +908,7 @@ test("object", (t) => {
     `\
 {
   foo: "derp",
-}`
+}`,
   )
 })
 
@@ -951,7 +951,7 @@ test("key with and without quotes", (t) => {
   "42a": 1,
   "é": 1,
   "😁": 1,
-}`
+}`,
   )
 })
 
@@ -964,7 +964,7 @@ test("object with empty key", (t) => {
     `\
 {
   "": 1,
-}`
+}`,
   )
 })
 
@@ -977,7 +977,7 @@ test("object with falsy key", (t) => {
     `\
 {
   0: 1,
-}`
+}`,
   )
 })
 
@@ -989,7 +989,7 @@ test("object with Inherited Enumerable", (t) => {
     `\
 {
   a: 1,
-}`
+}`,
   )
 })
 
@@ -1007,7 +1007,7 @@ test("object with getter", (t) => {
     `\
 {
   a: 1,
-}`
+}`,
   )
 })
 
@@ -1025,7 +1025,7 @@ test("object with Nonenumerable", (t) => {
     `\
 {
   a: 1,
-}`
+}`,
   )
 })
 
@@ -1045,7 +1045,7 @@ test("Object.create(null) as dict", (t) => {
 Object.assign(Object.create(null), {
   a: 1,
   b: 2,
-})`
+})`,
   )
 
   t.is(
@@ -1054,7 +1054,7 @@ Object.assign(Object.create(null), {
 {
   a: 1,
   b: 2,
-}`
+}`,
   )
 })
 
@@ -1079,7 +1079,7 @@ test("Object.create(null) as dict", (t) => {
 Object.assign(Object.create(null), {
   a: 1,
   b: 2,
-})`
+})`,
   )
 })
 
@@ -1094,7 +1094,7 @@ test("Object.create(null) as dict", "traceNullProto: false", (t) => {
 {
   a: 1,
   b: 2,
-}`
+}`,
   )
 })
 
@@ -1105,14 +1105,14 @@ test("object without trailing lastComma", (t) => {
     `\
 {
   a: "b"
-}`
+}`,
   )
 })
 
 test("object on one line", (t) => {
   const actual = stringify(
     { a: "b" },
-    { newline: " ", indentSpace: "", lastComma: "" }
+    { newline: " ", indentSpace: "", lastComma: "" },
   )
   t.is(actual, '{ a: "b" }')
 })
@@ -1128,7 +1128,7 @@ test("automatic quotes for object keys", (t) => {
   a: 0,
   "two word": 1,
   "a\\"b\\"c": 2,
-}`
+}`,
   )
 })
 
@@ -1148,7 +1148,7 @@ test("object nested", (t) => {
       d: {},
     },
   },
-}`
+}`,
   )
 })
 
@@ -1168,7 +1168,7 @@ test.skip("getters", (t) => {
   get b() {
     return 2
   },
-}`
+}`,
   )
 })
 
@@ -1186,7 +1186,7 @@ test("getters", "traceGetters: false", (t) => {
 {
   a: 1,
   b: 2,
-}`
+}`,
   )
 })
 
@@ -1205,7 +1205,7 @@ test("getters", "Host object", (t) => {
 /* Foo */ {
   a: 1,
   b: 2,
-}`
+}`,
   )
 })
 
@@ -1230,7 +1230,7 @@ test("custom object", (t) => {
     `\
 /* Foo */ {
   a: 1,
-}`
+}`,
   )
 })
 
@@ -1245,7 +1245,7 @@ test("custom object prefix & postfix", (t) => {
     `\
 _Foo_({
   a: 1,
-})`
+})`,
   )
 })
 
@@ -1275,7 +1275,7 @@ test("ignoreKeys", (t) => {
   d: {
     b: 2,
   },
-}`
+}`,
   )
 })
 
@@ -1296,7 +1296,7 @@ class Foo {
   derp() {
     console.log(this)
   }
-}`
+}`,
   )
 })
 
@@ -1309,7 +1309,7 @@ new Set([
   1,
   2,
   3,
-])`
+])`,
   )
 })
 
@@ -1326,7 +1326,7 @@ new Set([
       a: 3,
     },
   ],
-])`
+])`,
   )
 })
 
@@ -1345,7 +1345,7 @@ test("Set", 3, (t) => {
       },
     ],
   ]),
-}`
+}`,
   )
 })
 
@@ -1355,13 +1355,13 @@ test("Map", (t) => {
       new Map([
         [1, 2],
         [2, 4],
-      ])
+      ]),
     ),
     `\
 new Map([
   [ 1, 2 ],
   [ 2, 4 ],
-])`
+])`,
   )
 })
 
@@ -1371,13 +1371,13 @@ test("Map", 2, (t) => {
       new Map([
         [1, 2],
         [2, [4, { a: 5 }]],
-      ])
+      ]),
     ),
     `\
 new Map([
   [ 1, 2 ],
   [ 2, [ 4, { a: 5 } ] ],
-])`
+])`,
   )
 })
 
@@ -1401,7 +1401,7 @@ test("Map", "cyclic", (t) => {
     [ 2, { a: 1, b: /* [↖] */ { $ref: "#/x/1" } } ],
     [ "cyclic", /* [↖] */ { $ref: "#/x" } ],
   ]),
-}`
+}`,
   )
 })
 
@@ -1427,7 +1427,7 @@ test("Set", "cyclic", (t) => {
     },
     /* [↖] */ { $ref: "#/x" },
   ]),
-}`
+}`,
   )
 })
 
@@ -1485,7 +1485,7 @@ test("Symbols as keys", (t) => {
   [Symbol("baz")]: 3,
   [Symbol.for("derp")]: 4,
   [Symbol.toStringTag]: "Foo",
-}`
+}`,
   )
 })
 
@@ -1501,7 +1501,7 @@ test("ArrayBuffer hexdump", (t) => {
 /* ArrayBuffer */ new Uint8Array([
   0x63,0x6f,0x6e,0x73,0x6f,0x6c,0x65,0x2e, 0x6c,0x6f,0x67,0x28,0x68,0x65,0x6c,0x6c, // console.log(hell
   0x6f,0x20,0xf0,0x9f,0x91,0xbe,0x20,0x77, 0x6f,0x72,0x6c,0x64,0x29,0x3b,           // o .... world);
-]).buffer`
+]).buffer`,
   )
 
   // ArrayBuffer hexdump is also valid javascript
@@ -1513,7 +1513,7 @@ test("ArrayBuffer hexdump", (t) => {
 /* ArrayBuffer */ new Uint8Array([
   0x63,0x6f,0x6e,0x73,0x6f,0x6c,0x65,0x2e, 0x6c,0x6f,0x67,0x28,0x68,0x65,0x6c,0x6c, // console.log(hell
   0x6f,0x20,0x77,0x6f,0x72,0x6c,0x64,0x29,                                          // o world)
-]).buffer`
+]).buffer`,
   )
 
   buffer = new Uint8Array(new Array(256).fill(0).map((_, i) => i)).buffer
@@ -1576,7 +1576,7 @@ test("ArrayBuffer hexdump", "min", (t) => {
   const string = stringify.min(buffer)
   t.is(
     string,
-    `new Uint8Array([0x63,0x6f,0x6e,0x73,0x6f,0x6c,0x65,0x2e,0x6c,0x6f,0x67,0x28,0x68,0x65,0x6c,0x6c,0x6f,0x20,0xf0,0x9f,0x91,0xbe,0x20,0x77,0x6f,0x72,0x6c,0x64,0x29,0x3b]).buffer`
+    `new Uint8Array([0x63,0x6f,0x6e,0x73,0x6f,0x6c,0x65,0x2e,0x6c,0x6f,0x67,0x28,0x68,0x65,0x6c,0x6c,0x6f,0x20,0xf0,0x9f,0x91,0xbe,0x20,0x77,0x6f,0x72,0x6c,0x64,0x29,0x3b]).buffer`,
   )
 
   t.is(arrayBufferToString(eval(string)), "console.log(hello 👾 world);")
@@ -1601,7 +1601,7 @@ test("Uint8Array hexdump", 2, (t) => {
     `\
 new Uint8Array([
   0x66,0x6f,0x6f,                                                                   // foo
-])`
+])`,
   )
 })
 
@@ -1614,7 +1614,7 @@ test("Uint8Array hexdump", 3, (t) => {
     `\
 new Uint8Array([
   0x66,0x6f,0x6f,
-])`
+])`,
   )
 })
 
@@ -1629,7 +1629,7 @@ test("stringify with async option return a promise", async (t) => {
     `\
 {
   a: 1,
-}`
+}`,
   )
 })
 
@@ -1666,7 +1666,7 @@ if ("Blob" in globalThis) {
       `\
 new Blob([new Uint8Array([
   0x61,0x62,                                                                        // ab
-])])`
+])])`,
     )
     t.is(await new Response(eval(a)).text(), "ab")
   })
@@ -1682,7 +1682,7 @@ new Blob([new Uint8Array([
   x: new Blob([new Uint8Array([
     0x61,0x62,                                                                        // ab
   ])]),
-}`
+}`,
     )
   })
 
@@ -1709,12 +1709,12 @@ new Blob([new Uint8Array([
     a = await stringify(x, { async: true })
     t.is(
       a,
-      `new File(["ab"], "a.txt", { type: "text/plain", lastModified: 1555555555555 })`
+      `new File(["ab"], "a.txt", { type: "text/plain", lastModified: 1555555555555 })`,
     )
     a = await stringify.min(x, { async: true })
     t.is(
       a,
-      `new File(["ab"],"a.txt",{type:"text/plain",lastModified:1555555555555})`
+      `new File(["ab"],"a.txt",{type:"text/plain",lastModified:1555555555555})`,
     )
   })
 
@@ -1727,7 +1727,7 @@ new Blob([new Uint8Array([
       `\
 new File([new Uint8Array([
   0x61,0x62,                                                                        // ab
-])], "a.exe", { lastModified: 1555555555555 })`
+])], "a.exe", { lastModified: 1555555555555 })`,
     )
     t.is(await new Response(eval(a)).text(), "ab")
   })
@@ -1743,7 +1743,7 @@ new File([new Uint8Array([
   x: new File([new Uint8Array([
     0x61,0x62,                                                                        // ab
   ])], "a.exe", { lastModified: 1555555555555 }),
-}`
+}`,
     )
   })
 }
@@ -1754,7 +1754,7 @@ new File([new Uint8Array([
 test("maxBytes", (t) => {
   const a = stringify(
     new Uint8Array(new Array(11).fill(0).map((_, i) => i)).buffer,
-    { maxBytes: 10 }
+    { maxBytes: 10 },
   )
   t.is(
     a,
@@ -1762,7 +1762,7 @@ test("maxBytes", (t) => {
 /* ArrayBuffer */ new Uint8Array([
   0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07, 0x08,0x09,                               // ...........
   /* […] 1 unshown byte */
-]).buffer`
+]).buffer`,
   )
 })
 
@@ -1779,7 +1779,7 @@ test("maxLines", (t) => {
     `\`\\
 a
 b
-c\` /* […] 9 unshown lines */`
+c\` /* […] 9 unshown lines */`,
   )
 })
 
@@ -1793,7 +1793,7 @@ test("maxItems", "object", (t) => {
   a: 1,
   b: 2,
   /* […] 1 unshown item */
-}`
+}`,
   )
 })
 
@@ -1807,7 +1807,7 @@ test("maxItems", "array", (t) => {
   "a",
   "b",
   /* […] 1 unshown item */
-]`
+]`,
   )
 })
 
@@ -1821,7 +1821,7 @@ new Set([
   "a",
   "b",
   /* […] 1 unshown item */
-])`
+])`,
   )
 })
 
@@ -1839,7 +1839,7 @@ new Map([
   [ "a", 1 ],
   [ "b", 2 ],
   /* […] 1 unshown item */
-])`
+])`,
   )
 })
 
@@ -1866,7 +1866,7 @@ test("circular object", "root", async (t) => {
     1,
   ],
   circular: /* [↖] */ { $ref: "#" },
-}`
+}`,
   )
 })
 
@@ -1884,7 +1884,7 @@ test("circular object", "nested", async (t) => {
 {
   x: {},
   circular: /* [↖] */ { $ref: "#/x" },
-}`
+}`,
   )
 })
 
@@ -1903,7 +1903,7 @@ test("circular array", async (t) => {
 [
   /* [↖] */ { $ref: "#" },
   123,
-]`
+]`,
   )
 })
 
@@ -1927,7 +1927,7 @@ test("circular array", "nested", async (t) => {
   [
     /* [↖] */ { $ref: "#/0" },
   ],
-]`
+]`,
   )
 })
 
@@ -1956,7 +1956,7 @@ test("circular array", "nested", 2, async (t) => {
   ],
   /* [↖] */ { $ref: "#/0" },
   /* [↖] */ { $ref: "#/0" },
-]`
+]`,
   )
 })
 
@@ -2062,7 +2062,7 @@ test("make references relative to $id", async (t) => {
       },
     },
   ],
-}`
+}`,
   )
 })
 
@@ -2077,7 +2077,7 @@ test("circular Set", (t) => {
 new Set([
   /* [↖] */ { $ref: "#" },
   123,
-])`
+])`,
   )
 })
 
@@ -2094,7 +2094,7 @@ test("circular Set", "nested", (t) => {
     /* [↖] */ { $ref: "#" },
     /* [↖] */ { $ref: "#/set" },
   ]),
-}`
+}`,
   )
 })
 
@@ -2115,7 +2115,7 @@ test("circular Map", (t) => {
 new Map([
   [ "circular", /* [↖] */ { $ref: "#" } ],
   [ "n", 123 ],
-])`
+])`,
   )
 })
 
@@ -2145,7 +2145,7 @@ test("example from pretty-format", (t) => {
     NaN,
   ],
   [Symbol("foo")]: "foo",
-}`
+}`,
   )
 })
 
@@ -2158,7 +2158,7 @@ test("min", (t) => {
   const actual = stringify.min(val)
   t.is(
     actual,
-    `{object:{},circular:{$ref:"#"},map:new Map([["prop","value"]]),array:[-0,Infinity,NaN],[Symbol("foo")]:"foo\\nbar"}`
+    `{object:{},circular:{$ref:"#"},map:new Map([["prop","value"]]),array:[-0,Infinity,NaN],[Symbol("foo")]:"foo\\nbar"}`,
   )
 })
 
@@ -2216,7 +2216,7 @@ test("line", "complex", 3, (t) => {
   })
   t.is(
     str,
-    '{ key: [ 1, 2, 3 ], "two \\"word\\"": [ { a: 1, key: "ok ok" } ] }'
+    '{ key: [ 1, 2, 3 ], "two \\"word\\"": [ { a: 1, key: "ok ok" } ] }',
   )
 })
 
@@ -2226,7 +2226,7 @@ test("line", "circular", (t) => {
   const str = stringify.line(obj)
   t.is(
     str,
-    `{ key: [ 1, 2, 3 ], "two \\"word\\"": [ { a: 1, key: "ok ok" } ], obj: /* [↖] */ { $ref: "#" } }`
+    `{ key: [ 1, 2, 3 ], "two \\"word\\"": [ { a: 1, key: "ok ok" } ], obj: /* [↖] */ { $ref: "#" } }`,
   )
 })
 
@@ -2241,7 +2241,7 @@ test("list", "circular", (t) => {
   key: [ 1, 2, 3 ],
   "two \\"word\\"": [ { a: 1, key: "ok ok" } ],
   obj: /* [↖] */ { $ref: "#" },
-}`
+}`,
   )
 })
 
@@ -2304,7 +2304,7 @@ test("bug: indent", (t) => {
       },
     ],
   ]),
-}`
+}`,
   )
 })
 
@@ -2321,7 +2321,7 @@ test("inspect", "escape unicode", (t) => {
 {
   a: "\\x1b u200b-> \\u200b ",
   b: "\\ud83d\\ude43",
-}`
+}`,
   )
 })
 
@@ -2332,7 +2332,7 @@ test("{displayNewlines:true}", (t) => {
     `\
 \`\\
 a
-b\``
+b\``,
   )
 })
 

@@ -71,7 +71,7 @@ export default function addUtilities(item, isExecutionContext) {
           if (isExecutionContext) item.timeout("reset")
           item.logs.push([new Error(), type, args])
         },
-      ])
+      ]),
     )
 
     Object.defineProperty(item, "puppet", {
@@ -161,7 +161,7 @@ export default function addUtilities(item, isExecutionContext) {
   item.utils.dest = (options) => {
     const el = create(
       options?.tag ?? "section",
-      options ? omit(options, ["tag", "keep", "connect"]) : undefined
+      options ? omit(options, ["tag", "keep", "connect"]) : undefined,
     )
     const suiteTitle = item.suite.title
     idRegistry[suiteTitle] ??= 0

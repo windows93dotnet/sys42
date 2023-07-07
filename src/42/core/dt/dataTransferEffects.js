@@ -13,7 +13,7 @@ for (const item of effectUnits) EFFECTS[item] = [item]
 EFFECTS.uninitialized = EFFECTS.all
 
 const map = Object.fromEntries(
-  Object.keys(EFFECTS).map((item) => [item.toLowerCase(), item])
+  Object.keys(EFFECTS).map((item) => [item.toLowerCase(), item]),
 )
 
 map[""] = "none"

@@ -57,7 +57,7 @@ export async function animateTo(el, options, duration = 240) {
       easing: "ease-in-out",
       ...config,
       fill: "both",
-    }
+    },
   )
   await anim.finished
 
@@ -131,7 +131,7 @@ export async function animateFrom(el, options, duration = 240) {
       easing: "ease-in-out",
       ...config,
       fill: "backwards",
-    }
+    },
   )
   await anim.finished
 

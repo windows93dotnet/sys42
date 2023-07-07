@@ -5,7 +5,7 @@ export default function formatPath(obj) {
   const type = typeof obj
   if (obj === null || type !== "object") {
     throw new TypeError(
-      '"formatPath" argument must be of type Object. Received type ' + type
+      '"formatPath" argument must be of type Object. Received type ' + type,
     )
   }
 

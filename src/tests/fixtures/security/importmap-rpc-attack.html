@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <title>importmap-rpc-attack</title>
 
 <script type="importmap">
@@ -24,6 +24,6 @@ ipc.emit('xss', localStorage.getItem('SECRET'))
 `,
       },
     },
-    { trusted: true }
+    { trusted: true },
   )
 </script>

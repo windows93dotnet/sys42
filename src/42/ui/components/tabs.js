@@ -110,7 +110,7 @@ export class Tabs extends Component {
                     },
                     tabTemplate
                       ? objectifyPlan(tabTemplate)
-                      : { content: "{{render(label)}}" }
+                      : { content: "{{render(label)}}" },
                   ),
                   {
                     if: "{{postlabel}}",
@@ -159,7 +159,7 @@ export class Tabs extends Component {
               },
               panelTemplate
                 ? objectifyPlan(panelTemplate)
-                : { content: "{{render(content)}}" }
+                : { content: "{{render(content)}}" },
             ),
           },
         ],

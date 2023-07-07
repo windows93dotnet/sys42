@@ -10,7 +10,7 @@ test("html", async (t) => {
     ui(t.utils.dest({ connect: true }), {
       tag: "ui-icon",
       path: "/script.js",
-    })
+    }),
   )
 
   t.eq(t.utils.omit(app.reactive.data, ["$computed"]), {
@@ -48,7 +48,7 @@ test("html", async (t) => {
     <span class="ui-icon__name">script</span>
     <span class="ui-icon__ext">\u200b.js</span>
   </div>
-</ui-icon>`
+</ui-icon>`,
   )
 
   const el = app.el.querySelector("ui-icon")
@@ -57,7 +57,7 @@ test("html", async (t) => {
   t.is(el.getAttribute("aria-description"), "file")
   t.is(
     el.querySelector(":scope img").getAttribute("src"),
-    "/42/themes/default/icons/32x32/subtype/javascript.png"
+    "/42/themes/default/icons/32x32/subtype/javascript.png",
   )
 
   el.path = "/derp/foo.bar/"
@@ -67,7 +67,7 @@ test("html", async (t) => {
   t.is(el.getAttribute("aria-description"), "folder")
   t.is(
     el.querySelector(":scope img").getAttribute("src"),
-    "/42/themes/default/icons/32x32/places/folder.png"
+    "/42/themes/default/icons/32x32/places/folder.png",
   )
 
   el.path = "https://www.windows93.net/"
@@ -77,7 +77,7 @@ test("html", async (t) => {
   t.is(el.getAttribute("aria-description"), "uri")
   t.is(
     el.querySelector(":scope img").getAttribute("src"),
-    "/42/themes/default/icons/32x32/ext/url.png"
+    "/42/themes/default/icons/32x32/ext/url.png",
   )
 })
 
@@ -104,7 +104,7 @@ test("infos", async (t) => {
         tag: "ui-icon",
         path: "https://www.windows93.net/script.js",
       },
-    ])
+    ]),
   )
 
   t.eq(t.utils.omit(app.reactive.data, ["$computed"]), {
@@ -138,7 +138,7 @@ test("infos", async (t) => {
       { ext: "", name: "foo\u200b.bar" },
       { ext: "", name: "windows93\u200b.net" },
       { ext: "", name: "windows93\u200b.net/script\u200b.js" },
-    ]
+    ],
   )
 
   t.eq(
@@ -153,7 +153,7 @@ test("infos", async (t) => {
       { isURI: false, isDir: true, isFile: false },
       { isURI: true, isDir: false, isFile: false },
       { isURI: true, isDir: false, isFile: false },
-    ]
+    ],
   )
 
   t.eq(
@@ -164,7 +164,7 @@ test("infos", async (t) => {
       "inode/directory",
       "text/x-uri",
       "text/x-uri",
-    ]
+    ],
   )
 
   t.eq(
@@ -175,7 +175,7 @@ test("infos", async (t) => {
       "/42/themes/default/icons/32x32/places/folder.png",
       "/42/themes/default/icons/32x32/ext/url.png",
       "/42/themes/default/icons/32x32/ext/url.png",
-    ]
+    ],
   )
 
   t.eq(icons.textContent, [
@@ -211,7 +211,7 @@ test("each", async (t) => {
           { x: "/derp/" },
         ],
       },
-    })
+    }),
   )
 
   t.eq(t.utils.omit(app.reactive.data, ["$computed"]), {
@@ -268,7 +268,7 @@ test("each", 2, async (t) => {
           "/derp/",
         ],
       },
-    })
+    }),
   )
 
   t.eq(t.utils.omit(app.reactive.data, ["$computed"]), {
@@ -299,7 +299,7 @@ test("each", 2, async (t) => {
     [
       "/42/themes/default/icons/32x32/subtype/javascript.png",
       "/42/themes/default/icons/32x32/places/folder.png",
-    ]
+    ],
   )
   t.eq(icons.getAttribute("aria-description"), [
     "file", //
@@ -312,7 +312,7 @@ test("each", 2, async (t) => {
   t.eq(icons.textContent, ["bar\u200b.txt"])
   t.eq(
     icons.infos.map(({ image }) => image),
-    ["/42/themes/default/icons/32x32/type/text.png"]
+    ["/42/themes/default/icons/32x32/type/text.png"],
   )
   t.eq(icons.getAttribute("aria-description"), [
     "file", //
@@ -324,7 +324,7 @@ test("each", 2, async (t) => {
   t.eq(icons.textContent, ["derp\u200b"])
   t.eq(
     icons.infos.map(({ image }) => image),
-    ["/42/themes/default/icons/32x32/places/folder.png"]
+    ["/42/themes/default/icons/32x32/places/folder.png"],
   )
   t.eq(icons.getAttribute("aria-description"), [
     "folder", //

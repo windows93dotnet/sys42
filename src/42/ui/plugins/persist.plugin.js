@@ -44,8 +44,8 @@ export default async function persistPlugin(stage) {
       config.saved = false
       config.saved = await persist.set(
         persistPath,
-        omit(stage.reactive.data, ["$computed"])
+        omit(stage.reactive.data, ["$computed"]),
       )
-    })
+    }),
   )
 }

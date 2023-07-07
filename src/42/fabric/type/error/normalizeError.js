@@ -9,7 +9,7 @@ export default function normalizeError(e, originStack = new Error().stack) {
   if (!error) {
     error = new Error(
       (e?.message ? e.message + " --- " : "") +
-        "Unable to extract information from error"
+        "Unable to extract information from error",
     )
     error.stack = originStack
   } else if (typeof error !== "object") {

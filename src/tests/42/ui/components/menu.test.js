@@ -13,7 +13,7 @@ const __ = inTop ? "Top" : "Iframe"
 
 const { href } = new URL(
   "../../../../demos/ui/components/menu.demo.html?dev=true",
-  import.meta.url
+  import.meta.url,
 )
 
 const { when } = test.utils
@@ -239,7 +239,7 @@ if (inTop) {
             }),
           ],
         },
-      })
+      }),
     )
 
     if (manual) return t.pass()
@@ -271,7 +271,7 @@ if (inTop) {
         els.btnIncrDialogPopup.textContent,
         els.inputIncrDialogPopup.value,
       ],
-      ["42", "42", "42"]
+      ["42", "42", "42"],
     )
 
     await t.puppet(els.btnIncrTop).click()
@@ -283,7 +283,7 @@ if (inTop) {
         els.btnIncrDialogPopup.textContent,
         els.inputIncrDialogPopup.value,
       ],
-      ["43", "43", "43"]
+      ["43", "43", "43"],
     )
   })
 
@@ -310,8 +310,8 @@ if (inTop) {
           },
           plugins: ["autoIncrementId"],
         },
-        { trusted: true }
-      )
+        { trusted: true },
+      ),
     )
 
     if (manual) return t.pass()

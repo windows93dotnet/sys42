@@ -22,7 +22,7 @@ test("content", "array", (t) => {
     ui(t.utils.dest(), {
       tag: "em",
       content: ["hello ", { tag: "strong", content: "world" }],
-    })
+    }),
   )
 
   t.is(app.el.innerHTML, "<em>hello <strong>world</strong></em>")
@@ -33,7 +33,7 @@ test("content", "special strings", (t) => {
     ui(t.utils.dest(), {
       tag: "h1",
       content: ["\n", "hello", "\n\n", "world", "---", "\n"],
-    })
+    }),
   )
 
   t.is(
@@ -41,7 +41,7 @@ test("content", "special strings", (t) => {
     `\
 <h1>
 hello<br>world<hr>
-</h1>`
+</h1>`,
   )
 })
 
@@ -82,7 +82,7 @@ test("reactive data", async (t) => {
       state: {
         foo: "red",
       },
-    })
+    }),
   )
 
   t.is(app.el.innerHTML, "<em></em>")
@@ -112,7 +112,7 @@ test("reactive data", "attributes", async (t) => {
       state: {
         foo: "red",
       },
-    })
+    }),
   )
 
   t.is(app.el.innerHTML, "<em></em>")
@@ -154,7 +154,7 @@ test("reactive async state", async (t) => {
           foo: "red",
         }
       },
-    })
+    }),
   )
 
   t.is(app.el.innerHTML, "<em></em>")
@@ -181,7 +181,7 @@ test("reactive data", "array", async (t) => {
       state: { arr: ["a", "b"] },
       scope: "arr",
       content: ["{{./0}}", "{{./1}}"],
-    })
+    }),
   )
 
   t.is(app.el.innerHTML, "<em>ab</em>")
@@ -193,7 +193,7 @@ test("reactive data", "array as data", async (t) => {
       tag: "em",
       content: ["{{/0}}", "{{/1}}"],
       state: ["a", "b"],
-    })
+    }),
   )
 
   t.is(app.el.innerHTML, "<em>ab</em>")
@@ -207,7 +207,7 @@ test("reactive data", "nested", async (t) => {
       state: {
         foo: { bar: "hi" },
       },
-    })
+    }),
   )
 
   t.eq(Object.keys(app.stage.renderers), ["/foo/bar"])
@@ -234,12 +234,12 @@ test("reactive data", "styles", async (t) => {
       state: {
         foo: "red",
       },
-    })
+    }),
   )
 
   t.is(
     app.el.innerHTML,
-    '<div style="color: red; display: flex; flex: 1 1 0%;"></div>'
+    '<div style="color: red; display: flex; flex: 1 1 0%;"></div>',
   )
 
   app.state.foo = "tan"
@@ -247,7 +247,7 @@ test("reactive data", "styles", async (t) => {
 
   t.is(
     app.el.innerHTML,
-    '<div style="color: tan; display: flex; flex: 1 1 0%;"></div>'
+    '<div style="color: tan; display: flex; flex: 1 1 0%;"></div>',
   )
 })
 
@@ -259,7 +259,7 @@ test("update", async (t) => {
     ui(t.utils.dest(), {
       content: "{{a}}{{b}}{{c}}",
       state: { a: "a", b: "b", c: "c" },
-    })
+    }),
   )
 
   const stub = t.stub()
@@ -297,7 +297,7 @@ test("update throttle", async (t) => {
     ui(t.utils.dest(), {
       content: "{{a}}{{b}}{{c}}",
       state: { a: "a", b: "b", c: "c" },
-    })
+    }),
   )
 
   t.is(app.reactive.throttle, true)
@@ -333,7 +333,7 @@ test("update throttle", "using throttle:false", async (t) => {
     ui(t.utils.dest(), {
       content: "{{a}}{{b}}{{c}}",
       state: { a: "a", b: "b", c: "c" },
-    })
+    }),
   )
 
   app.reactive.throttle = false
@@ -369,7 +369,7 @@ test("update throttle", "using updateNow", async (t) => {
     ui(t.utils.dest(), {
       content: "{{a}}{{b}}{{c}}",
       state: { a: "a", b: "b", c: "c" },
-    })
+    }),
   )
 
   t.is(app.reactive.throttle, true)
@@ -406,7 +406,7 @@ test("update throttle", "using silent:true", async (t) => {
     ui(t.utils.dest(), {
       content: "{{a}}{{b}}{{c}}",
       state: { a: "a", b: "b", c: "c" },
-    })
+    }),
   )
 
   t.is(app.reactive.throttle, true)
@@ -450,7 +450,7 @@ test("scope", async (t) => {
       },
       scope: "foo",
       content: "{{bar}}",
-    })
+    }),
   )
 
   t.eq(Object.keys(app.stage.renderers), ["/foo/bar"])
@@ -492,7 +492,7 @@ test("scope", "relative scopes", async (t) => {
         "\n",
         { scope: "/", content: "?{{d}}" },
       ],
-    })
+    }),
   )
 
   t.eq(
@@ -503,7 +503,7 @@ test("scope", "relative scopes", async (t) => {
       ["/a/bar", 1],
       ["/baz", 1],
       ["/d", 1],
-    ]
+    ],
   )
 
   t.is(
@@ -514,7 +514,7 @@ test("scope", "relative scopes", async (t) => {
 4
 2
 1
-?`
+?`,
   )
 
   app.state.a.b.c.d = "#"
@@ -528,7 +528,7 @@ test("scope", "relative scopes", async (t) => {
 #
 2
 1
-?`
+?`,
   )
 })
 
@@ -561,7 +561,7 @@ test("scope", "relative template keys", async (t) => {
         "\n",
         { content: "?{{/d}}" },
       ],
-    })
+    }),
   )
 
   t.eq(
@@ -572,7 +572,7 @@ test("scope", "relative template keys", async (t) => {
       ["/a/bar", 1],
       ["/baz", 1],
       ["/d", 1],
-    ]
+    ],
   )
 
   t.is(
@@ -583,7 +583,7 @@ test("scope", "relative template keys", async (t) => {
 4
 2
 1
-?`
+?`,
   )
 
   app.state.a.b.c.d = "#"
@@ -597,7 +597,7 @@ test("scope", "relative template keys", async (t) => {
 #
 2
 1
-?`
+?`,
   )
 })
 
@@ -613,7 +613,7 @@ test("class", "string", async (t) => {
         a: "x",
         b: "y",
       },
-    })
+    }),
   )
 
   t.is(app.el.innerHTML, '<em class="x y"></em>')
@@ -638,7 +638,7 @@ test("class", "array", async (t) => {
         a: "x",
         b: "y",
       },
-    })
+    }),
   )
 
   t.is(app.el.innerHTML, '<em class="x y"></em>')
@@ -663,7 +663,7 @@ test("class", "object", async (t) => {
         a: true,
         b: true,
       },
-    })
+    }),
   )
 
   t.is(app.el.innerHTML, '<em class="a b"></em>')
@@ -712,7 +712,7 @@ test.tasks(
       const app = await t.utils.decay(ui(t.utils.dest(), plan))
       t.is(app.el.innerHTML, expected)
     })
-  }
+  },
 )
 
 test("abbr", "reactive", async (t) => {
@@ -722,7 +722,7 @@ test("abbr", "reactive", async (t) => {
       state: {
         foo: "bar",
       },
-    })
+    }),
   )
 
   t.is(app.el.innerHTML, "<em></em>")
@@ -746,7 +746,7 @@ test("abbr", "reactive", 2, async (t) => {
         a: "x",
         b: "y",
       },
-    })
+    }),
   )
 
   t.is(app.el.innerHTML, "<em></em>")
@@ -788,7 +788,7 @@ test("actions", async (t) => {
       content: "a {{foo|>uppercase(^^)}}",
       state: { foo: "b" },
       actions: { uppercase },
-    })
+    }),
   )
 
   t.is(app.el.innerHTML, "a B")
@@ -811,7 +811,7 @@ test.serial("actions", "error", async (t) => {
           throw new Error("boom")
         },
       },
-    })
+    }),
   )
 
   let e = await promise
@@ -837,7 +837,7 @@ test("actions", "as function", async (t) => {
       content: "a {{uppercase(foo)}}",
       state: { foo: "b" },
       actions: { uppercase },
-    })
+    }),
   )
 
   t.is(app.el.innerHTML, "a B")
@@ -853,7 +853,7 @@ test("actions", "inline variable", async (t) => {
     ui(t.utils.dest(), {
       content: "a {{'b'|>uppercase(^^)}}",
       actions: { uppercase },
-    })
+    }),
   )
 
   t.is(app.el.innerHTML, "a B")
@@ -864,7 +864,7 @@ test("actions", "inline variable", "as function", async (t) => {
     ui(t.utils.dest(), {
       content: "a {{uppercase('b')}}",
       actions: { uppercase },
-    })
+    }),
   )
 
   t.is(app.el.innerHTML, "a B")
@@ -876,7 +876,7 @@ test("actions", "builtin actions", async (t) => {
       tag: "pre",
       content: "{{foo|>stringify(^^)}}",
       state: { foo: { a: 1 } },
-    })
+    }),
   )
 
   t.is(
@@ -884,7 +884,7 @@ test("actions", "builtin actions", async (t) => {
     `\
 <pre>{
   a: 1,
-}</pre>`
+}</pre>`,
   )
 })
 
@@ -902,7 +902,7 @@ test("actions", "thisArg", async (t) => {
           return str.toUpperCase()
         },
       },
-    })
+    }),
   )
 
   t.is(app.el.innerHTML, "<em>a B</em>")
@@ -924,7 +924,7 @@ test("actions", "nested action", async (t) => {
           },
         },
       },
-    })
+    }),
   )
 
   t.is(app.el.innerHTML, "<em>a B</em>")
@@ -946,7 +946,7 @@ test("actions", "nested action", 2, async (t) => {
           },
         },
       },
-    })
+    }),
   )
 
   t.is(app.el.innerHTML, "<em>a B</em>")
@@ -972,7 +972,7 @@ test("actions", "thisArg", "nested", async (t) => {
           return str.toUpperCase()
         },
       },
-    })
+    }),
   )
 
   t.is(app.el.innerHTML, "B<em>B</em><strong>B</strong>")
@@ -991,7 +991,7 @@ test("actions", "builtin actions locate", async (t) => {
       content: "{{foo |> stringify(^^, 'min')}}",
       // content: "{{foo|>stringify.min}}",
       state: { foo: { a: 1 } },
-    })
+    }),
   )
 
   t.is(app.el.innerHTML, "<pre>{a:1}</pre>")
@@ -1001,7 +1001,7 @@ test("actions", "pluralize", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: "{{'apple'|>pluralize(^^)}}, {{'orange'|>pluralize(^^, 5)}}",
-    })
+    }),
   )
 
   t.is(app.el.innerHTML, "apples, oranges")
@@ -1017,7 +1017,7 @@ test("if", async (t) => {
       state: {
         a: { b: false },
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "")
@@ -1041,7 +1041,7 @@ test("if", "manage renderers", async (t) => {
         a: { b: false },
         x: "y",
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "")
@@ -1077,7 +1077,7 @@ test("if", "array", async (t) => {
       state: {
         arr: [false],
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "")
@@ -1100,7 +1100,7 @@ test("if", "else", async (t) => {
       state: {
         a: { b: true },
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "x")
@@ -1123,7 +1123,7 @@ test("if", "else with empty content", async (t) => {
       state: {
         a: { b: true },
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "x")
@@ -1154,7 +1154,7 @@ test("if", "nodes", async (t) => {
       state: {
         a: { b: false },
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "")
@@ -1189,7 +1189,7 @@ test("if", "element", async (t) => {
       state: {
         a: { b: false },
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "")
@@ -1222,7 +1222,7 @@ test("if", "bug using reactive.update", async (t) => {
         a: false,
         b: false,
       },
-    })
+    }),
   )
 
   t.is(app.el.innerHTML, "<!--[if]-->")
@@ -1263,7 +1263,7 @@ test("array", async (t) => {
       state: {
         arr: ["a", "b"],
       },
-    })
+    }),
   )
 
   t.is(app.el.innerHTML, "<em>ab</em>")
@@ -1291,7 +1291,7 @@ test("each", "manage childNodes", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: { scope: "arr", each: "{{.}}" },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "")
@@ -1348,7 +1348,7 @@ test("each", "manage renderers", async (t) => {
       state: {
         arr: ["a", "b", "c", "d"],
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "abcd")
@@ -1410,13 +1410,13 @@ test("each", "plan", async (t) => {
         },
       },
       state: { arr: ["a", "b"] },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "ab")
   t.is(
     app.el.innerHTML,
-    "<!--[each]--><span>a</span><!--[#]--><span>b</span><!--[#]-->"
+    "<!--[each]--><span>a</span><!--[#]--><span>b</span><!--[#]-->",
   )
 
   app.state.arr.push("c")
@@ -1425,7 +1425,7 @@ test("each", "plan", async (t) => {
   t.is(app.el.textContent, "abc")
   t.is(
     app.el.innerHTML,
-    "<!--[each]--><span>a</span><!--[#]--><span>b</span><!--[#]--><span>c</span><!--[#]-->"
+    "<!--[each]--><span>a</span><!--[#]--><span>b</span><!--[#]--><span>c</span><!--[#]-->",
   )
 
   app.state.arr.length = 1
@@ -1451,7 +1451,7 @@ test("each", "splice", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: { scope: "arr", each: "{{.}}" },
-    })
+    }),
   )
 
   app.state.arr = [1, 2, 3]
@@ -1482,19 +1482,19 @@ test("each", "array with objects", async (t) => {
           { x: "B", y: "2" },
         ],
       },
-    })
+    }),
   )
 
   t.is(
     app.el.innerHTML,
-    '<!--[each]--><span class="1">A</span><!--[#]--><span class="2">B</span><!--[#]-->'
+    '<!--[each]--><span class="1">A</span><!--[#]--><span class="2">B</span><!--[#]-->',
   )
 
   app.state.arr[0].x = "foo"
   await app
   t.is(
     app.el.innerHTML,
-    '<!--[each]--><span class="1">foo</span><!--[#]--><span class="2">B</span><!--[#]-->'
+    '<!--[each]--><span class="1">foo</span><!--[#]--><span class="2">B</span><!--[#]-->',
   )
 
   app.state.arr = [{ x: "Z", y: "9" }]
@@ -1515,7 +1515,7 @@ test("each", "render index 0 bug", async (t) => {
       state: {
         arr: [{ path: "A" }],
       },
-    })
+    }),
   )
 
   await app
@@ -1535,7 +1535,7 @@ test("each", "render index 0 bug", async (t) => {
 
   t.is(
     app.el.innerHTML,
-    "<!--[each]--><div>X</div><!--[#]--><div>Y</div><!--[#]-->"
+    "<!--[each]--><div>X</div><!--[#]--><div>Y</div><!--[#]-->",
   )
   t.is(app.el.children.length, 2)
   t.is(app.el.textContent, "XY")
@@ -1552,13 +1552,13 @@ test("each", "innerHTML", async (t) => {
         },
       ],
       state: { arr: [1, 2, 3] },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "123")
   t.is(
     app.el.innerHTML,
-    "<ul><!--[each]--><li>1</li><!--[#]--><li>2</li><!--[#]--><li>3</li><!--[#]--></ul>"
+    "<ul><!--[each]--><li>1</li><!--[#]--><li>2</li><!--[#]--><li>3</li><!--[#]--></ul>",
   )
 
   app.state.arr.push(4)
@@ -1567,7 +1567,7 @@ test("each", "innerHTML", async (t) => {
   t.is(app.el.textContent, "1234")
   t.is(
     app.el.innerHTML,
-    "<ul><!--[each]--><li>1</li><!--[#]--><li>2</li><!--[#]--><li>3</li><!--[#]--><li>4</li><!--[#]--></ul>"
+    "<ul><!--[each]--><li>1</li><!--[#]--><li>2</li><!--[#]--><li>3</li><!--[#]--><li>4</li><!--[#]--></ul>",
   )
 
   app.state.arr.length = 2
@@ -1576,7 +1576,7 @@ test("each", "innerHTML", async (t) => {
   t.is(app.el.textContent, "12")
   t.is(
     app.el.innerHTML,
-    "<ul><!--[each]--><li>1</li><!--[#]--><li>2</li><!--[#]--></ul>"
+    "<ul><!--[each]--><li>1</li><!--[#]--><li>2</li><!--[#]--></ul>",
   )
 })
 
@@ -1589,12 +1589,12 @@ test("each", "element", "scopped", async (t) => {
         each: { tag: "li", content: "{{.}}" },
       },
       state: { a: { b: ["foo", "bar"] } },
-    })
+    }),
   )
 
   t.is(
     app.el.innerHTML,
-    "<ul><!--[each]--><li>foo</li><!--[#]--><li>bar</li><!--[#]--></ul>"
+    "<ul><!--[each]--><li>foo</li><!--[#]--><li>bar</li><!--[#]--></ul>",
   )
 
   app.state.a.b.push("baz")
@@ -1602,7 +1602,7 @@ test("each", "element", "scopped", async (t) => {
 
   t.is(
     app.el.innerHTML,
-    "<ul><!--[each]--><li>foo</li><!--[#]--><li>bar</li><!--[#]--><li>baz</li><!--[#]--></ul>"
+    "<ul><!--[each]--><li>foo</li><!--[#]--><li>bar</li><!--[#]--><li>baz</li><!--[#]--></ul>",
   )
 
   app.state.a.b.length = 0
@@ -1622,7 +1622,7 @@ test("each", "array of objects", async (t) => {
           { a: 3, b: 4 },
         ],
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "1 - 2 - 3 - 4 - ")
@@ -1638,7 +1638,7 @@ test("each", "array of objects", "scopped", async (t) => {
           { a: 3, b: 4 },
         ],
       },
-    })
+    }),
   )
 
   t.is(app.el.innerHTML, "<!--[each]-->1 - 2 - <!--[#]-->3 - 4 - <!--[#]-->")
@@ -1681,7 +1681,7 @@ test("each", "access root data", async (t) => {
         foo: "bar",
         arr: [{ a: 1 }, { a: 2 }],
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "1 bar 2 bar ")
@@ -1703,7 +1703,7 @@ test("each", "access data in previous level", async (t) => {
           arr: [{ a: 1, foo: "derp" }, { a: 2 }],
         },
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "1 derp y world - 2 baz y world - ")
@@ -1719,7 +1719,7 @@ test("each", "lastChild bug", async (t) => {
       state: {
         arr: [{ a: "x" }, { a: "y" }],
       },
-    })
+    }),
   )
 
   t.is(app.el.innerHTML, "<!--[each]-->x<!--[#]-->y<!--[#]-->z")
@@ -1755,12 +1755,12 @@ test("each", "range bug", async (t) => {
       state: {
         arr: [{ a: 1 }, { a: 2 }],
       },
-    })
+    }),
   )
 
   t.is(
     app.el.innerHTML,
-    "<!--[each]-->1<!--[#]-->2<!--[#]-->+<!--[each]-->1<!--[#]-->2<!--[#]-->"
+    "<!--[each]-->1<!--[#]-->2<!--[#]-->+<!--[each]-->1<!--[#]-->2<!--[#]-->",
   )
 
   app.state.arr.push({ a: 3 })
@@ -1768,7 +1768,7 @@ test("each", "range bug", async (t) => {
 
   t.is(
     app.el.innerHTML,
-    "<!--[each]-->1<!--[#]-->2<!--[#]-->3<!--[#]-->+<!--[each]-->1<!--[#]-->2<!--[#]-->3<!--[#]-->"
+    "<!--[each]-->1<!--[#]-->2<!--[#]-->3<!--[#]-->+<!--[each]-->1<!--[#]-->2<!--[#]-->3<!--[#]-->",
   )
 
   app.state.arr.length = 1
@@ -1791,7 +1791,7 @@ test("each", "relative paths", async (t) => {
           arr: [{ a: 1, foo: "derp" }, { a: 2 }],
         },
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "1 derp baz bar - 2 baz baz bar - ")
@@ -1805,7 +1805,7 @@ test("each", "@index", async (t) => {
         foo: "bar",
         arr: [{ a: "x" }, { a: "y" }],
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "0 x 1 y ")
@@ -1819,7 +1819,7 @@ test("each", "@index", "operation", async (t) => {
         foo: "bar",
         arr: [{ a: "x" }, { a: "y" }],
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "1 x 2 y ")
@@ -1833,7 +1833,7 @@ test("each", "@index", "string array", async (t) => {
         foo: "bar",
         arr: ["x", "y"],
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "0 x 1 y ")
@@ -1850,7 +1850,7 @@ test("each", "#", async (t) => {
         foo: "bar",
         arr: [{ a: "x" }, { a: "y" }],
       },
-    })
+    }),
   )
 
   t.is(
@@ -1862,7 +1862,7 @@ test("each", "#", async (t) => {
 1 y
 01 y
 001 y
-`
+`,
   )
 })
 
@@ -1877,7 +1877,7 @@ test("each", "#", "string array", async (t) => {
         foo: "bar",
         arr: ["x", "y"],
       },
-    })
+    }),
   )
 
   t.is(
@@ -1889,7 +1889,7 @@ test("each", "#", "string array", async (t) => {
 1 y
 01 y
 001 y
-`
+`,
   )
 })
 
@@ -1905,9 +1905,9 @@ test("each", "#", "throws on invalid #", async (t) => {
           state: {
             arr: [{ a: "x" }, { a: "y" }],
           },
-        })
+        }),
       ),
-    /Invalid #/
+    /Invalid #/,
   )
 })
 
@@ -1919,7 +1919,7 @@ test("each", "@last", async (t) => {
         foo: "bar",
         arr: [{ a: "x" }, { a: "y" }],
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "00:x, 01:y")
@@ -1933,7 +1933,7 @@ test("each", "@first", async (t) => {
         foo: "bar",
         arr: [{ a: "x" }, { a: "y" }, { a: "z" }],
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, " - 00:x 01:y 02:z ")
@@ -1950,12 +1950,12 @@ test("each", "@last element", async (t) => {
         foo: "bar",
         arr: [{ a: "x" }, { a: "y" }],
       },
-    })
+    }),
   )
 
   t.is(
     app.el.innerHTML,
-    "<!--[each]-->0 x<!--[if]--><br><!--[#]-->1 y<!--[if]--><!--[#]-->"
+    "<!--[each]-->0 x<!--[if]--><br><!--[#]-->1 y<!--[if]--><!--[#]-->",
   )
 })
 
@@ -1970,12 +1970,12 @@ test("each", "@first element", async (t) => {
         foo: "bar",
         arr: [{ a: "x" }, { a: "y" }],
       },
-    })
+    }),
   )
 
   t.is(
     app.el.innerHTML,
-    "<!--[each]--><!--[if]--><hr>0 x<!--[#]--><!--[if]-->1 y<!--[#]-->"
+    "<!--[each]--><!--[if]--><hr>0 x<!--[#]--><!--[if]-->1 y<!--[#]-->",
   )
 })
 
@@ -1989,7 +1989,7 @@ test("each", "input element", async (t) => {
       state: {
         arr: [{ a: "x" }, { a: "y" }],
       },
-    })
+    }),
   )
 
   let ta = app.el.querySelectorAll("textarea")
@@ -2029,7 +2029,7 @@ test("computed", async (t) => {
       computed: {
         parsed: "{{formated|>split(^^, '/')}}",
       },
-    })
+    }),
   )
 
   const updates = ["/formated", "/parsed"]
@@ -2068,7 +2068,7 @@ test("on", async (t) => {
       state: {
         cnt: 42,
       },
-    })
+    }),
   )
 
   t.eq(app.state, { cnt: 42 })
@@ -2093,7 +2093,7 @@ test("on", "queued fast calls", async (t) => {
       state: {
         cnt: 42,
       },
-    })
+    }),
   )
 
   t.eq(app.state, { cnt: 42 })
@@ -2129,7 +2129,7 @@ test("on", "actions", async (t) => {
           this.state.cnt += n
         },
       },
-    })
+    }),
   )
 
   t.eq(app.state, { cnt: 42 })
@@ -2160,14 +2160,14 @@ test("input", async (t) => {
       state: {
         str: "foo",
       },
-    })
+    }),
   )
 
   t.eq(
     test.utils.prettify(app.el.innerHTML),
     `\
 <label for="a59j5pfmedwe">Str</label>
-<input id="a59j5pfmedwe" name="/str" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" translate="no">`
+<input id="a59j5pfmedwe" name="/str" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" translate="no">`,
   )
 
   const input = app.el.querySelector("input")
@@ -2196,14 +2196,14 @@ test("input", "prose:true", async (t) => {
       state: {
         str: "foo",
       },
-    })
+    }),
   )
 
   t.eq(
     test.utils.prettify(app.el.innerHTML),
     `\
 <label for="a59j5pfmedwe">Str</label>
-<input id="a59j5pfmedwe" name="/str" autocomplete="off">`
+<input id="a59j5pfmedwe" name="/str" autocomplete="off">`,
   )
 
   const input = app.el.querySelector("input")
@@ -2240,7 +2240,7 @@ test("watch", async (t) => {
           a: 1,
         },
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "1 - 11")
@@ -2268,7 +2268,7 @@ test("watch in on keyword", async (t) => {
           a: 1,
         },
       },
-    })
+    }),
   )
 
   t.is(app.el.textContent, "1 - 11")
@@ -2285,7 +2285,7 @@ test("set proxy as target", async (t, { decay, dest }) => {
       state: {
         arr: [{ a: 1 }],
       },
-    })
+    }),
   )
 
   app.state.arr.push(app.state.arr[0])

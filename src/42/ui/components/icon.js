@@ -89,7 +89,7 @@ class Icon extends Component {
 
       if (this.small) {
         infos.image16x16 ??= await fs.getURL(
-          await themeManager.getIconPath(icon, "16x16")
+          await themeManager.getIconPath(icon, "16x16"),
         )
       } else {
         infos.image ??= await fs.getURL(await themeManager.getIconPath(icon))
@@ -116,7 +116,7 @@ class Icon extends Component {
 
     if (this.small) {
       infos.image16x16 ??= await fs.getURL(
-        await themeManager.getIconPath(infos, "16x16")
+        await themeManager.getIconPath(infos, "16x16"),
       )
     } else {
       infos.image ??= await fs.getURL(await themeManager.getIconPath(infos))

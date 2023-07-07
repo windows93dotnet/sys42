@@ -9,7 +9,7 @@ export default function sortPath(paths, options) {
     const splitted = paths.map((path) => ({
       path,
       infos: getPathInfos(
-        options?.key === undefined ? path : path[options.key]
+        options?.key === undefined ? path : path[options.key],
       ),
     }))
 

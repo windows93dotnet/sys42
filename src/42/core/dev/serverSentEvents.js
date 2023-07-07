@@ -33,7 +33,7 @@ export class ServerSentEvents extends Emitter {
       clearTimeout(this.#timerId)
       this.#timerId = setTimeout(
         () => this.connect(),
-        500 + this.#attempt * this.#attempt * 100
+        500 + this.#attempt * this.#attempt * 100,
       )
     } else {
       this.emit("error", `maxAttempt reached (${this.config.maxAttempt})`)
@@ -65,7 +65,7 @@ export class ServerSentEvents extends Emitter {
         this.emit("connect")
         this.#attempt = 0
       },
-      this.cancel
+      this.cancel,
     )
 
     this.#sse.addEventListener(
@@ -75,7 +75,7 @@ export class ServerSentEvents extends Emitter {
         this.#sse.close()
         this.#reconnect()
       },
-      this.cancel
+      this.cancel,
     )
 
     if (inWindow) {
@@ -104,7 +104,7 @@ export class ServerSentEvents extends Emitter {
         (...args) => {
           if (this.enabled) this.emit(event, ...args)
         },
-        this.cancel
+        this.cancel,
       )
     }
   }

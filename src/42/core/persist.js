@@ -19,7 +19,7 @@ persist.ensureType = (path) => {
   const ext = getExtname(path)
   if (!VALID_TYPES.has(ext)) {
     throw new Error(
-      `Data file must have a .json, .json5 or .cbor extension: ${ext}`
+      `Data file must have a .json, .json5 or .cbor extension: ${ext}`,
     )
   }
 

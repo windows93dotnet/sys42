@@ -19,7 +19,7 @@ function makeFile(buffer, header, controller) {
         return new File(
           [buffer.toArrayBuffer(offset, offset + header.size)],
           getBasename(header.name),
-          { lastModified: header.mtime }
+          { lastModified: header.mtime },
         )
       },
     },
@@ -59,7 +59,7 @@ function createConsumer(options, controller) {
       } else if (header.type === "gnu-long-path") {
         header.name = decodeLongPath(
           buffer.read(header.size),
-          options?.filenameEncoding
+          options?.filenameEncoding,
         )
         buffer.offset += overflow(header.size)
         header = undefined

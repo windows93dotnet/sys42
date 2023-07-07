@@ -137,7 +137,7 @@ export class Sandbox extends Component {
     ) {
       throw new DOMException(
         '"scripts" and "same-origin" permissions are forbiden in untrusted context',
-        "SecurityError"
+        "SecurityError",
       )
     }
 
@@ -207,8 +207,8 @@ export class Sandbox extends Component {
             target: "_blank",
             rel: "nofollow noreferrer",
           },
-          this.path
-        )
+          this.path,
+        ),
       )
     }
 

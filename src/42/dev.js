@@ -15,7 +15,7 @@ const DEFAULT = {
 const config = configure(
   DEFAULT,
   getScriptData(import.meta.url)?.config,
-  parseURLQuery(import.meta.url)
+  parseURLQuery(import.meta.url),
 )
 
 log.verbose = config.verbose
@@ -26,7 +26,7 @@ function greet() {
 └─┤ ┌─┘  {reset type} {grey sys42.dev.help()} {reset for help}
   └─┴─╴  `)
   log(
-    `\n{cyan recommended devtool log filter: {reset -/both\\sallow-scripts|Clear-Site-Data|Skipping\\sunsupported/}}\n`
+    `\n{cyan recommended devtool log filter: {reset -/both\\sallow-scripts|Clear-Site-Data|Skipping\\sunsupported/}}\n`,
   )
 }
 
@@ -51,7 +51,7 @@ if (inTop && inAutomated) {
     },
     technicolor() {
       log.color("#000")(
-        `\n         ▄▄████▄▄\n  █ ▄ ▄▄██{bg.c3ff00 ▀▄  ▄▀}██\n  {0ff ▄} ▀▀▀▀██{bg.c3ff00  ▀  ▀ }██\n  {0ff ▀ █▄██}██{bg.c3ff00  ▄  ▄ }██\n  {f0f █ ▄ ▄▄}██{bg.c3ff00   ▀▀  }██\n  ▄ {f0f ▀▀▀▀}██{bg.c3ff00 ▄████▄}██\n  ▀ █▄███▀▀    ▀▀█\n`
+        `\n         ▄▄████▄▄\n  █ ▄ ▄▄██{bg.c3ff00 ▀▄  ▄▀}██\n  {0ff ▄} ▀▀▀▀██{bg.c3ff00  ▀  ▀ }██\n  {0ff ▀ █▄██}██{bg.c3ff00  ▄  ▄ }██\n  {f0f █ ▄ ▄▄}██{bg.c3ff00   ▀▀  }██\n  ▄ {f0f ▀▀▀▀}██{bg.c3ff00 ▄████▄}██\n  ▀ █▄███▀▀    ▀▀█\n`,
       )
     },
     async clear(options) {

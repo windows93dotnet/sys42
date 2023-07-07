@@ -53,7 +53,7 @@ test.setup(async () => {
 
 test.noop("debug single path", async (t) => {
   const { d, directions } = traceBitmap(
-    shared.ctx.getImageData(16 * 0, 16 * 12, 16, 16)
+    shared.ctx.getImageData(16 * 0, 16 * 12, 16, 16),
   )
   document.body.append(
     create(
@@ -64,8 +64,8 @@ test.noop("debug single path", async (t) => {
         height: 16,
         viewBox: "0 0 16 16",
       },
-      create("path", { d })
-    )
+      create("path", { d }),
+    ),
   )
   log(logDirections(directions))
   t.pass()
@@ -93,8 +93,8 @@ test("compare generated svg with original image", async (t) => {
     "data:image/svg+xml," +
       shared.svg.outerHTML.replace(
         "<svg ",
-        "<svg  xmlns='http://www.w3.org/2000/svg' "
-      )
+        "<svg  xmlns='http://www.w3.org/2000/svg' ",
+      ),
   )
 
   const canvas = document.createElement("canvas")

@@ -14,7 +14,7 @@ test("convert to base64 and back", async (t) => {
     t.equal(
       base64.byteLength(b64Str),
       base64.toArrayBuffer(b64Str).byteLength,
-      "Checked length for " + check
+      "Checked length for " + check,
     )
   }
 })
@@ -44,13 +44,13 @@ test("convert known data from string", (t) => {
     t.eq(
       actual,
       expected,
-      "Ensure that " + string + " deserialise to " + expected
+      "Ensure that " + string + " deserialise to " + expected,
     )
     const length = base64.byteLength(string)
     t.is(
       length,
       expected.byteLength,
-      "Ensure that " + string + " has byte lentgh of " + expected.byteLength
+      "Ensure that " + string + " has byte lentgh of " + expected.byteLength,
     )
   }
 })

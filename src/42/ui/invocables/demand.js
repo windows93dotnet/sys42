@@ -67,8 +67,8 @@ export async function demand(options) {
           value: config.value,
         },
       },
-      config.dialog
-    )
+      config.dialog,
+    ),
   )
 }
 

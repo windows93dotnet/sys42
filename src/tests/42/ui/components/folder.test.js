@@ -9,7 +9,7 @@ test("generate icon list", async (t) => {
       tag: "ui-folder",
       path: "/tests/fixtures/components/folder/",
       selection: ["/tests/fixtures/components/folder/script.js"],
-    })
+    }),
   )
 
   // await t.sleep(100)
@@ -96,7 +96,7 @@ test("generate icon list", async (t) => {
   ])
 
   el.currentView.selectable.selection.push(
-    "/tests/fixtures/components/folder/style.css"
+    "/tests/fixtures/components/folder/style.css",
   )
   el.currentView.selectable.sync()
 

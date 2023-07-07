@@ -28,7 +28,7 @@ export default function formatFilename(stackframe, options) {
     DEFAULTS,
     typeof options === "string"
       ? { colors: { name: options, line: `${options}.dim` } }
-      : options
+      : options,
   )
 
   const { colors, appendFullPath } = config

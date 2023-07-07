@@ -65,7 +65,7 @@ function plural({ data }, ...args) {
         else return false
       })
       const n = new Intl.NumberFormat(locale, config.number).format(
-        substitutions[i]
+        substitutions[i],
       )
       out += n + pluralize(word, substitutions[i], plural)
     }
@@ -144,7 +144,7 @@ const i18n = chainable(
     }
 
     return out
-  }
+  },
 )
 
 export default i18n

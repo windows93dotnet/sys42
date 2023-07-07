@@ -8,7 +8,7 @@ export default function cssPrefix(prop) {
   if (prop in document.body.style) return false
   prop = prop.split("-").map(capitalize).join("")
   const i = CSS_PREFIXES.findIndex(
-    (prefix) => prefix + prop in document.body.style
+    (prefix) => prefix + prop in document.body.style,
   )
   return i === -1 ? false : CSS_PREFIXES[i] + prop
 }

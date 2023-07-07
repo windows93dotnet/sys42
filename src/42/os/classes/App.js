@@ -181,7 +181,7 @@ function makeSandbox(manifest) {
     window.$files = window.$app.state.$files
     ${appScript}
     $app.start()
-    `
+    `,
   )
 
   out.sandbox.script = script
@@ -222,7 +222,7 @@ async function shell(manifestPath, options) {
 
     const appShell = new UI(
       { id, tag: "ui-sandbox.app-shell.box-fit", ...sandbox },
-      { trusted: manifest.trusted }
+      { trusted: manifest.trusted },
     )
 
     appShell.stage.reactive.watch("/$dialog/title", (val) => {
@@ -243,7 +243,7 @@ async function shell(manifestPath, options) {
 
 if (inTop) {
   ipc.on("42_APP_LAUNCH", ({ manifestPath, options }) =>
-    launch(manifestPath, options)
+    launch(manifestPath, options),
   )
 }
 
@@ -270,7 +270,7 @@ export async function launch(manifestPath, options) {
         style: { zIndex: -1 },
         ...sandbox,
       },
-      { trusted: manifest.trusted }
+      { trusted: manifest.trusted },
     )
     return
   }
@@ -303,7 +303,7 @@ export async function launch(manifestPath, options) {
         $dialog: { title: manifest.name },
       },
     },
-    { trusted: manifest.trusted }
+    { trusted: manifest.trusted },
   )
 }
 
@@ -329,7 +329,7 @@ export default class App extends UI {
     for (let i = 0, l = manifest.state.$files.length; i < l; i++) {
       manifest.state.$files[i] = new FileAgent(
         manifest.state.$files[i],
-        manifest
+        manifest,
       )
     }
 

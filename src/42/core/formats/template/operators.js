@@ -41,7 +41,7 @@ export const operators = {
 export const assignments = {
   "=": (a, b) => b,
   ...Object.fromEntries(
-    Object.entries(assignableOperators).map(([key, val]) => [key + "=", val])
+    Object.entries(assignableOperators).map(([key, val]) => [key + "=", val]),
   ),
 }
 

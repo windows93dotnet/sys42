@@ -157,7 +157,7 @@ class Selectable extends Trait {
         let fail
         for (const val of this.selection) {
           const el = this.el.querySelector(
-            `${this.config.selector}[${key}="${val}"]`
+            `${this.config.selector}[${key}="${val}"]`,
           )
           if (el) this.elements.push(el)
           else {
@@ -290,7 +290,7 @@ class Selectable extends Trait {
         [shortcuts.toggleSelect]: (e, target) => this.toggleSelect(target),
         [shortcuts.rangeSelect]: (e, target) => this.rangeSelect(target),
         [shortcuts.selectAll]: () => this.selectAll(),
-      }
+      },
     )
 
     if (this.config.multiselectable) this.initRubberband()

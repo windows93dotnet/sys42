@@ -28,7 +28,7 @@ function op(
   arrayOp,
   stringOp,
   raise,
-  remove
+  remove,
 ) {
   let track = ""
   let raised = false
@@ -47,7 +47,7 @@ function op(
         if (options?.strict) {
           if (Number.isNaN(index)) {
             throw new RangeError(
-              `path "${track}" is not allowed on array target`
+              `path "${track}" is not allowed on array target`,
             )
           }
 
@@ -95,7 +95,7 @@ export function add(obj, path, val, options) {
         if (previousKey) previousValue[previousKey] = res
         else out = res
         return res
-      }
+      },
     )
   }
 
@@ -118,14 +118,14 @@ export function remove(obj, path, val = 1, options) {
         const res = splice(
           str,
           index,
-          typeof val === "number" ? val : val.length
+          typeof val === "number" ? val : val.length,
         )
         if (previousKey) previousValue[previousKey] = res
         else out = res
         return res
       },
       true,
-      true
+      true,
     )
     if (raise && options?.strict) {
       throw new RangeError(`path "${path}" does not exist`)
@@ -152,7 +152,7 @@ export function copy(obj, from, path, options) {
     (obj, key) => (value = obj[key]),
     (arr, index) => (value = arr[index]),
     (str, index) => (value = str[index]),
-    true
+    true,
   )
   add(obj, path, value)
   return obj
@@ -189,7 +189,7 @@ export function replace(obj, path, val, options) {
         if (previousKey) previousValue[previousKey] = res
         else out = res
         return res
-      }
+      },
     )
   }
 
@@ -202,7 +202,7 @@ export function test(obj, path, expected) {
   if (equals(actual, expected) === false) {
     throw Object.assign(
       new Error(`patch test failed: value at ${path} is not like expected`),
-      { actual, expected }
+      { actual, expected },
     )
   }
 }

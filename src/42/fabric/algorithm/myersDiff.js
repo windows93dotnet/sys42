@@ -188,7 +188,7 @@ export function diffCore(i, N, j, M, eq) {
   const Z = (Math.min(N, M) + 1) * 2
   const L = N + M
   const b = new (L < 256 ? Uint8Array : L < 65_536 ? Uint16Array : Uint32Array)(
-    2 * Z
+    2 * Z,
   )
   return new DiffGen({
     i,

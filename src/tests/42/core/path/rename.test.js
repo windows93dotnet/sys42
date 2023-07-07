@@ -27,7 +27,7 @@ test.tasks(
     test(pattern, (t) => {
       t.eq(rename(path, pattern), expected)
     })
-  }
+  },
 )
 
 test("ignore extension glob if original extension is empty", (t) => {

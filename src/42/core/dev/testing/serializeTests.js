@@ -19,7 +19,7 @@ const DEFAULTS = {
 const castTestTitleParts = (arg, config) =>
   truncate(
     (typeof arg === "string" ? arg : mark(arg)).trim(),
-    config.truncateTitleParts
+    config.truncateTitleParts,
   )
 
 async function serializeTest(test, config) {
@@ -67,8 +67,8 @@ async function serializeTest(test, config) {
           value instanceof Error
             ? serializeError(value)
             : await stringify.async(value, stringifyDetailsOptions),
-        ])
-      )
+        ]),
+      ),
     )
 
     if (laps.length > 0) {
@@ -76,7 +76,7 @@ async function serializeTest(test, config) {
       test.error.original +=
         "\n\nlaps:" +
         laps.map(
-          ({ filename, line, column }) => `\n  ${filename}:${line}:${column}`
+          ({ filename, line, column }) => `\n  ${filename}:${line}:${column}`,
         )
     }
 

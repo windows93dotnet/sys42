@@ -47,7 +47,7 @@ export function wrap(stream, { before, after }, queuingStrategy) {
         } else controller.enqueue(value)
       },
     },
-    queuingStrategy
+    queuingStrategy,
   )
 }
 
@@ -71,7 +71,7 @@ export function source(data, queuingStrategy) {
           } else controller.close()
         },
       },
-      queuingStrategy
+      queuingStrategy,
     )
   }
 
@@ -91,7 +91,7 @@ export function arraySource(data, queuingStrategy) {
         } else controller.close()
       },
     },
-    queuingStrategy
+    queuingStrategy,
   )
 }
 
@@ -104,7 +104,7 @@ export function iteratorSource(iterator, queuingStrategy) {
         else controller.enqueue(value)
       },
     },
-    queuingStrategy
+    queuingStrategy,
   )
 }
 
@@ -149,7 +149,7 @@ export function mapPipe(cb) {
         controller.enqueue(await cb(chunk, i++))
       },
     },
-    ...DEFAULT_WATERMARK
+    ...DEFAULT_WATERMARK,
   )
 }
 
@@ -162,7 +162,7 @@ export function eachPipe(cb) {
         controller.enqueue(chunk)
       },
     },
-    ...DEFAULT_WATERMARK
+    ...DEFAULT_WATERMARK,
   )
 }
 
@@ -173,7 +173,7 @@ export function filterPipe(cb) {
         if (await cb(chunk)) controller.enqueue(chunk)
       },
     },
-    ...DEFAULT_WATERMARK
+    ...DEFAULT_WATERMARK,
   )
 }
 
@@ -192,7 +192,7 @@ export function splitPipe(delimiter = "", options) {
         if (buffer) controller.enqueue(buffer)
       },
     },
-    ...DEFAULT_WATERMARK
+    ...DEFAULT_WATERMARK,
   )
 }
 
@@ -210,7 +210,7 @@ export function joinPipe(delimiter = "") {
         if (buffer) controller.enqueue(buffer)
       },
     },
-    ...DEFAULT_WATERMARK
+    ...DEFAULT_WATERMARK,
   )
 }
 
@@ -233,7 +233,7 @@ export function cutPipe(size, options) {
               if (prevArr) {
                 i = size - prevArr.length
                 controller.enqueue(
-                  combineArrayBufferView(prevArr, chunk.slice(0, i))
+                  combineArrayBufferView(prevArr, chunk.slice(0, i)),
                 )
                 prevArr = undefined
               }
@@ -260,7 +260,7 @@ export function cutPipe(size, options) {
               if (prevStr) controller.enqueue(prevStr)
             },
     },
-    ...DEFAULT_WATERMARK
+    ...DEFAULT_WATERMARK,
   )
 }
 
@@ -274,7 +274,7 @@ export function percentPipe(total, cb) {
         controller.enqueue(chunk)
       },
     },
-    ...DEFAULT_WATERMARK
+    ...DEFAULT_WATERMARK,
   )
 }
 
@@ -291,7 +291,7 @@ export function pressurePipe(fn = nextCycle) {
         await fn()
       },
     },
-    ...DEFAULT_WATERMARK
+    ...DEFAULT_WATERMARK,
   )
 }
 

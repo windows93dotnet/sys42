@@ -92,7 +92,7 @@ export async function getRects(elements, options) {
         resolve(rects)
         observer.disconnect()
       },
-      options?.root ? { root } : undefined
+      options?.root ? { root } : undefined,
     )
 
     if (elements.length > 0) for (const el of elements) observer.observe(el)

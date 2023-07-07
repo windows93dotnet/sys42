@@ -49,7 +49,7 @@ const STYLABLES = new Set([
 const CONSOLE_IGNORE = new Set(["Console", "context"])
 export const CONSOLE_KEYS = Object.keys(console)
   .filter(
-    (key) => !CONSOLE_IGNORE.has(key) && typeof console[key] === "function"
+    (key) => !CONSOLE_IGNORE.has(key) && typeof console[key] === "function",
   )
   .sort()
 
@@ -166,9 +166,9 @@ export default class Logger extends Callable {
         // "this" is a "chainable" function based on the "log" method
         // The trick is that the "make" function is an arrow function
         // that can access "this"
-        make("log")
+        make("log"),
       ),
-      "log"
+      "log",
     )
 
     this.stylizer = stylizer

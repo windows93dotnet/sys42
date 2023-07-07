@@ -29,7 +29,7 @@ export default class Mock extends Spy {
           }
 
           return [url, new Response(val, { url })]
-        })
+        }),
       )
 
       fn = async (url) => {
