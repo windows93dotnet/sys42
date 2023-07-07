@@ -60,10 +60,7 @@ progress:not([value])::-webkit-progress-bar { display: none; }
 progress:not([value])::after {
   content: "";
   position: absolute;
-  top: var(--progress-pa);
-  bottom: var(--progress-pa);
-  left: var(--progress-pa);
-  right: var(--progress-pa);
+  inset: var(--progress-pa);
   background: var(--progress__wait-bg);
   border-radius: var(--progress__value-br);
   box-shadow: var(--progress__value-bsh);
