@@ -101,11 +101,6 @@ export default function renderControl(el, stage, plan) {
       )
     }
 
-    if (isRadioButton) {
-      el.value = plan.value
-      el.checked = plan.checked
-    }
-
     if (scopeTo) {
       if (isRadioButton) {
         if (plan.checked) stage.reactive.set(scopeTo, plan.value)
@@ -115,7 +110,22 @@ export default function renderControl(el, stage, plan) {
     }
 
     const name = scopeTo ?? scopeFrom
-    if (name) el.name ||= name
+
+    if (isRadioButton) {
+      el.value = plan.value
+      el.checked = plan.checked
+      if (name && !el.name) {
+        // Allow duplicate radio buttons
+        if (stage.tmp.has(name + plan.value)) {
+          const cnt = stage.tmp.get(name + plan.value) + 1
+          el.name = name + cnt
+          stage.tmp.set(name + plan.value, cnt)
+        } else {
+          el.name = name
+          stage.tmp.set(name + plan.value, 0)
+        }
+      }
+    } else if (name) el.name ||= name
   }
 
   setAttributes(el, setValidation(plan, el))
