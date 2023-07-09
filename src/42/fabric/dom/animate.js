@@ -18,19 +18,19 @@ const prm = window.matchMedia(`(prefers-reduced-motion: reduce)`)
 let prefersReducedMotion = prm.matches
 prm.onchange = (e) => (prefersReducedMotion = e.matches)
 
-/**
- * @param {HTMLElement} el
- */
-export async function cancelAnimations(el) {
-  for (const anim of el.getAnimations()) anim.cancel()
-}
-
-function autoHideScrollbars(el) {
+function hideScrollbars(el) {
   if (el.classList.contains("scrollbar-invisible")) return false
   if (!(el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth)) {
     el.classList.add("scrollbar-invisible")
     return true
   }
+}
+
+/**
+ * @param {HTMLElement} el
+ */
+export async function cancelAnimations(el) {
+  for (const anim of el.getAnimations()) anim.cancel()
 }
 
 /**
@@ -46,7 +46,7 @@ export async function animateTo(el, options, duration = 240) {
   if ("height" in to) el.style.height = `${el.offsetHeight}px`
   if ("width" in to) el.style.width = `${el.offsetWidth}px`
 
-  const restoreScrollbars = autoHideScrollbars(el)
+  const shouldRestoreScrollbars = hideScrollbars(el)
 
   if (prefersReducedMotion) config.duration = 1
   else config.duration ??= config.ms ?? duration
@@ -61,7 +61,7 @@ export async function animateTo(el, options, duration = 240) {
   )
   await anim.finished
 
-  if (restoreScrollbars) el.classList.remove("scrollbar-invisible")
+  if (shouldRestoreScrollbars) el.classList.remove("scrollbar-invisible")
 
   // force rendered element to commit styles
   const { display } = el.style
@@ -120,7 +120,7 @@ export async function animateFrom(el, options, duration = 240) {
     }
   }
 
-  const restoreScrollbars = autoHideScrollbars(el)
+  const restoreScrollbars = hideScrollbars(el)
 
   if (prefersReducedMotion) config.duration = 1
   else config.duration ??= config.ms ?? duration
@@ -143,7 +143,7 @@ export async function animateFrom(el, options, duration = 240) {
 }
 
 export default {
-  cancelAnimations,
+  cancel: cancelAnimations,
   to: animateTo,
   from: animateFrom,
 }
