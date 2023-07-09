@@ -2099,7 +2099,7 @@ Component.define(
 
 test("scope chain", async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       tag: "ui-t-scope-chain",
       content: {
         state: {
@@ -2155,7 +2155,7 @@ Component.define(
 
 test("find component actions", async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), { tag: "ui-t-parent-cpn" }),
+    ui(t.utils.dest({ connect: true }), { tag: "ui-t-parent-cpn" }),
   )
 
   t.is(app.el.textContent, "parent-foo")
@@ -2163,7 +2163,7 @@ test("find component actions", async (t) => {
 
 test("find component actions", "child class", async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       tag: "ui-t-child-cpn",
       content: "{{foo()}} - {{bar()}}",
     }),
@@ -2174,7 +2174,7 @@ test("find component actions", "child class", async (t) => {
 
 test("find component actions", "always ignore 'render'", async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       tag: "ui-t-child-cpn",
       content: "{{render('hello')}}",
     }),
@@ -2205,7 +2205,7 @@ test("find component actions", "ignore base class methods", async (t) => {
 
   try {
     await t.utils.decay(
-      ui(t.utils.dest(true), {
+      ui(t.utils.dest({ connect: true }), {
         tag: "ui-t-child-cpn",
         content: "{{init()}}",
       }),

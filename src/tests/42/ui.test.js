@@ -2225,7 +2225,7 @@ test("input", "prose:true", async (t) => {
 
 test("watch", async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       content: {
         scope: "foo",
         tag: "em",
@@ -2253,7 +2253,7 @@ test("watch", async (t) => {
 
 test("watch in on keyword", async (t) => {
   const app = await t.utils.decay(
-    ui(t.utils.dest(true), {
+    ui(t.utils.dest({ connect: true }), {
       content: {
         scope: "foo",
         tag: "em",
