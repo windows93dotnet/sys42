@@ -2477,3 +2477,26 @@ test("component events inside scope", async (t) => {
 
   t.is(el.textContent, "click")
 })
+
+test("state $ui priority", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest(), {
+      content: {
+        tag: "ui-icon",
+        path: "test.js",
+      },
+      state: {
+        $ui: {
+          icon: {
+            root: {
+              path: "test.css",
+            },
+          },
+        },
+      },
+    }),
+  )
+
+  const el = app.el.querySelector("ui-icon")
+  t.is(el.textContent, "test\u200b.css")
+})

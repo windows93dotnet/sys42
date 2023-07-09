@@ -1249,6 +1249,40 @@ test("if", "bug using reactive.update", async (t) => {
   t.is(app.el.textContent, "")
 })
 
+test("if", "same scope component", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest({ connect: true }), {
+      content: {
+        if: "{{show}}",
+        do: {
+          tag: "ui-icon",
+          path: "test.js",
+        },
+        else: {
+          tag: "ui-icon",
+          path: "test.css",
+        },
+      },
+
+      state: {
+        show: true,
+      },
+    }),
+  )
+
+  t.endsWith(app.el.querySelector("img").src, "javascript.png")
+
+  app.state.show = false
+  await app
+
+  t.endsWith(app.el.querySelector("img").src, "css.png")
+
+  app.state.show = true
+  await app
+
+  t.endsWith(app.el.querySelector("img").src, "javascript.png")
+})
+
 /* data array
 ============= */
 

@@ -143,10 +143,6 @@ export default async function renderProps(el, props, plan) {
       val = item.default
     }
 
-    // if (scope === "/$ui/tree/b05lr0okjhaz/items") {
-    //   console.warn(456, key, val[0])
-    // }
-
     if (item.update) {
       const type = typeof item.update
       if (type === "string" || type === "symbol") {

@@ -94,11 +94,13 @@ export default class Component extends HTMLElement {
     return out
   }
 
+  [_lifecycle] = CREATE
+
   #observed
   #animateTo
   #instanceDestroy
-  #hasNewScope;
-  [_lifecycle] = CREATE
+  #hasOwnScope
+  #clearOwnScope
 
   constructor(...args) {
     super()
@@ -177,8 +179,8 @@ export default class Component extends HTMLElement {
     await this.setup?.(this.stage)
   }
 
-  #setNewScope(props) {
-    this.#hasNewScope = true
+  #setOwnScope(props) {
+    this.#hasOwnScope = true
     this.stage.scopeChain = structuredClone(this.stage.scopeChain)
     this.stage.scopeChain.push({ scope: this.stage.scope, props })
     const i = this.localName.indexOf("-")
@@ -189,6 +191,27 @@ export default class Component extends HTMLElement {
       `${prefix}/${suffix}`,
       stepsToHash(this.stage.steps),
     )
+
+    this.#clearOwnScope = () => {
+      this.stage.cancel.signal.removeEventListener("abort", this.#clearOwnScope)
+
+      if (!this.stage.reactive.data) return
+
+      this.stage.reactive.delete(this.stage.scope, { silent: true })
+
+      if (isEmptyObject(this.stage.reactive.data[prefix]?.[suffix])) {
+        delete this.stage.reactive.data[prefix][suffix]
+      }
+
+      if (isEmptyObject(this.stage.reactive.data[prefix])) {
+        delete this.stage.reactive.data[prefix]
+      }
+
+      const changes = new Set([this.stage.scope])
+      this.stage.reactive.emit("update", changes, changes) // prevent calling $ref renderers
+    }
+
+    this.stage.cancel.signal.addEventListener("abort", this.#clearOwnScope)
   }
 
   async #init(plan, stage, options) {
@@ -292,7 +315,7 @@ export default class Component extends HTMLElement {
     -------------- */
     if (propsKeys.length > 0) {
       if (filteredPropsKeys.length > 0) {
-        this.#setNewScope(filteredPropsKeys)
+        this.#setOwnScope(filteredPropsKeys)
       }
 
       this.#observed = await renderProps(this, configProps, props)
@@ -300,10 +323,10 @@ export default class Component extends HTMLElement {
 
     if (computed) {
       const computedKeys = Object.keys(computed)
-      if (this.#hasNewScope) {
+      if (this.#hasOwnScope) {
         this.stage.scopeChain.at(-1).props.push(...computedKeys)
       } else {
-        this.#setNewScope([...filteredPropsKeys, ...computedKeys])
+        this.#setOwnScope([...filteredPropsKeys, ...computedKeys])
       }
     }
 
@@ -349,7 +372,7 @@ export default class Component extends HTMLElement {
     if (state && options?.skipNormalize !== true) {
       normalizeData(state, this.stage, (res, scope, options) => {
         this.stage.reactive.merge(
-          this.#hasNewScope
+          this.#hasOwnScope
             ? this.stage.scopeChain.at(0).scope
             : this.stage.scope,
           res,
@@ -443,25 +466,8 @@ export default class Component extends HTMLElement {
     if (this.#instanceDestroy) await this.#instanceDestroy(options)
 
     const reason = `${this.localName} destroyed`
+    this.#clearOwnScope?.()
     this.stage.cancel(reason)
-
-    if (this.#hasNewScope && this.stage.reactive.data) {
-      this.stage.reactive.delete(this.stage.scope, { silent: true })
-      const i = this.localName.indexOf("-")
-      let prefix = this.localName.slice(0, i)
-      const suffix = this.localName.slice(i + 1)
-      if (prefix === "ui") prefix = "$" + prefix
-      if (isEmptyObject(this.stage.reactive.data[prefix]?.[suffix])) {
-        delete this.stage.reactive.data[prefix][suffix]
-      }
-
-      if (isEmptyObject(this.stage.reactive.data[prefix])) {
-        delete this.stage.reactive.data[prefix]
-      }
-
-      const changes = new Set([this.stage.scope])
-      this.stage.reactive.emit("update", changes, changes) // prevent calling $ref renderers
-    }
 
     this.ready.resolve()
     this.ready = undefined

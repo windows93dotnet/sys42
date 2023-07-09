@@ -20,6 +20,8 @@ export default function renderIf(plan, stage) {
   let lastChild
   let lastRes
   let cancel
+  let remover
+  let elements
 
   const placeholder = document.createComment(PLACEHOLDER)
   el.append(placeholder)
@@ -42,7 +44,7 @@ export default function renderIf(plan, stage) {
       if ("animate" in ifPlan) plan.else.animate ??= ifPlan.animate
     }
 
-    elsePlan = plan.else ? normalizePlan(plan.else, stage) : undefined
+    elsePlan = normalizePlan(plan.else, stage)
     elseType = getType(elsePlan)
   }
 
@@ -52,24 +54,24 @@ export default function renderIf(plan, stage) {
 
     const [plan, type] = res ? [ifPlan, ifType] : [elsePlan, elseType]
 
-    let remover = noop
-
     if (lastChild) {
+      elements = getNodesInRange(new NodesRange(placeholder, lastChild))
+
       cancel?.("renderIf removed")
       cancel = undefined
+      lastChild = undefined
+
       const plan =
         lastRes === false && elseType === "object" && "animate" in elsePlan
           ? elsePlan
           : ifPlan
-      let elements = getNodesInRange(new NodesRange(placeholder, lastChild))
+
       remover = async () => {
         await removeElements(elements, plan, stage)
         elements.length = 0
         elements = undefined
       }
-
-      lastChild = undefined
-    }
+    } else remover = noop
 
     lastRes = res
     if (!plan) {
