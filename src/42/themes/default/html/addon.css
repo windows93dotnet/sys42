@@ -69,11 +69,11 @@ input::-webkit-calendar-picker-indicator {
 ::file-selector-button,
 selectmenu::after,
 input[list]::after,
-input[type="month" i]::after,
-input[type="datetime-local" i]::after,
 input[type="time" i]::after,
 input[type="week" i]::after,
-input[type="date" i]::after {
+input[type="month" i]::after,
+input[type="date" i]::after,
+input[type="datetime-local" i]::after {
   content: "";
   pointer-events: none;
   z-index: 1;

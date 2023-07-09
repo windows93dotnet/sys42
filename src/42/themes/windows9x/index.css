@@ -316,11 +316,11 @@ select,
 input[list],
 input[type="file" i],
 input[type="number" i],
-input[type="month" i],
-input[type="datetime-local" i],
 input[type="time" i],
 input[type="week" i],
-input[type="date" i] {
+input[type="month" i],
+input[type="date" i],
+input[type="datetime-local" i] {
   --_picto: var(--EMPTY_IMAGE);
   background-image: var(--_picto), var(--addon-bg-url);
   background-position-x: right;
@@ -340,8 +340,21 @@ select:disabled { --_picto: var(--picto--down--d); }
 input[type="file" i] { --_picto: var(--picto--import); }
 input[type="file" i]:disabled { --_picto: var(--picto--import--d); }
 
-input[type="date" i] { --_picto: var(--picto--calendar); }
-input[type="date" i]:disabled { --_picto: var(--picto--calendar--d); }
+:is(
+input[type="time" i],
+input[type="week" i],
+input[type="month" i],
+input[type="date" i],
+input[type="datetime-local" i]
+) { --_picto: var(--picto--calendar); }
+
+:is(
+input[type="time" i],
+input[type="week" i],
+input[type="month" i],
+input[type="date" i],
+input[type="datetime-local" i]
+):disabled { --_picto: var(--picto--calendar--d); }
 
 input[list] { --_picto: var(--input-datalist-picto); }
 input[list]:disabled { --_picto: var(--input-datalist-picto--d); }
