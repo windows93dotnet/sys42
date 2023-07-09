@@ -40,6 +40,7 @@ export default class UI {
     } else {
       if (this.stage.waitlistPreload.length > 0) {
         await this.stage.waitlistPreload.done()
+        delete this.stage.waitlistPreload
       }
 
       this.content = render(this.plan, this.stage, { skipNormalize: true })
@@ -51,6 +52,12 @@ export default class UI {
         this.stage.firstUpdateMade = true
         this.stage.reactive.throttle = true
         await this.stage.waitlistPostrender.call()
+        delete this.stage.waitlistPostrender
+      }
+
+      if (this.stage?.tmp) {
+        this.stage.tmp.clear()
+        delete this.stage.tmp
       }
     }
 
@@ -72,10 +79,11 @@ export default class UI {
 
   destroy() {
     this.stage?.cancel("ui destroyed")
-    this.stage?.waitlistPreload.clear()
-    this.stage?.waitlistComponents.clear()
-    this.stage?.waitlistPending.clear()
-    this.stage?.waitlistPostrender.clear()
+    this.stage?.waitlistPreload?.clear()
+    this.stage?.waitlistPending?.clear()
+    this.stage?.waitlistPostrender?.clear()
+    this.stage?.waitlistComponents?.clear()
+    this.stage?.waitlistTraits?.clear()
     this.content?.remove?.()
     delete this.stage
     delete this.plan

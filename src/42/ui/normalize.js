@@ -851,6 +851,7 @@ export function normalizeStage(stage = {}) {
   stage.plugins ??= Object.create(null)
   stage.computeds ??= Object.create(null)
   stage.refs ??= Object.create(null)
+  stage.tmp ??= new Map()
   stage.scopeChain ??= []
   stage.pluginHandlers ??= []
   stage.scopeResolvers ??= {}
