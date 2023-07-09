@@ -94,8 +94,8 @@ export default function renderIf(plan, stage) {
         const restore = setTemp(el, { style: { display: "none" } })
         newStage.pendingDone().then(() => {
           requestAnimationFrame(async () => {
-            await remover()
             restore()
+            await remover()
           })
         })
       } else {

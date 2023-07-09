@@ -33,24 +33,24 @@
             tag: ".box-center.box-stack",
             content: {
               if: "{{show}}",
-              tag: ".ratio.bd.pa-xxl",
+              tag: ".ratio.bd.pa-xl",
               animate: {
                 from: { rotate: "360deg", scale: 0, ms: 1000 },
                 to: { rotate: "-360deg", scale: 0, ms: 1000 },
               },
-              content: "a",
+              content: { tag: "ui-icon", path: "a.js" },
             },
           },
           {
             tag: ".box-center.box-stack",
             content: {
               if: "{{show}}",
-              tag: ".ratio.bd.pa-xxl",
+              tag: ".ratio.bd.pa-xl",
               animate: { translate: "-150px", scale: 0 },
-              content: "a",
+              content: { tag: "ui-icon", path: "a.js" },
               else: {
-                tag: ".ratio.bd.pa-xxl",
-                content: "b",
+                tag: ".ratio.bd.pa-xl",
+                content: { tag: "ui-icon", path: "b.css" },
                 animate: { translate: "150px", scale: 0 },
               },
             },
@@ -59,12 +59,12 @@
             tag: ".box-center.box-stack",
             content: {
               if: "{{show}}",
-              tag: ".ratio.bd.pa-xxl",
-              animate: { translate: "0 -150px", scale: 0 },
-              content: "a",
+              tag: ".ratio.bd.pa-xl",
+              animate: { translate: "0 -150px", scale: 0, ms: 500 },
+              content: { tag: "ui-icon", path: "a.js" },
               else: {
-                tag: ".ratio.bd.pa-xxl",
-                content: "b",
+                tag: ".ratio.bd.pa-xl",
+                content: { tag: "ui-icon", path: "b.css" },
               },
             },
           },
@@ -72,12 +72,12 @@
             tag: ".box-center.box-stack",
             content: {
               if: "{{show}}",
-              tag: ".ratio.bd.pa-xxl",
+              tag: ".ratio.bd.pa-xl",
               animate: { translate: "0 -150px", scale: 0 },
-              content: "a",
+              content: { tag: "ui-icon", path: "a.js" },
               else: {
-                tag: ".ratio.bd.pa-xxl",
-                content: "b",
+                tag: ".ratio.bd.pa-xl",
+                content: { tag: "ui-icon", path: "b.css" },
                 animate: false,
               },
             },
@@ -177,7 +177,7 @@
   // //   document.querySelector("#item-3")?.click()
   // // }, 600)
 
-  // // setTimeout(() => {
-  // //   document.querySelector("#toggle")?.click()
-  // // }, 1500)
+  setTimeout(() => {
+    document.querySelector("#toggle")?.click()
+  }, 1000)
 </script>
