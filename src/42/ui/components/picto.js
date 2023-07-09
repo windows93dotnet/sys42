@@ -47,6 +47,14 @@ export class Picto extends Component {
   }
 
   async update() {
+    if (!this.value) {
+      this.rasterImage?.remove()
+      this.vectorImage?.remove()
+      this.rasterImage = undefined
+      this.vectorImage = undefined
+      return
+    }
+
     const type = typeof this.value
 
     const isString = type === "string"
