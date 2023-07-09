@@ -56,7 +56,8 @@ ui-accordion {
   margin-bottom: var(--ctrl-group-gap);
 }
 
-button.ui-accordion__trigger {
+.ui-accordion__label button.ui-accordion__trigger,
+.ui-accordion__label button.ui-accordion__trigger:focus {
   all: unset;
   box-sizing: border-box;
   display: flex;
