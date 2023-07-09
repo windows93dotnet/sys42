@@ -18,7 +18,7 @@ const { isPromiseLike } = is
 const setTimeoutNative = globalThis.setTimeout
 const clearTimeoutNative = globalThis.clearTimeout
 
-const PLACEHOLDER = Symbol.for("Assert.PLACEHOLDER")
+const placeholder = Symbol.for("Assert.PLACEHOLDER")
 
 export class AssertionError extends Error {
   constructor(userMessage, message, details, stack) {
@@ -329,7 +329,7 @@ export default class Assert {
 
   eq(actual, expected, message) {
     this.#addCall()
-    if (equals(actual, expected, { placeholder: PLACEHOLDER }) === false) {
+    if (equals(actual, expected, { placeholder }) === false) {
       const clonedActual = clone(actual)
       throw new AssertionError(message, "Values are not deeply equal", {
         actual: clonedActual,
@@ -340,7 +340,7 @@ export default class Assert {
 
   notEq(actual, expected, message) {
     this.#addCall()
-    if (equals(actual, expected)) {
+    if (equals(actual, expected, { placeholder })) {
       throw new AssertionError(message, "Values are deeply equal", {
         actual,
         expected,
@@ -351,7 +351,7 @@ export default class Assert {
   any(actual, expected, message) {
     this.#addCall()
     for (const item of expected) {
-      if (equals(actual, item, { placeholder: PLACEHOLDER })) return
+      if (equals(actual, item, { placeholder })) return
     }
 
     const clonedActual = clone(actual)
@@ -365,7 +365,7 @@ export default class Assert {
   // simplify deep equal test for objects created using Object.create(null)
   alike(actual, expected, message) {
     this.#addCall()
-    if (equals(actual, expected, { proto: false }) === false) {
+    if (equals(actual, expected, { proto: false, placeholder }) === false) {
       const clonedActual = clone(actual)
       throw new AssertionError(message, "Values are not deeply alike", {
         actual: clonedActual,
@@ -376,10 +376,34 @@ export default class Assert {
 
   notAlike(actual, expected, message) {
     this.#addCall()
-    if (equals(actual, expected, { proto: false })) {
+    if (equals(actual, expected, { proto: false, placeholder })) {
       throw new AssertionError(message, "Values are deeply alike", {
         actual,
         expected,
+      })
+    }
+  }
+
+  startsWith(string, substring, message, details) {
+    this.#addCall()
+    string = String(string)
+    if (!string.startsWith(substring)) {
+      throw new AssertionError(message, "Value must starts with substring", {
+        string,
+        substring,
+        ...details,
+      })
+    }
+  }
+
+  endsWith(string, substring, message, details) {
+    this.#addCall()
+    string = String(string)
+    if (!string.endsWith(substring)) {
+      throw new AssertionError(message, "Value must ends with substring", {
+        string,
+        substring,
+        ...details,
       })
     }
   }
@@ -445,7 +469,7 @@ export default class Assert {
             false,
             path,
           )
-        } else if (val === PLACEHOLDER) {
+        } else if (val === placeholder) {
           if (key in actual !== true) {
             throw new AssertionError(
               message,
@@ -498,7 +522,9 @@ export default class Assert {
       })
     }
 
-    if (actual.some((item) => equals(item, expected)) === false) {
+    if (
+      actual.some((item) => equals(item, expected, { placeholder })) === false
+    ) {
       throw new AssertionError(message, `Value does not contain expectation`, {
         actual,
         expected,
