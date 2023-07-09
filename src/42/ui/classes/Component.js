@@ -341,7 +341,7 @@ export default class Component extends HTMLElement {
         Object.defineProperty(renderConfig, key, {
           enumerable: true,
           get: () => {
-            if (plan.traits?.[key]) delete plan.traits[key] // [1]
+            if (plan.traits && key in plan.traits) delete plan.traits[key] // [1]
             delete plan[key] // [1]
             return this[key]
           },
@@ -352,7 +352,7 @@ export default class Component extends HTMLElement {
         Object.defineProperty(renderConfig, key, {
           enumerable: true,
           get() {
-            if (plan.traits?.[key]) delete plan.traits[key] // [1]
+            if (plan.traits && key in plan.traits) delete plan.traits[key] // [1]
             delete plan[key] // [1]
             return val
           },
