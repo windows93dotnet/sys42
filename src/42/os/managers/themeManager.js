@@ -10,6 +10,8 @@ const DEFAULTS = {
 }
 
 class ThemeManager extends ConfigFile {
+  #fallbackIcon
+
   async init() {
     if (this.value.module) {
       await import(this.value.module).then((module) => {
@@ -22,12 +24,34 @@ class ThemeManager extends ConfigFile {
     // el.id = "theme"
   }
 
+  postload() {
+    this.#fallbackIcon = undefined
+  }
+
   async getIconPath(infos, size = "32x32") {
     await this.ready
     for (const themePath of this.value.icons) {
       const path = await findIconPath(themePath, infos, size)
       if (path) return path
     }
+
+    if (typeof infos === "string") {
+      // If unfound try from a freedesktop name
+      // https://specifications.freedesktop.org/icon-naming-spec/latest/ar01s04.html
+      infos = infos.replace("-", "/")
+      for (const themePath of this.value.icons) {
+        const path = await findIconPath(themePath, infos, size)
+        if (path) return path
+      }
+    }
+
+    this.#fallbackIcon ??= await findIconPath(
+      this.value.icons[0],
+      "subtype/octet-stream",
+      size,
+    )
+
+    return this.#fallbackIcon
   }
 
   async refresh() {

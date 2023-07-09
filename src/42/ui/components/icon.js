@@ -88,11 +88,11 @@ class Icon extends Component {
       infos.description = "shortcut"
 
       if (this.small) {
-        infos.image16x16 ??= await fs.getURL(
-          await themeManager.getIconPath(icon, "16x16"),
-        )
+        const iconPath = await themeManager.getIconPath(icon, "16x16")
+        infos.image16x16 ??= await fs.getURL(iconPath)
       } else {
-        infos.image ??= await fs.getURL(await themeManager.getIconPath(icon))
+        const iconPath = await themeManager.getIconPath(icon, "32x32")
+        infos.image ??= await fs.getURL(iconPath)
       }
 
       return infos
