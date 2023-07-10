@@ -624,16 +624,17 @@ function normalizeOn(plan) {
   }
 
   if (plan.dialog) {
+    const dialog = objectifyPlan(plan.dialog)
     plan.on ??= []
-    plan.on.push({ click: { dialog: plan.dialog } })
+    plan.on.push({ click: { dialog } })
     delete plan.dialog
   }
 
   if (plan.popup) {
+    const popup = objectifyPlan(plan.popup)
+    popup.tag ??= "div.outset.panel.pa"
     plan.on ??= []
-    plan.on.push({
-      "pointerdown || Enter || ArrowRight": { popup: plan.popup },
-    })
+    plan.on.push({ "pointerdown || Enter || ArrowRight": { popup } })
     delete plan.popup
   }
 
