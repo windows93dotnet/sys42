@@ -3,6 +3,9 @@ import system from "../../../../42/core/dev/testing/mainSystem.js"
 import preload from "../../../../42/core/load/preload.js"
 import inTop from "../../../../42/core/env/realm/inTop.js"
 import listen from "../../../../42/fabric/event/listen.js"
+import uid from "../../../../42/core/uid.js"
+
+import "../../../../42/ui/popup.js"
 
 let current = 0
 const responses = new Map()
@@ -74,7 +77,11 @@ export async function launch(t, open, close, ...rest) {
   return res
 }
 
-export async function make(t, { href, makeContent }, iframe = true) {
+export async function make(
+  t,
+  { href, makeContent, iframe = true, sync = true },
+) {
+  const id = uid()
   const app = await t.utils.decay(
     ui(
       t.utils.dest({ connect: true }),
@@ -88,9 +95,7 @@ export async function make(t, { href, makeContent }, iframe = true) {
                 iframe && {
                   tag: "ui-sandbox.ground",
                   permissions: "trusted",
-                  path: href,
-                  // tag: "iframe.ground",
-                  // src: href,
+                  path: `${href}?test=true&initiator=${id}`,
                 },
               ],
             },
@@ -98,9 +103,12 @@ export async function make(t, { href, makeContent }, iframe = true) {
         : {
             tag: ".box-fit",
             content: makeContent(),
-            // plugins: ["ipc"],
           },
-      { trusted: true },
+      inTop
+        ? { id, trusted: true }
+        : sync
+        ? { initiator: new URLSearchParams(location.search).get("initiator") }
+        : undefined,
     ),
   )
 

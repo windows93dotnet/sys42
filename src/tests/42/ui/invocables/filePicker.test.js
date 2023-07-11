@@ -5,7 +5,7 @@ const manual = 0
 const iframe = 1
 
 const { href } = new URL(
-  "../../../../demos/ui/invocables/filePicker.demo.html?test=true",
+  "../../../../demos/ui/invocables/filePicker.demo.html",
   import.meta.url,
 )
 
@@ -72,7 +72,7 @@ const filesPromise = Promise.all([
 
 test.ui(async (t) => {
   t.timeout(6000)
-  await make(t, { href, makeContent }, iframe)
+  await make(t, { href, makeContent, iframe })
   if (manual) return t.pass()
 
   const files = await filesPromise

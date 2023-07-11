@@ -2,18 +2,16 @@ import test from "../../../../42/test.js"
 import { make, launch, log, inTop } from "./helpers.js"
 
 const manual = 0
-const iframe = 0
+const iframe = 1
 
 const { href } = new URL(
-  "../../../../demos/ui/invocables/demands.demo.html?test=true",
+  "../../../../demos/ui/invocables/demands.demo.html",
   import.meta.url,
 )
 
 import prompt from "../../../../42/ui/invocables/prompt.js"
 import alert from "../../../../42/ui/invocables/alert.js"
 import confirm from "../../../../42/ui/invocables/confirm.js"
-
-const err = new TypeError("boom")
 
 const makeContent = () => ({
   tag: ".w-full.pa-xl",
@@ -45,7 +43,7 @@ const makeContent = () => ({
       label: "Error",
       id: "alertError",
       click() {
-        log(alert(err))
+        log(alert(new TypeError("boom")))
       },
     },
     {
@@ -120,7 +118,7 @@ const makeContent = () => ({
 })
 
 test.ui(async (t) => {
-  await make(t, { href, makeContent }, iframe)
+  await make(t, { href, makeContent, iframe })
 
   if (manual) {
     if (inTop) await t.puppet("#alert").click()
