@@ -101,6 +101,7 @@ export default class Component extends HTMLElement {
   #instanceDestroy
   #hasOwnScope
   #clearOwnScope
+  #constructorInit
 
   constructor(...args) {
     super()
@@ -111,15 +112,14 @@ export default class Component extends HTMLElement {
 
     if (this.isRendered()) return
 
-    const shouldInit =
+    this.#constructorInit =
       args.length > 0 ||
       (this.parentElement !== null && !this.hasAttribute("data-no-init"))
 
-    if (shouldInit) this.init(...args)
+    if (this.#constructorInit) this.init(...args)
   }
 
   isRendered() {
-    // a component created using cloneNode(true) should not init itself
     return (
       this.firstChild?.nodeType === Node.COMMENT_NODE &&
       this.firstChild.textContent === "[rendered]"
@@ -148,10 +148,15 @@ export default class Component extends HTMLElement {
     }
 
     if (this[_lifecycle] === RECYCLE) this[_lifecycle] = SETUP
-    if (this.isRendered()) return
+    if (this.isRendered()) return // a component created using cloneNode(true) should not init itself
 
-    if (this[_lifecycle] === INIT) this.ready.then(() => this.#setup())
-    else if (this[_lifecycle] === CREATE) this.init().then(() => this.#setup())
+    if (this[_lifecycle] === INIT) {
+      await this.ready
+      this.#setup()
+    } else if (this[_lifecycle] === CREATE) {
+      await (this.#constructorInit ? this.ready : this.init())
+      this.#setup()
+    }
   }
 
   disconnectedCallback() {
@@ -215,7 +220,7 @@ export default class Component extends HTMLElement {
   }
 
   async #init(plan, stage, options) {
-    if (stage?.cancel?.signal.aborted) return
+    if (stage?.detached !== true && stage?.cancel?.signal.aborted) return
 
     this.removeAttribute("data-no-init")
     this[_lifecycle] = INIT

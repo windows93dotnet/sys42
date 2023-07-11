@@ -214,10 +214,11 @@ const tracker = new Map()
 export const dialog = rpc(
   async function dialog(plan, stage) {
     const { steps } = stage
-    let n = tracker.has(steps) ? tracker.get(steps) : 0
-    stage = { ...stage }
-    stage.steps += ",dialog°" + n++
+    const n = tracker.has(steps) ? tracker.get(steps) + 1 : 0
     tracker.set(steps, n)
+
+    stage = { ...stage }
+    stage.steps += ",dialog°" + n
 
     const el = new Dialog(plan, stage)
     const { opener } = el
