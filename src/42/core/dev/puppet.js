@@ -235,7 +235,7 @@ const makePuppet = () => {
       },
     },
 
-    function ({ data }, target, options) {
+    function ({ data }, target = document.documentElement, options) {
       data.order.push({ target, options })
       return this
     },
