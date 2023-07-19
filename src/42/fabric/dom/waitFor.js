@@ -3,6 +3,17 @@ function cleanup(intervalID, timeoutID) {
   clearTimeout(timeoutID)
 }
 
+/**
+ * Waits for a CSS selector to be present
+ * @param {string} selector CSS selector
+ * @param {object} [options]
+ * @param {boolean} [options.base] Base element, defaults to document.documentElement
+ * @param {boolean} [options.all=false] Returns array of all matching elements if true
+ * @param {number} [options.timeout=3000] Fail timeout in milliseconds
+ * @param {number} [options.polling=100] Number of retries
+ * @param {AbortSignal} [options.signal] Abort signal
+ * @returns {Promise<Element | Element[]>}
+ */
 export default async function waitFor(selector, options) {
   const timeout = options?.timeout ?? 3000
   const polling = options?.polling ?? 100
@@ -16,9 +27,9 @@ export default async function waitFor(selector, options) {
   }
 
   return new Promise((resolve, reject) => {
-    const intervalID = setInterval(() => {
+    const intervalId = setInterval(() => {
       if (options?.signal?.aborted) {
-        cleanup(intervalID, timeoutID)
+        cleanup(intervalId, timeoutId)
         reject(options.signal.reason)
       }
 
@@ -32,13 +43,13 @@ export default async function waitFor(selector, options) {
       }
 
       if (el) {
-        cleanup(intervalID, timeoutID)
-        resolve(options?.all ? [...el] : el)
+        cleanup(intervalId, timeoutId)
+        resolve(el)
       }
     }, polling)
 
-    const timeoutID = setTimeout(() => {
-      cleanup(intervalID, timeoutID)
+    const timeoutId = setTimeout(() => {
+      cleanup(intervalId, timeoutId)
       reject(new Error(`Waiting for "${selector}" selector timed out`))
     }, timeout)
   })

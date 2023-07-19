@@ -247,7 +247,7 @@ class Selectable extends Trait {
 
     this._remove = this.config.attributes
       ? (el, val) => {
-          removeAttributes(el, this.config.attributes, { flip: true })
+          removeAttributes(el, this.config.attributes, { flipBoolean: true })
           this.config.remove(el, val)
         }
       : this.config.remove

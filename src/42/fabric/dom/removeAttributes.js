@@ -4,6 +4,14 @@ import isHashmapLike from "../type/any/is/isHashmapLike.js"
 import arrify from "../type/any/arrify.js"
 import cssPrefix from "../cssom/cssPrefix.js"
 
+/**
+ * Remove attributes from an element.
+ * @param {Element} el
+ * @param {object} obj An object with attribute names as keys.
+ * @param {object} [options]
+ * @param {boolean} [options.flipBoolean=false]
+ * @returns {Element}
+ */
 export function removeAttributes(el, obj, options) {
   if (!obj) return el
 
@@ -17,7 +25,7 @@ export function removeAttributes(el, obj, options) {
         } else el.classList.remove(...arrify(val))
       } else if (key === "aria") {
         const isArray = Array.isArray(val)
-        if (!isArray && options?.flip === true) {
+        if (!isArray && options?.flipBoolean === true) {
           for (const [key, value] of Object.entries(val)) {
             el.setAttribute(`aria-${key}`, String(!value))
           }

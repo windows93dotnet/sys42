@@ -1,4 +1,13 @@
 // [1] SVG doesn't support `className` // TODO: check browser compatibility
+
+/**
+ * Set the classes on an element.
+ * @param {Element} el
+ * @param {string | string[] | object} val A string or an array of strings or an object with classes as keys and boolean values.
+ * @param {object} [options]
+ * @param {boolean} [options.replaceClass=true]
+ * @returns {Element}
+ */
 export default function setClasses(el, val, options) {
   if (Array.isArray(val)) {
     if (options?.replaceClass === false) el.classList.add(...val)
