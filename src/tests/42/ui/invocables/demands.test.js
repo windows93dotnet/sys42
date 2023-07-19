@@ -1,5 +1,10 @@
 import test from "../../../../42/test.js"
-import { make, launch, log, inTop } from "./helpers.js"
+import {
+  makeRealm,
+  openPopup,
+  log,
+  inTop,
+} from "../../../../42/core/dev/testing/helpers/openPopup.js"
 
 const manual = 0
 const iframe = 1
@@ -118,7 +123,7 @@ const makeContent = () => ({
 })
 
 test.ui(async (t) => {
-  await make(t, { href, makeContent, iframe })
+  await makeRealm(t, { href, iframe }, makeContent)
 
   if (manual) {
     if (inTop) await t.puppet("#alert").click()
@@ -127,32 +132,32 @@ test.ui(async (t) => {
 
   await Promise.all([
     // alert always return true
-    launch(t, "#alert", ".ui-dialog__agree", true),
-    launch(t, "#alert", ".ui-dialog__close", true),
+    openPopup(t, "#alert", ".ui-dialog__agree", true),
+    openPopup(t, "#alert", ".ui-dialog__close", true),
 
     // confirm return a boolean
-    launch(t, "#confirm", ".ui-dialog__agree", true),
-    launch(t, "#confirm", ".ui-dialog__close", false),
-    launch(t, "#confirm", ".ui-dialog__decline", false),
+    openPopup(t, "#confirm", ".ui-dialog__agree", true),
+    openPopup(t, "#confirm", ".ui-dialog__close", false),
+    openPopup(t, "#confirm", ".ui-dialog__decline", false),
 
     // prompt return a string or undefined
-    launch(t, "#prompt", ".ui-dialog__agree", ""),
-    launch(t, "#prompt", ".ui-dialog__decline", undefined),
-    launch(t, "#prompt", ".ui-dialog__close", undefined),
+    openPopup(t, "#prompt", ".ui-dialog__agree", ""),
+    openPopup(t, "#prompt", ".ui-dialog__decline", undefined),
+    openPopup(t, "#prompt", ".ui-dialog__close", undefined),
 
-    launch(t, "#prompt", ".ui-dialog__agree", "derp", async (dialog) => {
+    openPopup(t, "#prompt", ".ui-dialog__agree", "derp", async (dialog) => {
       const input = dialog.querySelector('[name="/value"]')
       await t.puppet(input).fill("derp")
     }),
 
     // Customs
     // -------
-    launch(t, "#alertCustom", ".ui-dialog__agree", true, async (dialog) => {
+    openPopup(t, "#alertCustom", ".ui-dialog__agree", true, async (dialog) => {
       t.match(dialog.querySelector("img").src, /warning\./)
       t.is(dialog.querySelector(".ui-dialog__agree").textContent, "Fine !")
     }),
 
-    launch(t, "#confirmCustom", ".ui-dialog__agree", true, (dialog) => {
+    openPopup(t, "#confirmCustom", ".ui-dialog__agree", true, (dialog) => {
       t.match(dialog.querySelector("img").src, /question\./)
       t.is(dialog.querySelector(".ui-dialog__agree").textContent, "Yep")
       t.is(dialog.querySelector(".ui-dialog__decline").textContent, "Nope")
@@ -160,7 +165,7 @@ test.ui(async (t) => {
       t.is(dialog.querySelector(".ui-dialog__decline ui-picto").value, "cross")
     }),
 
-    launch(t, "#promptCustom", ".ui-dialog__agree", "42", (dialog) => {
+    openPopup(t, "#promptCustom", ".ui-dialog__agree", "42", (dialog) => {
       t.match(dialog.querySelector("img").src, /question\./)
       t.is(dialog.querySelector(".ui-dialog__agree").textContent, "Ok")
       t.is(dialog.querySelector(".ui-dialog__decline").textContent, "Cancel")
@@ -172,7 +177,7 @@ test.ui(async (t) => {
       t.is(label.htmlFor, input.id)
     }),
 
-    launch(
+    openPopup(
       t,
       "#promptAutoTextarea",
       ".ui-dialog__agree",

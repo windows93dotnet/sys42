@@ -1,5 +1,9 @@
 import test from "../../../../42/test.js"
-import { make, launch, inTop } from "../invocables/helpers.js"
+import {
+  makeRealm,
+  openPopup,
+  inTop,
+} from "../../../../42/core/dev/testing/helpers/openPopup.js"
 
 const manual = 0
 const iframe = 1
@@ -59,21 +63,21 @@ const makeContent = () => ({
 })
 
 test.ui(async (t) => {
-  const app = await make(t, { href, makeContent, iframe, sync: !false })
+  await makeRealm(t, { href, iframe, sync: !false }, makeContent)
 
   if (manual) return t.pass()
 
   const menuBtn = document.querySelector("#menu")
   t.is(menuBtn.getAttribute("aria-expanded"), "false")
-  const menu = await launch(t, menuBtn)
+  const menu = await openPopup(t, menuBtn)
   t.is(menuBtn.getAttribute("aria-expanded"), "true")
 
   const submenuBtn = menu.querySelector("#submenu")
   t.is(submenuBtn.getAttribute("aria-expanded"), "false")
-  const submenu = await launch(t, submenuBtn)
+  const submenu = await openPopup(t, submenuBtn)
   t.is(submenuBtn.getAttribute("aria-expanded"), "true")
 
-  const dialog = await launch(t, submenu.querySelector("#dialog"))
+  const dialog = await openPopup(t, submenu.querySelector("#dialog"))
 
   await t.sleep(50)
   t.is(submenuBtn.isConnected, false)

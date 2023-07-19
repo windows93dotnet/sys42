@@ -1,26 +1,28 @@
-import ui from "../../../../42/ui.js"
-import system from "../../../../42/core/dev/testing/mainSystem.js"
-import preload from "../../../../42/core/load/preload.js"
-import inTop from "../../../../42/core/env/realm/inTop.js"
-import listen from "../../../../42/fabric/event/listen.js"
-import uid from "../../../../42/core/uid.js"
+import ui from "../../../../ui.js"
+import system from "../mainSystem.js"
+import preload from "../../../load/preload.js"
+import inTop from "../../../env/realm/inTop.js"
+import listen from "../../../../fabric/event/listen.js"
+import uid from "../../../uid.js"
 
-import "../../../../42/ui/popup.js"
+import "../../../../ui/popup.js"
+
+const idMap = new Map()
 
 let current = 0
 const responses = new Map()
 export function log(promise) {
   responses.set(current, promise)
   if (system.testing.manual) {
-    Promise.all([import("../../../../42/core/log.js"), promise]).then(
-      ([m, arg]) => m.default.inspect.async(arg),
+    Promise.all([import("../../../log.js"), promise]).then(([m, arg]) =>
+      m.default.inspect.async(arg),
     )
   }
 }
 
 const { top } = globalThis
 
-export async function launch(t, open, ...rest) {
+export async function openPopup(t, open, ...rest) {
   let fn
   let close
   let expected
@@ -37,9 +39,13 @@ export async function launch(t, open, ...rest) {
   }
 
   const id = ++current
-  const el = typeof open === "string" ? document.querySelector(open) : open
+  const openIsString = typeof open === "string"
+  const el = openIsString
+    ? document.querySelector(open) || document.querySelector(idMap.get(open))
+    : open
   const originalId = el.id
   const newId = originalId + id + (inTop ? "top" : "iframe")
+  if (openIsString) idMap.set(open, "#" + newId)
 
   const p = new Promise((resolve, reject) => {
     const forget = listen(top, {
@@ -79,6 +85,7 @@ export async function launch(t, open, ...rest) {
 
   el.id = newId
   t.puppet(el).click().run()
+  // el.id = originalId
   const res = responses.get(id)
 
   const target = await p
@@ -94,9 +101,10 @@ export async function launch(t, open, ...rest) {
   return res
 }
 
-export async function make(
+export async function makeRealm(
   t,
-  { href, makeContent, iframe = true, sync = true },
+  { href, top = true, iframe = true, sync = true },
+  makeContent,
 ) {
   const id = uid()
   const app = await t.utils.decay(
@@ -108,7 +116,7 @@ export async function make(
             content: {
               tag: ".box-h.size-full",
               content: [
-                makeContent(),
+                top ? makeContent() : undefined,
                 iframe
                   ? {
                       tag: "ui-sandbox.ground",
@@ -134,12 +142,7 @@ export async function make(
   return app
 }
 
-export default {
-  preload,
-  launch,
-  make,
-  log,
-}
+export default { preload, openPopup, makeRealm, log }
 
-export { default as preload } from "../../../../42/core/load/preload.js"
-export { default as inTop } from "../../../../42/core/env/realm/inTop.js"
+export { default as preload } from "../../../load/preload.js"
+export { default as inTop } from "../../../env/realm/inTop.js"

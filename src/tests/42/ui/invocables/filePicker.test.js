@@ -1,5 +1,10 @@
 import test from "../../../../42/test.js"
-import { make, launch, log, preload } from "./helpers.js"
+import {
+  makeRealm,
+  openPopup,
+  log,
+  preload,
+} from "../../../../42/core/dev/testing/helpers/openPopup.js"
 
 const manual = 0
 const iframe = 1
@@ -72,7 +77,7 @@ const filesPromise = Promise.all([
 
 test.ui(async (t) => {
   t.timeout(6000)
-  await make(t, { href, makeContent, iframe })
+  await makeRealm(t, { href, iframe }, makeContent)
   if (manual) return t.pass()
 
   const files = await filesPromise
@@ -81,9 +86,9 @@ test.ui(async (t) => {
     /* Open
     ======= */
 
-    launch(t, "#filePickerOpen", ".ui-dialog__close", { ok: false }),
-    launch(t, "#filePickerOpen", ".ui-dialog__decline", { ok: false }),
-    launch(
+    openPopup(t, "#filePickerOpen", ".ui-dialog__close", { ok: false }),
+    openPopup(t, "#filePickerOpen", ".ui-dialog__decline", { ok: false }),
+    openPopup(
       t,
       "#filePickerOpen",
       ".ui-dialog__agree",
@@ -99,7 +104,7 @@ test.ui(async (t) => {
         t.is(t.puppet.$(".ui-dialog__agree", dialog).disabled, false)
       },
     ),
-    launch(
+    openPopup(
       t,
       "#filePickerOpen",
       ".ui-dialog__agree",
@@ -118,7 +123,7 @@ test.ui(async (t) => {
           .click()
       },
     ),
-    launch(
+    openPopup(
       t,
       "#filePickerOpen",
       false,
@@ -141,15 +146,15 @@ test.ui(async (t) => {
     // /* Save
     // ======= */
 
-    launch(t, "#filePickerSave", ".ui-dialog__close", { ok: false }),
-    launch(t, "#filePickerSave", ".ui-dialog__decline", { ok: false }),
-    launch(t, "#filePickerSave", ".ui-dialog__agree", {
+    openPopup(t, "#filePickerSave", ".ui-dialog__close", { ok: false }),
+    openPopup(t, "#filePickerSave", ".ui-dialog__decline", { ok: false }),
+    openPopup(t, "#filePickerSave", ".ui-dialog__agree", {
       ok: true,
       path: "/untitled.txt",
       // dir: "/",
       // base: "untitled.txt",
     }),
-    launch(
+    openPopup(
       t,
       "#filePickerSave",
       ".ui-dialog__agree",
@@ -165,11 +170,13 @@ test.ui(async (t) => {
       },
     ),
 
-    launch(t, "#filePickerSaveContent", ".ui-dialog__close", { ok: false }),
-    launch(t, "#filePickerSaveContent", ".ui-dialog__decline", { ok: false }),
+    openPopup(t, "#filePickerSaveContent", ".ui-dialog__close", { ok: false }),
+    openPopup(t, "#filePickerSaveContent", ".ui-dialog__decline", {
+      ok: false,
+    }),
   ])
 
-  await launch(
+  await openPopup(
     t,
     "#filePickerSaveContent",
     ".ui-dialog__agree",

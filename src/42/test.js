@@ -6,7 +6,7 @@ import Suite from "./core/dev/testing/classes/Suite.js"
 import Test from "./core/dev/testing/classes/Test.js"
 import ensureCurrentSuite from "./core/dev/testing/ensureCurrentSuite.js"
 import addUtilities from "./core/dev/testing/addUtilities.js"
-import uiTest from "./core/dev/testing/uiTest.js"
+import uiTest from "./core/dev/testing/helpers/uiTest.js"
 import inIframe from "./core/env/realm/inIframe.js"
 
 export { default as mock } from "./core/dev/testing/mock.js"
