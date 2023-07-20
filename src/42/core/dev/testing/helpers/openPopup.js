@@ -45,9 +45,24 @@ export async function openPopup(t, open, ...rest) {
     : open
   const originalId = el.id
   const newId = originalId + id + (inTop ? "top" : "iframe")
+
+  // Save the new ID to prevent successive calls to fail
+  // TODO: find better solution
   if (openIsString) idMap.set(open, "#" + newId)
 
-  const p = new Promise((resolve, reject) => {
+  // Always restore the original ID on close
+  const forget = listen(top, {
+    "uidialogclose || uipopupclose"({ target }) {
+      if (target.opener === newId) {
+        forget()
+        el.id = originalId
+      }
+    },
+  })
+
+  el.id = newId
+
+  const openPromise = new Promise((resolve, reject) => {
     const forget = listen(top, {
       async "uidialogopen || uipopupopen"({ target }) {
         if (target.opener === newId) {
@@ -74,30 +89,21 @@ export async function openPopup(t, open, ...rest) {
     })
   })
 
-  const forget = listen(top, {
-    "uidialogclose || uipopupclose"({ target }) {
-      if (target.opener === newId) {
-        forget()
-        el.id = originalId
-      }
-    },
-  })
-
-  el.id = newId
   t.puppet(el).click().run()
-  // el.id = originalId
   const res = responses.get(id)
+  const popupTarget = await openPromise
 
-  const target = await p
-
-  if (close === undefined && fn === undefined) return target
+  if (close === undefined && fn === undefined) return popupTarget
 
   if (hasExpected) t.eq(await res, expected)
 
+  // Some tests fail using too many concurrent async calls without delay
+  // TODO: find better solution
+  await t.sleep(20)
   // await t.timeout("reset")
   // await t.utils.idle()
   // await t.timeout("reset")
-  await t.sleep(20)
+
   return res
 }
 
