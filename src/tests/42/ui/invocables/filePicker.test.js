@@ -1,10 +1,10 @@
 import test from "../../../../42/test.js"
 import {
-  makeRealm,
-  openPopup,
+  makeRealmLab,
+  triggerOpener,
   log,
   preload,
-} from "../../../../42/core/dev/testing/helpers/openPopup.js"
+} from "../../../../42/core/dev/testing/helpers/triggerOpener.js"
 
 const manual = 0
 const iframe = 1
@@ -75,9 +75,9 @@ const filesPromise = Promise.all([
   fs.open("/index.html"),
 ])
 
-test.ui(async (t) => {
+test.ui(async (t, { makeRealmLab, triggerOpener }) => {
   t.timeout(6000)
-  await makeRealm(t, { href, iframe }, makeContent)
+  await makeRealmLab({ href, iframe }, makeContent)
   if (manual) return t.pass()
 
   const files = await filesPromise
@@ -86,9 +86,9 @@ test.ui(async (t) => {
     /* Open
     ======= */
 
-    openPopup(t, "#filePickerOpen", ".ui-dialog__close", { ok: false }),
-    openPopup(t, "#filePickerOpen", ".ui-dialog__decline", { ok: false }),
-    openPopup(
+    triggerOpener("#filePickerOpen", ".ui-dialog__close", { ok: false }),
+    triggerOpener("#filePickerOpen", ".ui-dialog__decline", { ok: false }),
+    triggerOpener(
       t,
       "#filePickerOpen",
       ".ui-dialog__agree",
@@ -104,7 +104,7 @@ test.ui(async (t) => {
         t.is(t.puppet.$(".ui-dialog__agree", dialog).disabled, false)
       },
     ),
-    openPopup(
+    triggerOpener(
       t,
       "#filePickerOpen",
       ".ui-dialog__agree",
@@ -123,7 +123,7 @@ test.ui(async (t) => {
           .click()
       },
     ),
-    openPopup(
+    triggerOpener(
       t,
       "#filePickerOpen",
       false,
@@ -146,15 +146,15 @@ test.ui(async (t) => {
     // /* Save
     // ======= */
 
-    openPopup(t, "#filePickerSave", ".ui-dialog__close", { ok: false }),
-    openPopup(t, "#filePickerSave", ".ui-dialog__decline", { ok: false }),
-    openPopup(t, "#filePickerSave", ".ui-dialog__agree", {
+    triggerOpener("#filePickerSave", ".ui-dialog__close", { ok: false }),
+    triggerOpener("#filePickerSave", ".ui-dialog__decline", { ok: false }),
+    triggerOpener("#filePickerSave", ".ui-dialog__agree", {
       ok: true,
       path: "/untitled.txt",
       // dir: "/",
       // base: "untitled.txt",
     }),
-    openPopup(
+    triggerOpener(
       t,
       "#filePickerSave",
       ".ui-dialog__agree",
@@ -170,13 +170,13 @@ test.ui(async (t) => {
       },
     ),
 
-    openPopup(t, "#filePickerSaveContent", ".ui-dialog__close", { ok: false }),
-    openPopup(t, "#filePickerSaveContent", ".ui-dialog__decline", {
+    triggerOpener("#filePickerSaveContent", ".ui-dialog__close", { ok: false }),
+    triggerOpener("#filePickerSaveContent", ".ui-dialog__decline", {
       ok: false,
     }),
   ])
 
-  await openPopup(
+  await triggerOpener(
     t,
     "#filePickerSaveContent",
     ".ui-dialog__agree",

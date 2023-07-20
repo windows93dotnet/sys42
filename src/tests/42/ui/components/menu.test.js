@@ -1,9 +1,4 @@
 import test from "../../../../42/test.js"
-import {
-  makeRealm,
-  openPopup,
-  inTop,
-} from "../../../../42/core/dev/testing/helpers/openPopup.js"
 
 const manual = 0
 const iframe = 1
@@ -42,7 +37,7 @@ const makeContent = () => ({
               label: "Dialog",
               id: "dialog",
               dialog: {
-                label: inTop ? "Top" : "Iframe",
+                label: test.env.realm.inTop ? "Top" : "Iframe",
                 content: [
                   {
                     tag: "button",
@@ -64,31 +59,33 @@ const makeContent = () => ({
   },
 })
 
-test.ui(async (t) => {
-  window.app = await makeRealm(
-    t,
+test.ui(async (t, { makeRealmLab, triggerOpener, whenIframesReady }) => {
+  window.app = await makeRealmLab(
     { href, iframe, syncData: true, nestedTestsParallel: true },
     makeContent,
   )
 
-  await t.utils.whenIframesReady()
+  await whenIframesReady()
+  // await t.sleep(100)
 
   if (manual) return t.pass()
 
   await t.puppet("#btnIncr", window.app.el).click()
   t.pass()
 
+  /*  */
+
   // const menuBtn = document.querySelector("#menu")
   // t.is(menuBtn.getAttribute("aria-expanded"), "false")
-  // const menu = await openPopup(t, menuBtn)
+  // const menu = await triggerOpener(menuBtn)
   // t.is(menuBtn.getAttribute("aria-expanded"), "true")
 
   // const submenuBtn = menu.querySelector("#submenu")
   // t.is(submenuBtn.getAttribute("aria-expanded"), "false")
-  // const submenu = await openPopup(t, submenuBtn)
+  // const submenu = await triggerOpener(submenuBtn)
   // t.is(submenuBtn.getAttribute("aria-expanded"), "true")
 
-  // const dialog = await openPopup(t, submenu.querySelector("#dialog"))
+  // const dialog = await triggerOpener(submenu.querySelector("#dialog"))
   // // const btnDialogIncr = dialog.querySelector("#btnDialogIncr")
 
   // await t.puppet("#btnDialogIncr", dialog).click()

@@ -39,8 +39,13 @@ if (debug) {
 /* </DEV> */
 
 export default async function ipcPlugin(stage) {
+  stage.signal.addEventListener("abort", ({ target }) => {
+    console.log("ipcPlugin stage.signal abort", target?.reason?.message)
+  })
+
   // const options = { signal: stage.signal }
   const options = {}
+
   if (inTop) {
     stage.reactive.on("update", options, (changes, deleteds, source) => {
       const data = stage.reactive.export(changes, deleteds)

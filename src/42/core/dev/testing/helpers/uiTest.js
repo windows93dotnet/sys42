@@ -3,6 +3,9 @@ import trap from "../../../../fabric/type/error/trap.js"
 import debounce from "../../../../fabric/type/function/debounce.js"
 import unsee from "../../../../fabric/dom/unsee.js"
 
+import makeRealmLab from "./makeRealmLab.js"
+import triggerOpener from "./triggerOpener.js"
+
 // Integration tests self-execute if not started from a test runner.
 // It allow to manually debug GUI tests inside a webpage
 // because the last executed test will not decay elements/components
@@ -69,6 +72,9 @@ export default function uiTest(fn, sbs) {
     t.utils.whenIframesReady = async () => {
       if (inTop) await whenIframesReady(t, sbs)
     }
+
+    t.utils.triggerOpener = async (...args) => triggerOpener(t, ...args)
+    t.utils.makeRealmLab = async (...args) => makeRealmLab(t, ...args)
 
     if (!inTop || (!isInTestRunner && index === total)) {
       const { dest } = t.utils

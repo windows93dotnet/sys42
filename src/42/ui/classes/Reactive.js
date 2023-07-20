@@ -220,7 +220,7 @@ export default class Reactive extends Emitter {
   }
 
   export(changes, deleteds) {
-    if (this.stage.signal.aborted) return
+    // if (this.stage.signal.aborted) return
 
     // TODO: find a way to export only necessary data (e.g. using a keyword list in ui plan)
     const data = { add: [], remove: [] }
@@ -236,7 +236,7 @@ export default class Reactive extends Emitter {
   }
 
   import({ add, remove }, ...rest) {
-    if (this.stage.signal.aborted) return
+    // if (this.stage.signal.aborted) return
 
     const queue = new Set()
 

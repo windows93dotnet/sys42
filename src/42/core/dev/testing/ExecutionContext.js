@@ -10,7 +10,7 @@ export default class ExecutionContext extends Assert {
   constructor() {
     super()
 
-    addUtilities(this, true)
+    addUtilities(this, { isExecutionContext: true })
 
     // TODO: add t.gen
 

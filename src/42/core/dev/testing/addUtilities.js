@@ -41,7 +41,9 @@ const idRegistry = {}
 const _forgets = Symbol("_forgets")
 const _decays = Symbol("_decays")
 
-export default function addUtilities(item, isExecutionContext) {
+export default function addUtilities(item, options) {
+  const isExecutionContext = options?.isExecutionContext
+
   if (isExecutionContext) {
     item.logs = []
     item.log = new Log({
@@ -68,7 +70,7 @@ export default function addUtilities(item, isExecutionContext) {
       CONSOLE_KEYS.map((type) => [
         type,
         (...args) => {
-          if (isExecutionContext) item.timeout("reset")
+          item.timeout("reset")
           item.logs.push([new Error(), type, args])
         },
       ]),
