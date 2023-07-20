@@ -73,6 +73,14 @@ export default function uiTest(fn, sbs) {
       if (inTop) await whenIframesReady(t, sbs)
     }
 
+    t.utils._whenAllRealmReady = async () => {
+      throw new Error(
+        "whenAllRealmReady() should be called after makeRealmLab()",
+      )
+    }
+
+    t.utils.whenAllRealmReady = () => t.utils._whenAllRealmReady()
+
     t.utils.triggerOpener = async (...args) => triggerOpener(t, ...args)
     t.utils.makeRealmLab = async (...args) => makeRealmLab(t, ...args)
 

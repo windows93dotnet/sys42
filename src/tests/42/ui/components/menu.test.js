@@ -59,20 +59,19 @@ const makeContent = () => ({
   },
 })
 
-test.ui(async (t, { makeRealmLab, triggerOpener, whenIframesReady }) => {
+test.ui(async (t, { makeRealmLab, triggerOpener, whenAllRealmReady }) => {
   window.app = await makeRealmLab(
     { href, iframe, syncData: true, nestedTestsParallel: true },
     makeContent,
   )
 
-  await whenIframesReady()
-  // await t.sleep(100)
+  await whenAllRealmReady()
 
   if (manual) return t.pass()
 
+  /*  */
   await t.puppet("#btnIncr", window.app.el).click()
   t.pass()
-
   /*  */
 
   // const menuBtn = document.querySelector("#menu")
@@ -86,7 +85,6 @@ test.ui(async (t, { makeRealmLab, triggerOpener, whenIframesReady }) => {
   // t.is(submenuBtn.getAttribute("aria-expanded"), "true")
 
   // const dialog = await triggerOpener(submenu.querySelector("#dialog"))
-  // // const btnDialogIncr = dialog.querySelector("#btnDialogIncr")
 
   // await t.puppet("#btnDialogIncr", dialog).click()
 

@@ -13,6 +13,7 @@ const DEFAULT = {
 
 export async function makeRealmLab(t, options, makeContent) {
   const id = uid()
+  const initiator = new URLSearchParams(location.search).get("initiator")
 
   if (typeof options === "function") {
     makeContent = options
@@ -26,6 +27,23 @@ export async function makeRealmLab(t, options, makeContent) {
   if (syncData) path.searchParams.set("initiator", id)
   if (nestedTestsParallel) path.searchParams.set("nestedTestsParallel", true)
   path.searchParams.set("test", true)
+
+  t.utils._whenAllRealmReady = async () => {
+    if (!nestedTestsParallel) return
+
+    await app
+
+    if (inTop) {
+      return new Promise((resolve) => {
+        globalThis.addEventListener("message", async (e) => {
+          if (e.data === id) resolve()
+        })
+      })
+    }
+
+    globalThis.parent.postMessage(initiator)
+    await t.sleep(20)
+  }
 
   const app = await t.utils.decay(
     ui(
@@ -51,11 +69,7 @@ export async function makeRealmLab(t, options, makeContent) {
             tag: ".box-fit",
             content: makeContent(),
           },
-      inTop
-        ? { id, trusted: true }
-        : syncData
-        ? { initiator: new URLSearchParams(location.search).get("initiator") }
-        : undefined,
+      inTop ? { id, trusted: true } : syncData ? { initiator } : undefined,
     ),
   )
 
