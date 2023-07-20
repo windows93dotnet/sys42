@@ -34,6 +34,10 @@ system.testing ??= {
 const sbs = system.testing
 sbs.current = sbs.root
 
+const nestedTestsSerial =
+  inIframe &&
+  new URLSearchParams(location.search).has("nestedTestsParallel") === false
+
 export { sbs }
 
 const suitesStack = []
@@ -125,7 +129,7 @@ export const test = chainable(
         }
 
         sbs.current.tests.push(test)
-        const promise = inIframe
+        const promise = nestedTestsSerial
           ? sbs.root.currentTest.done.then(() =>
               test.suite.runTest(test, { nested: true }),
             )

@@ -107,12 +107,29 @@ export async function openPopup(t, open, ...rest) {
   return res
 }
 
-export async function makeRealm(
-  t,
-  { href, top = true, iframe = true, sync = true },
-  makeContent,
-) {
+const DEFAULT = {
+  top: true,
+  iframe: true,
+  syncData: true,
+  nestedTestsParallel: false,
+}
+
+export async function makeRealm(t, options, makeContent) {
   const id = uid()
+
+  if (typeof options === "function") {
+    makeContent = options
+    options = {}
+  }
+
+  const config = { ...DEFAULT, ...options }
+  const { href, top, iframe, syncData, nestedTestsParallel } = config
+
+  const path = new URL(href)
+  if (syncData) path.searchParams.set("initiator", id)
+  if (nestedTestsParallel) path.searchParams.set("nestedTestsParallel", true)
+  path.searchParams.set("test", true)
+
   const app = await t.utils.decay(
     ui(
       t.utils.dest({ connect: true }),
@@ -127,7 +144,7 @@ export async function makeRealm(
                   ? {
                       tag: "ui-sandbox.ground",
                       permissions: "trusted",
-                      path: `${href}?test=true&initiator=${id}`,
+                      path,
                     }
                   : undefined,
               ],
@@ -139,7 +156,7 @@ export async function makeRealm(
           },
       inTop
         ? { id, trusted: true }
-        : sync
+        : syncData
         ? { initiator: new URLSearchParams(location.search).get("initiator") }
         : undefined,
     ),

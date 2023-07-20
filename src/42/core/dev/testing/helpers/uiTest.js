@@ -32,20 +32,26 @@ const selfExecute = debounce(async (sbs) => {
   trap()
 }, 1)
 
-export async function whenIframesReady(len, sbs, retry = 300) {
-  return new Promise((resolve, reject) => {
-    const interval = setInterval(() => {
-      if (retry-- < 0) {
-        clearInterval(interval)
-        reject(new Error(`no tests found in iframe`))
-      }
+async function whenIframesReady(t, sbs, retries = 300) {
+  const iframes = document.querySelectorAll('iframe[src$="test=true"]')
 
-      if (len === sbs.root.currentTest.nesteds.length) {
-        clearInterval(interval)
-        resolve()
-      }
-    }, 15)
-  })
+  if (iframes.length > 0) {
+    const len = iframes.length
+    t.timeout(4500)
+    await new Promise((resolve, reject) => {
+      const interval = setInterval(() => {
+        if (retries-- < 0) {
+          clearInterval(interval)
+          reject(new Error(`no tests found in iframe`))
+        }
+
+        if (len === sbs.root.currentTest.nesteds.length) {
+          clearInterval(interval)
+          resolve()
+        }
+      }, 15)
+    })
+  }
 }
 
 export default function uiTest(fn, sbs) {
@@ -59,6 +65,10 @@ export default function uiTest(fn, sbs) {
 
   return async (t) => {
     index++
+
+    t.utils.whenIframesReady = async () => {
+      if (inTop) await whenIframesReady(t, sbs)
+    }
 
     if (!inTop || (!isInTestRunner && index === total)) {
       const { dest } = t.utils
@@ -82,11 +92,7 @@ export default function uiTest(fn, sbs) {
 
     t.timeout("reset")
 
-    const iframes = document.querySelectorAll('iframe[src$="test=true"]')
-    if (iframes.length > 0) {
-      t.timeout(4500)
-      await whenIframesReady(iframes.length, sbs)
-    }
+    await whenIframesReady(t, sbs)
 
     t.timeout("reset")
   }

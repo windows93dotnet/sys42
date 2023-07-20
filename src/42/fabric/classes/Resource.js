@@ -112,7 +112,11 @@ export default class Resource {
       throw new DOMException("Sandbox not supported", "SecurityError")
     }
 
-    options?.signal?.addEventListener("abort", () => this.destroy())
+    if (options?.signal) {
+      this.forgetSignal = listen(options?.signal, {
+        abort: () => this.destroy(),
+      })
+    }
 
     this.config = configure(DEFAULTS, options)
 
@@ -260,6 +264,8 @@ export default class Resource {
   }
 
   destroy() {
+    this.forgetSignal?.()
+
     if (this.forgets?.length) {
       for (const forget of this.forgets) forget()
       this.forgets.length = 0
