@@ -3,7 +3,7 @@ import Trait from "../../classes/Trait.js"
 import inIframe from "../../../core/env/realm/inIframe.js"
 import uid from "../../../core/uid.js"
 import ghostify from "../../../fabric/dom/ghostify.js"
-import paint from "../../../fabric/type/promise/paint.js"
+import repaint from "../../../fabric/type/promise/repaint.js"
 import { animateTo, animateFrom } from "../../../fabric/dom/animate.js"
 
 function restoreSelection(el, droppeds) {
@@ -170,7 +170,7 @@ export class ItemsHint extends Array {
       return
     }
 
-    await paint()
+    await repaint()
 
     if (inIframe) {
       for (const item of this) {

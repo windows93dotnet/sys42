@@ -5,7 +5,7 @@ import appendCSS from "../../fabric/dom/appendCSS.js"
 import configure from "../../core/configure.js"
 import setTemp from "../../fabric/dom/setTemp.js"
 import Canceller from "../../fabric/classes/Canceller.js"
-import paintThrottle from "../../fabric/type/function/paintThrottle.js"
+import repaintThrottle from "../../fabric/type/function/repaintThrottle.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
 import noop from "../../fabric/type/function/noop.js"
 import HoverScroll from "./HoverScroll.js"
@@ -157,7 +157,7 @@ export default class Dragger {
       } else if (checkDistance(e) && start(e, target) === false) stop(e, target)
     }
 
-    if (this.config.throttle) drag = paintThrottle(drag)
+    if (this.config.throttle) drag = repaintThrottle(drag)
 
     listen(this.el, {
       signal,

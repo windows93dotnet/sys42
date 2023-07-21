@@ -3,7 +3,7 @@ import uid from "../../core/uid.js"
 import listen from "../../fabric/event/listen.js"
 import defer from "../../fabric/type/promise/defer.js"
 import bytesize from "../../fabric/binary/bytesize.js"
-import paintThrottle from "../../fabric/type/function/paintThrottle.js"
+import repaintThrottle from "../../fabric/type/function/repaintThrottle.js"
 
 const DEFAULT = {
   label: "{{label}}",
@@ -71,7 +71,7 @@ export function progress(total, options) {
   const done = demand(config)
 
   let bytes = 0
-  const update = paintThrottle(() => {
+  const update = repaintThrottle(() => {
     if (!running) return
     const p = (100 * bytes) / total
     state.label = `Progress - ${Math.round(p)}%`

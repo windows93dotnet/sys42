@@ -1,4 +1,4 @@
-export default function paintDebounce(fn) {
+export default function repaintDebounce(fn) {
   let id
   return (...args) => {
     cancelAnimationFrame(id)

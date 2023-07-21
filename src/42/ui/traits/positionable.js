@@ -6,7 +6,7 @@ import settings from "../../core/settings.js"
 import documentReady from "../../fabric/dom/documentReady.js"
 import emittable from "../../fabric/traits/emittable.js"
 import listen from "../../fabric/event/listen.js"
-import paintThrottle from "../../fabric/type/function/paintThrottle.js"
+import repaintThrottle from "../../fabric/type/function/repaintThrottle.js"
 import motionless from "../../fabric/dom/motionless.js"
 import setTemp from "../../fabric/dom/setTemp.js"
 import setRelativeToViewport from "../../fabric/dom/setRelativeToViewport.js"
@@ -374,7 +374,7 @@ class Positionable extends Trait {
 
     const { signal } = this.cancel
 
-    this.repaint = paintThrottle(() => this.refresh())
+    this.repaint = repaintThrottle(() => this.refresh())
 
     requestAnimationFrame(async () => {
       this.start()

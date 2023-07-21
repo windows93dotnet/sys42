@@ -1,5 +1,5 @@
 import nextCycle from "../../../fabric/type/promise/nextCycle.js"
-import repaint from "../../../fabric/type/promise/repaint.js"
+import nextRepaint from "../../../fabric/type/promise/nextRepaint.js"
 import defer from "../../../fabric/type/promise/defer.js"
 import listen from "../../../fabric/event/listen.js"
 
@@ -56,14 +56,14 @@ export function fieldSink(el, options) {
         const { length } = el.value
         el.setRangeText(text, length, length + text.length)
 
-        await repaint()
+        await nextRepaint()
 
         if (el.scrollHeight > el.clientHeight) {
           if (!speedUp) size *= 10
           speedUp = true
           await nextCycle()
         } else {
-          await repaint()
+          await nextRepaint()
         }
       }
     },

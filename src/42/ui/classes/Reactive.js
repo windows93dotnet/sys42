@@ -9,7 +9,7 @@ import defer from "../../fabric/type/promise/defer.js"
 import dispatch from "../../fabric/event/dispatch.js"
 import equals from "../../fabric/type/any/equals.js"
 import merge from "../../fabric/type/object/merge.js"
-import paintThrottle from "../../fabric/type/function/paintThrottle.js"
+import repaintThrottle from "../../fabric/type/function/repaintThrottle.js"
 import serialize from "../../fabric/type/any/serialize.js"
 import register from "../register.js"
 
@@ -57,7 +57,7 @@ export default class Reactive extends Emitter {
       }
     }
 
-    this.#update.onrepaint = paintThrottle(update)
+    this.#update.onrepaint = repaintThrottle(update)
     this.#update.now = update
     this.#update.fn = this.#update.now
     this.pendingUpdate = false

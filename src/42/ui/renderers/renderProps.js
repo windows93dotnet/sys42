@@ -4,7 +4,7 @@ import resolveScope from "../resolveScope.js"
 import register from "../register.js"
 import { normalizeComputed } from "../normalize.js"
 import toKebabCase from "../../fabric/type/string/case/toKebabCase.js"
-import paintThrottle from "../../fabric/type/function/paintThrottle.js"
+import repaintThrottle from "../../fabric/type/function/repaintThrottle.js"
 import getType from "../../fabric/type/any/getType.js"
 
 const BOOLEAN_TRUE = new Set(["", "on", "true"])
@@ -89,7 +89,7 @@ export default async function renderProps(el, props, plan) {
   let componentUpdate
   if (el.update) {
     queue = new Set()
-    componentUpdate = paintThrottle(() => {
+    componentUpdate = repaintThrottle(() => {
       if (!stage.signal.aborted) el.update(queue)
       queue.clear()
     })
@@ -146,7 +146,7 @@ export default async function renderProps(el, props, plan) {
     if (item.update) {
       const type = typeof item.update
       if (type === "string" || type === "symbol") {
-        updates[item.update] ??= paintThrottle((init) => {
+        updates[item.update] ??= repaintThrottle((init) => {
           if (stage.signal.aborted) return
           el[item.update](init)
         })

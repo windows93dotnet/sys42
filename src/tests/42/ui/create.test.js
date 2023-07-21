@@ -1,7 +1,6 @@
 import test from "../../../42/test.js"
 import create from "../../../42/ui/create.js"
 import { normalizeStage } from "../../../42/ui/normalize.js"
-import repaint from "../../../42/fabric/type/promise/repaint.js"
 import setAttributes from "../../../42/fabric/dom/setAttributes.js"
 
 test("simple", (t) => {
@@ -121,12 +120,12 @@ test("stage", async (t) => {
   const child = create(stage, "span", { class: "{{foo}}" })
   const el = create(stage, "div", { class: "derp" }, child)
   el.append(child)
-  await repaint()
+  await t.utils.nextRepaint()
 
   t.is(el.outerHTML, '<div class="derp"><span class="bar"></span></div>')
 
   stage.reactive.set("foo", "baz")
-  await repaint()
+  await t.utils.nextRepaint()
 
   t.is(el.outerHTML, '<div class="derp"><span class="baz"></span></div>')
 })

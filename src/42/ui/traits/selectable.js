@@ -6,7 +6,7 @@ import ensureScopeSelector from "../../fabric/dom/ensureScopeSelector.js"
 import rect from "../../fabric/geometry/rect.js"
 import on from "../../fabric/event/on.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
-import paintThrottle from "../../fabric/type/function/paintThrottle.js"
+import repaintThrottle from "../../fabric/type/function/repaintThrottle.js"
 import setTemp from "../../fabric/dom/setTemp.js"
 import noop from "../../fabric/type/function/noop.js"
 import getRects from "../../fabric/dom/getRects.js"
@@ -308,7 +308,7 @@ class Selectable extends Trait {
     let fromX
     let fromY
 
-    const handleBoxSelection = paintThrottle(async (B, ctrlKey) => {
+    const handleBoxSelection = repaintThrottle(async (B, ctrlKey) => {
       rects ??= await rectsPromise
       rectsPromise = undefined
       if (!rects) return

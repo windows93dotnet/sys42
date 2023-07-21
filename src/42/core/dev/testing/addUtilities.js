@@ -12,10 +12,10 @@ import kill from "../../../fabric/type/any/kill.js"
 import load from "../../load.js"
 import log, { Log, CONSOLE_KEYS } from "../../log.js"
 import nextCycle from "../../../fabric/type/promise/nextCycle.js"
+import nextRepaint from "../../../fabric/type/promise/nextRepaint.js"
 import noop from "../../../fabric/type/function/noop.js"
 import omit from "../../../fabric/type/object/omit.js"
 import on from "../../../fabric/event/on.js"
-import paint from "../../../fabric/type/promise/paint.js"
 import parallel from "../../../fabric/type/promise/parallel.js"
 import pick from "../../../fabric/type/object/pick.js"
 import preload from "../../load/preload.js"
@@ -207,9 +207,9 @@ export default function addUtilities(item, options) {
     load,
     log,
     nextCycle,
+    nextRepaint,
     noop,
     omit,
-    paint,
     parallel,
     pick,
     pickValues,
