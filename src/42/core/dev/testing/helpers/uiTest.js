@@ -5,6 +5,7 @@ import unsee from "../../../../fabric/dom/unsee.js"
 
 import makeRealmLab from "./makeRealmLab.js"
 import triggerOpener from "./triggerOpener.js"
+import untilClose from "./untilClose.js"
 
 // Integration tests self-execute if not started from a test runner.
 // It allow to manually debug GUI tests inside a webpage
@@ -69,20 +70,9 @@ export default function uiTest(fn, sbs) {
   return async (t) => {
     index++
 
-    t.utils.whenIframesReady = async () => {
-      if (inTop) await whenIframesReady(t, sbs)
-    }
-
-    t.utils._whenAllRealmReady = async () => {
-      throw new Error(
-        "whenAllRealmReady() should be called after makeRealmLab()",
-      )
-    }
-
-    t.utils.whenAllRealmReady = () => t.utils._whenAllRealmReady()
-
     t.utils.triggerOpener = async (...args) => triggerOpener(t, ...args)
     t.utils.makeRealmLab = async (...args) => makeRealmLab(t, ...args)
+    t.utils.untilClose = async (...args) => untilClose(...args)
 
     if (!inTop || (!isInTestRunner && index === total)) {
       const { dest } = t.utils

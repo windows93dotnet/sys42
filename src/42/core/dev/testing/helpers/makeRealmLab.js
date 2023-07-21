@@ -28,11 +28,7 @@ export async function makeRealmLab(t, options, makeContent) {
   if (nestedTestsParallel) path.searchParams.set("nestedTestsParallel", true)
   path.searchParams.set("test", true)
 
-  t.utils._whenAllRealmReady = async () => {
-    if (!nestedTestsParallel || !iframe || !top) return
-
-    await app
-
+  const whenAllRealmReady = async () => {
     if (inTop) {
       return new Promise((resolve) => {
         globalThis.addEventListener("message", async (e) => {
@@ -71,6 +67,8 @@ export async function makeRealmLab(t, options, makeContent) {
       inTop ? { id, trusted: true } : syncData ? { initiator } : undefined,
     ),
   )
+
+  if (nestedTestsParallel && iframe) await whenAllRealmReady()
 
   return app
 }

@@ -61,22 +61,15 @@ const makeContent = () => ({
   },
 })
 
-test.ui(async (t, { makeRealmLab, triggerOpener, whenAllRealmReady }) => {
+test.ui(async (t, { makeRealmLab, triggerOpener }) => {
   window.app = await makeRealmLab(
     { href, iframe, syncData: true, nestedTestsParallel: true },
     makeContent,
   )
 
-  await whenAllRealmReady()
-
   if (manual) return t.pass()
 
   if (test.env.realm.inIframe) await t.sleep(100) // TODO: find why this is needed
-
-  /*  */
-  // await t.puppet("#btnIncr", window.app.el).click()
-  // t.pass()
-  /*  */
 
   const menuBtn = document.querySelector("#menu")
   t.is(menuBtn.getAttribute("aria-expanded"), "false")
@@ -89,13 +82,23 @@ test.ui(async (t, { makeRealmLab, triggerOpener, whenAllRealmReady }) => {
   t.is(submenuBtn.getAttribute("aria-expanded"), "true")
 
   const dialog = await triggerOpener(submenu.querySelector("#dialog"))
-
-  // await t.sleep(500)
   await t.puppet("#btnDialogIncr", dialog).click()
-  // await t.sleep(500)
 
   t.is(submenuBtn.getAttribute("aria-expanded"), "false")
   t.is(menuBtn.getAttribute("aria-expanded"), "false")
 
   dialog.close()
+
+  if (test.env.realm.inIframe) {
+    await t.utils.untilClose(menu)
+
+    // await t.sleep(50)
+    t.is(t.puppet.$("#btnIncr").textContent, "2")
+    t.is(t.puppet.$("#btnIncr", window.parent.document.body).textContent, "2")
+
+    await t.puppet("#btnIncr", window.app.el).click()
+    await t.sleep(50)
+    t.is(t.puppet.$("#btnIncr").textContent, "3")
+    t.is(t.puppet.$("#btnIncr", window.parent.document.body).textContent, "3")
+  }
 })
