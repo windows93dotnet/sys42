@@ -9,7 +9,6 @@ import DOMQuery from "../../fabric/classes/DOMQuery.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
 import nextCycle from "../../fabric/type/promise/nextCycle.js"
 import serial from "../../fabric/type/promise/serial.js"
-import noop from "../../fabric/type/function/noop.js"
 
 const clickOrder = [
   "pointerdown",
@@ -241,11 +240,16 @@ const makePuppet = () => {
     },
   )
 
+  instance.makePuppet = makePuppet
+
   instance.$ = (...args) => $.query(...args)
   instance.$$ = (...args) => $.queryAll(...args)
   instance.$$$ = (...args) => $.each(...args)
-  instance.makePuppet = makePuppet
-  instance.run = () => instance.then(noop, noop /* 🐧 */)
+
+  instance.run = () =>
+    new Promise((resolve, reject) => {
+      instance.then(resolve, reject)
+    })
 
   return instance
 }

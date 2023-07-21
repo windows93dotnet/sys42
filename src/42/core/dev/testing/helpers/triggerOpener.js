@@ -86,13 +86,16 @@ export async function triggerOpener(t, open, ...rest) {
     })
   })
 
-  t.puppet(el).click().run()
+  const clickPromise = t.puppet(el).click().run()
   const res = responses.get(id)
   const popupTarget = await openPromise
 
-  if (close === undefined && fn === undefined) return popupTarget
-
   if (hasExpected) t.eq(await res, expected)
+
+  if (close === undefined && fn === undefined) {
+    await clickPromise
+    return popupTarget
+  }
 
   // Some tests fail using too many concurrent async calls without delay
   // TODO: find better solution

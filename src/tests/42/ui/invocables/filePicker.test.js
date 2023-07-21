@@ -1,10 +1,5 @@
 import test from "../../../../42/test.js"
-import {
-  makeRealmLab,
-  triggerOpener,
-  log,
-  preload,
-} from "../../../../42/core/dev/testing/helpers/triggerOpener.js"
+import { log } from "../../../../42/core/dev/testing/helpers/triggerOpener.js"
 
 const manual = 0
 const iframe = 1
@@ -14,7 +9,7 @@ const { href } = new URL(
   import.meta.url,
 )
 
-preload(href, { prefetch: true })
+test.utils.preload(href, { prefetch: true })
 
 import filePicker from "../../../../42/ui/invocables/filePicker.js"
 import explorer from "../../../../42/ui/components/explorer.js"
@@ -89,7 +84,6 @@ test.ui(async (t, { makeRealmLab, triggerOpener }) => {
     triggerOpener("#filePickerOpen", ".ui-dialog__close", { ok: false }),
     triggerOpener("#filePickerOpen", ".ui-dialog__decline", { ok: false }),
     triggerOpener(
-      t,
       "#filePickerOpen",
       ".ui-dialog__agree",
       {
@@ -105,7 +99,6 @@ test.ui(async (t, { makeRealmLab, triggerOpener }) => {
       },
     ),
     triggerOpener(
-      t,
       "#filePickerOpen",
       ".ui-dialog__agree",
       {
@@ -124,7 +117,6 @@ test.ui(async (t, { makeRealmLab, triggerOpener }) => {
       },
     ),
     triggerOpener(
-      t,
       "#filePickerOpen",
       false,
       {
@@ -155,7 +147,6 @@ test.ui(async (t, { makeRealmLab, triggerOpener }) => {
       // base: "untitled.txt",
     }),
     triggerOpener(
-      t,
       "#filePickerSave",
       ".ui-dialog__agree",
       {
@@ -177,7 +168,6 @@ test.ui(async (t, { makeRealmLab, triggerOpener }) => {
   ])
 
   await triggerOpener(
-    t,
     "#filePickerSaveContent",
     ".ui-dialog__agree",
     {

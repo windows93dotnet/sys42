@@ -29,7 +29,7 @@ export async function makeRealmLab(t, options, makeContent) {
   path.searchParams.set("test", true)
 
   t.utils._whenAllRealmReady = async () => {
-    if (!nestedTestsParallel) return
+    if (!nestedTestsParallel || !iframe || !top) return
 
     await app
 
@@ -42,7 +42,6 @@ export async function makeRealmLab(t, options, makeContent) {
     }
 
     globalThis.parent.postMessage(initiator)
-    await t.sleep(20)
   }
 
   const app = await t.utils.decay(

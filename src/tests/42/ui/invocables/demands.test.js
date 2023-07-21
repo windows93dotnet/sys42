@@ -9,6 +9,8 @@ const { href } = new URL(
   import.meta.url,
 )
 
+test.utils.preload(href, { prefetch: true })
+
 import prompt from "../../../../42/ui/invocables/prompt.js"
 import alert from "../../../../42/ui/invocables/alert.js"
 import confirm from "../../../../42/ui/invocables/confirm.js"
@@ -173,7 +175,6 @@ test.ui(async (t, { makeRealmLab, triggerOpener }) => {
     }),
 
     triggerOpener(
-      t,
       "#promptAutoTextarea",
       ".ui-dialog__agree",
       "derp",

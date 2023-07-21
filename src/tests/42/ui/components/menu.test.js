@@ -8,6 +8,8 @@ const { href } = new URL(
   import.meta.url,
 )
 
+test.utils.preload(href, { prefetch: true })
+
 const makeContent = () => ({
   tag: ".w-full.pa-xl",
   content: [
@@ -69,29 +71,31 @@ test.ui(async (t, { makeRealmLab, triggerOpener, whenAllRealmReady }) => {
 
   if (manual) return t.pass()
 
+  if (test.env.realm.inIframe) await t.sleep(100) // TODO: find why this is needed
+
   /*  */
-  await t.puppet("#btnIncr", window.app.el).click()
-  t.pass()
+  // await t.puppet("#btnIncr", window.app.el).click()
+  // t.pass()
   /*  */
 
-  // const menuBtn = document.querySelector("#menu")
-  // t.is(menuBtn.getAttribute("aria-expanded"), "false")
-  // const menu = await triggerOpener(menuBtn)
-  // t.is(menuBtn.getAttribute("aria-expanded"), "true")
+  const menuBtn = document.querySelector("#menu")
+  t.is(menuBtn.getAttribute("aria-expanded"), "false")
+  const menu = await triggerOpener(menuBtn)
+  t.is(menuBtn.getAttribute("aria-expanded"), "true")
 
-  // const submenuBtn = menu.querySelector("#submenu")
-  // t.is(submenuBtn.getAttribute("aria-expanded"), "false")
-  // const submenu = await triggerOpener(submenuBtn)
-  // t.is(submenuBtn.getAttribute("aria-expanded"), "true")
+  const submenuBtn = menu.querySelector("#submenu")
+  t.is(submenuBtn.getAttribute("aria-expanded"), "false")
+  const submenu = await triggerOpener(submenuBtn)
+  t.is(submenuBtn.getAttribute("aria-expanded"), "true")
 
-  // const dialog = await triggerOpener(submenu.querySelector("#dialog"))
+  const dialog = await triggerOpener(submenu.querySelector("#dialog"))
 
-  // await t.puppet("#btnDialogIncr", dialog).click()
-
-  // await t.sleep(50)
   // await t.sleep(500)
-  // t.is(submenuBtn.isConnected, false)
-  // t.is(menuBtn.getAttribute("aria-expanded"), "false")
+  await t.puppet("#btnDialogIncr", dialog).click()
+  // await t.sleep(500)
 
-  // dialog.close()
+  t.is(submenuBtn.getAttribute("aria-expanded"), "false")
+  t.is(menuBtn.getAttribute("aria-expanded"), "false")
+
+  dialog.close()
 })

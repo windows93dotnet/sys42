@@ -15,12 +15,13 @@ import nextCycle from "../../../fabric/type/promise/nextCycle.js"
 import noop from "../../../fabric/type/function/noop.js"
 import omit from "../../../fabric/type/object/omit.js"
 import on from "../../../fabric/event/on.js"
+import paint from "../../../fabric/type/promise/paint.js"
 import parallel from "../../../fabric/type/promise/parallel.js"
 import pick from "../../../fabric/type/object/pick.js"
+import preload from "../../load/preload.js"
 import prettify from "../../formats/markup/prettify.js"
 import puppet from "../puppet.js"
 import queueTask from "../../../fabric/type/function/queueTask.js"
-import paint from "../../../fabric/type/promise/paint.js"
 import repaint from "../../../fabric/type/promise/repaint.js"
 import serial from "../../../fabric/type/promise/serial.js"
 import shell from "../../shell.js"
@@ -212,6 +213,7 @@ export default function addUtilities(item, options) {
     parallel,
     pick,
     pickValues,
+    preload,
     prettify,
     puppet,
     queueTask,
