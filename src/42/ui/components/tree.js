@@ -50,7 +50,7 @@ export class Tree extends Component {
     this.navigable.update()
   }
 
-  async expandItem(path, navigate) {
+  async expandItem(path, options) {
     if (this.busy) return
 
     if (!this.expandeds.includes(path)) {
@@ -59,16 +59,16 @@ export class Tree extends Component {
       await this.busy
       this.busy = undefined
       this.navigable.update()
-    } else if (navigate) {
+    } else if (options?.navigate !== false) {
       this.navigable.next()
     }
   }
 
-  reduceItem(path, navigate) {
+  reduceItem(path, options) {
     if (this.expandeds.includes(path)) {
       removeItem(this.expandeds, path)
       this.navigable.update()
-    } else if (navigate) {
+    } else if (options?.navigate !== false) {
       this.focusAbove(path)
     }
   }
@@ -133,7 +133,6 @@ export class Tree extends Component {
         content: [
           {
             tag: ".ui-tree__label",
-
             content: [
               {
                 if: "{{items}}",
@@ -142,8 +141,8 @@ export class Tree extends Component {
                     selector: '.ui-tree__pictos, [role="treeitem"]',
                     repeatable: true,
                     pointerdown: `{{toggleItem(addr)}}`,
-                    ArrowRight: `{{expandItem(addr, true)}}`,
-                    ArrowLeft: `{{reduceItem(addr, true)}}`,
+                    ArrowRight: `{{expandItem(addr)}}`,
+                    ArrowLeft: `{{reduceItem(addr)}}`,
                   },
                 },
                 else: {
