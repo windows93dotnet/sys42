@@ -1,7 +1,6 @@
 import test from "../../../../42/test.js"
 
 const manual = 0
-const iframe = 1
 
 const { href } = new URL(
   "../../../../demos/ui/components/menu.demo.html",
@@ -63,7 +62,13 @@ const makeContent = () => ({
 
 test.ui(async (t, { makeRealmLab, triggerOpener }) => {
   window.app = await makeRealmLab(
-    { href, iframe, syncData: true, nestedTestsParallel: true },
+    {
+      href,
+      iframe: 1,
+      top: 1,
+      syncData: true,
+      nestedTestsParallel: true,
+    },
     makeContent,
   )
 
@@ -81,7 +86,10 @@ test.ui(async (t, { makeRealmLab, triggerOpener }) => {
   const submenu = await triggerOpener(submenuBtn)
   t.is(submenuBtn.getAttribute("aria-expanded"), "true")
 
+  // Check that detached dialog is still using ipcPlugin
+  const menuClosePromise = t.utils.untilClose(menu)
   const dialog = await triggerOpener(submenu.querySelector("#dialog"))
+  await menuClosePromise
   await t.puppet("#btnDialogIncr", dialog).click()
 
   t.is(submenuBtn.getAttribute("aria-expanded"), "false")
@@ -90,9 +98,7 @@ test.ui(async (t, { makeRealmLab, triggerOpener }) => {
   dialog.close()
 
   if (test.env.realm.inIframe) {
-    await t.utils.untilClose(menu)
-
-    // await t.sleep(50)
+    await t.sleep(50)
     t.is(t.puppet.$("#btnIncr").textContent, "2")
     t.is(t.puppet.$("#btnIncr", window.parent.document.body).textContent, "2")
 

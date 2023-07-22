@@ -262,6 +262,7 @@ export default class Component extends HTMLElement {
       steps: stage?.steps ?? this.localName,
     })
     this.detached = this.stage.detached
+    if (this.detached) this.stage.detacheds.add(this)
     delete this.stage.detached
 
     plan = ensurePlan(plan, this.stage)
@@ -467,6 +468,8 @@ export default class Component extends HTMLElement {
   async #destroy(options) {
     if (this[_lifecycle] === DESTROY || this[_lifecycle] === CREATE) return
     this[_lifecycle] = DESTROY
+
+    this.stage.detacheds.delete(this)
 
     if (this.#instanceDestroy) await this.#instanceDestroy(options)
 
