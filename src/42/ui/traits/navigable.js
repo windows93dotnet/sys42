@@ -43,6 +43,7 @@ class Navigable extends Trait {
       this.tabOrder ??= new TabOrder(this.el, this.tabOrderOptions)
     }
 
+    this.enabled = true
     let fromPointerdown
 
     const remember = this.config.remember
@@ -80,6 +81,8 @@ class Navigable extends Trait {
           if (!this.el.contains(e.relatedTarget)) blur(e.target)
         },
         "focusin": (e) => {
+          if (!this.enabled) return
+
           if (fromPointerdown) return void remember(e.target)
           if (!this.el.contains(e.relatedTarget)) {
             if (this.lastFocused && focus.attemptFocus(this.lastFocused)) return
@@ -143,7 +146,9 @@ class Navigable extends Trait {
   }
 
   focus(el) {
-    el.focus()
+    this.enabled = false
+    focus.autofocus(el)
+    this.enabled = true
   }
 
   update() {

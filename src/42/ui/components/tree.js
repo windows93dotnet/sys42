@@ -37,7 +37,17 @@ export class Tree extends Component {
     },
   }
 
-  async toggleItem(addr) {
+  async toggleItem(addr, e, target) {
+    e?.preventDefault()
+
+    if (target?.classList?.contains("ui-tree__pictos")) {
+      this.navigable.focus(
+        target.parentElement.querySelector('[role="treeitem"]'),
+      )
+    } else {
+      this.navigable.focus(target)
+    }
+
     if (this.expandeds.includes(addr)) {
       removeItem(this.expandeds, addr)
     } else {
@@ -71,6 +81,10 @@ export class Tree extends Component {
     } else if (options?.navigate !== false) {
       this.focusAbove(addr)
     }
+  }
+
+  focusUnder() {
+    this.navigable.next()
   }
 
   focusAbove(addr) {
@@ -140,17 +154,17 @@ export class Tree extends Component {
                   on: {
                     selector: '.ui-tree__pictos, [role="treeitem"]',
                     repeatable: true,
-                    pointerdown: `{{toggleItem(addr)}}`,
-                    ArrowRight: `{{expandItem(addr)}}`,
-                    ArrowLeft: `{{reduceItem(addr)}}`,
+                    pointerdown: "{{toggleItem(addr, e, target)}}",
+                    ArrowRight: "{{expandItem(addr)}}",
+                    ArrowLeft: "{{reduceItem(addr)}}",
                   },
                 },
                 else: {
                   on: {
                     selector: '[role="treeitem"]',
                     repeatable: true,
-                    ArrowRight: `{{navigable.next()}}`,
-                    ArrowLeft: `{{focusAbove(addr)}}`,
+                    ArrowRight: "{{focusUnder()}}",
+                    ArrowLeft: "{{focusAbove(addr)}}",
                   },
                 },
               },
@@ -185,6 +199,7 @@ export class Tree extends Component {
                   : { content: "{{render(label)}}" },
                 {
                   role: "treeitem",
+                  tabIndex: 0,
                   id: `${id}-trigger-{{addr}}`,
                   aria: {
                     expanded: "{{items ? expanded ?? false : undefined}}",
@@ -211,7 +226,7 @@ export class Tree extends Component {
             //     initial: false,
             //   },
             // },
-            content: `{{renderGroup(addr + "_") |> render(^^)}}`,
+            content: '{{renderGroup(addr + "_") |> render(^^)}}',
           },
         ],
       },
