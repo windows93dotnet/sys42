@@ -406,13 +406,14 @@ export default class Component extends HTMLElement {
     let traitsPending
 
     if (plan.traits) {
-      traitsPending = []
-      for (const name of Object.keys(plan.traits)) {
+      for (const [name, value] of Object.entries(plan.traits)) {
+        if (!value) continue
         if (
           name in this === false ||
           this.constructor.plan?.props?.[name]?.trait === true
         ) {
           const deferred = defer()
+          traitsPending ??= []
           traitsPending.push([name, deferred])
           Object.defineProperty(this, name, {
             configurable: true,
@@ -433,9 +434,9 @@ export default class Component extends HTMLElement {
 
     if (traitsPending) {
       this.stage.waitlistTraits.done().then(() => {
-        for (const [name, promise] of traitsPending) {
+        for (const [name, deferred] of traitsPending) {
           const trait = this[_INSTANCES][name]
-          promise.resolve(trait)
+          deferred.resolve(trait)
           Object.defineProperty(this, name, {
             configurable: true,
             get: () => trait,

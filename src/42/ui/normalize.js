@@ -522,9 +522,10 @@ export function normalizeTraits(plan, stage) {
 
   for (const key of TRAIT_KEYWORDS) if (key in plan) traits[key] = plan[key]
 
-  for (const [name, raw] of Object.entries(traits)) {
-    const val = typeof raw === "string" ? normalizeString(raw, stage) : raw
-    const trait = { name, val }
+  for (let [name, value] of Object.entries(traits)) {
+    if (!value) continue
+    if (typeof value === "string") value = normalizeString(value, stage)
+    const trait = { name, value }
     list.push(trait)
     stage.waitlistPreload.push(
       import(
@@ -545,9 +546,9 @@ export function normalizeTraits(plan, stage) {
 
     const undones = []
 
-    for (const { module, name, val } of list) {
+    for (const { module, name, value } of list) {
       const traitReady = []
-      traverse(val, (key, val, obj) => {
+      traverse(value, (key, val, obj) => {
         if (typeof val === "string") {
           const fn = normalizeString(val, stage)
           if (typeof fn === "function") {
@@ -567,8 +568,8 @@ export function normalizeTraits(plan, stage) {
             else module(el, { signal: stage.signal, ...val })
           }
 
-          if (val.scopes) register(stage, val, fn)
-          else fn(val)
+          if (value.scopes) register(stage, value, fn)
+          else fn(value)
         }),
       )
     }
