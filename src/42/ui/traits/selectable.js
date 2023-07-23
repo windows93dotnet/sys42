@@ -34,6 +34,100 @@ const configure = settings("ui.trait.selectable", DEFAULTS)
 const ns = "http://www.w3.org/2000/svg"
 
 class Selectable extends Trait {
+  constructor(el, options) {
+    super(el, options)
+
+    if (options?.selection) {
+      this.selection = options?.selection
+      delete options.selection
+    } else this.selection = []
+
+    if (options?.elements) {
+      this.elements = options?.elements
+      delete options.elements
+    } else this.elements = []
+
+    this.config = configure(options)
+
+    this.config.zone = this.config.zone
+      ? ensureElement(this.config.zone)
+      : this.el
+
+    this.config.selector = ensureScopeSelector(this.config.selector, this.el)
+
+    if (
+      options?.multiselectable === undefined &&
+      this.el.getAttribute("aria-multiselectable") === "false"
+    ) {
+      this.config.multiselectable = false
+    }
+
+    if (this.config.draggerIgnoreItems) {
+      this.config.dragger.ignore = this.config.selector
+    }
+
+    this.config.add ??= noop
+    this.config.remove ??= noop
+
+    this._add = this.config.attributes
+      ? (el, val) => {
+          setAttributes(el, this.config.attributes, { replaceClass: false })
+          this.config.add(el, val)
+        }
+      : this.config.add
+
+    this._remove = this.config.attributes
+      ? (el, val) => {
+          removeAttributes(el, this.config.attributes, { flipBoolean: true })
+          this.config.remove(el, val)
+        }
+      : this.config.remove
+
+    if (typeof this.config.key === "string") {
+      this.key = (item) =>
+        this.config.key in item
+          ? item[this.config.key]
+          : item.getAttribute(this.config.key)
+    } else {
+      this.key = this.config.key ?? ((item) => item.textContent)
+    }
+
+    this.sync()
+
+    const tmp = {}
+    if (this.el.getAttribute("tabindex") === null && this.el.tabIndex === -1) {
+      tmp.tabIndex = -1
+    }
+
+    const { shortcuts } = this.config
+    const { signal } = this.cancel
+
+    setTemp(this.el, {
+      signal,
+      class: { "selection-0": true },
+      style: { position: "relative" },
+      ...tmp,
+    })
+
+    on(
+      this.config.zone,
+      { signal },
+      {
+        Space: false,
+        [shortcuts.selectOne]: (e, target) => this.selectOne(target, e),
+      },
+      this.config.multiselectable && {
+        prevent: true,
+        [shortcuts.toggleSelect]: (e, target) => this.toggleSelect(target),
+        [shortcuts.rangeSelect]: (e, target) => this.rangeSelect(target),
+        [shortcuts.selectAll]: () => this.selectAll(),
+      },
+    )
+
+    if (this.config.multiselectable) this.initRubberband()
+    else this.dragger = { isDragging: false }
+  }
+
   toggle(el) {
     const val = this.key(el)
     if (this.elements.includes(el)) {
@@ -201,100 +295,6 @@ class Selectable extends Trait {
         this._add(el, val)
       }
     }
-  }
-
-  constructor(el, options) {
-    super(el, options)
-
-    if (options?.selection) {
-      this.selection = options?.selection
-      delete options.selection
-    } else this.selection = []
-
-    if (options?.elements) {
-      this.elements = options?.elements
-      delete options.elements
-    } else this.elements = []
-
-    this.config = configure(options)
-
-    this.config.zone = this.config.zone
-      ? ensureElement(this.config.zone)
-      : this.el
-
-    this.config.selector = ensureScopeSelector(this.config.selector, this.el)
-
-    if (
-      options?.multiselectable === undefined &&
-      this.el.getAttribute("aria-multiselectable") === "false"
-    ) {
-      this.config.multiselectable = false
-    }
-
-    if (this.config.draggerIgnoreItems) {
-      this.config.dragger.ignore = this.config.selector
-    }
-
-    this.config.add ??= noop
-    this.config.remove ??= noop
-
-    this._add = this.config.attributes
-      ? (el, val) => {
-          setAttributes(el, this.config.attributes, { replaceClass: false })
-          this.config.add(el, val)
-        }
-      : this.config.add
-
-    this._remove = this.config.attributes
-      ? (el, val) => {
-          removeAttributes(el, this.config.attributes, { flipBoolean: true })
-          this.config.remove(el, val)
-        }
-      : this.config.remove
-
-    if (typeof this.config.key === "string") {
-      this.key = (item) =>
-        this.config.key in item
-          ? item[this.config.key]
-          : item.getAttribute(this.config.key)
-    } else {
-      this.key = this.config.key ?? ((item) => item.textContent)
-    }
-
-    this.sync()
-
-    const tmp = {}
-    if (this.el.getAttribute("tabindex") === null && this.el.tabIndex === -1) {
-      tmp.tabIndex = -1
-    }
-
-    const { shortcuts } = this.config
-    const { signal } = this.cancel
-
-    setTemp(this.el, {
-      signal,
-      class: { "selection-0": true },
-      style: { position: "relative" },
-      ...tmp,
-    })
-
-    on(
-      this.config.zone,
-      { signal },
-      {
-        Space: false,
-        [shortcuts.selectOne]: (e, target) => this.selectOne(target, e),
-      },
-      this.config.multiselectable && {
-        prevent: true,
-        [shortcuts.toggleSelect]: (e, target) => this.toggleSelect(target),
-        [shortcuts.rangeSelect]: (e, target) => this.rangeSelect(target),
-        [shortcuts.selectAll]: () => this.selectAll(),
-      },
-    )
-
-    if (this.config.multiselectable) this.initRubberband()
-    else this.dragger = { isDragging: false }
   }
 
   initRubberband() {

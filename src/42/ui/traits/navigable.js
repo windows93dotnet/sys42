@@ -1,4 +1,3 @@
-/* eslint-disable object-shorthand */
 import Trait from "../classes/Trait.js"
 import settings from "../../core/settings.js"
 import focus, { TabOrder } from "../../fabric/dom/focus.js"
@@ -28,14 +27,12 @@ class Navigable extends Trait {
     super(el, options)
 
     this.config = configure(options)
+    const { shortcuts } = this.config
+    const { signal } = this.cancel
 
     if (this.config.selector) {
       this.config.selector = ensureScopeSelector(this.config.selector, this.el)
     }
-
-    const { shortcuts } = this.config
-
-    const { signal } = this.cancel
 
     this.tabOrderOptions = {
       loop: this.config.loop,
@@ -73,10 +70,10 @@ class Navigable extends Trait {
       this.el,
       { signal },
       {
-        "pointerdown": () => {
+        "pointerdown"() {
           fromPointerdown = true
         },
-        "pointerup || pointercancel": () => {
+        "pointerup || pointercancel"() {
           fromPointerdown = false
         },
         "focusout": (e) => {

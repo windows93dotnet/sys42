@@ -10,14 +10,14 @@ export default class Waitlist extends Array {
     })
   }
 
-  async call() {
-    return Promise.all(this.map((task) => task())).then((res) => {
+  async call(...args) {
+    return Promise.all(this.map((task) => task(...args))).then((res) => {
       this.length = 0
       return res
     })
   }
 
-  async clear() {
+  clear() {
     this.length = 0
   }
 }

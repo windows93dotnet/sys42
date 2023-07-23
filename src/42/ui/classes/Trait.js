@@ -17,8 +17,6 @@ export default class Trait {
 
   static INSTANCES = _INSTANCES
 
-  #hasGetter = false
-
   constructor(el, options) {
     if (isHashmapLike(el)) {
       options = el

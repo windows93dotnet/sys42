@@ -37,11 +37,11 @@ export class Tree extends Component {
     },
   }
 
-  async toggleItem(path) {
-    if (this.expandeds.includes(path)) {
-      removeItem(this.expandeds, path)
+  async toggleItem(addr) {
+    if (this.expandeds.includes(addr)) {
+      removeItem(this.expandeds, addr)
     } else {
-      this.expandeds.push(path)
+      this.expandeds.push(addr)
       this.busy = this.stage.pendingDone()
       await this.busy
       this.busy = undefined
@@ -50,11 +50,11 @@ export class Tree extends Component {
     this.navigable.update()
   }
 
-  async expandItem(path, options) {
+  async expandItem(addr, options) {
     if (this.busy) return
 
-    if (!this.expandeds.includes(path)) {
-      this.expandeds.push(path)
+    if (!this.expandeds.includes(addr)) {
+      this.expandeds.push(addr)
       this.busy = this.stage.pendingDone()
       await this.busy
       this.busy = undefined
@@ -64,18 +64,18 @@ export class Tree extends Component {
     }
   }
 
-  reduceItem(path, options) {
-    if (this.expandeds.includes(path)) {
-      removeItem(this.expandeds, path)
+  reduceItem(addr, options) {
+    if (this.expandeds.includes(addr)) {
+      removeItem(this.expandeds, addr)
       this.navigable.update()
     } else if (options?.navigate !== false) {
-      this.focusAbove(path)
+      this.focusAbove(addr)
     }
   }
 
-  focusAbove(path) {
+  focusAbove(addr) {
     this.expandeds.sort()
-    const index = path.lastIndexOf("_")
+    const index = addr.lastIndexOf("_")
 
     if (index === -1) {
       if (this.expandeds.length === 0) return void this.navigable.prev()
@@ -88,11 +88,11 @@ export class Tree extends Component {
       return
     }
 
-    const parent = path.slice(0, index)
+    const parent = addr.slice(0, index)
 
     for (let i = this.expandeds.length - 1; i >= 0; i--) {
       const item = this.expandeds[i]
-      if (item.startsWith(parent + "_") && item < path) {
+      if (item.startsWith(parent + "_") && item < addr) {
         const sel = `#${this.id}-group-${item} > li:last-child > .ui-tree__label > [role="treeitem"]`
         const el = this.querySelector(sel)
         if (el) this.navigable.focus(el)
@@ -196,7 +196,7 @@ export class Tree extends Component {
                 tag: "span.ui-tree__postlabel",
                 content: "{{render(postlabel)}}",
               },
-              "\n", // Improve textContent
+              "\n", // Improve textContent readability
             ],
           },
           {
