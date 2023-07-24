@@ -5,6 +5,7 @@ import getExtname from "../../core/path/core/getExtname.js"
 import getBasename from "../../core/path/core/getBasename.js"
 import groupBy from "../../fabric/type/array/groupBy.js"
 import arrify from "../../fabric/type/any/arrify.js"
+import assertPath from "../../core/path/assertPath.js"
 
 class MimetypesManager extends ConfigFile {
   async populate() {
@@ -102,7 +103,9 @@ class MimetypesManager extends ConfigFile {
 
         if (appName) {
           target.apps ??= []
-          if (!target.apps.includes(appName)) target.apps.unshift(appName) // add latest app as default
+          if (!target.apps.includes(appName)) {
+            target.apps.unshift(appName) // add latest app as default
+          }
         }
 
         if (extnames) {
@@ -127,21 +130,20 @@ class MimetypesManager extends ConfigFile {
   }
 
   lookup(path) {
+    assertPath(path)
     path = path.toLowerCase()
-    return (
+    const out =
       this.extnames[getExtname(path)] ?? this.basenames[getBasename(path)] ?? {}
-    )
-  }
 
-  getApps(path) {
-    const out = this.lookup(path)
+    out.apps ??= []
 
-    if (out.apps === undefined && out.mimetype) {
+    if (out.mimetype) {
       const { type } = parseMimetype(out.mimetype)
-      return this.mimetypes[type]?.["*"]?.apps
+      const apps = this.mimetypes[type]?.["*"]?.apps
+      if (apps) out.apps.push(...apps)
     }
 
-    return out.apps
+    return out
   }
 
   parse(mimetype) {

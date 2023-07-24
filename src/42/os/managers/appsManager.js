@@ -7,16 +7,16 @@ import normalizeManifest from "../classes/App/normalizeManifest.js"
 import App from "../classes/App.js"
 
 const REGISTRY_KEYS = [
-  "categories",
-  "document",
-  "geometry",
-  "height",
-  "icons",
-  "inset",
-  "manifestPath",
   "name",
   "slug",
+  "manifestPath",
+  "categories",
+  "icons",
   "width",
+  "height",
+  "geometry",
+  "document",
+  "inset",
 ]
 
 class AppsManager extends ConfigFile {
@@ -78,6 +78,17 @@ class AppsManager extends ConfigFile {
     if (options?.save !== false) return this.save()
   }
 
+  async launch(appName, state) {
+    await this.ready
+    if (appName in this.value === false) {
+      throw new Error(`Unknown app: ${appName}`)
+    }
+
+    const app = this.value[appName]
+    const options = state ? { state } : undefined
+    return App.launch(app.manifestPath, options)
+  }
+
   async open(paths) {
     await this.ready
     await mimetypesManager.ready
@@ -92,11 +103,11 @@ class AppsManager extends ConfigFile {
         continue
       }
 
-      const apps = mimetypesManager.getApps(path)
+      const { apps: appNames } = mimetypesManager.lookup(path)
 
-      if (apps?.length) {
-        openers[apps[0]] ??= []
-        openers[apps[0]].push(path)
+      if (appNames.length > 0) {
+        openers[appNames[0]] ??= []
+        openers[appNames[0]].push(path)
       } else {
         import("../../ui/invocables/alert.js").then(({ alert }) =>
           alert("No app available to open this type of file"),
@@ -109,34 +120,40 @@ class AppsManager extends ConfigFile {
     }
   }
 
-  async launch(appName, state) {
+  async lookup(path) {
     await this.ready
-    if (appName in this.value === false) {
-      throw new Error(`Unknown app: ${appName}`)
+    await mimetypesManager.ready
+    const { apps: appNames } = mimetypesManager.lookup(path)
+
+    const apps = []
+
+    for (const appName of appNames) {
+      const app = this.value[appName]
+      if (app) apps.push(app)
     }
 
-    const app = this.value[appName]
-    const options = state ? { state } : undefined
-    return App.launch(app.manifestPath, options)
+    return apps
   }
 
   async makeMenu(apps) {
     await this.ready
 
-    apps = apps
-      ? Object.entries(apps)
-      : Object.entries(this.value).sort(([a], [b]) => a.localeCompare(b))
+    if (typeof apps === "string") {
+      apps = apps in this.value ? [this.value[apps]] : await this.lookup(apps)
+    }
+
+    if (!apps) {
+      const values = Object.values(this.value)
+      values.shift()
+      apps = values.sort((a, b) => a.name.localeCompare(b.name))
+    }
 
     const menu = []
 
-    for (const [appName, { icons }] of apps) {
-      if (appName === "version") continue
-
+    for (const { name, icons } of apps) {
       const menuItem = {
-        label: appName,
-        click: () => {
-          this.launch(appName)
-        },
+        label: name,
+        click: () => this.launch(name),
       }
 
       for (const { sizes, src } of icons) {
