@@ -55,23 +55,19 @@ export default function render(plan, stage, options) {
 
       stage.el?.setAttribute("aria-busy", "true")
 
-      state.then(
-        /* async */ (res) => {
-          delete stage.scopeResolvers[stage.scope]
-          stage.reactive.set(stage.scope, res, { silent: true })
-          // await animateTo(loader, { height: "0", ms: 180 })
-          stage.el?.setAttribute("aria-busy", "false")
-          const el = render(plan, stage, {
-            ...options,
-            skipNormalize: true,
-            ignoreScopeResolver: true,
-          })
-          loader.replaceWith(el)
-          stage.scopeResolvers[stage.scope] = resolver
-        },
-      )
+      state.then((res) => {
+        delete stage.scopeResolvers[stage.scope]
+        stage.reactive.set(stage.scope, res, { silent: true })
+        stage.el?.setAttribute("aria-busy", "false")
+        const el = render(plan, stage, {
+          ...options,
+          skipNormalize: true,
+          ignoreScopeResolver: true,
+        })
+        loader.replaceWith(el)
+        stage.scopeResolvers[stage.scope] = resolver
+      })
 
-      // animateFrom(loader, { height: "0", ms: 180, delay: 100 })
       return loader
     }
 

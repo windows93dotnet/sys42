@@ -96,7 +96,7 @@ export class Picto extends Component {
         fetchpriority: "high",
         decoding: "async",
         on: {
-          load() {
+          "load || error"() {
             URL.revokeObjectURL(src)
           },
         },

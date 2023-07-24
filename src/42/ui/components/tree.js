@@ -1,6 +1,7 @@
 import Component from "../classes/Component.js"
 import configure from "../../core/configure.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
+import nextCycle from "../../fabric/type/promise/nextCycle.js"
 import { objectifyPlan } from "../normalize.js"
 
 export class Tree extends Component {
@@ -65,7 +66,7 @@ export class Tree extends Component {
 
     if (!this.expandeds.includes(addr)) {
       this.expandeds.push(addr)
-      this.busy = this.stage.pendingDone()
+      this.busy = this.stage.pendingDone() // TODO: also wait for promise states
       await this.busy
       this.busy = undefined
       this.navigable.update()
@@ -135,14 +136,31 @@ export class Tree extends Component {
 
       each: {
         tag: "li.ui-tree__item",
+        id: `${id}-item-{{addr}}`,
         role: "none", // TODO: Check if needed
+
+        watch: {
+          // Watch if item has a defined expanded state
+          async expanded(state, stage) {
+            await nextCycle()
+            const { addr } = state
+
+            if (state.expanded === true) {
+              if (stage.component.expandeds.includes(addr) === false) {
+                stage.component.expandeds.push(addr)
+              }
+            } else {
+              removeItem(stage.component.expandeds, addr)
+            }
+
+            delete state.expanded
+          },
+        },
 
         computed: {
           addr: `{{"${addr}" + @index}}`,
-          expanded: `{{includes(@component/expandeds, addr)}}`,
+          isExpanded: `{{includes(@component/expandeds, addr)}}`,
         },
-
-        id: `${id}-item-{{addr}}`,
 
         content: [
           {
@@ -183,7 +201,7 @@ export class Tree extends Component {
                   },
                   {
                     tag: "ui-picto.ui-tree__picto-fg",
-                    value: "{{expanded ? 'minus-thin' : 'plus-thin'}}",
+                    value: "{{isExpanded ? 'minus-thin' : 'plus-thin'}}",
                   },
                 ],
               },
@@ -202,7 +220,7 @@ export class Tree extends Component {
                   tabIndex: 0,
                   id: `${id}-trigger-{{addr}}`,
                   aria: {
-                    expanded: "{{items ? expanded ?? false : undefined}}",
+                    expanded: "{{items ? isExpanded ?? false : undefined}}",
                   },
                 },
               ),
@@ -215,7 +233,7 @@ export class Tree extends Component {
             ],
           },
           {
-            if: `{{items && expanded}}`,
+            if: `{{items && isExpanded}}`,
             tag: "ul.ui-tree__group",
             id: `${id}-group-{{addr}}`,
             role: "group",

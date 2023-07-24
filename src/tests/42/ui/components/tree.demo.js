@@ -78,7 +78,7 @@ window.app = await ui({
               { label: "Baz" },
               {
                 label: "Derp",
-                // expanded: true,
+                expanded: true,
                 items: [
                   {
                     label: "Foo",
@@ -120,7 +120,7 @@ window.app = await ui({
     {
       tag: "ui-tree.inset.paper.resize",
       id: "tree-demo",
-      style: { width: "256px", height: "650px" },
+      style: { width: "256px", height: "256px" },
       selection: ["/tests/fixtures/formats/example.json"],
       expandeds: ["3", "3_3_3", "3_3"],
       itemTemplate: {
