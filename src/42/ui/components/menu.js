@@ -2,6 +2,7 @@
 import inTop from "../../core/env/realm/inTop.js"
 import Component from "../classes/Component.js"
 import uid from "../../core/uid.js"
+import isPromiseLike from "../../fabric/type/any/is/isPromiseLike.js"
 
 function seq(el, dir) {
   const items = [
@@ -60,11 +61,17 @@ export class Menu extends Component {
     seq(this, 1)
   }
 
-  render({ items, displayPicto, shortcuts, focusBack }) {
+  async render({ items, displayPicto, shortcuts, focusBack }) {
     const inMenubar = this.constructor.name === "Menubar"
     const plan = []
 
     let first = true
+
+    if (typeof items === "function") {
+      items = await items()
+    } else if (isPromiseLike(items)) {
+      items = await items
+    }
 
     for (let item of items) {
       if (item === "---") {

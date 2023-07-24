@@ -55,14 +55,17 @@
             tag: "button",
             content: "Start",
             picto: "puzzle",
-            menu: [
-              ...(await os.apps.makeMenu()),
-              "---",
-              {
-                label: "Format Disk",
-                click: () => clearSiteData({ reload: true }),
-              },
-            ],
+            async menu() {
+              const apps = await os.apps.makeMenu()
+              return [
+                ...apps,
+                "---",
+                {
+                  label: "Format Disk",
+                  click: () => clearSiteData({ reload: true }),
+                },
+              ]
+            },
           },
           {
             if: "{{/errors.length > 0}}",
@@ -106,4 +109,6 @@
   //     "/style.css",
   //   ],
   // })
+
+  // console.log(await os.apps.getApps("index.html"))
 </script>
