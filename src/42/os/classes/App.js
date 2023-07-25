@@ -122,9 +122,9 @@ function makeSandbox(manifest) {
 
     path = new URL(path, manifest.dirURL).href
 
-    if (path.endsWith(".html") || path.endsWith(".php")) {
-      path += "?manifest=" + encodeURIComponent(JSON.stringify(manifest))
-    }
+    // if (path.endsWith(".html") || path.endsWith(".php")) {
+    //   path += "?manifest=" + encodeURIComponent(JSON.stringify(manifest))
+    // }
 
     out.sandbox.path = path
     return out

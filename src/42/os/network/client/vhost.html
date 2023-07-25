@@ -29,6 +29,9 @@
   if (controller) await ipc.to(controller).sendOnce("42_SW_DISK_INIT")
 
   const params = new URLSearchParams(location.search)
-  document.querySelector("iframe").src =
-    params.get("path") + "?targetOrigin=" + params.get("origin")
+  const iframe = document.querySelector("iframe")
+  iframe.src = params.get("path") + "?targetOrigin=" + params.get("origin")
+  iframe.onload = () => {
+    console.log(iframe.contentDocument.title)
+  }
 </script>

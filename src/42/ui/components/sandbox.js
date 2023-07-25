@@ -188,10 +188,11 @@ export class Sandbox extends Component {
 
     let { path } = this
 
-    if (system.network?.vhostOrigin && this.path.endsWith(".html")) {
-      if (new URL(path, location).origin === location.origin) {
+    if (system.network?.vhostOrigin && path.endsWith(".html")) {
+      const url = new URL(path, location)
+      if (url.origin === location.origin) {
         this.resource.el.sandbox.add("allow-same-origin")
-        path = `${system.network.vhost}?path=${this.path}&origin=${location.origin}`
+        path = `${system.network.vhost}?path=${url.pathname}&origin=${location.origin}`
       }
     }
 

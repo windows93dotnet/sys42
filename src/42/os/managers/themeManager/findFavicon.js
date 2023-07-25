@@ -1,3 +1,5 @@
+// https://stackoverflow.com/a/16844961
+
 // const FAVICONS = [
 //   "/favicon-32x32.png",
 //   "/apple-touch-icon.png",
