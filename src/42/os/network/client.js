@@ -2,7 +2,6 @@
 import system from "../../system.js"
 import ipc from "../../core/ipc.js"
 import listen from "../../fabric/event/listen.js"
-import isHashmapLike from "../../fabric/type/any/is/isHashmapLike.js"
 
 class Client {
   get controller() {
@@ -17,18 +16,8 @@ class Client {
   }
 
   async connect(options) {
-    let url =
+    const url =
       typeof options === "string" ? options : options?.url ?? "/42.sw.js"
-
-    if (isHashmapLike(options)) {
-      const query = []
-      for (const [key, val] of Object.entries(options)) {
-        if (key === "url") continue
-        query.push(`${key}=${encodeURIComponent(val)}`)
-      }
-
-      if (query.length > 0) url += `?${query.join("&")}`
-    }
 
     this.registration = await navigator.serviceWorker //
       .register(url, { type: "module" })
@@ -58,6 +47,11 @@ class Client {
     }
 
     this.bus.send("42_SW_GET_CONFIG").then((config) => {
+      if (config.vhost) {
+        system.network ??= {}
+        system.network.vhost ??= config.vhost
+      }
+
       if (config.dev && !system.dev) import("../../dev.js?verbose=2&service")
     })
   }

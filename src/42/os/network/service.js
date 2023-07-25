@@ -78,19 +78,19 @@ service.install = (options) => {
   ipc.on("42_SW_GET_CONFIG", async () => config)
 
   ipc.on("42_SW_DISK_INIT", async () =>
-    disk.init(config.vhost ? await getVhostClient() : undefined),
+    disk.init(config.proxy ? await getVhostClient() : undefined),
   )
 
-  if (!config.vhost && config.dev) {
+  if (!config.proxy && config.dev) {
     ipc.on("42_SW_CACHE_BUST", async (path) => kit.update(path, config.version))
   }
 
-  self.addEventListener("fetch", config.vhost ? proxy : serve)
+  self.addEventListener("fetch", config.proxy ? proxy : serve)
 
   self.addEventListener("install", (e) => {
     e.waitUntil(
       (async () => {
-        if (!config.vhost && config.version) await kit.install(config.version)
+        if (!config.proxy && config.version) await kit.install(config.version)
         await self.skipWaiting() // TODO: test this on sw update
       })(),
     )
@@ -116,7 +116,7 @@ service.install = (options) => {
   })
 
   if (config.dev && config.verbose > 2) {
-    const logIcon = config.vhost ? "🌐🛰️" : "🌍🛰️"
+    const logIcon = config.proxy ? "🌐🛰️" : "🌍🛰️"
     for (const event of ["activate", "error", "install", "message"]) {
       self.addEventListener(event, () => {
         console.log(`${logIcon} -(${event})`)

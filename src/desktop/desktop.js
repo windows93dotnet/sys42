@@ -8,11 +8,7 @@ trap((err) => {
   os.desktop.state.errors.push(err)
 })
 
-os.network ??= {
-  vhost: "http://localhost:3000/42/os/network/client/vhost.html",
-}
-
-await client.connect({ verbose: 2 })
+await client.connect()
 
 document.body.classList.add("desktop")
 
@@ -60,8 +56,14 @@ os.desktop = await ui({
           },
         },
         {
+          tag: "button.ma-l-auto",
+          content: "Format Disk",
+          picto: "cross-alt",
+          click: () => clearSiteData({ reload: true }),
+        },
+        {
           if: "{{/errors.length > 0}}",
-          tag: ".solid.error.ma-l-auto",
+          tag: ".solid.error",
           content: "{{/errors.length}} error(s)",
         },
       ],
@@ -72,6 +74,9 @@ os.desktop = await ui({
     errors: [],
   },
 })
+
+/* Apps Manager
+=============== */
 
 // import actions from "../42/os/actions.js"
 // actions.launchFolder("/tests/fixtures/formats/video/")
@@ -106,29 +111,32 @@ os.desktop = await ui({
 // console.log(...(await os.apps.makeMenu("index.html")))
 // console.log(...(await os.apps.makeMenu()))
 
-/*  */
+/* Vhost experiment
+=================== */
 
-import fs from "../42/core/fs.js"
-import actions from "../42/os/actions.js"
-import sleep from "../42/fabric/type/promise/sleep.js"
+// import fs from "../42/core/fs.js"
+// import actions from "../42/os/actions.js"
 
-const html = `\
-<title>Hello</title>
-<link rel="stylesheet" href="./test.css">
-<h1>hello</h1>`
+// const html = `\
+// <title>Hello</title>
+// <link rel="stylesheet" href="./test.css">
+// <h1>hello</h1>`
 
-const css = `\
-body {
-  background-color: tan;
-  font-family: sans-serif;
-}`
+// const css = `\
+// @import url("./fonts.css");
+// body {
+//   background-color: tan;
+// }`
 
-await Promise.all([
-  fs.write("/tests/fixtures/formats/test.html", html), //
-  fs.write("/tests/fixtures/formats/test.css", css),
-])
+// const fonts = `\
+// body {
+//   font-family: monospace;
+// }`
 
-await sleep(1000)
+// await Promise.all([
+//   fs.write("/tests/fixtures/formats/r/test.html", html), //
+//   fs.write("/tests/fixtures/formats/r/test.css", css),
+//   fs.write("/tests/fixtures/formats/r/fonts.css", fonts),
+// ])
 
-actions.launchFile("/tests/fixtures/formats/test.html")
-// actions.launchFile("/tests/fixtures/formats/test.css")
+// actions.launchFile("/tests/fixtures/formats/r/test.html")

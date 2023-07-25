@@ -15,7 +15,7 @@
 <iframe></iframe>
 
 <script type="module">
-  navigator.serviceWorker.register("/42.sw.js?vhost", { type: "module" })
+  navigator.serviceWorker.register("/42.sw.js?proxy", { type: "module" })
   await navigator.serviceWorker.ready
 
   const { ipc } = await import("../../../core/ipc.js")
