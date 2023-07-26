@@ -1,4 +1,5 @@
 import stopEvent from "./stopEvent.js"
+import cleanupEvent from "./cleanupEvent.js"
 import distribute from "../type/object/distribute.js"
 import ensureElement from "../dom/ensureElement.js"
 import Canceller from "../classes/Canceller.js"
@@ -38,37 +39,24 @@ const ITEM_DEFAULTS = {
 const DEFAULTS_KEYS = Object.keys(EVENT_DEFAULTS)
 const ITEM_KEYS = Object.keys(ITEM_DEFAULTS)
 
-function cleanup(item, e) {
-  if (item.preventDefault) e.preventDefault()
-  if (item.stopPropagation) e.stopPropagation()
-  if (item.stopImmediatePropagation) e.stopImmediatePropagation()
-}
-
-export const makeHandler = ({ selector, ...item }, fn, el) => {
-  if (item.prevent || item.disrupt) {
-    item.preventDefault = true
-  }
-
-  if (item.stop || item.disrupt) {
-    item.stopPropagation = true
-    item.stopImmediatePropagation = true
-  }
-
+export const makeHandler = ({ selector, ...options }, fn, el) => {
   if (selector?.includes(":scope")) {
     selector = ensureScopeSelector(selector, el)
   }
+
+  options = cleanupEvent.normalize(options)
 
   return selector
     ? (e) => {
         const target = e.target.closest?.(selector)
         if (target) {
           if (fn(e, target) === false) stopEvent(e)
-          else cleanup(item, e)
+          else cleanupEvent.run(e, options)
         }
       }
     : (e) => {
         if (fn(e, e.target) === false) stopEvent(e)
-        else cleanup(item, e)
+        else cleanupEvent.run(e, options)
       }
 }
 

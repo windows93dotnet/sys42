@@ -2191,6 +2191,7 @@ test("find component actions", "ignore base class methods", async (t) => {
 
   const promise = new Promise((resolve) => {
     t.utils.on({
+      capture: true,
       error(e) {
         if (e.message === expected2) {
           t.pass()
@@ -2231,39 +2232,27 @@ Component.define(
 test("actions", "above root path", async (t) => {
   t.plan(1)
 
-  const promise = new Promise((resolve) => {
-    t.utils.on({
-      error(e) {
-        if (e.message.startsWith("Action")) {
-          e.preventDefault()
-          e.stopPropagation()
-          e.stopImmediatePropagation()
-          t.is(
-            e.message,
-            "Action path is going above root by 3 level(s): ../../../../x",
-          )
-          resolve()
-        }
-      },
-    })
-  })
-
-  t.utils.decay(
-    ui(t.utils.dest({ connect: true }), {
-      content: {
-        tag: "ui-t-actions-above-root",
-        content: [{ tag: "button#child-e2", click: "{{../../../../x()}}" }],
-      },
-
-      actions: {
-        x() {
-          this.state.from = ["x", "ui"]
+  try {
+    await t.utils.decay(
+      ui(t.utils.dest({ connect: true }), {
+        content: {
+          tag: "ui-t-actions-above-root",
+          content: [{ tag: "button#child-e2", click: "{{../../../../x()}}" }],
         },
-      },
-    }),
-  )
 
-  await promise
+        actions: {
+          x() {
+            this.state.from = ["x", "ui"]
+          },
+        },
+      }),
+    )
+  } catch (err) {
+    t.is(
+      err.message,
+      "Action path is going above root by 3 level(s): ../../../../x",
+    )
+  }
 })
 
 /* --------- */

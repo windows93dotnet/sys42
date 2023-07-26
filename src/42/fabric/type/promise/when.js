@@ -1,4 +1,5 @@
 import normalizeError from "../error/normalizeError.js"
+import cleanupEvent from "../../event/cleanupEvent.js"
 
 const SPLIT_REGEX = /\s*(\|\||&&|\+)\s*/
 
@@ -9,7 +10,8 @@ export default async function when(target, events, options) {
     target = globalThis
   }
 
-  let { race, error, signal } = options ?? {}
+  options = options ? cleanupEvent.normalize(options) : {}
+  let { race, error, signal } = options
 
   const controller = new AbortController()
   const listenerOptions = { signal: controller.signal, once: true }
@@ -25,6 +27,7 @@ export default async function when(target, events, options) {
       (event) =>
         new Promise((resolve, reject) => {
           function onevent(e) {
+            cleanupEvent.run(e, options)
             resolve(e)
             controller.abort()
           }

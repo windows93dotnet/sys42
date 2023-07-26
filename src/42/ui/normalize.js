@@ -167,13 +167,10 @@ function findComponentAction(stage, cpn, value) {
       if (fn) return [stage, fn]
     }
 
-    dispatch(
-      stage.el,
-      new Error(
-        `Action path is going above root by ${
-          levels.length - cpnCnt
-        } level(s): ${value}`,
-      ),
+    throw new Error(
+      `Action path is going above root by ${
+        levels.length - cpnCnt
+      } level(s): ${value}`,
     )
   }
 }

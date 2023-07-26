@@ -800,7 +800,7 @@ test("actions", async (t) => {
 })
 
 test.serial("actions", "error", async (t) => {
-  let promise = t.utils.when(document.body, "error")
+  let promise = t.utils.when(document.body, "error", { prevent: true })
 
   const app = await t.utils.decay(
     ui(t.utils.dest({ connect: true }), {
@@ -815,12 +815,11 @@ test.serial("actions", "error", async (t) => {
   )
 
   let e = await promise
-  e.preventDefault()
   t.is(e.message, "boom")
 
   t.is(app.el.innerHTML, "a ")
 
-  promise = t.utils.when(document.body, "error")
+  promise = t.utils.when(document.body, "error", { prevent: true })
   app.state.foo = "x"
 
   e = await promise
