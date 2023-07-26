@@ -1,6 +1,7 @@
 import normalizeError from "./normalizeError.js"
 import removeItem from "../array/removeItem.js"
 import inNode from "../../../core/env/runtime/inNode.js"
+import isAsyncFunction from "../any/is/isAsyncFunction.js"
 
 export const queue = []
 
@@ -86,7 +87,7 @@ if (!inNode && "ReportingObserver" in globalThis) {
 export const forget = inNode
   ? () => {
       isListening = false
-      Error.stackTraceLimit = Infinity
+      Error.stackTraceLimit = stackTraceLimit
       process.off("uncaughtException", errorHandler)
       process.off("unhandledRejection", rejectionHandler)
     }
@@ -107,7 +108,7 @@ export const listen = inNode
     }
   : () => {
       isListening = true
-      Error.stackTraceLimit = stackTraceLimit
+      Error.stackTraceLimit = Infinity
       observer?.observe()
       globalThis.addEventListener("error", errorHandler)
       globalThis.addEventListener("unhandledrejection", rejectionHandler)
@@ -119,6 +120,8 @@ export default function trap(cb) {
       import("../../../core/log.js").then((m) => m.default(err))
       return false
     }
+  } else if (isAsyncFunction(cb)) {
+    throw new Error("Callback function should be synchronous")
   }
 
   const instance = [cb, new Error().stack]

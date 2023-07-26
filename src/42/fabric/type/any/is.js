@@ -27,6 +27,8 @@ export { default as isIterable } from "./is/isIterable.js"
 export { default as isPromiseLike } from "./is/isPromiseLike.js"
 export { default as isTemplateObject } from "./is/isTemplateObject.js"
 export { default as isErrorLike } from "./is/isErrorLike.js"
+export { default as isGeneratorFunction } from "./is/isGeneratorFunction.js"
+export { default as isAsyncFunction } from "./is/isAsyncFunction.js"
 export { default as isMultipleOf } from "../number/isMultipleOf.js"
 
 export const isPositiveInteger = (x) => x >>> 0 === x
@@ -56,12 +58,6 @@ export const isError = (x) => isInstanceOf(x, Error)
 export const isPromise = (x) => isInstanceOf(x, Promise)
 
 export const isMapOrSet = (x) => isMap(x) || isSet(x)
-
-// @thanks https://github.com/tc39/ecmascript-asyncawait/issues/78#issuecomment-167162901
-// const GeneratorFunction = Reflect.getPrototypeOf(function* () {})
-// const AsyncFunction = Reflect.getPrototypeOf(async () => {})
-// export const isGeneratorFunction = (x) => x instanceof GeneratorFunction
-// export const isAsyncFunction = (x) => x instanceof AsyncFunction
 
 export const isIterator = (x) =>
   x !== null &&
