@@ -7,16 +7,19 @@ import merge from "../type/object/merge.js"
 export default class Locator {
   #allocateConfig
 
-  constructor(value = {}, options) {
-    this.value = value
+  constructor(value, options) {
+    this.value = value ?? (options?.hashmap ? Object.create(null) : {})
 
-    this.#allocateConfig = options?.hashmap ? { hashmap: true } : undefined
-    this.value ??= options?.hashmap ? Object.create(null) : {}
-
-    this.delimiter =
+    const delimiter =
       typeof options === "string" //
         ? options
         : options?.delimiter ?? "."
+
+    this.delimiter = delimiter
+
+    this.#allocateConfig = options?.hashmap
+      ? { delimiter, hashmap: true }
+      : delimiter
   }
 
   has(path) {
@@ -28,7 +31,7 @@ export default class Locator {
   }
 
   set(path, val) {
-    allocate(this.value, path, val, this.delimiter, this.#allocateConfig)
+    allocate(this.value, path, val, this.#allocateConfig)
   }
 
   delete(path) {

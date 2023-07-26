@@ -11,7 +11,7 @@ const DEFAULTS = {
 }
 
 export default class Storable extends Locator {
-  constructor(value = {}, options) {
+  constructor(value, options) {
     super(value, options)
     this.config = configure(DEFAULTS, options)
 

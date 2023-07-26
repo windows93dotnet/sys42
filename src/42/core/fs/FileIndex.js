@@ -28,15 +28,15 @@ export default class FileIndex extends ParentClass {
 
   async set(path, inode, options) {
     if (options?.silent !== true) this.emit("change", path, "set", inode)
-    return super.set(path, inode)
+    await super.set(path, inode)
   }
   async delete(path, options) {
     if (options?.silent !== true) this.emit("change", path, "delete")
-    return super.delete(path)
+    await super.delete(path)
   }
   async clear(options) {
     if (options?.silent !== true) this.emit("change", "/", "clear")
-    return super.clear()
+    await super.clear()
   }
 
   watch(pattern, options, fn) {
