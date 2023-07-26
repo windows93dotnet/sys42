@@ -115,7 +115,11 @@ os.desktop = await ui({
 =================== */
 
 // import fs from "../42/core/fs.js"
-// import actions from "../42/os/actions.js"
+// // import actions from "../42/os/actions.js"
+
+// try {
+//   await fs.deleteDir("/tests/fixtures/formats/r")
+// } catch {}
 
 // const html = `\
 // <title>Hello</title>
@@ -133,10 +137,14 @@ os.desktop = await ui({
 //   font-family: monospace;
 // }`
 
-// await Promise.all([
-//   fs.write("/tests/fixtures/formats/r/test.html", html), //
-//   fs.write("/tests/fixtures/formats/r/test.css", css),
-//   fs.write("/tests/fixtures/formats/r/fonts.css", fonts),
-// ])
+// const populate = async () => {
+//   await Promise.all([
+//     fs.write("/tests/fixtures/formats/r/test.html", html), //
+//     fs.write("/tests/fixtures/formats/r/test.css", css),
+//     fs.write("/tests/fixtures/formats/r/fonts.css", fonts),
+//   ])
+// }
 
-// actions.launchFile("/tests/fixtures/formats/r/test.html")
+// setTimeout(() => populate(), 1000)
+
+// // actions.launchFile("/tests/fixtures/formats/r/test.html")

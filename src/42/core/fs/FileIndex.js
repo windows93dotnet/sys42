@@ -1,5 +1,6 @@
 import Storable from "../../fabric/classes/Storable.js"
 import Locator from "../../fabric/classes/Locator.js"
+import exists from "../../fabric/locator/exists.js"
 import FileSystemError from "./FileSystemError.js"
 import configure from "../configure.js"
 import joinPath from "../../core/path/core/joinPath.js"
@@ -21,15 +22,31 @@ const DEFAULTS = {
 const ParentClass = inIframe ? Locator : Storable
 
 export default class FileIndex extends ParentClass {
-  constructor(value = Object.create(null), options) {
+  constructor(value, options) {
     super(value, configure(DEFAULTS, options))
     emittable(this)
   }
 
   async set(path, inode, options) {
-    if (options?.silent !== true) this.emit("change", path, "set", inode)
+    if (options?.silent !== true) {
+      this.emit("change", path, "set", inode)
+
+      const segments = exists.segmentize(path, this.delimiter)
+      segments.pop()
+      while (segments.length > 0) {
+        if (!exists.run(this.value, segments)) {
+          const dirnode = Object.create(null)
+          const path = `/${segments.join("/")}`
+          this.emit("change", path, "set", dirnode)
+        }
+
+        segments.pop()
+      }
+    }
+
     await super.set(path, inode)
   }
+
   async delete(path, options) {
     if (options?.silent !== true) this.emit("change", path, "delete")
     await super.delete(path)
