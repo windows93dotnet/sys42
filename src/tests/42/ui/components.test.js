@@ -2467,18 +2467,31 @@ test("component events inside scope", async (t) => {
   t.is(el.textContent, "click")
 })
 
-test("state $ui priority", async (t) => {
+/* Own Scope
+============ */
+
+Component.define(
+  class extends Component {
+    static plan = {
+      tag: "ui-t-own-scope",
+      props: { foo: "---" },
+      content: "{{foo}}",
+    }
+  },
+)
+
+test("state.$ui priority", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
       content: {
-        tag: "ui-icon",
-        path: "test.js",
+        tag: "ui-t-own-scope",
+        foo: "a",
       },
       state: {
         $ui: {
-          icon: {
+          "t-own-scope": {
             root: {
-              path: "test.css",
+              foo: "b",
             },
           },
         },
@@ -2486,6 +2499,47 @@ test("state $ui priority", async (t) => {
     }),
   )
 
-  const el = app.el.querySelector("ui-icon")
-  t.is(el.textContent, "test\u200b.css")
+  const el = app.el.querySelector("ui-t-own-scope")
+  t.is(el.foo, "b")
+  t.is(el.textContent, "b")
+})
+
+test("same own scope components", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest({ connect: true }), {
+      content: {
+        if: "{{show}}",
+        do: {
+          tag: "ui-t-own-scope",
+          foo: "a",
+        },
+        else: {
+          tag: "ui-t-own-scope",
+          foo: "b",
+        },
+      },
+
+      state: {
+        show: true,
+      },
+    }),
+  )
+
+  let el = app.el.querySelector("ui-t-own-scope")
+  t.is(el.foo, "a")
+  t.is(el.textContent, "a")
+
+  app.state.show = false
+  await app
+
+  el = app.el.querySelector("ui-t-own-scope")
+  t.is(el.foo, "b")
+  t.is(el.textContent, "b")
+
+  app.state.show = true
+  await app
+
+  el = app.el.querySelector("ui-t-own-scope")
+  t.is(el.foo, "a")
+  t.is(el.textContent, "a")
 })
