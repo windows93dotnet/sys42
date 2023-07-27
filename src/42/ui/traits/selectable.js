@@ -34,6 +34,10 @@ const configure = settings("ui.trait.selectable", DEFAULTS)
 const ns = "http://www.w3.org/2000/svg"
 
 class Selectable extends Trait {
+  #getValue
+  #add
+  #remove
+
   constructor(el, options) {
     super(el, options)
 
@@ -69,27 +73,29 @@ class Selectable extends Trait {
     this.config.add ??= noop
     this.config.remove ??= noop
 
-    this._add = this.config.attributes
+    const { attributes } = this.config
+
+    this.#add = attributes
       ? (el, val) => {
-          setAttributes(el, this.config.attributes, { replaceClass: false })
+          if (el) setAttributes(el, attributes, { replaceClass: false })
           this.config.add(el, val)
         }
       : this.config.add
 
-    this._remove = this.config.attributes
+    this.#remove = attributes
       ? (el, val) => {
-          removeAttributes(el, this.config.attributes, { flipBoolean: true })
+          if (el) removeAttributes(el, attributes, { flipBoolean: true })
           this.config.remove(el, val)
         }
       : this.config.remove
 
     if (typeof this.config.key === "string") {
-      this.key = (item) =>
+      this.#getValue = (item) =>
         this.config.key in item
           ? item[this.config.key]
           : item.getAttribute(this.config.key)
     } else {
-      this.key = this.config.key ?? ((item) => item.textContent)
+      this.#getValue = this.config.key ?? ((item) => item.textContent)
     }
 
     this.sync()
@@ -124,38 +130,38 @@ class Selectable extends Trait {
       },
     )
 
-    if (this.config.multiselectable) this.initRubberband()
+    if (this.config.multiselectable) this.#initRubberband()
     else this.dragger = { isDragging: false }
   }
 
   toggle(el) {
-    const val = this.key(el)
+    const val = this.#getValue(el)
     if (this.elements.includes(el)) {
       removeItem(this.selection, val)
       removeItem(this.elements, el)
-      this._remove(el, val)
+      this.#remove(el, val)
     } else {
       this.selection.push(val)
       this.elements.push(el)
-      this._add(el, val)
+      this.#add(el, val)
     }
   }
 
   add(el) {
     if (!this.elements.includes(el)) {
-      const val = this.key(el)
+      const val = this.#getValue(el)
       this.selection.push(val)
       this.elements.push(el)
-      this._add(el, val)
+      this.#add(el, val)
     }
   }
 
   remove(el) {
     if (this.elements.includes(el)) {
-      const val = this.key(el)
+      const val = this.#getValue(el)
       removeItem(this.selection, val)
       removeItem(this.elements, el)
-      this._remove(el, val)
+      this.#remove(el, val)
     }
   }
 
@@ -209,28 +215,6 @@ class Selectable extends Trait {
     this.add(el)
   }
 
-  clear() {
-    while (this.elements.length > 0) {
-      const el = this.elements.shift()
-      const val = this.selection.shift()
-      this._remove(el, val)
-    }
-  }
-
-  clearElements() {
-    while (this.elements.length > 0) {
-      const el = this.elements.shift()
-      this._remove(el)
-    }
-  }
-
-  clearSelection() {
-    while (this.selection.length > 0) {
-      const val = this.selection.shift()
-      this._remove(undefined, val)
-    }
-  }
-
   setSelection(arr) {
     this.clear()
     this.selection.push(...arr)
@@ -243,9 +227,31 @@ class Selectable extends Trait {
     this.sync()
   }
 
+  clear() {
+    while (this.elements.length > 0) {
+      const el = this.elements.shift()
+      const val = this.selection.shift()
+      this.#remove(el, val)
+    }
+  }
+
+  #clearElements() {
+    while (this.elements.length > 0) {
+      const el = this.elements.shift()
+      this.#remove(el)
+    }
+  }
+
+  #clearSelection() {
+    while (this.selection.length > 0) {
+      const val = this.selection.shift()
+      this.#remove(undefined, val)
+    }
+  }
+
   sync() {
     if (this.selection.length > this.elements.length) {
-      this.clearElements()
+      this.#clearElements()
       if (typeof this.config.key === "string") {
         const { key } = this.config
         let fail
@@ -262,7 +268,7 @@ class Selectable extends Trait {
 
         if (fail !== true) {
           for (let i = 0, l = this.elements.length; i < l; i++) {
-            this._add(this.elements[i], this.selection[i])
+            this.#add(this.elements[i], this.selection[i])
           }
 
           return
@@ -275,12 +281,12 @@ class Selectable extends Trait {
       const elements = []
 
       for (const el of this.el.querySelectorAll(this.config.selector)) {
-        const val = this.key(el)
+        const val = this.#getValue(el)
         const i = this.selection.indexOf(val)
         if (i > -1) {
           selection[i] = val
           elements[i] = el
-          this._add(el, val)
+          this.#add(el, val)
         }
       }
 
@@ -288,16 +294,16 @@ class Selectable extends Trait {
       this.selection.push(...selection.filter((x) => x !== undefined))
       this.elements.push(...elements.filter((x) => x !== undefined))
     } else if (this.selection.length < this.elements.length) {
-      this.clearSelection()
+      this.#clearSelection()
       for (const el of this.elements) {
-        const val = this.key(el)
+        const val = this.#getValue(el)
         this.selection.push(val)
-        this._add(el, val)
+        this.#add(el, val)
       }
     }
   }
 
-  initRubberband() {
+  #initRubberband() {
     this.config.dragger.signal = this.cancel.signal
 
     let rectsPromise
