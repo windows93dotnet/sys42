@@ -5,7 +5,7 @@
 import test from "../../../42/test.js"
 import expr from "../../../42/core/expr.js"
 
-const targ = {
+const locals = {
   a: 0,
   b: 1,
   c: false,
@@ -20,42 +20,43 @@ const targ = {
 const { task } = test
 
 test.tasks(
+  // prettier-ignore
   [
-    task({ str: "{{a}}", res: targ.a }),
-    task({ str: "{{!a}}", res: !targ.a }),
-    task({ str: "{{a == 0}}", res: targ.a == 0 }),
-    task({ str: "{{b == 1}}", res: targ.b == 1 }),
-    task({ str: "{{b === 1}}", res: targ.b === 1 }),
-    task({ str: "{{b > 0.5}}", res: targ.b > 0.5 }),
-    task({ str: "{{b < 1.5}}", res: targ.b < 1.5 }),
-    task({ str: "{{b < 1}}", res: targ.b < 1 }),
-    task({ str: "{{b <= 1}}", res: targ.b <= 1 }),
-    task({ str: "{{b == true}}", res: targ.b == true }),
-    task({ str: "{{c == false}}", res: targ.c == false }),
-    task({ str: "{{d == true}}", res: targ.d == true }),
-    task({ str: "{{d === true}}", res: targ.d === true }),
-    task({ str: "{{e == 'hello'}}", res: targ.e == "hello" }),
-    task({ str: "{{e == 'Hello'}}", res: targ.e == "Hello" }),
-    task({ str: '{{e == "hello"}}', res: targ.e == "hello" }),
-    task({ str: '{{e == "Hello"}}', res: targ.e == "Hello" }),
-    task({ str: "{{a}}", res: targ.a }),
-    task({ str: "{{b}}", res: targ.b }),
-    task({ str: "{{c}}", res: targ.c }),
-    task({ str: "{{d}}", res: targ.d }),
-    task({ str: "{{e}}", res: targ.e }),
-    task({ str: "{{f}}", res: targ.f }),
-    task({ str: "{{g}}", res: targ.g }),
-    task({ str: "{{h}}", res: targ.h }),
-    task({ str: "{{b && d}}", res: targ.b && targ.d }),
-    task({ str: "{{b && !c}}", res: targ.b && !targ.c }),
-    task({ str: "{{a && c && f}}", res: targ.a && targ.c && targ.f }),
-    task({ str: "{{b && d && e}}", res: targ.b && targ.d && targ.e }),
-    task({ str: "{{f > 10 && f <= 42}}", res: targ.f > 10 && targ.f <= 42 }),
-    task({ str: "{{i.j.k === 1}}", res: targ.i.j.k === 1 }),
-    task({ str: "{{i.l === 2}}", res: targ.i.l === 2 }),
-    task({ str: "{{e =~ /^H(.*)o$/}}", res: /^H(.*)o$/.test(targ.e) }),
-    task({ str: "{{e =~ /^h(.*)o$/}}", res: /^h(.*)o$/.test(targ.e) }),
-    task({ str: "{{e =~ /^h(.*)o$/i}}", res: /^h(.*)o$/i.test(targ.e) }),
+    task({ str: "{{a}}", res: locals.a }),
+    task({ str: "{{!a}}", res: !locals.a }),
+    task({ str: "{{a == 0}}", res: locals.a == 0 }),
+    task({ str: "{{b == 1}}", res: locals.b == 1 }),
+    task({ str: "{{b === 1}}", res: locals.b === 1 }),
+    task({ str: "{{b > 0.5}}", res: locals.b > 0.5 }),
+    task({ str: "{{b < 1.5}}", res: locals.b < 1.5 }),
+    task({ str: "{{b < 1}}", res: locals.b < 1 }),
+    task({ str: "{{b <= 1}}", res: locals.b <= 1 }),
+    task({ str: "{{b == true}}", res: locals.b == true }),
+    task({ str: "{{c == false}}", res: locals.c == false }),
+    task({ str: "{{d == true}}", res: locals.d == true }),
+    task({ str: "{{d === true}}", res: locals.d === true }),
+    task({ str: "{{e == 'hello'}}", res: locals.e == "hello" }),
+    task({ str: "{{e == 'Hello'}}", res: locals.e == "Hello" }),
+    task({ str: '{{e == "hello"}}', res: locals.e == "hello" }),
+    task({ str: '{{e == "Hello"}}', res: locals.e == "Hello" }),
+    task({ str: "{{a}}", res: locals.a }),
+    task({ str: "{{b}}", res: locals.b }),
+    task({ str: "{{c}}", res: locals.c }),
+    task({ str: "{{d}}", res: locals.d }),
+    task({ str: "{{e}}", res: locals.e }),
+    task({ str: "{{f}}", res: locals.f }),
+    task({ str: "{{g}}", res: locals.g }),
+    task({ str: "{{h}}", res: locals.h }),
+    task({ str: "{{b && d}}", res: locals.b && locals.d }),
+    task({ str: "{{b && !c}}", res: locals.b && !locals.c }),
+    task({ str: "{{a && c && f}}", res: locals.a && locals.c && locals.f }),
+    task({ str: "{{b && d && e}}", res: locals.b && locals.d && locals.e }),
+    task({ str: "{{f > 10 && f <= 42}}", res: locals.f > 10 && locals.f <= 42 }),
+    task({ str: "{{i.j.k === 1}}", res: locals.i.j.k === 1 }),
+    task({ str: "{{i.l === 2}}", res: locals.i.l === 2 }),
+    task({ str: "{{e =~ /^H(.*)o$/}}", res: /^H(.*)o$/.test(locals.e) }),
+    task({ str: "{{e =~ /^h(.*)o$/}}", res: /^h(.*)o$/.test(locals.e) }),
+    task({ str: "{{e =~ /^h(.*)o$/i}}", res: /^h(.*)o$/i.test(locals.e) }),
     task({ str: "{{d ? 'x' : 'y'}}", res: "x" }),
     task({ str: "{{d ? 0 : -1}}", res: 0 }),
     task({ str: "{{c ? 'x' : 'y'}}", res: "y" }),
@@ -64,10 +65,10 @@ test.tasks(
 
   (test, { str, res }) => {
     test(str, (t) => {
-      t.is(expr(str, targ), res, str)
-      t.is(expr.compile(expr.parse(str))(targ), res, str)
-      t.is(expr.evaluate(str)(targ), res, str)
-      t.is(expr.evaluate(str, { boolean: true })(targ), Boolean(res), str)
+      t.is(expr(str, locals), res, str)
+      t.is(expr.compile(expr.parse(str))(locals), res, str)
+      t.is(expr.evaluate(str)(locals), res, str)
+      t.is(expr.evaluate(str, { boolean: true })(locals), Boolean(res), str)
     })
   },
 )
@@ -96,17 +97,17 @@ test.tasks(
     task({ str: "{{a = a < b - 1 ? 0 : b + 10}}", res: 13, expect: { a: 13, b: 3 } }),
     task({ str: "{{a = a == b - 1 ? 0 : b + 10}}", res: 0, expect: { a: 0, b: 3 } }),
     task({ str: "{{a ??= 42}}", res: 2, expect: { a: 2, b: 3 } }),
-    task({ str: "{{a ??= 42}}", targ: { b: 3 }, res: 42, expect: { b: 3, a: 42 } }),
+    task({ str: "{{a ??= 42}}", locals: { b: 3 }, res: 42, expect: { b: 3, a: 42 } }),
   ],
 
-  (test, { targ, str, res, expect }) => {
-    test("assignment", str, targ, (t) => {
-      targ ??= { a: 2, b: 3 }
+  (test, { locals, str, res, expect }) => {
+    test("assignment", str, locals, (t) => {
+      locals ??= { a: 2, b: 3 }
 
-      t.throws(() => expr(str, targ), "Assignment not allowed")
+      t.throws(() => expr(str, locals), "Assignment not allowed")
 
-      const out = expr(str, targ, { assignment: true })
-      t.eq(targ, expect)
+      const out = expr(str, locals, { assignment: true })
+      t.eq(locals, expect)
       if (res !== undefined) t.eq(out, res)
     })
   },
@@ -116,7 +117,7 @@ test.tasks(
   [
     task({
       str: "{{a = x()}}",
-      targ: {
+      locals: {
         a: 2,
         x: () => 5,
       },
@@ -125,7 +126,7 @@ test.tasks(
     }),
     task({
       str: "{{a = y()}}",
-      targ: {
+      locals: {
         a: 2,
         x: () => 5,
       },
@@ -133,7 +134,7 @@ test.tasks(
     }),
     task({
       str: "{{a = y(a, 5)}}",
-      targ: {
+      locals: {
         a: 2,
         y: (a, b) => a + b,
       },
@@ -142,7 +143,7 @@ test.tasks(
     }),
     task({
       str: "{{a = x() |> y(5, 6)}}",
-      targ: {
+      locals: {
         a: 2,
         x: () => 5,
         y: (a, b) => a + b,
@@ -152,7 +153,7 @@ test.tasks(
     }),
     task({
       str: "{{a = x() |> y(^^, 6)}}",
-      targ: {
+      locals: {
         a: 2,
         x: () => 5,
         y: (a, b) => a + b,
@@ -162,7 +163,7 @@ test.tasks(
     }),
     task({
       str: "{{a = x() |> y(6, ^^)}}",
-      targ: {
+      locals: {
         a: 2,
         x: () => 5,
         y: (a, b) => a + b,
@@ -172,17 +173,17 @@ test.tasks(
     }),
   ],
 
-  (test, { targ, str, res, expect, throws }) => {
-    test("actions", str, targ, (t) => {
+  (test, { locals, str, res, expect, throws }) => {
+    test("actions", str, locals, (t) => {
       if (throws) {
-        t.throws(() => expr(str, targ, { assignment: true }), throws)
+        t.throws(() => expr(str, locals, { assignment: true }), throws)
         return
       }
 
-      targ ??= { a: 2, b: 3 }
+      locals ??= { a: 2, b: 3 }
 
-      const out = expr(str, targ, { assignment: true })
-      t.eq(targ.a, expect.a)
+      const out = expr(str, locals, { assignment: true })
+      t.eq(locals.a, expect.a)
       if (res !== undefined) t.eq(out, res)
     })
   },
@@ -198,7 +199,7 @@ test.flaky("async statements", async (t) => {
   const parsed = expr.parse("{{tmp = x(); a = tmp}}")
 
   const fn = expr.compile(parsed, { assignment: true, async: true })
-  const obj = {
+  const locals = {
     a: 1,
     async x() {
       return new Promise((resolve) => {
@@ -209,9 +210,9 @@ test.flaky("async statements", async (t) => {
     },
   }
 
-  const res = await fn(obj)
+  const res = await fn(locals)
 
   t.is(res, 42)
-  t.eq(obj.a, 42)
-  t.eq(obj.tmp, 42)
+  t.eq(locals.a, 42)
+  t.eq(locals.tmp, 42)
 })

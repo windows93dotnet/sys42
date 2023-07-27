@@ -2539,7 +2539,7 @@ test("same own scope components", async (t) => {
   app.state.show = true
   await app
 
-  // check if removed component doens't erase state.$ui
+  // check if removed component doesn't erase state.$ui
   await t.utils.nextRepaint()
 
   el = app.el.querySelector("ui-t-own-scope")

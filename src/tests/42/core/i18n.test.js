@@ -37,7 +37,7 @@ test.teardown(() => {
   Object.assign(system.i18n, savedConfig)
 })
 
-test("choose prefered language", (t) => {
+test("choose preferred language", (t) => {
   system.i18n.languages = ["en-US", "en"]
   system.i18n.locale = "en-US"
   t.is(i18n`hello`, "hello")

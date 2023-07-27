@@ -16,7 +16,7 @@ test.tasks(
       expected: [[[{ event: "click" }], [{ event: "click" }]]],
     }),
     task({
-      title: "choord event",
+      title: "chord event",
       actual: "click+click",
       expected: [[[{ event: "click" }, { event: "click" }]]],
     }),

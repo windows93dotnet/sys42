@@ -8,9 +8,9 @@ trap((err) => {
   os.desktop.state.errors.push(err)
 })
 
-await client.connect()
-
 document.body.classList.add("desktop")
+
+await client.connect()
 
 os.desktop = await ui({
   tag: "body.box-fit.box-v._debug",

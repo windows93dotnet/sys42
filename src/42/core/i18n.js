@@ -55,13 +55,13 @@ function plural({ data }, ...args) {
 
     for (let i = 0, l = substitutions.length; i < l; i++) {
       let word = strings[i + 1]
-      const trimed = word.trim()
+      const trimmed = word.trim()
       let plural
       findContext(locale, "plurals", (ctx) => {
-        if (trimed in ctx) plural = word.replace(trimed, ctx[trimed])
+        if (trimmed in ctx) plural = word.replace(trimmed, ctx[trimmed])
       })
       findContext(locale, data.for, (ctx) => {
-        if (trimed in ctx) word = word.replace(trimed, ctx[trimed])
+        if (trimmed in ctx) word = word.replace(trimmed, ctx[trimmed])
         else return false
       })
       const n = new Intl.NumberFormat(locale, config.number).format(

@@ -117,24 +117,24 @@ test("constant numbers", (t) => {
 /* function
 =========== */
 
-function noline() {}
+function noLine() {}
 
-test("function", "noline", (t) => {
-  const actual = stringify(noline)
+test("function", "noLine", (t) => {
+  const actual = stringify(noLine)
   t.is(
     actual,
     `\
-function noline() {}`,
+function noLine() {}`,
   )
 })
 
-test("function", "noline", 2, (t) => {
-  function noline() {}
-  const actual = stringify(noline)
+test("function", "noLine", 2, (t) => {
+  function noLine() {}
+  const actual = stringify(noLine)
   t.is(
     actual,
     `\
-function noline() {}`,
+function noLine() {}`,
   )
 })
 

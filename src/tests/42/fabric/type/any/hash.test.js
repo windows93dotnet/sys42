@@ -69,14 +69,14 @@ test.tasks(
 
 display()
 
-const ALPHANUM = {}
-for (let i = 0; i < 36; i++) ALPHANUM[i.toString(36)] = ""
+const ALPHANUMERIC = {}
+for (let i = 0; i < 36; i++) ALPHANUMERIC[i.toString(36)] = ""
 
 test.flaky("check hash distribution", (t) => {
   const inputs = []
   const distribution = []
   for (let i = 0; i < 11; i++) {
-    distribution.push({ ...ALPHANUM })
+    distribution.push({ ...ALPHANUMERIC })
   }
 
   for (let i = 0; i < 10_000; i++) {

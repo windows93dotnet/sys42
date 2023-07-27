@@ -57,7 +57,7 @@ export default class RandomCheck {
       t.timeout("reset")
 
       if (signature) {
-        // TODO: generate JSON schema from signature to prevent incoherents shrunks
+        // TODO: generate JSON schema from signature to prevent incoherent shrinks
         const args = signature.map((fn) => fn())
 
         if (id !== undefined && attempts !== id) continue

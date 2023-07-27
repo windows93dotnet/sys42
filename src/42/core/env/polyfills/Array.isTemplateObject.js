@@ -1,4 +1,4 @@
-//! Copyright (c) 2014-2021 Denis Pushkarev. MIT Licence.
+//! Copyright (c) 2014-2021 Denis Pushkarev. MIT License.
 // @src https://github.com/zloirock/core-js/blob/master/packages/core-js/modules/esnext.array.is-template-object.js
 // https://github.com/tc39/proposal-array-is-template-object
 

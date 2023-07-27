@@ -145,7 +145,7 @@ function setFlip(axis) {
 }
 
 const makePlaceEventData = (changes, obj) => ({
-  // changes bytes: Xfliped Yfliped
+  // changes bytes: x-flipped y-flipped
   // @read https://webreflection.medium.com/about-bitwise-operations-1f983a9e6e25
   get my() {
     return {
