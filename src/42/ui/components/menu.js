@@ -2,7 +2,6 @@
 import inTop from "../../core/env/realm/inTop.js"
 import Component from "../classes/Component.js"
 import uid from "../../core/uid.js"
-import isPromiseLike from "../../fabric/type/any/is/isPromiseLike.js"
 
 function seq(el, dir) {
   const items = [
@@ -67,11 +66,7 @@ export class Menu extends Component {
 
     let first = true
 
-    if (typeof items === "function") {
-      items = await items()
-    } else if (isPromiseLike(items)) {
-      items = await items
-    }
+    items = await (typeof items === "function" ? items(this.stage) : items)
 
     for (let item of items) {
       if (item === "---") {

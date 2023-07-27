@@ -741,7 +741,7 @@ export function normalizeData(plan, stage, cb) {
     const { scope } = stage
     stage.waitlistPending.push(
       (async () => {
-        const res = await plan()
+        const res = await plan(stage)
         cb(res, scope)
       })(),
     )
@@ -842,34 +842,42 @@ export function normalizePlan(plan = {}, stage, options) {
 /* stage
 ====== */
 
+class Stage {
+  constructor(plan) {
+    Object.assign(this, plan)
+    this.scope ??= "/"
+    this.steps ??= "?"
+    this.renderers ??= Object.create(null)
+    this.plugins ??= Object.create(null)
+    this.computeds ??= Object.create(null)
+    this.refs ??= Object.create(null)
+    this.tmp ??= new Map()
+    this.detacheds ??= new Set()
+    this.scopeChain ??= []
+    this.pluginHandlers ??= []
+    this.scopeResolvers ??= {}
+    this.actions ??= new Locator(Object.create(null), { delimiter: "/" })
+
+    this.waitlistPreload ??= new Waitlist()
+    this.waitlistPending ??= new Waitlist()
+    this.waitlistPostrender ??= new Waitlist()
+    this.waitlistComponents ??= new Waitlist()
+    this.waitlistTraits ??= new Waitlist()
+
+    this.cancel ??= new Canceller()
+    this.reactive ??= new Reactive(this)
+
+    this.pendingDone ??= async () => pendingDone(this)
+  }
+
+  get signal() {
+    return this.cancel.signal
+  }
+  set signal(_) {}
+}
+
 export function normalizeStage(stage = {}) {
-  stage = { ...stage }
-  stage.scope ??= "/"
-  stage.steps ??= "?"
-  stage.renderers ??= Object.create(null)
-  stage.plugins ??= Object.create(null)
-  stage.computeds ??= Object.create(null)
-  stage.refs ??= Object.create(null)
-  stage.tmp ??= new Map()
-  stage.detacheds ??= new Set()
-  stage.scopeChain ??= []
-  stage.pluginHandlers ??= []
-  stage.scopeResolvers ??= {}
-  stage.actions ??= new Locator(Object.create(null), { delimiter: "/" })
-
-  stage.waitlistPreload ??= new Waitlist()
-  stage.waitlistPending ??= new Waitlist()
-  stage.waitlistPostrender ??= new Waitlist()
-  stage.waitlistComponents ??= new Waitlist()
-  stage.waitlistTraits ??= new Waitlist()
-
-  stage.cancel ??= new Canceller()
-  stage.signal = stage.cancel.signal
-  stage.reactive ??= new Reactive(stage)
-
-  stage.pendingDone ??= async () => pendingDone(stage)
-
-  return stage
+  return new Stage(stage)
 }
 
 export default function normalize(plan, stage = {}) {

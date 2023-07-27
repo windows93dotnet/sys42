@@ -142,13 +142,16 @@ test("reactive data", "attributes", async (t) => {
 })
 
 test("reactive async state", async (t) => {
+  t.plan(5)
+
   const app = t.utils.decay(
     ui(t.utils.dest(), {
       tag: "em",
       content: "{{foo}}",
       class: "{{foo}}",
       style: "color:{{foo}}",
-      async state() {
+      async state(stage) {
+        t.is(stage.constructor.name, "Stage")
         await t.sleep(100)
         return {
           foo: "red",
