@@ -28,16 +28,17 @@ export default class FileIndex extends ParentClass {
   }
 
   async set(path, inode, options) {
+    let changes
+
     if (options?.silent !== true) {
-      this.emit("change", path, "set", inode)
+      changes = []
 
       const segments = exists.segmentize(path, this.delimiter)
       segments.pop()
       while (segments.length > 0) {
         if (!exists.run(this.value, segments)) {
-          const dirnode = Object.create(null)
           const path = `/${segments.join("/")}`
-          this.emit("change", path, "set", dirnode)
+          changes.push(path)
         }
 
         segments.pop()
@@ -45,6 +46,14 @@ export default class FileIndex extends ParentClass {
     }
 
     await super.set(path, inode)
+
+    if (changes) {
+      for (let i = changes.length - 1; i >= 0; i--) {
+        this.emit("change", changes[i], "set")
+      }
+
+      this.emit("change", path, "set", inode)
+    }
   }
 
   async delete(path, options) {
@@ -107,7 +116,7 @@ export default class FileIndex extends ParentClass {
 
     if (dir === undefined) {
       throw new FileSystemError(FileSystemError.ENOENT, path)
-    } else if (Array.isArray(dir) || dir === 0) {
+    } else if (!isDirDescriptor(dir)) {
       throw new FileSystemError(FileSystemError.ENOTDIR, path)
     }
 

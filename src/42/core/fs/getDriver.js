@@ -1,13 +1,13 @@
 import { MASKS } from "./Disk.js"
 
-import { driver as indexeddbDriver } from "./drivers/indexeddbDriver.js"
-import { driver as localstorageDriver } from "./drivers/localstorageDriver.js"
-import { driver as memoryDriver } from "./drivers/memoryDriver.js"
+import { driver as indexeddb } from "./drivers/indexeddbDriver.js"
+import { driver as localstorage } from "./drivers/localstorageDriver.js"
+import { driver as memory } from "./drivers/memoryDriver.js"
 
 const modules = {
-  indexeddb: indexeddbDriver,
-  localstorage: localstorageDriver,
-  memory: memoryDriver,
+  indexeddb,
+  localstorage,
+  memory,
 }
 
 const drivers = {}

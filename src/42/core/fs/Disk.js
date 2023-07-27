@@ -13,10 +13,18 @@ export const MASKS = {
   0x13: "indexeddb",
 }
 
+function syncFileIndex(instance) {
+  ipc.on("42_DISK_CHANGE", ([path, type, inode]) => {
+    if (type === "set") {
+      if (inode !== undefined) instance[type](path, inode)
+    } else instance[type](path)
+  })
+}
+
 let ExportedClass
 
 if (ipc.inIframe) {
-  class DiskIPC extends FileIndex {
+  ExportedClass = class DiskIPC extends FileIndex {
     synced = false
 
     async init() {
@@ -26,18 +34,13 @@ if (ipc.inIframe) {
       this.value = await ipc.send("42_DISK_INIT")
       this.synced = true
 
-      ipc.on("42_DISK_CHANGE", ([path, type, inode]) => {
-        if (type === "set") this[type](path, inode)
-        else this[type](path)
-      })
+      syncFileIndex(this)
 
       if (!ipc.inWorker) {
         globalThis.addEventListener("pagehide", () => ipc.emit("42_DISK_CLOSE"))
       }
     }
   }
-
-  ExportedClass = DiskIPC
 } else {
   const populate = async () => {
     const url = new URL("/files.cbor", import.meta.url)
@@ -47,11 +50,14 @@ if (ipc.inIframe) {
 
   let instance
 
-  class Disk extends FileIndex {
+  ExportedClass = class Disk extends FileIndex {
     synced = false
 
     constructor() {
-      if (instance) return instance
+      if (instance) {
+        console.warn("Disk already initialized")
+        return instance
+      }
 
       super(Object.create(null), { populate })
 
@@ -101,16 +107,9 @@ if (ipc.inIframe) {
         if (ipc.inWorker) ipc.emit("42_DISK_SYNC")
       }
 
-      if (ipc.inWorker) {
-        ipc.on("42_DISK_CHANGE", ([path, type, inode]) => {
-          if (type === "set") this[type](path, inode)
-          else this[type](path)
-        })
-      }
+      if (ipc.inWorker) syncFileIndex(this)
     }
   }
-
-  ExportedClass = Disk
 }
 
 export { ExportedClass as Disk }

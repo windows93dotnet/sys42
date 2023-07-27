@@ -1,6 +1,8 @@
 import test from "../../../../42/test.js"
 import FileIndex from "../../../../42/core/fs/FileIndex.js"
 
+const dummyInode = ["dummy inode"]
+
 test("change event for files", async (t) => {
   t.plan(3)
   const fileindex = new FileIndex()
@@ -9,25 +11,25 @@ test("change event for files", async (t) => {
     fileindex.on("change", (path, type, inode) => {
       t.is(path, "/foo.txt")
       t.is(type, "set")
-      t.is(inode, "hello world")
+      t.is(inode, dummyInode)
       resolve()
     })
   })
 
-  fileindex.set("/foo.txt", "hello world")
+  fileindex.set("/foo.txt", dummyInode)
 
   await promise
 })
 
-test("change event on created folders", async (t) => {
+test("change event for files and created folders", async (t) => {
   t.plan(4 * 2)
   const fileindex = new FileIndex()
 
   const changes = [
-    "/foo/bar/baz/file.txt", //
-    "/foo/bar/baz",
+    "/foo", //
     "/foo/bar",
-    "/foo",
+    "/foo/bar/baz",
+    "/foo/bar/baz/file.txt",
   ]
 
   const promise = new Promise((resolve) => {
@@ -38,19 +40,19 @@ test("change event on created folders", async (t) => {
     })
   })
 
-  fileindex.set("/foo/bar/baz/file.txt", "hello world")
+  fileindex.set("/foo/bar/baz/file.txt", dummyInode)
 
   await promise
 })
 
-test("change event only on created folders", async (t) => {
+test("change event for files and created folders only", async (t) => {
   t.plan(3 * 2)
   const fileindex = new FileIndex({ foo: {} })
 
   const changes = [
-    "/foo/bar/baz/file.txt", //
+    "/foo/bar", //
     "/foo/bar/baz",
-    "/foo/bar",
+    "/foo/bar/baz/file.txt",
   ]
 
   const promise = new Promise((resolve) => {
@@ -61,7 +63,7 @@ test("change event only on created folders", async (t) => {
     })
   })
 
-  fileindex.set("/foo/bar/baz/file.txt", "hello world")
+  fileindex.set("/foo/bar/baz/file.txt", dummyInode)
 
   await promise
 })
