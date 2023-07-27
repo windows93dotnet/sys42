@@ -94,6 +94,7 @@
           ctx.passed.textContent = test.suite.root.stats.passed
           ctx.failed.textContent = test.suite.root.stats.failed
           ctx.skipped.textContent = test.suite.root.stats.skipped
+          if (!system.testing.root.ok) ctx.results.classList.add("error")
         },
       },
     })

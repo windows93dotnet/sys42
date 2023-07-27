@@ -157,7 +157,7 @@ export default class Suite {
 
     if (t.logs.length > 0) test.logs.push(...t.logs)
 
-    if (options.oneach) requestAnimationFrame(() => options.oneach(test))
+    if (options.oneach) options.oneach(test)
 
     if (this.afterEach) await this.warnOnThrow(this.afterEach, "afterEach")
   }

@@ -14,6 +14,7 @@ import isEmptyObject from "../../fabric/type/any/is/isEmptyObject.js"
 import dispatch from "../../fabric/event/dispatch.js"
 import hash from "../../fabric/type/any/hash.js"
 import uid from "../../core/uid.js"
+import noop from "../../fabric/type/function/noop.js"
 import {
   addEntry,
   ensurePlan,
@@ -214,6 +215,7 @@ export default class Component extends HTMLElement {
 
       const changes = new Set([this.stage.scope])
       this.stage.reactive.emit("update", changes, changes) // prevent calling $ref renderers
+      this.#clearOwnScope = noop
     }
 
     this.stage.cancel.signal.addEventListener("abort", this.#clearOwnScope)

@@ -37,8 +37,10 @@ export default function renderIf(plan, stage) {
 
   const ifPlan = normalizePlan(plan.do ?? omit(plan, ["if", "else"]), stage)
   const ifType = getType(ifPlan)
+  const ifSteps = stage.steps
   let elsePlan
   let elseType
+  let elseSteps
   if (plan.else) {
     if (ifType === "object") {
       if ("animate" in ifPlan) plan.else.animate ??= ifPlan.animate
@@ -46,13 +48,26 @@ export default function renderIf(plan, stage) {
 
     elsePlan = normalizePlan(plan.else, stage)
     elseType = getType(elsePlan)
+    elseSteps = ifSteps + "[else]"
   }
 
   register(stage, scopes, async () => {
     const res = await check(stage.reactive.state)
     if (res === lastRes) return
 
-    const [plan, type] = res ? [ifPlan, ifType] : [elsePlan, elseType]
+    let plan
+    let type
+    let steps
+
+    if (res) {
+      plan = ifPlan
+      type = ifType
+      steps = ifSteps
+    } else {
+      plan = elsePlan
+      type = elseType
+      steps = elseSteps
+    }
 
     if (lastChild) {
       elements = getNodesInRange(new NodesRange(placeholder, lastChild))
@@ -80,7 +95,7 @@ export default function renderIf(plan, stage) {
     }
 
     cancel = new Canceller(stage.signal)
-    const newStage = { ...stage, type, cancel, signal: cancel.signal }
+    const newStage = { ...stage, type, steps, cancel, signal: cancel.signal }
     const el = render(plan, newStage, { skipNormalize: true })
 
     if (el.nodeType === DOCUMENT_FRAGMENT_NODE) {
