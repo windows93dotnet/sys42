@@ -13,8 +13,8 @@ export default class ConfigFile {
   constructor(filename, defaults) {
     this.path = normalizeFilename(`$HOME/${getBasename(filename)}`)
     persist.ensureType(filename)
-    this.defaults = configure({ version: -1 * Date.now() }, defaults)
-
+    this.defaults = defaults
+    this.version ??= -1 * Date.now()
     this.ready = defer()
     this.#instanceInit = this.init
     this.init = async (...args) => {
@@ -48,15 +48,30 @@ export default class ConfigFile {
       await this.reset()
     }
 
-    if (this.defaults.version > this.value.version) {
-      if (this.upgrade) this.value = await this.upgrade(this.value)
-      else await this.reset()
+    if (this.version > this.value.version) {
+      const { name } = this.constructor
+      const path = location.origin + this.path
+      if (this.upgrade) {
+        console.warn(
+          `${name} config file was upgraded to version ${this.version}. ${path}`,
+        )
+        this.value = await this.upgrade(this.value)
+      } else {
+        // TODO: Use confirm.js to warn user
+        console.warn(
+          `Reseting ${name} config file because the version was obsolete. ${path}`,
+        )
+        await this.reset()
+      }
     }
+
+    delete this.value.version
 
     await this.postload()
   }
 
   async save() {
+    this.value.version = this.version
     return persist.set(this.path, this.value)
   }
 
