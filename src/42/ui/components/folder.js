@@ -153,6 +153,7 @@ export class Folder extends Component {
 
       contextmenu(icon, e, menu, this.stage)
     } else {
+      this.currentView.selectable.clear()
       const menu = [
         { ...os.createFolder.meta, click: "{{os.createFolder(path)}}" },
         { ...os.createFile.meta, click: "{{os.createFile(path)}}" },

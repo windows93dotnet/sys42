@@ -874,6 +874,15 @@ class Stage {
     return this.cancel.signal
   }
   set signal(_) {}
+
+  resolve(loc) {
+    return resolveScope(...findScope(this, loc), this)
+  }
+
+  get(loc) {
+    loc = resolveScope(...findScope(this, loc), this)
+    return this.reactive.get(loc)
+  }
 }
 
 export function normalizeStage(stage = {}) {

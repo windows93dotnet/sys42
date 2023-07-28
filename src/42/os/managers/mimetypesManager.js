@@ -63,6 +63,8 @@ class MimetypesManager extends ConfigFile {
       return out
     }
 
+    if (type === "*" && subtype === "*") return this.mimetypes
+
     throw new Error(`Unknown mimetype type: ${type}`)
   }
 
@@ -129,11 +131,38 @@ class MimetypesManager extends ConfigFile {
     return this.save()
   }
 
+  list(mimetype, options) {
+    const { type, subtype } = parseMimetype(mimetype)
+    const arr = []
+    for (const key in this.mimetypes) {
+      if (
+        Object.hasOwn(this.mimetypes, key) &&
+        (key === type || type === "*")
+      ) {
+        const object = this.mimetypes[key]
+        for (const key in object) {
+          if (
+            Object.hasOwn(object, key) &&
+            (key === subtype || subtype === "*") &&
+            (options?.withApps ? Boolean(object[key].apps) : true)
+          ) {
+            arr.push(object[key])
+          }
+        }
+      }
+    }
+
+    return arr
+  }
+
   lookup(path) {
     assertPath(path)
     path = path.toLowerCase()
-    const out =
-      this.extnames[getExtname(path)] ?? this.basenames[getBasename(path)] ?? {}
+    const out = structuredClone(
+      this.extnames[getExtname(path)] ??
+        this.basenames[getBasename(path)] ??
+        {},
+    )
 
     out.apps ??= []
 

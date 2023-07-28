@@ -28,6 +28,14 @@ const editor = {
               shortcut: "Ctrl+O",
               click: "{{editor.openFile()}}",
             },
+            // TODO: allow apps to open folders
+            // {
+            //   $id: "openFolder",
+            //   label: "Open Folder…",
+            //   picto: "folder-open",
+            //   shortcut: "Ctrl+K Ctrl+O",
+            //   click: "{{editor.openFolder()}}",
+            // },
             {
               $id: "saveFile",
               disabled: "{{$files.length === 0}}",
@@ -138,12 +146,6 @@ editor.init = (app) => {
   const { encode, decode, dir } = manifest
 
   const defaultFolder = manifest.defaultFolder ?? "$HOME/"
-
-  // setTimeout(() => {
-  //   const file = new File(["test"], "test")
-  //   state.$files.push({ file })
-  //   state.$current = 1
-  // }, 0)
 
   async function getBlob($file, path) {
     const [res] = await app.send("encode", $file, path)

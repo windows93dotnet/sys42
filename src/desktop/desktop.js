@@ -109,7 +109,15 @@ os.desktop = await ui({
 
 // console.log(await os.apps.lookup("index.html"))
 // console.log(...(await os.apps.makeMenu("index.html")))
+// console.log(...(await os.apps.makeMenu({ mimetype: "*" })))
 // console.log(...(await os.apps.makeMenu()))
+// console.log(
+//   ...(await os.apps.makeMenu([
+//     "index.html", //
+//     "script.js",
+//     "image.gif",
+//   ])),
+// )
 
 /* Vhost experiment
 =================== */

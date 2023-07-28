@@ -55,13 +55,11 @@ deleteFolder.meta = {
 
 launchFile.meta = {
   label: "Open File…",
-  shortcut: "Ctrl+O",
   picto: "file",
 }
 
 launchFolder.meta = {
   label: "Open Folder…",
-  shortcut: "Ctrl+K Ctrl+O",
   picto: "folder-open",
 }
 
@@ -74,6 +72,31 @@ renameFolder.meta = { ...renameFile.meta }
 
 const fileContextMenu = [
   { ...launchFile.meta, click: "{{os.launchFile(selection)}}" },
+  {
+    label: "Open With",
+    async items(stage) {
+      const { appsManager } = await import("./managers/appsManager.js")
+      const apps = await appsManager.makeMenu(stage.get("selection"))
+      return [
+        ...apps,
+        // "---",
+        // {
+        //   label: "Other Application…",
+        //   async click() {
+        //     const { dialog } = await import("../ui/components/dialog.js")
+        //     const apps = await appsManager.makeMenu({ mimetype: "*" })
+        //     dialog({
+        //       label: "Other Application",
+        //       content: {
+        //         tag: "ui-menu.inset",
+        //         items: apps,
+        //       },
+        //     })
+        //   },
+        // },
+      ]
+    },
+  },
   "---",
   { ...deleteFile.meta, click: "{{os.deleteFile(selection)}}" },
   "---",

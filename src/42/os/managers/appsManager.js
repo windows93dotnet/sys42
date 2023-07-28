@@ -1,7 +1,10 @@
+/* eslint-disable max-depth */
+/* eslint-disable complexity */
 import ConfigFile from "../classes/ConfigFile.js"
 import arrify from "../../fabric/type/any/arrify.js"
 import pick from "../../fabric/type/object/pick.js"
 import disk from "../../core/disk.js"
+import isHashmapLike from "../../fabric/type/any/is/isHashmapLike.js"
 import mimetypesManager from "./mimetypesManager.js"
 import normalizeManifest from "../classes/App/normalizeManifest.js"
 import App from "../classes/App.js"
@@ -135,25 +138,71 @@ class AppsManager extends ConfigFile {
     return apps
   }
 
-  async makeMenu(apps) {
+  async makeMenu(val) {
     await this.ready
 
-    if (typeof apps === "string") {
-      apps = apps in this.value ? [this.value[apps]] : await this.lookup(apps)
+    let state
+    let sort
+
+    if (typeof val === "string") {
+      val = val in this.value ? [this.value[val]] : await this.lookup(val)
+    } else if (Array.isArray(val)) {
+      await mimetypesManager.ready
+
+      const counts = {}
+
+      const appNames = new Set()
+      for (const item of val) {
+        if (item in this.value) appNames.add(item)
+        else {
+          state ??= {}
+          state.$files ??= []
+          state.$files.push(item)
+          const { apps } = mimetypesManager.lookup(item)
+          for (const app of apps) {
+            appNames.add(app)
+            counts[app] = (counts[app] ?? 0) + 1
+          }
+        }
+      }
+
+      val = []
+      for (const appName of appNames) {
+        if (appName in this.value) val.push(this.value[appName])
+      }
+
+      val.sort((a, b) => counts[b.name] - counts[a.name])
+    } else if (isHashmapLike(val)) {
+      if ("mimetype" in val) {
+        sort = true
+        const { mimetype } = val
+        const appNames = new Set()
+        for (const { apps } of mimetypesManager.list(mimetype, {
+          withApps: true,
+        })) {
+          for (const appName of apps) {
+            if (appName in this.value) appNames.add(appName)
+          }
+        }
+
+        val = []
+        for (const appName of appNames) {
+          if (appName in this.value) val.push(this.value[appName])
+        }
+      }
+    } else if (!val) {
+      sort = true
+      val = Object.values(this.value) //
     }
 
-    if (!apps) {
-      const values = Object.values(this.value)
-      values.shift()
-      apps = values.sort((a, b) => a.name.localeCompare(b.name))
-    }
+    if (sort) val.sort((a, b) => a.name.localeCompare(b.name))
 
     const menu = []
 
-    for (const { name, icons } of apps) {
+    for (const { name, icons } of val) {
       const menuItem = {
         label: name,
-        click: () => this.launch(name),
+        click: () => this.launch(name, state),
       }
 
       for (const { sizes, src } of icons) {
@@ -172,7 +221,7 @@ class AppsManager extends ConfigFile {
   }
 }
 
-const appsManager = new AppsManager(".apps.json")
+export const appsManager = new AppsManager(".apps.json")
 appsManager.init()
 
 export default appsManager
