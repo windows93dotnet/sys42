@@ -48,15 +48,15 @@ async function greet() {
     config.verbose > 1 ? ` verbose {magenta ${config.verbose}}` : ""
 
   const { version } = JSON.parse(
-    await fs.readFile(resolve("../package.json"), "utf-8")
+    await fs.readFile(resolve("../package.json"), "utf-8"),
   )
 
   log[config.dev ? "yellow" : "cyanBright"](`
   ╷ ┌───┐   ${line1.join("")}
   └─┤ ┌─┘   ${line2.join("")}
     └─┴─╴   {grey v${version}}${verbose}${
-    config.dev ? " {yellow 🛠️ dev} " : ""
-  }\n`)
+      config.dev ? " {yellow 🛠️ dev} " : ""
+    }\n`)
 }
 
 function exit(res) {
@@ -78,8 +78,8 @@ const res = await Promise.all(
       system.tasks[task] = m.default
       const res = await system.tasks[task]()
       return config.ignore.includes(task) ? 0 : res
-    })
-  )
+    }),
+  ),
 )
 
 exit(res)

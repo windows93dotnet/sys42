@@ -199,7 +199,7 @@ export default async function userConfig(args) {
   const configMerged = configure(
     DEFAULTS, //
     configUser,
-    { prettier: prettierConfig ? prettierConfig.config : {} }
+    { prettier: prettierConfig ? prettierConfig.config : {} },
   )
 
   normalizeTestContexts(configMerged.tasks.test)

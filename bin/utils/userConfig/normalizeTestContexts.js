@@ -73,7 +73,7 @@ export default function normalizeTestContexts(test) {
     const config = normalizeConfig(contextType, test)
     test[key] = normalizeConfig(
       configure(contextType, test[key], ctxVal),
-      config
+      config,
     )
     for (const pattern of config.glob) {
       if (!test[key].glob.includes(pattern)) test[key].glob.push(pattern)

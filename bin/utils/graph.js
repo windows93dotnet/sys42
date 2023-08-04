@@ -36,7 +36,7 @@ export default async function graph(glob, { cwd, host }) {
         arr[mod] ??= new Set()
         arr[mod].add(pathname)
       }
-    })
+    }),
   )
 
   return {

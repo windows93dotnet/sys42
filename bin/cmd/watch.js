@@ -41,7 +41,7 @@ function makeGraphResult() {
             valueFormater: (x) =>
               [...x].map((x) => format.file(`${cwd}${x}`)).join(", "),
           })
-          .trim()
+          .trim(),
       )
       .hr()
   })

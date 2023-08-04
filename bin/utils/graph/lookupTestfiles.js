@@ -4,7 +4,7 @@ export default function lookupTestfiles(
   graphResult,
   url,
   testFiles = [],
-  visited = new Set()
+  visited = new Set(),
 ) {
   visited.add(url)
   if (url.endsWith(".test.js")) return [url.slice(1)]

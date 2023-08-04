@@ -16,7 +16,7 @@ export default async function annex() {
 
     undones.push(
       import(`./annex/providers/${item.type}.js`) //
-        .then((m) => m.default(item))
+        .then((m) => m.default(item)),
     )
   }
 

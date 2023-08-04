@@ -20,12 +20,12 @@ export default async function scan() {
   system.config.files = files
 
   const scannedFiles = sortPath(
-    await globby(task.glob, { ...GLOBBY_DEFAULTS, cwd, dot: true })
+    await globby(task.glob, { ...GLOBBY_DEFAULTS, cwd, dot: true }),
   )
 
   if (scannedFiles.length === 0) {
     task.log(
-      `💥 {yellow could not find any files matching pattern: ${task.glob}}`
+      `💥 {yellow could not find any files matching pattern: ${task.glob}}`,
     )
     return 1
   }
@@ -43,7 +43,7 @@ export default async function scan() {
       buffer = cbor.encode(files)
     } else {
       throw new Error(
-        `Scan file must be .json or .cbor : ${system.config.paths.files.scan}`
+        `Scan file must be .json or .cbor : ${system.config.paths.files.scan}`,
       )
     }
 
@@ -52,8 +52,8 @@ export default async function scan() {
     task.log(
       ` scan {white.dim →} ${task.log.format.file(
         system.config.paths.files.scan,
-        { colors: { name: "bright.magenta" }, bytes: buffer.byteLength }
-      )} (${scannedFiles.length} files indexed)`
+        { colors: { name: "bright.magenta" }, bytes: buffer.byteLength },
+      )} (${scannedFiles.length} files indexed)`,
     )
   }
 
