@@ -177,12 +177,17 @@ function handleSeq(seq, fn, el, { repeatable, options }, registry) {
     const events = {}
     const chordCalls = []
     const eventOptions = { ...options }
+    const ensureFocusableOptions = {
+      signal: options.signal,
+      tabIndex: -1,
+      checkIfVisible: false,
+    }
 
     for (const { event, key, code } of chords) {
       if (event in events === false) {
         if ((key || code) && !keyboard.isListening) keyboard.listen()
         if (chords.length > 1) {
-          ensureFocusable(el, { signal: options.signal, tabIndex: -1 })
+          ensureFocusable(el, ensureFocusableOptions)
           eventOptions.capture = true
           events[event] = (e) => {
             if (chordCalls.length === 0) {
@@ -234,7 +239,7 @@ function handleSeq(seq, fn, el, { repeatable, options }, registry) {
             fn(e)
           }
         } else if (key || code) {
-          ensureFocusable(el, { signal: options.signal, tabIndex: -1 })
+          ensureFocusable(el, ensureFocusableOptions)
           events[event] = (e) => {
             chordCalls.length = 0
             if (registry.seqIndex !== i) return

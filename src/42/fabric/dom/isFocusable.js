@@ -1,15 +1,21 @@
 export const isVisible = (el) =>
   Boolean(el.offsetWidth || el.offsetHeight || el.getClientRects().length > 0)
 
-export function isFocusable(el) {
+export function isFocusable(el, options) {
   if (el === window) return true
 
   if (
     !el ||
     el.tabIndex < 0 ||
     el.disabled ||
-    el.getAttribute("aria-disabled") === "true" ||
-    !isVisible(el)
+    el.getAttribute("aria-disabled") === "true"
+  ) {
+    return false
+  }
+
+  if (
+    options?.checkIfVisible !== false &&
+    (!el.isConnected || !isVisible(el))
   ) {
     return false
   }

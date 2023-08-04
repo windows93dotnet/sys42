@@ -123,9 +123,22 @@ test.ui(async (t, { makeRealmLab, triggerOpener }) => {
   await makeRealmLab({ href, iframe }, makeContent)
 
   if (manual) {
-    if (test.env.realm.inTop) await t.puppet("#alert").click()
     return t.pass()
   }
+
+  await triggerOpener(
+    "#prompt",
+    ".ui-dialog__agree",
+    "derp",
+    async (dialog) => {
+      const input = dialog.querySelector('[name="/value"]')
+      t.true(
+        window.top.document.activeElement === input,
+        "Element should have focus",
+      )
+      await t.puppet(input).fill("derp")
+    },
+  )
 
   await Promise.all([
     // alert always return true
@@ -141,11 +154,6 @@ test.ui(async (t, { makeRealmLab, triggerOpener }) => {
     triggerOpener("#prompt", ".ui-dialog__agree", ""),
     triggerOpener("#prompt", ".ui-dialog__decline", undefined),
     triggerOpener("#prompt", ".ui-dialog__close", undefined),
-
-    triggerOpener("#prompt", ".ui-dialog__agree", "derp", async (dialog) => {
-      const input = dialog.querySelector('[name="/value"]')
-      await t.puppet(input).fill("derp")
-    }),
 
     // Customs
     // -------

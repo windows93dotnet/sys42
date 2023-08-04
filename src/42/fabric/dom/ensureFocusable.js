@@ -1,7 +1,7 @@
 import isFocusable from "./isFocusable.js"
 
 export function ensureFocusable(el, options) {
-  if (isFocusable(el)) return el
+  if (isFocusable(el, options)) return el
 
   const attr = el.getAttribute("tabIndex")
   el.tabIndex = options?.tabIndex ?? 0

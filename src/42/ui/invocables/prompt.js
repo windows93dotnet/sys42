@@ -26,7 +26,7 @@ export async function prompt(message = "", options) {
   const config = { ...DEFAULT, ...options }
 
   const onEnter = config.tag.startsWith("textarea")
-    ? { enterKeyHint: "enter" }
+    ? { enterKeyHint: "enter", rows: 4 }
     : { enterKeyHint: config.enterKeyHint ?? "done", on: { Enter: "{{ok()}}" } }
 
   config.content = {
@@ -37,14 +37,12 @@ export async function prompt(message = "", options) {
         {
           tag: config.tag,
           bind: "value",
-          rows: 4,
           lazy: true,
           label: message ?? "",
           prose: config.prose,
-          ...config.field,
-          ...onEnter,
         },
         config.field,
+        onEnter,
       ),
       config.afterfield,
     ],
