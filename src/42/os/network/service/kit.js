@@ -1,6 +1,5 @@
 import tarExtractPipe from "../../../core/formats/tar/tarExtractPipe.js"
 import getPathInfos from "../../../core/path/getPathInfos.js"
-import getDirname from "../../../core/path/core/getDirname.js"
 
 const kit = {}
 
@@ -9,7 +8,7 @@ kit.install = async (version, options) => {
 
   kit.version = version
 
-  const kitsFolder = options?.dirname ?? "42-kits"
+  const kitsFolder = options?.kitsFolder ?? "42-kits"
 
   const [res, cache] = await Promise.all([
     fetch(`/${kitsFolder}/${version}.tar.gz`),
@@ -27,13 +26,7 @@ kit.install = async (version, options) => {
       if (item.type === "file") {
         const { headers } = getPathInfos(item.name, { headers: true })
         headers["Content-Length"] = item.size
-        headers["42-Kit-Version"] = version
         const res = new Response(item.file, { headers })
-
-        if (item.name.endsWith("index.html")) {
-          undones.push(cache.put(getDirname(item.name) + "/", res.clone()))
-        }
-
         undones.push(cache.put(item.name, res))
       }
     },
@@ -50,14 +43,7 @@ kit.install = async (version, options) => {
 
 kit.update = async (path, version = kit.version) => {
   kit.cache ??= await caches.open(version)
-
-  if (path.endsWith("index.html")) {
-    const res = await fetch(path)
-    await Promise.all([
-      kit.cache.put(getDirname(path) + "/", res.clone()),
-      kit.cache.put(path, res),
-    ])
-  } else await kit.cache.add(path)
+  await kit.cache.add(path)
 }
 
 export { kit }
