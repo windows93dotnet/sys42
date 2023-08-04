@@ -107,7 +107,7 @@ function makeSandbox(manifest) {
     let path
     const parsed = template.parse(manifest.document)
     if (parsed.substitutions.length > 0) {
-      const state = { ...manifest.state, foo: "hello" }
+      const state = { ...manifest.state }
 
       for (let i = 0, l = manifest.state.$files.length; i < l; i++) {
         if (!(manifest.state.$files[i] instanceof FileAgent)) {

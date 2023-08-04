@@ -99,11 +99,23 @@ os.desktop = await ui({
 // appsManager.launch("TextEdit")
 
 // import appsManager from "../42/os/managers/appsManager.js"
+// import sleep from "../42/fabric/type/promise/sleep.js"
+
+// appsManager.launch("Sandbox", {
+//   $files: [
+//     // "/tests/fixtures/formats/example.json5",
+//     "/tests/fixtures/formats/example.html",
+//     // "/style.css",
+//   ],
+// })
+
+// await sleep(100)
+
 // appsManager.launch("TextEdit", {
 //   $files: [
-//     "/tests/fixtures/formats/example.json5",
+//     // "/tests/fixtures/formats/example.json5",
 //     "/tests/fixtures/formats/example.html",
-//     "/style.css",
+//     // "/style.css",
 //   ],
 // })
 

@@ -1,4 +1,5 @@
 import supportInstall from "../../../core/env/supportInstall.js"
+import nextCycle from "../../../fabric/type/promise/nextCycle.js"
 // import inPWA from "../../../core/env/runtime/inPWA.js"
 
 const editor = {
@@ -148,6 +149,10 @@ editor.init = (app) => {
   const defaultFolder = manifest.defaultFolder ?? "$HOME/"
 
   async function getBlob($file, path) {
+    // Allow any reactive pending updates to happen
+    await nextCycle()
+    await app.stage.reactive.pendingUpdate
+
     const [res] = await app.send("encode", $file, path)
     return res ?? $file.blob
   }
