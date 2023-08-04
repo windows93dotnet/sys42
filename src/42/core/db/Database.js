@@ -7,6 +7,7 @@ const DEFAULTS = {
   version: 1,
   stores: {},
   durability: "default",
+  persistent: true,
 }
 
 const debug = 0
@@ -182,7 +183,15 @@ export class Database {
       throw new DatabaseError("Database is obsolete")
     }
 
-    const { name, version } = this.#config
+    const { name, version, persistent } = this.#config
+
+    if ((persistent, navigator.storage && navigator.storage.persist)) {
+      // TODO: check Storage Buckets API https://developer.chrome.com/blog/storage-buckets/
+      this.persistent =
+        (await navigator.storage.persisted()) ||
+        (await navigator.storage.persist())
+    }
+
     this.indexedDB = await Database.open(name, version, {
       upgrade: async (...args) => this.#upgrade(...args),
       downgrade: async (...args) => this.#downgrade(...args),
