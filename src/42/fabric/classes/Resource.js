@@ -190,7 +190,7 @@ export default class Resource {
     const body = options?.body ?? ""
     this.el.removeAttribute("src")
     this.el.srcdoc = /* html */ `
-      <!DOCTYPE html>
+      <!doctype html>
       <meta charset="utf-8" />
       <!-- <meta http-equiv="Content-Security-Policy" content="${CSP}" /> -->
       ${head}

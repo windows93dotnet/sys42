@@ -22,7 +22,7 @@ log.verbose = config.verbose
 
 function greet() {
   log.if(config.verbose).cyanBright(`\
-╷ ┌───┐  ${config.service ? "{dim.grey from service worker}" : ""}
+╷ ┌───┐  ${config.service ? "🛰️ {dim.cyan from service worker}" : ""}
 └─┤ ┌─┘  {reset type} {grey sys42.dev.help()} {reset for help}
   └─┴─╴  `)
   log(

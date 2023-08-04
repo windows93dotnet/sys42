@@ -30,8 +30,8 @@ class StaticFile {
     this.fd = this.handle.fd
     this.stat = await this.handle.stat()
     if (!this.stat.isFile()) throw new Error(`${this.filename} is not a file`)
-    this.headers["content-length"] = this.stat.size
-    this.headers["last-modified"] = this.stat.mtime.toUTCString()
+    this.headers["Content-Length"] = this.stat.size
+    this.headers["Last-Modified"] = this.stat.mtime.toUTCString()
   }
 
   async close() {

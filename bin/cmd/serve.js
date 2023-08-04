@@ -57,13 +57,13 @@ async function startServer(port) {
     if (req.headers.accept !== "text/event-stream") return
 
     if (req.headers.host === host) {
-      reply.raw.setHeader("access-control-allow-origin", "null")
+      reply.raw.setHeader("Access-Control-Allow-Origin", "null")
     }
 
-    reply.raw.setHeader("content-type", "text/event-stream")
-    reply.raw.setHeader("connection", "keep-alive")
-    reply.raw.setHeader("cache-control", "no-cache,no-transform")
-    reply.raw.setHeader("x-no-compression", 1)
+    reply.raw.setHeader("Content-Type", "text/event-stream")
+    reply.raw.setHeader("Connection", "keep-alive")
+    reply.raw.setHeader("Cache-Control", "no-cache,no-transform")
+    reply.raw.setHeader("X-No-Compression", true)
 
     clients.add(reply)
 
@@ -93,10 +93,10 @@ async function startServer(port) {
       const asset = new StaticFile(srcPath + url)
 
       if (req.headers.host === host) {
-        reply.header("access-control-allow-origin", "null")
+        reply.header("Access-Control-Allow-Origin", "null")
       }
 
-      reply.header("accept-ranges", "bytes")
+      reply.header("Accept-Ranges", "bytes")
 
       try {
         await asset.open()
@@ -105,14 +105,11 @@ async function startServer(port) {
           needDevScript &&
           req.headers["sec-fetch-dest"] === "document" &&
           asset.ext === ".html"
-          // (req.headers["sec-fetch-dest"] === "document" ||
-          //   req.headers["sec-fetch-dest"] === "empty") &&
-          // (asset.ext === ".html" || asset.ext === ".svg")
         ) {
           const devStream = makeDevScript(asset, reply.getHeader("user-agent"))
-          asset.headers["content-length"] += Buffer.byteLength(
+          asset.headers["Content-Length"] += Buffer.byteLength(
             devStream,
-            "utf-8"
+            "utf-8",
           )
           reply.headers(asset.headers)
           const content = await asset.read()
@@ -121,14 +118,14 @@ async function startServer(port) {
           let i = content.indexOf("</title>")
           if (i > -1) {
             return reply.send(
-              content.slice(0, i + 8) + devStream + content.slice(i + 8)
+              content.slice(0, i + 8) + devStream + content.slice(i + 8),
             )
           }
 
-          i = content.indexOf("<!DOCTYPE html>")
+          i = content.indexOf("<!doctype html>")
           if (i > -1) {
             return reply.send(
-              content.slice(0, i + 15) + devStream + content.slice(i + 15)
+              content.slice(0, i + 15) + devStream + content.slice(i + 15),
             )
           }
 

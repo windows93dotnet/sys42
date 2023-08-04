@@ -57,7 +57,7 @@ export async function normalizeBody(body, out, parent) {
   for (let [key, val] of Object.entries(body)) {
     if (parent) key = `${parent}[${key}]`
 
-    if (val.nodeName === "FORM") val = new FormData(val)
+    if (val.localName === "form") val = new FormData(val)
     else if (val.form) {
       const input = val
       val = new FormData(val.form) // force any data serialization
@@ -175,7 +175,7 @@ export const makeStream = (requestMethod, withBody = true) =>
               if (!reader) {
                 const res = await requestMethod(url, options, ...rest)
                 onHeaders?.(res.headers, rs)
-                onSize?.(Number(res.headers.get("content-length")), rs)
+                onSize?.(Number(res.headers.get("Content-Length")), rs)
                 reader = res.body.getReader()
               }
 
