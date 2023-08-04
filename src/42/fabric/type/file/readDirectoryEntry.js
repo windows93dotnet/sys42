@@ -1,4 +1,4 @@
-export default async function readDirectoryEntry(
+export async function readDirectoryEntry(
   entry,
   { files = {}, folders = [] } = {},
   options,
@@ -35,3 +35,5 @@ export default async function readDirectoryEntry(
 
   return { files, folders }
 }
+
+export default readDirectoryEntry

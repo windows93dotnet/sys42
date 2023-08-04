@@ -258,8 +258,9 @@ editor.init = (app) => {
         })
     },
     async importFile() {
-      const fileImport = await import("../../../fabric/type/file/fileImport.js") //
-        .then((m) => m.default)
+      const { fileImport } = await import(
+        "../../../fabric/type/file/fileImport.js"
+      )
 
       if (manifest.multiple !== true) state.$files.length = 0
 

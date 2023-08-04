@@ -69,7 +69,7 @@ async function openFile(options = {}) {
   return files
 }
 
-export default async function fileImport(options = {}) {
+export async function fileImport(options = {}) {
   const config = {
     types: options.types,
     accept: options.accept,
@@ -84,3 +84,5 @@ export default async function fileImport(options = {}) {
     ? openFile(config)
     : legacyOpenFile(config)
 }
+
+export default fileImport

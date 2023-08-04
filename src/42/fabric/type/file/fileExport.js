@@ -17,10 +17,12 @@ async function saveFile(file, options) {
   return file.stream().pipeTo(writable)
 }
 
-export default async function fileExport(file, options = {}) {
+export async function fileExport(file, options = {}) {
   options.suggestedName ??= options.name ?? file.name ?? "untitled"
 
   return !inIframe && supportShowSaveFilePicker
     ? saveFile(file, options)
     : legacySaveFile(file, options)
 }
+
+export default fileExport
