@@ -15,7 +15,7 @@ test("html", async (t) => {
 
   t.eq(t.utils.omit(app.reactive.data, ["$computed"]), {
     $ui: {
-      icon: { root: { path: "/script.js", small: undefined, label: true } },
+      icon: { root: { path: "/script.js", small: false, label: true } },
     },
   })
 
@@ -110,17 +110,17 @@ test("infos", async (t) => {
   t.eq(t.utils.omit(app.reactive.data, ["$computed"]), {
     $ui: {
       icon: {
-        "root,0": { path: "/derp/foo.js", small: undefined, label: true },
-        "root,1": { path: "/derp/foo/", small: undefined, label: true },
-        "root,2": { path: "/derp/foo.bar/", small: undefined, label: true },
+        "root,0": { path: "/derp/foo.js", small: false, label: true },
+        "root,1": { path: "/derp/foo/", small: false, label: true },
+        "root,2": { path: "/derp/foo.bar/", small: false, label: true },
         "root,3": {
           path: "https://www.windows93.net/",
-          small: undefined,
+          small: false,
           label: true,
         },
         "root,4": {
           path: "https://www.windows93.net/script.js",
-          small: undefined,
+          small: false,
           label: true,
         },
       },
@@ -219,12 +219,12 @@ test("each", async (t) => {
     $ui: {
       icon: {
         "root,[0]": {
-          small: undefined,
+          small: false,
           label: true,
           path: { $ref: "/arr/0/x" },
         },
         "root,[1]": {
-          small: undefined,
+          small: false,
           label: true,
           path: { $ref: "/arr/1/x" },
         },
@@ -275,8 +275,8 @@ test("each", 2, async (t) => {
     arr: ["/derp/foo.js", "/derp/"],
     $ui: {
       icon: {
-        "root,[0]": { small: undefined, label: true, path: { $ref: "/arr/0" } },
-        "root,[1]": { small: undefined, label: true, path: { $ref: "/arr/1" } },
+        "root,[0]": { small: false, label: true, path: { $ref: "/arr/0" } },
+        "root,[1]": { small: false, label: true, path: { $ref: "/arr/1" } },
       },
     },
   })

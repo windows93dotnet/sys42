@@ -98,6 +98,12 @@ export default async function renderProps(el, props, plan) {
   const updates = {}
 
   for (let [key, item] of Object.entries(props)) {
+    let currentValue
+    let ref
+    let update
+    let fromRender = false
+    let fromWrite = false
+
     const type = getType(item)
 
     if (type !== "object") item = { type, default: item }
@@ -125,22 +131,16 @@ export default async function renderProps(el, props, plan) {
       toView = typeof toView === "function" ? toView : converter.toView
     }
 
-    let val
-    let ref
-    let update
-    let fromRender = false
-    let fromWrite = false
-
     if (key in data) {
-      val = data[key]
+      currentValue = data[key]
     } else if (key in el) {
-      val = el[key]
+      currentValue = el[key]
     } else if (fromView && el.hasAttribute(attribute)) {
-      val = fromView(el.getAttribute(attribute), attribute, el, item)
+      currentValue = fromView(el.getAttribute(attribute), attribute, el, item)
     } else if (key in plan) {
-      val = plan[key]
+      currentValue = plan[key]
     } else if ("default" in item) {
-      val = item.default
+      currentValue = item.default
     }
 
     if (item.update) {
@@ -157,17 +157,17 @@ export default async function renderProps(el, props, plan) {
       }
     }
 
-    const write = (value, options) => {
+    const write = (val, options) => {
       if (stage.cancel.signal.aborted === true) return
       if (item.storeInState === false) {
-        val = value
+        currentValue = val
         return
       }
 
       const silent = options?.silent ?? false
       fromWrite = true
 
-      stage.reactive.set(scope, ref ?? value, { silent })
+      stage.reactive.set(scope, ref ?? val, { silent })
       if (silent) fromWrite = false
     }
 
@@ -229,8 +229,9 @@ export default async function renderProps(el, props, plan) {
       continue
     }
 
-    if (typeof val === "function") {
-      const fn = val
+    if (typeof currentValue === "function") {
+      const fn = currentValue
+      currentValue = undefined
       ref = fn.ref ? { $ref: fn.ref } : undefined
       if (fn.ref) stage.refs[scope] = fn.ref
 
@@ -239,7 +240,8 @@ export default async function renderProps(el, props, plan) {
         render(val)
       })
     } else {
-      write(val, { silent: true })
+      if (item.type === "boolean") currentValue = Boolean(currentValue)
+      write(currentValue, { silent: true })
       register(stage, scope, (val, changed) => {
         if (changed !== undefined && changed !== scope) write(val)
         else if (fromWrite) {
@@ -255,9 +257,9 @@ export default async function renderProps(el, props, plan) {
       configurable: true,
       set:
         item.storeInState === false
-          ? (value) => {
-              val = value
-              render(value)
+          ? (val) => {
+              currentValue = val
+              render(val)
             }
           : (val) => {
               if (ref) stage.reactive.set(ref.$ref, val)
@@ -268,7 +270,7 @@ export default async function renderProps(el, props, plan) {
             },
       get:
         item.storeInState === false
-          ? () => val
+          ? () => currentValue
           : () => stage.reactive.get(ref ? ref.$ref : scope),
     })
   }

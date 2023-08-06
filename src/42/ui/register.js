@@ -38,6 +38,9 @@ export default function register(stage, loc, fn) {
         if (stage.renderers[scope].size === 0) delete stage.renderers[scope]
       }
     }
+
+    scopes = undefined
+    renderer = undefined
   }
 
   stage.cancel.signal.addEventListener("abort", forget)

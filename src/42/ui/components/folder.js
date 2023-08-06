@@ -82,18 +82,18 @@ export class Folder extends Component {
   [_updatePath](initial) {
     const path = normalizeDirname(this.path)
 
-    this.stage.reactive.now(() => {
-      this.stage.reactive.set(this.stage.scope + "/path", path, {
-        silent: true,
-      })
-    })
-
     if (
       this[_forgetWatch]?.path === path &&
       this[_forgetWatch]?.view === this.view
     ) {
       return
     }
+
+    this.stage.reactive.now(() => {
+      this.stage.reactive.set(this.stage.scope + "/path", path, {
+        silent: true,
+      })
+    })
 
     if (!initial) this.currentView.selectable.clear()
 

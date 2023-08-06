@@ -175,7 +175,7 @@ export default class Reactive extends Emitter {
     const changes = new Set()
     const deleteds = new Set()
 
-    const rendered = new WeakSet()
+    const rendereds = new WeakSet()
 
     for (const [loc, isObject, deleted] of queue) {
       changes.add(loc)
@@ -184,17 +184,17 @@ export default class Reactive extends Emitter {
         for (const key in this.stage.renderers) {
           if (key.startsWith(loc)) {
             for (const render of this.stage.renderers[key]) {
-              if (rendered.has(render)) continue
+              if (rendereds.has(render)) continue
               render(key)
-              rendered.add(render)
+              rendereds.add(render)
             }
           }
         }
       } else if (loc in this.stage.renderers) {
         for (const render of this.stage.renderers[loc]) {
-          if (rendered.has(render)) continue
+          if (rendereds.has(render)) continue
           render(loc)
-          rendered.add(render)
+          rendereds.add(render)
         }
       }
     }
@@ -202,9 +202,9 @@ export default class Reactive extends Emitter {
     // root renderers
     if (delimiter in this.stage.renderers) {
       for (const render of this.stage.renderers[delimiter]) {
-        if (rendered.has(render)) continue
+        if (rendereds.has(render)) continue
         render(delimiter)
-        rendered.add(render)
+        rendereds.add(render)
       }
     }
 
