@@ -28,6 +28,7 @@ export default async function testRunner(testFiles, options) {
     config.reporter.verbose = config.verbose
   }
 
+  sbs.inTestRunner = true
   sbs.started = true
   sbs.ran = false
   sbs.root.reset()

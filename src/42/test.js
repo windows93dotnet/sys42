@@ -15,9 +15,11 @@ system.DEV = true
 
 system.testing ??= {
   root: new Suite("#root"),
-  testfiles: Object.create(null),
   suites: new Map(),
+  testfiles: {},
   iframes: [],
+  inTestRunner: false,
+  manual: false,
   started: false,
   ran: false,
   run: (...args) =>
@@ -33,12 +35,11 @@ system.testing ??= {
 
 const sbs = system.testing
 sbs.current = sbs.root
+export { sbs }
 
 const nestedTestsSerial =
   inIframe &&
   new URLSearchParams(location.search).has("nestedTestsParallel") === false
-
-export { sbs }
 
 const suitesStack = []
 

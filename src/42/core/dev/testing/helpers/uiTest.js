@@ -9,7 +9,7 @@ import untilClose from "./untilClose.js"
 
 // Integration tests self-execute if not started from a test runner.
 // It allow to manually debug GUI tests inside a webpage
-// because the last executed test will not decay elements/components
+// because the last executed test will not destroy GUI using t.utils.decay()
 
 let total = 0
 let index = 0
@@ -59,11 +59,8 @@ async function whenIframesReady(t, sbs, retries = 300) {
 }
 
 export default function uiTest(fn, sbs) {
-  let isInTestRunner = true
-
   requestIdleCallback(async () => {
     if (!inTop || sbs.started) return
-    isInTestRunner = false
     selfExecute(sbs)
   })
 
@@ -74,7 +71,7 @@ export default function uiTest(fn, sbs) {
     t.utils.makeRealmLab = async (...args) => makeRealmLab(t, ...args)
     t.utils.untilClose = async (...args) => untilClose(...args)
 
-    if (!inTop || (!isInTestRunner && index === total)) {
+    if (!inTop || (!sbs.inTestRunner && index === total)) {
       const { dest } = t.utils
       Object.assign(t.utils, {
         decay: (item) => item,
