@@ -1,6 +1,7 @@
 import test from "../../../../42/test.js"
 
-const manual = 0
+const manual = 1
+const iframe = 0
 
 const { href } = new URL(
   "../../../../demos/ui/components/menu.demo.html",
@@ -64,7 +65,7 @@ test.ui(async (t, { makeRealmLab, triggerOpener }) => {
   window.app = await makeRealmLab(
     {
       href,
-      iframe: 1,
+      iframe,
       top: 1,
       syncData: true,
       nestedTestsParallel: true,

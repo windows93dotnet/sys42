@@ -2,13 +2,14 @@
 import inTop from "../../core/env/realm/inTop.js"
 import Component from "../classes/Component.js"
 import uid from "../../core/uid.js"
+import on from "../../fabric/event/on.js"
+
+const menuItemSelector = `
+  :scope > li > button:not([aria-disabled="true"]),
+  :scope > li > label > input:not([aria-disabled="true"])`
 
 function seq(el, dir) {
-  const items = [
-    ...el.querySelectorAll(`
-    :scope > li > button:not([aria-disabled="true"]),
-    :scope > li > label > input:not([aria-disabled="true"])`),
-  ]
+  const items = [...el.querySelectorAll(menuItemSelector)]
 
   const index = items.indexOf(document.activeElement)
 
@@ -20,28 +21,44 @@ function seq(el, dir) {
   }
 }
 
+const _updatePointing = Symbol.for("Menu._updatePointing")
+
 export class Menu extends Component {
   [Symbol.for("42_POPUP_CLOSE")] = true
+  #wasPointing = false
+  #forgetTmpPointer
+  #inMenubar
+  #lastHovered
 
   static plan = {
     tag: "ui-menu",
     role: "menu",
 
     props: {
-      // items: {
-      //   type: "array",
-      // },
+      pointing: {
+        type: "boolean",
+        reflect: true,
+        update: _updatePointing,
+      },
       opener: {
         type: "string",
       },
     },
 
-    on: {
-      prevent: true,
-      contextmenu: false,
-      ArrowUp: "{{focusPrev()}}",
-      ArrowDown: "{{focusNext()}}",
-    },
+    on: [
+      {
+        prevent: true,
+        contextmenu: false,
+        ArrowUp: "{{focusPrev()}}",
+        ArrowDown: "{{focusNext()}}",
+        pointerleave: "{{pointing = false}}",
+        pointermove: "{{pointing = true}}",
+      },
+      {
+        selector: menuItemSelector,
+        pointermove: "{{aim(target)}}",
+      },
+    ],
 
     defaults: {
       focusBack: undefined,
@@ -50,18 +67,54 @@ export class Menu extends Component {
         closeSubmenu: "pointerdown || ArrowLeft",
       },
     },
+  };
+
+  [_updatePointing](initial) {
+    if (initial || this.#wasPointing === this.pointing) return
+    this.#wasPointing = this.pointing
+    if (this.pointing === false) {
+      this.#forgetTmpPointer?.()
+    } else {
+      this.#forgetTmpPointer = on({
+        disrupt: true,
+        [this.#inMenubar ? "ArrowLeft" : "ArrowUp"]: () => {
+          this.#forgetTmpPointer?.()
+          if (!this.contains(document.activeElement)) this.focusPrev()
+        },
+        [this.#inMenubar ? "ArrowRight" : "ArrowDown"]: () => {
+          this.#forgetTmpPointer?.()
+          if (!this.contains(document.activeElement)) this.focusNext()
+        },
+      })
+    }
+  }
+
+  aim(target) {
+    if (this.#lastHovered === target) return
+    this.#lastHovered = target
+    if (
+      this.contains(document.activeElement) ||
+      this.querySelector(
+        ':scope > li > button[aria-haspopup][aria-expanded="true"]',
+      )
+    ) {
+      this.#lastHovered.focus()
+    }
   }
 
   focusPrev() {
+    this.pointing = false
     seq(this, -1)
   }
 
   focusNext() {
+    this.pointing = false
     seq(this, 1)
   }
 
   async render({ items, displayPicto, shortcuts, focusBack }) {
     const inMenubar = this.constructor.name === "Menubar"
+    this.#inMenubar = inMenubar
     const plan = []
 
     let first = true
@@ -103,7 +156,8 @@ export class Menu extends Component {
       if (item.items) {
         item.tag ??= "button.ui-menu__menuitem--submenu"
         item.role = "menuitem"
-        item.on = {
+        item.on ??= []
+        item.on.push({
           [shortcuts.openSubmenu]: {
             popup: {
               tag: "ui-menu",
@@ -113,9 +167,12 @@ export class Menu extends Component {
               focusBack: item.focusBack ?? focusBack ?? inMenubar,
               closeEvents: shortcuts.closeSubmenu,
               items: item.items,
+              handler: () => {
+                this.pointing = false
+              },
             },
           },
-        }
+        })
 
         if (!inMenubar) item.label.push({ tag: "ui-picto", value: "right" })
         item.content = item.label

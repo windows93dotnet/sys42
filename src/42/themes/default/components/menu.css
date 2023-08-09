@@ -145,8 +145,10 @@ ui-menu > li > button > :first-child:not(ui-picto) {
 }
 
 :is(ui-menu, ui-menubar) > li > button[aria-haspopup][aria-expanded="true"],
-:is(ui-menu, ui-menubar) > li > label:is(:focus-within),
-:is(ui-menu, ui-menubar) > li > button:not([aria-disabled="true"]):focus {
+:is(ui-menu, ui-menubar):not([pointing]) > li > label:is(:focus-within),
+:is(ui-menu, ui-menubar):not([pointing]) > li > button:not([aria-disabled="true"]):focus,
+:is(ui-menu, ui-menubar):is([pointing]) > li:hover > label,
+:is(ui-menu, ui-menubar):is([pointing]) > li:hover > button:not([aria-disabled="true"]) {
   --bg: var(--highlight-bg);
   --fg: var(--highlight-fg);
   background: var(--bg);
@@ -175,3 +177,7 @@ body.debug :is(ui-menu, ui-menubar) > li > button[aria-haspopup][aria-expanded="
 body.debug .aim-polygon {
   fill: rgb(255 255 0 / 0.5) !important;
 } */
+
+:focus {
+  box-shadow: 0 0 2px 5px rgb(255 0 0 / 1);
+}
