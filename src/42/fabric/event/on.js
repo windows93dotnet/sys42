@@ -150,7 +150,7 @@ export const eventsMap = (list) => {
         a.length === b.length ? 0 : a.length > b.length ? -1 : 1,
       )
       for (let [key, fn] of sorted) {
-        fn = makeHandler(item, fn)
+        fn = makeHandler(item, fn, el)
         for (const seq of parseShortcut(key)) {
           handleSeq(seq, fn, el, item, registry)
         }

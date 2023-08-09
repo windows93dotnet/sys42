@@ -60,10 +60,12 @@ function setOpener(el, stage, key, plan, type) {
 
 function setDialogOpener(el, stage, key, plan) {
   stage = setOpener(el, stage, key, plan, "dialog")
-  return async () => {
+  return function openDialog(e) {
     plan.opener = el.id
-    await import("../components/dialog.js") //
+    const deferred = import("../components/dialog.js") //
       .then(({ dialog }) => dialog(plan, stage))
+
+    plan.handler?.(e, { deferred, el, plan, stage })
   }
 }
 
@@ -71,7 +73,7 @@ function setPopupOpener(el, stage, key, plan) {
   stage = setOpener(el, stage, key, plan)
 
   const { focusBack } = plan
-  return async (e) => {
+  return function openPopup(e) {
     plan.opener = el.id
     if (e.type === "contextmenu" && e.x > 0 && e.y > 0) {
       plan.rect = { x: e.x, y: e.y }
@@ -83,8 +85,10 @@ function setPopupOpener(el, stage, key, plan) {
       plan.focusBack = activeElement.id
     }
 
-    await import("../popup.js") //
+    const deferred = import("../popup.js") //
       .then(({ popup }) => popup(el, plan, stage))
+
+    plan.handler?.(e, { deferred, el, plan, stage })
   }
 }
 
