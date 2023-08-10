@@ -134,7 +134,7 @@ export const popup = rpc(
       await stage.waitlistPostrender.call()
     }
 
-    focus.autofocus(el)
+    if (plan.autofocus !== false) focus.autofocus(el)
     dispatch(el, "uipopupopen")
 
     const deferred = defer()

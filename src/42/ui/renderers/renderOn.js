@@ -60,8 +60,11 @@ function setOpener(el, stage, key, plan, type) {
 
 function setDialogOpener(el, stage, key, plan) {
   stage = setOpener(el, stage, key, plan, "dialog")
+
   return function openDialog(e) {
     plan.opener = el.id
+    if (e.detail && typeof e.detail === "object") Object.assign(plan, e.detail)
+
     const deferred = import("../components/dialog.js") //
       .then(({ dialog }) => dialog(plan, stage))
 
@@ -71,10 +74,12 @@ function setDialogOpener(el, stage, key, plan) {
 
 function setPopupOpener(el, stage, key, plan) {
   stage = setOpener(el, stage, key, plan)
-
   const { focusBack } = plan
+
   return function openPopup(e) {
     plan.opener = el.id
+    if (e.detail && typeof e.detail === "object") Object.assign(plan, e.detail)
+
     if (e.type === "contextmenu" && e.x > 0 && e.y > 0) {
       plan.rect = { x: e.x, y: e.y }
     }

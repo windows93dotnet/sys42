@@ -2,11 +2,17 @@
 import inTop from "../../core/env/realm/inTop.js"
 import Component from "../classes/Component.js"
 import uid from "../../core/uid.js"
-import on from "../../fabric/event/on.js"
+// import { openPopup } from "../popup.js"
+// import aim from "../../fabric/dom/aim.js"
 
 const menuItemSelector = `
   :scope > li > button:not([aria-disabled="true"]),
   :scope > li > label > input:not([aria-disabled="true"])`
+
+const menuFocusItemSelector = menuItemSelector.replaceAll(
+  ":scope > li > ",
+  ":scope > ",
+)
 
 function seq(el, dir) {
   const items = [...el.querySelectorAll(menuItemSelector)]
@@ -21,25 +27,16 @@ function seq(el, dir) {
   }
 }
 
-const _updatePointing = Symbol.for("Menu._updatePointing")
-
 export class Menu extends Component {
   [Symbol.for("42_POPUP_CLOSE")] = true
-  #wasPointing = false
-  #forgetTmpPointer
   #inMenubar
-  #lastHovered
+  #lastHoverTarget
 
   static plan = {
     tag: "ui-menu",
     role: "menu",
 
     props: {
-      pointing: {
-        type: "boolean",
-        reflect: true,
-        update: _updatePointing,
-      },
       opener: {
         type: "string",
       },
@@ -51,12 +48,11 @@ export class Menu extends Component {
         contextmenu: false,
         ArrowUp: "{{focusPrev()}}",
         ArrowDown: "{{focusNext()}}",
-        pointerleave: "{{pointing = false}}",
-        pointermove: "{{pointing = true}}",
+        pointerleave: "{{resetHover()}}",
       },
       {
-        selector: menuItemSelector,
-        pointermove: "{{aim(target)}}",
+        selector: ":scope > li",
+        pointermove: "{{aim(e, target)}}",
       },
     ],
 
@@ -67,48 +63,49 @@ export class Menu extends Component {
         closeSubmenu: "pointerdown || ArrowLeft",
       },
     },
-  };
-
-  [_updatePointing](initial) {
-    if (initial || this.#wasPointing === this.pointing) return
-    this.#wasPointing = this.pointing
-    if (this.pointing === false) {
-      this.#forgetTmpPointer?.()
-    } else {
-      this.#forgetTmpPointer = on({
-        disrupt: true,
-        [this.#inMenubar ? "ArrowLeft" : "ArrowUp"]: () => {
-          this.#forgetTmpPointer?.()
-          if (!this.contains(document.activeElement)) this.focusPrev()
-        },
-        [this.#inMenubar ? "ArrowRight" : "ArrowDown"]: () => {
-          this.#forgetTmpPointer?.()
-          if (!this.contains(document.activeElement)) this.focusNext()
-        },
-      })
-    }
   }
 
-  aim(target) {
-    if (this.#lastHovered === target) return
-    this.#lastHovered = target
-    if (
-      this.contains(document.activeElement) ||
-      this.querySelector(
-        ':scope > li > button[aria-haspopup][aria-expanded="true"]',
-      )
-    ) {
-      this.#lastHovered.focus()
+  resetHover() {
+    this.#lastHoverTarget = undefined
+  }
+
+  aim(e, target) {
+    if (this.#lastHoverTarget === target) return
+    this.#lastHoverTarget = target
+    const item = target.querySelector(menuFocusItemSelector)
+    if (item) {
+      // window.focus()
+      // item.focus()
+
+      if (item.getAttribute("aria-haspopup") === "menu") {
+        if (item.getAttribute("aria-expanded") === "true") return
+        item.dispatchEvent(
+          new CustomEvent("pointerdown", {
+            bubbles: true,
+            cancelable: true,
+            detail: { autofocus: false },
+          }),
+        )
+      } else {
+        for (const item of this.querySelectorAll(
+          ':scope > li > button[aria-expanded="true"]',
+        )) {
+          item.dispatchEvent(
+            new PointerEvent("pointerdown", {
+              bubbles: true,
+              cancelable: true,
+            }),
+          )
+        }
+      }
     }
   }
 
   focusPrev() {
-    this.pointing = false
     seq(this, -1)
   }
 
   focusNext() {
-    this.pointing = false
     seq(this, 1)
   }
 

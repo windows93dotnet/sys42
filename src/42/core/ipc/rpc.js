@@ -9,7 +9,7 @@ const DESTROY = "42_RPC_DESTROY"
 
 const functions = new Map()
 
-const serialize = (val) => {
+function serialize(val) {
   const forgets = []
 
   traverse(val, (key, fn, obj) => {
@@ -27,8 +27,8 @@ const serialize = (val) => {
   return { val, destroy }
 }
 
-const deserialize = (val, { send }) =>
-  traverse(val, (key, id, obj) => {
+function deserialize(val, { send }) {
+  return traverse(val, (key, id, obj) => {
     if (typeof id === "string" && id.startsWith("42_RPC_FUNCTION_")) {
       obj[key] = async (...args) => {
         const [res] = await send(id, args)
@@ -36,6 +36,7 @@ const deserialize = (val, { send }) =>
       }
     }
   })
+}
 
 if (inTop) {
   ipc

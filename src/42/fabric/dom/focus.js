@@ -129,14 +129,14 @@ export class TabOrder {
   }
 }
 
-export function focusPrev(el, root = el.parentElement) {
+export function focusPrev(el, root = el?.parentElement) {
   const tab = new TabOrder(root, { include: el })
   const res = tab.prev(el)
   tab.destroy()
   return res
 }
 
-export function focusNext(el, root = el.parentElement) {
+export function focusNext(el, root = el?.parentElement) {
   const tab = new TabOrder(root, { include: el })
   const res = tab.next(el)
   tab.destroy()

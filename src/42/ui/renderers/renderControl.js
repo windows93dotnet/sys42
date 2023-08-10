@@ -12,6 +12,7 @@ import getBasename from "../../core/path/core/getBasename.js"
 import debounce from "../../fabric/type/function/debounce.js"
 import toTitleCase from "../../fabric/type/string/case/toTitleCase.js"
 import hash from "../../fabric/type/any/hash.js"
+import queueTask from "../../fabric/type/function/queueTask.js"
 import { objectifyPlan } from "../normalize.js"
 
 const TEXTBOX_TYPES = new Set(["text", "email", "search"])
@@ -142,6 +143,12 @@ export default function renderControl(el, stage, plan) {
         tag: "label",
         for: el.id,
         role: "none",
+        on: {
+          // Keep focus on the input even when pointerup is happening outside the label
+          pointerdown() {
+            queueTask(() => el.focus())
+          },
+        },
         ...objectifyPlan(labelPlan),
       },
       stage,
