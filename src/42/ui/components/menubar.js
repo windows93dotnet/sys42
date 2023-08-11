@@ -7,18 +7,27 @@ export class Menubar extends Menu {
   static plan = {
     tag: "ui-menubar",
     role: "menubar",
-    on: {
-      prevent: true,
-      contextmenu: false,
-      ArrowLeft: "{{focusPrev()}}",
-      ArrowRight: "{{focusNext()}}",
-    },
+
+    on: [
+      {
+        prevent: true,
+        contextmenu: false,
+        ArrowLeft: "{{focusPrev()}}",
+        ArrowRight: "{{focusNext()}}",
+        pointerleave: "{{resetHover()}}",
+      },
+      {
+        selector: ":scope > li",
+        pointermove: "{{focusMenuitem(e, target)}}",
+      },
+    ],
+
     defaults: {
       focusBack: undefined,
       displayPicto: false,
       shortcuts: {
-        openSubmenu: "pointerdown || Enter || Space || ArrowDown",
-        closeSubmenu: "pointerdown || ArrowLeft",
+        openSubmenu: "uiopensubmenu || Enter || Space || ArrowDown",
+        closeSubmenu: "uiopensubmenu || pointerdown || ArrowLeft",
       },
     },
   }

@@ -7,7 +7,7 @@ import inTop from "../../../../42/core/env/realm/inTop.js"
 import "../../../../42/ui/components/dialog.js"
 import "../../../../42/ui/popup.js"
 
-const manual = 0
+const manual = 1
 
 const __ = inTop ? "Top" : "Iframe"
 
@@ -104,6 +104,12 @@ const makeMenu = (name) => {
       label: "Checkbox",
       tag: "checkbox",
       bind: "bool",
+    },
+    {
+      label: "Disabled Checkbox",
+      tag: "checkbox",
+      value: true,
+      disabled: true,
     },
     "---",
     {

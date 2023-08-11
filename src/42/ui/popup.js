@@ -134,7 +134,9 @@ export const popup = rpc(
       await stage.waitlistPostrender.call()
     }
 
-    if (plan.autofocus !== false) focus.autofocus(el)
+    if (plan.autofocus === "menu") el.focus()
+    else if (plan.autofocus !== false) focus.autofocus(el)
+
     dispatch(el, "uipopupopen")
 
     const deferred = defer()
@@ -178,8 +180,10 @@ export const popup = rpc(
 
     async marshalling(el, plan = {}, stage) {
       if (el.getAttribute("aria-expanded") === "true") {
-        el.setAttribute("aria-expanded", "false")
-        return false
+        if (!plan.fromPointermove) {
+          el.setAttribute("aria-expanded", "false")
+          return false
+        }
       }
 
       plan = objectifyPlan(plan)

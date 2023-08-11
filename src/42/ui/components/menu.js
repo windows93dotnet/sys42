@@ -14,8 +14,14 @@ const menuFocusItemSelector = menuItemSelector.replaceAll(
   ":scope > ",
 )
 
-function seq(el, dir) {
-  const items = [...el.querySelectorAll(menuItemSelector)]
+function seq(menu, dir) {
+  const items = [...menu.querySelectorAll(menuItemSelector)]
+
+  if (document.activeElement === menu) {
+    const item = dir > 0 ? items.at(dir - 1) : items.at(dir)
+    item?.focus()
+    return item
+  }
 
   const index = items.indexOf(document.activeElement)
 
@@ -52,15 +58,15 @@ export class Menu extends Component {
       },
       {
         selector: ":scope > li",
-        pointermove: "{{aim(e, target)}}",
+        pointermove: "{{focusMenuitem(e, target)}}",
       },
     ],
 
     defaults: {
       focusBack: undefined,
       shortcuts: {
-        openSubmenu: "pointerdown || Enter || Space || ArrowRight",
-        closeSubmenu: "pointerdown || ArrowLeft",
+        openSubmenu: "uiopensubmenu || Enter || Space || ArrowRight",
+        closeSubmenu: "uiopensubmenu || pointerdown || ArrowLeft",
       },
     },
   }
@@ -69,34 +75,35 @@ export class Menu extends Component {
     this.#lastHoverTarget = undefined
   }
 
-  aim(e, target) {
+  focusMenuitem(e, target) {
     if (this.#lastHoverTarget === target) return
     this.#lastHoverTarget = target
     const item = target.querySelector(menuFocusItemSelector)
     if (item) {
-      // window.focus()
-      // item.focus()
+      window.focus()
+      item.focus()
 
       if (item.getAttribute("aria-haspopup") === "menu") {
-        if (item.getAttribute("aria-expanded") === "true") return
         item.dispatchEvent(
-          new CustomEvent("pointerdown", {
+          new CustomEvent("uiopensubmenu", {
             bubbles: true,
             cancelable: true,
-            detail: { autofocus: false },
+            detail: {
+              autofocus: "menu",
+              fromPointermove: true,
+            },
           }),
         )
       } else {
-        for (const item of this.querySelectorAll(
-          ':scope > li > button[aria-expanded="true"]',
-        )) {
-          item.dispatchEvent(
-            new PointerEvent("pointerdown", {
-              bubbles: true,
-              cancelable: true,
-            }),
-          )
-        }
+        // const item = this.querySelector(
+        //   ':scope > li > button[aria-expanded="true"]',
+        // )
+        // item?.dispatchEvent(
+        //   new CustomEvent("uiopensubmenu", {
+        //     bubbles: true,
+        //     cancelable: true,
+        //   }),
+        // )
       }
     }
   }
@@ -155,6 +162,7 @@ export class Menu extends Component {
         item.role = "menuitem"
         item.on ??= []
         item.on.push({
+          pointerdown: false,
           [shortcuts.openSubmenu]: {
             popup: {
               tag: "ui-menu",
