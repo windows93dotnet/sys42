@@ -2,7 +2,6 @@
 import inTop from "../../core/env/realm/inTop.js"
 import Component from "../classes/Component.js"
 import uid from "../../core/uid.js"
-// import { openPopup } from "../popup.js"
 // import aim from "../../fabric/dom/aim.js"
 
 const menuItemSelector = `
@@ -14,7 +13,20 @@ const menuFocusItemSelector = menuItemSelector.replaceAll(
   ":scope > ",
 )
 
-function seq(menu, dir) {
+function focusFirst(menu) {
+  const item = menu.querySelector(menuItemSelector)
+  item?.focus()
+  return item
+}
+
+function focusLast(menu) {
+  const items = [...menu.querySelectorAll(menuItemSelector)]
+  const item = items.at(-1)
+  item?.focus()
+  return item
+}
+
+function focusSequence(menu, dir) {
   const items = [...menu.querySelectorAll(menuItemSelector)]
 
   if (document.activeElement === menu) {
@@ -36,7 +48,7 @@ function seq(menu, dir) {
 export class Menu extends Component {
   [Symbol.for("42_POPUP_CLOSE")] = true
   #inMenubar
-  #lastHoverTarget
+  #lastHovered
 
   static plan = {
     tag: "ui-menu",
@@ -50,34 +62,37 @@ export class Menu extends Component {
 
     on: [
       {
-        prevent: true,
-        contextmenu: false,
-        ArrowUp: "{{focusPrev()}}",
-        ArrowDown: "{{focusNext()}}",
-        pointerleave: "{{resetHover()}}",
+        "prevent": true,
+        "contextmenu": false,
+        "ArrowUp || ArrowLeft || PageUp": "{{focusPrev()}}",
+        "ArrowDown || ArrowRight || PageDown": "{{focusNext()}}",
+        "Home": "{{focusFirst()}}",
+        "End": "{{focusLast()}}",
+        "pointerleave || focusout": "{{resetLastHovered(e)}}",
       },
       {
         selector: ":scope > li",
-        pointermove: "{{focusMenuitem(e, target)}}",
+        pointermove: "{{triggerMenuitem(e, target)}}",
       },
     ],
 
     defaults: {
       focusBack: undefined,
       shortcuts: {
-        openSubmenu: "uiopensubmenu || Enter || Space || ArrowRight",
-        closeSubmenu: "uiopensubmenu || pointerdown || ArrowLeft",
+        openSubmenu: "uitriggersubmenu || Enter || Space || ArrowRight",
+        closeSubmenu: "uitriggersubmenu || pointerdown || ArrowLeft",
       },
     },
   }
 
-  resetHover() {
-    this.#lastHoverTarget = undefined
+  resetLastHovered(e) {
+    if (e.type === "focusout" && !this.contains(e.relatedTarget)) return
+    this.#lastHovered = undefined
   }
 
-  focusMenuitem(e, target) {
-    if (this.#lastHoverTarget === target) return
-    this.#lastHoverTarget = target
+  triggerMenuitem(e, target) {
+    if (this.#lastHovered === target) return
+    this.#lastHovered = target
     const item = target.querySelector(menuFocusItemSelector)
     if (item) {
       window.focus()
@@ -85,7 +100,7 @@ export class Menu extends Component {
 
       if (item.getAttribute("aria-haspopup") === "menu") {
         item.dispatchEvent(
-          new CustomEvent("uiopensubmenu", {
+          new CustomEvent("uitriggersubmenu", {
             bubbles: true,
             cancelable: true,
             detail: {
@@ -99,7 +114,7 @@ export class Menu extends Component {
         //   ':scope > li > button[aria-expanded="true"]',
         // )
         // item?.dispatchEvent(
-        //   new CustomEvent("uiopensubmenu", {
+        //   new CustomEvent("uitriggersubmenu", {
         //     bubbles: true,
         //     cancelable: true,
         //   }),
@@ -109,11 +124,19 @@ export class Menu extends Component {
   }
 
   focusPrev() {
-    seq(this, -1)
+    focusSequence(this, -1)
   }
 
   focusNext() {
-    seq(this, 1)
+    focusSequence(this, 1)
+  }
+
+  focusFirst() {
+    focusFirst(this)
+  }
+
+  focusLast() {
+    focusLast(this)
   }
 
   async render({ items, displayPicto, shortcuts, focusBack }) {
@@ -172,8 +195,9 @@ export class Menu extends Component {
               focusBack: item.focusBack ?? focusBack ?? inMenubar,
               closeEvents: shortcuts.closeSubmenu,
               items: item.items,
-              handler: () => {
-                this.pointing = false
+              handler(e, { el }) {
+                // prevent menuitem highlight flickering when using ArrowRight
+                el.blur()
               },
             },
           },

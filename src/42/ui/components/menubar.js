@@ -10,15 +10,17 @@ export class Menubar extends Menu {
 
     on: [
       {
-        prevent: true,
-        contextmenu: false,
-        ArrowLeft: "{{focusPrev()}}",
-        ArrowRight: "{{focusNext()}}",
-        pointerleave: "{{resetHover()}}",
+        "prevent": true,
+        "contextmenu": false,
+        "ArrowUp || ArrowLeft || PageUp": "{{focusPrev()}}",
+        "ArrowDown || ArrowRight || PageDown": "{{focusNext()}}",
+        "Home": "{{focusFirst()}}",
+        "End": "{{focusLast()}}",
+        "pointerleave || focusout": "{{resetLastHovered(e)}}",
       },
       {
         selector: ":scope > li",
-        pointermove: "{{focusMenuitem(e, target)}}",
+        pointermove: "{{triggerMenuitem(e, target)}}",
       },
     ],
 
@@ -26,8 +28,8 @@ export class Menubar extends Menu {
       focusBack: undefined,
       displayPicto: false,
       shortcuts: {
-        openSubmenu: "uiopensubmenu || Enter || Space || ArrowDown",
-        closeSubmenu: "uiopensubmenu || pointerdown || ArrowLeft",
+        openSubmenu: "uitriggersubmenu || Enter || Space || ArrowDown",
+        closeSubmenu: "uitriggersubmenu || pointerdown || ArrowLeft",
       },
     },
   }

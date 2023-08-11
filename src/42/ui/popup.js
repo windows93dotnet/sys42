@@ -224,7 +224,7 @@ export const popup = rpc(
         }
 
         if (focusOut) {
-          const menu = el.closest("ui-menu,ui-menubar")
+          const menu = el.closest("ui-menu, ui-menubar")
 
           if (menu) focus.autofocus(menu)
           else el.focus()
