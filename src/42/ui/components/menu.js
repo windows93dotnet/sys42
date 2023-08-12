@@ -2,6 +2,7 @@
 import inTop from "../../core/env/realm/inTop.js"
 import Component from "../classes/Component.js"
 import uid from "../../core/uid.js"
+import { closeOthers } from "../popup.js"
 // import aim from "../../fabric/dom/aim.js"
 
 const menuItemSelector = `
@@ -68,11 +69,11 @@ export class Menu extends Component {
         "ArrowDown || ArrowRight || PageDown": "{{focusNext()}}",
         "Home": "{{focusFirst()}}",
         "End": "{{focusLast()}}",
-        "pointerleave || focusout": "{{resetLastHovered(e)}}",
+        "pointerenter || pointerleave": "{{resetLastHovered()}}",
       },
       {
         selector: ":scope > li",
-        pointermove: "{{triggerMenuitem(e, target)}}",
+        pointermove: "{{triggerMenuitem(target)}}",
       },
     ],
 
@@ -85,17 +86,26 @@ export class Menu extends Component {
     },
   }
 
-  resetLastHovered(e) {
-    if (e.type === "focusout" && !this.contains(e.relatedTarget)) return
+  resetLastHovered() {
     this.#lastHovered = undefined
   }
 
-  triggerMenuitem(e, target) {
+  triggerMenuitem(target) {
     if (this.#lastHovered === target) return
     this.#lastHovered = target
+
     const item = target.querySelector(menuFocusItemSelector)
+
+    if (inTop) {
+      for (const item of this.querySelectorAll(
+        ':scope > li > button[aria-expanded="true"]',
+      )) {
+        item.setAttribute("aria-expanded", "false")
+        closeOthers(item)
+      }
+    }
+
     if (item) {
-      window.focus()
       item.focus()
 
       if (item.getAttribute("aria-haspopup") === "menu") {
@@ -109,16 +119,6 @@ export class Menu extends Component {
             },
           }),
         )
-      } else {
-        // const item = this.querySelector(
-        //   ':scope > li > button[aria-expanded="true"]',
-        // )
-        // item?.dispatchEvent(
-        //   new CustomEvent("uitriggersubmenu", {
-        //     bubbles: true,
-        //     cancelable: true,
-        //   }),
-        // )
       }
     }
   }
@@ -185,6 +185,16 @@ export class Menu extends Component {
         item.role = "menuitem"
         item.on ??= []
         item.on.push({
+          // pointerdown: (e, target) => {
+          //   if (target.getAttribute("aria-expanded") === "true") {
+          //     this.resetLastHovered()
+          //     target.setAttribute("aria-expanded", "false")
+          //     closeOthers(target)
+          //     target.focus()
+          //   }
+          //
+          //   return false
+          // },
           pointerdown: false,
           [shortcuts.openSubmenu]: {
             popup: {
@@ -192,7 +202,8 @@ export class Menu extends Component {
               aria: inTop ? { labelledby: item.id } : { label },
               inMenuitem: true,
               inMenubar,
-              focusBack: item.focusBack ?? focusBack ?? inMenubar,
+              // focusBack: item.focusBack ?? focusBack ?? inMenubar,
+              focusBack: item.focusBack ?? focusBack,
               closeEvents: shortcuts.closeSubmenu,
               items: item.items,
               handler(e, { el }) {

@@ -12,15 +12,15 @@ export class Menubar extends Menu {
       {
         "prevent": true,
         "contextmenu": false,
-        "ArrowUp || ArrowLeft || PageUp": "{{focusPrev()}}",
-        "ArrowDown || ArrowRight || PageDown": "{{focusNext()}}",
+        "ArrowLeft || PageUp": "{{focusPrev()}}",
+        "ArrowRight || PageDown": "{{focusNext()}}",
         "Home": "{{focusFirst()}}",
         "End": "{{focusLast()}}",
-        "pointerleave || focusout": "{{resetLastHovered(e)}}",
+        "pointerenter || pointerleave": "{{resetLastHovered()}}",
       },
       {
         selector: ":scope > li",
-        pointermove: "{{triggerMenuitem(e, target)}}",
+        pointermove: "{{triggerMenuitem(target)}}",
       },
     ],
 

@@ -42,15 +42,18 @@ function listenGlobalEvents() {
   )
 }
 
-function closeOthers(e, target = e.target) {
-  if (target.nodeType !== ELEMENT_NODE) return
+export function closeOthers(e, target = e?.target) {
+  if (e?.nodeType === ELEMENT_NODE) {
+    target = e
+    e = undefined
+  } else if (target.nodeType !== ELEMENT_NODE) return
 
   let i = map.length
   while (i--) {
     const { close, opener, openerFrame, el } = map[i]
 
     if (el.contains(target)) {
-      if (e.key === "ArrowLeft") {
+      if (e?.key === "ArrowLeft") {
         map.length = i
         close({
           fromOpener: target?.id === opener && openerFrame === window.name,
@@ -73,7 +76,12 @@ function closeOthers(e, target = e.target) {
   map.length = 0
 }
 
-function closeAll(e, target = e.target) {
+export function closeAll(e, target = e?.target) {
+  if (e?.nodeType === ELEMENT_NODE) {
+    target = e
+    e = undefined
+  }
+
   let i = map.length
   while (i--) {
     const { close, opener, openerFrame } = map[i]
