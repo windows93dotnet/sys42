@@ -254,7 +254,7 @@
   border-radius: 0;
 }
 
-:where(:disabled:not(form,fieldset),[aria-disabled="true"]) {
+:where(:disabled:not(form, fieldset)) {
   opacity: var(--ctrl-disabled-alpha);
 }
 
@@ -395,7 +395,7 @@ fieldset[disabled]
   cursor: var(--cursor-default, default);
 }
 
-:where(:disabled:not(form,fieldset),[aria-disabled="true"]) {
+:where(:disabled:not(form, fieldset)) {
   cursor: var(--cursor-not-allowed, not-allowed);
 }
 
@@ -512,9 +512,9 @@ input:not(
   [type="submit"]
 ),
 textarea
-):is(:disabled,:not([type="file"]):read-only,[aria-disabled="true"]),
-:where(select:is(:disabled,[aria-disabled="true"])),
-:where(selectmenu:is(:disabled,[aria-disabled="true"])) {
+):is(:disabled, :not([type="file"]):read-only),
+:where(select:disabled),
+:where(selectmenu:disabled) {
   --fg: var(--fld-disabled-fg);
   --bg: var(--fld-disabled-bg);
   --fld-bdw: var(--fld-disabled-bdw);
@@ -526,9 +526,9 @@ textarea
   --fld-bsh: var(--fld-disabled-bsh);
 }
 
-:is(:disabled,[aria-disabled="true"]) label,
-:is(:disabled,[aria-disabled="true"]) legend,
-:is(:disabled,[aria-disabled="true"]) + label {
+:disabled label,
+:disabled legend,
+:disabled + label {
   opacity: var(--ctrl-disabled-alpha);
   color: var(--ctrl-disabled-fg);
   text-shadow: var(--ctrl-disabled-tsh, none);
@@ -768,7 +768,7 @@ button,
 input[type="button"],
 input[type="reset"],
 input[type="submit"]
-):where(:disabled,[aria-disabled="true"]),
+):where(:disabled),
 :where(input:is([type="checkbox"],[type="radio"]):disabled + label.button) {
   --fg: var(--btn-disabled-fg);
   --bg: var(--btn-disabled-bg);
@@ -789,7 +789,7 @@ button,
 input[type="button"],
 input[type="reset"],
 input[type="submit"]
-):is([aria-pressed="true"]):is(:disabled,[aria-disabled="true"]),
+):is([aria-pressed="true"]):disabled,
 :where(input:is([type="checkbox"],[type="radio"]):checked:disabled + label.button) {
   --fg: var(--btn-toggled-disabled-fg);
   --bg: var(--btn-toggled-disabled-bg);

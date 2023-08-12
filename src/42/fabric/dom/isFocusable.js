@@ -4,14 +4,7 @@ export const isVisible = (el) =>
 export function isFocusable(el, options) {
   if (el === window) return true
 
-  if (
-    !el ||
-    el.tabIndex < 0 ||
-    el.disabled ||
-    el.getAttribute("aria-disabled") === "true"
-  ) {
-    return false
-  }
+  if (!el || el.tabIndex < 0 || el.disabled) return false
 
   if (
     options?.checkIfVisible !== false &&

@@ -6,8 +6,8 @@ import { closeOthers } from "../popup.js"
 // import aim from "../../fabric/dom/aim.js"
 
 const menuItemSelector = `
-  :scope > li > button:not([aria-disabled="true"]),
-  :scope > li > label > input:not([aria-disabled="true"])`
+  :scope > li > button:not(:disabled),
+  :scope > li > label > input:not(:disabled)`
 
 const menuFocusItemSelector = `
   :scope > button,
@@ -105,12 +105,18 @@ export class Menu extends Component {
     }
 
     if (item) {
+      if (item.disabled) {
+        // Set the focus even on disabled items for visual feedback
+        // (removing the highlight on previous item)
+        item.disabled = false
+        item.focus()
+        item.disabled = true
+        return
+      }
+
       item.focus()
 
-      if (
-        item.getAttribute("aria-haspopup") === "menu" &&
-        item.getAttribute("aria-disabled") !== "true"
-      ) {
+      if (item.getAttribute("aria-haspopup") === "menu") {
         item.dispatchEvent(
           new CustomEvent("uitriggersubmenu", {
             bubbles: true,
@@ -234,9 +240,6 @@ export class Menu extends Component {
       }
 
       if (item.disabled) {
-        item.aria ??= {}
-        item.aria.disabled = item.disabled
-        delete item.disabled
         item.tabIndex = -1
       } else {
         item.tabIndex = first ? 0 : -1

@@ -364,8 +364,8 @@ input[type="checkbox"]:not([role="menuitemcheckbox"]):is(:checked,:indeterminate
   left: -3px;
 }
 
-:where(input[type="radio" i]):is(:disabled, [aria-disabled="true"])::before,
-:where(input[type="checkbox" i]):is(:disabled, [aria-disabled="true"])::before {
+:where(input[type="radio" i]):disabled::before,
+:where(input[type="checkbox" i]):disabled::before {
   background-color: var(--ButtonHilight);
   transform: translate(1px, 1px);
 }
@@ -718,7 +718,7 @@ ui-tabs[side="right"] .ui-tabs__tab[aria-selected="true"]:first-of-type::after {
   display: none;
 }
 
-button:is(:disabled,[aria-disabled="true"]) :is(img, svg) {
+button:disabled :is(img, svg) {
   fill: #000;
   filter: url("#disabled-inset");
 }

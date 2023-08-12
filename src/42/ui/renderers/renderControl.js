@@ -145,14 +145,9 @@ export default function renderControl(el, stage, plan) {
         role: "none",
         on: {
           pointerdown() {
-            if (!el.disabled && el.getAttribute("aria-disabled") !== "true") {
+            if (!el.disabled) {
               // Keep focus on the input even when pointerup is happening outside the label
               queueTask(() => el.focus())
-            }
-          },
-          click() {
-            if (el.disabled || el.getAttribute("aria-disabled") === "true") {
-              return false
             }
           },
         },
