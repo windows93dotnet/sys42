@@ -48,11 +48,12 @@ function setOpener(el, stage, key, plan, type) {
 
   el.id ||= hash(String(stage.steps))
   if (inIframe) window.name ||= uid()
-  plan.openerFrame = window.name
+  plan.realm = window.name
 
   type ??= plan.tag?.startsWith("ui-")
     ? plan.tag.slice(3)
     : plan.role ?? plan.tag
+
   el.setAttribute("aria-haspopup", POPUP_TYPES.has(type) ? type : "true")
   if (type !== "dialog") el.setAttribute("aria-expanded", "false")
   return stage

@@ -18,7 +18,7 @@ import normalize, {
 
 const zIndexSector = ":root > :is(ui-dialog, ui-menu)"
 
-const map = []
+const popupsList = []
 const _close = Symbol.for("42_POPUP_CLOSE")
 const { ELEMENT_NODE } = Node
 
@@ -48,18 +48,18 @@ export function closeOthers(e, target = e?.target) {
     e = undefined
   } else if (target.nodeType !== ELEMENT_NODE) return
 
-  let i = map.length
+  let i = popupsList.length
   while (i--) {
-    const { close, opener, openerFrame, el } = map[i]
+    const { close, opener, realm, el } = popupsList[i]
 
     if (el.contains(target)) {
       if (e?.key === "ArrowLeft") {
-        map.length = i
+        popupsList.length = i
         close({
-          fromOpener: target?.id === opener && openerFrame === window.name,
+          fromOpener: target?.id === opener && realm === window.name,
         })
       } else {
-        map.length = i + 1
+        popupsList.length = i + 1
       }
 
       return
@@ -67,13 +67,13 @@ export function closeOthers(e, target = e?.target) {
 
     close(
       i === 0
-        ? { fromOpener: target?.id === opener && openerFrame === window.name }
+        ? { fromOpener: target?.id === opener && realm === window.name }
         : undefined,
     )
   }
 
-  forgetGlobalEvents()
-  map.length = 0
+  forgetGlobalEvents?.()
+  popupsList.length = 0
 }
 
 export function closeAll(e, target = e?.target) {
@@ -82,13 +82,13 @@ export function closeAll(e, target = e?.target) {
     e = undefined
   }
 
-  let i = map.length
+  let i = popupsList.length
   while (i--) {
-    const { close, opener, openerFrame } = map[i]
+    const { close, opener, realm } = popupsList[i]
     close(
       i === 0
         ? {
-            fromOpener: target?.id === opener && openerFrame === window.name,
+            fromOpener: target?.id === opener && realm === window.name,
             fromBlur: e?.type === "blur",
             focusOut: e?.focusOut,
           }
@@ -96,12 +96,12 @@ export function closeAll(e, target = e?.target) {
     )
   }
 
-  forgetGlobalEvents()
-  map.length = 0
+  forgetGlobalEvents?.()
+  popupsList.length = 0
 }
 
 function focusOut(dir, e) {
-  if (map.length > 0) {
+  if (popupsList.length > 0) {
     e.preventDefault()
     closeAll({ focusOut: dir })
   }
@@ -149,7 +149,7 @@ export const popup = rpc(
 
     const deferred = defer()
 
-    const { opener, openerFrame, focusBack } = plan
+    const { opener, realm, focusBack } = plan
 
     const close = (options) => {
       const event = dispatch(el, "uipopupbeforeclose", { cancelable: true })
@@ -167,7 +167,7 @@ export const popup = rpc(
       })
     }
 
-    if (map.length === 0) listenGlobalEvents()
+    if (popupsList.length === 0) listenGlobalEvents()
 
     const closeEvents = plan.closeEvents ?? "pointerdown"
     forgetLastPopupClose?.()
@@ -179,7 +179,7 @@ export const popup = rpc(
       el.closeAll = closeAll
     }
 
-    map.push({ el, close, opener, openerFrame, closeEvents })
+    popupsList.push({ el, close, opener, realm, closeEvents })
 
     return deferred
   },
