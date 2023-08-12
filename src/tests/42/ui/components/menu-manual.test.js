@@ -122,6 +122,13 @@ const makeMenu = (name) => {
       bind: "choice",
       value: "bar",
     },
+    {
+      tag: "radio",
+      bind: "choice",
+      disabled: true,
+      value: "baz",
+      checked: true,
+    },
     "---",
     {
       label: "{{cnt}}", //
@@ -137,7 +144,13 @@ const makeDemo = ({ content } = {}) => {
   content ??= [
     { tag: "number", bind: "cnt", id: `cnt${__}`, compact: true },
     "\n\n",
-    { tag: "checkbox", bind: "bool", id: `bool${__}` },
+    { tag: "checkbox", label: "Checkbox", bind: "bool", id: `bool${__}` },
+    {
+      tag: "checkbox",
+      label: "Disabled Checkbox",
+      value: true,
+      disabled: true,
+    },
     {
       tag: "radio",
       bind: "choice",

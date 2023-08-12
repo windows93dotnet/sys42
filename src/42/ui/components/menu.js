@@ -9,10 +9,9 @@ const menuItemSelector = `
   :scope > li > button:not([aria-disabled="true"]),
   :scope > li > label > input:not([aria-disabled="true"])`
 
-const menuFocusItemSelector = menuItemSelector.replaceAll(
-  ":scope > li > ",
-  ":scope > ",
-)
+const menuFocusItemSelector = `
+  :scope > button,
+  :scope > label > input`
 
 function focusFirst(menu) {
   const item = menu.querySelector(menuItemSelector)
@@ -108,7 +107,10 @@ export class Menu extends Component {
     if (item) {
       item.focus()
 
-      if (item.getAttribute("aria-haspopup") === "menu") {
+      if (
+        item.getAttribute("aria-haspopup") === "menu" &&
+        item.getAttribute("aria-disabled") !== "true"
+      ) {
         item.dispatchEvent(
           new CustomEvent("uitriggersubmenu", {
             bubbles: true,

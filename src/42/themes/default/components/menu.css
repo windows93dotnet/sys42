@@ -58,7 +58,8 @@ ui-menu > li {
   display: flex;
 }
 
-:is(ui-menu, ui-menubar) > li > button:is(:disabled,[aria-disabled="true"]) {
+:is(ui-menu, ui-menubar) > li > label:has(:disabled, [aria-disabled="true"]),
+:is(ui-menu, ui-menubar) > li > button:is(:disabled, [aria-disabled="true"]) {
   color: var(--btn-disabled-fg);
   opacity: var(--ctrl-disabled-alpha);
   text-shadow: var(--btn-disabled-tsh);
@@ -145,7 +146,7 @@ ui-menu > li > button > :first-child:not(ui-picto) {
 }
 
 :is(ui-menu, ui-menubar) > li > button[aria-haspopup][aria-expanded="true"],
-:is(ui-menu, ui-menubar) > li > label:is(:focus-within, :active),
+:is(ui-menu, ui-menubar) > li > label:is(:active, :focus-within):not(:has(:disabled, [aria-disabled="true"])),
 :is(ui-menu, ui-menubar) > li:focus-within > button:not([aria-disabled="true"]) {
   --bg: var(--highlight-bg);
   --fg: var(--highlight-fg);
@@ -176,6 +177,6 @@ body.debug .aim-polygon {
   fill: rgb(255 255 0 / 0.5) !important;
 } */
 
-:focus {
+/* :focus {
   box-shadow: 0 0 2px 5px rgb(255 0 0 / 0.5);
-}
+} */
