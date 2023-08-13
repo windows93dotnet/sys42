@@ -1,8 +1,7 @@
 /* eslint-disable complexity */
 /* eslint-disable max-depth */
-import Reactive from "./classes/Reactive.js"
+import Stage from "./classes/Stage.js"
 import resolveScope from "./utils/resolveScope.js"
-import pendingDone from "./utils/pendingDone.js"
 import findScope from "./utils/findScope.js"
 import register from "./register.js"
 
@@ -11,11 +10,8 @@ import template from "../core/formats/template.js"
 import expr from "../core/expr.js"
 import filters from "../core/filters.js"
 
-import Locator from "../fabric/classes/Locator.js"
 import locate from "../fabric/locator/locate.js"
 import allocate from "../fabric/locator/allocate.js"
-import Canceller from "../fabric/classes/Canceller.js"
-import Waitlist from "../fabric/classes/Waitlist.js"
 import traverse from "../fabric/type/object/traverse.js"
 import dispatch from "../fabric/event/dispatch.js"
 import isEmptyObject from "../fabric/type/any/is/isEmptyObject.js"
@@ -841,58 +837,10 @@ export function normalizePlan(plan = {}, stage, options) {
   return plan
 }
 
-/* stage
-====== */
-
-class Stage {
-  constructor(plan) {
-    Object.assign(this, plan)
-    this.scope ??= "/"
-    this.steps ??= "?"
-    this.renderers ??= Object.create(null)
-    this.plugins ??= Object.create(null)
-    this.computeds ??= Object.create(null)
-    this.refs ??= Object.create(null)
-    this.tmp ??= new Map()
-    this.detacheds ??= new Set()
-    this.scopeChain ??= []
-    this.pluginHandlers ??= []
-    this.scopeResolvers ??= {}
-    this.actions ??= new Locator(Object.create(null), { delimiter: "/" })
-
-    this.waitlistPreload ??= new Waitlist()
-    this.waitlistPending ??= new Waitlist()
-    this.waitlistPostrender ??= new Waitlist()
-    this.waitlistComponents ??= new Waitlist()
-    this.waitlistTraits ??= new Waitlist()
-
-    this.cancel ??= new Canceller()
-    this.reactive ??= new Reactive(this)
-
-    this.pendingDone ??= async () => pendingDone(this)
-  }
-
-  get signal() {
-    return this.cancel.signal
-  }
-  set signal(_) {}
-
-  resolve(loc) {
-    return resolveScope(...findScope(this, loc), this)
-  }
-
-  get(loc) {
-    loc = resolveScope(...findScope(this, loc), this)
-    return this.reactive.get(loc)
-  }
-}
-
-export function normalizeStage(stage = {}) {
-  return new Stage(stage)
-}
-
-export default function normalize(plan, stage = {}) {
-  stage = normalizeStage(stage)
+export function normalize(plan, stage) {
+  stage = new Stage(stage)
   plan = normalizePlan(plan, stage)
   return [plan, stage]
 }
+
+export default normalize

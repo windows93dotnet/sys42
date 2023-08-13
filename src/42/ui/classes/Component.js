@@ -6,7 +6,6 @@ import {
   addEntry,
   ensurePlan,
   objectifyPlan,
-  normalizeStage,
   normalizePlan,
   normalizeString,
   normalizeComputeds,
@@ -14,6 +13,7 @@ import {
   normalizeData,
   normalizeAttrs,
 } from "../normalize.js"
+import Stage from "./Stage.js"
 import render from "../render.js"
 import renderAttributes from "../renderers/renderAttributes.js"
 import renderProps from "../renderers/renderProps.js"
@@ -248,7 +248,7 @@ export default class Component extends HTMLElement {
 
     /* handle stage
     ------------- */
-    this.stage = normalizeStage({
+    this.stage = new Stage({
       ...stage,
       el: this,
       component: this,

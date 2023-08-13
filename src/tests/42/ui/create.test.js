@@ -1,6 +1,6 @@
 import test from "../../../42/test.js"
 import create from "../../../42/ui/create.js"
-import { normalizeStage } from "../../../42/ui/normalize.js"
+import Stage from "../../../42/ui/classes/Stage.js"
 import setAttributes from "../../../42/fabric/dom/setAttributes.js"
 
 test("simple", (t) => {
@@ -115,7 +115,7 @@ test("classes", 2, (t) => {
 })
 
 test("stage", async (t) => {
-  const stage = normalizeStage()
+  const stage = new Stage()
   stage.reactive.set("foo", "bar")
   const child = create(stage, "span", { class: "{{foo}}" })
   const el = create(stage, "div", { class: "derp" }, child)
@@ -131,7 +131,7 @@ test("stage", async (t) => {
 })
 
 test("stage", "renderKeyVal 'dynamic' bug", async (t) => {
-  const stage = normalizeStage()
+  const stage = new Stage()
   const child = create(stage, "span", { class: "bar" })
   const el = create(stage, "div", { class: "derp" }, child)
 
