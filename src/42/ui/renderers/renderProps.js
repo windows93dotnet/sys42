@@ -1,8 +1,8 @@
 /* eslint-disable complexity */
-import noop from "../../fabric/type/function/noop.js"
-import resolveScope from "../resolveScope.js"
-import register from "../register.js"
 import { normalizeComputed } from "../normalize.js"
+import register from "../register.js"
+import resolveScope from "../utils/resolveScope.js"
+import noop from "../../fabric/type/function/noop.js"
 import toKebabCase from "../../fabric/type/string/case/toKebabCase.js"
 import repaintThrottle from "../../fabric/type/function/repaintThrottle.js"
 import getType from "../../fabric/type/any/getType.js"

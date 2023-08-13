@@ -1,4 +1,4 @@
-import renderAnimation from "./renderAnimation.js"
+import renderAnimation from "../renderers/renderAnimation.js"
 
 export default async function removeElements(elements, plan, stage) {
   const anim = plan?.animate?.to

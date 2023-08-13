@@ -1,7 +1,7 @@
 import Component from "../classes/Component.js"
 import { Menu } from "./menu.js"
-import extractShortcuts from "../extractShortcuts.js"
 import renderOn from "../renderers/renderOn.js"
+import extractShortcuts from "../utils/extractShortcuts.js"
 
 export class Menubar extends Menu {
   static plan = {

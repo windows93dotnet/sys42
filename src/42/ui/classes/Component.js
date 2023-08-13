@@ -2,19 +2,6 @@
 // @read https://developer.salesforce.com/blogs/2020/01/accessibility-for-web-components
 // @read https://github.com/webcomponents/gold-standard/wiki
 
-import system from "../../system.js"
-import toKebabCase from "../../fabric/type/string/case/toKebabCase.js"
-import defer from "../../fabric/type/promise/defer.js"
-import renderAttributes from "../renderers/renderAttributes.js"
-import renderProps from "../renderers/renderProps.js"
-import resolveScope from "../resolveScope.js"
-import configure from "../../core/configure.js"
-import render from "../render.js"
-import isEmptyObject from "../../fabric/type/any/is/isEmptyObject.js"
-import dispatch from "../../fabric/event/dispatch.js"
-import hash from "../../fabric/type/any/hash.js"
-import uid from "../../core/uid.js"
-import noop from "../../fabric/type/function/noop.js"
 import {
   addEntry,
   ensurePlan,
@@ -27,6 +14,21 @@ import {
   normalizeData,
   normalizeAttrs,
 } from "../normalize.js"
+import render from "../render.js"
+import renderAttributes from "../renderers/renderAttributes.js"
+import renderProps from "../renderers/renderProps.js"
+import resolveScope from "../utils/resolveScope.js"
+
+import system from "../../system.js"
+import configure from "../../core/configure.js"
+import uid from "../../core/uid.js"
+
+import toKebabCase from "../../fabric/type/string/case/toKebabCase.js"
+import defer from "../../fabric/type/promise/defer.js"
+import isEmptyObject from "../../fabric/type/any/is/isEmptyObject.js"
+import dispatch from "../../fabric/event/dispatch.js"
+import hash from "../../fabric/type/any/hash.js"
+import noop from "../../fabric/type/function/noop.js"
 
 const CREATE = 0
 const INIT = 1

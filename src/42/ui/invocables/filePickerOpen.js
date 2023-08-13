@@ -1,6 +1,6 @@
 import explorer from "../components/explorer.js"
-import omit from "../../fabric/type/object/omit.js"
 import { objectifyPlan } from "../normalize.js"
+import omit from "../../fabric/type/object/omit.js"
 
 const DEFAULT = {
   agree: "Open",
@@ -16,8 +16,11 @@ export async function filePickerOpen(path, options) {
     isPicker: true,
 
     dialog: {
-      class:
-        "ui-dialog-explorer ui-dialog-filepicker ui-dialog-filepicker--open",
+      class: [
+        "ui-dialog-explorer",
+        "ui-dialog-filepicker",
+        "ui-dialog-filepicker--open",
+      ],
       footer: [
         {
           tag: "input.w-full.inset-shallow._panel",

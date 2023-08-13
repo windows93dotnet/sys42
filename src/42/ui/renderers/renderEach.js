@@ -1,15 +1,14 @@
 /* eslint-disable complexity */
 /* eslint-disable max-depth */
+import { normalizePlanWithoutStage } from "../normalize.js"
 import render from "../render.js"
+import register from "../register.js"
+import removeRange from "../utils/removeRange.js"
 import omit from "../../fabric/type/object/omit.js"
 import NodesRange from "../../fabric/range/NodesRange.js"
-import removeRange from "./removeRange.js"
-import register from "../register.js"
 import Canceller from "../../fabric/classes/Canceller.js"
-import { normalizePlanWithoutStage } from "../normalize.js"
 import { arrayDiff } from "../../fabric/json/diff.js"
 import renderAnimation from "./renderAnimation.js"
-// import nextCycle from "../../fabric/type/promise/nextCycle.js"
 
 const PLACEHOLDER = "[each]"
 const ITEM = "[#]"
@@ -211,8 +210,6 @@ export default function renderEach(plan, stage) {
         ),
         (lastItem = document.createComment(ITEM)),
       )
-
-      // await nextCycle()
     }
 
     if (endItem) endItem.after(fragment)

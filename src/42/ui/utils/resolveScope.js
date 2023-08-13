@@ -1,7 +1,7 @@
-import resolvePath from "../core/path/core/resolvePath.js"
-import segmentize from "../fabric/type/string/segmentize.js"
-import getBasename from "../core/path/core/getBasename.js"
-import same from "../fabric/type/array/same.js"
+import resolvePath from "../../core/path/core/resolvePath.js"
+import segmentize from "../../fabric/type/string/segmentize.js"
+import getBasename from "../../core/path/core/getBasename.js"
+import same from "../../fabric/type/array/same.js"
 
 export default function resolveScope(scope, loc, stage) {
   if (loc == null) throw new Error("Undefined path")

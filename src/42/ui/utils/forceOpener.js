@@ -1,4 +1,4 @@
-import uid from "../core/uid.js"
+import uid from "../../core/uid.js"
 
 export default function forceOpener(plan) {
   if (!plan.opener) {

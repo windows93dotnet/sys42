@@ -1,19 +1,21 @@
 /* eslint-disable complexity */
+import ui, { UI } from "../../ui.js"
+import postrenderAutofocus from "../../ui/utils/postrenderAutofocus.js"
+import transferable from "../../ui/traits/transferable.js"
 import system from "../../system.js"
+
 import inTop from "../../core/env/realm/inTop.js"
 import uid from "../../core/uid.js"
-import ui, { UI } from "../../ui.js"
+import template from "../../core/formats/template.js"
+import ipc from "../../core/ipc.js"
 import escapeTemplate from "../../core/formats/template/escapeTemplate.js"
 import configure from "../../core/configure.js"
+
 import noop from "../../fabric/type/function/noop.js"
-import postrenderAutofocus from "../../ui/postrenderAutofocus.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
 import arrify from "../../fabric/type/any/arrify.js"
-import template from "../../core/formats/template.js"
 import Emitter from "../../fabric/classes/Emitter.js"
 import resolve from "../../fabric/json/resolve.js"
-import transferable from "../../ui/traits/transferable.js"
-import ipc from "../../core/ipc.js"
 
 import editor from "./App/editor.js"
 import preinstall from "./App/preinstall.js"

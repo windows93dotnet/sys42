@@ -1,4 +1,4 @@
-import nextCycle from "../fabric/type/promise/nextCycle.js"
+import nextCycle from "../../fabric/type/promise/nextCycle.js"
 
 export async function pendingDone(stage, n = 10) {
   await Promise.all([

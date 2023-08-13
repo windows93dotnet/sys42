@@ -1,8 +1,8 @@
 import "../head.js"
-import ensureElement from "../../fabric/dom/ensureElement.js"
-import render from "../render.js"
 import normalize from "../normalize.js"
-import postrenderAutofocus from "../postrenderAutofocus.js"
+import render from "../render.js"
+import postrenderAutofocus from "../utils/postrenderAutofocus.js"
+import ensureElement from "../../fabric/dom/ensureElement.js"
 
 export default class UI {
   constructor(...args) {

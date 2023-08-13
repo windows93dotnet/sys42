@@ -1,16 +1,17 @@
 /* eslint-disable no-unused-expressions */
 import Component from "../classes/Component.js"
-import rpc from "../../core/ipc/rpc.js"
-import omit from "../../fabric/type/object/omit.js"
-import dispatch from "../../fabric/event/dispatch.js"
-import maxZIndex from "../../fabric/dom/maxZIndex.js"
 import { objectifyPlan, forkPlan, normalizePlugins } from "../normalize.js"
-import forceOpener from "../forceOpener.js"
-import { autofocus } from "../../fabric/dom/focus.js"
+import forceOpener from "../utils/forceOpener.js"
+import postrenderAutofocus from "../utils/postrenderAutofocus.js"
+import rpc from "../../core/ipc/rpc.js"
+
+import omit from "../../fabric/type/object/omit.js"
 import nextCycle from "../../fabric/type/promise/nextCycle.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
-import postrenderAutofocus from "../postrenderAutofocus.js"
 import emittable from "../../fabric/traits/emittable.js"
+import dispatch from "../../fabric/event/dispatch.js"
+import maxZIndex from "../../fabric/dom/maxZIndex.js"
+import { autofocus } from "../../fabric/dom/focus.js"
 
 const _axis = Symbol("axis")
 

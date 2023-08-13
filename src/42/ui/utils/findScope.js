@@ -1,7 +1,7 @@
-import occurrences from "../fabric/type/string/occurrences.js"
+import occurrences from "../../fabric/type/string/occurrences.js"
 import resolveScope from "./resolveScope.js"
-import getDirname from "../core/path/core/getDirname.js"
-import segmentize from "../fabric/type/string/segmentize.js"
+import getDirname from "../../core/path/core/getDirname.js"
+import segmentize from "../../fabric/type/string/segmentize.js"
 
 export default function findScope(stage, loc) {
   if (loc == null) throw new Error("Undefined path")

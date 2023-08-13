@@ -1,19 +1,19 @@
 /* eslint-disable complexity */
 
+import { objectifyPlan } from "../normalize.js"
 import register from "../register.js"
 import render from "../render.js"
+import create from "../create.js"
+import findScope from "../utils/findScope.js"
+import resolveScope from "../utils/resolveScope.js"
+import getBasename from "../../core/path/core/getBasename.js"
 import setControlData from "../../fabric/dom/setControlData.js"
 import getControlData from "../../fabric/dom/getControlData.js"
 import setAttributes from "../../fabric/dom/setAttributes.js"
-import create from "../create.js"
-import findScope from "../findScope.js"
-import resolveScope from "../resolveScope.js"
-import getBasename from "../../core/path/core/getBasename.js"
 import debounce from "../../fabric/type/function/debounce.js"
 import toTitleCase from "../../fabric/type/string/case/toTitleCase.js"
 import hash from "../../fabric/type/any/hash.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
-import { objectifyPlan } from "../normalize.js"
 
 const TEXTBOX_TYPES = new Set(["text", "email", "search"])
 

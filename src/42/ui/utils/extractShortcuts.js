@@ -1,4 +1,4 @@
-import traverse from "./../fabric/type/object/traverse.js"
+import traverse from "../../fabric/type/object/traverse.js"
 
 export function extractShortcuts(items, stage) {
   const eventmap = { prevent: true }

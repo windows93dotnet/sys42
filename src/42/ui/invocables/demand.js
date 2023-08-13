@@ -1,7 +1,7 @@
 import dialog from "../components/dialog.js"
-import configure from "../../core/configure.js"
-import forceOpener from "../forceOpener.js"
 import { objectifyPlan } from "../normalize.js"
+import forceOpener from "../utils/forceOpener.js"
+import configure from "../../core/configure.js"
 
 const DEFAULT = {
   class: "ui-dialog-demand",
