@@ -3,7 +3,8 @@ import inTop from "../../core/env/realm/inTop.js"
 import Component from "../classes/Component.js"
 import uid from "../../core/uid.js"
 import { closeOthers } from "../popup.js"
-// import aim from "../../fabric/dom/aim.js"
+import listen from "../../fabric/event/listen.js"
+import Aim from "../classes/Aim.js"
 
 const menuItemSelector = `
   :scope > li > button:not(:disabled),
@@ -44,6 +45,20 @@ function focusSequence(menu, dir) {
     return item
   }
 }
+
+const aim = new Aim()
+
+listen({
+  uipopupopen(e, menu) {
+    aim.to(menu)
+    menu.positionable.on("place", async () => {
+      aim.to(menu)
+    })
+  },
+  // uipopupclose() {
+  //   aim.reset()
+  // },
+})
 
 export class Menu extends Component {
   [Symbol.for("42_POPUP_CLOSE")] = true

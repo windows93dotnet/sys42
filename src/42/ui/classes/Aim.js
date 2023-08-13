@@ -1,20 +1,17 @@
 // @read https://bjk5.com/post/44698559168/breaking-down-amazons-mega-dropdown
 
 /* eslint-disable max-params */
-import listen from "../event/listen.js"
-import throttle from "../type/function/throttle.js"
+import listen from "../../fabric/event/listen.js"
+import throttle from "../../fabric/type/function/throttle.js"
 
 const ns = "http://www.w3.org/2000/svg"
 
-class Aim {
-  constructor(el) {
-    const svg = document.createElementNS(ns, "svg")
-    this.polygon = document.createElementNS(ns, "polygon")
-    this.polygon.setAttribute("class", "aim-polygon")
-    this.polygon.setAttribute("fill", "transparent")
-    this.polygon.setAttribute("points", "0,0 0,0 0,0")
-    this.polygon.style = "pointer-events: auto;"
-    svg.style = `
+export class Aim {
+  constructor(options) {
+    this.el = document.createElementNS(ns, "svg")
+    this.el.id = "aim"
+    this.el.setAttribute("aria-hidden", "true")
+    this.el.style = `
       pointer-events: none;
       position: fixed;
       inset: 0;
@@ -22,16 +19,26 @@ class Aim {
       height: 100%;
       z-index: 10000;`
 
+    this.polygon = document.createElementNS(ns, "polygon")
+    this.polygon.setAttribute("class", "aim-polygon")
+    this.polygon.setAttribute("fill", "transparent")
+    this.polygon.setAttribute("points", "0,0 0,0 0,0")
+    this.polygon.style = "pointer-events: auto;"
+
     this.polygon.onclick = () => this.reset()
 
-    svg.append(this.polygon)
-    el.append(svg)
+    const dest = options?.dest ?? document.documentElement
+
+    this.el.append(this.polygon)
+    dest.append(this.el)
 
     this.reset()
 
     this.forget = listen({
       pointermove: throttle((e) => this.setCursor(e), 300),
     })
+
+    options?.signal.addEventListener("abort", () => this.destroy())
   }
 
   reset() {
@@ -115,8 +122,12 @@ class Aim {
     const points = `${ax},${ay} ${bx},${by} ${cx},${cy}`
     this.polygon.setAttribute("points", points)
   }
+
+  destroy() {
+    this.el.remove()
+    this.forget()
+    this.reset()
+  }
 }
 
-export default function aim(el) {
-  return new Aim(el)
-}
+export default Aim

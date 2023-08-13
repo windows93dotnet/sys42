@@ -277,12 +277,12 @@ class Positionable extends Trait {
       if (this.x.collision) x = collisions[this.x.collision](x, X, this.x)
       if (this.y.collision) y = collisions[this.y.collision](y, Y, this.y)
 
+      this.coords(x, y)
+
       if (initial || changes) {
         initial = 0
         this.emit("place", makePlaceEventData(changes, this))
       }
-
-      this.coords(x, y)
     }
 
     this.x = {

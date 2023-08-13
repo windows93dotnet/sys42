@@ -136,11 +136,13 @@ export const popup = rpc(
 
     document.documentElement.append(el)
 
-    if (el.ready) await el.ready
+    if ("ready" in el) await el.ready
     else {
       await stage.pendingDone()
       await stage.waitlistPostrender.call()
     }
+
+    await el.positionable
 
     if (plan.autofocus === "menu") el.focus()
     else if (plan.autofocus !== false) focus.autofocus(el)

@@ -16,7 +16,7 @@ let index = 0
 
 const selfExecute = debounce(async (sbs) => {
   sbs.started = true
-  document.body.classList.add("debug")
+  document.documentElement.classList.add("debug")
 
   for (const suite of sbs.root.suites) {
     if (suite.onlies.size > 0) {
