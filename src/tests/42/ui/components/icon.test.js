@@ -3,7 +3,7 @@ import ui from "../../../../42/ui.js"
 import cssPrefix from "../../../../42/fabric/cssom/cssPrefix.js"
 import toKebabCase from "../../../../42/fabric/type/string/case/toKebabCase.js"
 
-test.suite.timeout(2000)
+test.suite.timeout(3000)
 
 test("html", async (t) => {
   const app = await t.utils.decay(

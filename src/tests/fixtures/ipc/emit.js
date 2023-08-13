@@ -8,3 +8,17 @@ setTimeout(() => {
     self.close()
   } catch {}
 }, 3000)
+
+if (env.realm.inServiceWorker) {
+  self.addEventListener("install", () => {
+    self.skipWaiting()
+  })
+
+  self.addEventListener("activate", () => {
+    setTimeout(() => {
+      self.registration
+        .unregister()
+        .then((res) => console.log("unregistered", res))
+    }, 3000)
+  })
+}

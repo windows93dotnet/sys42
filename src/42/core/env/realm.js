@@ -4,7 +4,7 @@
 const windowExist = globalThis.window !== undefined
 const selfExist = globalThis.self !== undefined
 
-export default {
+export default Object.freeze({
   inWindow: windowExist && window === window.self,
   inChildWindow: windowExist && globalThis.opener !== null,
 
@@ -28,4 +28,4 @@ export default {
     selfExist &&
     globalThis.DedicatedWorkerGlobalScope !== undefined &&
     self instanceof DedicatedWorkerGlobalScope,
-}
+})

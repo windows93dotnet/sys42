@@ -7,30 +7,27 @@ import disposable from "../fabric/traits/disposable.js"
 
 const getUAParse = disposable(() => new UAParser())
 
-export default {
-  get realm() {
-    return Object.assign(Object.create(null), realm)
-  },
-
-  get runtime() {
-    return Object.assign(Object.create(null), runtime)
-  },
+export default Object.freeze({
+  realm,
+  runtime,
 
   get browser() {
     const uap = getUAParse()
     const browser = uap.getBrowser()
     const name = browser.name?.toLowerCase() ?? ""
-    const { major } = browser
-    browser.major = Number.parseInt(major, 10)
-    if (Number.isNaN(browser.major)) browser.major = major
+    let version = browser.major
+    version = Number.parseInt(version, 10)
+    if (Number.isNaN(version)) version = 0
     return {
+      name,
+      version,
+      semver: browser.version,
       isChrome: name.startsWith("chrom"),
       isEdge: name.startsWith("edge"),
       isFirefox: name.startsWith("firefox"),
       isIE: name.startsWith("ie"),
       isOpera: name.startsWith("opera"),
       isSafari: name.startsWith("safari"),
-      ...browser,
     }
   },
 
@@ -97,4 +94,4 @@ export default {
     if (d.vendor) out += `, ${d.vendor}${d.model ? ` ${d.model}` : ""}`
     return out
   },
-}
+})

@@ -60,15 +60,15 @@ test("runtime", (t) => {
 
 test("browser", (t) => {
   t.alike(Object.keys(env.browser), [
+    "name",
+    "version",
+    "semver",
     "isChrome",
     "isEdge",
     "isFirefox",
     "isIE",
     "isOpera",
     "isSafari",
-    "name",
-    "version",
-    "major",
   ])
 })
 

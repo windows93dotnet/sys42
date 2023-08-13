@@ -9,7 +9,7 @@ import inBrowser from "./runtime/inBrowser.js"
 import inAutomated from "./runtime/inAutomated.js"
 import inPWA from "./runtime/inPWA.js"
 
-export default {
+export default Object.freeze({
   inBackend,
   inNode,
   inDeno,
@@ -20,4 +20,4 @@ export default {
   inBrowser,
   inAutomated,
   inPWA,
-}
+})
