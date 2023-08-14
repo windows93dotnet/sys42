@@ -41,6 +41,8 @@ export default class Emitter {
   }
 
   off(events, fn) {
+    if (!this[_EVENTS]) return this // off should never throw an error
+
     for (const event of events.split(SPLIT_REGEX)) {
       if (event === "*" && !fn) {
         for (const key in this[_EVENTS]) {

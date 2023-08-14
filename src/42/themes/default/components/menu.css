@@ -173,7 +173,7 @@ ui-menu > li > button > :first-child:not(ui-picto) {
   background: #f0f !important;
 } */
 
-:root.debug .aim-polygon {
+:root.debug #menu-aim-triangle {
   fill: rgb(255 255 0 / 0.5) !important;
 }
 

@@ -16,7 +16,7 @@ export class Menubar extends Menu {
         "ArrowRight || PageDown": "{{focusNext()}}",
         "Home": "{{focusFirst()}}",
         "End": "{{focusLast()}}",
-        "pointerenter || pointerleave": "{{resetLastHovered()}}",
+        "pointerenter || pointerleave": "{{resetLastHovered(e)}}",
       },
       {
         selector: ":scope > li",

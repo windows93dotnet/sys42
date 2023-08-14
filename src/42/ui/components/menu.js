@@ -4,6 +4,8 @@ import Component from "../classes/Component.js"
 import uid from "../../core/uid.js"
 import { closeOthers } from "../popup.js"
 import listen from "../../fabric/event/listen.js"
+import throttle from "../../fabric/type/function/throttle.js"
+import ipc from "../../core/ipc.js"
 import Aim from "../classes/Aim.js"
 
 const menuItemSelector = `
@@ -46,23 +48,49 @@ function focusSequence(menu, dir) {
   }
 }
 
-const aim = new Aim()
+/* Menu-aim
+=========== */
+const selector = ":is(ui-menu, ui-menubar) > li"
+let listenPointermove
+let forgetPointermove
 
-listen({
-  uipopupopen(e, menu) {
-    aim.to(menu)
-    menu.positionable.on("place", async () => {
-      aim.to(menu)
+if (inTop) {
+  const aim = new Aim({ selector })
+
+  listen({
+    selector: "ui-menu",
+    uipopupopen(e, menu) {
+      const direction = menu.fromMenubar ? "vertical" : "horizontal"
+      aim.shoot(menu, direction)
+      menu.positionable.on("place", async () => {
+        aim.shoot(menu, direction)
+      })
+    },
+    uipopupclose(e, menu) {
+      if (menu === aim.hit) aim.reset()
+    },
+  })
+
+  ipc.on("42_MENU_POINTERMOVE", ({ x, y }, { iframe }) => {
+    const rect = iframe.getBoundingClientRect()
+    x += rect.x
+    y += rect.y
+    aim.setCursor({ x, y })
+  })
+} else {
+  listenPointermove = (signal) =>
+    listen({
+      signal,
+      selector,
+      pointermove: throttle(({ x, y }) => {
+        ipc.emit("42_MENU_POINTERMOVE", { x, y })
+      }, 100),
     })
-  },
-  // uipopupclose() {
-  //   aim.reset()
-  // },
-})
+}
 
 export class Menu extends Component {
   [Symbol.for("42_POPUP_CLOSE")] = true
-  #inMenubar
+  #isMenubar
   #lastHovered
 
   static plan = {
@@ -83,7 +111,7 @@ export class Menu extends Component {
         "ArrowDown || ArrowRight || PageDown": "{{focusNext()}}",
         "Home": "{{focusFirst()}}",
         "End": "{{focusLast()}}",
-        "pointerenter || pointerleave": "{{resetLastHovered()}}",
+        "pointerenter || pointerleave": "{{resetLastHovered(e)}}",
       },
       {
         selector: ":scope > li",
@@ -100,8 +128,25 @@ export class Menu extends Component {
     },
   }
 
-  resetLastHovered() {
+  constructor(...args) {
+    super(...args)
+    this.#isMenubar = this.constructor.name === "Menubar"
+  }
+
+  get isMenubar() {
+    return this.#isMenubar
+  }
+
+  resetLastHovered(e) {
+    if (e.relatedTarget?.id === "menu-aim-triangle") return
     this.#lastHovered = undefined
+
+    if (e.type === "pointerenter") {
+      forgetPointermove ??= listenPointermove?.(this.stage.signal)
+    } else if (e.type === "pointerleave") {
+      forgetPointermove?.()
+      forgetPointermove = undefined
+    }
   }
 
   triggerMenuitem(target) {
@@ -163,8 +208,7 @@ export class Menu extends Component {
   }
 
   async render({ items, displayPicto, shortcuts, focusBack }) {
-    const inMenubar = this.constructor.name === "Menubar"
-    this.#inMenubar = inMenubar
+    const inMenubar = this.isMenubar
     const plan = []
 
     let first = true

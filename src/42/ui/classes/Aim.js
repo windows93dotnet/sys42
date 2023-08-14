@@ -2,14 +2,19 @@
 
 /* eslint-disable max-params */
 import listen from "../../fabric/event/listen.js"
-import throttle from "../../fabric/type/function/throttle.js"
+import repaintThrottle from "../../fabric/type/function/repaintThrottle.js"
+
+const DEFAULTS = {
+  refresh: 300,
+  direction: "horizontal",
+}
 
 const ns = "http://www.w3.org/2000/svg"
 
 export class Aim {
   constructor(options) {
     this.el = document.createElementNS(ns, "svg")
-    this.el.id = "aim"
+    this.el.id = "menu-aim"
     this.el.setAttribute("aria-hidden", "true")
     this.el.style = `
       pointer-events: none;
@@ -19,46 +24,75 @@ export class Aim {
       height: 100%;
       z-index: 10000;`
 
-    this.polygon = document.createElementNS(ns, "polygon")
-    this.polygon.setAttribute("class", "aim-polygon")
-    this.polygon.setAttribute("fill", "transparent")
-    this.polygon.setAttribute("points", "0,0 0,0 0,0")
-    this.polygon.style = "pointer-events: auto;"
+    this.triangle = document.createElementNS(ns, "polygon")
+    this.triangle.id = "menu-aim-triangle"
+    this.triangle.setAttribute("fill", "transparent")
+    this.triangle.setAttribute("points", "0,0 0,0 0,0")
+    this.triangle.style = "display:none; pointer-events: auto;"
+    this.triangle.onpointerdown = () => this.reset()
 
-    this.polygon.onclick = () => this.reset()
+    this.config = { ...DEFAULTS, ...options }
+    this.config.dest ??= document.documentElement
 
-    const dest = options?.dest ?? document.documentElement
+    this.el.append(this.triangle)
+    this.config.dest.append(this.el)
 
-    this.el.append(this.polygon)
-    dest.append(this.el)
+    this.direction = this.config.direction
 
     this.reset()
 
+    let refreshTimerId
+
     this.forget = listen({
-      pointermove: throttle((e) => this.setCursor(e), 300),
+      selector: (this.config.selector ?? "") + ", #menu-aim-triangle",
+      pointermove: repaintThrottle((e) => {
+        clearTimeout(refreshTimerId)
+
+        if (!this.#active) return
+
+        if (e.target.id === "menu-aim-triangle") {
+          refreshTimerId = setTimeout(
+            () => this.setCursor(e),
+            this.config.refresh,
+          )
+          return
+        }
+
+        this.setCursor(e)
+      }),
     })
 
-    options?.signal.addEventListener("abort", () => this.destroy())
+    this.config.signal?.addEventListener("abort", () => this.destroy())
+  }
+
+  #active
+  get active() {
+    return this.#active
+  }
+  set active(val) {
+    this.#active = Boolean(val)
+    if (this.#active) {
+      this.triangle.style.display = "block"
+    } else {
+      this.triangle.style.display = "none"
+      this.cursor = { x: 0, y: 0 }
+      this.rect = { top: 0, left: 0, right: 0, bottom: 0 }
+      this.resetPoints()
+    }
   }
 
   reset() {
-    this.polygon.style.display = "none"
-    this.cursor = { x: 0, y: 0 }
-    this.rect = { top: 0, left: 0, right: 0, bottom: 0 }
-    this.resetPoints()
+    this.active = false
   }
 
-  to(el, cursor, inMenubar) {
-    this.polygon.style.display = "block"
+  shoot(el, direction) {
+    this.active = true
+    this.hit = el
 
-    this.inMenubar = inMenubar ?? false
-    if (cursor) {
-      this.cursor.x = cursor.x
-      this.cursor.y = cursor.y
-    }
+    this.direction = direction ?? this.config.direction
 
     requestAnimationFrame(() => {
-      this.rect = el.getBoundingClientRect()
+      this.rect = this.hit.getBoundingClientRect()
       this.draw()
     })
   }
@@ -73,7 +107,7 @@ export class Aim {
     const { cursor, rect } = this
     const { x, y } = cursor
 
-    if (this.inMenubar) {
+    if (this.direction === "vertical") {
       if (y > rect.bottom) {
         this.setPoints(
           x,
@@ -115,12 +149,12 @@ export class Aim {
   }
 
   resetPoints() {
-    this.polygon.setAttribute("points", "0,0 0,0 0,0")
+    this.triangle.setAttribute("points", "0,0 0,0 0,0")
   }
 
   setPoints(ax, ay, bx, by, cx, cy) {
     const points = `${ax},${ay} ${bx},${by} ${cx},${cy}`
-    this.polygon.setAttribute("points", points)
+    this.triangle.setAttribute("points", points)
   }
 
   destroy() {
