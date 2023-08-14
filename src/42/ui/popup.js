@@ -116,11 +116,14 @@ function combineRect(rect1, rect2) {
 export const popup = rpc(
   async function popup(plan, stage, rect, meta) {
     plan.positionable = {
-      preset: plan.inMenuitem && !plan.inMenubar ? "menuitem" : "popup",
+      preset: plan.fromMenuitem && !plan.fromMenubar ? "menuitem" : "popup",
       of: meta?.iframe
         ? combineRect(rect, meta.iframe.getBoundingClientRect())
         : rect,
     }
+
+    const { autofocus } = plan
+    delete plan.autofocus
 
     const normalized = normalize(plan, stage)
     stage = normalized[1]
@@ -144,8 +147,8 @@ export const popup = rpc(
 
     await el.positionable
 
-    if (plan.autofocus === "menu") el.focus()
-    else if (plan.autofocus !== false) focus.autofocus(el)
+    if (autofocus === "menu") el.focus()
+    else if (autofocus !== false) focus.autofocus(el)
 
     dispatch(el, "uipopupopen")
 

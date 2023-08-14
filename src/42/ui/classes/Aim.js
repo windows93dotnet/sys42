@@ -2,10 +2,12 @@
 
 /* eslint-disable max-params */
 import listen from "../../fabric/event/listen.js"
+import stopEvent from "../../fabric/event/stopEvent.js"
 import repaintThrottle from "../../fabric/type/function/repaintThrottle.js"
 
 const DEFAULTS = {
-  refresh: 300,
+  refresh: 100,
+  threshold: 0,
   direction: "horizontal",
 }
 
@@ -29,7 +31,12 @@ export class Aim {
     this.triangle.setAttribute("fill", "transparent")
     this.triangle.setAttribute("points", "0,0 0,0 0,0")
     this.triangle.style = "display:none; pointer-events: auto;"
-    this.triangle.onpointerdown = () => this.reset()
+    this.triangle.onpointerdown = (e) => {
+      stopEvent(e)
+      this.reset()
+      this.setCursor(e)
+      this.propagateEvent(e, "pointerdown")
+    }
 
     this.config = { ...DEFAULTS, ...options }
     this.config.dest ??= document.documentElement
@@ -38,8 +45,11 @@ export class Aim {
     this.config.dest.append(this.el)
 
     this.direction = this.config.direction
+    this.t = this.config.threshold
+    this.cursor = { x: 0, y: 0 }
+    this.rect = { top: 0, left: 0, right: 0, bottom: 0 }
 
-    this.reset()
+    if (this.config.target) this.setTarget(this.config.target)
 
     let refreshTimerId
 
@@ -51,10 +61,10 @@ export class Aim {
         if (!this.#active) return
 
         if (e.target.id === "menu-aim-triangle") {
-          refreshTimerId = setTimeout(
-            () => this.setCursor(e),
-            this.config.refresh,
-          )
+          refreshTimerId = setTimeout(() => {
+            this.setCursor(e)
+            this.propagateEvent(e, "pointermove")
+          }, this.config.refresh)
           return
         }
 
@@ -75,8 +85,10 @@ export class Aim {
       this.triangle.style.display = "block"
     } else {
       this.triangle.style.display = "none"
-      this.cursor = { x: 0, y: 0 }
-      this.rect = { top: 0, left: 0, right: 0, bottom: 0 }
+      this.rect.top = 0
+      this.rect.bottom = 0
+      this.rect.left = 0
+      this.rect.right = 0
       this.resetPoints()
     }
   }
@@ -85,16 +97,19 @@ export class Aim {
     this.active = false
   }
 
-  shoot(el, direction) {
+  setTarget(el, direction) {
     this.active = true
-    this.hit = el
+    this.target = el
 
     this.direction = direction ?? this.config.direction
 
-    requestAnimationFrame(() => {
-      this.rect = this.hit.getBoundingClientRect()
-      this.draw()
-    })
+    const rect = this.target.getBoundingClientRect()
+    this.rect.top = rect.top
+    this.rect.bottom = rect.bottom
+    this.rect.left = rect.left
+    this.rect.right = rect.right
+    if (this.cursor.x === 0 && this.cursor.y === 0) return
+    this.draw()
   }
 
   setCursor({ x, y }) {
@@ -112,18 +127,18 @@ export class Aim {
         this.setPoints(
           x,
           y + 1,
-          rect.left - 5,
+          rect.left - this.t,
           rect.bottom,
-          rect.right + 5,
+          rect.right + this.t,
           rect.bottom,
         ) // v
       } else if (y < rect.top) {
         this.setPoints(
           x,
           y - 1,
-          rect.left - 5,
+          rect.left - this.t,
           rect.top,
-          rect.right + 5,
+          rect.right + this.t,
           rect.top,
         ) // ^
       } else this.resetPoints()
@@ -132,18 +147,18 @@ export class Aim {
         x + 1,
         y,
         rect.left,
-        rect.top - 5,
+        rect.top - this.t,
         rect.left,
-        rect.bottom + 5,
+        rect.bottom + this.t,
       ) // <
     } else if (x > rect.right) {
       this.setPoints(
         x - 1,
         y,
         rect.right,
-        rect.top - 5,
+        rect.top - this.t,
         rect.right,
-        rect.bottom + 5,
+        rect.bottom + this.t,
       ) // >
     } else this.resetPoints()
   }
@@ -153,8 +168,29 @@ export class Aim {
   }
 
   setPoints(ax, ay, bx, by, cx, cy) {
-    const points = `${ax},${ay} ${bx},${by} ${cx},${cy}`
+    const points = `${ax},${ay} ${ax},${ay} ${bx},${by} ${cx},${cy}`
     this.triangle.setAttribute("points", points)
+  }
+
+  propagateEvent(e, event) {
+    if (this.config.propagateEvent === false) return
+    this.triangle.style.display = "none"
+    const [el] = document.elementsFromPoint(e.x, e.y)
+    this.triangle.style.display = this.#active ? "block" : "none"
+    if (el) {
+      el.dispatchEvent(
+        Object.defineProperties(
+          new PointerEvent(event, {
+            bubbles: true,
+            cancelable: true,
+          }),
+          {
+            x: { value: e.x, enumerable: true },
+            y: { value: e.y, enumerable: true },
+          },
+        ),
+      )
+    }
   }
 
   destroy() {

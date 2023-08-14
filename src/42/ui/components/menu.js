@@ -50,7 +50,8 @@ function focusSequence(menu, dir) {
 
 /* Menu-aim
 =========== */
-const selector = ":is(ui-menu, ui-menubar) > li"
+// const selector = ":is(ui-menu, ui-menubar) > li"
+const selector = "ui-menu > li"
 let listenPointermove
 let forgetPointermove
 
@@ -60,14 +61,23 @@ if (inTop) {
   listen({
     selector: "ui-menu",
     uipopupopen(e, menu) {
-      const direction = menu.fromMenubar ? "vertical" : "horizontal"
-      aim.shoot(menu, direction)
+      // TODO: check if menu-aim is really needed on menubar
+      if (menu.positionable.config.preset !== "menuitem") return
+
+      const direction = "horizontal"
+
+      // const direction =
+      //   menu.positionable.config.preset === "menuitem"
+      //     ? "horizontal"
+      //     : "vertical"
+
+      aim.setTarget(menu, direction)
       menu.positionable.on("place", async () => {
-        aim.shoot(menu, direction)
+        aim.setTarget(menu, direction)
       })
     },
     uipopupclose(e, menu) {
-      if (menu === aim.hit) aim.reset()
+      if (menu === aim.target) aim.reset()
     },
   })
 
@@ -137,6 +147,19 @@ export class Menu extends Component {
     return this.#isMenubar
   }
 
+  focusPrev() {
+    focusSequence(this, -1)
+  }
+  focusNext() {
+    focusSequence(this, 1)
+  }
+  focusFirst() {
+    focusFirst(this)
+  }
+  focusLast() {
+    focusLast(this)
+  }
+
   resetLastHovered(e) {
     if (e.relatedTarget?.id === "menu-aim-triangle") return
     this.#lastHovered = undefined
@@ -191,24 +214,8 @@ export class Menu extends Component {
     }
   }
 
-  focusPrev() {
-    focusSequence(this, -1)
-  }
-
-  focusNext() {
-    focusSequence(this, 1)
-  }
-
-  focusFirst() {
-    focusFirst(this)
-  }
-
-  focusLast() {
-    focusLast(this)
-  }
-
   async render({ items, displayPicto, shortcuts, focusBack }) {
-    const inMenubar = this.isMenubar
+    const fromMenubar = this.isMenubar
     const plan = []
 
     let first = true
@@ -252,25 +259,15 @@ export class Menu extends Component {
         item.role = "menuitem"
         item.on ??= []
         item.on.push({
-          // pointerdown: (e, target) => {
-          //   if (target.getAttribute("aria-expanded") === "true") {
-          //     this.resetLastHovered()
-          //     target.setAttribute("aria-expanded", "false")
-          //     closeOthers(target)
-          //     target.focus()
-          //   }
-          //
-          //   return false
-          // },
           pointerdown: false,
           [shortcuts.openSubmenu]: {
             popup: {
               tag: "ui-menu",
               aria: inTop ? { labelledby: item.id } : { label },
-              inMenuitem: true,
-              inMenubar,
-              // focusBack: item.focusBack ?? focusBack ?? inMenubar,
-              focusBack: item.focusBack ?? focusBack,
+              fromMenuitem: true,
+              fromMenubar,
+              focusBack: item.focusBack ?? focusBack ?? fromMenubar,
+              // focusBack: item.focusBack ?? focusBack,
               closeEvents: shortcuts.closeSubmenu,
               items: item.items,
               handler(e, { el }) {
@@ -281,7 +278,7 @@ export class Menu extends Component {
           },
         })
 
-        if (!inMenubar) item.label.push({ tag: "ui-picto", value: "right" })
+        if (!fromMenubar) item.label.push({ tag: "ui-picto", value: "right" })
         item.content = item.label
       } else if (item.tag?.startsWith("checkbox")) {
         item.role = "menuitemcheckbox"
@@ -305,7 +302,7 @@ export class Menu extends Component {
         first = false
       }
 
-      if (inMenubar && displayPicto !== true) {
+      if (fromMenubar && displayPicto !== true) {
         delete item.picto
       }
 
