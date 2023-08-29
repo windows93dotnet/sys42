@@ -31,32 +31,23 @@ let DEFAULT_PRELOAD = ""
 if (inTop) {
   for (const pathname of [
     new URL(import.meta.url).pathname,
+    new URL("./App/FileAgent.js", import.meta.url).pathname,
+    new URL("../../core/fs.js", import.meta.url).pathname,
+    new URL("../../core/fs/BrowserDriver.js", import.meta.url).pathname,
     new URL("../../fabric/json/resolve.js", import.meta.url).pathname,
-    new URL("../../ui.js", import.meta.url).pathname,
     new URL("../../ui/classes/Component.js", import.meta.url).pathname,
     new URL("../../ui/classes/UI.js", import.meta.url).pathname,
     new URL("../../ui/components/menu.js", import.meta.url).pathname,
     new URL("../../ui/components/menubar.js", import.meta.url).pathname,
     new URL("../../ui/traits/transferable.js", import.meta.url).pathname,
-    new URL("./App/FileAgent.js", import.meta.url).pathname,
-    new URL("../../core/fs.js", import.meta.url).pathname,
-    new URL("../../core/fs/BrowserDriver.js", import.meta.url).pathname,
+    new URL("../../ui.js", import.meta.url).pathname,
   ]) {
     DEFAULT_PRELOAD += `<link rel="modulepreload" href="${pathname}" />\n`
   }
 }
 
 async function prepareManifest(manifest, options) {
-  if (manifest === undefined) {
-    const params = new URLSearchParams(location.search)
-    if (params.has("manifest")) {
-      manifest = JSON.parse(params.get("manifest"))
-      options ??= {}
-      options.skipNormalize = true
-    } else {
-      manifest = new URL("./app.json5", document.URL).pathname
-    }
-  }
+  manifest ??= new URL("./app.json5", document.URL).pathname
 
   if (typeof manifest === "string") {
     const fs = await import("../../core/fs.js") //
@@ -123,10 +114,6 @@ function makeSandbox(manifest) {
     }
 
     path = new URL(path, manifest.dirURL).href
-
-    // if (path.endsWith(".html") || path.endsWith(".php")) {
-    //   path += "?manifest=" + encodeURIComponent(JSON.stringify(manifest))
-    // }
 
     out.sandbox.path = path
     return out
