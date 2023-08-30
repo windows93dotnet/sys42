@@ -72,7 +72,8 @@ export default class ConfigFile {
 
   async save() {
     this.value.version = this.version
-    return persist.set(this.path, this.value)
+    await persist.set(this.path, this.value)
+    delete this.value.version
   }
 
   async update(value) {
