@@ -296,7 +296,7 @@ async function getFilter(item, group, name) {
   return fn
 }
 
-export default async function filters(name) {
+export async function filters(name) {
   for (const [group, val] of entries) {
     if (name in val) {
       const item = val[name]
@@ -314,3 +314,5 @@ export default async function filters(name) {
 }
 
 Object.assign(filters, types)
+
+export default filters

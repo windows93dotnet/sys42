@@ -7,7 +7,7 @@ import disposable from "../fabric/traits/disposable.js"
 
 const getUAParse = disposable(() => new UAParser())
 
-export default Object.freeze({
+export const env = Object.freeze({
   realm,
   runtime,
 
@@ -95,3 +95,5 @@ export default Object.freeze({
     return out
   },
 })
+
+export default env

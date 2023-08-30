@@ -6,7 +6,7 @@ import compileExpression from "./formats/template/compileExpression.js"
 
 const parseValue = JSON5.parse
 
-export default function expr(str, locals, options) {
+export function expr(str, locals, options) {
   return compileExpression(parseExpression(str, parseValue), options)(locals)
 }
 
@@ -16,3 +16,5 @@ expr.compile = compileExpression
 
 expr.evaluate = (str, options) =>
   compileExpression(parseExpression(str, parseValue), options)
+
+export default expr

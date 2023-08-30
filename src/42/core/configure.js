@@ -29,7 +29,7 @@ export function merge(target, source, memory = new WeakMap()) {
   return target
 }
 
-export default function configure(...options) {
+export function configure(...options) {
   const config = {}
   if (options.length === 0) return config
 
@@ -48,3 +48,5 @@ export default function configure(...options) {
 
   return config
 }
+
+export default configure

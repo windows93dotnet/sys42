@@ -3,7 +3,7 @@ import pointer from "./devices/pointer.js"
 import gamepad from "./devices/gamepad.js"
 import wheel from "./devices/wheel.js"
 
-const devices = {
+export const devices = {
   keys: keyboard.keys,
   codes: keyboard.codes,
   pointer: pointer.primary,
