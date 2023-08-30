@@ -374,7 +374,9 @@ export default class App extends UI {
     if (el) {
       if (el === true) {
         el = document.createElement("div")
+        el.className = "item-shrink"
         document.body.prepend(el)
+        document.body.classList.add("box-v", "h-screen")
       }
 
       if (transferableConfig) {
