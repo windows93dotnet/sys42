@@ -317,6 +317,7 @@ test("fromEntries", async (t) => {
   t.is(await db.strings.get("d"), "D")
 })
 
+// TODO: check why this test sometimes fail with "The requested file could not be read..."
 test("files", async (t) => {
   const res = await db.files
     .put(file)

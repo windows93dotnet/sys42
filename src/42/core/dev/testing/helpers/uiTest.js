@@ -7,7 +7,7 @@ import makeRealmLab from "./makeRealmLab.js"
 import triggerOpener from "./triggerOpener.js"
 import untilClose from "./untilClose.js"
 
-// Integration tests self-execute if not started from a test runner.
+// UI tests self-execute if not started from a test runner.
 // It allow to manually debug GUI tests inside a webpage
 // because the last executed test will not destroy GUI using t.utils.decay()
 

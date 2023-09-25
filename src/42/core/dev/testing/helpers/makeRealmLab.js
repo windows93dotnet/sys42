@@ -1,4 +1,3 @@
-import ui from "../../../../ui.js"
 import inTop from "../../../env/realm/inTop.js"
 import uid from "../../../uid.js"
 
@@ -10,6 +9,8 @@ const DEFAULT = {
   syncData: true,
   nestedTestsParallel: false,
 }
+
+let ui
 
 export async function makeRealmLab(t, options, makeContent) {
   const id = uid()
@@ -39,6 +40,9 @@ export async function makeRealmLab(t, options, makeContent) {
 
     globalThis.parent.postMessage(initiator)
   }
+
+  ui ??= await import("../../../../ui.js") //
+    .then((m) => m.default)
 
   const app = await t.utils.decay(
     ui(

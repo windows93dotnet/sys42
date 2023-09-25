@@ -52,7 +52,9 @@ export class Database {
           } catch (err) {
             reject(err)
           }
-        } else reject(new DatabaseError(target.error))
+        } else {
+          reject(new DatabaseError(target.error))
+        }
       }
 
       req.onsuccess = async (e) => {
@@ -66,11 +68,15 @@ export class Database {
     return new Promise((resolve, reject) => {
       const req = indexedDB.deleteDatabase(name)
       if (blocked) req.onblocked = blocked
-      req.onsuccess = () => resolve()
-      req.onerror = () =>
+      req.onsuccess = () => {
+        resolve()
+      }
+
+      req.onerror = () => {
         reject(
           new DatabaseError(`Couldn't delete database ${this.#config.name}`),
         )
+      }
     })
   }
 
@@ -183,14 +189,14 @@ export class Database {
       throw new DatabaseError("Database is obsolete")
     }
 
-    const { name, version, persistent } = this.#config
+    const { name, version /* , persistent */ } = this.#config
 
-    if ((persistent, navigator.storage && navigator.storage.persist)) {
-      // TODO: check Storage Buckets API https://developer.chrome.com/blog/storage-buckets/
-      this.persistent =
-        (await navigator.storage.persisted()) ||
-        (await navigator.storage.persist())
-    }
+    // if ((persistent, navigator.storage && navigator.storage.persist)) {
+    //   // TODO: check Storage Buckets API https://developer.chrome.com/blog/storage-buckets/
+    //   this.persistent =
+    //     (await navigator.storage.persisted()) ||
+    //     (await navigator.storage.persist())
+    // }
 
     this.indexedDB = await Database.open(name, version, {
       upgrade: async (...args) => this.#upgrade(...args),
