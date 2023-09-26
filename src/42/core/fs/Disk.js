@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/no-this-assignment */
 /* eslint-disable no-constructor-return */
-import FileIndex from "./FileIndex.js"
+import FileLocator from "./FileLocator.js"
 import Canceller from "../../fabric/classes/Canceller.js"
 import CBOR from "../formats/cbor.js"
 import ipc from "../ipc.js"
@@ -24,7 +24,7 @@ function syncFileIndex(instance) {
 let ExportedClass
 
 if (ipc.inIframe) {
-  ExportedClass = class DiskIPC extends FileIndex {
+  ExportedClass = class DiskIPC extends FileLocator {
     synced = false
 
     async init() {
@@ -50,7 +50,7 @@ if (ipc.inIframe) {
 
   let instance
 
-  ExportedClass = class Disk extends FileIndex {
+  ExportedClass = class Disk extends FileLocator {
     synced = false
 
     constructor() {

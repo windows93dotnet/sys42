@@ -1,14 +1,14 @@
 import test from "../../../../42/test.js"
-import FileIndex from "../../../../42/core/fs/FileIndex.js"
+import FileLocator from "../../../../42/core/fs/FileLocator.js"
 
 const dummyInode = ["dummy inode"]
 
 test("change event for files", async (t) => {
   t.plan(3)
-  const fileindex = new FileIndex()
+  const files = new FileLocator()
 
   const promise = new Promise((resolve) => {
-    fileindex.on("change", (path, type, inode) => {
+    files.on("change", (path, type, inode) => {
       t.is(path, "/foo.txt")
       t.is(type, "set")
       t.is(inode, dummyInode)
@@ -16,14 +16,14 @@ test("change event for files", async (t) => {
     })
   })
 
-  fileindex.set("/foo.txt", dummyInode)
+  files.set("/foo.txt", dummyInode)
 
   await promise
 })
 
 test("change event for files and created folders", async (t) => {
   t.plan(4 * 2)
-  const fileindex = new FileIndex()
+  const files = new FileLocator()
 
   const changes = [
     "/foo", //
@@ -33,21 +33,21 @@ test("change event for files and created folders", async (t) => {
   ]
 
   const promise = new Promise((resolve) => {
-    fileindex.on("change", (path, type) => {
+    files.on("change", (path, type) => {
       t.is(path, changes.shift())
       t.is(type, "set")
       if (changes.length === 0) t.sleep(1).then(resolve)
     })
   })
 
-  fileindex.set("/foo/bar/baz/file.txt", dummyInode)
+  files.set("/foo/bar/baz/file.txt", dummyInode)
 
   await promise
 })
 
 test("change event for files and created folders only", async (t) => {
   t.plan(3 * 2)
-  const fileindex = new FileIndex({ foo: {} })
+  const files = new FileLocator({ foo: {} })
 
   const changes = [
     "/foo/bar", //
@@ -56,14 +56,14 @@ test("change event for files and created folders only", async (t) => {
   ]
 
   const promise = new Promise((resolve) => {
-    fileindex.on("change", (path, type) => {
+    files.on("change", (path, type) => {
       t.is(path, changes.shift())
       t.is(type, "set")
       if (changes.length === 0) t.sleep(1).then(resolve)
     })
   })
 
-  fileindex.set("/foo/bar/baz/file.txt", dummyInode)
+  files.set("/foo/bar/baz/file.txt", dummyInode)
 
   await promise
 })

@@ -3,12 +3,12 @@ import Locator from "../../fabric/classes/Locator.js"
 import exists from "../../fabric/locator/exists.js"
 import FileSystemError from "./FileSystemError.js"
 import configure from "../configure.js"
-import joinPath from "../../core/path/core/joinPath.js"
-import sortPath from "../../core/path/core/sortPath.js"
+import joinPath from "../path/core/joinPath.js"
+import sortPath from "../path/core/sortPath.js"
 import emittable from "../../fabric/traits/emittable.js"
 import isDirDescriptor from "./isDirDescriptor.js"
 import isGlob from "../path/isGlob.js"
-import glob, { Glob } from "../../core/path/glob.js"
+import glob, { Glob } from "../path/glob.js"
 import normalizeFilename from "./normalizeFilename.js"
 import inIframe from "../env/realm/inIframe.js"
 
@@ -19,9 +19,7 @@ const DEFAULTS = {
   // durability: "relaxed",
 }
 
-const ParentClass = inIframe ? Locator : Storable
-
-export default class FileIndex extends ParentClass {
+export class FileLocator extends (inIframe ? Locator : Storable) {
   constructor(value, options) {
     super(value, configure(DEFAULTS, options))
     emittable(this)
@@ -139,3 +137,5 @@ export default class FileIndex extends ParentClass {
     return sortPath(names)
   }
 }
+
+export default FileLocator
