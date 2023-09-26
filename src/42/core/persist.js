@@ -1,5 +1,5 @@
 import fs from "./fs.js"
-import disk from "./disk.js"
+import fileIndex from "./fileIndex.js"
 import normalizeFilename from "./fs/normalizeFilename.js"
 import dispatch from "../fabric/event/dispatch.js"
 import getExtname from "./path/core/getExtname.js"
@@ -26,7 +26,7 @@ persist.ensureType = (path) => {
   return ext.slice(1)
 }
 
-persist.has = (path) => disk.has(normalizeFilename(path))
+persist.has = (path) => fileIndex.has(normalizeFilename(path))
 
 persist.get = async (path) => fs.read[persist.ensureType(path)](path)
 

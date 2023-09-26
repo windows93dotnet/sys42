@@ -2,12 +2,12 @@ import "../env/polyfills/ReadableStream.prototype.values.js"
 
 import system from "../../system.js"
 import Driver from "./Driver.js"
-import Disk from "./Disk.js"
+import FileIndex from "./FileIndex.js"
 import uid from "../uid.js"
 import FileSystemError from "../fs/FileSystemError.js"
 import http from "../http.js"
 
-let disk
+let fileIndex
 
 const { ENOENT, EISDIR, EEXIST, ENOTDIR } = FileSystemError
 
@@ -33,10 +33,10 @@ export default class BrowserDriver extends Driver {
   }
 
   async init() {
-    if (system.disk) disk = system.disk
+    if (system.fileIndex) fileIndex = system.fileIndex
     else {
-      disk = new Disk()
-      await disk.init()
+      fileIndex = new FileIndex()
+      await fileIndex.init()
     }
 
     return this
@@ -46,11 +46,11 @@ export default class BrowserDriver extends Driver {
   ======== */
 
   async access(filename) {
-    return disk.has(filename)
+    return fileIndex.has(filename)
   }
 
   async getURL(filename) {
-    if (!disk.has(filename)) {
+    if (!fileIndex.has(filename)) {
       if (filename.startsWith("http") || filename.startsWith("//")) {
         return filename
       }
@@ -58,7 +58,7 @@ export default class BrowserDriver extends Driver {
       throw new FileSystemError(ENOENT, filename)
     }
 
-    const inode = disk.get(filename)
+    const inode = fileIndex.get(filename)
     if (inode === 0) return filename
     if (inode?.[0] === -1) return this.getURL(inode[1])
 
@@ -68,27 +68,29 @@ export default class BrowserDriver extends Driver {
   }
 
   async isDir(filename) {
-    return disk.isDir(filename)
+    return fileIndex.isDir(filename)
   }
   async isFile(filename) {
-    return disk.isFile(filename)
+    return fileIndex.isFile(filename)
   }
   async isLink(filename) {
-    return disk.isLink(filename)
+    return fileIndex.isLink(filename)
   }
 
   async link(source, destination) {
-    return disk.link(source, destination)
+    return fileIndex.link(source, destination)
   }
 
   /* file
   ======= */
 
   async open(filename) {
-    if (!disk.has(filename)) throw new FileSystemError(ENOENT, filename)
-    else if (disk.isDir(filename)) throw new FileSystemError(EISDIR, filename)
+    if (!fileIndex.has(filename)) throw new FileSystemError(ENOENT, filename)
+    else if (fileIndex.isDir(filename)) {
+      throw new FileSystemError(EISDIR, filename)
+    }
 
-    const inode = disk.get(filename)
+    const inode = fileIndex.get(filename)
 
     if (inode === 0) {
       const res = await http.get(filename)
@@ -100,7 +102,7 @@ export default class BrowserDriver extends Driver {
     if (id === -1) return this.open(mask)
 
     inode[2].a = Date.now()
-    disk.set(filename, inode, { silent: true })
+    fileIndex.set(filename, inode, { silent: true })
 
     if (this.mask !== mask) {
       const driver = await this.getDriver(mask)
@@ -111,7 +113,7 @@ export default class BrowserDriver extends Driver {
 
     if (blob === undefined) {
       // TODO: remove memoryDriver files from FileIndex on init
-      disk.delete(filename, { silent: true })
+      fileIndex.delete(filename, { silent: true })
       throw new FileSystemError(ENOENT, filename)
     }
 
@@ -124,12 +126,12 @@ export default class BrowserDriver extends Driver {
   }
 
   async write(filename, data, options) {
-    if (disk.isDir(filename)) throw new FileSystemError(EISDIR, filename)
+    if (fileIndex.isDir(filename)) throw new FileSystemError(EISDIR, filename)
 
     if (typeof options === "string") options = { encoding: options }
 
     let id
-    let inode = disk.get(filename)
+    let inode = fileIndex.get(filename)
 
     if (inode) {
       id = inode[0]
@@ -141,7 +143,7 @@ export default class BrowserDriver extends Driver {
       }
 
       inode[2].m = Date.now()
-      disk.set(filename, inode)
+      fileIndex.set(filename, inode)
     } else {
       id = uid()
       // @read https://man7.org/linux/man-pages/man7/inode.7.html
@@ -157,18 +159,20 @@ export default class BrowserDriver extends Driver {
           m: time, // Last modification
         },
       ]
-      disk.set(filename, inode)
+      fileIndex.set(filename, inode)
     }
 
     await this.store.set(id, BrowserDriver.toFile([data], options?.encoding))
   }
 
   async append(filename, data, options) {
-    if (!disk.has(filename)) throw new FileSystemError(ENOENT, filename)
-    else if (disk.isDir(filename)) throw new FileSystemError(EISDIR, filename)
+    if (!fileIndex.has(filename)) throw new FileSystemError(ENOENT, filename)
+    else if (fileIndex.isDir(filename)) {
+      throw new FileSystemError(EISDIR, filename)
+    }
 
     if (typeof options === "string") options = { encoding: options }
-    const inode = disk.get(filename)
+    const inode = fileIndex.get(filename)
     const id = inode === 0 ? uid() : inode[0]
     const prev = await this.open(filename)
     const bits = [prev, data]
@@ -176,12 +180,14 @@ export default class BrowserDriver extends Driver {
   }
 
   async delete(filename) {
-    if (!disk.has(filename)) throw new FileSystemError(ENOENT, filename)
-    else if (disk.isDir(filename)) throw new FileSystemError(EISDIR, filename)
+    if (!fileIndex.has(filename)) throw new FileSystemError(ENOENT, filename)
+    else if (fileIndex.isDir(filename)) {
+      throw new FileSystemError(EISDIR, filename)
+    }
 
-    const inode = disk.get(filename)
+    const inode = fileIndex.get(filename)
 
-    disk.delete(filename)
+    fileIndex.delete(filename)
 
     if (inode) {
       const [id, mask] = inode
@@ -200,30 +206,32 @@ export default class BrowserDriver extends Driver {
   ====== */
 
   async writeDir(filename) {
-    if (disk.has(filename) && disk.isFile(filename)) {
+    if (fileIndex.has(filename) && fileIndex.isFile(filename)) {
       throw new FileSystemError(EEXIST, filename)
     }
 
-    disk.set(filename, {})
+    fileIndex.set(filename, {})
   }
 
   async readDir(filename, options) {
-    return disk.readDir(filename, options)
+    return fileIndex.readDir(filename, options)
   }
 
   async deleteDir(filename) {
-    if (!disk.has(filename)) throw new FileSystemError(ENOENT, filename)
-    else if (!disk.isDir(filename)) throw new FileSystemError(ENOTDIR, filename)
+    if (!fileIndex.has(filename)) throw new FileSystemError(ENOENT, filename)
+    else if (!fileIndex.isDir(filename)) {
+      throw new FileSystemError(ENOTDIR, filename)
+    }
 
     await Promise.all(
-      disk
+      fileIndex
         .readDir(filename, { absolute: true })
         .map((path) =>
           path.endsWith("/") ? this.deleteDir(path) : this.delete(path),
         ),
     )
 
-    disk.delete(filename)
+    fileIndex.delete(filename)
   }
 
   /* stream

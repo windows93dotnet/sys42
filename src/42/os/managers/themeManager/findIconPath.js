@@ -2,8 +2,8 @@
 /* eslint-disable max-depth */
 /* eslint-disable complexity */
 
-import disk from "../../../core/disk.js"
 import fs from "../../../core/fs.js"
+import fileIndex from "../../../core/fileIndex.js"
 import decodeINI from "../../../core/formats/ini/decodeINI.js"
 import locate from "../../../fabric/locator/locate.js"
 import getDirBasePair from "../../../core/path/core/getDirBasePair.js"
@@ -93,12 +93,12 @@ function searchIcon(themePath, obj, val) {
 }
 
 export default async function findIconPath(themePath, val, size) {
-  if (val.isDir && disk.has(val.filename + ".directory")) {
+  if (val.isDir && fileIndex.has(val.filename + ".directory")) {
     const ini = decodeINI(await fs.readText(val.filename + ".directory"))
     val = ini["Desktop Entry"]?.Icon
   }
 
-  const dirNode = disk.get(themePath)
+  const dirNode = fileIndex.get(themePath)
   if (!dirNode) return
 
   if (size && size in dirNode) {

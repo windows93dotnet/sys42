@@ -7,12 +7,12 @@
 
 <script type="module">
   import ui from "./42/ui.js"
-  import disk from "./42/core/disk.js"
+  import fileIndex from "./42/core/fileIndex.js"
 
   const demos = [{ tag: "li > a", content: "desktop", href: "/desktop/" }]
   const CLEAN_REG = /^\/demos\/ui\/|(\.plugin)?\.demo\.html$/g
 
-  for (const href of disk.glob("**/*.demo.html")) {
+  for (const href of fileIndex.glob("**/*.demo.html")) {
     demos.push({ tag: "li > a", content: href.replaceAll(CLEAN_REG, ""), href })
   }
 

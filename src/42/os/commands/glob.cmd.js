@@ -1,5 +1,5 @@
-import disk from "../../core/disk.js"
+import fileIndex from "../../core/fileIndex.js"
 
 export default async function glob({ glob }) {
-  return disk.glob(glob)
+  return fileIndex.glob(glob)
 }

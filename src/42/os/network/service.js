@@ -6,12 +6,12 @@ import configure from "../../core/configure.js"
 import parseURLQuery from "../../fabric/url/parseURLQuery.js"
 import getPathInfos from "../../core/path/getPathInfos.js"
 import getDriver from "../../core/fs/getDriver.js"
-import Disk from "../../core/fs/Disk.js"
+import FileIndex from "../../core/fs/FileIndex.js"
 import kit from "./service/kit.js"
 
 const service = {}
 
-const disk = new Disk()
+const fileIndex = new FileIndex()
 const VHOST_URL = new URL("./client/vhost.html", import.meta.url).href
 
 async function getVhostClient() {
@@ -40,8 +40,8 @@ function serve(e) {
 
   e.respondWith(
     (async () => {
-      if (!disk.synced) await disk.init()
-      const inode = disk.get(pathname)
+      if (!fileIndex.synced) await fileIndex.init()
+      const inode = fileIndex.get(pathname)
       if (!inode) return fromCacheOrNetwork(e, pathname)
 
       const driver = await getDriver(inode[1])
@@ -59,7 +59,7 @@ function proxy(e) {
 
   e.respondWith(
     (async () => {
-      const inode = disk.get(pathname)
+      const inode = fileIndex.get(pathname)
       if (!inode) return fromNetwork(e)
 
       const client = await getVhostClient()
@@ -78,7 +78,7 @@ service.install = (options) => {
   ipc.on("42_SW_GET_CONFIG", async () => config)
 
   ipc.on("42_SW_DISK_INIT", async () =>
-    disk.init(config.proxy ? await getVhostClient() : undefined),
+    fileIndex.init(config.proxy ? await getVhostClient() : undefined),
   )
 
   if (!config.proxy && config.dev) {

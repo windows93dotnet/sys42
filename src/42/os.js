@@ -3,7 +3,7 @@ import "./ui/head.js"
 import system from "./system.js"
 
 import fs from "./core/fs.js"
-import disk from "./core/disk.js"
+import fileIndex from "./core/fileIndex.js"
 import actions from "./os/actions.js"
 import exec from "./exec.js"
 import ui from "./ui.js"
@@ -13,7 +13,7 @@ import mimetypesManager from "./os/managers/mimetypesManager.js"
 import devices from "./core/devices.js"
 
 system.fs = fs
-system.disk = disk
+system.fileIndex = fileIndex
 system.exec = exec
 system.actions = actions
 system.ui = ui

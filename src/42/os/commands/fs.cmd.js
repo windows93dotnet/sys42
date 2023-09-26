@@ -1,5 +1,5 @@
 import { default as fsModule } from "../../core/fs.js"
-import disk from "../../core/disk.js"
+import fileIndex from "../../core/fileIndex.js"
 
 export const cli = {
   subcommands: ["read", "open", "write"],
@@ -15,7 +15,7 @@ export default async function fs(args) {
     }
 
     return Promise.all(
-      disk.glob(options.glob).map(
+      fileIndex.glob(options.glob).map(
         (path) => fsModule[cmd](path), //
       ),
     )

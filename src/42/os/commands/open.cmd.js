@@ -1,4 +1,4 @@
-import disk from "../../core/disk.js"
+import fileIndex from "../../core/fileIndex.js"
 import appsManager from "../managers/appsManager.js"
 
 export const cli = {
@@ -11,5 +11,5 @@ export default async function open(options) {
   }
 
   const { glob } = options
-  appsManager.open(disk.glob(glob))
+  appsManager.open(fileIndex.glob(glob))
 }

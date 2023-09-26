@@ -2,7 +2,7 @@ import isHashmapLike from "../../../fabric/type/any/is/isHashmapLike.js"
 import isInstanceOf from "../../../fabric/type/any/is/isInstanceOf.js"
 import getBasename from "../../../core/path/core/getBasename.js"
 import unproxy from "../../../fabric/type/any/unproxy.js"
-import disk from "../../../core/disk.js"
+import fileIndex from "../../../core/fileIndex.js"
 import fs from "../../../core/fs.js"
 
 const _noSideEffects = Symbol("FileAgent._noSideEffects")
@@ -151,7 +151,7 @@ export default class FileAgent {
 
     return (async () => {
       if (this.path) {
-        const inode = await disk.get(this.path)
+        const inode = await fileIndex.get(this.path)
         if (inode === 0) {
           this[_url] = this.path
           return this[_url]

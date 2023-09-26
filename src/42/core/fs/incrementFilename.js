@@ -1,10 +1,10 @@
 import postfixPath from "../../core/path/core/postfixPath.js"
-import disk from "../../core/disk.js"
+import fileIndex from "../fileIndex.js"
 
 export default function incrementFilename(base, dir = "/") {
   let cnt = 1
   const unpostfixed = base
-  while (disk.has(dir + base)) {
+  while (fileIndex.has(dir + base)) {
     base = postfixPath(unpostfixed, `-${++cnt}`)
   }
 

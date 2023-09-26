@@ -1,8 +1,8 @@
 import "../../../../42/ui/components/icon.js"
 import ui from "../../../../42/ui.js"
+import fileIndex from "../../../../42/core/fileIndex.js"
 
-import disk from "../../../../42/core/disk.js"
-const items = disk.glob("/tests/fixtures/**/*", {
+const items = fileIndex.glob("/tests/fixtures/**/*", {
   sort: "mimetype",
 })
 

@@ -3,7 +3,7 @@ import "./tree.js"
 import "./grid.js"
 import Component from "../classes/Component.js"
 import configure from "../../core/configure.js"
-import disk from "../../core/disk.js"
+import fileIndex from "../../core/fileIndex.js"
 import os from "../../os/actions.js"
 import normalizeDirname from "../../core/fs/normalizeDirname.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
@@ -102,23 +102,27 @@ export class Folder extends Component {
     const pattern = path + (this.view === "tree" ? "**" : "*")
 
     this[_forgetWatch]?.()
-    this[_forgetWatch] = disk.watch(pattern, { signal }, (changed, type) => {
-      if (!this.stage) return
+    this[_forgetWatch] = fileIndex.watch(
+      pattern,
+      { signal },
+      (changed, type) => {
+        if (!this.stage) return
 
-      clearTimeout(timerId)
+        clearTimeout(timerId)
 
-      const { selection } = this
+        const { selection } = this
 
-      if (type === "delete") {
-        if (selection.includes(changed)) removeItem(selection, changed)
-        changed += "/"
-        if (selection.includes(changed)) removeItem(selection, changed)
-      }
+        if (type === "delete") {
+          if (selection.includes(changed)) removeItem(selection, changed)
+          changed += "/"
+          if (selection.includes(changed)) removeItem(selection, changed)
+        }
 
-      timerId = setTimeout(() => {
-        this.refresh(changed)
-      }, 50)
-    })
+        timerId = setTimeout(() => {
+          this.refresh(changed)
+        }, 50)
+      },
+    )
     this[_forgetWatch].path = path
     this[_forgetWatch].view = this.view
   }
@@ -172,13 +176,13 @@ export class Folder extends Component {
     let dir
     try {
       dir = await (this.glob
-        ? disk.glob(
+        ? fileIndex.glob(
             path.endsWith("*") || //
               (!path.startsWith(".") && path.includes("."))
               ? path
               : path + "*",
           )
-        : disk.readDir(path, { absolute: true }))
+        : fileIndex.readDir(path, { absolute: true }))
       this.err = undefined
     } catch (err) {
       this.err = err.message

@@ -19,14 +19,14 @@ const DEFAULTS = {
 }
 
 async function makeVhost(origin) {
-  const [disk, ipc, fs] = await Promise.all([
-    import("../../core/disk.js").then(({ disk }) => disk),
+  const [fileIndex, ipc, fs] = await Promise.all([
+    import("../../core/fileIndex.js").then(({ fileIndex }) => fileIndex),
     import("../../core/ipc.js").then(({ ipc }) => ipc),
     import("../../core/fs.js").then(({ fs }) => fs),
   ])
 
   ipc.from(origin).on("42_VHOST_REQ", async (path) => fs.open(path))
-  await disk.ready
+  await fileIndex.ready
 }
 
 if (system.network?.vhost) {

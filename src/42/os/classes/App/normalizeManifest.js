@@ -4,8 +4,8 @@ import getDirname from "../../../core/path/core/getDirname.js"
 import mimetypesManager from "../../managers/mimetypesManager.js"
 
 export async function getIcons(manifest) {
-  const disk = await import("../../../core/disk.js") //
-    .then(({ disk }) => disk)
+  const fileIndex = await import("../../../core/fileIndex.js") //
+    .then(({ fileIndex }) => fileIndex)
 
   const icons = []
 
@@ -13,7 +13,7 @@ export async function getIcons(manifest) {
   let icon32
   let icon160
 
-  for (const path of disk.glob([
+  for (const path of fileIndex.glob([
     `${manifest.dir}icons/**/*.{jpg,gif,svg,png}`,
     `${manifest.dir}icons/*.{jpg,gif,svg,png}`,
     `${manifest.dir}icon*.{jpg,gif,svg,png}`,

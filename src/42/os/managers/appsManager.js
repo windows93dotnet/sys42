@@ -3,7 +3,7 @@
 import ConfigFile from "../classes/ConfigFile.js"
 import arrify from "../../fabric/type/any/arrify.js"
 import pick from "../../fabric/type/object/pick.js"
-import disk from "../../core/disk.js"
+import fileIndex from "../../core/fileIndex.js"
 import isHashmapLike from "../../fabric/type/any/is/isHashmapLike.js"
 import mimetypesManager from "./mimetypesManager.js"
 import normalizeManifest from "../classes/App/normalizeManifest.js"
@@ -27,7 +27,7 @@ class AppsManager extends ConfigFile {
     this.value = {}
 
     await Promise.all(
-      disk
+      fileIndex
         .glob("**/*app.json5")
         .map((manifestPath) => this.add(manifestPath, { save: false })),
     )

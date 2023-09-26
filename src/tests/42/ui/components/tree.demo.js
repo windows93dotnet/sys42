@@ -1,7 +1,7 @@
 import "../../../../42/ui/components/icon.js"
 import ui from "../../../../42/ui.js"
 import sleep from "../../../../42/fabric/type/promise/sleep.js"
-import disk from "../../../../42/core/disk.js"
+import fileIndex from "../../../../42/core/fileIndex.js"
 
 const content = [
   {
@@ -39,7 +39,7 @@ const content = [
 
 async function recursiveFolders(dir) {
   const out = []
-  for (const path of await disk.readDir(dir, { absolute: true })) {
+  for (const path of await fileIndex.readDir(dir, { absolute: true })) {
     const item = { label: path }
     if (path.endsWith("/")) item.items = () => recursiveFolders(path)
     out.push(item)

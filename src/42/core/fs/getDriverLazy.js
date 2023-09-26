@@ -1,4 +1,4 @@
-import { MASKS } from "./Disk.js"
+import { FS_DRIVER_MASKS } from "./FileIndex.js"
 
 const drivers = {}
 
@@ -6,7 +6,7 @@ export default async function getDriverLazy(name) {
   const type = typeof name
   if (type === "function") return name
 
-  name = type === "number" ? MASKS[name] : name.toLowerCase()
+  name = type === "number" ? FS_DRIVER_MASKS[name] : name.toLowerCase()
 
   if (drivers[name]) return drivers[name]
 

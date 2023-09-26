@@ -22,7 +22,7 @@
 
   const bus = ipc.to(window.parent)
 
-  ipc.on("42_DISK_INIT", () => bus.send("42_DISK_INIT"))
+  ipc.on("42_FILE_INDEX_INIT", () => bus.send("42_FILE_INDEX_INIT"))
   ipc.on("42_VHOST_PROXY_REQ", (url) => bus.send("42_VHOST_REQ", url))
 
   const { controller } = navigator.serviceWorker
