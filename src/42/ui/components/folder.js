@@ -7,7 +7,7 @@ import fileIndex from "../../core/fileIndex.js"
 import os from "../../os/actions.js"
 import normalizeDirname from "../../core/fs/normalizeDirname.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
-import contextmenu from "../invocables/contextmenu.js"
+import contextMenu from "../invocables/contextMenu.js"
 import getBasename from "../../core/path/core/getBasename.js"
 
 const _forgetWatch = Symbol("Folder.forgetWatch")
@@ -74,7 +74,7 @@ export class Folder extends Component {
       },
       {
         disrupt: true,
-        contextmenu: "{{displayContextmenu(e, target)}}",
+        contextmenu: "{{displayContextMenu(e, target)}}",
       },
     ],
   };
@@ -138,7 +138,7 @@ export class Folder extends Component {
     })
   }
 
-  displayContextmenu(e, target) {
+  displayContextMenu(e, target) {
     const icon = target.closest("ui-icon")
 
     if (icon) {
@@ -155,7 +155,7 @@ export class Folder extends Component {
         menu = hasFiles ? os.fileContextMenu : os.folderContextMenu
       } else menu = os.fileContextMenu
 
-      contextmenu(icon, e, menu, this.stage)
+      contextMenu(icon, e, menu, this.stage)
     } else {
       this.currentView.selectable.clear()
       const menu = [
@@ -164,7 +164,7 @@ export class Folder extends Component {
         "---",
         { label: "Select all", click: "{{selectAll()}}" },
       ]
-      contextmenu(this, e, menu, this.stage)
+      contextMenu(this, e, menu, this.stage)
     }
   }
 

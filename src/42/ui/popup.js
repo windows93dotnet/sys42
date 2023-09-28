@@ -7,7 +7,6 @@ import defer from "../fabric/type/promise/defer.js"
 import Canceller from "../fabric/classes/Canceller.js"
 import focus from "../fabric/dom/focus.js"
 import queueTask from "../fabric/type/function/queueTask.js"
-
 import uid from "../core/uid.js"
 import rpc from "../core/ipc/rpc.js"
 import normalize, {

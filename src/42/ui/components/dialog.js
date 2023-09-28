@@ -109,6 +109,25 @@ export class Dialog extends Component {
     return this.close(true)
   }
 
+  activate() {
+    for (const item of document.querySelectorAll(
+      `${rootSelector} > ui-dialog:not(#${this.id})`,
+    )) {
+      item.active = false
+    }
+
+    if (this.active) return
+
+    this.active = true
+    this.style.zIndex = maxZIndex(zIndexSelector) + 1
+
+    if (!this.contains(document.activeElement)) {
+      postrenderAutofocus(this) ||
+        autofocus(this.querySelector(":scope > .ui-dialog__body")) ||
+        autofocus(this.querySelector(":scope > .ui-dialog__footer"))
+    }
+  }
+
   render({ content, label, picto, footer, plugins }) {
     const buttons = [
       {
@@ -152,25 +171,6 @@ export class Dialog extends Component {
     plan.plugins = plugins
 
     return plan
-  }
-
-  activate() {
-    for (const item of document.querySelectorAll(
-      `${rootSelector} > ui-dialog:not(#${this.id})`,
-    )) {
-      item.active = false
-    }
-
-    if (this.active) return
-
-    this.active = true
-    this.style.zIndex = maxZIndex(zIndexSelector) + 1
-
-    if (!this.contains(document.activeElement)) {
-      postrenderAutofocus(this) ||
-        autofocus(this.querySelector(":scope > .ui-dialog__body")) ||
-        autofocus(this.querySelector(":scope > .ui-dialog__footer"))
-    }
   }
 
   setup() {

@@ -2,7 +2,7 @@ import popup from "../popup.js"
 import uid from "../../core/uid.js"
 import { objectifyPlan } from "../normalize.js"
 
-export async function contextmenu(el, e, plan, stage) {
+export async function contextMenu(el, e, plan, stage) {
   if (el.nodeType !== Node.ELEMENT_NODE && el.target) {
     stage = plan
     plan = e
@@ -11,6 +11,7 @@ export async function contextmenu(el, e, plan, stage) {
   }
 
   el.id ||= uid()
+
   popup(
     el,
     {
@@ -24,4 +25,4 @@ export async function contextmenu(el, e, plan, stage) {
   )
 }
 
-export default contextmenu
+export default contextMenu
