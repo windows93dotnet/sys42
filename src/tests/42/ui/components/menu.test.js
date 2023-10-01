@@ -32,6 +32,11 @@ const makeContent = () => ({
           click: "{{cnt++}}",
         },
         {
+          label: "List",
+          id: "list",
+          items: [{ label: "A" }, { label: "B" }],
+        },
+        {
           label: "Submenu",
           id: "submenu",
           items: [
@@ -60,6 +65,32 @@ const makeContent = () => ({
     cnt: 0,
   },
 })
+
+// test.ui(async (t, { makeRealmLab, triggerOpener }) => {
+//   window.app = await makeRealmLab(
+//     {
+//       href,
+//       iframe,
+//       top: 1,
+//       syncData: true,
+//       nestedTestsParallel: true,
+//     },
+//     makeContent,
+//   )
+
+//   if (manual) return t.pass()
+
+//   const menuBtn = document.querySelector("#menu")
+//   t.is(menuBtn.getAttribute("aria-expanded"), "false")
+//   const menu = await triggerOpener(menuBtn)
+
+//   const list = menu.querySelector("li:has(#list)")
+//   const submenu = menu.querySelector("li:has(#submenu)")
+
+//   menu.triggerMenuitem(list)
+//   // await t.sleep(10)
+//   menu.triggerMenuitem(submenu)
+// })
 
 test.ui(async (t, { makeRealmLab, triggerOpener }) => {
   window.app = await makeRealmLab(

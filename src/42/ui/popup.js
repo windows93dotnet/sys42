@@ -49,7 +49,7 @@ export function closeOthers(e, target = e?.target) {
 
   let i = popupsList.length
   while (i--) {
-    const { close, opener, realm, el } = popupsList[i]
+    const { el, close, opener, realm } = popupsList[i]
 
     if (el.contains(target)) {
       if (e?.key === "ArrowLeft") {
@@ -114,6 +114,10 @@ function combineRect(rect1, rect2) {
 
 export const popup = rpc(
   async function popup(plan, stage, rect, meta) {
+    const closeEvents = plan.closeEvents ?? "pointerdown"
+    forgetLastPopupClose?.()
+    forgetLastPopupClose = on({ [closeEvents]: closeOthers })
+
     plan.positionable = {
       preset: plan.fromMenuitem && !plan.fromMenubar ? "menuitem" : "popup",
       of: meta?.iframe
@@ -172,10 +176,6 @@ export const popup = rpc(
     }
 
     if (popupsList.length === 0) listenGlobalEvents()
-
-    const closeEvents = plan.closeEvents ?? "pointerdown"
-    forgetLastPopupClose?.()
-    forgetLastPopupClose = on({ [closeEvents]: closeOthers })
 
     if (el[_close] === true) {
       el.close = close
