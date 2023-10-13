@@ -55,6 +55,10 @@ const makeSubmenu = (name) => [
 const makeMenu = (name) => {
   const submenu = [
     {
+      label: "Disabled",
+      disabled: true,
+    },
+    {
       label: "Infinite Submenu",
       get items() {
         return submenu

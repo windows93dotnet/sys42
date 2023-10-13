@@ -1,4 +1,5 @@
 // @read https://bjk5.com/post/44698559168/breaking-down-amazons-mega-dropdown
+// @read https://www.smashingmagazine.com/2023/08/better-context-menus-safe-triangles/
 
 /* eslint-disable max-params */
 import listen from "../../fabric/event/listen.js"

@@ -189,11 +189,8 @@ export class Menu extends Component {
 
     if (item) {
       if (item.disabled) {
-        // Set the focus even on disabled items for visual feedback
-        // (removing the highlight on previous item)
-        item.disabled = false
-        item.focus()
-        item.disabled = true
+        // Focus on the menu to remove the highlight on previous item
+        this.focus()
         return
       }
 

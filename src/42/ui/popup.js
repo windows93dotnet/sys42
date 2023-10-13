@@ -71,6 +71,7 @@ export function closeOthers(e, target = e?.target) {
     )
   }
 
+  forgetLastPopupClose?.()
   forgetGlobalEvents?.()
   popupsList.length = 0
 }
@@ -95,6 +96,7 @@ export function closeAll(e, target = e?.target) {
     )
   }
 
+  forgetLastPopupClose?.()
   forgetGlobalEvents?.()
   popupsList.length = 0
 }
@@ -183,7 +185,7 @@ export const popup = rpc(
       el.closeAll = closeAll
     }
 
-    popupsList.push({ el, close, opener, realm, closeEvents })
+    popupsList.push({ el, close, opener, realm })
 
     return deferred
   },
