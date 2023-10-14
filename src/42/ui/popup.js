@@ -7,6 +7,7 @@ import defer from "../fabric/type/promise/defer.js"
 import Canceller from "../fabric/classes/Canceller.js"
 import focus from "../fabric/dom/focus.js"
 import queueTask from "../fabric/type/function/queueTask.js"
+import removeItem from "../fabric/type/array/removeItem.js"
 import uid from "../core/uid.js"
 import rpc from "../core/ipc/rpc.js"
 import normalize, {
@@ -51,14 +52,9 @@ export function closeOthers(e, target = e?.target) {
   while (i--) {
     const { el, close, opener, realm } = popupsList[i]
 
-    if (el.contains(target)) {
+    if (el?.contains(target)) {
       if (e?.key === "ArrowLeft") {
-        popupsList.length = i
-        close({
-          fromOpener: target?.id === opener && realm === window.name,
-        })
-      } else {
-        popupsList.length = i + 1
+        close({ fromOpener: target?.id === opener && realm === window.name })
       }
 
       return
@@ -73,7 +69,6 @@ export function closeOthers(e, target = e?.target) {
 
   forgetLastPopupClose?.()
   forgetGlobalEvents?.()
-  popupsList.length = 0
 }
 
 export function closeAll(e, target = e?.target) {
@@ -98,7 +93,6 @@ export function closeAll(e, target = e?.target) {
 
   forgetLastPopupClose?.()
   forgetGlobalEvents?.()
-  popupsList.length = 0
 }
 
 function focusOut(dir, e) {
@@ -120,6 +114,40 @@ export const popup = rpc(
     forgetLastPopupClose?.()
     forgetLastPopupClose = on({ [closeEvents]: closeOthers })
 
+    if (popupsList.length === 0) listenGlobalEvents()
+
+    // Close any unresolved popups
+    for (const item of popupsList) {
+      item.ready?.then(() => item.close())
+    }
+
+    const out = defer()
+    const { opener, realm, focusBack } = plan
+    const instance = { opener, realm, close, ready: defer() }
+    popupsList.push(instance)
+
+    async function close(options) {
+      removeItem(popupsList, instance)
+      if (instance.ready) await instance.ready
+      if (!instance.el) return
+
+      const event = dispatch(el, "uipopupbeforeclose", { cancelable: true })
+      if (event.defaultPrevented) return
+
+      unsee(el)
+      if (el.contains(document.activeElement)) document.activeElement.blur()
+
+      queueTask(() => {
+        out.resolve({ opener, focusBack, ...options })
+        requestIdleCallback(async () => {
+          await stage.pendingDone
+          dispatch(el, "uipopupclose")
+          el.remove()
+          stage.cancel("ui popup closed")
+        })
+      })
+    }
+
     plan.positionable = {
       preset: plan.fromMenuitem && !plan.fromMenubar ? "menuitem" : "popup",
       of: meta?.iframe
@@ -133,16 +161,26 @@ export const popup = rpc(
     const normalized = normalize(plan, stage)
     stage = normalized[1]
 
-    stage.cancel = new Canceller(stage.cancel?.signal)
-    stage.signal = stage.cancel.signal
+    stage.cancel = new Canceller(stage.signal)
 
     await stage.waitlistPreload.done()
     const el = render(...normalized, { skipNormalize: true })
+
     el.style.position = "fixed"
     el.style.translate = "-200vw -200vh"
     el.style.zIndex = maxZIndex(zIndexSector) + 1
 
+    if (el[_close] === true) {
+      el.close = close
+      el.closeOthers = closeOthers
+      el.closeAll = closeAll
+    }
+
     document.documentElement.append(el)
+
+    instance.el = el
+    instance.ready.resolve()
+    delete instance.ready
 
     if ("ready" in el) await el.ready
     else {
@@ -157,37 +195,7 @@ export const popup = rpc(
 
     dispatch(el, "uipopupopen")
 
-    const deferred = defer()
-
-    const { opener, realm, focusBack } = plan
-
-    const close = (options) => {
-      const event = dispatch(el, "uipopupbeforeclose", { cancelable: true })
-      if (event.defaultPrevented) return
-      unsee(el)
-      if (el.contains(document.activeElement)) document.activeElement.blur()
-      queueTask(() => {
-        deferred.resolve({ opener, focusBack, ...options })
-        requestIdleCallback(async () => {
-          await stage.pendingDone
-          dispatch(el, "uipopupclose")
-          el.remove()
-          stage.cancel("ui popup closed")
-        })
-      })
-    }
-
-    if (popupsList.length === 0) listenGlobalEvents()
-
-    if (el[_close] === true) {
-      el.close = close
-      el.closeOthers = closeOthers
-      el.closeAll = closeAll
-    }
-
-    popupsList.push({ el, close, opener, realm })
-
-    return deferred
+    return out
   },
   {
     module: import.meta.url,

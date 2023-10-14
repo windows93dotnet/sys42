@@ -1,6 +1,6 @@
 import test from "../../../../42/test.js"
 
-const manual = 1
+const manual = 0
 const iframe = 0
 
 const { href } = new URL(
@@ -30,6 +30,7 @@ const makeContent = () => ({
           label: "{{cnt}}", //
           picto: "plus",
           click: "{{cnt++}}",
+          id: "counter",
         },
         {
           label: "List",
@@ -66,6 +67,39 @@ const makeContent = () => ({
   },
 })
 
+test.ui(async (t, { makeRealmLab, triggerOpener }) => {
+  window.app = await makeRealmLab(
+    {
+      href,
+      iframe: 0,
+      top: 1,
+      syncData: true,
+      nestedTestsParallel: true,
+    },
+    makeContent,
+  )
+
+  if (manual && test.env.realm.inTop) return t.pass()
+
+  const menuBtn = document.querySelector("#menu")
+  t.is(menuBtn.getAttribute("aria-expanded"), "false")
+
+  const menu = await triggerOpener(menuBtn)
+
+  const list = menu.querySelector("li:has(#list)")
+  const submenu = menu.querySelector("li:has(#submenu)")
+
+  menu.triggerMenuitem(list)
+  menu.triggerMenuitem(submenu)
+
+  await t.sleep(100)
+
+  const menu1 = top.document.querySelector('ui-menu[aria-labelledby="list"]')
+  const menu2 = top.document.querySelector('ui-menu[aria-labelledby="submenu"]')
+  t.isNull(menu1)
+  t.isElement(menu2)
+})
+
 // test.ui(async (t, { makeRealmLab, triggerOpener }) => {
 //   window.app = await makeRealmLab(
 //     {
@@ -80,63 +114,37 @@ const makeContent = () => ({
 
 //   if (manual) return t.pass()
 
+//   if (test.env.realm.inIframe) await t.sleep(100) // TODO: find why this is needed
+
 //   const menuBtn = document.querySelector("#menu")
 //   t.is(menuBtn.getAttribute("aria-expanded"), "false")
-//   const menu = await triggerOpener(menuBtn)
+//   const menu = t.step(await triggerOpener(menuBtn))
+//   t.is(menuBtn.getAttribute("aria-expanded"), "true")
 
-//   const list = menu.querySelector("li:has(#list)")
-//   const submenu = menu.querySelector("li:has(#submenu)")
+//   const submenuBtn = menu.querySelector("#submenu")
+//   t.is(submenuBtn.getAttribute("aria-expanded"), "false")
+//   const submenu = t.step(await triggerOpener(submenuBtn))
+//   t.is(submenuBtn.getAttribute("aria-expanded"), "true")
 
-//   menu.triggerMenuitem(list)
-//   // await t.sleep(10)
-//   menu.triggerMenuitem(submenu)
+//   // Check that detached dialog is still using ipcPlugin
+//   const menuClosePromise = t.utils.untilClose(menu)
+//   const dialog = t.step(await triggerOpener(submenu.querySelector("#dialog")))
+//   t.step(await menuClosePromise)
+//   t.step(await t.puppet("#btnDialogIncr", dialog).click())
+
+//   t.is(submenuBtn.getAttribute("aria-expanded"), "false")
+//   t.is(menuBtn.getAttribute("aria-expanded"), "false")
+
+//   dialog.close()
+
+//   if (test.env.realm.inIframe) {
+//     await t.sleep(50)
+//     t.is(t.puppet.$("#btnIncr").textContent, "2")
+//     t.is(t.puppet.$("#btnIncr", window.parent.document.body).textContent, "2")
+
+//     await t.puppet("#btnIncr", window.app.el).click()
+//     await t.sleep(50)
+//     t.is(t.puppet.$("#btnIncr").textContent, "3")
+//     t.is(t.puppet.$("#btnIncr", window.parent.document.body).textContent, "3")
+//   }
 // })
-
-test.ui(async (t, { makeRealmLab, triggerOpener }) => {
-  window.app = await makeRealmLab(
-    {
-      href,
-      iframe,
-      top: 1,
-      syncData: true,
-      nestedTestsParallel: true,
-    },
-    makeContent,
-  )
-
-  if (manual) return t.pass()
-
-  if (test.env.realm.inIframe) await t.sleep(100) // TODO: find why this is needed
-
-  const menuBtn = document.querySelector("#menu")
-  t.is(menuBtn.getAttribute("aria-expanded"), "false")
-  const menu = await triggerOpener(menuBtn)
-  t.is(menuBtn.getAttribute("aria-expanded"), "true")
-
-  const submenuBtn = menu.querySelector("#submenu")
-  t.is(submenuBtn.getAttribute("aria-expanded"), "false")
-  const submenu = await triggerOpener(submenuBtn)
-  t.is(submenuBtn.getAttribute("aria-expanded"), "true")
-
-  // Check that detached dialog is still using ipcPlugin
-  const menuClosePromise = t.utils.untilClose(menu)
-  const dialog = await triggerOpener(submenu.querySelector("#dialog"))
-  await menuClosePromise
-  await t.puppet("#btnDialogIncr", dialog).click()
-
-  t.is(submenuBtn.getAttribute("aria-expanded"), "false")
-  t.is(menuBtn.getAttribute("aria-expanded"), "false")
-
-  dialog.close()
-
-  if (test.env.realm.inIframe) {
-    await t.sleep(50)
-    t.is(t.puppet.$("#btnIncr").textContent, "2")
-    t.is(t.puppet.$("#btnIncr", window.parent.document.body).textContent, "2")
-
-    await t.puppet("#btnIncr", window.app.el).click()
-    await t.sleep(50)
-    t.is(t.puppet.$("#btnIncr").textContent, "3")
-    t.is(t.puppet.$("#btnIncr", window.parent.document.body).textContent, "3")
-  }
-})

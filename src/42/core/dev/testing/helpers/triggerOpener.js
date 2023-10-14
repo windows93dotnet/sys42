@@ -97,7 +97,18 @@ export async function triggerOpener(t, open, ...args) {
     })
   })
 
-  const clickPromise = t.puppet(el).click().run()
+  let clickPromise
+
+  if (el.getAttribute("role")?.startsWith("menuitem")) {
+    const menu = el.closest("ui-menu")
+    if (menu) {
+      clickPromise = false
+      menu.triggerMenuitem(el)
+    }
+  }
+
+  clickPromise ??= t.puppet(el).click().run()
+
   const res = responses.get(id)
   const popupTarget = await openPromise
 

@@ -7,6 +7,7 @@ import listen from "../../fabric/event/listen.js"
 import throttle from "../../fabric/type/function/throttle.js"
 import ipc from "../../core/ipc.js"
 import Aim from "../classes/Aim.js"
+import isIterable from "../../fabric/type/any/is/isIterable.js"
 
 const menuItemSelector = `
   :scope > li > button:not(:disabled),
@@ -176,8 +177,6 @@ export class Menu extends Component {
     if (this.#lastHovered === target) return
     this.#lastHovered = target
 
-    const item = target.querySelector(menuFocusItemSelector)
-
     if (inTop) {
       for (const item of this.querySelectorAll(
         ':scope > li > button[aria-expanded="true"]',
@@ -187,14 +186,21 @@ export class Menu extends Component {
       }
     }
 
+    const item =
+      target.localName === "li"
+        ? target.querySelector(menuFocusItemSelector)
+        : target.getAttribute("role")?.startsWith("menuitem")
+        ? target
+        : undefined
+
     if (item) {
       if (item.disabled) {
         // Focus on the menu to remove the highlight on previous item
-        this.focus()
+        this.focus({ preventScroll: true })
         return
       }
 
-      item.focus()
+      item.focus({ preventScroll: true })
 
       if (item.getAttribute("aria-haspopup") === "menu") {
         item.dispatchEvent(
@@ -215,9 +221,11 @@ export class Menu extends Component {
     const fromMenubar = this.isMenubar
     const plan = []
 
-    let first = true
-
     items = await (typeof items === "function" ? items(this.stage) : items)
+
+    if (!isIterable(items)) return plan
+
+    let first = true
 
     for (let item of items) {
       if (item === "---") {
