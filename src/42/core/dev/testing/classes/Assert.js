@@ -101,7 +101,7 @@ export default class Assert {
   #pending = 0
   #planned = false
 
-  #laps = []
+  #steps = []
   #stayings = []
   #teardowns = []
 
@@ -159,14 +159,17 @@ export default class Assert {
     for (const fn of this.#teardowns) fn()
     this.spies.length = 0
     this.stubs.length = 0
-    this.#laps.length = 0
+    this.#steps.length = 0
     this.#stayings.length = 0
   }
 
   verifyContext(failing, stackframe) {
     if (this.#timeoutId === true) {
       let details
-      if (this.#laps.length > 0) details = { laps: this.#laps }
+      if (this.#steps.length > 0) {
+        details = { steps: this.#steps }
+      }
+
       throw new VerifyError("Test timed out", stackframe, details)
     } else clearTimeoutNative(this.#timeoutId)
 
@@ -237,9 +240,9 @@ export default class Assert {
     return new Promise((resolve) => setTimeoutNative(resolve, ms))
   }
 
-  lap(val) {
+  step(val) {
     this.timeout("reset")
-    this.#laps.push(new Error())
+    this.#steps.push(new Error())
     return val
   }
 

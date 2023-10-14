@@ -138,12 +138,12 @@ const displayTest = (test, config, options) => {
         valueFormater(x) {
           if (typeof x === "string") return highlight(x)
           if (Array.isArray(x)) {
-            let laps = ""
+            let steps = ""
             for (const item of x) {
-              laps += "\n  {grey.dim •} " + formatFilename(item, "red")
+              steps += "\n  {grey.dim •} " + formatFilename(item, "red")
             }
 
-            return laps
+            return steps
           }
 
           return (

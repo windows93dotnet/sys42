@@ -341,9 +341,9 @@ if (inTop) {
 
     const iframe = t.puppet.$("ui-sandbox iframe")
 
-    t.lap(await when("uipopupopen"))
-    t.lap(await t.puppet("#menuItemIncrPopupIframe").click())
-    t.lap(await iframe.contentWindow.sys42.once("ipc.plugin:end-of-update"))
+    t.step(await when("uipopupopen"))
+    t.step(await t.puppet("#menuItemIncrPopupIframe").click())
+    t.step(await iframe.contentWindow.sys42.once("ipc.plugin:end-of-update"))
 
     t.is(t.puppet.$("#cntIframe", iframe)?.value, "1")
 

@@ -31,13 +31,13 @@ async function serializeTest(test, config) {
 
     const { details } = test.error
 
-    const laps = []
-    if (Array.isArray(details.laps)) {
-      for (const lap of details.laps) {
-        laps.push(serializeError(lap).stack[0])
+    const steps = []
+    if (Array.isArray(details.steps)) {
+      for (const step of details.steps) {
+        steps.push(serializeError(step).stack[0])
       }
 
-      delete details.laps
+      delete details.steps
     }
 
     if (
@@ -71,11 +71,11 @@ async function serializeTest(test, config) {
       ),
     )
 
-    if (laps.length > 0) {
-      test.error.details.laps = laps
+    if (steps.length > 0) {
+      test.error.details.steps = steps
       test.error.original +=
-        "\n\nlaps:" +
-        laps.map(
+        "\n\nsteps:" +
+        steps.map(
           ({ filename, line, column }) => `\n  ${filename}:${line}:${column}`,
         )
     }
