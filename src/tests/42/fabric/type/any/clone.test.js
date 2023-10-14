@@ -267,6 +267,12 @@ test("Math", (t) => {
   t.not(a, Math)
 })
 
+test("Error", (t) => {
+  const err = new Error()
+  const cloned = clone(err)
+  t.is(err.stack, cloned.stack)
+})
+
 test("class", async (t) => {
   class Foo {
     constructor() {

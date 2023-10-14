@@ -112,17 +112,21 @@ function walk(
     }
 
     if (target && typeof target === "object") {
-      const targetDescriptors = Object.getOwnPropertyDescriptors(target)
       const sourceDescriptors = Object.getOwnPropertyDescriptors(source)
+      const targetDescriptors = Object.getOwnPropertyDescriptors(target)
       for (const [key, descriptor] of Object.entries(sourceDescriptors)) {
         if (targetDescriptors[key]?.configurable === false) {
           if (targetDescriptors[key]?.writable) {
-            target[key] = walk(descriptor.value, deep, visitedRefs, target)
+            target[key] = walk(source[key], deep, visitedRefs, target)
           }
 
           delete sourceDescriptors[key]
         } else if ("value" in descriptor) {
           descriptor.value = walk(descriptor.value, deep, visitedRefs, target)
+        } else if ("get" in descriptor) {
+          descriptor.value = walk(source[key], deep, visitedRefs, target)
+          delete descriptor.get
+          delete descriptor.set
         }
       }
 
