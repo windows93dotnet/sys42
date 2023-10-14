@@ -99,7 +99,7 @@ export async function triggerOpener(t, open, ...args) {
 
   let clickPromise
 
-  if (el.getAttribute("role")?.startsWith("menuitem")) {
+  if (el.getAttribute("aria-haspopup") === "menu") {
     const menu = el.closest("ui-menu")
     if (menu) {
       clickPromise = false

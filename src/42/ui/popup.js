@@ -129,7 +129,7 @@ export const popup = rpc(
     async function close(options) {
       removeItem(popupsList, instance)
       if (instance.ready) await instance.ready
-      if (!instance.el) return
+      // if (!instance.el) return
 
       const event = dispatch(el, "uipopupbeforeclose", { cancelable: true })
       if (event.defaultPrevented) return
@@ -170,11 +170,7 @@ export const popup = rpc(
     el.style.translate = "-200vw -200vh"
     el.style.zIndex = maxZIndex(zIndexSector) + 1
 
-    if (el[_close] === true) {
-      el.close = close
-      el.closeOthers = closeOthers
-      el.closeAll = closeAll
-    }
+    if (el[_close] === true) el.close = close
 
     document.documentElement.append(el)
 

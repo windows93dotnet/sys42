@@ -1,7 +1,8 @@
 import test from "../../../../42/test.js"
+import { closeAll } from "../../../../42/ui/popup.js"
 
 const manual = 0
-const iframe = 0
+const iframe = 1
 
 const { href } = new URL(
   "../../../../demos/ui/components/menu.demo.html",
@@ -24,7 +25,7 @@ const makeContent = () => ({
     {
       tag: "button",
       label: "Menu",
-      id: "menu",
+      id: "menuTrigger",
       menu: [
         {
           label: "{{cnt}}", //
@@ -34,16 +35,17 @@ const makeContent = () => ({
         },
         {
           label: "List",
-          id: "list",
+          id: "listTrigger",
+          // class: test.env.realm.inTop ? "Top" : "Iframe",
           items: [{ label: "A" }, { label: "B" }],
         },
         {
           label: "Submenu",
-          id: "submenu",
+          id: "submenuTrigger",
           items: [
             {
               label: "Dialog",
-              id: "dialog",
+              id: "dialogTrigger",
               dialog: {
                 label: test.env.realm.inTop ? "Top" : "Iframe",
                 content: [
@@ -67,40 +69,60 @@ const makeContent = () => ({
   },
 })
 
-test.ui(async (t, { makeRealmLab, triggerOpener }) => {
+test.ui("submenu close previous submenu", async (t) => {
+  const { makeRealmLab, triggerOpener } = t.utils
+
   window.app = await makeRealmLab(
     {
       href,
-      iframe: 0,
+      iframe,
       top: 1,
-      syncData: true,
-      nestedTestsParallel: true,
     },
     makeContent,
   )
 
-  if (manual && test.env.realm.inTop) return t.pass()
+  // if (manual && test.env.realm.inTop) return t.pass()
+  // if (manual) return t.pass()
+  // if (test.env.realm.inTop) return t.pass()
 
-  const menuBtn = document.querySelector("#menu")
-  t.is(menuBtn.getAttribute("aria-expanded"), "false")
+  const menuTrigger = document.querySelector("#menuTrigger")
+  t.is(menuTrigger.getAttribute("aria-expanded"), "false")
 
-  const menu = await triggerOpener(menuBtn)
+  const menu = await triggerOpener(menuTrigger)
 
-  const list = menu.querySelector("li:has(#list)")
-  const submenu = menu.querySelector("li:has(#submenu)")
+  const listTrigger = menu.querySelector("#listTrigger")
+  const submenuTrigger = menu.querySelector("#submenuTrigger")
+  menu.triggerMenuitem(listTrigger)
+  menu.triggerMenuitem(submenuTrigger)
 
-  menu.triggerMenuitem(list)
-  menu.triggerMenuitem(submenu)
+  await new Promise((resolve) => {
+    t.utils.on(window.top, {
+      uipopupclose({ target }) {
+        if (target.opener === "listTrigger") resolve()
+      },
+    })
+  })
 
-  await t.sleep(100)
+  const listMenu = top.document.querySelector(
+    'ui-menu[aria-labelledby="listTrigger"]',
+  )
+  const submenuMenu = top.document.querySelector(
+    'ui-menu[aria-labelledby="submenuTrigger"]',
+  )
 
-  const menu1 = top.document.querySelector('ui-menu[aria-labelledby="list"]')
-  const menu2 = top.document.querySelector('ui-menu[aria-labelledby="submenu"]')
-  t.isNull(menu1)
-  t.isElement(menu2)
+  t.isNull(listMenu)
+  t.isElement(submenuMenu)
+
+  t.is(submenuTrigger.getAttribute("aria-expanded"), "true")
+  t.is(listTrigger.getAttribute("aria-expanded"), "false")
+
+  if (test.env.realm.inTop) closeAll()
+  else await t.sleep(100)
 })
 
-// test.ui(async (t, { makeRealmLab, triggerOpener }) => {
+// test.ui("detached dialog still use ipcPlugin", async (t) => {
+//   const { makeRealmLab, triggerOpener } = t.utils
+
 //   window.app = await makeRealmLab(
 //     {
 //       href,
@@ -116,24 +138,26 @@ test.ui(async (t, { makeRealmLab, triggerOpener }) => {
 
 //   if (test.env.realm.inIframe) await t.sleep(100) // TODO: find why this is needed
 
-//   const menuBtn = document.querySelector("#menu")
-//   t.is(menuBtn.getAttribute("aria-expanded"), "false")
-//   const menu = t.step(await triggerOpener(menuBtn))
-//   t.is(menuBtn.getAttribute("aria-expanded"), "true")
+//   const menuTrigger = document.querySelector("#menuTrigger")
+//   t.is(menuTrigger.getAttribute("aria-expanded"), "false")
+//   const menu = t.step(await triggerOpener(menuTrigger))
+//   t.is(menuTrigger.getAttribute("aria-expanded"), "true")
 
-//   const submenuBtn = menu.querySelector("#submenu")
-//   t.is(submenuBtn.getAttribute("aria-expanded"), "false")
-//   const submenu = t.step(await triggerOpener(submenuBtn))
-//   t.is(submenuBtn.getAttribute("aria-expanded"), "true")
+//   const submenuTrigger = menu.querySelector("#submenuTrigger")
+//   t.is(submenuTrigger.getAttribute("aria-expanded"), "false")
+//   const submenu = t.step(await triggerOpener(submenuTrigger))
+//   t.is(submenuTrigger.getAttribute("aria-expanded"), "true")
 
 //   // Check that detached dialog is still using ipcPlugin
 //   const menuClosePromise = t.utils.untilClose(menu)
-//   const dialog = t.step(await triggerOpener(submenu.querySelector("#dialog")))
+//   const dialog = t.step(
+//     await triggerOpener(submenu.querySelector("#dialogTrigger")),
+//   )
 //   t.step(await menuClosePromise)
 //   t.step(await t.puppet("#btnDialogIncr", dialog).click())
 
-//   t.is(submenuBtn.getAttribute("aria-expanded"), "false")
-//   t.is(menuBtn.getAttribute("aria-expanded"), "false")
+//   t.is(submenuTrigger.getAttribute("aria-expanded"), "false")
+//   t.is(menuTrigger.getAttribute("aria-expanded"), "false")
 
 //   dialog.close()
 

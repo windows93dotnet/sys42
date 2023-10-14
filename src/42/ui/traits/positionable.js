@@ -377,6 +377,8 @@ class Positionable extends Trait {
     this.repaint = repaintThrottle(() => this.refresh())
 
     requestAnimationFrame(async () => {
+      if (this.cancel.signal.aborted) return
+
       this.start()
 
       if (this.of) {

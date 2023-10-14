@@ -79,6 +79,14 @@ function setPopupOpener(el, stage, key, defaultPlan) {
 
   return function openPopup(e) {
     const plan = { ...defaultPlan, opener: el.id }
+
+    plan.aria ??= {}
+    if (inIframe) {
+      plan.aria.label ??= el.textContent
+    } else {
+      plan.aria.labelledby ??= el.id
+    }
+
     if (e.detail && typeof e.detail === "object") Object.assign(plan, e.detail)
 
     if (e.type === "contextmenu" && e.x > 0 && e.y > 0) {
