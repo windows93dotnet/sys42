@@ -267,6 +267,92 @@ test("Math", (t) => {
   t.not(a, Math)
 })
 
+test("class", async (t) => {
+  class Foo {
+    constructor() {
+      this.foo = "bar"
+    }
+  }
+
+  const actual = new Foo()
+  actual.foo = "baz"
+  const cloned = clone(actual)
+
+  t.instanceOf(cloned, Foo)
+
+  t.is(cloned.foo, "baz")
+
+  t.eq(Object.getOwnPropertyDescriptors(cloned), {
+    foo: {
+      value: "baz",
+      writable: true,
+      enumerable: true,
+      configurable: true,
+    },
+  })
+})
+
+test("class", "non-configurable property", async (t) => {
+  class Foo {
+    constructor() {
+      Object.defineProperty(this, "foo", {
+        configurable: false,
+        writable: false,
+        value: "bar",
+      })
+    }
+  }
+
+  const actual = new Foo()
+  let cloned
+
+  t.notThrows(() => {
+    cloned = clone(actual)
+  })
+
+  t.instanceOf(cloned, Foo)
+
+  t.eq(Object.getOwnPropertyDescriptors(cloned), {
+    foo: {
+      value: "bar",
+      writable: false,
+      enumerable: false,
+      configurable: false,
+    },
+  })
+})
+
+test("class", "writable and non-configurable property", async (t) => {
+  class Foo {
+    constructor() {
+      Object.defineProperty(this, "foo", {
+        configurable: false,
+        writable: true,
+        value: "bar",
+      })
+    }
+  }
+
+  const actual = new Foo()
+  actual.foo = "baz"
+  let cloned
+
+  t.notThrows(() => {
+    cloned = clone(actual)
+  })
+
+  t.instanceOf(cloned, Foo)
+
+  t.eq(Object.getOwnPropertyDescriptors(cloned), {
+    foo: {
+      value: "baz",
+      writable: true,
+      enumerable: false,
+      configurable: false,
+    },
+  })
+})
+
 if (test.env.runtime.inFrontend) {
   test("Blob", async (t) => {
     t.timeout(1000)

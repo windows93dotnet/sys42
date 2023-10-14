@@ -23,8 +23,6 @@ const ARRAYS = new Set([
   Uint8ClampedArray,
 ])
 
-const { defineProperties, getOwnPropertyDescriptors } = Object
-
 function walk(
   source,
   deep = true,
@@ -85,8 +83,7 @@ function walk(
     source.nodeType &&
     typeof source.cloneNode === "function"
   ) {
-    target =
-      typeof source.cloneNode === "function" ? source.cloneNode(true) : {}
+    target = source.cloneNode(true)
   } else {
     if (source instanceof Set) isSet = true
     if (source instanceof Map) isMap = true
@@ -96,7 +93,7 @@ function walk(
         target =
           source.constructor && realConstructor ? new source.constructor() : {}
       } catch (error) {
-        target = { $name: source.constructor.name, $error: error.message }
+        target = { $name: source.constructor?.name, $error: error.message }
       }
     }
   }
@@ -115,14 +112,21 @@ function walk(
     }
 
     if (target && typeof target === "object") {
-      const descriptors = getOwnPropertyDescriptors(source)
-      for (const descriptor of Object.values(descriptors)) {
-        if ("value" in descriptor) {
+      const targetDescriptors = Object.getOwnPropertyDescriptors(target)
+      const sourceDescriptors = Object.getOwnPropertyDescriptors(source)
+      for (const [key, descriptor] of Object.entries(sourceDescriptors)) {
+        if (targetDescriptors[key]?.configurable === false) {
+          if (targetDescriptors[key]?.writable) {
+            target[key] = walk(descriptor.value, deep, visitedRefs, target)
+          }
+
+          delete sourceDescriptors[key]
+        } else if ("value" in descriptor) {
           descriptor.value = walk(descriptor.value, deep, visitedRefs, target)
         }
       }
 
-      return defineProperties(target, descriptors)
+      return Object.defineProperties(target, sourceDescriptors)
     }
   }
 
