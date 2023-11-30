@@ -1,13 +1,15 @@
-export default async function isIframable(url, signal) {
-  const el = document.createElement("object")
+export async function isURLIframable(url, signal) {
+  let el = document.createElement("object")
   el.style.position = "fixed"
-  el.style.width = "0"
-  el.style.height = "0"
-  el.style.visibility = "hidden"
+  el.style.width = 0
+  el.style.height = 0
+  el.style.opacity = 0.001
   el.style.pointerEvents = "none"
 
+  el.data = url
+
   return new Promise((resolve) => {
-    const cleanup = (el, signal) => {
+    const cleanup = () => {
       signal?.removeEventListener("abort", onabort)
       el.onerror = null
       el.onload = null
@@ -17,23 +19,24 @@ export default async function isIframable(url, signal) {
     }
 
     const onabort = () => {
-      cleanup(el, signal)
-      resolve(false)
+      cleanup()
+      resolve()
     }
 
     signal?.addEventListener("abort", onabort)
 
     el.onerror = () => {
-      cleanup(el)
+      cleanup()
       resolve(false)
     }
 
     el.onload = () => {
-      cleanup(el)
+      cleanup()
       resolve(true)
     }
 
-    el.data = url
     document.body.append(el)
   })
 }
+
+export default isURLIframable

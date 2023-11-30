@@ -8,7 +8,7 @@ import ipc from "../../core/ipc.js"
 import arrify from "../type/any/arrify.js"
 import listen from "../event/listen.js"
 import dispatch from "../event/dispatch.js"
-import isIframable from "../url/isIframable.js"
+import isURLIframable from "../url/isURLIframable.js"
 
 const DEFAULTS = {
   upgradeInsecureRequests: true,
@@ -250,7 +250,7 @@ export default class Resource {
       this.el.src = url
 
       if (this.config.checkIframable) {
-        isIframable(url, signal).then((ok) => end(ok))
+        isURLIframable(url, signal).then((ok) => end(ok))
       } else {
         this.forgets.push(
           listen(this.el, {

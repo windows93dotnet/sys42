@@ -2,6 +2,7 @@ import test from "../../../42/test.js"
 import ipc from "../../../42/core/ipc.js"
 import ui from "../../../42/ui.js"
 import timeout from "../../../42/fabric/type/promise/timeout.js"
+import isURLCrossOrigin from "../../../42/fabric/url/isURLCrossOrigin.js"
 
 test.suite.serial()
 
@@ -12,6 +13,11 @@ const check = {
   dedicatedWorker: 1,
   sharedWorker: 1,
   serviceWorker: 0, // TODO: Fix service worker failing to unregister for unknown reasons
+}
+
+if ((await isURLCrossOrigin("/tests/fixtures/ipc/emit.js")) === false) {
+  // Disable sandbox test on simple server
+  check.sandbox = 0
 }
 
 if (test.env.browser.isFirefox) {
