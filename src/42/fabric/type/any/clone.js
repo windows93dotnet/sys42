@@ -75,6 +75,12 @@ function walk(
     })
   } else if (globalThis.Blob && source instanceof Blob) {
     target = new Blob([source], { type: source.type })
+  } else if (globalThis.Error && source instanceof Error) {
+    target = new source.constructor()
+    if ("stack" in source.constructor.prototype) {
+      // Firefox error stack property is in Error prototype
+      Object.defineProperty(target, "stack", { value: source.stack })
+    }
   } else if (source instanceof ArrayBuffer) {
     target = new ArrayBuffer(source.byteLength)
     if (deep) new Uint8Array(target).set(new Uint8Array(source))

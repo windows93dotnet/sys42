@@ -267,10 +267,42 @@ test("Math", (t) => {
   t.not(a, Math)
 })
 
+function compareErrors(t, err, cloned) {
+  t.eq(err, cloned)
+  t.is(err.name, cloned.name)
+  t.is(err.stack, cloned.stack)
+  t.is(err.message, cloned.message)
+}
+
 test("Error", (t) => {
   const err = new Error()
   const cloned = clone(err)
-  t.is(err.stack, cloned.stack)
+  compareErrors(t, err, cloned)
+})
+
+test("Error", 2, (t) => {
+  const err = new Error("foo")
+  const cloned = clone(err)
+  compareErrors(t, err, cloned)
+})
+
+test("TypeError", (t) => {
+  const err = new TypeError("foo")
+  const cloned = clone(err)
+  compareErrors(t, err, cloned)
+})
+
+test("CustomError", (t) => {
+  class CustomError extends Error {
+    constructor(error) {
+      super(error)
+      Object.defineProperty(this, "name", { value: "CustomError" })
+    }
+  }
+
+  const err = new CustomError("foo")
+  const cloned = clone(err)
+  compareErrors(t, err, cloned)
 })
 
 test("class", async (t) => {

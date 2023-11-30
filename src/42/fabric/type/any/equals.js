@@ -1,9 +1,11 @@
 /* eslint-disable complexity */
 /* eslint-disable max-depth */
+/* eslint-disable max-params */
 
 // @thanks https://github.com/epoberezkin/fast-deep-equal
 // @related https://github.com/substack/node-deep-equal
 
+import removeItem from "../array/removeItem.js"
 import equalsArrayBufferView from "../../binary/equalsArrayBufferView.js"
 
 const PRIMITIVES = new Set(["boolean", "number", "string"])
@@ -11,9 +13,7 @@ const PRIMITIVES = new Set(["boolean", "number", "string"])
 const checkNode = "Node" in globalThis
 const checkBlob = "Blob" in globalThis
 
-function equalsObject(a, b, config) {
-  const keysA = Reflect.ownKeys(a)
-  const keysB = Reflect.ownKeys(b)
+function equalsObjectKeys(a, b, keysA, keysB, config) {
   const l = keysA.length
   if (l !== keysB.length) return false
 
@@ -32,6 +32,20 @@ function equalsObject(a, b, config) {
   }
 
   return true
+}
+
+function equalsObject(a, b, config) {
+  const keysA = Reflect.ownKeys(a)
+  const keysB = Reflect.ownKeys(b)
+  return equalsObjectKeys(a, b, keysA, keysB, config)
+}
+
+function equalsError(a, b, config) {
+  if (a.stack !== b.stack) return false
+  // Ignore stack because Firefox error stack property is in Error prototype
+  const keysA = removeItem(Reflect.ownKeys(a), "stack")
+  const keysB = removeItem(Reflect.ownKeys(b), "stack")
+  return equalsObjectKeys(a, b, keysA, keysB, config)
 }
 
 function equalsArray(a, b, config) {
@@ -129,6 +143,11 @@ function walk(a, b, config) {
         typeA = ArrayBuffer.isView(a)
         typeB = ArrayBuffer.isView(b)
         if (typeA && typeB) return equalsArrayBufferView(a, b)
+        if (typeA !== typeB) return false
+
+        typeA = a instanceof Error
+        typeB = b instanceof Error
+        if (typeA && typeB) return equalsError(a, b, config)
         if (typeA !== typeB) return false
 
         if (checkNode) {
