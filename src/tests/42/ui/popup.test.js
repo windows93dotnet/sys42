@@ -105,7 +105,9 @@ test.ui.flaky("popup behavior", async (t, { decay, dest, pickValues }) => {
     let cnt = 0
     t.utils.on({
       uipopupopen(e, target) {
-        t.puppet(".menuitemDialog", target).click().run()
+        if (target.localName === "ui-menu") {
+          t.puppet(".menuitemDialog", target).click().run()
+        }
       },
       uidialogopen: () => ++cnt === 4 && resolve(),
     })
