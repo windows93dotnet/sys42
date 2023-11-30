@@ -9,7 +9,7 @@
     "sys42": "bin/42.js"
   },
   "engines": {
-    "node": "^18 || ^19 || ^20"
+    "node": ">=18"
   },
   "scripts": {
     "pretest": "eslint '{src,bin}/**/*.{js,html}'",
