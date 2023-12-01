@@ -9,7 +9,7 @@ const { href } = new URL(
   import.meta.url,
 )
 
-test.utils.preload(href, { prefetch: true })
+test.utils.preload(href, { prefetch: true, catchError: true })
 
 const makeContent = () => ({
   tag: ".w-full.pa-xl",

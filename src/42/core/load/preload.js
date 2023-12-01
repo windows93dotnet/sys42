@@ -1,5 +1,3 @@
-import normalizeError from "../../fabric/type/error/normalizeError.js"
-
 const SELECTORS = {
   "audio": "audio",
   "iframe": "document",
@@ -39,7 +37,17 @@ async function fromURL(url) {
 
 export async function preload(
   url,
-  { as, crossorigin, media, type, signal, rel, prefetch } = {},
+  {
+    as,
+    crossorigin,
+    media,
+    type,
+    signal,
+    rel,
+    prefetch,
+    dnsPrefetch,
+    catchError,
+  } = {},
 ) {
   if (url instanceof Element) {
     as = url
@@ -48,11 +56,11 @@ export async function preload(
 
   let el = document.createElement("link")
 
-  rel = prefetch ? "prefetch" : rel ?? "preload"
-
   el.crossorigin = crossorigin ?? "anonymous"
   if (media) el.media = media
   if (type) el.type = type
+
+  rel ??= dnsPrefetch ? "dns-prefetch" : prefetch ? "prefetch" : "preload"
 
   if (rel === "preload") {
     if (as instanceof Element) as = fromElement(as)
@@ -87,8 +95,12 @@ export async function preload(
 
     signal?.addEventListener("abort", onabort)
 
-    el.onerror = (e) => {
+    el.onerror = async (e) => {
       cleanup()
+      if (catchError) return resolve(e)
+      const { normalizeError } = await import(
+        "../../fabric/type/error/normalizeError.js"
+      )
       reject(normalizeError(e))
     }
 

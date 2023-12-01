@@ -1,7 +1,7 @@
 import isInstanceOf from "../any/is/isInstanceOf.js"
 const ERROR_EVENT_INFOS = ["lineno", "colno", "filename", "type", "message"]
 
-export default function normalizeError(e, originStack = new Error().stack) {
+export function normalizeError(e, originStack = new Error().stack) {
   let error = isInstanceOf(e, Error)
     ? e
     : e.error ?? e.reason ?? e.target?.error
@@ -34,3 +34,5 @@ export default function normalizeError(e, originStack = new Error().stack) {
 
   return error
 }
+
+export default normalizeError

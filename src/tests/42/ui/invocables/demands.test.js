@@ -9,7 +9,7 @@ const { href } = new URL(
   import.meta.url,
 )
 
-test.utils.preload(href, { prefetch: true })
+test.utils.preload(href, { prefetch: true, catchError: true })
 
 import prompt from "../../../../42/ui/invocables/prompt.js"
 import alert from "../../../../42/ui/invocables/alert.js"
