@@ -17,25 +17,25 @@
     "dev": "node ./bin/42.js"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.22.7",
+    "@babel/eslint-parser": "^7.23.3",
     "@babel/plugin-syntax-top-level-await": "^7.14.5",
-    "eslint": "^8.44.0",
-    "eslint-config-prettier": "^8.8.0",
+    "eslint": "^8.54.0",
+    "eslint-config-prettier": "^9.0.0",
     "eslint-config-xo": "^0.43.1",
     "eslint-plugin-html": "^7.1.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-unicorn": "^47.0.0",
-    "prettier": "^3.0.0",
-    "stylelint": "^15.10.1",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-unicorn": "^49.0.0",
+    "prettier": "^3.1.0",
+    "stylelint": "^15.11.0",
     "stylelint-config-standard": "^34.0.0"
   },
   "dependencies": {
-    "cborg": "^2.0.3",
+    "cborg": "^4.0.5",
     "chokidar": "^3.5.3",
-    "fastify": "^4.19.2",
-    "fastify-disablecache": "^3.1.3",
-    "lilconfig": "^2.1.0",
+    "fastify": "^4.24.3",
+    "fastify-disablecache": "^3.1.7",
+    "lilconfig": "^3.0.0",
     "node-source-walk": "^6.0.2",
-    "pino-pretty": "^10.0.1"
+    "pino-pretty": "^10.2.3"
   }
 }
