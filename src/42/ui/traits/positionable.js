@@ -139,8 +139,8 @@ function setFlip(axis) {
     ? axis.kind === "at"
       ? axis.at.flipped - axis.my.current
       : axis.kind === "my"
-      ? axis.at.current - axis.my.flipped
-      : axis.at.flipped - axis.my.flipped
+        ? axis.at.current - axis.my.flipped
+        : axis.at.flipped - axis.my.flipped
     : 0
 }
 
@@ -191,14 +191,14 @@ class Positionable extends Trait {
       this.config.of === "offsetParent"
         ? this.el.offsetParent ?? document.body
         : this.config.of === "parent"
-        ? this.el.parentElement
-        : this.config.of === "previous"
-        ? this.el.previousElementSibling
-        : this.config.of === "next"
-        ? this.el.nextElementSibling
-        : typeof this.config.of === "string"
-        ? document.querySelector(this.config.of)
-        : this.config.of
+          ? this.el.parentElement
+          : this.config.of === "previous"
+            ? this.el.previousElementSibling
+            : this.config.of === "next"
+              ? this.el.nextElementSibling
+              : typeof this.config.of === "string"
+                ? document.querySelector(this.config.of)
+                : this.config.of
 
     setTemp(this.el, {
       signal: this.cancel.signal,
@@ -357,13 +357,13 @@ class Positionable extends Trait {
                 height: globalThis.innerHeight,
               }
             : this.config.within === "viewport"
-            ? {
-                top: globalThis.visualViewport.offsetTop,
-                left: globalThis.visualViewport.offsetLeft,
-                width: globalThis.visualViewport.width,
-                height: globalThis.visualViewport.height,
-              }
-            : this.config.within.getBoundingClientRect()
+              ? {
+                  top: globalThis.visualViewport.offsetTop,
+                  left: globalThis.visualViewport.offsetLeft,
+                  width: globalThis.visualViewport.width,
+                  height: globalThis.visualViewport.height,
+                }
+              : this.config.within.getBoundingClientRect()
 
         this.x.min = withinRect.left
         this.y.min = withinRect.top

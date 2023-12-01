@@ -99,18 +99,18 @@ export default function rpc(fn, options = {}) {
             return out
           }
         : unmarshalling
-        ? async (...args) =>
-            unmarshalling(await ipc.send(CALL, [id, args, info]))
-        : marshalling
-        ? async (...args) => {
-            const res = await marshalling(...args)
-            if (res === false) return
-            const { val, destroy } = serialize(res)
-            const out = await ipc.send(CALL, [id, val, info])
-            destroy()
-            return out
-          }
-        : async (...args) => ipc.send(CALL, [id, args, info])
+          ? async (...args) =>
+              unmarshalling(await ipc.send(CALL, [id, args, info]))
+          : marshalling
+            ? async (...args) => {
+                const res = await marshalling(...args)
+                if (res === false) return
+                const { val, destroy } = serialize(res)
+                const out = await ipc.send(CALL, [id, val, info])
+                destroy()
+                return out
+              }
+            : async (...args) => ipc.send(CALL, [id, args, info])
 
     caller.destroy = async () => ipc.send(DESTROY, id)
 
@@ -127,14 +127,14 @@ export default function rpc(fn, options = {}) {
           return unmarshalling(await fn(...res))
         }
       : unmarshalling
-      ? async (...args) => unmarshalling(await fn(...args))
-      : marshalling
-      ? async (...args) => {
-          const res = await marshalling(...args)
-          if (res === false) return
-          return fn(...res)
-        }
-      : fn
+        ? async (...args) => unmarshalling(await fn(...args))
+        : marshalling
+          ? async (...args) => {
+              const res = await marshalling(...args)
+              if (res === false) return
+              return fn(...res)
+            }
+          : fn
 
   caller.destroy = async () => functions.delete(id)
 

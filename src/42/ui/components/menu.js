@@ -190,8 +190,8 @@ export class Menu extends Component {
       target.localName === "li"
         ? target.querySelector(menuFocusItemSelector)
         : target.getAttribute("role")?.startsWith("menuitem")
-        ? target
-        : undefined
+          ? target
+          : undefined
 
     if (item) {
       if (item.disabled) {

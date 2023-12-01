@@ -38,8 +38,8 @@ export function uid(size = 8) {
   while (size--) {
     const byte = pool.next() & 61
     id +=
-      byte < 36 //
-        ? byte.toString(36)
+      byte < 36
+        ? byte.toString(36) //
         : (byte - 26).toString(36).toUpperCase()
   }
 

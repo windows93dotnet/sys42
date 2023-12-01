@@ -72,20 +72,20 @@ types.number = {
     decimals === 0
       ? Math.ceil(num)
       : trailingZeros
-      ? trailZeros(ceil(num, decimals), decimals)
-      : ceil(num, decimals),
+        ? trailZeros(ceil(num, decimals), decimals)
+        : ceil(num, decimals),
   floor: (num, decimals = 0, trailingZeros = true) =>
     decimals === 0
       ? Math.floor(num)
       : trailingZeros
-      ? trailZeros(floor(num, decimals), decimals)
-      : floor(num, decimals),
+        ? trailZeros(floor(num, decimals), decimals)
+        : floor(num, decimals),
   round: (num, decimals = 0, trailingZeros = true) =>
     decimals === 0
       ? Math.round(num)
       : trailingZeros
-      ? trailZeros(round(num, decimals), decimals)
-      : round(num, decimals),
+        ? trailZeros(round(num, decimals), decimals)
+        : round(num, decimals),
   add: (a, b) => a + b,
   minus: (a, b) => a - b,
   multiply: (a, b) => a * b,
@@ -282,14 +282,14 @@ async function getFilter(item, group, name) {
       group === "ui"
         ? `../ui/invocables/${fn}.js` //
         : group === "path"
-        ? `../core/path/${fn}.js`
-        : `../fabric/type/${fn}.js`
+          ? `../core/path/${fn}.js`
+          : `../fabric/type/${fn}.js`
     ).then((m) =>
       item.key
         ? locate(m.default, name)
         : item.import
-        ? locate(m, item.import)
-        : m.default,
+          ? locate(m, item.import)
+          : m.default,
     )
   }
 

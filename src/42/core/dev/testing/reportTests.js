@@ -211,8 +211,8 @@ const displaySuiteHeader = (suite, config) => {
         (suite.skip
           ? "{magenta.dim ~} "
           : suite.ok
-          ? "{green ✓} "
-          : "{red ✗} "),
+            ? "{green ✓} "
+            : "{red ✗} "),
     )
     [suite.ok ? "log" : "groupCollapsed"](title + stats)
 }

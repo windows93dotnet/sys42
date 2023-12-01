@@ -92,13 +92,13 @@ export default function renderControl(el, stage, plan) {
                 : "change || Control+s || Enter"]: fn,
             }
           : plan.debounce
-          ? {
-              input: debounce(fn, plan.debounce),
-              [plan.enterKeyHint === "enter"
-                ? "change || Control+s"
-                : "change || Control+s || Enter"]: fn,
-            }
-          : { input: fn },
+            ? {
+                input: debounce(fn, plan.debounce),
+                [plan.enterKeyHint === "enter"
+                  ? "change || Control+s"
+                  : "change || Control+s || Enter"]: fn,
+              }
+            : { input: fn },
       )
     }
 

@@ -218,22 +218,22 @@ export default function compileExpression(tokens, options = {}) {
           return res
         }
     : options?.boolean
-    ? (...locals) => {
-        let res
-        for (const statement of statements) {
-          for (const item of statement) res = item(locals)
-        }
+      ? (...locals) => {
+          let res
+          for (const statement of statements) {
+            for (const item of statement) res = item(locals)
+          }
 
-        return Boolean(res)
-      }
-    : (...locals) => {
-        let res
-        for (const statement of statements) {
-          for (const item of statement) res = item(locals)
+          return Boolean(res)
         }
+      : (...locals) => {
+          let res
+          for (const statement of statements) {
+            for (const item of statement) res = item(locals)
+          }
 
-        return res
-      }
+          return res
+        }
 
   return fn
 }

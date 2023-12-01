@@ -103,8 +103,8 @@ export function walk(dest, source, carrier) {
         $ref in val
           ? val[$ref]
           : $dynamicRef in val
-          ? val[$dynamicRef]
-          : undefined
+            ? val[$dynamicRef]
+            : undefined
 
       if (ref) {
         const { path, hash } = getPath(ref, carrier.baseURI)

@@ -696,9 +696,9 @@ class Transferable extends Trait {
         (this.list
           ? ["move", "copy"]
           : options.accept &&
-            Object.keys(options.accept).every((x) => x === "mimetype")
-          ? ["copy"]
-          : this.config.effects),
+              Object.keys(options.accept).every((x) => x === "mimetype")
+            ? ["copy"]
+            : this.config.effects),
     )
 
     const ms = this.config.animationSpeed

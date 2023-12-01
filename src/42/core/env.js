@@ -48,8 +48,8 @@ export const env = Object.freeze({
           ? "mobile"
           : "desktop"
         : runtime.inFrontend
-        ? "desktop"
-        : undefined)
+          ? "desktop"
+          : undefined)
     return device
   },
 

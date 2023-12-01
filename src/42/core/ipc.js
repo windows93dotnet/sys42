@@ -50,13 +50,13 @@ async function messageHandler(e) {
         ? ["ChildWindow", undefined]
         : ["Iframe", undefined, findIframe(source)]
       : globalThis.ServiceWorker !== undefined &&
-        source instanceof ServiceWorker
-      ? ["ServiceWorker", source]
-      : globalThis.Worker !== undefined && target instanceof Worker
-      ? ["DedicatedWorker", target]
-      : target instanceof MessagePort && sources.has(target)
-      ? ["SharedWorker", target]
-      : []
+          source instanceof ServiceWorker
+        ? ["ServiceWorker", source]
+        : globalThis.Worker !== undefined && target instanceof Worker
+          ? ["DedicatedWorker", target]
+          : target instanceof MessagePort && sources.has(target)
+            ? ["SharedWorker", target]
+            : []
 
     const trusted = Boolean(
       worker ||
@@ -175,14 +175,14 @@ function normalizeTarget(target, port, options) {
     const iframeOrigin = target.src
       ? new URL(target.src).origin
       : target.srcdoc
-      ? location.origin
-      : undefined
+        ? location.origin
+        : undefined
 
     options.targetOrigin ??= target.sandbox.contains("allow-same-origin")
       ? iframeOrigin
       : target.hasAttribute("sandbox") && iframeOrigin === location.origin
-      ? "*"
-      : iframeOrigin
+        ? "*"
+        : iframeOrigin
 
     ping(target.contentWindow, port, options.targetOrigin)
   } else if (target.self === target) {
@@ -400,8 +400,8 @@ export class Receiver extends Emitter {
 export const ipc = realm.inSharedWorker
   ? new SharedWorkerSender()
   : realm.inServiceWorker
-  ? new ServiceWorkerSender()
-  : new Sender()
+    ? new ServiceWorkerSender()
+    : new Sender()
 
 ipc.iframes = new Map()
 

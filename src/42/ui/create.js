@@ -69,8 +69,8 @@ export default function create(stage, tag, ...args) {
   const el = ALLOWED_SVG_TAGS.includes(tag)
     ? document.createElementNS("http://www.w3.org/2000/svg", tag)
     : tag === "body"
-    ? document.createDocumentFragment()
-    : document.createElement(tag)
+      ? document.createDocumentFragment()
+      : document.createElement(tag)
 
   if (el.localName === "a") el.rel = "noopener"
   if (attrs.label && "label" in el === false) delete attrs.label

@@ -151,8 +151,8 @@ const devtool = chainable(GETTERS, color, ({ entries }, str) => {
         state === states.BG
           ? states.BG_BRIGHT
           : state === states.DIM
-          ? states.DIM_BRIGHT
-          : states.BRIGHT
+            ? states.DIM_BRIGHT
+            : states.BRIGHT
       if (key === "bright") continue
     }
 

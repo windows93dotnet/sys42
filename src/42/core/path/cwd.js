@@ -5,7 +5,7 @@ import inDeno from "../env/runtime/inDeno.js"
 const cwd = inNode
   ? process.cwd
   : inDeno
-  ? Deno.cwd
-  : () => system.shell?.cwd ?? "/"
+    ? Deno.cwd
+    : () => system.shell?.cwd ?? "/"
 
 export default cwd

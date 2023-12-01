@@ -566,10 +566,10 @@ function patchNumber(raw, value) {
         matchRadix[2] === "b" || matchRadix[2] === "B"
           ? 2
           : matchRadix[2] === "o" || matchRadix[2] === "O"
-          ? 8
-          : matchRadix[2] === "x" || matchRadix[2] === "X"
-          ? 16
-          : null,
+            ? 8
+            : matchRadix[2] === "x" || matchRadix[2] === "X"
+              ? 16
+              : null,
       )
     )
   }

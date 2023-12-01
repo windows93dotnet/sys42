@@ -3,8 +3,9 @@ export async function ensureArrayBuffer(val) {
     val instanceof ArrayBuffer
       ? val
       : typeof val === "string"
-      ? new TextEncoder().encode(val)
-      : val?.buffer ?? (val?.arrayBuffer ? await val.arrayBuffer() : undefined)
+        ? new TextEncoder().encode(val)
+        : val?.buffer ??
+          (val?.arrayBuffer ? await val.arrayBuffer() : undefined)
 
   if (!buffer) {
     throw new TypeError(

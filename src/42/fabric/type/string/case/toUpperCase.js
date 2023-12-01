@@ -7,9 +7,9 @@ export const toUpperCase = (str) =>
   isCamelCase(str)
     ? fromCamelCase(str).toUpperCase()
     : isLodashCase(str)
-    ? str.replaceAll("_", " ").toUpperCase()
-    : isHyphenCase(str)
-    ? str.replaceAll("-", " ").toUpperCase()
-    : str.toUpperCase()
+      ? str.replaceAll("_", " ").toUpperCase()
+      : isHyphenCase(str)
+        ? str.replaceAll("-", " ").toUpperCase()
+        : str.toUpperCase()
 
 export default toUpperCase

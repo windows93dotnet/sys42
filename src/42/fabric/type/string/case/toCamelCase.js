@@ -12,8 +12,8 @@ export const toCamelCase = (str, ignoreAcronyms) =>
         isUpperCase(x)
           ? x
           : i > 0
-          ? x.slice(0, 1).toUpperCase() + x.slice(1).toLowerCase()
-          : x.toLowerCase(),
+            ? x.slice(0, 1).toUpperCase() + x.slice(1).toLowerCase()
+            : x.toLowerCase(),
       )(str)
 
 export default toCamelCase

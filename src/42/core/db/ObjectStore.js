@@ -225,8 +225,8 @@ export default class ObjectStore {
         config.key === true && config.value === false
           ? (cursor) => cursor.key
           : config.key === false
-          ? (cursor) => cursor.value
-          : (cursor) => [cursor.key, cursor.value]
+            ? (cursor) => cursor.value
+            : (cursor) => [cursor.key, cursor.value]
 
       return [req, append]
     })

@@ -47,8 +47,8 @@ async function updateRule(rule, sheet, relativeURL, url, i) {
     rule.type === FONT_FACE_RULE
       ? "font"
       : rule.type === IMPORT_RULE || rule.type === STYLE_RULE
-      ? "style"
-      : "image"
+        ? "style"
+        : "image"
 
   await preload(url, { as })
   sheet.insertRule(changed, i + 1)

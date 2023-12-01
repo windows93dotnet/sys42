@@ -62,8 +62,8 @@ export default function stackTrace(err = new Error(), options = {}) {
     err instanceof Error
       ? parseErrorStack(err)
       : globalThis.ErrorEvent && err instanceof ErrorEvent
-      ? [errorEventToStackframe(err)]
-      : []
+        ? [errorEventToStackframe(err)]
+        : []
 
   if ("errorEvent" in err) addErrorEventStackFrame(err, stackFrames)
 

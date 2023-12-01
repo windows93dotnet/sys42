@@ -84,10 +84,10 @@ export const isEmpty = (x) => {
         ? isLength(x.length)
           ? x.length === 0
           : isLength(x.size)
-          ? x.size === 0
-          : isLength(x.byteLength)
-          ? x.byteLength === 0
-          : isEmptyObject(x)
+            ? x.size === 0
+            : isLength(x.byteLength)
+              ? x.byteLength === 0
+              : isEmptyObject(x)
         : false))
   )
 }

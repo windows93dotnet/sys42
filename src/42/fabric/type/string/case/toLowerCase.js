@@ -7,9 +7,9 @@ export const toLowerCase = (str) =>
   isCamelCase(str)
     ? fromCamelCase(str).toLowerCase()
     : isLodashCase(str)
-    ? str.replaceAll("_", " ").toLowerCase()
-    : isHyphenCase(str)
-    ? str.replaceAll("-", " ").toLowerCase()
-    : str.toLowerCase()
+      ? str.replaceAll("_", " ").toLowerCase()
+      : isHyphenCase(str)
+        ? str.replaceAll("-", " ").toLowerCase()
+        : str.toLowerCase()
 
 export default toLowerCase

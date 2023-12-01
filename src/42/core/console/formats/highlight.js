@@ -168,8 +168,8 @@ export default function highlight(js, options) {
         const color = str.match(KEYWORD_REGEX)
           ? colors.keyword
           : str.match(BUILTIN_REGEX)
-          ? colors.builtin
-          : colors.function
+            ? colors.builtin
+            : colors.function
 
         return `{${color} ${str}}`
       },

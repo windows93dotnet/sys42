@@ -32,8 +32,8 @@ class Memoizer extends Callable {
     this.cache = this.config.max
       ? new this.config.cache(this.config.max)
       : typeof options.cache === "function"
-      ? new this.config.cache()
-      : new Map()
+        ? new this.config.cache()
+        : new Map()
   }
 }
 

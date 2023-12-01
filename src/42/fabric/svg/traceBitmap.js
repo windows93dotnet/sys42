@@ -25,10 +25,10 @@ const counterclockwise = (move) =>
   move.v === -1
     ? { h: -1 }
     : move.h === -1
-    ? { v: 1 }
-    : move.v === 1
-    ? { h: 1 }
-    : { v: -1 }
+      ? { v: 1 }
+      : move.v === 1
+        ? { h: 1 }
+        : { v: -1 }
 
 const isSameSig = (a, b) => a * b > 0
 
@@ -53,8 +53,8 @@ const pathToString = (moves) =>
       "h" in move
         ? "h" + move.h
         : "v" in move
-        ? "v" + move.v
-        : "M" + move.x + " " + move.y,
+          ? "v" + move.v
+          : "M" + move.x + " " + move.y,
     )
     .join("") + "z"
 

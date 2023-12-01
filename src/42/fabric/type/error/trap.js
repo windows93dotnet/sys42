@@ -27,8 +27,8 @@ const handleError = (type, e, cb, originStack) => {
     type === "rejection"
       ? "Unhandled Rejection"
       : type === "report"
-      ? "Report"
-      : "Uncaught Error"
+        ? "Report"
+        : "Uncaught Error"
 
   const { reports } = error
 

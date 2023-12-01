@@ -162,8 +162,8 @@ const escapeString = (val, config, q = '"') => {
       ? escapeUnicode(val, [10])
       : escapeUnicode(val)
     : config.displayNewlines === false
-    ? val.replaceAll("\n", "\\n")
-    : val
+      ? val.replaceAll("\n", "\\n")
+      : val
 }
 
 const limitMessage = (n, word) => `${n} unshown ${pluralize(word, n)}`
@@ -383,8 +383,8 @@ ${indentSpace.repeat(depth - 1)})`
           ? "Object.create(null)"
           : "Object"
         : Symbol.toStringTag in val
-        ? val[Symbol.toStringTag]
-        : proto.constructor.name
+          ? val[Symbol.toStringTag]
+          : proto.constructor.name
 
     if (tag === "Date") return `new Date("${val.toISOString()}")`
     if (tag === "RegExp") return val.toString()
@@ -526,11 +526,11 @@ ${indentSpace.repeat(depth - 1)})`
         tag === "Object"
           ? ""
           : typeof this.config.prefix === "string"
-          ? this.config.prefix
-          : this.config.addComments &&
-            (this.config.traceProxy || tag !== "Proxy")
-          ? `/* ${tag} */ `
-          : ""
+            ? this.config.prefix
+            : this.config.addComments &&
+                (this.config.traceProxy || tag !== "Proxy")
+              ? `/* ${tag} */ `
+              : ""
     }
 
     if (this.config.$id && keys.includes(this.config.$id)) {

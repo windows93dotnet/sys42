@@ -11,8 +11,8 @@ export default function resolveScope(scope, loc, stage) {
     loc = loc.startsWith("@component")
       ? stage.component.stage.scope + loc.slice(10)
       : loc.startsWith("@scope")
-      ? stage.scope + loc.slice(6)
-      : `../${loc}:${getBasename(scope)}`
+        ? stage.scope + loc.slice(6)
+        : `../${loc}:${getBasename(scope)}`
   } else if (loc.startsWith("#")) {
     if (!same(loc, "#")) {
       throw new Error(

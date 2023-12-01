@@ -80,8 +80,8 @@ class Absorb {
       this.absorber = chunkIsString
         ? new AbsorbText()
         : chunkIsArrayBuffer
-        ? new AbsorbArrayBuffer()
-        : new AbsorbArray()
+          ? new AbsorbArrayBuffer()
+          : new AbsorbArray()
 
       if (chunkIsString) {
         this.decoder = new TextDecoder(this.encoding)
