@@ -9,7 +9,7 @@ const { href } = new URL(
   import.meta.url,
 )
 
-test.utils.preload(href, { prefetch: true })
+test.utils.preload(href, { prefetch: true, catchError: true })
 
 import filePicker from "../../../../42/ui/invocables/filePicker.js"
 import explorer from "../../../../42/ui/components/explorer.js"
@@ -143,8 +143,6 @@ test.ui(async (t, { makeRealmLab, triggerOpener }) => {
     triggerOpener("#filePickerSave", ".ui-dialog__agree", {
       ok: true,
       path: "/untitled.txt",
-      // dir: "/",
-      // base: "untitled.txt",
     }),
     triggerOpener(
       "#filePickerSave",
@@ -152,15 +150,12 @@ test.ui(async (t, { makeRealmLab, triggerOpener }) => {
       {
         ok: true,
         path: "/style.css",
-        // dir: "/",
-        // base: "style.css",
       },
       async (dialog) => {
         await t.puppet('[path="/style.css"]', dialog).click()
         await idle()
       },
     ),
-
     triggerOpener("#filePickerSaveContent", ".ui-dialog__close", { ok: false }),
     triggerOpener("#filePickerSaveContent", ".ui-dialog__decline", {
       ok: false,
@@ -174,11 +169,8 @@ test.ui(async (t, { makeRealmLab, triggerOpener }) => {
       ok: true,
       saved: true,
       path: "/hello.txt",
-      // dir: "/",
-      // base: "hello.txt",
     },
     async (dialog) => {
-      await t.sleep(100) // TODO: remove this
       t.is(dialog.querySelector('[name$="/name"]').value, "hello.txt")
     },
   )
@@ -188,8 +180,6 @@ test.ui(async (t, { makeRealmLab, triggerOpener }) => {
     .finally(async () => {
       try {
         await fs.delete("/hello.txt")
-      } catch (err) {
-        console.error(err.message)
-      }
+      } catch {}
     })
 })
