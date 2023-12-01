@@ -1,20 +1,21 @@
 /* eslint-disable no-unused-expressions */
 import Component from "../../../42/ui/classes/Component.js"
-import rpc from "../../../42/core/ipc/rpc.js"
-import omit from "../../../42/fabric/type/object/omit.js"
-import dispatch from "../../../42/fabric/event/dispatch.js"
-import maxZIndex from "../../../42/fabric/dom/maxZIndex.js"
 import {
   objectifyPlan,
   forkPlan,
   normalizePlugins,
 } from "../../../42/ui/normalize.js"
-import forceOpener from "../../../42/ui/forceOpener.js"
-import { autofocus } from "../../../42/fabric/dom/focus.js"
+import forceOpener from "../../../42/ui/utils/forceOpener.js"
+import postrenderAutofocus from "../../../42/ui/utils/postrenderAutofocus.js"
+import rpc from "../../../42/core/ipc/rpc.js"
+
+import omit from "../../../42/fabric/type/object/omit.js"
 import nextCycle from "../../../42/fabric/type/promise/nextCycle.js"
 import queueTask from "../../../42/fabric/type/function/queueTask.js"
-import postrenderAutofocus from "../../../42/ui/postrenderAutofocus.js"
 import emittable from "../../../42/fabric/traits/emittable.js"
+import dispatch from "../../../42/fabric/event/dispatch.js"
+import maxZIndex from "../../../42/fabric/dom/maxZIndex.js"
+import { autofocus } from "../../../42/fabric/dom/focus.js"
 
 const _axis = Symbol("axis")
 
@@ -112,6 +113,25 @@ export class Dialog extends Component {
     return this.close(true)
   }
 
+  activate() {
+    for (const item of document.querySelectorAll(
+      `${rootSelector} > ui-dialog:not(#${this.id})`,
+    )) {
+      item.active = false
+    }
+
+    if (this.active) return
+
+    this.active = true
+    this.style.zIndex = maxZIndex(zIndexSelector) + 1
+
+    if (!this.contains(document.activeElement)) {
+      postrenderAutofocus(this) ||
+        autofocus(this.querySelector(":scope > .ui-dialog__body")) ||
+        autofocus(this.querySelector(":scope > .ui-dialog__footer"))
+    }
+  }
+
   render({ content, label, picto, footer, plugins }) {
     const buttons = [
       {
@@ -124,6 +144,8 @@ export class Dialog extends Component {
 
     const id = this.id + "-title"
     this.setAttribute("aria-labelledby", id)
+
+    label = { tag: "span.ui-dialog__title__text", content: label }
 
     const plan = [
       {
@@ -153,25 +175,6 @@ export class Dialog extends Component {
     plan.plugins = plugins
 
     return plan
-  }
-
-  activate() {
-    for (const item of document.querySelectorAll(
-      `${rootSelector} > ui-dialog:not(#${this.id})`,
-    )) {
-      item.active = false
-    }
-
-    if (this.active) return
-
-    this.active = true
-    this.style.zIndex = maxZIndex(zIndexSelector) + 1
-
-    if (!this.contains(document.activeElement)) {
-      postrenderAutofocus(this) ||
-        autofocus(this.querySelector(":scope > .ui-dialog__body")) ||
-        autofocus(this.querySelector(":scope > .ui-dialog__footer"))
-    }
   }
 
   setup() {
@@ -216,10 +219,11 @@ const tracker = new Map()
 export const dialog = rpc(
   async function dialog(plan, stage) {
     const { steps } = stage
-    let n = tracker.has(steps) ? tracker.get(steps) : 0
-    stage = { ...stage }
-    stage.steps += ",dialog°" + n++
+    const n = tracker.has(steps) ? tracker.get(steps) + 1 : 0
     tracker.set(steps, n)
+
+    stage = { ...stage }
+    stage.steps += ",dialog°" + n
 
     const el = new Dialog(plan, stage)
     const { opener } = el

@@ -82,8 +82,8 @@ test.ui("submenu close previous submenu", async (t) => {
   )
 
   // if (manual && test.env.realm.inTop) return t.pass()
-  // if (manual) return t.pass()
   // if (test.env.realm.inTop) return t.pass()
+  if (manual) return t.pass()
 
   const menuTrigger = document.querySelector("#menuTrigger")
   t.is(menuTrigger.getAttribute("aria-expanded"), "false")

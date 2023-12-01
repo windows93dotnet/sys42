@@ -1,5 +1,4 @@
 /* eslint-disable max-params */
-/* eslint-disable max-statements-per-line */
 
 // JavaScript Object Notation (JSON) Patch
 // @implement https://tools.ietf.org/html/rfc6902

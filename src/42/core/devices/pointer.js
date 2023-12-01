@@ -1,5 +1,3 @@
-/* eslint-disable max-statements-per-line */
-
 // @read https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/getCoalescedEvents
 // @related https://github.com/nok/onedollar-unistroke-coffee
 // @related http://depts.washington.edu/madlab/proj/dollar/ndollar.html
