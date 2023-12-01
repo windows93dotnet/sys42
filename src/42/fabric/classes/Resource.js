@@ -212,7 +212,7 @@ export default class Resource {
 
     if (this.config.permissions === "web" && url.origin === location.origin) {
       throw new DOMException(
-        `"web" permissions is only allowed for different origin`,
+        `"web" permission is only allowed for different origin`,
         "SecurityError",
       )
     }

@@ -123,8 +123,6 @@ export class Sandbox extends Component {
   [_setResource](init) {
     if (init) return
     const { permissions } = this
-    // const { signal } = this.stage
-    // this.resource = new Resource({ permissions, signal })
     this.resource = new Resource({ permissions })
 
     const { sandbox } = this.resource.el
