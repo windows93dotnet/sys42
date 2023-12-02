@@ -31,6 +31,7 @@ import stringify from "../../../fabric/type/any/stringify.js"
 import system from "../../../system.js"
 import uid from "../../uid.js"
 import when from "../../../fabric/type/promise/when.js"
+import trap from "../../../fabric/type/error/trap.js"
 
 function pickValues(obj, key = "textContent") {
   const out = {}
@@ -151,6 +152,17 @@ export default function addUtilities(item, options) {
 
   item.utils.decay = decay
 
+  item.utils.untilError = async () =>
+    new Promise((resolve) => {
+      const forget = trap((err) => {
+        resolve(err)
+        forget()
+        return false
+      })
+
+      decay({ forget })
+    })
+
   item.utils.invisible = (el) => {
     el.style = `
       position: absolute;
@@ -224,6 +236,7 @@ export default function addUtilities(item, options) {
     stream,
     stringify,
     system,
+    trap,
     uid,
     when,
   })

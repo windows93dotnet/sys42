@@ -91,6 +91,12 @@ export const assertError = (err, expected, message, stack) => {
   return err
 }
 
+const VOYELS = new Set(["a", "e", "i", "o", "u", "y"])
+function articlePrefix(str, displayStr = str) {
+  const article = VOYELS.has(str.charAt(0).toLowerCase()) ? "an" : "a"
+  return `${article} ${displayStr}`
+}
+
 export default class Assert {
   #cumulated
   #timeoutDelay
@@ -109,7 +115,7 @@ export default class Assert {
   stubs = []
 
   constructor() {
-    // "tape" compatibility
+    // "tape" compatibility aliases
     this.ok = this.truthy
     this.notOk = this.falsy
     this.equal = this.is
@@ -118,12 +124,13 @@ export default class Assert {
 
     Object.entries(is).forEach(([key, check]) => {
       const not = `isNot${key.slice(2)}`
-      const type =
-        key === "isNaN" ? "NaN" : key.charAt(2).toLowerCase() + key.slice(3)
+      const type = articlePrefix(
+        key === "isNaN" ? "NaN" : key.charAt(2).toLowerCase() + key.slice(3),
+      )
       this[key] = (actual, message, details = { actual }) => {
         this.#addCall()
         if (check(actual) === false) {
-          const why = `value is not "${type}"`
+          const why = `Value is not ${type}`
           message = message ? `${message}\n${why}` : why
           throw new AssertionError(message, undefined, details)
         }
@@ -132,7 +139,7 @@ export default class Assert {
       this[not] = (actual, message, details = { actual }) => {
         this.#addCall()
         if (check(actual) === true) {
-          const why = `value should not be "${type}"`
+          const why = `Value should not be ${type}`
           message = message ? `${message}\n${why}` : why
           throw new AssertionError(message, undefined, details)
         }
@@ -506,7 +513,7 @@ export default class Assert {
     if (!(needle in obj)) {
       throw new AssertionError(
         message,
-        `Object don't have a "${needle}" property`,
+        `Object don't have "${articlePrefix(needle, `"${needle}"`)} property`,
         {
           keys: Object.keys(obj),
           needle,
@@ -533,6 +540,19 @@ export default class Assert {
         expected,
       })
     }
+  }
+
+  checkError(err, expected, message) {
+    if (arguments.length === 2 && expected === undefined) {
+      throw new TypeError(
+        `If "expected" argument is defined it can't be of type undefined`,
+      )
+    }
+
+    this.isError(err)
+    const { stack } = new Error()
+    this.#addCall()
+    assertError(err, expected, message, stack)
   }
 
   throws(fn, expected, message) {
