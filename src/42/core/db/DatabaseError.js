@@ -8,6 +8,9 @@ export default class DatabaseError extends Error {
     } else {
       super(error.message)
       Object.assign(this, error)
+      Object.defineProperty(this, "name", {
+        value: error.name === "Error" ? "DatabaseError" : error.name,
+      })
       if (error.stack) addStack(this, error.stack)
     }
   }

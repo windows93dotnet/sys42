@@ -8,6 +8,7 @@ const DEFAULTS = {
   stores: {},
   durability: "default",
   persistent: true,
+  retries: 10,
 }
 
 const debug = 0
@@ -198,10 +199,35 @@ export class Database {
     //     (await navigator.storage.persist())
     // }
 
-    this.indexedDB = await Database.open(name, version, {
+    const RETRIES = this.#config.retries
+    let retries = RETRIES + 1
+
+    const openOptions = {
       upgrade: async (...args) => this.#upgrade(...args),
       downgrade: async (...args) => this.#downgrade(...args),
-    })
+    }
+
+    const tryOpen = async () => {
+      try {
+        this.indexedDB = await Database.open(name, version, openOptions)
+      } catch (err) {
+        if (--retries) {
+          console.groupCollapsed(
+            `Database opening fail (${err.name}), retry ${
+              RETRIES - retries + 1
+            }/${RETRIES}`,
+          )
+          console.warn(err)
+          console.groupEnd()
+          await tryOpen()
+        } else {
+          throw err
+        }
+      }
+    }
+
+    await tryOpen()
+
     this.#registerDB(this.indexedDB)
 
     return this
