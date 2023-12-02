@@ -470,6 +470,18 @@ export default class Component extends HTMLElement {
     }
   }
 
+  async remove() {
+    if (this.isConnected && this.#animateTo) {
+      const { renderAnimation } = await import(
+        "../renderers/renderAnimation.js"
+      )
+      await renderAnimation(this.stage, this, "to", this.#animateTo)
+    }
+
+    this.replaceChildren()
+    super.remove()
+  }
+
   async #destroy(options) {
     if (this[_lifecycle] === DESTROY || this[_lifecycle] === CREATE) return
     this[_lifecycle] = DESTROY
@@ -486,22 +498,14 @@ export default class Component extends HTMLElement {
     this.ready = undefined
     this.#observed = undefined
 
-    if (options?.remove !== false) {
-      if (this.isConnected && this.#animateTo) {
-        const { renderAnimation } = await import(
-          "../renderers/renderAnimation.js"
-        )
-        await renderAnimation(this.stage, this, "to", this.#animateTo)
-      }
-
-      this.replaceChildren()
-      this.remove()
-    }
-
     delete this.stage.component
     delete this.stage.el
     delete this.stage
 
     this[_lifecycle] = CREATE
+
+    if (options?.remove !== false) {
+      await this.remove()
+    }
   }
 }

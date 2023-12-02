@@ -154,7 +154,7 @@ test.tasks(
         el.click()
         t.is(stub.count, 4)
 
-        app.destroy()
+        await app.destroy()
         el.click()
         t.is(stub.count, 4)
       },

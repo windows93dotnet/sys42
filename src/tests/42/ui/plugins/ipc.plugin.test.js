@@ -162,10 +162,14 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
     dialogIncr3: "0",
   })
 
-  await t.puppet(btnIncr.incr1).click()
-  await t.sleep(1)
-  await system.once("ipc.plugin:end-of-update")
+  async function click(t, btn) {
+    const update = app.stage.reactive.once("update")
+    await t.puppet(btn).click()
+    await Promise.all([system.once("ipc.plugin:end-of-update"), update])
+    await t.sleep(10)
+  }
 
+  await click(t, btnIncr.incr1)
   t.eq(pickValues(btnIncr), {
     incr1: "1",
     incr2: "1",
@@ -175,10 +179,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
     dialogIncr3: "1",
   })
 
-  await t.puppet(btnIncr.incr2).click()
-  await t.sleep(1)
-  await system.once("ipc.plugin:end-of-update")
-
+  await click(t, btnIncr.incr2)
   t.eq(pickValues(btnIncr), {
     incr1: "2",
     incr2: "2",
@@ -188,10 +189,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
     dialogIncr3: "2",
   })
 
-  await t.puppet(btnIncr.incr3).click()
-  await t.sleep(1)
-  await system.once("ipc.plugin:end-of-update")
-
+  await click(t, btnIncr.incr3)
   t.eq(pickValues(btnIncr), {
     incr1: "3",
     incr2: "3",
@@ -201,10 +199,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
     dialogIncr3: "3",
   })
 
-  await t.puppet(btnIncr.dialogIncr1).click()
-  await t.sleep(1)
-  await system.once("ipc.plugin:end-of-update")
-
+  await click(t, btnIncr.dialogIncr1)
   t.eq(pickValues(btnIncr), {
     incr1: "4",
     incr2: "4",
@@ -214,10 +209,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
     dialogIncr3: "4",
   })
 
-  await t.puppet(btnIncr.dialogIncr2).click()
-  await t.sleep(1)
-  await system.once("ipc.plugin:end-of-update")
-
+  await click(t, btnIncr.dialogIncr2)
   t.eq(pickValues(btnIncr), {
     incr1: "5",
     incr2: "5",
@@ -227,10 +219,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
     dialogIncr3: "5",
   })
 
-  await t.puppet(btnIncr.dialogIncr3).click()
-  await t.sleep(1)
-  await system.once("ipc.plugin:end-of-update")
-
+  await click(t, btnIncr.dialogIncr3)
   t.eq(pickValues(btnIncr), {
     incr1: "6",
     incr2: "6",
@@ -240,15 +229,12 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
     dialogIncr3: "6",
   })
 
-  await btnDialogs.dialog1.close()
-  await t.sleep(10)
+  await t.utils.closeDialog(btnDialogs.dialog1, btnDialogs.btnDialog1)
   t.is(document.activeElement.id, btnDialogs.btnDialog1.id)
 
-  await btnDialogs.dialog2.close()
-  await t.sleep(10)
+  await t.utils.closeDialog(btnDialogs.dialog2, btnDialogs.btnDialog2)
   t.is(sandbox1.activeElement.id, btnDialogs.btnDialog2.id)
 
-  await btnDialogs.dialog3.close()
-  await t.sleep(10)
+  await t.utils.closeDialog(btnDialogs.dialog3, btnDialogs.btnDialog3)
   t.is(sandbox2.activeElement.id, btnDialogs.btnDialog3.id)
 })

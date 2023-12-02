@@ -1,6 +1,7 @@
 import inTop from "../../../env/realm/inTop.js"
 import trap from "../../../../fabric/type/error/trap.js"
 import debounce from "../../../../fabric/type/function/debounce.js"
+import isInstanceOf from "../../../../fabric/type/any/is/isInstanceOf.js"
 import unsee from "../../../../fabric/dom/unsee.js"
 
 import makeRealmLab from "./makeRealmLab.js"
@@ -70,6 +71,22 @@ export default function uiTest(fn, sbs) {
     t.utils.triggerOpener = async (...args) => triggerOpener(t, ...args)
     t.utils.makeRealmLab = async (...args) => makeRealmLab(t, ...args)
     t.utils.untilClose = async (...args) => untilClose(...args)
+    t.utils.closeDialog = async (el, context = window) => {
+      context = isInstanceOf(context, Window)
+        ? context
+        : context?.ownerDocument?.defaultView
+
+      const { opener } = el
+
+      const promise = el.close()
+      await (context
+        ? t.utils.when(
+            context,
+            "uidialogafterclose",
+            ({ detail }) => detail.opener === opener,
+          )
+        : promise)
+    }
 
     if (!inTop || (!sbs.inTestRunner && index === total)) {
       const { dest } = t.utils

@@ -9,8 +9,9 @@ import serializeError from "../fabric/type/error/serializeError.js"
 import deserializeError from "../fabric/type/error/deserializeError.js"
 import SecurityError from "../fabric/errors/SecurityError.js"
 
-const defaultTargetOrigin = new URLSearchParams(location.search) //
-  .get("targetOrigin")
+const defaultTargetOrigin = inVhost
+  ? new URLSearchParams(location.search).get("targetOrigin")
+  : undefined
 
 const sources = new WeakMap()
 const origins = new Map()
@@ -154,7 +155,7 @@ async function messageHandler(e) {
 }
 
 function ping(target, port, targetOrigin) {
-  targetOrigin ??= inVhost ? defaultTargetOrigin : document.referrer
+  targetOrigin ??= defaultTargetOrigin ?? "*" // TODO: find a way to avoid "*"
   target.postMessage({ type: PING }, targetOrigin, [port])
 }
 

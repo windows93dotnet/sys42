@@ -10,11 +10,13 @@ export default async function when(target, events, options) {
     target = globalThis
   }
 
+  if (typeof options === "function") options = { check: options }
+
   options = options ? cleanupEvent.normalize(options) : {}
-  let { race, error, signal } = options
+  let { race, error, signal, check } = options
 
   const controller = new AbortController()
-  const listenerOptions = { signal: controller.signal, once: true }
+  const listenerOptions = { signal: controller.signal }
   let originStack
 
   race ??= events.includes("||")
@@ -27,6 +29,7 @@ export default async function when(target, events, options) {
       (event) =>
         new Promise((resolve, reject) => {
           function onevent(e) {
+            if (check?.(e) === false) return
             cleanupEvent.run(e, options)
             resolve(e)
             controller.abort()

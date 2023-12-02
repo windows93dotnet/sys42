@@ -99,8 +99,9 @@ export class Dialog extends Component {
     const data = omit(this.stage.reactive.data, ["$ui", "$computed"])
     if (ok) data.ok = true
     this.emit("close", data)
-    await this.destroy()
-    dispatch(globalThis, "uidialogclose")
+    await this.destroy({ remove: false })
+    dispatch(this, "uidialogclose")
+    await this.remove()
     return data
   }
 
@@ -250,6 +251,7 @@ export const dialog = rpc(
 
     unmarshalling({ res, opener }) {
       document.querySelector(`#${opener}`)?.focus()
+      dispatch(window, "uidialogafterclose", { detail: { opener } })
       return res
     },
   },
