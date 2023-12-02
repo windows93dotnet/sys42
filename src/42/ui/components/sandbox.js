@@ -172,7 +172,15 @@ export class Sandbox extends Component {
       return this.resource.script(script, options)
     }
 
-    if (this.script) return this.resource.script(this.script, options)
+    if (this.script) {
+      const script =
+        this.script.includes("ipc.") && !this.script.includes("ipc.js")
+          ? `import ipc from "${ipcUrl}";\n${this.script}`
+          : this.script
+
+      return this.resource.script(script, options)
+    }
+
     if (this.html) return this.resource.html(this.html, options)
 
     if (!this.path) return

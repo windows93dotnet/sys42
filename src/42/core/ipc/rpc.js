@@ -1,6 +1,7 @@
 import ipc from "../ipc.js"
 import hash from "../../fabric/type/any/hash.js"
 import traverse from "../../fabric/type/object/traverse.js"
+import SecurityError from "./SecurityError.js"
 
 const { inTop, inIframe } = ipc
 
@@ -49,8 +50,9 @@ if (inTop) {
         meta.iframe.hasAttribute("sandbox") &&
         !meta.iframe.sandbox.contains("allow-same-origin")
       ) {
-        // stage.trusted is not allowed from sandboxed iframes
-        delete args[1].trusted
+        throw new SecurityError(
+          "Setting stage.trusted as true is not allowed from sandboxed iframes",
+        )
       }
 
       if (functions.has(id)) {

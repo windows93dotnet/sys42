@@ -134,10 +134,6 @@ export default class Resource {
 
     this.#addBus()
 
-    // -------------------------------------------
-    // temporarily disabled while windows93 v3 dev
-    // -------------------------------------------
-
     const allowList = []
 
     this.el.toggleAttribute("sandbox", true)

@@ -2,9 +2,7 @@ import test from "../../../42/test.js"
 
 import ui from "../../../42/ui.js"
 import ipc from "../../../42/core/ipc.js"
-import when from "../../../42/fabric/type/promise/when.js"
 import timeout from "../../../42/fabric/type/promise/timeout.js"
-import normalizeError from "../../../42/fabric/type/error/normalizeError.js"
 
 const debug = 1
 
@@ -131,7 +129,7 @@ dialog(
 
   (test, { title, plan, timeout: ms, working, trusted, description }) => {
     ms ??= 2000
-    test.ui("sandbox", title, async (t, { decay, dest }) => {
+    test.ui("sandbox", title, async (t, { decay, dest, untilError }) => {
       t.timeout(ms + 100)
 
       const app = decay(ui(dest({ connect: true }), plan, { trusted }))
@@ -145,10 +143,7 @@ dialog(
       }
 
       res ??= await Promise.race([
-        when("error").then((e) => {
-          e.preventDefault()
-          return normalizeError(e)
-        }),
+        untilError(),
         ipc.once("xss"),
         timeout(ms).catch((err) => err),
       ])
@@ -162,7 +157,7 @@ dialog(
 
       if (res == null) return
 
-      t.isError(res)
+      t.checkError(res, { name: "SecurityError" })
 
       if (
         description ||
@@ -173,7 +168,9 @@ dialog(
         return
       }
 
-      t.log(res)
+      t.log(`{bright.blue ${title}}\n${description}\n\n`, res)
+
+      await t.sleep(1000)
     })
   },
 )
