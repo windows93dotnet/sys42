@@ -7,7 +7,7 @@ import isInstanceOf from "../any/is/isInstanceOf.js"
 
 const ERROR_EVENT_INFOS = ["lineno", "colno", "filename"]
 
-export default function serializeError(error) {
+export function serializeError(error) {
   const details = {}
 
   error = normalizeError(error)
@@ -52,3 +52,5 @@ export default function serializeError(error) {
     original,
   }
 }
+
+export default serializeError

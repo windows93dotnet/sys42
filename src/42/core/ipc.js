@@ -5,6 +5,8 @@ import uid from "./uid.js"
 import defer from "../fabric/type/promise/defer.js"
 import Emitter from "../fabric/classes/Emitter.js"
 import Canceller from "../fabric/classes/Canceller.js"
+import serializeError from "../fabric/type/error/serializeError.js"
+import deserializeError from "../fabric/type/error/deserializeError.js"
 
 const defaultTargetOrigin = new URLSearchParams(location.search) //
   .get("targetOrigin")
@@ -143,7 +145,7 @@ async function messageHandler(e) {
             port.postMessage({ id, res: res[0], all: res })
           })
           .catch((err) => {
-            port.postMessage({ id, err })
+            port.postMessage({ id, err: serializeError(err) })
           })
       } else if (type === "reply") {
         rsvp[id].resolve(data)
@@ -216,8 +218,9 @@ export class Sender extends Emitter {
 
     this.port.onmessage = ({ data }) => {
       if (data.id && this.#queue.has(data.id)) {
-        if (data.err) this.#queue.get(data.id).reject(data.err)
-        else this.#queue.get(data.id).resolve(data.res)
+        if (data.err) {
+          this.#queue.get(data.id).reject(deserializeError(data.err))
+        } else this.#queue.get(data.id).resolve(data.res)
         return void this.#queue.delete(data.id)
       }
 

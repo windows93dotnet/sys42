@@ -1,4 +1,4 @@
-export default function deserializeError(obj) {
+export function deserializeError(obj) {
   const err = new Error()
   if (obj.name) err.name = obj.name
   if (obj.message) err.message = obj.message
@@ -7,3 +7,5 @@ export default function deserializeError(obj) {
   if (obj.details) Object.assign(err, obj.details)
   return err
 }
+
+export default deserializeError
