@@ -3,6 +3,7 @@ import Component from "../classes/Component.js"
 import Resource from "../../fabric/classes/Resource.js"
 import create from "../create.js"
 import { forkPlan } from "../normalize.js"
+import SecurityError from "../../fabric/errors/SecurityError.js"
 
 const _setResource = Symbol("setResource")
 
@@ -133,9 +134,8 @@ export class Sandbox extends Component {
       sandbox.contains("allow-scripts") &&
       sandbox.contains("allow-same-origin")
     ) {
-      throw new DOMException(
+      throw new SecurityError(
         '"scripts" and "same-origin" permissions are forbiden in untrusted context',
-        "SecurityError",
       )
     }
 

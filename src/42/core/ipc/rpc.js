@@ -1,7 +1,7 @@
 import ipc from "../ipc.js"
 import hash from "../../fabric/type/any/hash.js"
 import traverse from "../../fabric/type/object/traverse.js"
-import SecurityError from "./SecurityError.js"
+import SecurityError from "../../fabric/errors/SecurityError.js"
 
 const { inTop, inIframe } = ipc
 

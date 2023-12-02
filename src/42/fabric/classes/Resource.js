@@ -9,6 +9,7 @@ import arrify from "../type/any/arrify.js"
 import listen from "../event/listen.js"
 import dispatch from "../event/dispatch.js"
 import isURLIframable from "../url/isURLIframable.js"
+import SecurityError from "../errors/SecurityError.js"
 
 const DEFAULTS = {
   upgradeInsecureRequests: true,
@@ -109,7 +110,7 @@ const FEATURES = new Set([...APP_FEATURES, ...DISALLOWED_FEATURES])
 export default class Resource {
   constructor(options) {
     if ("sandbox" in HTMLIFrameElement.prototype === false) {
-      throw new DOMException("Sandbox not supported", "SecurityError")
+      throw new SecurityError("Sandbox not supported")
     }
 
     if (options?.signal) {
@@ -143,10 +144,7 @@ export default class Resource {
         const token = x.startsWith("allow-") ? x : `allow-${x}`
         if (this.el.sandbox.supports(token)) this.el.sandbox.add(token)
         else {
-          throw new DOMException(
-            `Sandbox token not supported: ${token}`,
-            "SecurityError",
-          )
+          throw new SecurityError(`Sandbox token not supported: ${token}`)
         }
       }
     }
@@ -207,9 +205,8 @@ export default class Resource {
     url = new URL(url, location.href)
 
     if (this.config.permissions === "web" && url.origin === location.origin) {
-      throw new DOMException(
+      throw new SecurityError(
         `"web" permission is only allowed for different origin`,
-        "SecurityError",
       )
     }
 

@@ -7,6 +7,7 @@ import Emitter from "../fabric/classes/Emitter.js"
 import Canceller from "../fabric/classes/Canceller.js"
 import serializeError from "../fabric/type/error/serializeError.js"
 import deserializeError from "../fabric/type/error/deserializeError.js"
+import SecurityError from "../fabric/errors/SecurityError.js"
 
 const defaultTargetOrigin = new URLSearchParams(location.search) //
   .get("targetOrigin")
@@ -72,10 +73,7 @@ async function messageHandler(e) {
     )
 
     if (!trusted) {
-      throw new DOMException(
-        `IPC_PING: untrusted origin: ${origin}`,
-        "SecurityError",
-      )
+      throw new SecurityError(`IPC_PING: untrusted origin: ${origin}`)
     }
 
     if (worker) source = worker

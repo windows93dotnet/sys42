@@ -7,6 +7,7 @@ import renderOptions from "./renderOptions.js"
 import renderTooltip from "./renderTooltip.js"
 import ALLOWED_HTML_TAGS from "../../fabric/constants/ALLOWED_HTML_TAGS.js"
 import ALLOWED_SVG_TAGS from "../../fabric/constants/ALLOWED_SVG_TAGS.js"
+import SecurityError from "../../fabric/errors/SecurityError.js"
 
 export const PRELOAD = new Set(["link", "script"])
 export const NOT_CONTROLS = new Set(["label", "legend", "output", "option"])
@@ -29,7 +30,7 @@ export function renderTag(tag, plan, stage) {
     !ALLOWED_HTML_TAGS.includes(localName) &&
     !ALLOWED_SVG_TAGS.includes(localName)
   ) {
-    throw new DOMException(`Disallowed tag: ${localName}`, "SecurityError")
+    throw new SecurityError(`Disallowed tag: ${localName}`)
   }
 
   if (plan.entry) addEntry(stage.component, plan.entry, el)
