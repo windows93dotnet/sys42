@@ -2,6 +2,7 @@ import { pathToFileURL } from "node:url"
 import system from "../../src/42/system.js"
 import fastify from "fastify"
 import disableCache from "fastify-disablecache"
+import chromiumBugWarning from "../utils/chromiumBugWarning.js"
 
 import StaticFile from "../utils/StaticFile.js"
 import makeDevScript from "./serve/makeDevScript.js"
@@ -106,30 +107,35 @@ async function startServer(port) {
           req.headers["sec-fetch-dest"] === "document" &&
           asset.ext === ".html"
         ) {
-          const devStream = makeDevScript(asset, reply.getHeader("user-agent"))
-          asset.headers["Content-Length"] += Buffer.byteLength(
-            devStream,
-            "utf-8",
-          )
-          reply.headers(asset.headers)
-          const content = await asset.read()
-          asset.close()
+          const ua = req.headers["user-agent"]
+          chromiumBugWarning(ua)
 
-          let i = content.indexOf("</title>")
-          if (i > -1) {
-            return reply.send(
-              content.slice(0, i + 8) + devStream + content.slice(i + 8),
+          if (needDevScript) {
+            const devStream = makeDevScript(asset, ua)
+            asset.headers["Content-Length"] += Buffer.byteLength(
+              devStream,
+              "utf-8",
             )
-          }
+            reply.headers(asset.headers)
+            const content = await asset.read()
+            asset.close()
 
-          i = content.indexOf("<!doctype html>")
-          if (i > -1) {
-            return reply.send(
-              content.slice(0, i + 15) + devStream + content.slice(i + 15),
-            )
-          }
+            let i = content.indexOf("</title>")
+            if (i > -1) {
+              return reply.send(
+                content.slice(0, i + 8) + devStream + content.slice(i + 8),
+              )
+            }
 
-          return reply.send(devStream + content)
+            i = content.indexOf("<!doctype html>")
+            if (i > -1) {
+              return reply.send(
+                content.slice(0, i + 15) + devStream + content.slice(i + 15),
+              )
+            }
+
+            return reply.send(devStream + content)
+          }
         }
 
         reply.headers(asset.headers)
