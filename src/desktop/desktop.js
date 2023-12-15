@@ -5,7 +5,7 @@ import clearSiteData from "../42/os/network/client/clearSiteData.js"
 
 import trap from "../42/fabric/type/error/trap.js"
 trap((err) => {
-  os.desktop.state.errors.push(err)
+  os.desktop?.state.errors.push(err)
 })
 
 document.body.classList.add("desktop")

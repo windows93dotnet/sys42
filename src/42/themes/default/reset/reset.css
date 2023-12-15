@@ -4,9 +4,15 @@
 
 :where(table) { font: inherit; }
 
-:where(iframe, img, video) {
+/* @read https://twitter.com/csswizardry/status/1717841334462005661 */
+:where(iframe, img, svg, video) {
   height: auto;
   max-width: 100%;
+  font-style: italic;
+  vertical-align: middle;
+  shape-margin: 0.75rem;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 :where(kbd) {

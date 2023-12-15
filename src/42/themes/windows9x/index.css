@@ -637,6 +637,12 @@ ui-tabs[side="right"] .ui-tabs__tab[aria-selected="true"]:first-of-type::after {
 /* scrollbars
 ============= */
 
+@-moz-document url-prefix() {
+  :root {
+    scrollbar-color: var(--ButtonFace) transparent;
+  }
+}
+
 ::-webkit-scrollbar { background: var(--Scrollbar) var(--screentone-url) repeat; }
 
 ::-webkit-scrollbar,
