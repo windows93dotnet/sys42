@@ -51,7 +51,7 @@ class Client {
       })
     }
 
-    this.bus.send("42_SW_GET_CONFIG").then((config) => {
+    this.bus.send("42_SW_HANDSHAKE").then((config) => {
       if (config.vhost) {
         system.network ??= {}
         system.network.vhost ??= config.vhost

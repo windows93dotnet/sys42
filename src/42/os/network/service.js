@@ -1,5 +1,5 @@
-// @read https://bugs.chromium.org/p/chromium/issues/detail?id=468227#c15
-// [1] TODO: Use ignoreSearch option when this bug will be fixed https://bugs.chromium.org/p/chromium/issues/detail?id=682677
+// @read https://crbug.com/468227#c15
+// [1] TODO: Use ignoreSearch option when this bug will be fixed https://crbug.com/682677
 
 import ipc from "../../core/ipc.js"
 import configure from "../../core/configure.js"
@@ -33,10 +33,10 @@ async function fromCacheOrNetwork(e, pathname) {
   )
 }
 
-function getHeaders(search) {
+function getHeaders(searchParams) {
   const headers = {}
-  if (search.includes("clear-site-data")) {
-    if (search.includes("empty")) return false
+  if (searchParams.has("clear-site-data")) {
+    if (searchParams.has("empty")) return false
     headers["Clear-Site-Data"] = '"cache", "storage"'
   }
 
@@ -44,8 +44,8 @@ function getHeaders(search) {
 }
 
 function serve(e) {
-  let { pathname, search } = new URL(e.request.url)
-  let headers = getHeaders(search)
+  let { pathname, searchParams } = new URL(e.request.url)
+  let headers = getHeaders(searchParams)
   if (headers === false) return
 
   if (pathname.endsWith("/")) pathname += "index.html"
@@ -65,8 +65,8 @@ function serve(e) {
 }
 
 function proxy(e) {
-  let { pathname, search } = new URL(e.request.url)
-  let headers = getHeaders(search)
+  let { pathname, searchParams } = new URL(e.request.url)
+  let headers = getHeaders(searchParams)
   if (headers === false) return
 
   if (pathname.endsWith("/")) pathname += "index.html"
@@ -89,7 +89,10 @@ function proxy(e) {
 service.install = (options) => {
   const config = configure(options, parseURLQuery(location.search))
 
-  ipc.on("42_SW_GET_CONFIG", async () => config)
+  ipc.on("42_SW_HANDSHAKE", () => {
+    self.registration.navigationPreload?.disable()
+    return config
+  })
 
   ipc.on("42_SW_DISK_INIT", async () =>
     fileIndex.init(config.proxy ? await getVhostClient() : undefined),
@@ -114,7 +117,7 @@ service.install = (options) => {
     e.waitUntil(
       (async () => {
         // @read https://developers.google.com/web/updates/2017/02/navigation-preload
-        await self.registration.navigationPreload.enable()
+        await self.registration.navigationPreload?.enable()
 
         if (!config.version) return
 
