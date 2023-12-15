@@ -64,8 +64,8 @@ const getPathInfos = memoize((filename, options) => {
   }
 
   if (options?.headers) {
-    out.headers = {}
-    out.headers["Content-Type"] =
+    out.headers = { ...options.headers }
+    out.headers["Content-Type"] ??=
       out.mimetype + (out.charset ? `; charset=${out.charset}` : "")
   }
 

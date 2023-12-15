@@ -33,9 +33,21 @@ async function fromCacheOrNetwork(e, pathname) {
   )
 }
 
+function getHeaders(search) {
+  const headers = {}
+  if (search.includes("clear-site-data")) {
+    if (search.includes("empty")) return false
+    headers["Clear-Site-Data"] = '"cache", "storage"'
+  }
+
+  return headers
+}
+
 function serve(e) {
   let { pathname, search } = new URL(e.request.url)
-  if (search.includes("clear-site-data")) return
+  let headers = getHeaders(search)
+  if (headers === false) return
+
   if (pathname.endsWith("/")) pathname += "index.html"
 
   e.respondWith(
@@ -46,7 +58,7 @@ function serve(e) {
 
       const driver = await getDriver(inode[1])
       const blob = await driver.open(pathname)
-      const { headers } = getPathInfos(pathname, { headers: true })
+      headers = getPathInfos(pathname, { headers }).headers
       return new Response(blob, { headers })
     })(),
   )
@@ -54,7 +66,9 @@ function serve(e) {
 
 function proxy(e) {
   let { pathname, search } = new URL(e.request.url)
-  if (search.includes("clear-site-data")) return
+  let headers = getHeaders(search)
+  if (headers === false) return
+
   if (pathname.endsWith("/")) pathname += "index.html"
 
   e.respondWith(
@@ -66,7 +80,7 @@ function proxy(e) {
       if (!client) return fromNetwork(e)
 
       const blob = await ipc.to(client).sendOnce("42_VHOST_PROXY_REQ", pathname)
-      const { headers } = getPathInfos(pathname, { headers: true })
+      headers = getPathInfos(pathname, { headers }).headers
       return new Response(blob, { headers })
     })(),
   )

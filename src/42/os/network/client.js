@@ -2,6 +2,11 @@
 import system from "../../system.js"
 import ipc from "../../core/ipc.js"
 import listen from "../../fabric/event/listen.js"
+import unregisterServices from "./client/unregisterServices.js"
+
+if (location.search.includes("clear-site-data")) {
+  if (await unregisterServices()) location.reload()
+}
 
 class Client {
   get controller() {
