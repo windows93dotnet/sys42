@@ -21,7 +21,11 @@ export async function nodeInternals() {
     )
 }
 
-const NODE_INTERNALS = isNode ? await nodeInternals() : []
+let NODE_INTERNALS = []
+if (isNode) {
+  // Don't use top-level await because it's forbidden in Service Worker
+  nodeInternals().then((arr) => (NODE_INTERNALS = arr))
+}
 
 const errorEventToStackframe = (err) =>
   stackframe({
