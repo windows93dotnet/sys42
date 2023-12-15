@@ -16,8 +16,7 @@ function hex2arrayBuffer(data) {
   const length = data.length / 2
   const ret = new Uint8Array(length)
   for (let i = 0; i < length; ++i) {
-    // eslint-disable-next-line unicorn/prefer-string-slice
-    ret[i] = Number.parseInt(data.substr(i * 2, 2), 16)
+    ret[i] = Number.parseInt(data.slice(i * 2, i * 2 + 2), 16)
   }
 
   return ret.buffer

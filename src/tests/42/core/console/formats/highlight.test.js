@@ -1,5 +1,5 @@
 import test from "../../../../../42/test.js"
-import highlight from "../../../../../42/core/console/formats/highlight.js"
+import highlight from "../../../../../42/core/console/formatters/highlight.js"
 
 import log from "../../../../../42/core/log.js"
 

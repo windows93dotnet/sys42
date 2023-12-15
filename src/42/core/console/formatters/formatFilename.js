@@ -1,11 +1,11 @@
-import parsePath from "../../../core/path/core/parsePath.js"
+import parsePath from "../../path/core/parsePath.js"
 
 import inBackend from "../../env/runtime/inBackend.js"
 import isObject from "../../../fabric/type/any/is/isObject.js"
 
 import configure from "../../configure.js"
 import { esc } from "../logUtils.js"
-import shortenFilename from "../../../core/path/shortenFilename.js"
+import shortenFilename from "../../path/shortenFilename.js"
 import bytesize from "../../../fabric/binary/bytesize.js"
 
 const DEFAULTS = {

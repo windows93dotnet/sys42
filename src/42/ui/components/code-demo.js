@@ -1,7 +1,7 @@
 import Component from "../classes/Component.js"
 import stringify from "../../fabric/type/any/stringify.js"
-import highlight from "../../core/console/formats/highlight.js"
-import logAsContent from "../../core/console/logAsContent.js"
+import highlight from "../../core/console/formatters/highlight.js"
+import logAsPlan from "../../core/console/logAsPlan.js"
 
 const OPEN = `#OPEN_TEMPLATE_${42}`
 const CLOSE = `#CLOSE_TEMPLATE_${42}`
@@ -36,7 +36,7 @@ export class CodeDemo extends Component {
       .replaceAll(OPEN, escapeTemplate ? "\\\\{\\{" : `{${"{"}`)
       .replaceAll(CLOSE, escapeTemplate ? "\\}\\}" : "}}")
 
-    content = logAsContent(content)
+    content = logAsPlan(content)
 
     return [
       {

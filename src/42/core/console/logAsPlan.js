@@ -24,6 +24,6 @@ export function formatLog(tokens) {
   return out
 }
 
-export default function logAsContent(str) {
+export default function logAsPlan(str) {
   return formatLog(parseLogTemplate(str))
 }
