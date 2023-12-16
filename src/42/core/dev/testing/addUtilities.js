@@ -28,10 +28,10 @@ import stringify from "../../../fabric/type/any/stringify.js"
 import system from "../../../system.js"
 import trap from "../../../fabric/type/error/trap.js"
 import uid from "../../uid.js"
+import until from "../../../fabric/type/promise/until.js"
 import untilNextRepaint from "../../../fabric/type/promise/untilNextRepaint.js"
 import untilNextTask from "../../../fabric/type/promise/untilNextTask.js"
 import untilRepaint from "../../../fabric/type/promise/untilRepaint.js"
-import when from "../../../fabric/type/promise/when.js"
 
 function pickValues(obj, key = "textContent") {
   const out = {}
@@ -235,9 +235,9 @@ export default function addUtilities(item, options) {
     system,
     trap,
     uid,
+    until,
     untilNextRepaint,
     untilNextTask,
     untilRepaint,
-    when,
   })
 }

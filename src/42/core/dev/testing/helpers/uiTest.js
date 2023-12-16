@@ -80,7 +80,7 @@ export default function uiTest(fn, sbs) {
 
       const promise = el.close()
       await (context
-        ? t.utils.when(
+        ? t.utils.until(
             context,
             "uidialogafterclose",
             ({ detail }) => detail.opener === opener,

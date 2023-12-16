@@ -803,7 +803,7 @@ test("actions", async (t) => {
 })
 
 test.serial("actions", "error", async (t) => {
-  let promise = t.utils.when(document.body, "error", { prevent: true })
+  let promise = t.utils.until(document.body, "error", { prevent: true })
 
   const app = await t.utils.decay(
     ui(t.utils.dest({ connect: true }), {
@@ -822,7 +822,7 @@ test.serial("actions", "error", async (t) => {
 
   t.is(app.el.innerHTML, "a ")
 
-  promise = t.utils.when(document.body, "error", { prevent: true })
+  promise = t.utils.until(document.body, "error", { prevent: true })
   app.state.foo = "x"
 
   e = await promise

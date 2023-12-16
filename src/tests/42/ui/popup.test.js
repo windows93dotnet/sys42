@@ -146,7 +146,7 @@ test.ui.flaky("popup behavior", async (t, { decay, dest, pickValues }) => {
       "popup button should be closed",
     )
 
-    await puppet(btn).dispatch("pointerdown").when("uipopupopen")
+    await puppet(btn).dispatch("pointerdown").until("uipopupopen")
 
     t.is(
       btn.getAttribute("aria-expanded"),
@@ -160,7 +160,7 @@ test.ui.flaky("popup behavior", async (t, { decay, dest, pickValues }) => {
     let popupClosePromise
 
     if (options?.close) {
-      popupClosePromise = t.utils.when("uipopupclose")
+      popupClosePromise = t.utils.until("uipopupclose")
       await puppet(options.close).click()
     }
 
@@ -189,7 +189,7 @@ test.ui.flaky("popup behavior", async (t, { decay, dest, pickValues }) => {
         menuDialogIframe: String(cnt),
       })
 
-      popupClosePromise = t.utils.when("uipopupclose")
+      popupClosePromise = t.utils.until("uipopupclose")
 
       // popup is still open
       incr = document.querySelector(sel)

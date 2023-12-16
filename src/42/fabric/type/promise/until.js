@@ -3,7 +3,7 @@ import cleanupEvent from "../../event/cleanupEvent.js"
 
 const SPLIT_REGEX = /\s*(\|\||&&|\+)\s*/
 
-export default async function when(target, events, options) {
+export default async function until(target, events, options) {
   if (typeof target === "string") {
     options = events
     events = target

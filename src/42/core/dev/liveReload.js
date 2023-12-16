@@ -7,7 +7,7 @@ import log from "../log.js"
 import preload from "../load/preload.js"
 import inOpaqueOrigin from "../env/realm/inOpaqueOrigin.js"
 
-import when from "../../fabric/type/promise/when.js"
+import until from "../../fabric/type/promise/until.js"
 import sleep from "../../fabric/type/promise/sleep.js"
 
 const task = {
@@ -70,7 +70,7 @@ async function updateElement(el, url, key) {
 
   await Promise.race([
     sleep(500),
-    when(clone, "load || error || readystatechange", { race: true }),
+    until(clone, "load || error || readystatechange", { race: true }),
   ])
 
   el.removeAttribute(key)

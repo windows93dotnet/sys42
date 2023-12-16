@@ -3,7 +3,7 @@ import simulate from "../../fabric/event/simulate.js"
 import waitFor from "../../fabric/dom/waitFor.js"
 import mark from "../../fabric/type/any/mark.js"
 import sleep from "../../fabric/type/promise/sleep.js"
-import when from "../../fabric/type/promise/when.js"
+import until from "../../fabric/type/promise/until.js"
 import arrify from "../../fabric/type/any/arrify.js"
 import DOMQuery from "../../fabric/classes/DOMQuery.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
@@ -56,7 +56,7 @@ const makePuppet = () => {
   const instance = chainable(
     {
       order: [],
-      whens: [],
+      undones: [],
       pendingKeys: new Map(),
 
       click({ data }) {
@@ -160,12 +160,12 @@ const makePuppet = () => {
         simulate(target, event, init)
       },
 
-      when({ data }, ...args) {
-        data.whens.push(() => when(...args))
-      },
-
       sleep({ data }, ms) {
         data.order.push(async (target) => sleep(target, ms))
+      },
+
+      until({ data }, ...args) {
+        data.undones.push(() => until(...args))
       },
 
       untilNextTask({ data }, ms) {
@@ -217,11 +217,11 @@ const makePuppet = () => {
           }
         }
 
-        await (data.whens
-          ? Promise.all(data.whens.map((x) => x()))
+        await (data.undones
+          ? Promise.all(data.undones.map((x) => x()))
           : serial(undones))
 
-        data.whens.length = 0
+        data.undones.length = 0
         data.order.length = 0
         undones.length = 0
         delete data._stack

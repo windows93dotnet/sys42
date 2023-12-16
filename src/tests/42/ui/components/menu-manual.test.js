@@ -16,7 +16,7 @@ const { href } = new URL(
   import.meta.url,
 )
 
-const { when } = test.utils
+const { until } = test.utils
 
 const makeDialogMenuitem = (name) => ({
   label: `Dialog`,
@@ -270,11 +270,11 @@ if (inTop) {
     await t.puppet("#btnMenuTop").click()
 
     // menu is open
-    await when("uipopupopen")
+    await until("uipopupopen")
     t.isElement(t.puppet.$("ui-menu"))
 
     await t.puppet("#menuItemDialogPopupTop").click()
-    await when("uidialogopen")
+    await until("uidialogopen")
 
     // menu is closed
     t.isNull(t.puppet.$("ui-menu"))
@@ -341,7 +341,7 @@ if (inTop) {
 
     const iframe = t.puppet.$("ui-sandbox iframe")
 
-    t.step(await when("uipopupopen"))
+    t.step(await until("uipopupopen"))
     t.step(await t.puppet("#menuItemIncrPopupIframe").click())
     t.step(await iframe.contentWindow.sys42.once("ipc.plugin:end-of-update"))
 
