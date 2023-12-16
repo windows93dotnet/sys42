@@ -37,7 +37,7 @@ const selfExecute = debounce(async (sbs) => {
   trap()
 }, 1)
 
-async function whenIframesReady(t, sbs, retries = 300) {
+async function untilIframesReady(t, sbs, retries = 300) {
   const iframes = document.querySelectorAll('iframe[src$="test=true"]')
 
   if (iframes.length > 0) {
@@ -110,7 +110,7 @@ export default function uiTest(fn, sbs) {
 
     t.timeout("reset")
 
-    await whenIframesReady(t, sbs)
+    await untilIframesReady(t, sbs)
 
     t.timeout("reset")
   }

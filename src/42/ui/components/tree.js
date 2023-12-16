@@ -1,7 +1,7 @@
 import Component from "../classes/Component.js"
 import configure from "../../core/configure.js"
 import removeItem from "../../fabric/type/array/removeItem.js"
-import nextCycle from "../../fabric/type/promise/nextCycle.js"
+import untilNextTask from "../../fabric/type/promise/untilNextTask.js"
 import { objectifyPlan } from "../normalize.js"
 
 export class Tree extends Component {
@@ -142,7 +142,7 @@ export class Tree extends Component {
         watch: {
           // Watch if item has a defined expanded state
           async expanded(state, stage) {
-            await nextCycle()
+            await untilNextTask()
             const { addr } = state
 
             if (state.expanded === true) {

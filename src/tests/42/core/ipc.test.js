@@ -137,7 +137,7 @@ const contexts = {
       "_blank",
     )
     decay(target)
-    await t.utils.nextCycle()
+    await t.utils.untilNextTask()
     window.focus()
     return target
   },

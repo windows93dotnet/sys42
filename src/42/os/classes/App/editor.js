@@ -1,5 +1,5 @@
 import supportInstall from "../../../core/env/supportInstall.js"
-import nextCycle from "../../../fabric/type/promise/nextCycle.js"
+import untilNextTask from "../../../fabric/type/promise/untilNextTask.js"
 // import inPWA from "../../../core/env/runtime/inPWA.js"
 
 const editor = {
@@ -150,7 +150,7 @@ editor.init = (app) => {
 
   async function getBlob($file, path) {
     // Allow any reactive pending updates to happen
-    await nextCycle()
+    await untilNextTask()
     await app.stage.reactive.pendingUpdate
 
     const [res] = await app.send("encode", $file, path)

@@ -1,6 +1,6 @@
 import explorer from "../components/explorer.js"
 import isHashmapLike from "../../fabric/type/any/is/isHashmapLike.js"
-import nextCycle from "../../fabric/type/promise/nextCycle.js"
+import untilNextTask from "../../fabric/type/promise/untilNextTask.js"
 import { objectifyPlan } from "../normalize.js"
 import configure from "../../core/configure.js"
 import getBasename from "../../core/path/core/getBasename.js"
@@ -78,7 +78,7 @@ export async function filePickerSave(path, options) {
 
   if (!res.ok || !res.name) return { ok: false }
 
-  await nextCycle()
+  await untilNextTask()
 
   if (!res.path.endsWith("/")) res.path += "/"
   path = res.path + res.name

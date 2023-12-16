@@ -7,7 +7,7 @@ import when from "../../fabric/type/promise/when.js"
 import arrify from "../../fabric/type/any/arrify.js"
 import DOMQuery from "../../fabric/classes/DOMQuery.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
-import nextCycle from "../../fabric/type/promise/nextCycle.js"
+import untilNextTask from "../../fabric/type/promise/untilNextTask.js"
 import serial from "../../fabric/type/promise/serial.js"
 
 const clickOrder = [
@@ -105,11 +105,11 @@ const makePuppet = () => {
             simulate(target, "keyup", init),
           )
           simulate(target, "keydown", init)
-          await nextCycle()
+          await untilNextTask()
 
           simulate(target, "keyup", init)
           data.pendingKeys.delete(mark(init))
-          await nextCycle()
+          await untilNextTask()
         })
       },
 
@@ -168,8 +168,8 @@ const makePuppet = () => {
         data.order.push(async (target) => sleep(target, ms))
       },
 
-      nextCycle({ data }, ms) {
-        data.order.push(async (target) => nextCycle(target, ms))
+      untilNextTask({ data }, ms) {
+        data.order.push(async (target) => untilNextTask(target, ms))
       },
 
       target({ data }, target, options) {

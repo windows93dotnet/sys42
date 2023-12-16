@@ -6,7 +6,7 @@ import postrenderAutofocus from "../utils/postrenderAutofocus.js"
 import rpc from "../../core/ipc/rpc.js"
 
 import omit from "../../fabric/type/object/omit.js"
-import nextCycle from "../../fabric/type/promise/nextCycle.js"
+import untilNextTask from "../../fabric/type/promise/untilNextTask.js"
 import queueTask from "../../fabric/type/function/queueTask.js"
 import emittable from "../../fabric/traits/emittable.js"
 import dispatch from "../../fabric/event/dispatch.js"
@@ -106,7 +106,7 @@ export class Dialog extends Component {
   }
 
   async ok() {
-    await nextCycle()
+    await untilNextTask()
     return this.close(true)
   }
 

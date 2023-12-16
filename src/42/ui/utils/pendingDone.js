@@ -1,4 +1,4 @@
-import nextCycle from "../../fabric/type/promise/nextCycle.js"
+import untilNextTask from "../../fabric/type/promise/untilNextTask.js"
 
 export async function pendingDone(stage, n = 10) {
   await Promise.all([
@@ -10,7 +10,7 @@ export async function pendingDone(stage, n = 10) {
 
   if (stage.waitlistPending.length > 0 || stage.waitlistComponents.length > 0) {
     if (n < 0) throw new Error("Too much recursion")
-    await nextCycle()
+    await untilNextTask()
     await pendingDone(stage, --n)
   }
 }

@@ -11,8 +11,6 @@ import idle from "../../../fabric/type/promise/idle.js"
 import kill from "../../../fabric/type/any/kill.js"
 import load from "../../load.js"
 import log, { Log, CONSOLE_KEYS } from "../../log.js"
-import nextCycle from "../../../fabric/type/promise/nextCycle.js"
-import nextRepaint from "../../../fabric/type/promise/nextRepaint.js"
 import noop from "../../../fabric/type/function/noop.js"
 import omit from "../../../fabric/type/object/omit.js"
 import on from "../../../fabric/event/on.js"
@@ -22,16 +20,18 @@ import preload from "../../load/preload.js"
 import prettify from "../../formats/markup/prettify.js"
 import puppet from "../puppet.js"
 import queueTask from "../../../fabric/type/function/queueTask.js"
-import repaint from "../../../fabric/type/promise/repaint.js"
 import serial from "../../../fabric/type/promise/serial.js"
 import shell from "../../shell.js"
 import sleep from "../../../fabric/type/promise/sleep.js"
 import stream from "../../stream.js"
 import stringify from "../../../fabric/type/any/stringify.js"
 import system from "../../../system.js"
-import uid from "../../uid.js"
-import when from "../../../fabric/type/promise/when.js"
 import trap from "../../../fabric/type/error/trap.js"
+import uid from "../../uid.js"
+import untilNextRepaint from "../../../fabric/type/promise/untilNextRepaint.js"
+import untilNextTask from "../../../fabric/type/promise/untilNextTask.js"
+import untilRepaint from "../../../fabric/type/promise/untilRepaint.js"
+import when from "../../../fabric/type/promise/when.js"
 
 function pickValues(obj, key = "textContent") {
   const out = {}
@@ -218,8 +218,6 @@ export default function addUtilities(item, options) {
     kill,
     load,
     log,
-    nextCycle,
-    nextRepaint,
     noop,
     omit,
     parallel,
@@ -229,7 +227,6 @@ export default function addUtilities(item, options) {
     prettify,
     puppet,
     queueTask,
-    repaint,
     serial,
     shell,
     sleep,
@@ -238,6 +235,9 @@ export default function addUtilities(item, options) {
     system,
     trap,
     uid,
+    untilNextRepaint,
+    untilNextTask,
+    untilRepaint,
     when,
   })
 }

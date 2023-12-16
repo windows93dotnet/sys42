@@ -24,7 +24,7 @@ test.serial.skip("auto release keys", async (t) => {
 
   t.alike(keyboard.keys, { Control: true, Enter: true })
 
-  await t.utils.nextCycle()
+  await t.utils.untilNextTask()
 
   t.alike(keyboard.keys, {})
 })

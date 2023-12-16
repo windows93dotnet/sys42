@@ -1,4 +1,4 @@
-export default function defer() {
+export function defer() {
   const deferred = Object.create(null)
 
   deferred.isPending = true
@@ -23,3 +23,5 @@ export default function defer() {
 
   return deferred
 }
+
+export default defer

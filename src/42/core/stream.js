@@ -13,7 +13,7 @@ if ("DecompressionStream" in globalThis === false) {
 }
 
 import combineArrayBufferView from "../fabric/binary/combineArrayBufferView.js"
-import nextCycle from "../fabric/type/promise/nextCycle.js"
+import untilNextTask from "../fabric/type/promise/untilNextTask.js"
 import sleep from "../fabric/type/promise/sleep.js"
 
 import slicePipe from "./stream/pipes/slicePipe.js"
@@ -278,7 +278,7 @@ export function percentPipe(total, cb) {
   )
 }
 
-export function pressurePipe(fn = nextCycle) {
+export function pressurePipe(fn = untilNextTask) {
   if (typeof fn === "number") {
     const ms = fn
     fn = async () => sleep(ms)

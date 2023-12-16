@@ -1,6 +1,6 @@
 import DropzoneHint from "./DropzoneHint.js"
 import appendCSS from "../../../fabric/dom/appendCSS.js"
-import repaint from "../../../fabric/type/promise/repaint.js"
+import untilRepaint from "../../../fabric/type/promise/untilRepaint.js"
 import sleep from "../../../fabric/type/promise/sleep.js"
 
 export class SlideDropzoneHint extends DropzoneHint {
@@ -101,7 +101,7 @@ export class SlideDropzoneHint extends DropzoneHint {
     // Animate empty holes
     // -------------------
     this.css.blank.update(enterCss.join("\n"))
-    await repaint()
+    await untilRepaint()
     this.css.transition.enable()
     this.css.blank.disable()
 
@@ -166,7 +166,7 @@ export class SlideDropzoneHint extends DropzoneHint {
         translate: ${this.blank};
       }`)
 
-    await repaint()
+    await untilRepaint()
     this.css.transition.enable()
 
     if (!adopteds?.length) {

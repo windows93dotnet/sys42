@@ -2,7 +2,7 @@
 
 import ensureElement from "./ensureElement.js"
 import distribute from "../type/object/distribute.js"
-import repaint from "../type/promise/repaint.js"
+import untilRepaint from "../type/promise/untilRepaint.js"
 
 const OPTIONS_KEYWORDS = [
   "ms",
@@ -107,7 +107,7 @@ export async function animateFrom(el, options, duration = 240) {
     }
 
     // ensure el.offsetHeight is defined
-    await repaint()
+    await untilRepaint()
 
     if (hasHeightAnim) {
       el.style.height = heightBkp

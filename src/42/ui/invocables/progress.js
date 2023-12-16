@@ -76,9 +76,7 @@ export function progress(total, options) {
     const p = (100 * bytes) / total
     state.label = `Progress - ${Math.round(p)}%`
     state.value = p
-    state.description = `\
-${bytesize(bytes)} / \
-${bytesize(total)}`
+    state.description = `${bytesize(bytes)} / ${bytesize(total)}`
   })
 
   const ts = new TransformStream({

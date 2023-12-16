@@ -120,12 +120,12 @@ test("stage", async (t) => {
   const child = create(stage, "span", { class: "{{foo}}" })
   const el = create(stage, "div", { class: "derp" }, child)
   el.append(child)
-  await t.utils.nextRepaint()
+  await t.utils.untilNextRepaint()
 
   t.is(el.outerHTML, '<div class="derp"><span class="bar"></span></div>')
 
   stage.reactive.set("foo", "baz")
-  await t.utils.nextRepaint()
+  await t.utils.untilNextRepaint()
 
   t.is(el.outerHTML, '<div class="derp"><span class="baz"></span></div>')
 })

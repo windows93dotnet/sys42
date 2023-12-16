@@ -5,9 +5,7 @@ export function abortable(signal, promise) {
   return Promise.race([
     promise,
     new Promise((_, reject) => {
-      signal.addEventListener("abort", () => {
-        reject(signal.reason)
-      })
+      signal.addEventListener("abort", () => reject(signal.reason))
     }),
   ])
 }

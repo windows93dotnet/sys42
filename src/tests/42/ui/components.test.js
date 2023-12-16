@@ -479,7 +479,7 @@ test.tasks(
       }
 
       if (defer) {
-        await Promise.all([defer, t.utils.nextCycle()])
+        await Promise.all([defer, t.utils.untilNextTask()])
       }
     })
   },
@@ -2540,7 +2540,7 @@ test("same own scope components", async (t) => {
   await app
 
   // check if removed component doesn't erase state.$ui
-  await t.utils.nextRepaint()
+  await t.utils.untilNextRepaint()
 
   el = app.el.querySelector("ui-t-own-scope")
   t.is(el.foo, "a")

@@ -1,5 +1,7 @@
 import queueTask from "../function/queueTask.js"
 
-export default async function nextCycle() {
+export async function untilNextTask() {
   await new Promise((resolve) => queueTask(resolve))
 }
+
+export default untilNextTask
