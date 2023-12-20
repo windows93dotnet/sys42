@@ -10,6 +10,7 @@
   --menu-bsh: var(--outset-bsh);
   --menu-w: var(--ctrl-w);
   --menu-picto-size: var(--picto-size);
+  --menu-empty-warning: "<empty menu>";
 }
 
 ui-menu,
@@ -157,6 +158,11 @@ ui-menu > li > button > :first-child:not(ui-picto) {
 
 :is(ui-menu, ui-menubar) > li > button:focus {
   outline: none;
+}
+
+:is(ui-menu, ui-menubar):empty::after {
+  content: var(--menu-empty-warning);
+  opacity: 0.5;
 }
 
 /* debug */

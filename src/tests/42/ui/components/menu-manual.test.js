@@ -137,6 +137,10 @@ const makeMenu = (name) => {
     },
     "---",
     {
+      label: "Empty",
+      items: [],
+    },
+    {
       label: "{{cnt}}", //
       id: `menuItemIncr${name}${__}`,
       picto: "plus",
@@ -209,6 +213,9 @@ const makeDemo = ({ content } = {}) => {
     "\n\n",
     "\n\n",
     { tag: "number", bind: "cnt", compact: true },
+    "\n\n",
+    "\n\n",
+    { tag: "ui-menu" },
   ]
 
   return {

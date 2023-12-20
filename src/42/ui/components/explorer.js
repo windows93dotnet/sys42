@@ -122,7 +122,7 @@ export class Explorer extends Component {
           {
             label: "File",
             items: [
-              { label: "Exit", click: "{{dialog.close()}}" }, //
+              { if: "{{dialog}}", label: "Exit", click: "{{dialog.close()}}" }, //
             ],
           },
           {
