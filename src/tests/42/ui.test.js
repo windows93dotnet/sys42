@@ -45,6 +45,24 @@ hello<br>world<hr>
   )
 })
 
+test("dataset", (t) => {
+  const app = t.utils.decay(
+    ui(t.utils.dest(), {
+      tag: "em",
+      dataset: {
+        "camelCase": "foo",
+        "kebab-case": "bar",
+      },
+    }),
+  )
+  t.is(
+    app.el.innerHTML,
+    '<em data-camel-case="foo" data-kebab-case="bar"></em>',
+  )
+  t.is(app.el.firstChild.dataset.camelCase, "foo")
+  t.is(app.el.firstChild.dataset.kebabCase, "bar")
+})
+
 /* reactivity
 ============= */
 

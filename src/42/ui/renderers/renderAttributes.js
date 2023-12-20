@@ -1,6 +1,7 @@
 import { setAttribute } from "../../fabric/dom/setAttributes.js"
 import { setStyle } from "../../fabric/dom/setStyles.js"
 import setControlData from "../../fabric/dom/setControlData.js"
+import toKebabCase from "../../fabric/type/string/case/toKebabCase.js"
 import register from "../register.js"
 
 function renderClasses(el, stage, classes) {
@@ -69,7 +70,7 @@ export default function renderAttributes(el, stage, attrs, prefix = "") {
         setControlData(el, val)
       }
     } else {
-      key = prefix + key
+      key = prefix + (prefix === "data-" ? toKebabCase(key) : key)
       if (typeof val === "function") {
         register(stage, val, async (val) => setAttribute(el, key, await val))
       } else {

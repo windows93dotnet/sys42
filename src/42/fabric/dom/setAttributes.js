@@ -2,10 +2,11 @@
 import uid from "../../core/uid.js"
 import setStyles from "./setStyles.js"
 import setClasses from "./setClasses.js"
+import toKebabCase from "../type/string/case/toKebabCase.js"
 
 export function setDataset(el, obj) {
   for (const [key, val] of Object.entries(obj)) {
-    el.setAttribute(`data-${key}`, val)
+    el.setAttribute(`data-${toKebabCase(key)}`, val)
   }
 
   return el
