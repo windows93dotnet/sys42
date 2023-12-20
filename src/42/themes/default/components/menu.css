@@ -167,10 +167,10 @@ ui-menu > li > button > :first-child:not(ui-picto) {
 
 /* debug */
 
-/* :root.debug #menu-aim-triangle {
+:root.debug #menu-aim-triangle {
   fill: rgb(255 255 0 / 0.3) !important;
 }
 
 :root.debug :focus {
   box-shadow: 0 0 0 5px rgb(0 255 0 / 0.3) !important;
-} */
+}

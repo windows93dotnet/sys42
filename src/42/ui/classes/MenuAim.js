@@ -14,7 +14,7 @@ const DEFAULTS = {
 
 const ns = "http://www.w3.org/2000/svg"
 
-export class Aim {
+export class MenuAim {
   constructor(options) {
     this.el = document.createElementNS(ns, "svg")
     this.el.id = "menu-aim"
@@ -201,4 +201,4 @@ export class Aim {
   }
 }
 
-export default Aim
+export default MenuAim

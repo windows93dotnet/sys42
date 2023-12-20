@@ -6,7 +6,7 @@ import { closeOthers } from "../popup.js"
 import listen from "../../fabric/event/listen.js"
 import throttle from "../../fabric/type/function/throttle.js"
 import ipc from "../../core/ipc.js"
-import Aim from "../classes/Aim.js"
+import MenuAim from "../classes/MenuAim.js"
 import isIterable from "../../fabric/type/any/is/isIterable.js"
 
 const menuItemSelector = `
@@ -49,33 +49,25 @@ function focusSequence(menu, dir) {
   }
 }
 
-/* Menu-aim
+/* Menu aim
 =========== */
-// const selector = ":is(ui-menu, ui-menubar) > li"
-const selector = "ui-menu > li"
+const selector = ":is(ui-menu, ui-menubar) > li"
 let listenPointermove
 let forgetPointermove
 
 if (inTop) {
-  const aim = new Aim({ selector })
+  const aim = new MenuAim({ selector })
 
   listen({
     "selector": "ui-menu",
     "ui:popup.open"(e, menu) {
-      // TODO: check if menu-aim is really needed on menubar
-      if (menu.positionable.config.preset !== "menuitem") return
-
-      const direction = "horizontal"
-
-      // const direction =
-      //   menu.positionable.config.preset === "menuitem"
-      //     ? "horizontal"
-      //     : "vertical"
+      const direction =
+        menu.positionable.config.preset === "menuitem"
+          ? "horizontal"
+          : "vertical"
 
       aim.setTarget(menu, direction)
-      menu.positionable.on("place", async () => {
-        aim.setTarget(menu, direction)
-      })
+      menu.positionable.on("place", async () => aim.setTarget(menu, direction))
     },
     "ui:popup.close"(e, menu) {
       if (menu === aim.target) aim.reset()
