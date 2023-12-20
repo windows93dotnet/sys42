@@ -82,7 +82,7 @@ export default function uiTest(fn, sbs) {
       await (context
         ? t.utils.until(
             context,
-            "uidialogafterclose",
+            "ui:dialog.after-close",
             ({ detail }) => detail.opener === opener,
           )
         : promise)
@@ -99,7 +99,7 @@ export default function uiTest(fn, sbs) {
       })
     } else {
       t.utils.on({
-        "uidialogopen || uipopupopen"(e, target) {
+        "ui:dialog.open || ui:popup.open"(e, target) {
           t.utils.decay(unsee(target))
         },
       })

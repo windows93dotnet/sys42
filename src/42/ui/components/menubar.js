@@ -29,8 +29,8 @@ export class Menubar extends Menu {
       displayPicto: false,
       shortcuts: {
         initialExpand: "pointerdown",
-        openSubmenu: "uitriggersubmenu || Enter || Space || ArrowDown",
-        closeSubmenu: "uitriggersubmenu || pointerdown || ArrowLeft",
+        openSubmenu: "ui:trigger-submenu || Enter || Space || ArrowDown",
+        closeSubmenu: "ui:trigger-submenu || pointerdown || ArrowLeft",
       },
     },
   }

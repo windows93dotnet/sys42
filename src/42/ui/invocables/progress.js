@@ -55,7 +55,7 @@ export function progress(total, options) {
   let el
 
   const forget = listen({
-    uidialogopen(e, target) {
+    "ui:dialog.open"(e, target) {
       if (target.id === config.dialog.id) {
         // state = target.stage.reactive.get(target.stage.scope)
         state = target.stage.state

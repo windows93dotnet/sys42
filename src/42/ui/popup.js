@@ -130,7 +130,7 @@ export const popup = rpc(
       removeItem(popupsList, instance)
       if (instance.ready) await instance.ready
 
-      const event = dispatch(el, "uipopupbeforeclose", { cancelable: true })
+      const event = dispatch(el, "ui:popup.before-close", { cancelable: true })
       if (event.defaultPrevented) return
 
       unsee(el)
@@ -140,7 +140,7 @@ export const popup = rpc(
         out.resolve({ opener, focusBack, ...options })
         requestIdleCallback(async () => {
           await stage.pendingDone
-          dispatch(el, "uipopupclose")
+          dispatch(el, "ui:popup.close")
           stage.cancel("ui popup closed")
           el.remove()
         })
@@ -188,7 +188,7 @@ export const popup = rpc(
     if (autofocus === "menu") el.focus()
     else if (autofocus !== false) focus.autofocus(el)
 
-    dispatch(el, "uipopupopen")
+    dispatch(el, "ui:popup.open")
 
     return out
   },

@@ -175,7 +175,7 @@ export default class Resource {
         dispatch(this.el, deserializeError(err))
       })
       .on("42_IFRAME_BLUR", () => {
-        dispatch(this.el, "uiiframeblur", { bubbles: true })
+        dispatch(this.el, "ui:iframe.blur")
       })
   }
 

@@ -279,11 +279,11 @@ if (inTop) {
     await t.puppet("#btnMenuTop").click()
 
     // menu is open
-    await until("uipopupopen")
+    await until("ui:popup.open")
     t.isElement(t.puppet.$("ui-menu"))
 
     await t.puppet("#menuItemDialogPopupTop").click()
-    await until("uidialogopen")
+    await until("ui:dialog.open")
 
     // menu is closed
     t.isNull(t.puppet.$("ui-menu"))
@@ -350,7 +350,7 @@ if (inTop) {
 
     const iframe = t.puppet.$("ui-sandbox iframe")
 
-    t.step(await until("uipopupopen"))
+    t.step(await until("ui:popup.open"))
     t.step(await t.puppet("#menuItemIncrPopupIframe").click())
     t.step(await iframe.contentWindow.sys42.once("ipc.plugin:end-of-update"))
 

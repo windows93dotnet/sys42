@@ -79,7 +79,7 @@ export class Dialog extends Component {
       { pointerdown: "{{activate()}}" },
       { focusin: activateIfFocused },
       globalThis,
-      { "blur || uiiframeblur": activateIfFocused },
+      { "blur || ui:iframe.blur": activateIfFocused },
     ],
   }
 
@@ -94,13 +94,13 @@ export class Dialog extends Component {
 
   async close(ok = false) {
     if (!this.stage) return
-    const event = dispatch(this, "uidialogbeforeclose", { cancelable: true })
+    const event = dispatch(this, "ui:dialog.before-close", { cancelable: true })
     if (event.defaultPrevented) return
     const data = omit(this.stage.reactive.data, ["$ui", "$computed"])
     if (ok) data.ok = true
     this.emit("close", data)
     await this.destroy({ remove: false })
-    dispatch(this, "uidialogclose")
+    dispatch(this, "ui:dialog.close")
     await this.remove()
     return data
   }
@@ -205,7 +205,7 @@ export class Dialog extends Component {
     this.activate()
 
     this.emit("open", this)
-    dispatch(this, "uidialogopen")
+    dispatch(this, "ui:dialog.open")
   }
 }
 
@@ -251,7 +251,7 @@ export const dialog = rpc(
 
     unmarshalling({ res, opener }) {
       document.querySelector(`#${opener}`)?.focus()
-      dispatch(window, "uidialogafterclose", { detail: { opener } })
+      dispatch(window, "ui:dialog.after-close", { detail: { opener } })
       return res
     },
   },

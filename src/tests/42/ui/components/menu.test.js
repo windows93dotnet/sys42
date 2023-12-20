@@ -97,7 +97,7 @@ test.ui("submenu close previous submenu", async (t) => {
 
   await new Promise((resolve) => {
     t.utils.on(window.top, {
-      uipopupclose({ target }) {
+      "ui:popup.close"({ target }) {
         if (target.opener === "listTrigger") resolve()
       },
     })

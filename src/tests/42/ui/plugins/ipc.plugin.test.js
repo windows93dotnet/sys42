@@ -116,7 +116,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
 
   await new Promise((resolve) => {
     let cnt = 0
-    t.utils.on({ uidialogopen: () => ++cnt === 3 && resolve() })
+    t.utils.on({ "ui:dialog.open": () => ++cnt === 3 && resolve() })
   })
 
   t.timeout("reset")

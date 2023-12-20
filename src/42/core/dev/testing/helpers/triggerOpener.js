@@ -59,7 +59,7 @@ export async function triggerOpener(t, open, ...args) {
 
   // Always restore the original ID on close
   const forget = listen(top, {
-    "uidialogclose || uipopupclose"({ target }) {
+    "ui:dialog.close || ui:popup.close"({ target }) {
       if (target.opener === newId) {
         forget()
         el.id = originalId
@@ -72,7 +72,7 @@ export async function triggerOpener(t, open, ...args) {
 
   const openPromise = new Promise((resolve, reject) => {
     const forget = listen(top, {
-      async "uidialogopen || uipopupopen"({ target }) {
+      async "ui:dialog.open || ui:popup.open"({ target }) {
         if (target.opener === newId) {
           forget()
 

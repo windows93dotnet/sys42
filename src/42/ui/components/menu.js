@@ -60,8 +60,8 @@ if (inTop) {
   const aim = new Aim({ selector })
 
   listen({
-    selector: "ui-menu",
-    uipopupopen(e, menu) {
+    "selector": "ui-menu",
+    "ui:popup.open"(e, menu) {
       // TODO: check if menu-aim is really needed on menubar
       if (menu.positionable.config.preset !== "menuitem") return
 
@@ -77,7 +77,7 @@ if (inTop) {
         aim.setTarget(menu, direction)
       })
     },
-    uipopupclose(e, menu) {
+    "ui:popup.close"(e, menu) {
       if (menu === aim.target) aim.reset()
     },
   })
@@ -134,8 +134,8 @@ export class Menu extends Component {
       shortcuts: {
         // initialExpand: "pointermove",
         initialExpand: "pointerdown",
-        openSubmenu: "uitriggersubmenu || Enter || Space || ArrowRight",
-        closeSubmenu: "uitriggersubmenu || pointerdown || ArrowLeft",
+        openSubmenu: "ui:trigger-submenu || Enter || Space || ArrowRight",
+        closeSubmenu: "ui:trigger-submenu || pointerdown || ArrowLeft",
       },
     },
   }
@@ -220,7 +220,7 @@ export class Menu extends Component {
 
       if (item.getAttribute("aria-haspopup") === "menu") {
         item.dispatchEvent(
-          new CustomEvent("uitriggersubmenu", {
+          new CustomEvent("ui:trigger-submenu", {
             bubbles: true,
             cancelable: true,
             detail: {
