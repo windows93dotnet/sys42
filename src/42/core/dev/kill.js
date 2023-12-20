@@ -9,6 +9,7 @@ const killKeys = [
   "unregister",
   "terminate",
   "forget",
+  "dispose",
 ]
 
 export default async function kill(val, report) {
@@ -16,7 +17,11 @@ export default async function kill(val, report) {
 
   try {
     if (typeof val === "string") {
-      if (val.startsWith("blob:")) return URL.revokeObjectURL(val) ?? true
+      if (val.startsWith("blob:")) {
+        URL.revokeObjectURL(val)
+        return true
+      }
+
       return false
     }
 
@@ -26,7 +31,10 @@ export default async function kill(val, report) {
     }
 
     for (const key of killKeys) {
-      if (typeof val[key] === "function") return (await val[key]()) ?? true
+      if (typeof val[key] === "function") {
+        await val[key]()
+        return true
+      }
     }
   } catch (err) {
     report?.(err)

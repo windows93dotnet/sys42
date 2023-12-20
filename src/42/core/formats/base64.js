@@ -42,7 +42,7 @@ export function byteLength(str) {
   return ((validLen + placeHoldersLen) * 3) / 4 - placeHoldersLen
 }
 
-export function toArrayBuffer(str) {
+export function base64ToArrayBuffer(str) {
   let tmp
   const lens = getLens(str)
   const validLen = lens[0]
@@ -110,7 +110,7 @@ function encodeChunk(uint8, start, end) {
   return str
 }
 
-export function fromArrayBuffer(buffer) {
+export function base64FromArrayBuffer(buffer) {
   let tmp
   const uint8 = new Uint8Array(buffer)
   const len = uint8.length
@@ -145,11 +145,11 @@ export function fromArrayBuffer(buffer) {
 
 export async function base64Encode(val) {
   const buffer = await ensureArrayBuffer(val)
-  return fromArrayBuffer(buffer)
+  return base64FromArrayBuffer(buffer)
 }
 
 export function base64Decode(val, options) {
-  const buffer = toArrayBuffer(val)
+  const buffer = base64ToArrayBuffer(val)
 
   if (typeof options === "string") options = { encoding: options }
   if (options?.encoding) {
@@ -162,8 +162,8 @@ export function base64Decode(val, options) {
 export const base64 = {
   encode: base64Encode,
   decode: base64Decode,
-  toArrayBuffer,
-  fromArrayBuffer,
+  toArrayBuffer: base64ToArrayBuffer,
+  fromArrayBuffer: base64FromArrayBuffer,
   byteLength,
 }
 
