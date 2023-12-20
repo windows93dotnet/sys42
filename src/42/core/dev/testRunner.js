@@ -12,7 +12,6 @@ const DEFAULTS = {
     alike: { preset: "inspect", traceNullProto: false },
     diff: "inspect",
     truncateTitleParts: 80,
-    keepIframes: false,
   },
   reporter: {
     verbose: undefined,

@@ -2,8 +2,8 @@ import serial from "../../../../fabric/type/promise/serial.js"
 import parallel from "../../../../fabric/type/promise/parallel.js"
 import groupBy from "../../../../fabric/type/array/groupBy.js"
 import idle from "../../../../fabric/type/promise/idle.js"
-import ExecutionContext from "../ExecutionContext.js"
 import serializeError from "../../../../fabric/type/error/serializeError.js"
+import ExecutionContext from "./ExecutionContext.js"
 
 const dummyRootStats = {
   ok: undefined,

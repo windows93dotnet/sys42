@@ -16,8 +16,8 @@ system.DEV = true
 system.testing ??= {
   root: new Suite("#root"),
   suites: new Map(),
+  iframes: new Set(),
   testfiles: {},
-  iframes: [],
   inTestRunner: false,
   manual: false,
   started: false,
@@ -43,6 +43,54 @@ const nestedTestsSerial =
 
 const suitesStack = []
 
+function makeTest(title, data, stack, fn) {
+  if (data.ui) {
+    fn = uiTest(fn, sbs)
+    data.serial = true
+    sbs.current.serial = true
+    sbs.current.timeout = 4500
+  }
+
+  const test = new Test(sbs.current, title, fn)
+  if (data.taskError) test.taskError = data.taskError
+  const s = stack.find((x) => x.filename === sbs.current.filename)
+  test.stackframe = s
+
+  sbs.testfiles[s.filename] ??= Object.create(null)
+  sbs.testfiles[s.filename][s.line] = test
+
+  if (data.failing) test.failing = true
+  if (data.skip) test.skip = true
+  if (data.serial) test.serial = true
+  if (data.flaky) test.flaky = 2
+
+  // nested tests
+  if (sbs.root.running) {
+    if (data.only) {
+      throw new Error('nested tests "only" option is not supported')
+    }
+
+    sbs.current.tests.push(test)
+    const promise = nestedTestsSerial
+      ? sbs.root.currentTest.done.then(() =>
+          test.suite.runTest(test, { nested: true }),
+        )
+      : test.suite.runTest(test, { nested: true })
+
+    if (inIframe) sbs.iframes.add(location.href)
+    sbs.root.currentTest.nesteds.push(promise)
+
+    return promise
+  }
+
+  if (data.only) {
+    sbs.current.onlies.add(test)
+    sbs.root.onlies.add(sbs.current)
+  } else {
+    sbs.current.tests.push(test)
+  }
+}
+
 export const test = chainable(
   [
     "only",
@@ -66,7 +114,7 @@ export const test = chainable(
   ({ data }, ...args) => {
     if (data.noop || data.todo) return
 
-    let fn = args.pop()
+    const fn = args.pop()
 
     if (typeof fn !== "function") {
       throw new TypeError(
@@ -82,54 +130,7 @@ export const test = chainable(
     else if (data.beforeEach) sbs.current.beforeEach = [new Error(), fn]
     else if (data.setup) sbs.current.setups.push([new Error(), fn])
     else if (data.teardown) sbs.current.teardowns.push([new Error(), fn])
-    else {
-      const title = args
-
-      if (data.ui) {
-        fn = uiTest(fn, sbs)
-        data.serial = true
-        sbs.current.serial = true
-        sbs.current.timeout = 4500
-      }
-
-      const test = new Test(sbs.current, title, fn)
-      if (data.taskError) test.taskError = data.taskError
-      const s = stack.find((x) => x.filename === sbs.current.filename)
-      test.stackframe = s
-
-      sbs.testfiles[s.filename] ??= Object.create(null)
-      sbs.testfiles[s.filename][s.line] = test
-
-      if (data.failing) test.failing = true
-      if (data.skip) test.skip = true
-      if (data.serial) test.serial = true
-      if (data.flaky) test.flaky = 2
-
-      // nested tests
-      if (sbs.root.running) {
-        if (data.only) {
-          throw new Error('nested tests "only" option is not supported')
-        }
-
-        sbs.current.tests.push(test)
-        const promise = nestedTestsSerial
-          ? sbs.root.currentTest.done.then(() =>
-              test.suite.runTest(test, { nested: true }),
-            )
-          : test.suite.runTest(test, { nested: true })
-
-        sbs.root.currentTest.nesteds.push(promise)
-
-        return promise
-      }
-
-      if (data.only) {
-        sbs.current.onlies.add(test)
-        sbs.root.onlies.add(sbs.current)
-      } else {
-        sbs.current.tests.push(test)
-      }
-    }
+    else return makeTest(args, data, stack, fn)
   },
 )
 

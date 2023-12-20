@@ -41,7 +41,9 @@ async function untilIframesReady(t, sbs, retries = 300) {
   const iframes = document.querySelectorAll('iframe[src$="test=true"]')
 
   if (iframes.length > 0) {
-    const len = iframes.length
+    const queue = new Set()
+    for (const iframe of iframes) queue.add(iframe.src)
+
     t.timeout(4500)
     await new Promise((resolve, reject) => {
       const interval = setInterval(() => {
@@ -50,7 +52,9 @@ async function untilIframesReady(t, sbs, retries = 300) {
           reject(new Error(`no tests found in iframe`))
         }
 
-        if (len === sbs.root.currentTest.nesteds.length) {
+        for (const item of sbs.iframes) if (queue.has(item)) queue.delete(item)
+
+        if (queue.size === 0) {
           clearInterval(interval)
           resolve()
         }
