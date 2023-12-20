@@ -340,10 +340,10 @@ export default class Component extends HTMLElement {
       }
     }
 
-    const config = configure(cpnPlan.defaults, params)
+    this.config = configure(cpnPlan.defaults, params)
 
     if (this.render) {
-      const renderConfig = { ...config }
+      const renderConfig = { ...this.config }
 
       // [1] not needed anymore if used in render
 

@@ -16,6 +16,8 @@ const { href } = new URL(
   import.meta.url,
 )
 
+document.documentElement.classList.add("debug")
+
 const { until } = test.utils
 
 const makeDialogMenuitem = (name) => ({
@@ -95,7 +97,7 @@ const makeMenu = (name) => {
       id: `submenuItem3rd${name}${__}`,
       items: makeSubmenu(name),
     },
-    "---",
+    // "---",
     makeDialogMenuitem(name),
     {
       label: "Save",
@@ -350,7 +352,6 @@ if (inTop) {
     // TODO: test two level menu in iframe
   })
 } else {
-  document.body.classList.add("debug")
   await ui({
     content: makeDemo(),
     initiator: "menuDemo",

@@ -129,7 +129,6 @@ export const popup = rpc(
     async function close(options) {
       removeItem(popupsList, instance)
       if (instance.ready) await instance.ready
-      // if (!instance.el) return
 
       const event = dispatch(el, "uipopupbeforeclose", { cancelable: true })
       if (event.defaultPrevented) return
@@ -142,29 +141,29 @@ export const popup = rpc(
         requestIdleCallback(async () => {
           await stage.pendingDone
           dispatch(el, "uipopupclose")
-          el.remove()
           stage.cancel("ui popup closed")
+          el.remove()
         })
       })
     }
 
-    plan.positionable = {
-      preset: plan.fromMenuitem && !plan.fromMenubar ? "menuitem" : "popup",
-      of: meta?.iframe
-        ? combineRect(rect, meta.iframe.getBoundingClientRect())
-        : rect,
-    }
+    plan.positionable ??= {}
+    plan.positionable.preset ??= "popup"
+    plan.positionable.of ??= meta?.iframe
+      ? combineRect(rect, meta.iframe.getBoundingClientRect())
+      : rect
 
     const { autofocus } = plan
     delete plan.autofocus
 
     const normalized = normalize(plan, stage)
+    plan = normalized[0]
     stage = normalized[1]
 
     stage.cancel = new Canceller(stage.signal)
 
     await stage.waitlistPreload.done()
-    const el = render(...normalized, { skipNormalize: true })
+    const el = render(plan, stage, { skipNormalize: true })
 
     el.style.position = "fixed"
     el.style.translate = "-200vw -200vh"

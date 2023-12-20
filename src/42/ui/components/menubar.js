@@ -19,8 +19,8 @@ export class Menubar extends Menu {
         "pointerenter || pointerleave": "{{resetLastHovered(e)}}",
       },
       {
-        selector: ":scope > li",
-        pointermove: "{{triggerMenuitem(target)}}",
+        "selector": ":scope > li",
+        "pointermove || pointerdown": "{{triggerMenuitem(target, e)}}",
       },
     ],
 
@@ -28,6 +28,7 @@ export class Menubar extends Menu {
       focusBack: undefined,
       displayPicto: false,
       shortcuts: {
+        initialExpand: "pointerdown",
         openSubmenu: "uitriggersubmenu || Enter || Space || ArrowDown",
         closeSubmenu: "uitriggersubmenu || pointerdown || ArrowLeft",
       },

@@ -101,7 +101,6 @@ if (inTop) {
 
 export class Menu extends Component {
   [Symbol.for("42_POPUP_CLOSE")] = true
-  #isMenubar
   #lastHovered
 
   static plan = {
@@ -125,14 +124,16 @@ export class Menu extends Component {
         "pointerenter || pointerleave": "{{resetLastHovered(e)}}",
       },
       {
-        selector: ":scope > li",
-        pointermove: "{{triggerMenuitem(target)}}",
+        "selector": ":scope > li",
+        "pointermove || pointerdown": "{{triggerMenuitem(target, e)}}",
       },
     ],
 
     defaults: {
       focusBack: undefined,
       shortcuts: {
+        // initialExpand: "pointermove",
+        initialExpand: "pointerdown",
         openSubmenu: "uitriggersubmenu || Enter || Space || ArrowRight",
         closeSubmenu: "uitriggersubmenu || pointerdown || ArrowLeft",
       },
@@ -141,11 +142,7 @@ export class Menu extends Component {
 
   constructor(...args) {
     super(...args)
-    this.#isMenubar = this.constructor.name === "Menubar"
-  }
-
-  get isMenubar() {
-    return this.#isMenubar
+    this.isMenubar = this.constructor.name === "Menubar"
   }
 
   focusPrev() {
@@ -173,14 +170,26 @@ export class Menu extends Component {
     }
   }
 
-  triggerMenuitem(target) {
+  #getExpandeds() {
+    return this.querySelectorAll(':scope > li > button[aria-expanded="true"]')
+  }
+
+  triggerMenuitem(target, e) {
+    let expandeds
+
+    if (e?.type === "pointerdown") {
+      e.preventDefault()
+      e.stopPropagation()
+      e.stopImmediatePropagation()
+      this.#lastHovered = undefined
+    }
+
     if (this.#lastHovered === target) return
     this.#lastHovered = target
 
     if (inTop) {
-      for (const item of this.querySelectorAll(
-        ':scope > li > button[aria-expanded="true"]',
-      )) {
+      expandeds ??= this.#getExpandeds()
+      for (const item of expandeds) {
         item.setAttribute("aria-expanded", "false")
         closeOthers(item)
       }
@@ -202,6 +211,13 @@ export class Menu extends Component {
 
       item.focus({ preventScroll: true })
 
+      if (!this.opener) {
+        if (e.type !== this.config.shortcuts.initialExpand) {
+          expandeds ??= this.#getExpandeds()
+          if (expandeds.length === 0) return
+        }
+      }
+
       if (item.getAttribute("aria-haspopup") === "menu") {
         item.dispatchEvent(
           new CustomEvent("uitriggersubmenu", {
@@ -218,7 +234,6 @@ export class Menu extends Component {
   }
 
   async render({ items, displayPicto, shortcuts, focusBack }) {
-    const fromMenubar = this.isMenubar
     const plan = []
 
     items = await (typeof items === "function" ? items(this.stage) : items)
@@ -264,26 +279,24 @@ export class Menu extends Component {
         item.role = "menuitem"
         item.on ??= []
         item.on.push({
-          pointerdown: false,
+          stopPropagation: true,
           [shortcuts.openSubmenu]: {
             popup: {
               tag: "ui-menu",
               aria: inTop ? { labelledby: item.id } : { label },
-              fromMenuitem: true,
-              fromMenubar,
-              focusBack: item.focusBack ?? focusBack ?? fromMenubar,
-              // focusBack: item.focusBack ?? focusBack,
+              positionable: { preset: this.isMenubar ? "popup" : "menuitem" },
+              // focusBack: item.focusBack ?? focusBack ?? this.opener,
+              focusBack: item.focusBack ?? focusBack,
               closeEvents: shortcuts.closeSubmenu,
               items: item.items,
-              handler(e, { el }) {
-                // prevent menuitem highlight flickering when using ArrowRight
-                el.blur()
-              },
             },
           },
         })
 
-        if (!fromMenubar) item.label.push({ tag: "ui-picto", value: "right" })
+        if (!this.isMenubar) {
+          item.label.push({ tag: "ui-picto", value: "right" })
+        }
+
         item.content = item.label
       } else if (item.tag?.startsWith("checkbox")) {
         item.role = "menuitemcheckbox"
@@ -307,7 +320,7 @@ export class Menu extends Component {
         first = false
       }
 
-      if (fromMenubar && displayPicto !== true) {
+      if (this.isMenubar && displayPicto !== true) {
         delete item.picto
       }
 
