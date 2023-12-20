@@ -3,7 +3,6 @@ import arrify from "../../../fabric/type/any/arrify.js"
 import clone from "../../../fabric/type/any/clone.js"
 import create from "../../../ui/create.js"
 import defer from "../../../fabric/type/promise/defer.js"
-import documentReady from "../../../fabric/dom/documentReady.js"
 import env from "../../env.js"
 import hashmap from "../../../fabric/type/object/hashmap.js"
 import http from "../../../core/http.js"
@@ -29,6 +28,7 @@ import system from "../../../system.js"
 import trap from "../../../fabric/type/error/trap.js"
 import uid from "../../uid.js"
 import until from "../../../fabric/type/promise/until.js"
+import untilDocumentReady from "../../../fabric/type/promise/untilDocumentReady.js"
 import untilNextRepaint from "../../../fabric/type/promise/untilNextRepaint.js"
 import untilNextTask from "../../../fabric/type/promise/untilNextTask.js"
 import untilRepaint from "../../../fabric/type/promise/untilRepaint.js"
@@ -211,7 +211,6 @@ export default function addUtilities(item, options) {
     arrify,
     clone,
     defer,
-    documentReady,
     hashmap,
     http,
     idle,
@@ -236,6 +235,7 @@ export default function addUtilities(item, options) {
     trap,
     uid,
     until,
+    untilDocumentReady,
     untilNextRepaint,
     untilNextTask,
     untilRepaint,

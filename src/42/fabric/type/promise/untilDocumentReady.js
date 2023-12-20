@@ -1,4 +1,4 @@
-export default async function documentReady() {
+export async function untilDocumentReady() {
   if (document.readyState === "complete") return
 
   return new Promise((resolve) => {
@@ -12,3 +12,5 @@ export default async function documentReady() {
     document.addEventListener("readystatechange", handler)
   })
 }
+
+export default untilDocumentReady

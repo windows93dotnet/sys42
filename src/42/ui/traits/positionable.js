@@ -3,7 +3,7 @@
 
 import Trait from "../classes/Trait.js"
 import settings from "../../core/settings.js"
-import documentReady from "../../fabric/dom/documentReady.js"
+import untilDocumentReady from "../../fabric/type/promise/untilDocumentReady.js"
 import emittable from "../../fabric/traits/emittable.js"
 import listen from "../../fabric/event/listen.js"
 import repaintThrottle from "../../fabric/type/function/repaintThrottle.js"
@@ -392,7 +392,7 @@ class Positionable extends Trait {
               { loadingdone: this.repaint },
             )
 
-            await documentReady()
+            await untilDocumentReady()
 
             listen(
               window,
