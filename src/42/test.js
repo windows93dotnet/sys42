@@ -43,21 +43,6 @@ const nestedTestsSerial =
 
 const suitesStack = []
 
-const makeCallbackTest = (fn) => {
-  const cb = (t) =>
-    // eslint-disable-next-line no-async-promise-executor
-    new Promise(async (resolve, reject) => {
-      t.end = (err) => (err ? reject(err) : resolve())
-      try {
-        await fn(t)
-      } catch (err) {
-        reject(err)
-      }
-    })
-  cb.original = fn
-  return cb
-}
-
 export const test = chainable(
   [
     "only",
@@ -66,7 +51,6 @@ export const test = chainable(
     "todo",
     "failing",
     "serial",
-    "cb",
     "flaky",
     "afterEach",
     "beforeEach",
@@ -101,11 +85,9 @@ export const test = chainable(
     else {
       const title = args
 
-      if (data.cb) fn = makeCallbackTest(fn)
       if (data.ui) {
         fn = uiTest(fn, sbs)
         data.serial = true
-        // data.flaky = 2 // TODO: remove flaky for self-executed ui tests
         sbs.current.serial = true
         sbs.current.timeout = 4500
       }
