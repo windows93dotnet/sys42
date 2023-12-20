@@ -16,13 +16,13 @@ const types = {
   Constant: "THIS_IS_NICE_AND_TIDY_NATHAN",
 }
 
-test("letters", (t) => {
-  for (const [key, expected] of Object.entries(types)) {
-    const method = `to${key}Case`
+for (const [key, expected] of Object.entries(types)) {
+  const method = `to${key}Case`
+  test("letters", method, (t) => {
     if (method in letters) {
       for (const origin of Object.values(types)) {
         t.is(letters[method](origin), expected, { origin, method })
       }
     }
-  }
-})
+  })
+}

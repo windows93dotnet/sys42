@@ -1,5 +1,5 @@
-import splitWord from "./splitWord.js"
+import combineWords from "./combineWords.js"
 
-export const toNoCase = splitWord((x) => x.toLowerCase(), " ")
+export const toNoCase = combineWords((x) => x.toLowerCase(), " ")
 
 export default toNoCase

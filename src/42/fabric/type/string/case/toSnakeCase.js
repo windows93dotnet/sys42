@@ -1,5 +1,5 @@
-import splitWord from "./splitWord.js"
+import combineWords from "./combineWords.js"
 
-export const toSnakeCase = splitWord((x) => x.toLowerCase(), "_")
+export const toSnakeCase = combineWords((x) => x.toLowerCase(), "_")
 
 export default toSnakeCase

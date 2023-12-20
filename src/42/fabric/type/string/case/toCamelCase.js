@@ -1,14 +1,14 @@
-import splitWord from "./splitWord.js"
+import combineWords from "./combineWords.js"
 import isUpperCase from "./isUpperCase.js"
 
 export const toCamelCase = (str, ignoreAcronyms) =>
   ignoreAcronyms || isUpperCase(str)
-    ? splitWord((x, i) =>
+    ? combineWords((x, i) =>
         i > 0
           ? x.slice(0, 1).toUpperCase() + x.slice(1).toLowerCase()
           : x.toLowerCase(),
       )(str)
-    : splitWord((x, i) =>
+    : combineWords((x, i) =>
         isUpperCase(x)
           ? x
           : i > 0

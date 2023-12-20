@@ -1,5 +1,5 @@
-import splitWord from "./splitWord.js"
+import combineWords from "./combineWords.js"
 
-export const toKebabCase = splitWord((x) => x.toLowerCase(), "-")
+export const toKebabCase = combineWords((x) => x.toLowerCase(), "-")
 
 export default toKebabCase

@@ -1,5 +1,5 @@
-import splitWord from "./splitWord.js"
+import combineWords from "./combineWords.js"
 
-export const toConstantCase = splitWord((x) => x.toUpperCase(), "_")
+export const toConstantCase = combineWords((x) => x.toUpperCase(), "_")
 
 export default toConstantCase
