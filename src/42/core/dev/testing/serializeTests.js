@@ -7,6 +7,7 @@ import sortPath from "../../../core/path/core/sortPath.js"
 import { calcPatch } from "../../../fabric/algorithm/myersDiff.js"
 import diff from "../../../fabric/json/diff.js"
 import serializeError from "../../../fabric/type/error/serializeError.js"
+import isInstanceOf from "../../../fabric/type/any/is/isInstanceOf.js"
 
 const DEFAULTS = {
   details: "inspect",
@@ -42,7 +43,7 @@ async function serializeTest(test, config) {
     if (
       "actual" in details &&
       "expected" in details &&
-      !(details.actual instanceof Error)
+      !isInstanceOf(details.actual, Error)
     ) {
       if (
         typeof details.actual === "string" &&
@@ -63,7 +64,7 @@ async function serializeTest(test, config) {
       await Promise.all(
         Object.entries(test.error.details).map(async ([key, value]) => [
           key,
-          value instanceof Error
+          isInstanceOf(value, Error)
             ? serializeError(value)
             : await stringify.async(value, stringifyDetailsOptions),
         ]),

@@ -1,7 +1,8 @@
 // @related https://www.npmjs.com/package/clean-stack
 // @read https://github.com/tlrobinson/long-stack-traces
 
-import isNode from "../../../core/env/runtime/inNode.js"
+import inNode from "../../../core/env/runtime/inNode.js"
+import isInstanceOf from "../any/is/isInstanceOf.js"
 import parseErrorStack, { stackframe } from "./parseErrorStack.js"
 
 // @src https://github.com/tapjs/stack-utils/blob/82097544610b7360e14c496b3eb23aedda53d3d0/index.js#L5
@@ -22,7 +23,7 @@ export async function nodeInternals() {
 }
 
 let NODE_INTERNALS = []
-if (isNode) {
+if (inNode) {
   // Don't use top-level await because it's forbidden in Service Worker
   nodeInternals().then((arr) => (NODE_INTERNALS = arr))
 }
@@ -62,12 +63,11 @@ const addErrorEventStackFrame = (err, stackFrames) => {
 }
 
 export default function stackTrace(err = new Error(), options = {}) {
-  const stackFrames =
-    err instanceof Error
-      ? parseErrorStack(err)
-      : globalThis.ErrorEvent && err instanceof ErrorEvent
-        ? [errorEventToStackframe(err)]
-        : []
+  const stackFrames = isInstanceOf(err, Error)
+    ? parseErrorStack(err)
+    : globalThis.ErrorEvent && isInstanceOf(err, ErrorEvent)
+      ? [errorEventToStackframe(err)]
+      : []
 
   if ("errorEvent" in err) addErrorEventStackFrame(err, stackFrames)
 
@@ -75,7 +75,7 @@ export default function stackTrace(err = new Error(), options = {}) {
 
   for (const item of stackFrames) {
     if (
-      isNode &&
+      inNode &&
       options.internals !== true &&
       ("source" in item === false ||
         NODE_INTERNALS.some((reg) => item.source.match(reg)))

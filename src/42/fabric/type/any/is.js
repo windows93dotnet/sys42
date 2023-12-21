@@ -8,16 +8,14 @@ import isEmptyObject from "./is/isEmptyObject.js"
 import isLength from "./is/isLength.js"
 import isInstanceOf from "./is/isInstanceOf.js"
 
-export {
-  default as isInstanceOf,
-  isDirectInstanceOf,
-} from "./is/isInstanceOf.js"
+export { default as isInstanceOf } from "./is/isInstanceOf.js"
+export { default as isDirectInstanceOf } from "./is/isDirectInstanceOf.js"
 
-// TODO: move more usefull is* functions in 'any' folder
+// TODO: move more usefull is* functions in `any/is` folder
 export { default as isObject } from "./is/isObject.js"
 export { default as isObjectOrArray } from "./is/isObjectOrArray.js"
-export { default as isHashmap } from "./is/isHashmap.js"
 export { default as isPlainObject } from "./is/isPlainObject.js"
+export { default as isHashmap } from "./is/isHashmap.js"
 export { default as isHashmapLike } from "./is/isHashmapLike.js"
 export { default as isEmptyObject } from "./is/isEmptyObject.js"
 export { default as isProxy } from "./is/isProxy.js"
