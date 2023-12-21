@@ -4,6 +4,8 @@ import groupBy from "../../../../fabric/type/array/groupBy.js"
 import idle from "../../../../fabric/type/promise/idle.js"
 import serializeError from "../../../../fabric/type/error/serializeError.js"
 import ExecutionContext from "./ExecutionContext.js"
+import mark from "../../../../fabric/type/any/mark.js"
+import slugify from "../../../../fabric/type/string/slugify.js"
 
 const dummyRootStats = {
   ok: undefined,
@@ -13,6 +15,28 @@ const dummyRootStats = {
   failed: 0,
   skipped: 0,
   onlies: 0,
+}
+
+function stringify(val) {
+  return typeof val === "string" ? val : mark(val)
+}
+
+function addTitleGetter(obj) {
+  const out = {}
+  return Object.defineProperties(out, {
+    title: {
+      get() {
+        return Array.isArray(obj.title)
+          ? obj.title.map(stringify).join(" · ")
+          : stringify(obj.title)
+      },
+    },
+    slug: {
+      get() {
+        return slugify(out.title, { preserveUnicode: true, kebabCase: false })
+      },
+    },
+  })
 }
 
 export default class Suite {
@@ -98,8 +122,8 @@ export default class Suite {
 
     const t = new ExecutionContext()
 
-    t.suite = { title: this.title }
-    t.test = { title: test.title }
+    t.suite = addTitleGetter(this)
+    t.test = addTitleGetter(test)
 
     test.timeStamp = performance.now()
 

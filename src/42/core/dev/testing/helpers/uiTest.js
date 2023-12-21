@@ -112,10 +112,10 @@ export default function uiTest(fn, sbs) {
     await 0 // queueMicrotask
     await fn(t, t.utils)
 
-    t.timeout("reset")
-
-    await untilIframesReady(t, sbs)
-
-    t.timeout("reset")
+    if (sbs.nestedTestsSerial) {
+      t.timeout("reset")
+      await untilIframesReady(t, sbs)
+      t.timeout("reset")
+    }
   }
 }

@@ -22,6 +22,9 @@ system.testing ??= {
   manual: false,
   started: false,
   ran: false,
+  nestedTestsSerial:
+    inIframe &&
+    new URLSearchParams(location.search).has("nestedTestsParallel") === false,
   run: (...args) =>
     import("./core/dev/testing/runTests.js") //
       .then((m) => m.default(...args)),
@@ -36,10 +39,6 @@ system.testing ??= {
 const sbs = system.testing
 sbs.current = sbs.root
 export { sbs }
-
-const nestedTestsSerial =
-  inIframe &&
-  new URLSearchParams(location.search).has("nestedTestsParallel") === false
 
 const suitesStack = []
 
@@ -71,7 +70,7 @@ function makeTest(title, data, stack, fn) {
     }
 
     sbs.current.tests.push(test)
-    const promise = nestedTestsSerial
+    const promise = sbs.nestedTestsSerial
       ? sbs.root.currentTest.done.then(() =>
           test.suite.runTest(test, { nested: true }),
         )

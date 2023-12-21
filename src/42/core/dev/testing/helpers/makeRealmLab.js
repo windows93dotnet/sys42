@@ -1,6 +1,4 @@
 import inTop from "../../../env/realm/inTop.js"
-import uid from "../../../uid.js"
-
 import "../../../../ui/popup.js"
 
 const DEFAULT = {
@@ -13,7 +11,7 @@ const DEFAULT = {
 let ui
 
 export async function makeRealmLab(t, options, makeContent) {
-  const id = uid()
+  const id = `test--${t.test.slug}`
   const initiator = new URLSearchParams(location.search).get("initiator")
 
   if (typeof options === "function") {
