@@ -4,6 +4,7 @@
 import allKeys from "../object/allKeys.js"
 import isIterable from "./is/isIterable.js"
 import isHashmapLike from "./is/isHashmapLike.js"
+import isInstanceOf from "./is/isInstanceOf.js"
 const { isArray } = Array
 
 /**
@@ -50,7 +51,7 @@ export default function mark(val, memory = new WeakSet()) {
 
   memory.add(val)
 
-  if ("Blob" in globalThis && val instanceof Blob) {
+  if ("Blob" in globalThis && isInstanceOf(val, Blob)) {
     return "File" in globalThis && val.constructor === File
       ? `new File([],"${val.name}",{size:${val.size},type:"${
           val.type
@@ -60,16 +61,16 @@ export default function mark(val, memory = new WeakSet()) {
       : `new Blob([],{size:${val.size},type:"${val.type}"})`
   }
 
-  if ("Element" in globalThis && val instanceof Element) {
+  if ("Element" in globalThis && isInstanceOf(val, Element)) {
     return val.outerHTML
   }
 
-  if ("Node" in globalThis && val instanceof Node) {
+  if ("Node" in globalThis && isInstanceOf(val, Node)) {
     return `${val.constructor?.name}#${val.textContent || val.nodeName}`
   }
 
   let closeTag = ""
-  if (val instanceof ArrayBuffer) {
+  if (isInstanceOf(val, ArrayBuffer)) {
     val = new Uint8Array(val)
     closeTag = ".buffer"
   }
