@@ -1,3 +1,5 @@
+import TimeoutError from "../errors/TimeoutError.js"
+
 function cleanup(intervalID, timeoutID) {
   clearInterval(intervalID)
   clearTimeout(timeoutID)
@@ -50,7 +52,11 @@ export default async function waitFor(selector, options) {
 
     const timeoutId = setTimeout(() => {
       cleanup(intervalId, timeoutId)
-      reject(new Error(`Waiting for "${selector}" selector timed out`))
+      reject(
+        new TimeoutError(
+          `Waiting for "${selector}" selector timed out: ${timeout}ms`,
+        ),
+      )
     }, timeout)
   })
 }

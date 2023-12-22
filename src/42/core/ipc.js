@@ -8,6 +8,7 @@ import Canceller from "../fabric/classes/Canceller.js"
 import serializeError from "../fabric/type/error/serializeError.js"
 import deserializeError from "../fabric/type/error/deserializeError.js"
 import SecurityError from "../fabric/errors/SecurityError.js"
+import TimeoutError from "../fabric/errors/TimeoutError.js"
 
 const defaultTargetOrigin = inVhost
   ? new URLSearchParams(location.search).get("targetOrigin")
@@ -208,7 +209,14 @@ export class Sender extends Emitter {
     this.port = port1
     this.remote = port2
     this.#queue = new Map()
-    this.ready = defer()
+
+    const timeout = options?.timeout ?? 1000
+    this.ready = defer({
+      timeout: realm.inTop ? undefined : timeout,
+      timeoutError: realm.inTop
+        ? undefined
+        : new TimeoutError(`ipc connection timed out: ${timeout}ms`),
+    })
 
     this.ignoreUnresponsive = options?.ignoreUnresponsive ?? false
 
@@ -235,29 +243,40 @@ export class Sender extends Emitter {
     }
   }
 
-  emit(event, data, transfer) {
+  emit(event, data, options) {
     const msg = { type: "emit", event, data }
     // emit() must be async to allow emiting in "pagehide" or "beforeunload" events
     // but if ready is not resolved yet we wait for it
     if (this.ready.isPending) {
       if (this.ignoreUnresponsive) return this
-      this.ready.then(() => this.port.postMessage(msg, transfer))
-    } else this.port.postMessage(msg, transfer)
+      this.ready
+        .then(() => this.port.postMessage(msg, options?.transfer))
+        .catch((err) => {
+          if (event === HANDSHAKE) return
+          throw new TimeoutError(err.message)
+        })
+    } else this.port.postMessage(msg, options?.transfer)
     return this
   }
 
-  async send(event, data, transfer) {
+  async send(event, data, options) {
     if (this.ignoreUnresponsive && this.ready.isPending) return
-    await this.ready
+
+    try {
+      await this.ready
+    } catch (err) {
+      throw new TimeoutError(err.message)
+    }
+
     const id = uid()
-    const reply = defer()
+    const reply = defer({ timeout: options?.timeout })
     this.#queue.set(id, reply)
-    this.port.postMessage({ id, type: "send", event, data }, transfer)
+    this.port.postMessage({ id, type: "send", event, data }, options?.transfer)
     return reply
   }
 
-  async sendOnce(event, data, transfer) {
-    const res = await this.send(event, data, transfer)
+  async sendOnce(event, data, options) {
+    const res = await this.send(event, data, options?.transfer)
     this.destroy()
     return res
   }
@@ -279,7 +298,13 @@ export class SharedWorkerSender extends Emitter {
     }
 
     this.clients = []
-    this.ready = defer()
+
+    const timeout = options?.timeout ?? 1000
+    this.ready = defer({
+      timeout,
+      timeoutError: new TimeoutError(`ipc connection timed out: ${timeout}ms`),
+    })
+
     self.addEventListener("connect", (e) => {
       this.clients.push(new Sender(e.ports[0]))
       this.ready.resolve()
@@ -288,9 +313,13 @@ export class SharedWorkerSender extends Emitter {
 
   emit(...args) {
     if (this.ready.isPending) {
-      this.ready.then(() => {
-        for (const client of this.clients) client.emit(...args)
-      })
+      this.ready
+        .then(() => {
+          for (const client of this.clients) client.emit(...args)
+        })
+        .catch((err) => {
+          throw new TimeoutError(err.message)
+        })
     } else {
       for (const client of this.clients) client.emit(...args)
     }
@@ -299,7 +328,12 @@ export class SharedWorkerSender extends Emitter {
   }
 
   async send(...args) {
-    await this.ready
+    try {
+      await this.ready
+    } catch (err) {
+      throw new TimeoutError(err.message)
+    }
+
     const undones = []
     for (const client of this.clients) undones.push(client.send(...args))
     return Promise.all(undones)

@@ -1,4 +1,6 @@
-export function defer() {
+import TimeoutError from "../../errors/TimeoutError.js"
+
+export function defer(options) {
   const deferred = Object.create(null)
 
   deferred.isPending = true
@@ -20,6 +22,18 @@ export function defer() {
   })
 
   deferred.then = (resolve, reject) => deferred.promise.then(resolve, reject)
+
+  const timeout = options?.timeout
+  if (timeout) {
+    const err =
+      typeof options?.timeoutError === "string"
+        ? new TimeoutError(options?.timeoutError)
+        : options?.timeoutError ?? new TimeoutError(timeout)
+
+    setTimeout(() => {
+      if (deferred.isPending) deferred.reject(err)
+    }, timeout)
+  }
 
   return deferred
 }

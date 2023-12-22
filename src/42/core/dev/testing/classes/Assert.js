@@ -177,7 +177,11 @@ export default class Assert {
         details = { steps: this.#steps }
       }
 
-      throw new VerifyError("Test timed out", stackframe, details)
+      throw new VerifyError(
+        `Test timed out: ${this.#timeoutDelay}ms`,
+        stackframe,
+        details,
+      )
     } else clearTimeoutNative(this.#timeoutId)
 
     for (const { actual, expected, error } of this.#stayings) {
