@@ -1,1 +1,3 @@
-export default function noop() {}
+export function noop() {}
+Object.freeze(noop)
+export default noop
