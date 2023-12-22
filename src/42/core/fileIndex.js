@@ -5,7 +5,7 @@ let fileIndex
 if (system.fileIndex) fileIndex = system.fileIndex
 else {
   fileIndex = new FileIndex()
-  await fileIndex.init()
+  await fileIndex.init().catch(console.error)
   system.fileIndex = fileIndex
 }
 
