@@ -20,7 +20,7 @@ export default class Test {
 
     this.done = defer()
     this.deferred = defer()
-    this.deferred.promise.catch((err) => {
+    this.deferred.catch((err) => {
       if (this.ran === false) {
         this.ok = false
         this.error = err

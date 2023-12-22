@@ -131,7 +131,7 @@ export default class Suite {
       await Promise.race([
         t.timeout(this.timeout, this.cumulated + 100),
         test.fn(t, t.utils),
-        test.deferred.promise,
+        test.deferred,
       ])
 
       t.verifyContext(test.failing, test.stackframe)

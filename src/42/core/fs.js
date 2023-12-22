@@ -31,7 +31,7 @@ const queue = new Map()
 async function enqueue(filename) {
   const deferred = defer()
 
-  deferred.promise.finally(() => {
+  deferred.finally(() => {
     const stack = queue.get(filename)
     removeItem(stack, deferred)
     if (stack.length === 0) queue.delete(filename)
