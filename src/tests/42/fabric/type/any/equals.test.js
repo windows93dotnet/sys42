@@ -44,29 +44,117 @@ test("0 -0", (t) => {
   t.true(equals(new Set([0]), new Set([-0])))
 })
 
-test("Object.create(null)", (t) => {
-  const actual = Object.create(null)
-  actual.a = 1
-  actual.b = 2
-  t.true(equals(actual, Object.assign(Object.create(null), { a: 1, b: 2 })))
+test("null", (t) => {
+  const hashmap = Object.create(null)
 
-  t.false(equals(actual, { a: 1, b: 2 }))
+  t.false(equals(null, {}))
+  t.false(equals({}, null))
+  t.false(equals(undefined, {}))
+  t.false(equals({}, undefined))
+
+  t.false(equals(null, hashmap))
+  t.false(equals(hashmap, null))
+  t.false(equals(undefined, hashmap))
+  t.false(equals(hashmap, undefined))
+
+  t.false(equals(null, undefined))
+  t.false(equals(undefined, null))
+
+  t.true(equals(null, null))
+  t.true(equals(undefined, undefined))
 })
 
-test("Object.create(null)", "{proto:false}", (t) => {
-  const options = { proto: false }
-  const actual = Object.create(null)
-  actual.a = 1
-  actual.b = 2
-  t.true(
-    equals(actual, Object.assign(Object.create(null), { a: 1, b: 2 }), options),
-  )
-  t.true(equals(actual, { a: 1, b: 2 }, options))
+test("Object.create(null)", (t) => {
+  const a = Object.create(null)
+  a.a = 1
+  a.b = 2
+  const b = Object.assign(Object.create(null), { a: 1, b: 2 })
+  t.true(equals(a, b))
+  t.true(equals(b, a))
 
-  t.false(
-    equals(actual, Object.assign(Object.create(null), { a: 1, b: 3 }), options),
-  )
-  t.false(equals(actual, { a: 1, b: 3 }, options))
+  t.false(equals(a, { a: 1, b: 2 }))
+  t.false(equals({ a: 1, b: 2 }, a))
+})
+
+test("Object.create(null)", "{ proto: false }", (t) => {
+  const options = { proto: false }
+  const a = Object.create(null)
+  a.a = 1
+  a.b = 2
+  const b = Object.assign(Object.create(null), { a: 1, b: 2 })
+  const c = Object.assign(Object.create(null), { a: 0, b: 2 })
+  t.true(equals(a, b, options))
+  t.true(equals(b, a, options))
+  t.true(equals(a, { a: 1, b: 2 }, options))
+  t.true(equals({ a: 1, b: 2 }, a, options))
+
+  t.false(equals(a, c, options))
+  t.false(equals(c, a, options))
+  t.false(equals(a, { a: 0, b: 2 }, options))
+  t.false(equals({ a: 0, b: 2 }, a, options))
+
+  t.false(equals(a, [], options))
+  t.false(equals([], a, options))
+
+  const arr = []
+  arr.a = 1
+  arr.b = 2
+
+  t.false(equals(a, arr, options))
+  t.false(equals(arr, a, options))
+})
+
+test("Object.create(null)", "array", (t) => {
+  const a = Object.create(null)
+  a.a = 1
+  a.b = 2
+  a.length = 0
+
+  const arr = []
+  arr.a = 1
+  arr.b = 2
+
+  t.false(equals(a, arr))
+  t.false(equals(arr, a))
+})
+
+test("Object.create(null)", "array", "{ proto: false }", (t) => {
+  const options = { proto: false }
+  const a = Object.create(null)
+  a.a = 1
+  a.b = 2
+  a.length = 0
+
+  const arr = []
+  arr.a = 1
+  arr.b = 2
+
+  t.true(equals(a, arr, options))
+  t.true(equals(arr, a, options))
+
+  arr.push(1)
+
+  t.false(equals(a, arr, options))
+  t.false(equals(arr, a, options))
+})
+
+test("{ proto: false }", (t) => {
+  const options = { proto: false }
+  const a = new Set()
+  a.a = 1
+  a.b = 2
+
+  const b = {}
+  b.a = 1
+  b.b = 2
+
+  t.true(equals(a, b, options))
+  t.true(equals(b, a, options))
+
+  b.a = 0
+
+  t.false(equals(a, b, options))
+  t.false(equals(b, a, options))
 })
 
 test("sparse Array", (t) => {
@@ -130,6 +218,32 @@ test("references Object", (t) => {
   b = { x: 1 }
   b.y = { x: 1 }
   t.false(equals(a, b))
+})
+
+test("Cross realms Objects", async (t) => {
+  const iframe = t.utils.decay(document.createElement("iframe"))
+  iframe.srcdoc = `
+    <script>
+      var obj = { a: 1, b: 2 }
+      var arr = [1, 2]
+      var set = new Set([1, 2])
+      var reg = /a/i
+      var hm = Object.create(null)
+    </script>`
+  document.body.append(iframe)
+  await t.utils.until(iframe, "load")
+
+  t.true(equals(iframe.contentWindow.obj, { a: 1, b: 2 }))
+  t.true(equals(iframe.contentWindow.arr, [1, 2]))
+  t.true(equals(iframe.contentWindow.set, new Set([1, 2])))
+  t.true(equals(iframe.contentWindow.reg, /a/i))
+  t.true(equals(iframe.contentWindow.hm, Object.create(null)))
+
+  t.false(equals(iframe.contentWindow.obj, { a: 0, b: 2 }))
+  t.false(equals(iframe.contentWindow.arr, [0, 2]))
+  t.false(equals(iframe.contentWindow.set, new Set([0, 2])))
+  t.false(equals(iframe.contentWindow.reg, /a/))
+  t.false(equals(iframe.contentWindow.hm, {}))
 })
 
 const symbolA = Symbol("a")
@@ -561,7 +675,7 @@ if ("File" in globalThis) {
 }
 
 function runTask({ test, title }, assert, a, b) {
-  test.serial(title, assert, a, b, (t) => {
+  test(title, assert, a, b, (t) => {
     t.timeout(2000)
     t[assert](equals(a, b))
     t[assert](equals({ a }, { a: b }), "in object")

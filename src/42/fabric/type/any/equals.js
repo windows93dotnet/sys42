@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-/* eslint-disable max-depth */
+
 /* eslint-disable max-params */
 
 // @thanks https://github.com/epoberezkin/fast-deep-equal
@@ -9,9 +9,6 @@ import removeItem from "../array/removeItem.js"
 import equalsArrayBufferView from "../../binary/equalsArrayBufferView.js"
 
 const PRIMITIVES = new Set(["boolean", "number", "string"])
-
-const checkNode = "Node" in globalThis
-const checkBlob = "Blob" in globalThis
 
 function equalsObjectKeys(a, b, keysA, keysB, config) {
   const l = keysA.length
@@ -100,85 +97,81 @@ const compareBlob = (a, b) =>
 const deep = (compare, a, b, visited) =>
   compare(a, b, visited) && equalsObject(a, b, visited)
 
+const constructors = new Set([
+  "Map", //
+  "Set",
+  "ArrayBuffer",
+  "Error",
+])
+
+if ("Node" in globalThis) constructors.add("Node")
+if ("Blob" in globalThis) constructors.add("Blob")
+
+function getConstructor(obj) {
+  let ctor = obj?.constructor
+
+  while (ctor) {
+    if (constructors.has(ctor.name)) return ctor.name
+    ctor = Object.getPrototypeOf(ctor)
+  }
+}
+
 function walk(a, b, config) {
   if (Object.is(a, b)) return true
 
-  let typeA = typeof a
-  let typeB = typeof b
+  const typeA = typeof a
+  const typeB = typeof b
 
   if (typeA !== typeB || PRIMITIVES.has(typeA)) {
     if (config.placeholder && b === config.placeholder) return true
     return false
   }
 
-  if (a && b) {
-    const protoA = Object.getPrototypeOf(a)
-    const protoB = Object.getPrototypeOf(b)
+  if (typeA === "object") {
+    if (!(a && b)) return false
+    if (config.proto === false) return equalsObject(a, b, config)
 
-    if (config.proto && protoA !== protoB) return false
-    if (protoA === null) return equalsObject(a, b, config)
+    const protoA = Object.getPrototypeOf(a)?.constructor?.name
+    const protoB = Object.getPrototypeOf(b)?.constructor?.name
 
-    if (typeA === "object") {
-      typeA = Array.isArray(a)
-      typeB = Array.isArray(b)
-      if (typeA && typeB) return deep(equalsArray, a, b, config)
-      if (typeA !== typeB) return false
+    if (protoA !== protoB) return false
 
-      if (protoA.constructor && protoA.constructor.name !== "Object") {
-        typeA = a instanceof Map
-        typeB = b instanceof Map
-        if (typeA && typeB) return deep(equalsCollection, a, b, config)
-        if (typeA !== typeB) return false
+    if (protoA !== "Object") {
+      if (Array.isArray(a)) return deep(equalsArray, a, b, config)
+      if (ArrayBuffer.isView(a)) return equalsArrayBufferView(a, b)
 
-        typeA = a instanceof Set
-        typeB = b instanceof Set
-        if (typeA && typeB) return deep(equalsCollection, a, b, config)
-        if (typeA !== typeB) return false
-
-        typeA = a instanceof ArrayBuffer
-        typeB = b instanceof ArrayBuffer
-        if (typeA && typeB) return equalsArrayBuffer(a, b)
-        if (typeA !== typeB) return false
-
-        typeA = ArrayBuffer.isView(a)
-        typeB = ArrayBuffer.isView(b)
-        if (typeA && typeB) return equalsArrayBufferView(a, b)
-        if (typeA !== typeB) return false
-
-        typeA = a instanceof Error
-        typeB = b instanceof Error
-        if (typeA && typeB) return equalsError(a, b, config)
-        if (typeA !== typeB) return false
-
-        if (checkNode) {
-          typeA = a instanceof Node
-          typeB = b instanceof Node
-          if (typeA && typeB && a.isEqualNode(b) === false) return false
-          if (typeA !== typeB) return false
-        }
-
-        if (checkBlob) {
-          typeA = a instanceof Blob
-          typeB = b instanceof Blob
-          if (typeA && typeB && compareBlob(a, b) === false) return false
-          if (typeA !== typeB) return false
-        }
-
-        const toStringA = typeof a.toString === "function"
-        const toStringB = typeof b.toString === "function"
-        if (toStringA && toStringB && a.toString() !== b.toString()) {
-          return false
-        }
-
-        if (toStringA !== toStringB) return false
+      switch (getConstructor(a)) {
+        case "Map":
+        case "Set":
+          return deep(equalsCollection, a, b, config)
+        case "ArrayBuffer":
+          return equalsArrayBuffer(a, b)
+        case "Error":
+          return equalsError(a, b, config)
+        case "Node":
+          if (a.isEqualNode(b) === false) return false
+          break
+        case "Blob":
+          if (compareBlob(a, b) === false) return false
+          break
+        default:
+          break
       }
 
-      return equalsObject(a, b, config)
+      const toStringA = typeof a.toString === "function"
+      const toStringB = typeof b.toString === "function"
+      if (toStringA && toStringB && a.toString() !== b.toString()) {
+        return false
+      }
+
+      if (toStringA !== toStringB) return false
     }
 
-    if (typeA === "function" && a.toString() === b.toString()) {
-      return equalsObject(a, b, config)
-    }
+    return equalsObject(a, b, config)
+  }
+
+  if (typeA === "function" && a.toString() === b.toString()) {
+    return equalsObject(a, b, config)
   }
 
   return false
