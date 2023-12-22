@@ -7,6 +7,7 @@ module.exports = {
 
     "custom-property-pattern": null,
     "declaration-empty-line-before": null,
+    "declaration-block-no-redundant-longhand-properties": null,
 
     // "import/rule": true,
 
