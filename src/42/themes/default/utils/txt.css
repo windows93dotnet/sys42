@@ -1,21 +1,10 @@
-/* :root {
-  --txt-xxs: xx-small;
-  --txt-xs: x-small;
-  --txt-sm: smaller;
-  --txt-lg: larger;
-  --txt-xl: x-large;
-  --txt-xxl: xx-large;
-}
-
-.txt-xxs { font-size: var(--txt-xxs); }
-.txt-xs { font-size: var(--txt-xs); }
-.txt-sm { font-size: var(--txt-sm); }
-.txt-lg { font-size: var(--txt-lg); }
-.txt-xl { font-size: var(--txt-xl); }
-.txt-xxl { font-size: var(--txt-xxl); } */
-
-.font-sans { font: var(--font-sans); }
-.font-mono { font: var(--font-mono); }
+.txt-xxs { font-size: var(--txt-xxs, xx-small); } /* 9px */
+.txt-xs { font-size: var(--txt-xs, x-small); } /* 10px */
+.txt-sm { font-size: var(--txt-sm, smaller); } /* 13px */
+.txt-md { font-size: var(--txt-md, medium); } /* 16px */
+.txt-lg { font-size: var(--txt-lg, large); } /* 18px */
+.txt-xl { font-size: var(--txt-xl, x-large); } /* 24px */
+.txt-xxl { font-size: var(--txt-xxl, xx-large); } /* 32px */
 
 .txt-normal {
   font-weight: normal;
@@ -61,3 +50,6 @@
   /* prevent hidden aliasing using pixel fonts */
   text-indent: 1px;
 }
+
+.font-sans { font: var(--font-sans); }
+.font-mono { font: var(--font-mono); }

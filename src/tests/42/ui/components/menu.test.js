@@ -1,4 +1,6 @@
 import test from "../../../../42/test.js"
+import system from "../../../../42/system.js"
+import ipc from "../../../../42/core/ipc.js"
 import { closeAll } from "../../../../42/ui/popup.js"
 
 const manual = 0
@@ -81,8 +83,6 @@ test.ui("submenu close previous submenu", async (t) => {
     makeContent,
   )
 
-  // if (manual && test.env.realm.inTop) return t.pass()
-  // if (test.env.realm.inTop) return t.pass()
   if (manual) return t.pass()
 
   const menuTrigger = document.querySelector("#menuTrigger")
@@ -120,55 +120,72 @@ test.ui("submenu close previous submenu", async (t) => {
   else await t.sleep(100)
 })
 
-// test.ui("detached dialog still use ipcPlugin", async (t) => {
-//   const { makeRealmLab, triggerOpener } = t.utils
+test.ui("detached dialog still use ipcPlugin", async (t) => {
+  const { makeRealmLab, triggerOpener } = t.utils
+  const { slug } = t.test
 
-//   window.app = await makeRealmLab(
-//     {
-//       href,
-//       iframe,
-//       top: 1,
-//       syncData: true,
-//       nestedTestsParallel: true,
-//     },
-//     makeContent,
-//   )
+  window.app = await makeRealmLab(
+    {
+      href,
+      iframe,
+      top: 1,
+      syncData: true,
+      nestedTestsParallel: true,
+    },
+    makeContent,
+  )
 
-//   if (manual) return t.pass()
+  if (manual) return t.pass()
 
-//   if (test.env.realm.inIframe) await t.sleep(100) // TODO: find why this is needed
+  const deferred = t.utils.defer()
 
-//   const menuTrigger = document.querySelector("#menuTrigger")
-//   t.is(menuTrigger.getAttribute("aria-expanded"), "false")
-//   const menu = t.step(await triggerOpener(menuTrigger))
-//   t.is(menuTrigger.getAttribute("aria-expanded"), "true")
+  if (test.env.realm.inIframe) {
+    t.timeout("reset")
+    await ipc.send(`42_MENU_TESTS_${slug}`)
+    t.timeout("reset")
+  } else {
+    ipc.on(`42_MENU_TESTS_${slug}`, async () => deferred)
+  }
 
-//   const submenuTrigger = menu.querySelector("#submenuTrigger")
-//   t.is(submenuTrigger.getAttribute("aria-expanded"), "false")
-//   const submenu = t.step(await triggerOpener(submenuTrigger))
-//   t.is(submenuTrigger.getAttribute("aria-expanded"), "true")
+  const menuTrigger = document.querySelector("#menuTrigger")
+  t.is(menuTrigger.getAttribute("aria-expanded"), "false")
+  const menu = t.step(await triggerOpener(menuTrigger))
+  t.is(menuTrigger.getAttribute("aria-expanded"), "true")
 
-//   // Check that detached dialog is still using ipcPlugin
-//   const menuClosePromise = t.utils.untilClose(menu)
-//   const dialog = t.step(
-//     await triggerOpener(submenu.querySelector("#dialogTrigger")),
-//   )
-//   t.step(await menuClosePromise)
-//   t.step(await t.puppet("#btnDialogIncr", dialog).click())
+  const submenuTrigger = menu.querySelector("#submenuTrigger")
+  t.is(submenuTrigger.getAttribute("aria-expanded"), "false")
+  const submenu = t.step(await triggerOpener(submenuTrigger))
+  t.is(submenuTrigger.getAttribute("aria-expanded"), "true")
 
-//   t.is(submenuTrigger.getAttribute("aria-expanded"), "false")
-//   t.is(menuTrigger.getAttribute("aria-expanded"), "false")
+  // Check that detached dialog is still using ipcPlugin
+  const menuClosePromise = t.utils.untilClose(menu)
+  const dialog = t.step(
+    await triggerOpener(submenu.querySelector("#dialogTrigger")),
+  )
+  t.step(await menuClosePromise)
+  t.step(await t.puppet("#btnDialogIncr", dialog).click())
 
-//   dialog.close()
+  if (test.env.realm.inIframe) {
+    t.step(await system.once("ipc.plugin:end-of-update"))
+  }
 
-//   if (test.env.realm.inIframe) {
-//     await t.sleep(50)
-//     t.is(t.puppet.$("#btnIncr").textContent, "2")
-//     t.is(t.puppet.$("#btnIncr", window.parent.document.body).textContent, "2")
+  t.timeout("reset")
 
-//     await t.puppet("#btnIncr", window.app.el).click()
-//     await t.sleep(50)
-//     t.is(t.puppet.$("#btnIncr").textContent, "3")
-//     t.is(t.puppet.$("#btnIncr", window.parent.document.body).textContent, "3")
-//   }
-// })
+  t.is(submenuTrigger.getAttribute("aria-expanded"), "false")
+  t.is(menuTrigger.getAttribute("aria-expanded"), "false")
+
+  deferred.resolve()
+
+  if (test.env.realm.inIframe) {
+    t.is(t.puppet.$("#btnIncr").textContent, "2")
+    t.is(t.puppet.$("#btnIncr", window.parent.document.body).textContent, "2")
+
+    t.step(await t.puppet("#btnIncr", window.app.el).click())
+    t.step(await system.once("ipc.plugin:end-of-update"))
+
+    t.is(t.puppet.$("#btnIncr").textContent, "3")
+    t.is(t.puppet.$("#btnIncr", window.parent.document.body).textContent, "3")
+  }
+
+  await dialog.close()
+})

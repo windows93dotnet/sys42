@@ -1,3 +1,6 @@
+/* @read https://una.im/css-color-theming */
+/* @read https://developer.chrome.com/blog/css-relative-color-syntax */
+
 :root {
   --bg: Canvas;
   --fg: CanvasText;
@@ -272,9 +275,12 @@ output,
 .code {
   --bg: var(--code-bg);
   --fg: var(--code-fg);
-  text-shadow: var(--code-tsh, none);
-  font: var(--font-mono);
+  --fs: var(--fs-mono);
+  --lh: var(--lh-mono);
+  --ff: var(--_ff-mono);
+  font: var(--fs)/var(--lh) var(--ff);
   padding: var(--unit-sm) var(--unit-md);
+  text-shadow: var(--code-tsh, none);
   overflow-y: auto;
   overflow-x: auto;
   white-space: pre;

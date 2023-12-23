@@ -35,8 +35,6 @@ export default function ensureCurrentSuite(titled) {
     }
   }
 
-  let exist
-
   const moduleTitle = shortenFilename(parentModule.url)
     .replaceAll(TITLE_REGEX, "")
     .replace(/^\//, "")
@@ -63,7 +61,10 @@ export default function ensureCurrentSuite(titled) {
     }
   }
 
-  if (inIframe || !system.testing.suites.has(title)) exist = false
+  let exist
+  if (inIframe || !system.testing.suites.has(title)) {
+    exist = false
+  }
 
   if (exist === false) {
     system.testing.current = system.testing.root

@@ -8,10 +8,15 @@ import ensureCurrentSuite from "./core/dev/testing/ensureCurrentSuite.js"
 import addUtilities from "./core/dev/testing/addUtilities.js"
 import uiTest from "./core/dev/testing/helpers/uiTest.js"
 import inIframe from "./core/env/realm/inIframe.js"
+import equals from "./fabric/type/any/equals.js"
 
 export { default as mock } from "./core/dev/testing/mock.js"
 
 system.DEV = true
+
+const params = new URLSearchParams(location.search)
+const inRealmLab = inIframe && params.has("test")
+const nestedTestsSerial = inIframe && !params.has("nestedTestsParallel")
 
 system.testing ??= {
   root: new Suite("#root"),
@@ -22,9 +27,6 @@ system.testing ??= {
   manual: false,
   started: false,
   ran: false,
-  nestedTestsSerial:
-    inIframe &&
-    new URLSearchParams(location.search).has("nestedTestsParallel") === false,
   run: (...args) =>
     import("./core/dev/testing/runTests.js") //
       .then((m) => m.default(...args)),
@@ -65,12 +67,14 @@ function makeTest(title, data, stack, fn) {
 
   // nested tests
   if (sbs.root.running) {
+    if (inRealmLab && !equals(test.title, sbs.root.currentTest.title)) return
+
     if (data.only) {
       throw new Error('nested tests "only" option is not supported')
     }
 
     sbs.current.tests.push(test)
-    const promise = sbs.nestedTestsSerial
+    const promise = nestedTestsSerial
       ? sbs.root.currentTest.done.then(() =>
           test.suite.runTest(test, { nested: true }),
         )

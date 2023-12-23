@@ -92,20 +92,24 @@ export default function uiTest(fn, sbs) {
         : promise)
     }
 
-    if (!inTop || (!sbs.inTestRunner && index === total)) {
-      const { dest } = t.utils
-      Object.assign(t.utils, {
-        decay: (item) => item,
-        dest(options = {}) {
-          options.keep = true
-          return dest(options)
-        },
-      })
-    } else {
+    const { dest } = t.utils
+
+    if (inTop) {
       t.utils.on({
         "ui:dialog.open || ui:popup.open"(e, target) {
           t.utils.decay(unsee(target))
         },
+      })
+    }
+
+    if (!inTop || (!sbs.inTestRunner && index === total)) {
+      Object.assign(t.utils, {
+        decay: (item) => item,
+        dest: (options) => dest({ ...options, keep: true }),
+      })
+    } else if (!sbs.inTestRunner) {
+      Object.assign(t.utils, {
+        dest: (options) => dest({ ...options, visible: true }),
       })
     }
 

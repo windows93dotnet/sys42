@@ -4,14 +4,14 @@
 // @thanks https://github.com/avajs/ava
 // @thanks https://github.com/substack/tape
 
+import Stub from "./Stub.js"
+import Spy from "./Spy.js"
 import equals from "../../../../fabric/type/any/equals.js"
 import clone from "../../../../fabric/type/any/clone.js"
 import pluralize from "../../../../fabric/type/string/pluralize.js"
-import * as is from "../../../../fabric/type/any/is.js"
-import Stub from "./Stub.js"
-import Spy from "./Spy.js"
 import addStack from "../../../../fabric/type/error/addStack.js"
 import template from "../../../formats/template.js"
+import * as is from "../../../../fabric/type/any/is.js"
 
 const { isPromiseLike } = is
 

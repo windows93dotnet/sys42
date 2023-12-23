@@ -47,20 +47,26 @@ export async function makeRealmLab(t, options, makeContent) {
       t.utils.dest({ connect: true }),
       inTop
         ? {
-            tag: ".box-fit.desktop",
-            content: {
-              tag: ".box-h.size-full",
-              content: [
-                top ? makeContent() : undefined,
-                iframe
-                  ? {
-                      tag: "ui-sandbox.ground",
-                      permissions: "trusted",
-                      path,
-                    }
-                  : undefined,
-              ],
-            },
+            tag: ".box-v.box-fit.desktop",
+            content: [
+              {
+                tag: "h1.code.ma-0.pa-xl",
+                content: "🧪 " + t.test.title,
+              },
+              {
+                tag: ".box-h",
+                content: [
+                  top ? makeContent() : undefined,
+                  iframe
+                    ? {
+                        tag: "ui-sandbox.ground",
+                        permissions: "trusted",
+                        path,
+                      }
+                    : undefined,
+                ],
+              },
+            ],
           }
         : {
             tag: ".box-fit",
@@ -70,7 +76,11 @@ export async function makeRealmLab(t, options, makeContent) {
     ),
   )
 
-  if (nestedTestsParallel && iframe) await untilAllRealmReady()
+  if (nestedTestsParallel && iframe) {
+    t.timeout("reset")
+    await untilAllRealmReady()
+    t.timeout("reset")
+  }
 
   return app
 }

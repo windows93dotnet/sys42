@@ -198,8 +198,10 @@ export default function addUtilities(item, options) {
         decay(el)
       }
 
-      el.style.opacity = 0.001
-      el.style.pointerEvents = "none"
+      if (options?.visible !== true) {
+        el.style.opacity = 0.001
+        el.style.pointerEvents = "none"
+      }
     }
 
     if (options?.connect) document.body.append(el)
