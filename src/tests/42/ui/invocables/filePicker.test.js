@@ -70,9 +70,9 @@ const filesPromise = Promise.all([
   fs.open("/index.html"),
 ])
 
-test.ui(async (t, { makeRealmLab, triggerOpener }) => {
+test.ui(async (t, { triggerOpener }) => {
   t.timeout(6000)
-  await makeRealmLab({ href, iframe }, makeContent)
+  await t.glovebox({ href, iframe }, makeContent)
   if (manual) return t.pass()
 
   const files = await filesPromise

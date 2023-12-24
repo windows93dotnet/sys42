@@ -8,6 +8,7 @@ import formatError from "../../console/formatters/formatError.js"
 import truncate from "../../../fabric/type/string/truncate.js"
 import equals from "../../../fabric/type/any/equals.js"
 import pluralize from "../../../fabric/type/string/pluralize.js"
+import toNoCase from "../../../fabric/type/string/case/toNoCase.js"
 import { escapeLog } from "../../console/logUtils.js"
 
 const DEFAULTS = {
@@ -33,13 +34,16 @@ const getSuiteTitle = ({ title, skip }, highlightLast) =>
     )
     .join(` {${skip ? "magenta.dim" : "grey"} ›} `)
 
-const getTestTitle = ({ title, ok, skip }) =>
+const getTestTitle = ({ title, ok, skip, realm }) =>
   title
     .map(
       (x) => `{${skip ? "magenta.dim" : ok ? "reset" : "red"} ${escapeLog(x)}}`,
     )
     .join(` {${skip ? "magenta.dim" : "dim"} ·} `)
-    .replaceAll("\n", "␤")
+    .replaceAll("\n", "␤") +
+  (realm && realm !== "top"
+    ? ` {grey (${realm === "dedicatedWorker" ? "worker" : toNoCase(realm)})}`
+    : "")
 
 const getStats = (suite, config, isRootSuite) => {
   let begin = ""

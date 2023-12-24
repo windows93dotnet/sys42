@@ -119,8 +119,8 @@ const makeContent = () => ({
   ],
 })
 
-test.ui(async (t, { makeRealmLab, triggerOpener }) => {
-  await makeRealmLab({ href, iframe }, makeContent)
+test.ui(async (t, { triggerOpener }) => {
+  await t.glovebox({ href, iframe }, makeContent)
 
   if (manual) {
     return t.pass()

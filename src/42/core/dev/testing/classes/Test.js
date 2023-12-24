@@ -1,5 +1,8 @@
 import defer from "../../../../fabric/type/promise/defer.js"
+import realm from "../../../env/realm.js"
 import serializeError from "../../../../fabric/type/error/serializeError.js"
+
+const realmString = String(realm)
 
 export default class Test {
   constructor(suite, title, fn) {
@@ -16,7 +19,11 @@ export default class Test {
     this.skip = false
     this.serial = false
     this.flaky = 0
+
+    this.realm = realmString
+
     this.nesteds = []
+    this.nestedsOnlies = []
 
     this.done = defer()
     this.deferred = defer()
@@ -34,6 +41,7 @@ export default class Test {
     this.ms = 0
     this.ok = false
     this.ran = false
+    this.running = false
     this.error = undefined
     this.logs = []
   }
@@ -41,6 +49,7 @@ export default class Test {
   toJSON() {
     const json = {
       title: this.title,
+      realm: this.realm,
       suiteTitle: this.suite.title,
       suiteOk: this.suite.ok,
       stackframe: this.stackframe,

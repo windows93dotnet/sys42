@@ -4,7 +4,7 @@ import debounce from "../../../../fabric/type/function/debounce.js"
 import isInstanceOf from "../../../../fabric/type/any/is/isInstanceOf.js"
 import unsee from "../../../../fabric/dom/unsee.js"
 
-import makeRealmLab from "./makeRealmLab.js"
+import glovebox from "./glovebox.js"
 import triggerOpener from "./triggerOpener.js"
 import untilClose from "./untilClose.js"
 
@@ -37,32 +37,6 @@ const selfExecute = debounce(async (sbs) => {
   trap()
 }, 1)
 
-async function untilIframesReady(t, sbs, retries = 300) {
-  const iframes = document.querySelectorAll('iframe[src$="test=true"]')
-
-  if (iframes.length > 0) {
-    const queue = new Set()
-    for (const iframe of iframes) queue.add(iframe.src)
-
-    t.timeout(4500)
-    await new Promise((resolve, reject) => {
-      const interval = setInterval(() => {
-        if (retries-- < 0) {
-          clearInterval(interval)
-          reject(new Error(`no tests found in iframe`))
-        }
-
-        for (const item of sbs.iframes) if (queue.has(item)) queue.delete(item)
-
-        if (queue.size === 0) {
-          clearInterval(interval)
-          resolve()
-        }
-      }, 15)
-    })
-  }
-}
-
 export default function uiTest(fn, sbs) {
   requestIdleCallback(async () => {
     if (!inTop || sbs.started) return
@@ -72,8 +46,21 @@ export default function uiTest(fn, sbs) {
   return async (t) => {
     index++
 
+    const id = `test--${t.test.slug}`
+
+    t.glovebox = async (options, makeContent) => {
+      if (typeof options === "function") {
+        makeContent = options
+        options = {}
+      }
+
+      options ??= {}
+      options.makeContent ??= makeContent
+      options.id = id
+      return glovebox(t, options)
+    }
+
     t.utils.triggerOpener = async (...args) => triggerOpener(t, ...args)
-    t.utils.makeRealmLab = async (...args) => makeRealmLab(t, ...args)
     t.utils.untilClose = async (...args) => untilClose(...args)
     t.utils.closeDialog = async (el, context = window) => {
       context = isInstanceOf(context, Window)
@@ -113,13 +100,6 @@ export default function uiTest(fn, sbs) {
       })
     }
 
-    await 0 // queueMicrotask
     await fn(t, t.utils)
-
-    if (sbs.nestedTestsSerial) {
-      t.timeout("reset")
-      await untilIframesReady(t, sbs)
-      t.timeout("reset")
-    }
   }
 }

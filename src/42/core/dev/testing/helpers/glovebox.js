@@ -5,38 +5,38 @@ const DEFAULT = {
   top: true,
   iframe: true,
   syncData: true,
-  nestedTestsParallel: false,
 }
+
+const initiator = new URLSearchParams(location.search).get("initiator")
 
 let ui
 
-export async function makeRealmLab(t, options, makeContent) {
-  const id = `test--${t.test.slug}`
-  const initiator = new URLSearchParams(location.search).get("initiator")
-
-  if (typeof options === "function") {
-    makeContent = options
-    options = {}
-  }
-
+export async function glovebox(t, options) {
   const config = { ...DEFAULT, ...options }
-  const { href, top, iframe, syncData, nestedTestsParallel } = config
+
+  const {
+    id, //
+    makeContent,
+    href,
+    top,
+    iframe,
+    syncData,
+  } = config
 
   const path = new URL(href)
-  if (syncData) path.searchParams.set("initiator", id)
-  if (nestedTestsParallel) path.searchParams.set("nestedTestsParallel", true)
+  if (!syncData) path.searchParams.set("parallel", true)
+  path.searchParams.set("initiator", id)
   path.searchParams.set("test", true)
 
-  const untilAllRealmReady = async () => {
-    if (inTop) {
-      return new Promise((resolve) => {
-        globalThis.addEventListener("message", async (e) => {
-          if (e.data === id) resolve()
-        })
+  if (inTop) {
+    t.glovebox.ready = new Promise((resolve) => {
+      globalThis.addEventListener("message", function handler({ data }) {
+        if (data === id) {
+          resolve()
+          globalThis.removeEventListener("message", handler)
+        }
       })
-    }
-
-    globalThis.parent.postMessage(initiator)
+    })
   }
 
   ui ??= await import("../../../../ui.js") //
@@ -51,7 +51,10 @@ export async function makeRealmLab(t, options, makeContent) {
             content: [
               {
                 tag: "h1.code.ma-0.pa-xl",
-                content: "🧪 " + t.test.title,
+                content: [
+                  { tag: "span", style: "color:#555", content: "[🧤🧪] " },
+                  t.test.title,
+                ],
               },
               {
                 tag: ".box-h",
@@ -76,13 +79,7 @@ export async function makeRealmLab(t, options, makeContent) {
     ),
   )
 
-  if (nestedTestsParallel && iframe) {
-    t.timeout("reset")
-    await untilAllRealmReady()
-    t.timeout("reset")
-  }
-
-  return app
+  return { app }
 }
 
-export default makeRealmLab
+export default glovebox

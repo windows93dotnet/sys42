@@ -39,7 +39,6 @@ export default function ensureCurrentSuite(titled) {
     .replaceAll(TITLE_REGEX, "")
     .replace(/^\//, "")
     .replace(/\?.*$/, "")
-    .replace(/\.(test|demo)\.html/, " (html)")
 
   if (titled) system.testing.lastTitled = titled
   else if (
@@ -49,31 +48,19 @@ export default function ensureCurrentSuite(titled) {
     titled = system.testing.lastTitled
   }
 
-  let title = titled ? `${moduleTitle}/${titled}` : moduleTitle
+  const title = titled ? `${moduleTitle}/${titled}` : moduleTitle
 
   if (inIframe) {
-    const params = new URLSearchParams(location.search)
-    if (params.has("prefix")) {
-      title = params.get("prefix") + title
-    } else {
-      const suffix = params.get("suffix") ?? params.get("title") ?? " (iframe)"
-      title += suffix
-    }
-  }
-
-  let exist
-  if (inIframe || !system.testing.suites.has(title)) {
-    exist = false
-  }
-
-  if (exist === false) {
+    const suite = new Suite(title, parentModule.url, system.testing.root)
+    system.testing.current = suite
+  } else if (system.testing.suites.has(title)) {
+    system.testing.current = system.testing.suites.get(title)
+  } else {
     system.testing.current = system.testing.root
     const suite = new Suite(title, parentModule.url, system.testing.root)
     system.testing.current.suites.push(suite)
     system.testing.current = suite
     system.testing.suites.set(title, suite)
-  } else {
-    system.testing.current = system.testing.suites.get(title)
   }
 
   return parentModule.stack

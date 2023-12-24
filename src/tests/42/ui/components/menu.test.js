@@ -72,9 +72,9 @@ const makeContent = () => ({
 })
 
 test.ui("submenu close previous submenu", async (t) => {
-  const { makeRealmLab, triggerOpener } = t.utils
+  const { triggerOpener } = t.utils
 
-  window.app = await makeRealmLab(
+  window.app = await t.glovebox(
     {
       href,
       iframe,
@@ -121,16 +121,14 @@ test.ui("submenu close previous submenu", async (t) => {
 })
 
 test.ui("detached dialog still use ipcPlugin", async (t) => {
-  const { makeRealmLab, triggerOpener } = t.utils
+  const { triggerOpener } = t.utils
   const { slug } = t.test
 
-  window.app = await makeRealmLab(
+  window.app = await t.glovebox(
     {
       href,
       iframe,
       top: 1,
-      syncData: true,
-      nestedTestsParallel: true,
     },
     makeContent,
   )

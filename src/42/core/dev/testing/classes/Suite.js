@@ -116,6 +116,8 @@ export default class Suite {
       return
     }
 
+    test.running = true
+
     await idle({ timeout: 3000 })
 
     if (this.beforeEach) await this.warnOnThrow(this.beforeEach, "beforeEach")
@@ -146,17 +148,28 @@ export default class Suite {
       }
     }
 
-    test.done.resolve()
-    if (test.nesteds.length > 0) await Promise.all(test.nesteds)
-
-    t.cleanup()
+    test.done.resolve(t)
 
     if (test.ok === false && test.flaky) {
+      t.cleanup()
       test.flaky--
       delete test.error
       await this.runTest(test, options)
       return
     }
+
+    if (t.glovebox?.ready) await t.glovebox.ready
+
+    const nesteds =
+      test.nestedsOnlies.length > 0
+        ? test.nestedsOnlies
+        : test.nesteds.length > 0
+          ? test.nesteds
+          : undefined
+
+    if (nesteds) await this.runNesteds(test, nesteds, options)
+
+    t.cleanup()
 
     test.ms = performance.now() - test.timeStamp
     this.cumulated += test.ms
@@ -184,6 +197,35 @@ export default class Suite {
     if (options.oneach) options.oneach(test)
 
     if (this.afterEach) await this.warnOnThrow(this.afterEach, "afterEach")
+
+    test.running = false
+  }
+
+  async runNesteds(test, nesteds, options) {
+    const suites = new Set()
+    const undones = []
+    const index = this.tests.indexOf(test)
+    const config = { ...options, nested: true }
+
+    // TODO: group parallel and serial tests
+
+    for (const nestedTest of nesteds) {
+      if (nestedTest.ran) continue
+      if (nestedTest.running) {
+        undones.push(nestedTest.done)
+        continue
+      }
+
+      this.tests.splice(index + 1, 0, nestedTest)
+      const { suite } = nestedTest
+      undones.push(
+        suite.runTest(nestedTest, config).then(() => {
+          if (suite !== this) suites.add(suite)
+        }),
+      )
+    }
+
+    await Promise.all(undones)
   }
 
   async runSuite(suite, options) {

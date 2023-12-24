@@ -15,8 +15,9 @@ export { default as mock } from "./core/dev/testing/mock.js"
 system.DEV = true
 
 const params = new URLSearchParams(location.search)
-const inRealmLab = inIframe && params.has("test")
-const nestedTestsSerial = inIframe && !params.has("nestedTestsParallel")
+const inGlovebox = inIframe && params.has("test")
+const initiator = params.get("initiator")
+const parallel = params.get("parallel")
 
 system.testing ??= {
   root: new Suite("#root"),
@@ -67,26 +68,18 @@ function makeTest(title, data, stack, fn) {
 
   // nested tests
   if (sbs.root.running) {
-    if (inRealmLab && !equals(test.title, sbs.root.currentTest.title)) return
+    if (inGlovebox && !equals(test.title, sbs.root.currentTest.title)) return
 
-    if (data.only) {
-      throw new Error('nested tests "only" option is not supported')
+    if (data.only) sbs.root.currentTest.nestedsOnlies.push(test)
+    else sbs.root.currentTest.nesteds.push(test)
+
+    if (inGlovebox && initiator) {
+      globalThis.parent.postMessage(initiator)
+      if (parallel) {
+        sbs.root.currentTest.suite.runNesteds(sbs.root.currentTest, [test])
+      }
     }
-
-    sbs.current.tests.push(test)
-    const promise = nestedTestsSerial
-      ? sbs.root.currentTest.done.then(() =>
-          test.suite.runTest(test, { nested: true }),
-        )
-      : test.suite.runTest(test, { nested: true })
-
-    if (inIframe) sbs.iframes.add(location.href)
-    sbs.root.currentTest.nesteds.push(promise)
-
-    return promise
-  }
-
-  if (data.only) {
+  } else if (data.only) {
     sbs.current.onlies.add(test)
     sbs.root.onlies.add(sbs.current)
   } else {

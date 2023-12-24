@@ -194,12 +194,16 @@ const makePuppet = () => {
 
               if (typeof item.options === "string") {
                 options = { base: await waitFor(item.options) }
-              } else if (item.options?.nodeType) {
+              } else if (
+                item.options?.nodeType &&
+                item.options?.querySelector
+              ) {
                 options = { base: item.options }
               }
 
               if (options?.base?.localName === "iframe") {
-                options.base = options.base.contentWindow.document.body
+                options.base =
+                  options.base.contentWindow.document.documentElement
               }
 
               try {
