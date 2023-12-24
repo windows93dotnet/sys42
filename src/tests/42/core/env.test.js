@@ -1,6 +1,7 @@
 /* eslint-disable no-implicit-coercion */
 import test from "../../../42/test.js"
 import env from "../../../42/core/env.js"
+import traverse from "../../../42/fabric/type/object/traverse.js"
 
 const expectedKeys = [
   "realm",
@@ -29,6 +30,21 @@ test("toPrimitive", (t) => {
   t.true((env + 2).endsWith("2"))
   t.isNaN(Number(env))
   t.isNaN(+env)
+
+  t.is(`${env.realm}`, "top")
+})
+
+test("frozen", (t) => {
+  traverse(env, (key, val, obj, parentKey) => {
+    if (key === "languages" || parentKey === "languages") return
+    t.throws(
+      () => {
+        obj[key] = 42
+      },
+      { name: "TypeError" },
+      `${parentKey ? parentKey + "/" : ""}${key} should be frozen`,
+    )
+  })
 })
 
 test("realm", (t) => {
