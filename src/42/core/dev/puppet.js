@@ -194,7 +194,7 @@ const makePuppet = () => {
 
               if (typeof item.options === "string") {
                 options = { base: await waitFor(item.options) }
-              } else if (item.options?.nodeType === Node.ELEMENT_NODE) {
+              } else if (item.options?.nodeType) {
                 options = { base: item.options }
               }
 

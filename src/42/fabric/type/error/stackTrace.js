@@ -62,6 +62,16 @@ const addErrorEventStackFrame = (err, stackFrames) => {
   stackFrames.unshift(e)
 }
 
+function isIgnoredModule(item) {
+  return (
+    item.filename.endsWith("trap.js") ||
+    item.filename.endsWith("stackTrace.js") ||
+    item.filename.endsWith("Assert.js") ||
+    item.filename.endsWith("uiTest.js") ||
+    item.filename.endsWith("ExecutionContext.js")
+  )
+}
+
 export default function stackTrace(err = new Error(), options = {}) {
   const stackFrames = isInstanceOf(err, Error)
     ? parseErrorStack(err)
@@ -91,14 +101,7 @@ export default function stackTrace(err = new Error(), options = {}) {
     item.filename = item.filename || ""
     item.filename = item.filename.replace(/\?.*$/, "") || "__anonymous__"
 
-    if (
-      item.filename.endsWith("trap.js") ||
-      item.filename.endsWith("stackTrace.js") ||
-      item.filename.endsWith("Assert.js") ||
-      item.filename.endsWith("ExecutionContext.js")
-    ) {
-      continue
-    }
+    if (isIgnoredModule(item)) continue
 
     if (
       item.function.endsWith("runTest") &&

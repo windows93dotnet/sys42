@@ -28,7 +28,7 @@
         <div>failed: <output class="parallel-failed txt-pre">0</output></div>
         <div>skipped: <output class="parallel-skipped txt-pre">0</output></div>
       </div>
-      <a class="button w-full" href="/tests.html">run</a>
+      <a class="button w-full ma-t" href="/tests.html">run</a>
     </div>
     <div>
       <div class="serial-results message">
@@ -37,12 +37,15 @@
         <div>failed: <output class="serial-failed txt-pre">0</output></div>
         <div>skipped: <output class="serial-skipped txt-pre">0</output></div>
       </div>
-      <a class="button w-full" href="/tests.html?serial-tests">run</a>
+      <a class="button w-full ma-t" href="/tests.html?serial-tests">run</a>
     </div>
   </div>
+  <div class="w-prose">
+    <a id="all" class="button w-full ma-t" href="/tests.html?all-tests">run</a>
+  </div>
   <br />
-  <div class="notice">
-    <strong>Open the browser console to show tests results.</strong>
+  <div class="notice w-prose txt-center opacity-half">
+    <span>Open the console to show tests results.</span>
   </div>
 </body>
 
@@ -60,11 +63,10 @@
   async function run(ctx) {
     if (!ctx.enabled) return
 
-    await fetch("/?clear-site-data")
+    // await fetch("/?clear-site-data")
     if (!system.dev) await import("./42/dev.js")
 
-    log()
-    log("🧪 " + ctx.label)
+    log(`\n🧪 ${ctx.label}\n`)
 
     await testRunner(ctx.tests, {
       verbose: 2,
@@ -93,9 +95,9 @@
     testTitle.textContent = ""
 
     system.testing.root.reset()
-    await idle()
-    await fetch("/?clear-site-data")
-    await idle()
+    // await idle()
+    // await fetch("/?clear-site-data")
+    // await idle()
   }
 
   const testFilename = document.querySelector(".test-filename")
@@ -199,11 +201,28 @@
 
   const params = new URLSearchParams(location.search)
 
-  if (params.has("all-tests") || !params.has("serial-tests")) {
-    await run(parallelTests)
+  const all = params.has("all-tests")
+  const allBtn = document.querySelector("#all")
+
+  if (all) {
+    allBtn.setAttribute("aria-expanded", "true")
   }
 
-  if (params.has("serial-tests")) {
+  if (all || !params.has("serial-tests")) {
+    const btn = document.querySelector(".parallel-results + a")
+    btn.setAttribute("aria-expanded", "true")
+    await run(parallelTests)
+    btn.setAttribute("aria-expanded", "false")
+  }
+
+  if (all || params.has("serial-tests")) {
+    const btn = document.querySelector(".serial-results + a")
+    btn.setAttribute("aria-expanded", "true")
     await run(serialTests)
+    btn.setAttribute("aria-expanded", "false")
+  }
+
+  if (all) {
+    allBtn.setAttribute("aria-expanded", "false")
   }
 </script>

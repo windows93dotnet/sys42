@@ -13,6 +13,7 @@
 @import url("./reset/sanitize.css");
 @import url("./reset/reduce-motion.css");
 @import url("./reset/reset.css");
+@import url("./html/theme.css");
 
 /* Elements
 =========== */
@@ -22,7 +23,6 @@
 @import url("./html/progress.css");
 @import url("./html/range.css");
 @import url("./html/scrollbar.css");
-@import url("./html/theme.css");
 
 /* Components
 ============= */

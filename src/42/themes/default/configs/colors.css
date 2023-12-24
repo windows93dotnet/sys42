@@ -87,8 +87,8 @@
   --pink-900: 131 24 67;
 }
 
-.bg-transparent { background-color: transparent; }
-.bg-current { background-color: currentColor; }
+.bg-transparent { --bg: transparent; background-color: var(--bg); }
+.bg-current { --bg: currentColor; background-color: var(--bg); }
 
 .bg-black { --bg-opacity: 1; background-color: rgb(var(--black) / var(--bg-opacity)); }
 .bg-white { --bg-opacity: 1; background-color: rgb(var(--white) / var(--bg-opacity)); }

@@ -291,7 +291,8 @@ button
   vertical-align: top;
   display: inline-block;
   line-height: var(--ctrl-lh);
-  min-width: 3ch;
+  /* TODO: restore when Chrome 121 bug is fixed */
+  /* min-width: 3ch; */
   max-width: 100%;
   padding: var(--ctrl-pa-y) var(--ctrl-pa-x);
 }
@@ -647,8 +648,7 @@ button,
 input[type="button"],
 input[type="reset"],
 input[type="submit"]
-),
-a.button {
+) {
   --fg: var(--btn-fg);
   --bg: var(--btn-bg);
   color: var(--fg);
