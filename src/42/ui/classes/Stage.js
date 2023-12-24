@@ -19,6 +19,7 @@ export class Stage {
     this.computeds ??= Object.create(null)
     this.refs ??= Object.create(null)
     this.tmp ??= new Map()
+    this.sandboxes ??= new Map()
     this.detacheds ??= new Set()
     this.scopeChain ??= []
     this.pluginHandlers ??= []

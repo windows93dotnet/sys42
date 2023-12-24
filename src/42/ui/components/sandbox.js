@@ -2,6 +2,7 @@ import system from "../../system.js"
 import Component from "../classes/Component.js"
 import Resource from "../../fabric/classes/Resource.js"
 import create from "../create.js"
+import defer from "../../fabric/type/promise/defer.js"
 import { forkPlan } from "../normalize.js"
 import SecurityError from "../../fabric/errors/SecurityError.js"
 
@@ -44,6 +45,8 @@ if (system.network?.vhost) {
 export class Sandbox extends Component {
   static plan = {
     tag: "ui-sandbox",
+
+    id: true,
 
     tabIndex: -1,
 
@@ -153,22 +156,31 @@ export class Sandbox extends Component {
     const options = { head, body }
 
     if (this.content) {
-      // Ensure sandboxed content can execute rpc/ipc functions in top
-      await Promise.all([
-        import("./dialog.js"),
-        import("../popup.js"),
-        import("../traits/transferable.js"),
-      ])
       const content = forkPlan(this.content, this.stage)
+      const id = `sandboxed-${this.id}`
+
+      if (!this.stage.sandboxes.has(id)) {
+        const deferred = defer({ timeout: 2000 })
+        this.stage.waitlistPending.push(deferred)
+        this.stage.sandboxes.set(id, deferred)
+      }
+
       content.plugins ??= []
       if (!content.plugins.includes("ipc")) content.plugins.push("ipc")
 
       const script = `
         import ipc from "${ipcUrl}";
         import ui from "${uiUrl}";
-        const app = await ui(${JSON.stringify(content)});
+        const app = await ui(${JSON.stringify(content)}, {id:"${id}"});
+        window.app = app;
         ${this.script ?? ""}`
 
+      // Ensure sandboxed content can execute rpc/ipc functions in top
+      await Promise.all([
+        import("./dialog.js"),
+        import("../popup.js"),
+        import("../traits/transferable.js"),
+      ])
       return this.resource.script(script, options)
     }
 

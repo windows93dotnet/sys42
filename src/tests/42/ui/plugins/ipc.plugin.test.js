@@ -1,144 +1,201 @@
 import test from "../../../../42/test.js"
 import system from "../../../../42/system.js"
 import ui from "../../../../42/ui.js"
+import ipc from "../../../../42/core/ipc.js"
 
-test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
-  const app = await decay(
+test.ui("data sync on inserted iframe", async (t) => {
+  const dest = t.utils.dest({ connect: true })
+  const id = t.test.slug
+  const app = await t.utils.decay(
     ui(
-      dest({ connect: true }),
+      dest,
       {
-        tag: ".box-fit.box-v",
-        content: [
-          {
-            tag: ".bd-b",
-            content: [
-              { tag: "h2", content: "Top" },
-              {
-                tag: "button#incr1",
-                content: "{{cnt}}",
-                click: "{{cnt++}}",
-              },
-
-              {
-                tag: "button#btnDialog1",
-                content: "dialog 1",
-                dialog: {
-                  id: "dialog1",
-                  x: 100,
-                  y: 100,
-                  label: "1 ({{x}},{{y}})",
-                  content: {
-                    tag: "button#dialogIncr1",
-                    content: "{{cnt}}",
-                    click: "{{cnt++}}",
-                  },
-                },
-              },
-            ],
-          },
-
-          {
-            content: {
-              tag: "ui-sandbox#sandbox1.bd-b",
-              permissions: "trusted",
-              content: [
-                { tag: "h2", content: "Sandbox 1" },
-                {
-                  tag: "button#incr2",
-                  content: "{{cnt}}",
-                  click: "{{cnt++}}",
-                },
-                {
-                  tag: "button#btnDialog2",
-                  content: "dialog 2",
-                  dialog: {
-                    id: "dialog2",
-                    x: 100,
-                    y: 200,
-                    label: "2 ({{x}},{{y}})",
-                    content: {
-                      tag: "button#dialogIncr2",
-                      content: "{{cnt}}",
-                      click: "{{cnt++}}",
-                    },
-                  },
-                },
-              ],
-              script: `app.el.querySelector("#btnDialog2")?.click()`,
-            },
-          },
-
-          {
-            content: {
-              tag: "ui-sandbox#sandbox2.bd-b",
-              permissions: "trusted",
-              content: [
-                { tag: "h2", content: "Sandbox 2" },
-                {
-                  tag: "button#incr3",
-                  content: "{{cnt}}",
-                  click: "{{cnt++}}",
-                },
-                {
-                  tag: "button#btnDialog3",
-                  content: "dialog 3",
-                  dialog: {
-                    id: "dialog3",
-                    x: 100,
-                    y: 300,
-                    label: "3 ({{x}},{{y}})",
-                    content: {
-                      tag: "button#dialogIncr3",
-                      content: "{{cnt}}",
-                      click: "{{cnt++}}",
-                    },
-                  },
-                },
-              ],
-              script: `app.el.querySelector("#btnDialog3")?.click()`,
-            },
-          },
-        ],
+        content: {
+          tag: "button#btnIncr",
+          content: "{{cnt}}",
+          click: "{{cnt++}}",
+        },
 
         state: {
           cnt: 0,
         },
+
+        plugins: ["ipc"],
       },
-      { trusted: true },
+      { id },
     ),
   )
 
-  t.timeout("reset")
+  t.is(app.state.cnt, 0)
+  await t.puppet("#btnIncr").click()
+  t.is(app.state.cnt, 1)
 
-  globalThis.app = app
+  const iframe = document.createElement("iframe")
+  iframe.style = "border: 1px solid"
+  iframe.srcdoc = `
+<script type="module">
+  import ui from "../../../../42/ui.js"
+  window.app = ui(
+    {
+      content: {
+        tag: "button#btnIncr",
+        content: "{{cnt}}",
+        click: "{{cnt++}}",
+      },
 
-  app.el.querySelector("#btnDialog1").click()
+      state: {
+        cnt: 0,
+      },
+    },
+    { initiator: "${id}" },
+  )
+</script>`
 
-  await new Promise((resolve) => {
-    let cnt = 0
-    t.utils.on({ "ui:dialog.open": () => ++cnt === 3 && resolve() })
-  })
+  dest.append(iframe)
 
-  t.timeout("reset")
-  await t.utils.idle()
-  t.timeout("reset")
+  await t.step(ipc.once(`42-ui-ipc-handshake-${id}`))
+  const iframeApp = iframe.contentWindow.app
+  await t.step(iframeApp.stage.reactive.once("update"))
 
-  const sandbox1 = app.el.querySelector("#sandbox1 iframe").contentDocument
-  const sandbox2 = app.el.querySelector("#sandbox2 iframe").contentDocument
+  t.is(iframeApp.state.cnt, 1)
+})
 
-  const btnDialogs = {
-    btnDialog1: document.querySelector("#btnDialog1"),
-    btnDialog2: sandbox1.querySelector("#btnDialog2"),
-    btnDialog3: sandbox2.querySelector("#btnDialog3"),
+test.ui("cross-realms state data", async (t, { pickValues }) => {
+  const app = await t.step(
+    t.utils.decay(
+      ui(
+        t.utils.dest({ connect: true }),
+        {
+          tag: ".box-fit.box-v",
+          content: [
+            {
+              tag: ".bd-b",
+              content: [
+                { tag: "h2", content: "Top" },
+                {
+                  tag: "button#incr1",
+                  content: "{{cnt}}",
+                  click: "{{cnt++}}",
+                },
+                {
+                  tag: "button#btnDialog1",
+                  content: "dialog 1",
+                  dialog: {
+                    id: "dialog1",
+                    x: 100,
+                    y: 100,
+                    label: "1 ({{x}},{{y}})",
+                    content: {
+                      tag: "button#dialogIncr1",
+                      content: "{{cnt}}",
+                      click: "{{cnt++}}",
+                    },
+                  },
+                },
+              ],
+            },
+
+            {
+              content: {
+                tag: "ui-sandbox#sandbox1.bd-b",
+                permissions: "trusted",
+                content: [
+                  { tag: "h2", content: "Sandbox 1" },
+                  {
+                    tag: "button#incr2",
+                    content: "{{cnt}}",
+                    click: "{{cnt++}}",
+                  },
+                  {
+                    tag: "button#btnDialog2",
+                    content: "dialog 2",
+                    dialog: {
+                      id: "dialog2",
+                      x: 100,
+                      y: 200,
+                      label: "2 ({{x}},{{y}})",
+                      content: {
+                        tag: "button#dialogIncr2",
+                        content: "{{cnt}}",
+                        click: "{{cnt++}}",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+
+            {
+              content: {
+                tag: "ui-sandbox#sandbox2.bd-b",
+                permissions: "trusted",
+                content: [
+                  { tag: "h2", content: "Sandbox 2" },
+                  {
+                    tag: "button#incr3",
+                    content: "{{cnt}}",
+                    click: "{{cnt++}}",
+                  },
+                  {
+                    tag: "button#btnDialog3",
+                    content: "dialog 3",
+                    dialog: {
+                      id: "dialog3",
+                      x: 100,
+                      y: 300,
+                      label: "3 ({{x}},{{y}})",
+                      content: {
+                        tag: "button#dialogIncr3",
+                        content: "{{cnt}}",
+                        click: "{{cnt++}}",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+
+          state: {
+            cnt: 0,
+          },
+        },
+        { trusted: true },
+      ),
+    ),
+  )
+
+  window.app = app
+
+  const sandbox1Realm = app.el.querySelector("#sandbox1 iframe").contentWindow
+  const sandbox2Realm = app.el.querySelector("#sandbox2 iframe").contentWindow
+  const sandbox1 = sandbox1Realm.document
+  const sandbox2 = sandbox2Realm.document
+
+  await t.step(Promise.all([sandbox1Realm.app, sandbox2Realm.app]))
+
+  const btnDialog1 = document.querySelector("#btnDialog1")
+  const btnDialog2 = sandbox1.querySelector("#btnDialog2")
+  const btnDialog3 = sandbox2.querySelector("#btnDialog3")
+
+  btnDialog1.click()
+  btnDialog2.click()
+  btnDialog3.click()
+
+  await t.step(
+    new Promise((resolve) => {
+      let cnt = 0
+      t.utils.on({ "ui:dialog.open": () => ++cnt === 3 && resolve() })
+    }),
+  )
+
+  const dialogs = {
     dialog1: document.querySelector("#dialog1"),
     dialog2: document.querySelector("#dialog2"),
     dialog3: document.querySelector("#dialog3"),
   }
 
-  t.eq(pickValues(btnDialogs), {
-    btnDialog1: "dialog 1",
-    btnDialog2: "dialog 2",
-    btnDialog3: "dialog 3",
+  t.eq(pickValues(dialogs), {
     dialog1: "1 (100,100)0",
     dialog2: "2 (100,200)0",
     dialog3: "3 (100,300)0",
@@ -162,14 +219,17 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
     dialogIncr3: "0",
   })
 
-  async function click(t, btn) {
-    const update = app.stage.reactive.once("update")
-    await t.puppet(btn).click()
-    await Promise.all([system.once("ipc.plugin:end-of-update"), update])
-    await t.sleep(10)
+  async function click(btn) {
+    const promise = Promise.all([
+      system.once("ipc.plugin:end-of-update"),
+      app.stage.reactive.once("update"),
+    ])
+    btn.click()
+    await promise
+    await t.utils.untilRepaint()
   }
 
-  await click(t, btnIncr.incr1)
+  await click(btnIncr.incr1)
   t.eq(pickValues(btnIncr), {
     incr1: "1",
     incr2: "1",
@@ -179,7 +239,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
     dialogIncr3: "1",
   })
 
-  await click(t, btnIncr.incr2)
+  await click(btnIncr.incr2)
   t.eq(pickValues(btnIncr), {
     incr1: "2",
     incr2: "2",
@@ -189,7 +249,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
     dialogIncr3: "2",
   })
 
-  await click(t, btnIncr.incr3)
+  await click(btnIncr.incr3)
   t.eq(pickValues(btnIncr), {
     incr1: "3",
     incr2: "3",
@@ -199,7 +259,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
     dialogIncr3: "3",
   })
 
-  await click(t, btnIncr.dialogIncr1)
+  await click(btnIncr.dialogIncr1)
   t.eq(pickValues(btnIncr), {
     incr1: "4",
     incr2: "4",
@@ -209,7 +269,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
     dialogIncr3: "4",
   })
 
-  await click(t, btnIncr.dialogIncr2)
+  await click(btnIncr.dialogIncr2)
   t.eq(pickValues(btnIncr), {
     incr1: "5",
     incr2: "5",
@@ -219,7 +279,7 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
     dialogIncr3: "5",
   })
 
-  await click(t, btnIncr.dialogIncr3)
+  await click(btnIncr.dialogIncr3)
   t.eq(pickValues(btnIncr), {
     incr1: "6",
     incr2: "6",
@@ -229,12 +289,12 @@ test.ui("cross-realms state data", async (t, { decay, dest, pickValues }) => {
     dialogIncr3: "6",
   })
 
-  await t.utils.closeDialog(btnDialogs.dialog1, btnDialogs.btnDialog1)
-  t.is(document.activeElement.id, btnDialogs.btnDialog1.id)
+  await t.utils.closeDialog(dialogs.dialog1, btnDialog1)
+  t.is(document.activeElement.id, btnDialog1.id)
 
-  await t.utils.closeDialog(btnDialogs.dialog2, btnDialogs.btnDialog2)
-  t.is(sandbox1.activeElement.id, btnDialogs.btnDialog2.id)
+  await t.utils.closeDialog(dialogs.dialog2, btnDialog2)
+  t.is(sandbox1.activeElement.id, btnDialog2.id)
 
-  await t.utils.closeDialog(btnDialogs.dialog3, btnDialogs.btnDialog3)
-  t.is(sandbox2.activeElement.id, btnDialogs.btnDialog3.id)
+  await t.utils.closeDialog(dialogs.dialog3, btnDialog3)
+  t.is(sandbox2.activeElement.id, btnDialog3.id)
 })

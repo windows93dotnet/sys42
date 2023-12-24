@@ -1,8 +1,9 @@
 import system from "../../system.js"
 import inIframe from "../../core/env/realm/inIframe.js"
 import inTop from "../../core/env/realm/inTop.js"
-import noop from "../../fabric/type/function/noop.js"
 import ipc from "../../core/ipc.js"
+import noop from "../../fabric/type/function/noop.js"
+import debounce from "../../fabric/type/function/debounce.js"
 
 let endOfUpdate
 if (system.DEV) {
@@ -12,8 +13,6 @@ if (system.DEV) {
 }
 
 /* <DEV> */
-import debounce from "../../fabric/type/function/debounce.js"
-
 let debug = 0
 
 if (debug) {
@@ -81,6 +80,14 @@ export default async function ipcPlugin(stage) {
       debug("Parent Top <-- Iframe")
     })
 
+    ipc.on(`42-ui-ipc-handshake-${stage.id}`, options, (data) => {
+      if (stage.sandboxes.has(data)) {
+        stage.sandboxes.get(data).resolve()
+      }
+
+      return stage.reactive.export()
+    })
+
     if (stage.initiator) {
       ipc.on(`42-ui-ipc-${stage.initiator}`, options, (data, { iframe }) => {
         stage.reactive.import(data, iframe)
@@ -112,6 +119,12 @@ export default async function ipcPlugin(stage) {
         stage.reactive.import(data, "parent")
         debug("Iframe <-- Parent Top")
       })
+
+      ipc
+        .send(`42-ui-ipc-handshake-${stage.initiator}`, stage.id)
+        .then((data) => {
+          stage.reactive.import(data, "parent")
+        })
     }
   }
 }
