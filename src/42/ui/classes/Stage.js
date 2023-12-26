@@ -1,13 +1,11 @@
 /* eslint-disable complexity */
-
 import Reactive from "./Reactive.js"
 import resolveScope from "../utils/resolveScope.js"
-import pendingDone from "../utils/pendingDone.js"
 import findScope from "../utils/findScope.js"
-
 import Locator from "../../fabric/classes/Locator.js"
 import Canceller from "../../fabric/classes/Canceller.js"
 import Waitlist from "../../fabric/classes/Waitlist.js"
+import untilNextTask from "../../fabric/type/promise/untilNextTask.js"
 
 export class Stage {
   constructor(stage) {
@@ -34,22 +32,41 @@ export class Stage {
 
     this.cancel ??= new Canceller()
     this.reactive ??= new Reactive(this)
+  }
 
-    this.pendingDone ??= async () => pendingDone(this)
+  get state() {
+    return this.reactive.state
   }
 
   get signal() {
     return this.cancel.signal
   }
-  set signal(_) {}
 
   resolve(loc) {
     return resolveScope(...findScope(this, loc), this)
   }
 
   get(loc) {
-    loc = resolveScope(...findScope(this, loc), this)
-    return this.reactive.get(loc)
+    return this.reactive.get(resolveScope(...findScope(this, loc), this))
+  }
+
+  fork(params) {
+    return new Stage(params ? { ...this, ...params } : this)
+  }
+
+  async pendingDone(n = 10) {
+    await Promise.all([
+      this.waitlistPending.done(),
+      this.waitlistComponents.done(),
+    ])
+
+    await this.reactive.pendingUpdate
+
+    if (this.waitlistPending.length > 0 || this.waitlistComponents.length > 0) {
+      if (n < 0) throw new Error("Too much recursion")
+      await untilNextTask()
+      await this.pendingDone(--n)
+    }
   }
 }
 

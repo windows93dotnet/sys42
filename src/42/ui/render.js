@@ -82,9 +82,9 @@ export default function render(plan, stage, options) {
     // to fix tags like "div > ui-foo" and skip traits and attrs normalization
     delete plan.setTraits
     delete plan.attrs
+
     if (options?.step !== undefined) {
-      stage = { ...stage }
-      stage.steps += "," + options.step
+      stage = stage.fork({ steps: `${stage.steps},${options.step}` })
     }
 
     return renderComponent(create(plan.tag), plan, stage, options)

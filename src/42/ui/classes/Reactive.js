@@ -26,11 +26,6 @@ export default class Reactive extends Emitter {
     this.data = data
     this.bypassEqualCheck = false
 
-    Object.defineProperty(this.stage, "state", {
-      enumerable: true,
-      get: () => this.state,
-    })
-
     this.queue = new Set()
 
     const update = () => {
@@ -42,13 +37,13 @@ export default class Reactive extends Emitter {
 
       if (this.queue.size === 0) {
         this.pendingUpdate?.resolve?.()
-        this.pendingUpdate = false
+        this.pendingUpdate = undefined
         return
       }
 
       const res = this.render(this.queue)
       this.pendingUpdate?.resolve?.()
-      this.pendingUpdate = false
+      this.pendingUpdate = undefined
 
       try {
         this.emit("update", ...res)
@@ -60,7 +55,7 @@ export default class Reactive extends Emitter {
     this.#update.onrepaint = repaintThrottle(update)
     this.#update.now = update
     this.#update.fn = this.#update.now
-    this.pendingUpdate = false
+    this.pendingUpdate = undefined
 
     this.state = observe(this.data, {
       signal: this.stage.cancel.signal,
@@ -297,7 +292,7 @@ export default class Reactive extends Emitter {
     this.emit("destroy", this)
     this.off("*")
     this.queue.clear()
-    this.pendingUpdate = false
+    this.pendingUpdate = undefined
     delete this.data
     delete this.state
     this.stage.cancel("Reactive instance destroyed")

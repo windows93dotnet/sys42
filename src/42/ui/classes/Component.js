@@ -254,7 +254,6 @@ export default class Component extends HTMLElement {
       component: this,
       refs: undefined,
 
-      pendingDone: undefined,
       waitlistPreload: undefined,
       // waitlistPending: undefined,
       waitlistComponents: undefined,

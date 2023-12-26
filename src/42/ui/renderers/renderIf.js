@@ -95,7 +95,7 @@ export default function renderIf(plan, stage) {
     }
 
     cancel = new Canceller(stage.signal)
-    const newStage = { ...stage, type, steps, cancel, signal: cancel.signal }
+    const newStage = stage.fork({ type, steps, cancel })
     const el = render(plan, newStage, { skipNormalize: true })
 
     if (el.nodeType === DOCUMENT_FRAGMENT_NODE) {

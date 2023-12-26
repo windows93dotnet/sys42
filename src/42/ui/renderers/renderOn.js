@@ -37,7 +37,9 @@ function compileRun(val, stage) {
 }
 
 function forkStage(stage, key) {
-  return { ...stage, steps: `${stage.steps},${stage.el.localName}^${key}` }
+  return stage.fork({
+    steps: `${stage.steps},${stage.el.localName}^${key}`,
+  })
 }
 
 // @read https://labs.levelaccess.com/index.php/ARIA_Haspopup_property

@@ -198,14 +198,12 @@ export default function renderEach(plan, stage) {
       fragment.append(
         render(
           itemDef,
-          {
-            ...stage,
+          stage.fork({
             cancel,
-            signal: cancel.signal,
             scope: `${stage.scope}/${i}`,
             steps: `${stage.steps},[${i}]`,
             scopeChain,
-          },
+          }),
           { skipNoStage: true },
         ),
         (lastItem = document.createComment(ITEM)),
