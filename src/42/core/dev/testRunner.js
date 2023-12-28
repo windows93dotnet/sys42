@@ -28,7 +28,7 @@ export default async function testRunner(testFiles, options) {
   }
 
   sbs.inTestRunner = true
-  sbs.started = true
+  sbs.running = true
   sbs.ran = false
   sbs.root.reset()
 
@@ -44,7 +44,7 @@ export default async function testRunner(testFiles, options) {
   await sbs.run(config.runner)
 
   sbs.root.ms = performance.now() - time
-  sbs.started = false
+  sbs.running = false
   sbs.ran = true
 
   if (config.serialize) return sbs.serialize(config.serializer)

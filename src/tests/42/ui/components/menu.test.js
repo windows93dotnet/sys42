@@ -3,9 +3,6 @@ import system from "../../../../42/system.js"
 import ipc from "../../../../42/core/ipc.js"
 import { closeAll } from "../../../../42/ui/popup.js"
 
-const manual = 0
-const iframe = 1
-
 const { href } = new URL(
   "../../../../demos/ui/components/menu.demo.html",
   import.meta.url,
@@ -74,16 +71,12 @@ const makeContent = () => ({
 test.ui("submenu close previous submenu", async (t) => {
   const { triggerOpener } = t.utils
 
-  window.app = await t.glovebox(
-    {
-      href,
-      iframe,
-      top: 1,
-    },
+  const { app } = await t.glovebox({
+    href,
+    iframe: true,
+    top: true,
     makeContent,
-  )
-
-  if (manual) return t.pass()
+  })
 
   const menuTrigger = document.querySelector("#menuTrigger")
   t.is(menuTrigger.getAttribute("aria-expanded"), "false")
@@ -117,23 +110,18 @@ test.ui("submenu close previous submenu", async (t) => {
   t.is(listTrigger.getAttribute("aria-expanded"), "false")
 
   if (test.env.realm.inTop) closeAll()
-  else await t.sleep(100)
 })
 
 test.ui("detached dialog still use ipcPlugin", async (t) => {
   const { triggerOpener } = t.utils
   const { slug } = t.test
 
-  window.app = await t.glovebox(
-    {
-      href,
-      iframe,
-      top: 1,
-    },
+  const { app } = await t.glovebox({
+    href,
+    iframe: true,
+    top: true,
     makeContent,
-  )
-
-  if (manual) return t.pass()
+  })
 
   const deferred = t.utils.defer()
 
@@ -178,12 +166,12 @@ test.ui("detached dialog still use ipcPlugin", async (t) => {
     t.is(t.puppet.$("#btnIncr").textContent, "2")
     t.is(t.puppet.$("#btnIncr", window.parent.document.body).textContent, "2")
 
-    t.step(await t.puppet("#btnIncr", window.app.el).click())
+    t.step(await t.puppet("#btnIncr", app.el).click())
     t.step(await system.once("ipc.plugin:end-of-update"))
 
     t.is(t.puppet.$("#btnIncr").textContent, "3")
     t.is(t.puppet.$("#btnIncr", window.parent.document.body).textContent, "3")
   }
 
-  await dialog.close()
+  dialog.close()
 })

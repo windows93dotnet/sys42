@@ -158,7 +158,11 @@ export default class Suite {
       return
     }
 
-    if (t.glovebox?.ready) await t.glovebox.ready
+    if (t.glovebox?.ready) {
+      await t.glovebox.ready.catch((err) => {
+        test.error = err
+      })
+    }
 
     const nesteds =
       test.nestedsOnlies.length > 0

@@ -1,4 +1,5 @@
 import inTop from "../../../env/realm/inTop.js"
+import timeout from "../../../../fabric/type/promise/timeout.js"
 import "../../../../ui/popup.js"
 
 const DEFAULT = {
@@ -28,15 +29,18 @@ export async function glovebox(t, options) {
   path.searchParams.set("initiator", id)
   path.searchParams.set("test", true)
 
-  if (inTop) {
-    t.glovebox.ready = new Promise((resolve) => {
-      globalThis.addEventListener("message", function handler({ data }) {
-        if (data === id) {
-          resolve()
-          globalThis.removeEventListener("message", handler)
-        }
-      })
-    })
+  if (inTop && iframe) {
+    t.glovebox.ready = Promise.race([
+      timeout(1000, "Glovebox timed out: 1000"),
+      new Promise((resolve) => {
+        window.addEventListener("message", function handler({ data }) {
+          if (data === id) {
+            resolve()
+            window.removeEventListener("message", handler)
+          }
+        })
+      }),
+    ])
   }
 
   ui ??= await import("../../../../ui.js") //

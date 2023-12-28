@@ -16,7 +16,7 @@ let total = 0
 let index = 0
 
 const selfExecute = debounce(async (sbs) => {
-  sbs.started = true
+  sbs.running = true
   document.documentElement.classList.add("debug")
 
   for (const suite of sbs.root.suites) {
@@ -39,7 +39,7 @@ const selfExecute = debounce(async (sbs) => {
 
 export default function uiTest(fn, sbs) {
   requestIdleCallback(async () => {
-    if (!inTop || sbs.started) return
+    if (!inTop || sbs.running) return
     selfExecute(sbs)
   })
 
@@ -84,7 +84,11 @@ export default function uiTest(fn, sbs) {
     if (inTop) {
       t.utils.on({
         "ui:dialog.open || ui:popup.open"(e, target) {
-          t.utils.decay(unsee(target))
+          if (!sbs.inTestRunner && index === total) {
+            t.utils.decay(target)
+          } else {
+            t.utils.decay(unsee(target))
+          }
         },
       })
     }

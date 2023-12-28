@@ -9,7 +9,7 @@ function cleanup(intervalID, timeoutID) {
  * Waits for a CSS selector to be present
  * @param {string} selector CSS selector
  * @param {object} [options]
- * @param {boolean} [options.base] Base element, defaults to document.documentElement
+ * @param {HTMLElement} [options.base] Base element, defaults to document.documentElement
  * @param {boolean} [options.all=false] Returns array of all matching elements if true
  * @param {number} [options.timeout=3000] Fail timeout in milliseconds
  * @param {number} [options.polling=100] Number of retries
