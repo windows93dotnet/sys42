@@ -1,15 +1,20 @@
-export async function ensureArrayBuffer(val) {
+import getType from "../type/any/getType.js"
+
+/**
+ * @param {string | ArrayBuffer | ArrayBufferView} val
+ * @returns {ArrayBuffer}
+ */
+export function ensureArrayBuffer(val) {
   const buffer =
     val instanceof ArrayBuffer
       ? val
       : typeof val === "string"
         ? new TextEncoder().encode(val)
-        : val?.buffer ??
-          (val?.arrayBuffer ? await val.arrayBuffer() : undefined)
+        : val?.buffer
 
   if (!buffer) {
     throw new TypeError(
-      `input must be a string, File, Blob, ArrayBuffer or TypedArray: ${typeof val}`,
+      `Input must be a string, ArrayBuffer or ArrayBufferView: ${getType(val)}`,
     )
   }
 

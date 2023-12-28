@@ -4,13 +4,12 @@ import checksum from "../../../../42/fabric/binary/checksum.js"
 test.suite.timeout(1000)
 
 test("throws", async (t) => {
-  const errPrefix =
-    "input must be a string, File, Blob, ArrayBuffer or TypedArray: "
+  const errPrefix = "Input must be a string, ArrayBuffer or ArrayBufferView: "
   await t.throws(() => checksum(), errPrefix + "undefined")
-  await t.throws(() => checksum(null), errPrefix + "object")
+  await t.throws(() => checksum(null), errPrefix + "null")
   await t.throws(() => checksum(1), errPrefix + "number")
   await t.throws(() => checksum(true), errPrefix + "boolean")
-  await t.throws(() => checksum([]), errPrefix + "object")
+  await t.throws(() => checksum([]), errPrefix + "array")
   await t.throws(() => checksum({}), errPrefix + "object")
   await t.throws(() => checksum(new Map()), errPrefix + "object")
   await t.throws(() => checksum(Symbol("")), errPrefix + "symbol")
@@ -33,7 +32,7 @@ test("SHA-256", async (t) => {
 
   t.is(await checksum(new Blob([])), hashes.empty)
   t.is(await checksum(new Blob([""])), hashes.empty)
-  t.is(await checksum(new ArrayBuffer()), hashes.empty)
+  t.is(await checksum(new ArrayBuffer(0)), hashes.empty)
   t.is(await checksum(new Uint8Array()), hashes.empty)
 })
 
@@ -54,7 +53,7 @@ test("SHA-256", "hex", async (t) => {
 
   t.is(await checksum(new Blob([]), { output: "hex" }), hashes.empty)
   t.is(await checksum(new Blob([""]), { output: "hex" }), hashes.empty)
-  t.is(await checksum(new ArrayBuffer(), { output: "hex" }), hashes.empty)
+  t.is(await checksum(new ArrayBuffer(0), { output: "hex" }), hashes.empty)
   t.is(await checksum(new Uint8Array(), { output: "hex" }), hashes.empty)
 })
 
@@ -77,7 +76,7 @@ test("SHA-384", async (t) => {
 
   t.is(await checksum(new Blob([]), options), hashes.empty)
   t.is(await checksum(new Blob([""]), options), hashes.empty)
-  t.is(await checksum(new ArrayBuffer(), options), hashes.empty)
+  t.is(await checksum(new ArrayBuffer(0), options), hashes.empty)
   t.is(await checksum(new Uint8Array(), options), hashes.empty)
 })
 
@@ -100,6 +99,6 @@ test("SHA-1", async (t) => {
 
   t.is(await checksum(new Blob([]), options), hashes.empty)
   t.is(await checksum(new Blob([""]), options), hashes.empty)
-  t.is(await checksum(new ArrayBuffer(), options), hashes.empty)
+  t.is(await checksum(new ArrayBuffer(0), options), hashes.empty)
   t.is(await checksum(new Uint8Array(), options), hashes.empty)
 })

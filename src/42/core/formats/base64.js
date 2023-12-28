@@ -143,11 +143,20 @@ export function base64FromArrayBuffer(buffer) {
   return str
 }
 
-export async function base64Encode(val) {
-  const buffer = await ensureArrayBuffer(val)
+/**
+ * @param {string | ArrayBuffer | ArrayBufferView} val
+ * @returns {string}
+ */
+export function base64Encode(val) {
+  const buffer = ensureArrayBuffer(val)
   return base64FromArrayBuffer(buffer)
 }
 
+/**
+ * @param {string} val
+ * @param {string|{ encoding?: string }} [options]
+ * @returns {string | ArrayBuffer}
+ */
 export function base64Decode(val, options) {
   const buffer = base64ToArrayBuffer(val)
 

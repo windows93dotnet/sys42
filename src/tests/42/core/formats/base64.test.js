@@ -73,28 +73,28 @@ test("decode url-safe style base64 strings", async (t) => {
   t.is(base64.byteLength(str), actual.byteLength)
 })
 
-test("utf-8 string", async (t) => {
-  t.is(await base64.encode("hello 🌍"), "aGVsbG8g8J+MjQ==")
-  t.is(await base64.decode("aGVsbG8g8J+MjQ==", "utf-8"), "hello 🌍")
+test("utf-8 string", (t) => {
+  t.is(base64.encode("hello 🌍"), "aGVsbG8g8J+MjQ==")
+  t.is(base64.decode("aGVsbG8g8J+MjQ==", "utf-8"), "hello 🌍")
 })
 
-test("padding bytes found inside base64 string", async (t) => {
+test("padding bytes found inside base64 string", (t) => {
   // See https://github.com/beatgammit/base64-js/issues/42
   const str = "SQ==QU0="
-  // console.log(await base64.decode("SQ==QU0=", "utf-8"))
+  // console.log(base64.decode("SQ==QU0=", "utf-8"))
   t.eq(base64.toArrayBuffer(str), new Uint8Array([73]).buffer)
   t.is(base64.byteLength(str), 1)
 })
 
-test.skip("convert big data to base64", async (t) => {
+test.skip("convert big data to base64", (t) => {
   t.timeout(3000)
   const big = new Uint8Array(64 * 1024 * 1024)
   for (let i = 0, { length } = big; i < length; ++i) {
     big[i] = i % 256
   }
 
-  const str = await base64.encode(big)
-  const buffer = await base64.decode(str)
+  const str = base64.encode(big)
+  const buffer = base64.decode(str)
   const arr = new Uint8Array(buffer)
   t.eq(arr, big)
   t.is(base64.byteLength(str), arr.length)
