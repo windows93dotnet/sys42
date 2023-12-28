@@ -24,8 +24,8 @@ export default function observe(root, options = {}) {
     const scope = "/" + (chain.length > 0 ? chain.join("/") + "/" : "")
 
     return {
-      has(target, key, receiver) {
-        const has = Reflect.has(target, key, receiver)
+      has(target, key) {
+        const has = Reflect.has(target, key)
 
         if (!has) {
           if (typeof key !== "string") return false
@@ -46,7 +46,7 @@ export default function observe(root, options = {}) {
             return
           }
 
-          return Reflect.has(target, key, receiver)
+          return Reflect.has(target, key)
             ? undefined
             : options.get?.(scope + key, { key, chain, parent, root })
         }

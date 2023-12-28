@@ -3,6 +3,9 @@
 import Callable from "./Callable.js"
 
 export default class Canceller extends Callable {
+  /** @type {Canceller|undefined} */
+  parent
+
   constructor(signal) {
     const controller = new AbortController()
     let onabort
@@ -35,7 +38,7 @@ export default class Canceller extends Callable {
 
   fork() {
     if (this.signal.aborted) {
-      throw new Error("Impossible to fork an aborted signal")
+      throw new Error("Impossible to fork a Canceller with aborted signal")
     }
 
     const fork = new Canceller()

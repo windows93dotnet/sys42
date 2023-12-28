@@ -1,5 +1,10 @@
 import arrify from "../any/arrify.js"
 
+/**
+ * @param {string} source
+ * @param {string|string[]} [delimiters="."]
+ * @returns {Array}
+ */
 export default function segmentize(source, delimiters = ".") {
   if (!delimiters) return [source]
   delimiters = arrify(delimiters)

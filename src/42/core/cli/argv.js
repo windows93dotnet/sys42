@@ -25,6 +25,7 @@ export const DEFAULTS = {
   splitSmallOption: true,
   autoBoolean: true,
   autocast: true,
+  /** @type {Function} */
   parseValue: JSON.parse,
   aliases: {},
   presets: {},
@@ -71,6 +72,7 @@ function getFollowingArguments(arg, config, args, i) {
 
   const index = i
 
+  /** @type {Array|symbol} */
   let value = []
 
   while (
@@ -93,8 +95,8 @@ function getFollowingArguments(arg, config, args, i) {
 
 /**
  * Command line argument parsing
- * @param {array<string>} args
- * @param {object} options
+ * @param {string[]} args
+ * @param {DEFAULTS} [options]
  * @returns {object}
  */
 export default function argv(args, options) {

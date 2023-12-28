@@ -2,7 +2,10 @@
   "compilerOptions": {
     "module": "ESNext",
     "target": "ESNext",
-    "baseUrl": "src"
+    "baseUrl": "src",
+    "checkJs": true,
+    "strict": false
   },
+  "include": ["src/**/*"],
   "exclude": ["node_modules"]
 }

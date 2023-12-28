@@ -5,9 +5,7 @@ import segmentize from "../type/string/segmentize.js"
  * @param {object} obj
  * @param {string} path
  * @param {*} val
- * @param {object|string} [options] delimiter if string
- * @param {string|array<string>} [options.delimiter=.]
- * @param {boolean} [options.hashmap=false]
+ * @param {string | {delimiter?: string, hashmap?: boolean}} [options] delimiter if string
  * @returns {object} obj
  */
 export default function allocate(obj, path, val, options) {
