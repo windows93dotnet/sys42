@@ -26,7 +26,7 @@ function greet() {
 └─┤ ┌─┘  {reset type} {grey sys42.dev.help()} {reset for help}
   └─┴─╴  `)
   log(
-    `\n{cyan recommended devtool log filter: {reset -/both\\sallow-scripts|Clear-Site-Data|Skipping\\sunsupported/}}\n`,
+    `\n{cyan recommended devtool log filter: {reset -/both\\sallow-scripts|Clear-Site-Data header|Skipping\\sunsupported/}}\n`,
   )
 }
 

@@ -32,7 +32,7 @@
     </div>
     <div>
       <div class="serial-results message">
-        <strong>Serial tests (slow and instable)</strong><br />
+        <strong>Serial tests (slow)</strong><br />
         <div>passed: <output class="serial-passed txt-pre">0</output></div>
         <div>failed: <output class="serial-failed txt-pre">0</output></div>
         <div>skipped: <output class="serial-skipped txt-pre">0</output></div>
@@ -40,20 +40,85 @@
       <a class="button w-full ma-t" href="/tests.html?serial-tests">run</a>
     </div>
   </div>
-  <div class="w-prose">
+  <div class="w-prose max-w-full">
     <a id="all" class="button w-full ma-t" href="/tests.html?all-tests">run</a>
+    <div class="check-cont w-full ma-t-sm">
+      <input type="checkbox" id="clear-site-data" />
+      <label for="clear-site-data"
+        >Clear storage and remove Service Worker before running tests</label
+      >
+    </div>
   </div>
   <br />
-  <div class="notice w-prose txt-center opacity-half">
+  <div class="notice w-prose max-w-full opacity-half">
     <span>Open the console to show tests results.</span>
   </div>
 </body>
 
 <script type="module">
+  const params = new URLSearchParams(location.search)
+  const testRunner = {}
+  window.sys42 = { testRunner }
+
+  const clearSiteDataCheckbox = document.querySelector("#clear-site-data")
+
+  const links = document.querySelectorAll("a[href^='/tests.html']")
+
+  function cleanParams(params) {
+    const out = params.toString().replaceAll(/=(?=&|$)/gm, "")
+    return out ? `?${out}` : ""
+  }
+
+  function updateLinks() {
+    if (clearSiteDataCheckbox.checked) {
+      params.set("clear-site-data", "")
+    } else if (params.has("clear-site-data")) {
+      params.delete("clear-site-data")
+    }
+
+    const search = cleanParams(params)
+    const newURL = `${location.origin}${location.pathname}${search}`
+    history.replaceState({}, "", newURL)
+
+    for (const item of links) {
+      item.href = clearSiteDataCheckbox.checked
+        ? `${item.href}${item.href.includes("?") ? "&" : "?"}clear-site-data`
+        : item.href.replace(/[&?]clear-site-data$/, "")
+    }
+  }
+
+  if (params.has("clear-site-data")) {
+    clearSiteDataCheckbox.checked = true
+    updateLinks()
+  }
+
+  clearSiteDataCheckbox.addEventListener("input", updateLinks)
+
+  const all = params.has("all-tests")
+  const allBtn = document.querySelector("#all")
+
+  if (all) {
+    allBtn.setAttribute("aria-expanded", "true")
+    testRunner.allTests = allBtn
+  }
+
+  if (all || !params.has("serial-tests")) {
+    const btn = document.querySelector(".parallel-results + a")
+    btn.setAttribute("aria-expanded", "true")
+    testRunner.parallelTests = btn
+  }
+
+  if (all || params.has("serial-tests")) {
+    const btn = document.querySelector(".serial-results + a")
+    btn.setAttribute("aria-expanded", "true")
+    testRunner.serialTests = btn
+  }
+</script>
+
+<script type="module">
   import system from "./42/system.js"
   import testRunner from "./42/core/dev/testRunner.js"
   import log from "./42/core/log.js"
-  import idle from "./42/fabric/type/promise/idle.js"
 
   // prettier-ignore
   // console.log(await import("./42/core/fileIndex.js").then(({fileIndex})=>fileIndex.glob("**/*.test.js")))
@@ -95,9 +160,6 @@
     testTitle.textContent = ""
 
     system.testing.root.reset()
-    // await idle()
-    // await fetch("/?clear-site-data")
-    // await idle()
   }
 
   const testFilename = document.querySelector(".test-filename")
@@ -199,30 +261,17 @@
     "/tests/42/ui/xss.test.js",
   ]
 
-  const params = new URLSearchParams(location.search)
-
-  const all = params.has("all-tests")
-  const allBtn = document.querySelector("#all")
-
-  if (all) {
-    allBtn.setAttribute("aria-expanded", "true")
-  }
-
-  if (all || !params.has("serial-tests")) {
-    const btn = document.querySelector(".parallel-results + a")
-    btn.setAttribute("aria-expanded", "true")
+  if (system.testRunner.parallelTests) {
     await run(parallelTests)
-    btn.setAttribute("aria-expanded", "false")
+    system.testRunner.parallelTests.setAttribute("aria-expanded", "false")
   }
 
-  if (all || params.has("serial-tests")) {
-    const btn = document.querySelector(".serial-results + a")
-    btn.setAttribute("aria-expanded", "true")
+  if (system.testRunner.serialTests) {
     await run(serialTests)
-    btn.setAttribute("aria-expanded", "false")
+    system.testRunner.serialTests.setAttribute("aria-expanded", "false")
   }
 
-  if (all) {
-    allBtn.setAttribute("aria-expanded", "false")
+  if (system.testRunner.allTests) {
+    system.testRunner.allTests.setAttribute("aria-expanded", "false")
   }
 </script>
