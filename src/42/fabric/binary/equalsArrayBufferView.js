@@ -3,9 +3,10 @@
 
 /**
  * Check whether binary arrays are equal to each other using 8-bit comparisons.
+ *
  * @private
- * @param {ArrayBufferView} a first array to check equality
- * @param {ArrayBufferView} b second array to check equality
+ * @param {ArrayBufferView} a First array to check equality
+ * @param {ArrayBufferView} b Second array to check equality
  * @returns {boolean}
  */
 function equalsNaive(a, b) {
@@ -18,9 +19,10 @@ function equalsNaive(a, b) {
 
 /**
  * Check whether binary arrays are equal to each other using 32-bit comparisons.
+ *
  * @private
- * @param {ArrayBufferView} a first array to check equality
- * @param {ArrayBufferView} b second array to check equality
+ * @param {ArrayBufferView} a First array to check equality
+ * @param {ArrayBufferView} b Second array to check equality
  * @returns {boolean}
  */
 function equals32Bit(a, b) {
@@ -41,8 +43,9 @@ function equals32Bit(a, b) {
 
 /**
  * Check whether binary arrays are equal to each other.
- * @param {ArrayBufferView} a first array to check equality
- * @param {ArrayBufferView} b second array to check equality
+ *
+ * @param {ArrayBufferView} a First array to check equality
+ * @param {ArrayBufferView} b Second array to check equality
  * @returns {boolean}
  */
 export function equalsArrayBufferView(a, b) {

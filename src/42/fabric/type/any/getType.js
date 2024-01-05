@@ -1,8 +1,8 @@
 /**
- * Returns the input type,
- * like the `typeof` operator but with `null` and `array` support.
+ * Returns the input type,\
+ * Like the `typeof` operator but with `null` and `array` support.
  *
- * @param {*} val
+ * @param {any} val
  * @returns {string}
  */
 export default function getType(val) {

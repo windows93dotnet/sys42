@@ -2,10 +2,11 @@
 
 /**
  * Set the classes on an element.
+ *
  * @param {Element} el
  * @param {string | string[] | object} val A string or an array of strings or an object with classes as keys and boolean values.
  * @param {object} [options]
- * @param {boolean} [options.replaceClass=true]
+ * @param {boolean} [options.replaceClass=true] Default is `true`
  * @returns {Element}
  */
 export default function setClasses(el, val, options) {

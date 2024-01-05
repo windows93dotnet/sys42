@@ -2,7 +2,7 @@ import arrify from "../any/arrify.js"
 
 /**
  * @param {string} source
- * @param {string|string[]} [delimiters="."]
+ * @param {string | string[]} [delimiters="."] Default is `"."`
  * @returns {Array}
  */
 export default function segmentize(source, delimiters = ".") {

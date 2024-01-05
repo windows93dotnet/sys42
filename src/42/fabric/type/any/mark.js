@@ -10,7 +10,7 @@ const { isArray } = Array
 /**
  * Converts any value into a human readable, most unique possible string.
  *
- * @param {*} val
+ * @param {any} val
  * @returns {string}
  */
 export default function mark(val, memory = new WeakSet()) {

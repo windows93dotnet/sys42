@@ -5,11 +5,12 @@ const pool = new EntropyPool()
 /**
  * Cryptographic unique string ID generator.\
  * URL and element ID friendly (the first char is always a lowercase letter).\
- * See: https://zelark.github.io/nano-id-cc/
+ * See: https://zelark.github.io/nano-id-cc
+ *
  * @thanks https://github.com/ai/nanoid/blob/main/index.browser.js
  *
- * @param {number} [size] the desired string length (Default: 8)
- * @returns {string} alphanumeric string
+ * @param {number} [size] The desired string length (Default: 8)
+ * @returns {string} Alphanumeric string
  */
 export function uid(size = 8) {
   if (size < 4) size = 4

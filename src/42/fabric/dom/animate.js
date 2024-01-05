@@ -26,9 +26,7 @@ function hideScrollbars(el) {
   }
 }
 
-/**
- * @param {HTMLElement} el
- */
+/** @param {HTMLElement} el */
 export async function cancelAnimations(el) {
   for (const anim of el.getAnimations()) anim.cancel()
 }

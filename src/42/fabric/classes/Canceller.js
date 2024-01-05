@@ -3,7 +3,7 @@
 import Callable from "./Callable.js"
 
 export default class Canceller extends Callable {
-  /** @type {Canceller|undefined} */
+  /** @type {Canceller | undefined} */
   parent
 
   constructor(signal) {

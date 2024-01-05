@@ -7,7 +7,7 @@
 
 /**
  * @file The buffer module from node.js, for the browser.
- * @author Feross Aboukhadijeh <https://feross.org>
+ * @author Feross Aboukhadijeh [https://feross.org](https://feross.org)
  * @license MIT
  * @source https://github.com/feross/buffer
  */
@@ -26,7 +26,7 @@ export const INSPECT_MAX_BYTES = 50
 const K_MAX_LENGTH = 0x7f_ff_ff_ff
 export const kMaxLength = K_MAX_LENGTH
 
-/**
+/*
  * The Buffer constructor returns instances of `Uint8Array` that have their
  * prototype changed to `Buffer.prototype`. Furthermore, `Buffer` is a subclass of
  * `Uint8Array`, so the returned instances will have all the node `Buffer` methods
@@ -146,14 +146,14 @@ function from(value, encodingOrOffset, length) {
   )
 }
 
-/**
+/*
  * Functionally equivalent to Buffer(arg, encoding) but throws a TypeError
  * if value is a number.
  * Buffer.from(str[, encoding])
  * Buffer.from(array)
  * Buffer.from(buffer)
  * Buffer.from(arrayBuffer[, byteOffset[, length]])
- **/
+ */
 Buffer.from = function (value, encodingOrOffset, length) {
   return from(value, encodingOrOffset, length)
 }
@@ -191,10 +191,10 @@ function alloc(size, fill, encoding) {
   return createBuffer(size)
 }
 
-/**
+/*
  * Creates a new filled Buffer instance.
  * alloc(size[, fill[, encoding]])
- **/
+ */
 Buffer.alloc = function (size, fill, encoding) {
   return alloc(size, fill, encoding)
 }
@@ -204,14 +204,14 @@ function allocUnsafe(size) {
   return createBuffer(size < 0 ? 0 : checked(size) | 0)
 }
 
-/**
+/*
  * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer instance.
- * */
+ */
 Buffer.allocUnsafe = function (size) {
   return allocUnsafe(size)
 }
 
-/**
+/*
  * Equivalent to SlowBuffer(num), by default creates a non-zero-filled Buffer instance.
  */
 Buffer.allocUnsafeSlow = function (size) {

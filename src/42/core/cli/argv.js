@@ -72,7 +72,7 @@ function getFollowingArguments(arg, config, args, i) {
 
   const index = i
 
-  /** @type {Array|symbol} */
+  /** @type {Array | symbol} */
   let value = []
 
   while (
@@ -95,6 +95,7 @@ function getFollowingArguments(arg, config, args, i) {
 
 /**
  * Command line argument parsing
+ *
  * @param {string[]} args
  * @param {DEFAULTS} [options]
  * @returns {object}

@@ -169,7 +169,7 @@ export function base64Encode(val) {
 
 /**
  * @param {string} str
- * @param {TextDecoderCommon['encoding'] | { encoding?: TextDecoderCommon['encoding'] }} [options]
+ * @param {TextDecoderCommon["encoding"] | { encoding?: TextDecoderCommon["encoding"] }} [options]
  * @returns {string | ArrayBuffer}
  */
 export function base64Decode(str, options) {

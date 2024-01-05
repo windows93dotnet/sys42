@@ -1,14 +1,15 @@
 /**
- * Function that count occurrences of a substring in a string
+ * Function that count occurrences of a substring in a string.\
+ * See: http://stackoverflow.com/questions/4009756/how-to-count-string-occurrence-in-string/7924240#7924240
+ *
+ * @author Vitim.us [https://www.vitim.us](https://www.vitim.us)
+ * @source https://gist.github.com/victornpb/7736865
  *
  * @param {string} str
- * @param {string} search the sub string to search for
+ * @param {string} search The sub string to search for
  * @param {object} [options]
- * @param {boolean} [options.overlap=false] allow overlapping
+ * @param {boolean} [options.overlap=false] Allow overlapping. Default is `false`
  * @returns {number}
- *
- * @author Vitim.us https://gist.github.com/victornpb/7736865
- * @see http://stackoverflow.com/questions/4009756/how-to-count-string-occurrence-in-string/7924240#7924240
  */
 export default function occurrences(str, search, options) {
   str = String(str)

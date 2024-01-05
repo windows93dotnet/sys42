@@ -1,6 +1,4 @@
-/**
- * @source https://stackoverflow.com/q/72334889
- */
+/** @source https://stackoverflow.com/q/72334889 */
 export class EntropyPool {
   #entropy
   #index

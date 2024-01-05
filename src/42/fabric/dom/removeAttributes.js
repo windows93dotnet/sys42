@@ -6,10 +6,11 @@ import cssPrefix from "../cssom/cssPrefix.js"
 
 /**
  * Remove attributes from an element.
- * @param {Element} el
+ *
+ * @param {HTMLElement | SVGElement} el
  * @param {object} obj An object with attribute names as keys.
  * @param {object} [options]
- * @param {boolean} [options.flipBoolean=false]
+ * @param {boolean} [options.flipBoolean=false] Default is `false`
  * @returns {Element}
  */
 export function removeAttributes(el, obj, options) {

@@ -73,6 +73,7 @@ if (inTop) {
 
 /**
  * Remote procedure call
+ *
  * @see https://en.wikipedia.org/wiki/Remote_procedure_call
  */
 export default function rpc(fn, options = {}) {

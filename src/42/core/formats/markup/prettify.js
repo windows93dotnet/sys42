@@ -43,8 +43,8 @@ const addIndentation = (splittedHtml, options = {}) => {
 }
 
 /**
- * @param {string} nonFormattedString any non formatted string
- * @returns {string[]} Array of strings separated on new lines
+ * @param {string} nonFormattedString Any non formatted string
+ * @returns {string} Array of strings separated on new lines
  */
 const removeEmptyLines = (nonFormattedString) =>
   // Replace
@@ -56,7 +56,7 @@ const removeEmptyLines = (nonFormattedString) =>
 
 /**
  * @param {string} markup
- * @returns {string[]} array of strings splitted on new lines without empty lines
+ * @returns {string[]} Array of strings splitted on new lines without empty lines
  */
 const mergeAttributesWithElements = (markup) => {
   const splittedMarkup = removeEmptyLines(markup).split("\n")

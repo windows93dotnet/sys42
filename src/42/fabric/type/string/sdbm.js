@@ -4,7 +4,7 @@
 // @related https://gist.github.com/WebReflection/14d135b9a2b988ea8073d1098b0abd0f
 
 /**
- * Non-cryptographic hash function.
+ * Non-cryptographic hash function.\
  * Hashes the input string into an unsigned 32-bit integer.
  *
  * @param {string} str
