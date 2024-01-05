@@ -1,34 +1,14 @@
-/** {@link https://stackoverflow.com/q/72334889 Source} */
-class EntropyPool {
-  #entropy
-  #index
-  #size
-  constructor(size = 1024) {
-    this.#entropy = new Uint32Array(size)
-    this.#size = size
-    this.#index = 0
-    crypto.getRandomValues(this.#entropy)
-  }
-  next() {
-    const value = this.#entropy[this.#index++]
-    if (this.#index === this.#size) {
-      crypto.getRandomValues(this.#entropy)
-      this.#index = 0
-    }
-
-    return value
-  }
-}
+import EntropyPool from "../fabric/classes/EntropyPool.js"
 
 const pool = new EntropyPool()
 
 /**
- * Cryptographic unique string ID generator.
- * URL and element ID friendly (the first char is always a lowercase letter).
- * {@link https://github.com/ai/nanoid/blob/main/async/index.browser.js Source}
- * @license Copyright 2017 Andrey Sitnik <andrey@sitnik.ru>. MIT License.
+ * Cryptographic unique string ID generator.\
+ * URL and element ID friendly (the first char is always a lowercase letter).\
+ * See: https://zelark.github.io/nano-id-cc/
+ * @thanks https://github.com/ai/nanoid/blob/main/index.browser.js
  *
- * @param {number} size the desired string length
+ * @param {number} [size] the desired string length (Default: 8)
  * @returns {string} alphanumeric string
  */
 export function uid(size = 8) {

@@ -4,11 +4,12 @@
 /* eslint-disable default-case */
 /* eslint-disable prefer-rest-params */
 /* eslint-disable complexity */
-/*!
- * The buffer module from node.js, for the browser.
- *
- * @author   Feross Aboukhadijeh <https://feross.org>
- * @license  MIT
+
+/**
+ * @file The buffer module from node.js, for the browser.
+ * @author Feross Aboukhadijeh <https://feross.org>
+ * @license MIT
+ * @source https://github.com/feross/buffer
  */
 
 import base64 from "../../core/formats/base64.js"
@@ -34,7 +35,6 @@ export const kMaxLength = K_MAX_LENGTH
  *
  * The `Uint8Array` prototype remains unmodified.
  */
-
 export default function Buffer(arg, encodingOrOffset, length) {
   // Common case.
   if (typeof arg === "number") {

@@ -7,6 +7,7 @@ import equalsArrayBufferView from "./equalsArrayBufferView.js"
 const isLittleEndianMachine =
   new Uint8Array(new Uint16Array([1]).buffer)[0] === 1
 
+// @ts-ignore
 const supportResize = ArrayBuffer.prototype.resize !== undefined
 
 const MAX_BYTE_LENGTH = 0xff_ff_ff_fe // 2 ** 32 - 2
@@ -15,6 +16,7 @@ const MEMORY_PAGE = 0x01_00_00
 export default class Buffer {
   #arr
   #length
+  decoderOptions
 
   static isLittleEndianMachine = isLittleEndianMachine
 
@@ -33,7 +35,8 @@ export default class Buffer {
   constructor(options) {
     const length = typeof options === "number" ? options : 0
     this.memory = supportResize
-      ? { buffer: new ArrayBuffer(length, { maxByteLength: MAX_BYTE_LENGTH }) }
+      ? // @ts-ignore
+        { buffer: new ArrayBuffer(length, { maxByteLength: MAX_BYTE_LENGTH }) }
       : new WebAssembly.Memory({
           initial: 1 + Math.ceil((length - MEMORY_PAGE) / MEMORY_PAGE),
         })
@@ -65,9 +68,11 @@ export default class Buffer {
     this.writeOffset = n
     if (n > this.memory.buffer.byteLength) {
       if (supportResize) {
+        // @ts-ignore
         this.memory.buffer.resize(n)
       } else {
         const remain = n - this.memory.buffer.byteLength
+        // @ts-ignore
         this.memory.grow(Math.ceil(remain / MEMORY_PAGE))
         this.#arr = new Uint8Array(this.memory.buffer)
         this.#view = undefined
@@ -75,11 +80,13 @@ export default class Buffer {
     }
   }
 
+  /** @type {DataView | undefined} */
   #view
   get view() {
     this.#view ??= new DataView(this.memory.buffer)
     return this.#view
   }
+
   get buffer() {
     return this.memory.buffer
   }
@@ -200,14 +207,21 @@ export default class Buffer {
 
 const p = Buffer.prototype
 
+// @ts-ignore
 p.writeUint8 = p.writeByte
+// @ts-ignore
 p.readUint8 = p.readByte
+// @ts-ignore
 p.peekUint8 = p.peekByte
 
+// @ts-ignore
 p.writeUint8Array = p.write
+// @ts-ignore
 p.readUint8Array = p.read
+// @ts-ignore
 p.peekUint8Array = p.peek
 
+// @ts-ignore
 p.toUint8Array = p.slice
 
 for (const getKey of Reflect.ownKeys(DataView.prototype)) {
@@ -218,59 +232,58 @@ for (const getKey of Reflect.ownKeys(DataView.prototype)) {
   ) {
     const key = getKey.slice(3)
     const arrayKey = `${key}Array`
-    if (arrayKey in globalThis) {
-      const BinaryArray = globalThis[arrayKey]
-      const BPE = BinaryArray.BYTES_PER_ELEMENT
-      const setKey = `set${key}`
+    if (!(arrayKey in globalThis)) continue
+    const { BYTES_PER_ELEMENT } = globalThis[arrayKey]
+    const setKey = `set${key}`
 
-      p[`write${key}`] = function (
-        value,
-        writeOffset = this.writeOffset,
-        littleEndian,
-      ) {
-        const len = writeOffset + BPE
-        if (len > this.length) this.length = len
-        this.view[setKey](writeOffset, value, littleEndian)
-        return BPE
+    /** @this {Buffer} */
+    p[`write${key}`] = function (
+      value,
+      writeOffset = this.writeOffset,
+      littleEndian,
+    ) {
+      const len = writeOffset + BYTES_PER_ELEMENT
+      if (len > this.length) this.length = len
+      this.view[setKey](writeOffset, value, littleEndian)
+      return BYTES_PER_ELEMENT
+    }
+
+    /** @this {Buffer} */
+    p[`read${key}`] = function (offset = this.offset, littleEndian) {
+      this.offset = offset + BYTES_PER_ELEMENT
+      return this.view[getKey](offset, littleEndian)
+    }
+
+    /** @this {Buffer} */
+    p[`read${key}Array`] = function (
+      length,
+      offset = this.offset,
+      littleEndian,
+    ) {
+      const arr = this[`to${key}Array`](offset, offset + length, littleEndian)
+      this.offset = arr.byteLength
+      return arr
+    }
+
+    /** @this {Buffer} */
+    p[`peek${key}Array`] = function (
+      length,
+      offset = this.offset,
+      littleEndian,
+    ) {
+      return this[`to${key}Array`](offset, offset + length, littleEndian)
+    }
+
+    /** @this {Buffer} */
+    p[`to${key}Array`] = function (start = 0, end = this.length, littleEndian) {
+      const length = (end - start) / BYTES_PER_ELEMENT
+      const arr = new globalThis[arrayKey](length)
+      const dataview = this.view
+      for (let i = start; i < length; i++) {
+        arr[i] = dataview[getKey](i * BYTES_PER_ELEMENT, littleEndian)
       }
 
-      p[`read${key}`] = function (offset = this.offset, littleEndian) {
-        this.offset = offset + BPE
-        return this.view[getKey](offset, littleEndian)
-      }
-
-      p[`read${key}Array`] = function (
-        length,
-        offset = this.offset,
-        littleEndian,
-      ) {
-        const arr = this[`to${key}Array`](offset, offset + length, littleEndian)
-        this.offset = arr.byteLength
-        return arr
-      }
-
-      p[`peek${key}Array`] = function (
-        length,
-        offset = this.offset,
-        littleEndian,
-      ) {
-        return this[`to${key}Array`](offset, offset + length, littleEndian)
-      }
-
-      p[`to${key}Array`] = function (
-        start = 0,
-        end = this.length,
-        littleEndian,
-      ) {
-        const length = (end - start) / BPE
-        const arr = new BinaryArray(length)
-        const dataview = this.view
-        for (let i = start; i < length; i++) {
-          arr[i] = dataview[getKey](i * BPE, littleEndian)
-        }
-
-        return arr
-      }
+      return arr
     }
   }
 }

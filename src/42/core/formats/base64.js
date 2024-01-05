@@ -1,6 +1,13 @@
 //! Copyright (c) 2014 Jameson Little. MIT License.
 // @src https://github.com/beatgammit/base64-js
 
+/**
+ * @file
+ * @author Jameson Little
+ * @license MIT
+ * @source https://github.com/beatgammit/base64-js
+ */
+
 import ensureArrayBuffer from "../../fabric/binary/ensureArrayBuffer.js"
 
 const lookup = []
@@ -42,6 +49,10 @@ export function byteLength(str) {
   return ((validLen + placeHoldersLen) * 3) / 4 - placeHoldersLen
 }
 
+/**
+ * @param {string} str
+ * @returns {ArrayBuffer}
+ */
 export function base64ToArrayBuffer(str) {
   let tmp
   const lens = getLens(str)
@@ -110,6 +121,10 @@ function encodeChunk(uint8, start, end) {
   return str
 }
 
+/**
+ * @param {ArrayBuffer} buffer
+ * @returns {string}
+ */
 export function base64FromArrayBuffer(buffer) {
   let tmp
   const uint8 = new Uint8Array(buffer)
@@ -153,12 +168,12 @@ export function base64Encode(val) {
 }
 
 /**
- * @param {string} val
- * @param {string|{ encoding?: string }} [options]
+ * @param {string} str
+ * @param {TextDecoderCommon['encoding'] | { encoding?: TextDecoderCommon['encoding'] }} [options]
  * @returns {string | ArrayBuffer}
  */
-export function base64Decode(val, options) {
-  const buffer = base64ToArrayBuffer(val)
+export function base64Decode(str, options) {
+  const buffer = base64ToArrayBuffer(str)
 
   if (typeof options === "string") options = { encoding: options }
   if (options?.encoding) {
