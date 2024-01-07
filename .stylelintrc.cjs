@@ -26,10 +26,10 @@ module.exports = {
     "property-no-vendor-prefix": null,
     "value-no-vendor-prefix": null,
     "no-descending-specificity": null,
-
     "value-keyword-case": null,
-
     "number-max-precision": null,
+
+    "function-url-quotes": ["always", { except: ["empty"] }],
     "at-rule-no-unknown": [true, { ignoreAtRules: ["container"] }],
     "length-zero-no-unit": [true, { ignore: ["custom-properties"] }],
     "property-no-unknown": [true, { ignoreProperties: [/^font-smooth/] }],

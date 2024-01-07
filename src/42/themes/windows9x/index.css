@@ -328,7 +328,7 @@ input[type="datetime-local" i] {
   background-repeat: no-repeat;
 }
 
-@-moz-document url-prefix("") {
+@-moz-document url-prefix() {
   input[type="number"] {
     background-image: none;
   }

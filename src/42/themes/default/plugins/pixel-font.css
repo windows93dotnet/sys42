@@ -25,7 +25,7 @@
 }
 
 /* Firefox */
-@-moz-document url-prefix("") {
+@-moz-document url-prefix() {
   :where(
   .ui-tabs__tab > span,
   .ui-icon__text,

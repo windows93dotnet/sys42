@@ -912,7 +912,7 @@ select:is([multiple],[size]) optgroup::before {
   padding-bottom: calc(var(--ctrl-pa-y) - 1px);
 }
 
-@-moz-document url-prefix("") {
+@-moz-document url-prefix() {
   select { text-indent: -0.28ch !important; }
 }
 

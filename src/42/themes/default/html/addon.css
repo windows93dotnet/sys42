@@ -146,7 +146,7 @@ input::-webkit-datetime-edit-year-field:focus {
   text-shadow: var(--highlight-tsh, none);
 }
 
-@-moz-document url-prefix("") {
+@-moz-document url-prefix() {
   input:not(
   [type="checkbox"],
   [type="radio"],

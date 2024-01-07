@@ -23,7 +23,7 @@ meter {
   flex: 1;
 }
 
-@-moz-document url-prefix("") {
+@-moz-document url-prefix() {
   meter {
     background: var(--meter-bg);
     padding: var(--meter-pa);
