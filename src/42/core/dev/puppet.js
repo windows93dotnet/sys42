@@ -32,24 +32,45 @@ const tapOrder = [
 
 const $ = new DOMQuery()
 
-const allPendingKeys = new Set()
-let timeoutId
+const allPendings = new Set()
 
 function cleanup() {
-  for (const pendingKeys of allPendingKeys) {
-    for (const keyup of pendingKeys.values()) keyup()
+  for (const pending of allPendings) {
+    for (const fn of pending.values()) fn()
   }
 }
 
-function autoCleanup({ pendingKeys }) {
-  allPendingKeys.add(pendingKeys)
+let timeoutId
+function autoCleanup({ pendingKeys, pendingEvents }) {
+  allPendings.add(pendingKeys)
+  allPendings.add(pendingEvents)
   clearTimeout(timeoutId)
   timeoutId = setTimeout(() => cleanup(), 3000)
 }
 
 function normalizeKeyInit(init) {
-  if (typeof init === "string") return { key: init }
-  return init
+  return typeof init === "string" ? { key: init } : init
+}
+
+function setPositions(target, init, options) {
+  if (typeof target?.getBoundingClientRect !== "function") {
+    return init
+  }
+
+  const { x, y, width, height } = target.getBoundingClientRect()
+  if (options?.center === false) {
+    return {
+      clientX: x,
+      clientY: y,
+      ...init,
+    }
+  }
+
+  return {
+    clientX: x + Math.round(width / 2),
+    clientY: y + Math.round(height / 2),
+    ...init,
+  }
 }
 
 const makePuppet = () => {
@@ -58,17 +79,85 @@ const makePuppet = () => {
       order: [],
       undones: [],
       pendingKeys: new Map(),
+      pendingEvents: new Set(),
 
-      click({ data }) {
+      click({ data }, init) {
         for (const event of clickOrder) {
-          data.order.push(async (target) => simulate(target, event))
+          data.order.push(async (target) =>
+            simulate(target, event, setPositions(target, init)),
+          )
         }
       },
 
-      tap({ data }) {
+      tap({ data }, init) {
         for (const event of tapOrder) {
-          data.order.push(async (target) => simulate(target, event))
+          data.order.push(async (target) =>
+            simulate(target, event, setPositions(target, init)),
+          )
         }
+      },
+
+      enter({ data }, init) {
+        data.order.push(async (target) => {
+          const initBorder = setPositions(target, init, { center: false })
+          simulate(target, "pointerover", initBorder)
+          simulate(target, "pointerenter", initBorder)
+          simulate(target, "mouseover", initBorder)
+          simulate(target, "mouseenter", initBorder)
+        })
+      },
+
+      leave({ data }, init) {
+        data.order.push(async (target) => {
+          const initBorder = setPositions(target, init, { center: false })
+          simulate(target, "pointerleave", initBorder)
+          simulate(target, "mouseleave", initBorder)
+        })
+      },
+
+      move({ data }, init) {
+        data.order.push(async (target) => {
+          const initBorder = setPositions(target, init, { center: false })
+          const initCenter = setPositions(target, init)
+          simulate(target, "pointermove", initBorder)
+          simulate(target, "mousemove", initBorder)
+
+          simulate(target, "pointermove", initCenter)
+          simulate(target, "mousemove", initCenter)
+        })
+      },
+
+      hover({ data }, init, fn) {
+        if (typeof init === "function") {
+          fn = init
+          init = undefined
+        }
+
+        data.order.push(async (target) => {
+          const initBorder = setPositions(target, init, { center: false })
+          const initCenter = setPositions(target, init)
+          autoCleanup(data)
+          data.pendingEvents.add(() => {
+            simulate(target, "pointermove", initBorder)
+            simulate(target, "mousemove", initBorder)
+
+            simulate(target, "pointerleave", initBorder)
+            simulate(target, "mouseleave", initBorder)
+          })
+
+          simulate(target, "pointerover", initBorder)
+          simulate(target, "pointerenter", initBorder)
+          simulate(target, "mouseover", initBorder)
+          simulate(target, "mouseenter", initBorder)
+
+          simulate(target, "pointermove", initBorder)
+          simulate(target, "mousemove", initBorder)
+
+          simulate(target, "pointermove", initCenter)
+          simulate(target, "mousemove", initCenter)
+
+          fn?.()
+        })
       },
 
       keydown({ data }, init) {
@@ -161,15 +250,15 @@ const makePuppet = () => {
       },
 
       sleep({ data }, ms) {
-        data.order.push(async (target) => sleep(target, ms))
+        data.order.push(async () => sleep(ms))
       },
 
       until({ data }, ...args) {
         data.undones.push(() => until(...args))
       },
 
-      untilNextTask({ data }, ms) {
-        data.order.push(async (target) => untilNextTask(target, ms))
+      untilNextTask({ data }) {
+        data.order.push(async () => untilNextTask())
       },
 
       target({ data }, target, options) {
@@ -229,6 +318,9 @@ const makePuppet = () => {
         data.order.length = 0
         undones.length = 0
         delete data._stack
+
+        for (const fn of data.pendingEvents) fn()
+        data.pendingEvents.clear()
 
         queueTask(() => {
           for (const keyup of data.pendingKeys.values()) keyup()

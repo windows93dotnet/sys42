@@ -66,3 +66,52 @@ test.serial("auto wait for element", "throws on timeout", async (t) => {
 
   await end
 })
+
+test.serial("hover", async (t) => {
+  const el = t.utils.dest({ connect: true })
+  el.append("hello")
+  el.style.border = "1px solid"
+  el.style.inset = "20px auto auto 30px"
+  el.style.width = "100px"
+  el.style.height = "50px"
+
+  const res = []
+
+  const keys = [
+    "click",
+    "pointerover",
+    "mouseover",
+    "pointerenter",
+    "mouseenter",
+    "pointerleave",
+    "mouseleave",
+    "pointermove",
+  ].join("||")
+
+  t.utils.on(el, {
+    [keys]({ type, x, y }) {
+      res.push({ type, x, y })
+    },
+  })
+
+  await t
+    .puppet(el)
+    .hover(() => {
+      res.push("before click & leave")
+    })
+    .click()
+
+  t.eq(res, [
+    { type: "pointerover", x: 30, y: 20 },
+    { type: "pointerenter", x: 30, y: 20 },
+    { type: "mouseover", x: 30, y: 20 },
+    { type: "mouseenter", x: 30, y: 20 },
+    { type: "pointermove", x: 30, y: 20 },
+    { type: "pointermove", x: 80, y: 45 },
+    "before click & leave",
+    { type: "click", x: 80, y: 45 },
+    { type: "pointermove", x: 30, y: 20 },
+    { type: "pointerleave", x: 30, y: 20 },
+    { type: "mouseleave", x: 30, y: 20 },
+  ])
+})
