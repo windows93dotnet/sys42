@@ -1,11 +1,14 @@
 /* eslint-disable max-params */
 import { normalizeListen, eventsMap } from "../../fabric/event/on.js"
-import { normalizeTokens } from "../normalize.js"
+import normalizeTokens from "../normalizers/normalizeTokens.js"
+
+import isPromiseLike from "../../fabric/type/any/is/isPromiseLike.js"
 import hash from "../../fabric/type/any/hash.js"
 import expr from "../../core/expr.js"
 import uid from "../../core/uid.js"
 import allocate from "../../fabric/locator/allocate.js"
 import inIframe from "../../core/env/realm/inIframe.js"
+import traverse from "../../fabric/type/object/traverse.js"
 
 const makeEventLocals = (loc, e, target) => {
   const eventLocals = Object.defineProperties(
@@ -19,16 +22,47 @@ function compileRun(val, stage) {
   const tokens = expr.parse(val)
 
   const { actions, locals } = normalizeTokens(tokens, stage, {
+    async: false,
     specials: ["e", "event", "target", "rect"],
   })
 
-  const fn = expr.compile(tokens, {
-    assignment: true,
-    async: true,
-    delimiter: "/",
-    actions,
-    locals,
+  let fn
+
+  const undones = []
+
+  traverse(actions, (key, val, obj) => {
+    if (isPromiseLike(val)) {
+      undones.push(
+        val.then((res) => {
+          obj[key] = res
+        }),
+      )
+    }
   })
+
+  if (undones) {
+    fn = () => {
+      throw new Error(`Event expression isn't ready: ${val}`)
+    }
+
+    stage.waitlistPending.push(
+      Promise.all(undones).then(() => {
+        fn = expr.compile(tokens, {
+          assignment: true,
+          delimiter: "/",
+          actions,
+          locals,
+        })
+      }),
+    )
+  } else {
+    fn = expr.compile(tokens, {
+      assignment: true,
+      delimiter: "/",
+      actions,
+      locals,
+    })
+  }
 
   return (e, target) => {
     const eventLocals = makeEventLocals(stage.scope, e, target)

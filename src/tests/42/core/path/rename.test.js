@@ -208,12 +208,12 @@ test("filter replace regex", (t) => {
 
 test("filter removeSpaces", (t) => {
   const file = "a sentence\twith  spaces.txt"
-  const expected = "a_sentence_with__spaces.txt"
+  const expected = "a_sentence_with_spaces.txt"
   t.eq(rename(file, "**/*{removeSpaces}.*"), expected)
   t.eq(rename(file, "{removeSpaces}"), expected)
 
-  t.eq(rename(file, "**/*{replace:/\\s/g,_}.*"), expected)
-  t.eq(rename(file, "{replace:/\\s/g,_}"), expected)
+  t.eq(rename(file, "**/*{replace:/\\s+/g,_}.*"), expected)
+  t.eq(rename(file, "{replace:/\\s+/g,_}"), expected)
 })
 
 test("filter slugify", (t) => {

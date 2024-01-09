@@ -1,4 +1,6 @@
-import { normalizePlan, normalizeTokens } from "../normalize.js"
+import { normalizePlan } from "../normalize.js"
+import normalizeTokens from "../normalizers/normalizeTokens.js"
+
 import render from "../render.js"
 import register from "../register.js"
 import removeElements from "../utils/removeElements.js"

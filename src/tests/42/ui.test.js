@@ -2074,8 +2074,6 @@ test("computed", async (t) => {
 /* actions
 ========== */
 
-// [1] TODO: find good way to wait renderOn end of update
-
 test("on", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
@@ -2096,8 +2094,6 @@ test("on", async (t) => {
   const el = app.el.querySelector("button")
 
   el.click()
-  t.eq(app.state, { cnt: 42 })
-  await t.utils.sleep(100) // [1]
   t.eq(app.state, { cnt: 43 })
 })
 
@@ -2124,8 +2120,6 @@ test("on", "queued fast calls", async (t) => {
   el.click()
   el.click()
   el.click()
-  t.eq(app.state, { cnt: 42 })
-  await t.utils.sleep(100) // [1]
   t.eq(app.state, { cnt: 46 })
 })
 
@@ -2145,6 +2139,7 @@ test("on", "actions", async (t) => {
 
       actions: {
         incr(n, e) {
+          t.is(e.eventPhase, Event.AT_TARGET)
           t.instanceOf(e, Event)
           this.state.cnt += n
         },
@@ -2157,13 +2152,28 @@ test("on", "actions", async (t) => {
   const el = app.el.querySelector("button")
 
   el.click()
-  t.eq(app.state, { cnt: 42 })
-  await t.utils.sleep(100) // [1]
   t.eq(app.state, { cnt: 52 })
+})
 
-  app.destroy()
-  el.click()
-  await app
+test("on", "builtin actions", async (t) => {
+  t.plan(2)
+  const app = await t.utils.decay(
+    ui(t.utils.dest(), {
+      content: {
+        tag: "button",
+        content: "text: {{text}}",
+        on: { click: "{{text = toUpperCase(text)}}" },
+      },
+
+      state: {
+        text: "Hello",
+      },
+    }),
+  )
+
+  t.eq(app.state, { text: "Hello" })
+  app.el.querySelector("button").click()
+  t.eq(app.state, { text: "HELLO" })
 })
 
 /* fields
