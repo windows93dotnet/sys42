@@ -5,22 +5,23 @@ const { task } = test
 
 test.tasks(
   [
-    task({ task: ["foo.js", "\\*_*_.js", ["*_foo_.js"]] }),
-    task({ task: ["a/b/c/file.txt", "*/*.*", ["a/file.txt"]] }),
-    task({ task: ["a/b/c/file.txt", "*/*/*.*", ["a/b/file.txt"]] }),
-    task({ task: ["a/b/c/file.txt", "**/../*.*", ["a/b/file.txt"]] }),
-    task({ task: ["a/b/c/file.txt", "**/../../*.*", ["a/file.txt"]] }),
-    task({ task: ["a/b/c/file.txt", "*/foo/**/*.*", ["a/foo/b/c/file.txt"]] }),
-    // task({ task: ["a/b/c/file.txt", "**/foo/*/*.*", ["a/b/foo/c/file.txt"]] }),
-    task({ task: ["a/b/c/file.txt", "*/foo/**/../*.*", ["a/foo/b/file.txt"]] }),
-    task({ task: ["foo.js", "*.js", ["foo.js"]] }),
-    task({ task: ["foo.js", "bar.*", ["bar.js"]] }),
-    task({ task: ["foo.js", "prefix_*.js", ["prefix_foo.js"]] }),
-    task({ task: ["foo.js", "*_suffix.js", ["foo_suffix.js"]] }),
-    task({ task: ["a/b/c.js", "*.js", ["c.js"]] }),
-    task({ task: ["a/b/c.js", "**/*.*", ["a/b/c.js"]] }),
-    task({ task: ["a/b/c.js", "foo/**/*.js", ["foo/a/b/c.js"]] }),
-    task({ task: ["a/b/c.js", "foo/**/bar/*.js", ["foo/a/b/bar/c.js"]] }),
+    task({ task: ["foo.js", "\\*_*_.js", "*_foo_.js"] }),
+    task({ task: ["a/b/c/file.txt", "*/*.*", "a/file.txt"] }),
+    task({ task: ["a/b/c/file.txt", "*/*/*.*", "a/b/file.txt"] }),
+    task({ task: ["a/b/c/file.txt", "**/../*.*", "a/b/file.txt"] }),
+    task({ task: ["a/b/c/file.txt", "**/../../*.*", "a/file.txt"] }),
+    task({ task: ["a/b/c/file.txt", "*/foo/**/*.*", "a/foo/b/c/file.txt"] }),
+    task({ task: ["a/b/c/file.txt", "*/*/foo/**/*.*", "a/b/foo/c/file.txt"] }),
+    // task({ task: ["a/b/c/file.txt", "**/foo/*/*.*", "a/b/foo/c/file.txt"] }),
+    task({ task: ["a/b/c/file.txt", "*/foo/**/../*.*", "a/foo/b/file.txt"] }),
+    task({ task: ["foo.js", "*.js", "foo.js"] }),
+    task({ task: ["foo.js", "bar.*", "bar.js"] }),
+    task({ task: ["foo.js", "prefix_*.js", "prefix_foo.js"] }),
+    task({ task: ["foo.js", "*_suffix.js", "foo_suffix.js"] }),
+    task({ task: ["a/b/c.js", "*.js", "c.js"] }),
+    task({ task: ["a/b/c.js", "**/*.*", "a/b/c.js"] }),
+    task({ task: ["a/b/c.js", "foo/**/*.js", "foo/a/b/c.js"] }),
+    task({ task: ["a/b/c.js", "foo/**/bar/*.js", "foo/a/b/bar/c.js"] }),
   ],
 
   (test, { task: [path, pattern, expected] }) => {
@@ -31,10 +32,10 @@ test.tasks(
 )
 
 test("ignore extension glob if original extension is empty", (t) => {
-  t.eq(rename("a/b/c", "*.*"), ["c"])
-  t.eq(rename("a/b/c", "**/*.*"), ["a/b/c"])
-  t.eq(rename("a/b/c", "*.txt"), ["c.txt"])
-  t.eq(rename("a/b/c", "**/*.txt"), ["a/b/c.txt"])
+  t.eq(rename("a/b/c", "*.*"), "c")
+  t.eq(rename("a/b/c", "**/*.*"), "a/b/c")
+  t.eq(rename("a/b/c", "*.txt"), "c.txt")
+  t.eq(rename("a/b/c", "**/*.txt"), "a/b/c.txt")
 })
 
 const files = [
@@ -121,28 +122,33 @@ test("filter", (t) => {
 })
 
 test("filter change case", (t) => {
-  t.eq(rename("foo-bar/a-file.js", "**{camelCase}/_*{camelCase}_.js"), [
+  t.eq(
+    rename("foo-bar/a-file.js", "**{camelCase}/_*{camelCase}_.js"),
     "fooBar/_aFile_.js",
-  ])
-  t.eq(rename("foo bar/a file.js", "**{camelCase}/_*{camelCase}_.js"), [
+  )
+  t.eq(
+    rename("foo bar/a file.js", "**{camelCase}/_*{camelCase}_.js"),
     "fooBar/_aFile_.js",
-  ])
-  t.eq(rename("foo bar/a file.js", "**{snakeCase}/_*{snakeCase}_.js"), [
+  )
+  t.eq(
+    rename("foo bar/a file.js", "**{snakeCase}/_*{snakeCase}_.js"),
     "foo_bar/_a_file_.js",
-  ])
+  )
 })
 
 test("filter change case from camel", (t) => {
-  t.eq(rename("fooBar/aFile.js", "**{upperCase}/_*{upperCase}_.js"), [
+  t.eq(
+    rename("fooBar/aFile.js", "**{upperCase}/_*{upperCase}_.js"),
     "FOO BAR/_A FILE_.js",
-  ])
-  t.eq(rename("fooBar/aFile.js", "**{kebabCase}/_*{kebabCase}_.js"), [
+  )
+  t.eq(
+    rename("fooBar/aFile.js", "**{kebabCase}/_*{kebabCase}_.js"),
     "foo-bar/_a-file_.js",
-  ])
+  )
 })
 
 test("deburr", (t) => {
-  const expected = ["el nino/oscilacion.txt"]
+  const expected = "el nino/oscilacion.txt"
   t.eq(rename("el niño/oscilación.txt", "**{deburr}/*{deburr}.*"), expected)
   t.eq(rename("EL NIÑO/OSCILACIÓN.TXT", "{deburr|lowerCase}"), expected)
   t.eq(rename("EL NIÑO/OSCILACIÓN.TXT", "{lowerCase|deburr}"), expected)
@@ -183,7 +189,7 @@ test("filter replace", (t) => {
     "a/b/_dhree_.js",
   ])
 
-  t.eq(rename("a space.txt", "**/_*{replace: ,_}_.*"), ["_a_space_.txt"])
+  t.eq(rename("a space.txt", "**/_*{replace: ,_}_.*"), "_a_space_.txt")
 })
 
 test("filter replace regex", (t) => {
@@ -202,7 +208,7 @@ test("filter replace regex", (t) => {
 
 test("filter nospace", (t) => {
   const file = "a sentence\twith  spaces.txt"
-  const expected = ["a_sentence_with_spaces.txt"]
+  const expected = "a_sentence_with_spaces.txt"
   t.eq(rename(file, "**/*{nospace}.*"), expected)
   t.eq(rename(file, "{nospace}"), expected)
 

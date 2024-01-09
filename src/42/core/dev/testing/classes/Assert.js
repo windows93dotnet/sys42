@@ -257,6 +257,7 @@ export default class Assert {
     return val
   }
 
+  /** @param {number | "reset"} ms */
   timeout(ms = 300, cumulated = 0) {
     this.#cumulated ??= cumulated
     this.#timeoutDelay = ms === "reset" ? this.#timeoutDelay : ms

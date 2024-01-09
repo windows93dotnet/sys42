@@ -2,7 +2,6 @@ import { normalizeString } from "./core/normalizePath.js"
 import parsePath from "./core/parsePath.js"
 import formatPath from "./core/formatPath.js"
 import parseRegexLiteral from "../../fabric/type/regex/parseRegexLiteral.js"
-import arrify from "../../fabric/type/any/arrify.js"
 import manipulation from "../../fabric/type/string/manipulation.js"
 
 const makePlaceholder = (i) => `#PLACEHOLDER_${42}_${i}`
@@ -174,6 +173,14 @@ const makePattern = (pattern) => {
   }
 }
 
+/**
+ * Rename a path or list of paths using glob-like patterns
+ *
+ * @param {string | string[]} paths
+ * @param {string} pattern
+ * @returns {string | string[]}
+ */
 export default function rename(paths, pattern) {
-  return arrify(paths).map(makePattern(pattern))
+  if (Array.isArray(paths)) return paths.map(makePattern(pattern))
+  return makePattern(pattern)(paths)
 }

@@ -55,7 +55,7 @@ function compileToken(i, list, tokens, options) {
     list.push(
       options.async
         ? async (locals, args = [], res) => {
-            action ??= resolveAction(locals, value, delimiter, action)
+            action ??= resolveAction(locals, value, delimiter)
             args.unshift(action)
             for (const arg of argTokens) args.push(arg(locals, res))
             const [asyncFn, ...rest] = await Promise.all(args)
@@ -63,7 +63,7 @@ function compileToken(i, list, tokens, options) {
             return asyncFn(...rest)
           }
         : (locals, args = [], res) => {
-            action ??= resolveAction(locals, value, delimiter, action)
+            action ??= resolveAction(locals, value, delimiter)
             ensureAction(action, value)
             for (const arg of argTokens) args.push(arg(locals, res))
             return action(...args)
@@ -176,6 +176,11 @@ function compileStatement(tokens, options) {
   return list
 }
 
+/**
+ * @param {object[]} tokens
+ * @param {object} options
+ * @returns {Function | Function[][]}
+ */
 export default function compileExpression(tokens, options = {}) {
   const statements = []
   let statement = []

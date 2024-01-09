@@ -71,11 +71,7 @@ if (inTop) {
     })
 }
 
-/**
- * Remote procedure call
- *
- * @see https://en.wikipedia.org/wiki/Remote_procedure_call
- */
+/** [Remote Procedure Call](https://en.wikipedia.org/wiki/Remote_procedure_call) */
 export default function rpc(fn, options = {}) {
   const { marshalling, unmarshalling } = options
   options.module = options.module
