@@ -105,7 +105,7 @@ test("escaped hash", (t) => {
 })
 
 test("filter", (t) => {
-  t.eq(rename(files, "**/_*{upperCase}_.js"), [
+  t.eq(rename(files, "**/_*{toUpperCase}_.js"), [
     "a/b/_ONE_.js",
     "a/b/_TWO_.js",
     "a/b/_THREE_.js",
@@ -117,32 +117,32 @@ test("filter", (t) => {
     "A/B/THREE.JS",
   ]
 
-  t.eq(rename(files, "**{upperCase}/*{upperCase}.*{upperCase}"), allCaps)
-  t.eq(rename(files, "{upperCase}"), allCaps)
+  t.eq(rename(files, "**{toUpperCase}/*{toUpperCase}.*{toUpperCase}"), allCaps)
+  t.eq(rename(files, "{toUpperCase}"), allCaps)
 })
 
 test("filter change case", (t) => {
   t.eq(
-    rename("foo-bar/a-file.js", "**{camelCase}/_*{camelCase}_.js"),
+    rename("foo-bar/a-file.js", "**{toCamelCase}/_*{toCamelCase}_.js"),
     "fooBar/_aFile_.js",
   )
   t.eq(
-    rename("foo bar/a file.js", "**{camelCase}/_*{camelCase}_.js"),
+    rename("foo bar/a file.js", "**{toCamelCase}/_*{toCamelCase}_.js"),
     "fooBar/_aFile_.js",
   )
   t.eq(
-    rename("foo bar/a file.js", "**{snakeCase}/_*{snakeCase}_.js"),
+    rename("foo bar/a file.js", "**{toSnakeCase}/_*{toSnakeCase}_.js"),
     "foo_bar/_a_file_.js",
   )
 })
 
 test("filter change case from camel", (t) => {
   t.eq(
-    rename("fooBar/aFile.js", "**{upperCase}/_*{upperCase}_.js"),
+    rename("fooBar/aFile.js", "**{toUpperCase}/_*{toUpperCase}_.js"),
     "FOO BAR/_A FILE_.js",
   )
   t.eq(
-    rename("fooBar/aFile.js", "**{kebabCase}/_*{kebabCase}_.js"),
+    rename("fooBar/aFile.js", "**{toKebabCase}/_*{toKebabCase}_.js"),
     "foo-bar/_a-file_.js",
   )
 })
@@ -150,8 +150,8 @@ test("filter change case from camel", (t) => {
 test("deburr", (t) => {
   const expected = "el nino/oscilacion.txt"
   t.eq(rename("el niño/oscilación.txt", "**{deburr}/*{deburr}.*"), expected)
-  t.eq(rename("EL NIÑO/OSCILACIÓN.TXT", "{deburr|lowerCase}"), expected)
-  t.eq(rename("EL NIÑO/OSCILACIÓN.TXT", "{lowerCase|deburr}"), expected)
+  t.eq(rename("EL NIÑO/OSCILACIÓN.TXT", "{deburr|toLowerCase}"), expected)
+  t.eq(rename("EL NIÑO/OSCILACIÓN.TXT", "{toLowerCase|deburr}"), expected)
 })
 
 test("unknown filter", (t) => {
@@ -175,7 +175,7 @@ test("filter slice", (t) => {
     "a/b/_ee_.js",
   ])
 
-  t.eq(rename(files, "**/_*{slice:0,2|upperCase}_.js"), [
+  t.eq(rename(files, "**/_*{slice:0,2|toUpperCase}_.js"), [
     "a/b/_ON_.js",
     "a/b/_TW_.js",
     "a/b/_TH_.js",
@@ -206,12 +206,17 @@ test("filter replace regex", (t) => {
   ])
 })
 
-test("filter nospace", (t) => {
+test("filter removeSpaces", (t) => {
   const file = "a sentence\twith  spaces.txt"
-  const expected = "a_sentence_with_spaces.txt"
-  t.eq(rename(file, "**/*{nospace}.*"), expected)
-  t.eq(rename(file, "{nospace}"), expected)
+  const expected = "a_sentence_with__spaces.txt"
+  t.eq(rename(file, "**/*{removeSpaces}.*"), expected)
+  t.eq(rename(file, "{removeSpaces}"), expected)
 
-  t.eq(rename(file, "**/*{replace:/\\s+/g,_}.*"), expected)
-  t.eq(rename(file, "{replace:/\\s+/g,_}"), expected)
+  t.eq(rename(file, "**/*{replace:/\\s/g,_}.*"), expected)
+  t.eq(rename(file, "{replace:/\\s/g,_}"), expected)
+})
+
+test("filter slugify", (t) => {
+  const file = "el niño  oscilación"
+  t.eq(rename(file, "*{slugify}"), "el-nino-oscilacion")
 })

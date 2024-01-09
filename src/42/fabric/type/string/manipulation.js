@@ -1,5 +1,6 @@
 import deburr from "./deburr.js"
 import pluralize from "./pluralize.js"
+import slugify from "./slugify.js"
 import { countLetters, countWords, countBytes } from "./count.js"
 import { trim, trimStart, trimEnd } from "./trim.js"
 
@@ -17,30 +18,20 @@ import toTitleCase from "./case/toTitleCase.js"
 import toUpperCase from "./case/toUpperCase.js"
 
 export default {
-  camelCase: toCamelCase,
-  capitalCase: toCapitalCase,
-  constantCase: toConstantCase,
-  headerCase: toHeaderCase,
-  kebabCase: toKebabCase,
-  lowerCase: toLowerCase,
-  nocaseCase: toNoCase,
-  pascalCase: toPascalCase,
-  sentenceCase: toSentenceCase,
-  snakeCase: toSnakeCase,
-  titleCase: toTitleCase,
-  upperCase: toUpperCase,
+  toCamelCase,
+  toCapitalCase,
+  toConstantCase,
+  toHeaderCase,
+  toKebabCase,
+  toLowerCase,
+  toNoCase,
+  toPascalCase,
+  toSentenceCase,
+  toSnakeCase,
+  toTitleCase,
+  toUpperCase,
 
-  nospace: (str) => str.replaceAll(/\s+/g, "_"),
-  slice: (str, ...rest) => str.slice(...rest),
-  split: (str, delimiter) => str.split(delimiter),
-  repeat: (str, num) => str.repeat(num),
-  replace: (str, ...rest) => str.replace(...rest),
-  replaceAll: (str, ...rest) => str.replaceAll(...rest),
-  padEnd: (str, length, padString) => str.padEnd(length, padString),
-  padStart: (str, length, padString) => str.padStart(length, padString),
-  endsWith: (str, search) => str.endsWith(search),
-  startsWith: (str, search) => str.startsWith(search),
-
+  slugify,
   deburr,
   pluralize,
 
@@ -51,4 +42,15 @@ export default {
   trim,
   trimStart,
   trimEnd,
+
+  removeSpaces: (str, replacement = "_") => str.replaceAll(/\s+/g, replacement),
+  slice: (str, ...rest) => str.slice(...rest),
+  split: (str, delimiter) => str.split(delimiter),
+  repeat: (str, num) => str.repeat(num),
+  replace: (str, ...rest) => str.replace(...rest),
+  replaceAll: (str, ...rest) => str.replaceAll(...rest),
+  padEnd: (str, length, padString) => str.padEnd(length, padString),
+  padStart: (str, length, padString) => str.padStart(length, padString),
+  endsWith: (str, search) => str.endsWith(search),
+  startsWith: (str, search) => str.startsWith(search),
 }
