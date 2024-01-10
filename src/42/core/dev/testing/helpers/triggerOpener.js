@@ -97,17 +97,19 @@ export async function triggerOpener(t, open, ...args) {
     })
   })
 
-  let clickPromise
+  // let clickPromise
 
-  if (el.getAttribute("aria-haspopup") === "menu") {
-    const menu = el.closest("ui-menu")
-    if (menu) {
-      clickPromise = false
-      menu.triggerMenuitem(el)
-    }
-  }
+  // if (el.getAttribute("aria-haspopup") === "menu") {
+  //   const menu = el.closest("ui-menu")
+  //   if (menu) {
+  //     clickPromise = false
+  //     menu.triggerMenuitem(el)
+  //   }
+  // }
 
-  clickPromise ??= t.puppet(el).click().run()
+  // clickPromise ??= t.puppet(el).click().run()
+
+  const clickPromise = t.puppet(el).click().run()
 
   const res = responses.get(id)
   const popupTarget = await openPromise
@@ -121,12 +123,7 @@ export async function triggerOpener(t, open, ...args) {
     return popupTarget
   }
 
-  // Some tests fail using too many concurrent async calls without delay
-  // TODO: find a better solution
-  await t.sleep(20)
-  // await t.timeout("reset")
-  // await t.utils.idle()
-  // await t.timeout("reset")
+  t.timeout("reset")
 
   return res
 }

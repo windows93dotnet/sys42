@@ -151,6 +151,7 @@ export class Menu extends Component {
   }
 
   resetLastHovered(e) {
+    // if (e.target !== this) return
     if (e.relatedTarget?.id === "menu-aim-triangle") return
     this.#lastHovered = undefined
 
@@ -170,9 +171,9 @@ export class Menu extends Component {
     let expandeds
 
     if (e?.type === "pointerdown") {
-      e.preventDefault()
-      e.stopPropagation()
-      e.stopImmediatePropagation()
+      // e.preventDefault()
+      // e.stopPropagation()
+      // e.stopImmediatePropagation()
       this.#lastHovered = undefined
     }
 
@@ -204,7 +205,7 @@ export class Menu extends Component {
       item.focus({ preventScroll: true })
 
       if (!this.opener) {
-        if (e.type !== this.config.shortcuts.initialExpand) {
+        if (e?.type !== this.config.shortcuts.initialExpand) {
           expandeds ??= this.#getExpandeds()
           if (expandeds.length === 0) return
         }

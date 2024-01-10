@@ -71,7 +71,7 @@ const makeContent = () => ({
 test.ui("submenu close previous submenu", async (t) => {
   const { triggerOpener } = t.utils
 
-  const { app } = await t.glovebox({
+  await t.glovebox({
     href,
     iframe: true,
     top: true,
@@ -174,4 +174,54 @@ test.ui("detached dialog still use ipcPlugin", async (t) => {
   }
 
   dialog.close()
+})
+
+test.ui("menu opening close other menus's submenus", async (t) => {
+  const makeItems = (n) => [
+    {
+      label: `submenu ${n}`,
+      id: `submenuBtn${n}`,
+      items: [
+        { label: `submenu ${n} item 1` }, //
+        { label: `submenu ${n} item 2` },
+      ],
+    },
+  ]
+
+  await t.glovebox({
+    href,
+    iframe: true,
+    top: true,
+    makeContent: () => ({
+      tag: ".w-full.pa-xl",
+      content: [
+        { tag: "ui-menu#menu1", items: makeItems(1) },
+        "<br>",
+        { tag: "ui-menu#menu2", items: makeItems(2) },
+      ],
+    }),
+  })
+
+  const btn1 = document.querySelector("#submenuBtn1")
+  const btn2 = document.querySelector("#submenuBtn2")
+
+  const submenu1 = await t.utils.triggerOpener(btn1)
+  t.is(btn1.getAttribute("aria-expanded"), "true")
+  t.true(submenu1.isConnected)
+
+  const submenu2 = await t.utils.triggerOpener(btn2)
+  t.is(btn2.getAttribute("aria-expanded"), "true")
+  t.true(submenu2.isConnected)
+
+  t.is(btn1.getAttribute("aria-expanded"), "false")
+  await t.utils.untilNextRepaint()
+  t.false(submenu1.isConnected)
+
+  // await t.puppet(btn1).click()
+  // await t.utils.untilNextRepaint()
+  // t.is(btn1.getAttribute("aria-expanded"), "true")
+
+  // await t.puppet(btn2).click()
+  // await t.utils.untilNextRepaint()
+  // t.is(btn2.getAttribute("aria-expanded"), "true")
 })
