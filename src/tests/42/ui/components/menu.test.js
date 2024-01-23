@@ -216,12 +216,59 @@ test.ui("menu opening close other menus's submenus", async (t) => {
   t.is(btn1.getAttribute("aria-expanded"), "false")
   await t.utils.untilNextRepaint()
   t.false(submenu1.isConnected)
+})
 
-  // await t.puppet(btn1).click()
-  // await t.utils.untilNextRepaint()
-  // t.is(btn1.getAttribute("aria-expanded"), "true")
+test.ui("menu initial expand", async (t) => {
+  await t.glovebox({
+    href,
+    iframe: true,
+    top: !true,
+    makeContent: () => ({
+      tag: ".w-full.pa-xl",
+      content: [
+        {
+          tag: "ui-menu#menu1",
+          items: [
+            {
+              label: `submenu 1`,
+              id: `submenuBtn1`,
+              items: [
+                { label: `submenu 1 item 1` }, //
+                { label: `submenu 1 item 2` },
+              ],
+            },
+            {
+              label: `submenu 1`,
+              id: `submenuBtn2`,
+              items: [
+                { label: `submenu 2 item 1` }, //
+                { label: `submenu 2 item 2` },
+              ],
+            },
+            {
+              label: `disabled`,
+              id: `disabledBtn`,
+              disabled: true,
+            },
+          ],
+        },
+      ],
+    }),
+  })
 
-  // await t.puppet(btn2).click()
-  // await t.utils.untilNextRepaint()
-  // t.is(btn2.getAttribute("aria-expanded"), "true")
+  if (test.env.realm.inTop) {
+    t.pass()
+    return
+  }
+
+  const submenuBtn1 = document.querySelector("#submenuBtn1")
+  // const submenuBtn2 = document.querySelector("#submenuBtn2")
+  // const disabledBtn = document.querySelector("#disabledBtn")
+
+  t.puppet(submenuBtn1).click().run()
+  const submenu1 = await t.utils.untilOpen(submenuBtn1)
+
+  t.element.isConnected(submenu1)
+
+  t.pass()
 })

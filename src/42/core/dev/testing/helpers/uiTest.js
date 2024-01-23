@@ -6,6 +6,7 @@ import unsee from "../../../../fabric/dom/unsee.js"
 
 import glovebox from "./glovebox.js"
 import triggerOpener from "./triggerOpener.js"
+import untilOpen from "./untilOpen.js"
 import untilClose from "./untilClose.js"
 
 // UI tests self-execute if not started from a test runner.
@@ -61,6 +62,7 @@ export default function uiTest(fn, sbs) {
     }
 
     t.utils.triggerOpener = async (...args) => triggerOpener(t, ...args)
+    t.utils.untilOpen = async (...args) => untilOpen(...args)
     t.utils.untilClose = async (...args) => untilClose(...args)
     t.utils.closeDialog = async (el, context = window) => {
       context = isInstanceOf(context, Window)

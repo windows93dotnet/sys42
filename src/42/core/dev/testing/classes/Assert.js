@@ -11,6 +11,7 @@ import clone from "../../../../fabric/type/any/clone.js"
 import pluralize from "../../../../fabric/type/string/pluralize.js"
 import addStack from "../../../../fabric/type/error/addStack.js"
 import template from "../../../formats/template.js"
+import ensureElement from "../../../../fabric/dom/ensureElement.js"
 import * as is from "../../../../fabric/type/any/is.js"
 
 const { isPromiseLike } = is
@@ -97,6 +98,11 @@ function articlePrefix(str, displayStr = str) {
   return `${article} ${displayStr}`
 }
 
+const elementAssertions = {
+  isConnected: (el) => Boolean(el.isConnected),
+  isFocused: (el) => el === el.ownerDocument.activeElement,
+}
+
 export default class Assert {
   #cumulated
   #timeoutDelay
@@ -121,6 +127,33 @@ export default class Assert {
     this.equal = this.is
     this.deepEqual = this.eq
     this.notDeepEqual = this.notEq
+
+    this.element = {}
+
+    Object.entries(elementAssertions).forEach(([key, check]) => {
+      const not = `isNot${key.slice(2)}`
+      const type = key.charAt(2).toLowerCase() + key.slice(3)
+
+      this.element[key] = (actual, message, details = { actual }) => {
+        this.#addCall()
+        actual = ensureElement(actual)
+        if (check(actual) === false) {
+          const why = `Element is not ${type}`
+          message = message ? `${message}\n${why}` : why
+          throw new AssertionError(message, undefined, details)
+        }
+      }
+
+      this.element[not] = (actual, message, details = { actual }) => {
+        this.#addCall()
+        actual = ensureElement(actual)
+        if (check(actual) === true) {
+          const why = `Element should not be ${type}`
+          message = message ? `${message}\n${why}` : why
+          throw new AssertionError(message, undefined, details)
+        }
+      }
+    })
 
     Object.entries(is).forEach(([key, check]) => {
       const not = `isNot${key.slice(2)}`

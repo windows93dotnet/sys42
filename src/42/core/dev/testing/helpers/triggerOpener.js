@@ -97,18 +97,6 @@ export async function triggerOpener(t, open, ...args) {
     })
   })
 
-  // let clickPromise
-
-  // if (el.getAttribute("aria-haspopup") === "menu") {
-  //   const menu = el.closest("ui-menu")
-  //   if (menu) {
-  //     clickPromise = false
-  //     menu.triggerMenuitem(el)
-  //   }
-  // }
-
-  // clickPromise ??= t.puppet(el).click().run()
-
   const clickPromise = t.puppet(el).click().run()
 
   const res = responses.get(id)
