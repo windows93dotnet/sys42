@@ -291,8 +291,7 @@ button
   vertical-align: top;
   display: inline-block;
   line-height: var(--ctrl-lh);
-  /* TODO: restore when Chrome 121 bug is fixed */
-  /* min-width: 3ch; */
+  min-width: 3ch;
   max-width: 100%;
   padding: var(--ctrl-pa-y) var(--ctrl-pa-x);
 }
