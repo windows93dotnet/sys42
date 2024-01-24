@@ -222,7 +222,7 @@ test.ui("menu initial expand", async (t) => {
   await t.glovebox({
     href,
     iframe: true,
-    top: !true,
+    top: true,
     makeContent: () => ({
       tag: ".w-full.pa-xl",
       content: [
@@ -256,18 +256,24 @@ test.ui("menu initial expand", async (t) => {
     }),
   })
 
-  if (test.env.realm.inTop) {
-    t.pass()
-    return
-  }
-
   const submenuBtn1 = document.querySelector("#submenuBtn1")
   // const submenuBtn2 = document.querySelector("#submenuBtn2")
   // const disabledBtn = document.querySelector("#disabledBtn")
 
+  const promise = new Promise((resolve) => {
+    t.utils.on(submenuBtn1, {
+      "ui:trigger-submenu"() {
+        resolve(true)
+      },
+    })
+  })
+
+  t.puppet(submenuBtn1).hover().run()
+  const res = await Promise.race([promise, t.sleep(100)])
+  t.isUndefined(res, "Hover should not trigger submenu")
+
   t.puppet(submenuBtn1).click().run()
   const submenu1 = await t.utils.untilOpen(submenuBtn1)
-
   t.element.isConnected(submenu1)
 
   t.pass()

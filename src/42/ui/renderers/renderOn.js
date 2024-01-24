@@ -102,10 +102,10 @@ function setDialogOpener(el, stage, key, defaultPlan) {
     const plan = { ...defaultPlan, opener: el.id }
     if (e.detail && typeof e.detail === "object") Object.assign(plan, e.detail)
 
-    const deferred = import("../components/dialog.js") //
+    const data = import("../components/dialog.js") //
       .then(({ dialog }) => dialog(plan, stage))
 
-    plan.handler?.(e, { deferred, el, plan, stage })
+    plan.handler?.(e, { data, el, plan, stage })
   }
 }
 
@@ -135,10 +135,10 @@ function setPopupOpener(el, stage, key, defaultPlan) {
       plan.focusBack = activeElement.id
     }
 
-    const deferred = import("../popup.js") //
+    const data = import("../popup.js") //
       .then(({ popup }) => popup(el, plan, stage))
 
-    plan.handler?.(e, { deferred, el, plan, stage })
+    plan.handler?.(e, { data, el, plan, stage })
   }
 }
 

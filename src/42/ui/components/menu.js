@@ -103,6 +103,9 @@ export class Menu extends Component {
       opener: {
         type: "string",
       },
+      expanded: {
+        type: "boolean",
+      },
     },
 
     on: [
@@ -171,9 +174,6 @@ export class Menu extends Component {
     let expandeds
 
     if (e?.type === "pointerdown") {
-      // e.preventDefault()
-      // e.stopPropagation()
-      // e.stopImmediatePropagation()
       this.#lastHovered = undefined
     }
 
@@ -206,8 +206,9 @@ export class Menu extends Component {
 
       if (!this.opener) {
         if (e?.type !== this.config.shortcuts.initialExpand) {
-          expandeds ??= this.#getExpandeds()
-          if (expandeds.length === 0) return
+          // expandeds ??= this.#getExpandeds()
+          // if (expandeds.length === 0) return
+          if (!this.expanded) return
         }
       }
 
@@ -278,10 +279,15 @@ export class Menu extends Component {
               tag: "ui-menu",
               aria: inTop ? { labelledby: item.id } : { label },
               positionable: { preset: this.isMenubar ? "popup" : "menuitem" },
-              // focusBack: item.focusBack ?? focusBack ?? this.opener,
               focusBack: item.focusBack ?? focusBack,
               closeEvents: shortcuts.closeSubmenu,
               items: item.items,
+              handler: (e, { data }) => {
+                this.expanded = true
+                data.then(() => {
+                  this.expanded = this.matches(":hover,:focus,:focus-within")
+                })
+              },
             },
           },
         })
