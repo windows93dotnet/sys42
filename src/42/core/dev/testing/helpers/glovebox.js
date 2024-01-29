@@ -83,6 +83,8 @@ export async function glovebox(t, options) {
     ),
   )
 
+  if (inTop && !top) throw new SilentError()
+
   return { app }
 }
 

@@ -46,6 +46,13 @@ export class VerifyError extends Error {
   }
 }
 
+export class SilentError extends Error {
+  constructor(message) {
+    super(message)
+    Object.defineProperty(this, "name", { value: "SilentError" })
+  }
+}
+
 export const checkError = (err, expected) => {
   if (!expected) return true
 

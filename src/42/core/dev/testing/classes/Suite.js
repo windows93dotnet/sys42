@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import serial from "../../../../fabric/type/promise/serial.js"
 import parallel from "../../../../fabric/type/promise/parallel.js"
 import groupBy from "../../../../fabric/type/array/groupBy.js"
@@ -139,12 +140,16 @@ export default class Suite {
       t.verifyContext(test.failing, test.stackframe)
       test.ok = true
     } catch (err) {
-      test.error = err
-      if (
-        test.failing === true &&
-        !err.message.startsWith("Test was expected to fail")
-      ) {
+      if (err.name === "SilentError") {
         test.ok = true
+      } else {
+        test.error = err
+        if (
+          test.failing === true &&
+          !err.message.startsWith("Test was expected to fail")
+        ) {
+          test.ok = true
+        }
       }
     }
 

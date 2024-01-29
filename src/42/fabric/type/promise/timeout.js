@@ -5,7 +5,7 @@ const setTimeoutNative = globalThis.setTimeout
 /**
  * @param {number} ms
  * @param {string | Error} err
- * @returns {Promise}
+ * @returns {Promise<Error>}
  */
 export function timeout(ms = 5000, err = new TimeoutError(ms)) {
   if (typeof err === "string") err = new TimeoutError(err)
