@@ -207,15 +207,15 @@ test.ui("menu opening close other menus's submenus", async (t) => {
 
   const submenu1 = await t.utils.triggerOpener(btn1)
   t.is(btn1.getAttribute("aria-expanded"), "true")
-  t.true(submenu1.isConnected)
+  t.element.isConnected(submenu1)
 
   const submenu2 = await t.utils.triggerOpener(btn2)
   t.is(btn2.getAttribute("aria-expanded"), "true")
-  t.true(submenu2.isConnected)
+  t.element.isConnected(submenu2)
 
   t.is(btn1.getAttribute("aria-expanded"), "false")
   await t.utils.untilNextRepaint()
-  t.false(submenu1.isConnected)
+  t.element.isNotConnected(submenu1)
 })
 
 test.ui("menu initial expand", async (t) => {
@@ -275,6 +275,4 @@ test.ui("menu initial expand", async (t) => {
   t.puppet(submenuBtn1).click().run()
   const submenu1 = await t.utils.untilOpen(submenuBtn1)
   t.element.isConnected(submenu1)
-
-  t.pass()
 })
