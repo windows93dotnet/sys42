@@ -153,8 +153,6 @@ export default class Suite {
       }
     }
 
-    test.done.resolve(t)
-
     if (test.ok === false && test.flaky) {
       t.cleanup()
       test.flaky--
@@ -166,8 +164,11 @@ export default class Suite {
     if (t.glovebox?.ready) {
       await t.glovebox.ready.catch((err) => {
         test.error = err
+        test.ok = false
       })
     }
+
+    test.done.resolve(t)
 
     const nesteds =
       test.nestedsOnlies.length > 0

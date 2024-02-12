@@ -1,4 +1,5 @@
 import inTop from "../../../env/realm/inTop.js"
+import { SilentError } from "../classes/Assert.js"
 import timeout from "../../../../fabric/type/promise/timeout.js"
 import "../../../../ui/popup.js"
 
@@ -31,7 +32,7 @@ export async function glovebox(t, options) {
 
   if (inTop && iframe) {
     t.glovebox.ready = Promise.race([
-      timeout(1000, "Glovebox timed out: 1000"),
+      timeout(3000, "Glovebox timed out: 3000"),
       new Promise((resolve) => {
         window.addEventListener("message", function handler({ data }) {
           if (data === id) {
