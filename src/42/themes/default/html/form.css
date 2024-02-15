@@ -28,8 +28,8 @@
   --ctrl-w: 25ch;
   --ctrl-group-gap: calc(-1 * var(--ctrl-bdlw));
 
-  --ctrl-o: 1px solid var(--ctrl-oc, rgb(80 80 80 / 0.5));
-  --ctrl-oo: -2px;
+  --ctrl-o: 1px dotted currentColor;
+  --ctrl-oo: -3px;
 
   --ctrl-disabled-alpha: 0.5;
 
@@ -1073,6 +1073,8 @@ input:where([type="radio"],[type="checkbox"]) + label {
 
 .check-cont > label {
   margin: 0;
+  /* padding: 0;
+  border: none; */
 }
 
 /* color

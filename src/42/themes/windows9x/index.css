@@ -254,7 +254,7 @@
   --btn-toggled-bg: var(--btn-bg) var(--screentone-url);
   --btn-toggled-disabled-bdi: var(--btn-toggled-bdi);
 
-  --check-o: none;
+  --check-o: 1px dotted;
   --check-size: 13px;
 
   --link-fg: var(--Hilight);
@@ -401,7 +401,13 @@ input[type="number" i]:disabled::-webkit-inner-spin-button {
   --_down: var(--picto--down-xs--d);
 }
 
-:is(button, .button):not(:active,[role="tab"],[role="menuitem"],[aria-selected="true"]):focus {
+:is(button, .button):focus:not(
+:active,
+[role="tab"],
+[role="menuitem"],
+[aria-selected="true"],
+[aria-expanded="true"]
+) {
   border-image: var(--btn-default-bdi);
 }
 
