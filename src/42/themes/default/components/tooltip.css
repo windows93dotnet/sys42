@@ -13,6 +13,7 @@
 /* tooltip
 ========== */
 
+.tooltip,
 ui-tooltip {
   --bg: var(--tooltip-bg);
   --fg: var(--tooltip-fg);

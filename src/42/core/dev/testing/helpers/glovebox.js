@@ -52,27 +52,58 @@ export async function glovebox(t, options) {
       t.utils.dest({ connect: true }),
       inTop
         ? {
-            tag: ".box-v.box-fit.desktop",
+            tag: ".box-v.box-fit.ground.pa-0",
             content: [
               {
-                tag: "h1.code.ma-0.pa-xl",
+                tag: "style",
+                content: `
+                .realm-label {
+                  padding: 1px 5px;
+                  position: absolute;
+                  margin-top: -2ex;
+                  z-index: 5;
+                  right: calc(50% + var(--unit));
+                }
+                .realm-label + .realm-label {
+                  right: calc(2 * var(--unit));
+                }
+                `,
+              },
+              {
+                tag: "h1.font-mono.ma-0.pa-xl",
                 content: [
                   { tag: "span", style: "color:#555", content: "[🧤🧪] " },
                   t.test.title,
                 ],
               },
               {
-                tag: ".box-h",
+                tag: ".item-shrink",
                 content: [
-                  top ? makeContent() : undefined,
-                  iframe
-                    ? {
-                        tag: "ui-sandbox.ground",
-                        permissions: "trusted",
-                        path,
-                      }
-                    : undefined,
+                  { tag: "span.tooltip.realm-label", content: "Top" },
+                  { tag: "span.tooltip.realm-label", content: "Iframe" },
                 ],
+              },
+              {
+                tag: ".ma.ma-t-0",
+                content: {
+                  tag: ".box-cols.h-full.gap",
+                  content: [
+                    top
+                      ? { tag: ".panel.inset", content: makeContent() }
+                      : undefined,
+                    iframe
+                      ? {
+                          tag: "ui-sandbox.panel.inset",
+                          permissions: "trusted",
+                          path,
+                        }
+                      : undefined,
+                  ],
+                },
+              },
+              {
+                tag: ".item-shrink",
+                style: "height:100px",
               },
             ],
           }
