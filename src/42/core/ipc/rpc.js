@@ -123,7 +123,9 @@ export default function rpc(fn, options = {}) {
       ? async (...args) => {
           const res = await marshalling(...args)
           if (res === false) return
-          return unmarshalling(await fn(...res))
+          return Array.isArray(res)
+            ? unmarshalling(await fn(...res))
+            : unmarshalling(await fn(res))
         }
       : unmarshalling
         ? async (...args) => unmarshalling(await fn(...args))
@@ -131,7 +133,7 @@ export default function rpc(fn, options = {}) {
           ? async (...args) => {
               const res = await marshalling(...args)
               if (res === false) return
-              return fn(...res)
+              return Array.isArray(res) ? fn(...res) : fn(res)
             }
           : fn
 

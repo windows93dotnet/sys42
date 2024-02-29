@@ -217,6 +217,7 @@ export default async function renderProps(el, props, plan) {
       let computed
 
       Object.defineProperty(el, key, {
+        enumerable: true,
         configurable: true,
         get: () => computed,
       })
@@ -254,6 +255,7 @@ export default async function renderProps(el, props, plan) {
     }
 
     Object.defineProperty(el, key, {
+      enumerable: true,
       configurable: true,
       set:
         item.storeInState === false

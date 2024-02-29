@@ -191,6 +191,7 @@ async function mount(el, manifestPath, options) {
   return app
 }
 
+// Execute App sandboxed
 async function shell(manifestPath, options) {
   let manifest = await prepareManifest(manifestPath, options)
 
@@ -236,7 +237,7 @@ if (inTop) {
   )
 }
 
-// Execute App sandboxed
+// Execute App sandboxed in a dialog
 export async function launch(manifestPath, options) {
   if (!inTop) {
     return void ipc.emit("42_APP_LAUNCH", { manifestPath, options })
@@ -277,7 +278,7 @@ export async function launch(manifestPath, options) {
     picto = item.src
   }
 
-  dialog(
+  return dialog(
     {
       id,
       class: `app__${manifest.slug}`,
