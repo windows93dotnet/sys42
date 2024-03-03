@@ -2,13 +2,13 @@ import ipc from "../ipc.js"
 import hash from "../../fabric/type/any/hash.js"
 import traverse from "../../fabric/type/object/traverse.js"
 import SecurityError from "../../fabric/errors/SecurityError.js"
+import ElementController from "./ElementController.js"
 
 const { inTop, inIframe } = ipc
 
 const CALL = "42_RPC_CALL"
 const DESTROY = "42_RPC_DESTROY"
-
-const functions = new Map()
+const callers = new Map()
 
 function serialize(val) {
   const forgets = []
@@ -41,7 +41,7 @@ function deserialize(val, { send }) {
 
 if (inTop) {
   ipc
-    .on(CALL, ([id, args, info], meta) => {
+    .on(CALL, async ([id, args, info], meta) => {
       if (
         args.length > 1 &&
         typeof args[1] === "object" &&
@@ -55,8 +55,15 @@ if (inTop) {
         )
       }
 
-      if (functions.has(id)) {
-        return functions.get(id)(...deserialize(args, meta), meta)
+      if (callers.has(id)) {
+        const res = await callers.get(id)(...deserialize(args, meta), meta)
+        if (res instanceof ElementController) {
+          return {
+            "42_ELEMENT_CONTROLLER": res[ElementController.REMOTE_EXPORT],
+          }
+        }
+
+        return res
       }
 
       const help = info.module
@@ -67,8 +74,18 @@ if (inTop) {
       )
     })
     .on(DESTROY, (id) => {
-      functions.delete(id)
+      callers.delete(id)
     })
+}
+
+async function remoteCall(data) {
+  const res = await ipc.send(CALL, data)
+
+  if (res && "42_ELEMENT_CONTROLLER" in res) {
+    return new ElementController(res["42_ELEMENT_CONTROLLER"])
+  }
+
+  return res
 }
 
 /** [Remote Procedure Call](https://en.wikipedia.org/wiki/Remote_procedure_call) */
@@ -85,61 +102,64 @@ export default function rpc(fn, options = {}) {
       name: fn.name ? `"${fn.name}"` : "corresponding",
       module: options?.module,
     }
-    const caller =
+    const stub =
       unmarshalling && marshalling
         ? async (...args) => {
-            const res = await marshalling(...args)
-            if (res === false) return
-            const { val, destroy } = serialize(res)
-            const out = await unmarshalling(
-              await ipc.send(CALL, [id, val, info]),
-            )
+            const packed = await marshalling(...args)
+            if (packed === false) return
+            const { val, destroy } = serialize(packed)
+            const res = await unmarshalling(await remoteCall([id, val, info]))
             destroy()
-            return out
+            return res
           }
         : unmarshalling
-          ? async (...args) =>
-              unmarshalling(await ipc.send(CALL, [id, args, info]))
+          ? async (...args) => unmarshalling(await remoteCall([id, args, info]))
           : marshalling
             ? async (...args) => {
-                const res = await marshalling(...args)
-                if (res === false) return
-                const { val, destroy } = serialize(res)
-                const out = await ipc.send(CALL, [id, val, info])
+                const packed = await marshalling(...args)
+                if (packed === false) return
+                const { val, destroy } = serialize(packed)
+                const res = await remoteCall([id, val, info])
                 destroy()
-                return out
+                return res
               }
-            : async (...args) => ipc.send(CALL, [id, args, info])
+            : async (...args) => remoteCall([id, args, info])
 
-    caller.destroy = async () => ipc.send(DESTROY, id)
+    stub.destroy = async () => ipc.send(DESTROY, id)
 
-    return caller
+    return stub
   }
 
-  functions.set(id, fn)
+  const caller = async (...args) => {
+    const res = await fn(...args)
+    if (res?.nodeType === Node.ELEMENT_NODE) return new ElementController(res)
+    return res
+  }
 
-  const caller =
+  callers.set(id, caller)
+
+  const stub =
     unmarshalling && marshalling
       ? async (...args) => {
           const res = await marshalling(...args)
           if (res === false) return
           return Array.isArray(res)
-            ? unmarshalling(await fn(...res))
-            : unmarshalling(await fn(res))
+            ? unmarshalling(await caller(...res))
+            : unmarshalling(await caller(res))
         }
       : unmarshalling
-        ? async (...args) => unmarshalling(await fn(...args))
+        ? async (...args) => unmarshalling(await caller(...args))
         : marshalling
           ? async (...args) => {
               const res = await marshalling(...args)
               if (res === false) return
-              return Array.isArray(res) ? fn(...res) : fn(res)
+              return Array.isArray(res) ? caller(...res) : caller(res)
             }
-          : fn
+          : caller
 
-  caller.destroy = async () => functions.delete(id)
+  stub.destroy = async () => callers.delete(id)
 
-  return caller
+  return stub
 }
 
 rpc.inTop = inTop
