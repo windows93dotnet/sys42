@@ -11,6 +11,7 @@ export default function emittable(item, options) {
     value: events,
     configurable: true,
   })
+
   for (const key of Object.getOwnPropertyNames(Emitter.prototype)) {
     if (key !== "constructor" && key in item === false) {
       Object.defineProperty(item, key, {

@@ -33,7 +33,7 @@ export default class Canceller extends Callable {
     }
 
     this.signal = controller.signal
-    this.cancel = this // allow `{cancel, signal} = new CancelToken()` syntax
+    this.cancel = this // allow `{cancel, signal} = new Canceller()` syntax
   }
 
   fork() {

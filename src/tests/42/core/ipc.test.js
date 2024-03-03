@@ -167,7 +167,6 @@ const contexts = {
       "/tests/fixtures/ipc/emit.js?e=42_ENV_SERVICEWORKER",
       { type: "module" },
     )
-    console.log(registration)
     decay(registration)
     return registration
   },
