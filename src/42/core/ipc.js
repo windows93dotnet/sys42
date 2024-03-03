@@ -89,6 +89,7 @@ async function messageHandler(e) {
       iframe,
       worker,
       port,
+      transfer: [],
       get emit() {
         return (events, ...args) => {
           port.postMessage({ type: EMIT, events, args })
@@ -142,7 +143,14 @@ async function messageHandler(e) {
         Promise.all(undones)
           .then((res) => {
             res = res.flat()
-            port.postMessage({ id, res: res[0], all: res })
+
+            let options
+            if (meta.transfer.length > 0) {
+              options = { transfer: [...meta.transfer] }
+              meta.transfer.length = 0
+            }
+
+            port.postMessage({ id, res: res[0], all: res }, options)
           })
           .catch((err) => {
             port.postMessage({ id, err: serializeError(err) })
@@ -250,12 +258,12 @@ export class Sender extends Emitter {
     if (this.ready.isPending) {
       if (this.ignoreUnresponsive) return this
       this.ready
-        .then(() => this.port.postMessage(msg, options?.transfer))
+        .then(() => this.port.postMessage(msg, options))
         .catch((err) => {
           if (event === HANDSHAKE) return
           throw new TimeoutError(err.message)
         })
-    } else this.port.postMessage(msg, options?.transfer)
+    } else this.port.postMessage(msg, options)
     return this
   }
 
@@ -271,12 +279,12 @@ export class Sender extends Emitter {
     const id = uid()
     const reply = defer({ timeout: options?.timeout })
     this.#queue.set(id, reply)
-    this.port.postMessage({ id, type: "send", event, data }, options?.transfer)
+    this.port.postMessage({ type: "send", id, event, data }, options)
     return reply
   }
 
   async sendOnce(event, data, options) {
-    const res = await this.send(event, data, options?.transfer)
+    const res = await this.send(event, data, options)
     this.destroy()
     return res
   }
