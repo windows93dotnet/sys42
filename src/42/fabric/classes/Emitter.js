@@ -24,13 +24,13 @@ export default class Emitter {
     if (typeof options === "function") {
       fn = options
       options = undefined
+    } else if (typeof fn !== "function") {
+      throw new TypeError("`fn` argument is not an function")
     }
 
     for (const event of events.split(SPLIT_REGEX)) {
-      if (typeof fn === "function") {
-        this[_EVENTS][event] ??= []
-        this[_EVENTS][event].push(fn)
-      }
+      this[_EVENTS][event] ??= []
+      this[_EVENTS][event].push(fn)
     }
 
     options?.signal?.addEventListener("abort", () => this.off(events, fn))
@@ -50,7 +50,7 @@ export default class Emitter {
         }
       } else if (fn && this[_EVENTS][event]) {
         this[_EVENTS][event] = this[_EVENTS][event].filter(
-          (cb) => cb !== fn && cb.fn !== fn,
+          (cb) => cb !== fn && cb.originalFn !== fn,
         )
       } else delete this[_EVENTS][event]
     }
@@ -75,7 +75,7 @@ export default class Emitter {
       return fn(...args)
     }
 
-    on.fn = fn
+    on.originalFn = fn
     this.on(event, on)
     return this
   }

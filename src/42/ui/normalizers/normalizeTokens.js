@@ -17,7 +17,7 @@ function makeActionAsyncFn(fn, thisArg, el) {
     }
   }
 
-  action.original = fn
+  action.originalFn = fn
   return action
 }
 
@@ -31,7 +31,7 @@ function makeActionFn(fn, thisArg, el) {
     }
   }
 
-  action.original = fn
+  action.originalFn = fn
   return action
 }
 

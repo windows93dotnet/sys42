@@ -26,7 +26,7 @@ const listenUncaughts = () =>
             testLine = Number(testLine)
             if (stackFrame.line >= testLine) {
               let { fn } = testfile[testLine]
-              fn = fn.original || fn
+              fn = fn.originalFn ?? fn
               const testFnLines = fn.toString().split("\n").length
               if (stackFrame.line < testLine + testFnLines) return true
               return false
