@@ -97,12 +97,19 @@ export class Dialog extends Component {
   }
 
   async close(ok = false) {
-    if (!this.stage) return
     const event = dispatch(this, "ui:dialog.before-close", { cancelable: true })
     if (event.defaultPrevented) return
-    const data = omit(this.stage.reactive.data, ["$ui", "$computed"])
-    if (ok) data.ok = true
-    this.emit("close", data)
+
+    const data = this.stage
+      ? omit(this.stage.reactive.data, ["$ui", "$computed"])
+      : {}
+
+    this.emit("close", {
+      ok,
+      data,
+      opener: this.opener,
+    })
+
     await this.destroy({ remove: false })
     dispatch(this, "ui:dialog.close")
     await this.remove()
@@ -110,7 +117,7 @@ export class Dialog extends Component {
   }
 
   async ok() {
-    await untilNextTask()
+    await untilNextTask() // TODO: check if needed
     return this.close(true)
   }
 
@@ -227,12 +234,8 @@ export const dialog = rpc(
     stage.steps += ",dialog°" + n
 
     const el = new Dialog(plan, stage)
-    const { opener } = el
-
-    await el.ready
-    document.documentElement.append(el)
-
-    return el.once("close").then((res) => ({ res, opener }))
+    el.ready.then(() => document.documentElement.append(el))
+    return el
   },
   {
     module: import.meta.url,
@@ -253,10 +256,12 @@ export const dialog = rpc(
       return [forkPlan(plan, stage), { trusted: true } /* ATTACK */]
     },
 
-    unmarshalling({ res, opener }) {
-      document.querySelector(`#${opener}`)?.focus()
-      dispatch(window, "ui:dialog.after-close", { detail: { opener } })
-      return res
+    unmarshalling(controller) {
+      controller.once("close").then(async ({ opener }) => {
+        document.querySelector(`#${opener}`)?.focus()
+        dispatch(window, "ui:dialog.after-close", { detail: { opener } })
+      })
+      return controller
     },
   },
 )

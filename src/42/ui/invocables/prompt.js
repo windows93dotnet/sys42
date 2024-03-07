@@ -50,7 +50,7 @@ export async function prompt(message = "", options) {
 
   const res = await demand(config)
 
-  return res.ok ? String(res.value) : undefined
+  return res.ok ? String(res.data.value) : undefined
 }
 
 export default prompt

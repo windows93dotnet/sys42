@@ -48,16 +48,18 @@ export async function filePickerOpen(path, options) {
 
   if (!res.ok) return { ok: false }
 
+  const { data } = res
+
   const out = {
     ok: true,
-    dir: res.path,
-    selection: res.selection,
+    dir: data.path,
+    selection: data.selection,
   }
 
   if (options?.files !== false) {
     const fs = await import("../../core/fs.js").then((m) => m.default)
     out.files = await Promise.all(
-      res.selection.map((path) =>
+      data.selection.map((path) =>
         path.endsWith("/") ? undefined : fs.open(path),
       ),
     )

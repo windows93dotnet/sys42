@@ -39,7 +39,7 @@ export async function demand(options) {
     }
   }
 
-  return dialog(
+  const controller = await dialog(
     configure(
       {
         label: config.label,
@@ -70,6 +70,8 @@ export async function demand(options) {
       config.dialog,
     ),
   )
+
+  return controller.once("close")
 }
 
 export default demand

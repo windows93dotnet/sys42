@@ -76,18 +76,19 @@ export async function filePickerSave(path, options) {
     ),
   )
 
-  if (!res.ok || !res.name) return { ok: false }
+  const { data } = res
+  if (!res.ok || !data.name) return { ok: false }
 
   await untilNextTask()
 
-  if (!res.path.endsWith("/")) res.path += "/"
-  path = res.path + res.name
+  if (!data.path.endsWith("/")) data.path += "/"
+  path = data.path + data.name
 
   const out = {
     ok: true,
     path,
-    // dir: res.path,
-    // base: res.name,
+    // dir: data.path,
+    // base: data.name,
   }
 
   if (options && "data" in options) {

@@ -254,7 +254,7 @@ export async function explorer(path = "/", options) {
 
   path = parsed.dir === "/" ? parsed.dir : parsed.dir + "/"
 
-  return dialog(
+  const controller = await dialog(
     configure(
       {
         label: options?.label ?? "{{path}}",
@@ -278,6 +278,8 @@ export async function explorer(path = "/", options) {
       options?.dialog,
     ),
   )
+
+  return controller.once("close")
 }
 
 export default explorer

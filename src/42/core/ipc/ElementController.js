@@ -24,7 +24,12 @@ const ELEMENT_METHODS = new Set()
   let div = document.createElement("div")
 
   for (const key in div) {
-    if (typeof div[key] === "function") ELEMENT_METHODS.add(key)
+    if (
+      !key.startsWith("onmozfullscreen") && // prevent firefox warning
+      typeof div[key] === "function"
+    ) {
+      ELEMENT_METHODS.add(key)
+    }
   }
 
   div = undefined

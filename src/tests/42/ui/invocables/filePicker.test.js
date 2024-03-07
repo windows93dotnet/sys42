@@ -70,7 +70,7 @@ const filesPromise = Promise.all([
   fs.open("/index.html"),
 ])
 
-test.ui(async (t, { triggerOpener }) => {
+test.ui("open/save", async (t, { triggerOpener }) => {
   t.timeout(6000)
   await t.glovebox({ href, iframe }, makeContent)
   if (manual) return t.pass()
