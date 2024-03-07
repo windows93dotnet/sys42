@@ -1,43 +1,15 @@
 import ipc from "../ipc.js"
 import hash from "../../fabric/type/any/hash.js"
-import traverse from "../../fabric/type/object/traverse.js"
 import SecurityError from "../../fabric/errors/SecurityError.js"
 import ElementController from "./ElementController.js"
+import Canceller from "../../fabric/classes/Canceller.js"
+import { serialize, deserialize } from "./transmit.js"
 
 const { inTop, inIframe } = ipc
 
 const CALL = "42_RPC_CALL"
 const DESTROY = "42_RPC_DESTROY"
 const callers = new Map()
-
-function serialize(val) {
-  const forgets = []
-
-  traverse(val, (key, fn, obj) => {
-    if (typeof fn === "function") {
-      const id = "42_RPC_FUNCTION_" + hash(fn.originalFn ?? fn)
-      forgets.push(ipc.on(id, { off: true }, (args) => fn(...args)))
-      obj[key] = id
-    }
-  })
-
-  const destroy = () => {
-    for (const forget of forgets) forget()
-  }
-
-  return { val, destroy }
-}
-
-function deserialize(val, { send }) {
-  return traverse(val, (key, id, obj) => {
-    if (typeof id === "string" && id.startsWith("42_RPC_FUNCTION_")) {
-      obj[key] = async (...args) => {
-        const [res] = await send(id, args)
-        return res
-      }
-    }
-  })
-}
 
 if (inTop) {
   ipc
@@ -56,7 +28,9 @@ if (inTop) {
       }
 
       if (callers.has(id)) {
-        const res = await callers.get(id)(...deserialize(args, meta), meta)
+        const { caller, signal } = callers.get(id)
+        const options = { send: meta.send, signal }
+        const res = await caller(...deserialize(args, options), meta)
         if (res instanceof ElementController) {
           return {
             "42_ELEMENT_CONTROLLER": res[ElementController.REMOTE_EXPORT],
@@ -74,6 +48,7 @@ if (inTop) {
       )
     })
     .on(DESTROY, (id) => {
+      callers.get(id)?.cancel()
       callers.delete(id)
     })
 }
@@ -81,7 +56,7 @@ if (inTop) {
 async function remoteCall(data) {
   const res = await ipc.send(CALL, data)
 
-  if (res && "42_ELEMENT_CONTROLLER" in res) {
+  if (res && typeof res === "object" && "42_ELEMENT_CONTROLLER" in res) {
     return new ElementController(res["42_ELEMENT_CONTROLLER"])
   }
 
@@ -96,36 +71,45 @@ export default function rpc(fn, options = {}) {
     : undefined
 
   const id = hash([fn, options])
+  const { cancel, signal } = new Canceller()
 
   if (!inTop) {
     const info = {
       name: fn.name ? `"${fn.name}"` : "corresponding",
       module: options?.module,
     }
+
     const stub =
       unmarshalling && marshalling
         ? async (...args) => {
             const packed = await marshalling(...args)
             if (packed === false) return
-            const { val, destroy } = serialize(packed)
-            const res = await unmarshalling(await remoteCall([id, val, info]))
-            destroy()
-            return res
+            const val = serialize(packed, { signal })
+            return unmarshalling(await remoteCall([id, val, info]))
           }
         : unmarshalling
-          ? async (...args) => unmarshalling(await remoteCall([id, args, info]))
+          ? async (...args) => {
+              const val = serialize(args, { signal })
+              return unmarshalling(await remoteCall([id, val, info]))
+            }
           : marshalling
             ? async (...args) => {
                 const packed = await marshalling(...args)
                 if (packed === false) return
-                const { val, destroy } = serialize(packed)
-                const res = await remoteCall([id, val, info])
-                destroy()
-                return res
+                const val = serialize(packed, { signal })
+                return remoteCall([id, val, info])
               }
-            : async (...args) => remoteCall([id, args, info])
+            : async (...args) => {
+                const val = serialize(args, { signal })
+                return remoteCall([id, val, info])
+              }
 
-    stub.destroy = async () => ipc.send(DESTROY, id)
+    stub.destroy = async () => {
+      cancel()
+      return ipc.send(DESTROY, id)
+    }
+
+    signal.addEventListener("abort", stub.destroy)
 
     return stub
   }
@@ -136,7 +120,7 @@ export default function rpc(fn, options = {}) {
     return res
   }
 
-  callers.set(id, caller)
+  callers.set(id, { caller, signal, cancel })
 
   const stub =
     unmarshalling && marshalling
@@ -157,7 +141,12 @@ export default function rpc(fn, options = {}) {
             }
           : caller
 
-  stub.destroy = async () => callers.delete(id)
+  stub.destroy = async () => {
+    cancel()
+    callers.delete(id)
+  }
+
+  signal.addEventListener("abort", stub.destroy)
 
   return stub
 }

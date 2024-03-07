@@ -24,6 +24,8 @@ const SEND = "42_IPC_SEND"
 const CLOSE = "42_IPC_CLOSE"
 const HANDSHAKE = "42_IPC_HANDSHAKE"
 
+const pickFirst = (res) => res[0]
+
 function findIframe(source) {
   for (const el of document.querySelectorAll("iframe")) {
     if (el.contentWindow === source) return el
@@ -80,7 +82,7 @@ async function messageHandler(e) {
 
     if (worker) source = worker
 
-    let rsvp
+    let pendingReplies
 
     const meta = {
       type,
@@ -96,12 +98,12 @@ async function messageHandler(e) {
         }
       },
       get send() {
-        rsvp ??= {}
+        pendingReplies ??= {}
         return async (events, ...args) => {
           const id = uid()
           port.postMessage({ type: SEND, id, events, args })
-          rsvp[id] = defer()
-          return rsvp[id]
+          pendingReplies[id] = defer()
+          return pendingReplies[id]
         }
       },
     }
@@ -119,19 +121,19 @@ async function messageHandler(e) {
         if (sources.has(source)) {
           const dest = sources.get(source)
           if (event in dest[Emitter.EVENTS]) {
-            undones.push(dest.send(event, data, meta))
+            undones.push(dest.send(event, data, meta).then(pickFirst))
           }
         }
 
         if (origins.has(origin)) {
           const dest = origins.get(origin)
           if (event in dest[Emitter.EVENTS]) {
-            undones.push(dest.send(event, data, meta))
+            undones.push(dest.send(event, data, meta).then(pickFirst))
           }
         }
 
         if (event in ipc[Emitter.EVENTS]) {
-          undones.push(ipc.self.send(event, data, meta))
+          undones.push(ipc.self.send(event, data, meta).then(pickFirst))
         }
 
         if (undones.length === 0) {
@@ -142,22 +144,21 @@ async function messageHandler(e) {
 
         Promise.all(undones)
           .then((res) => {
-            res = res.flat()
-
             let options
+
             if (meta.transfer.length > 0) {
               options = { transfer: [...meta.transfer] }
               meta.transfer.length = 0
             }
 
-            port.postMessage({ id, res: res[0], all: res }, options)
+            port.postMessage({ id, res: res[0] }, options)
           })
           .catch((err) => {
             port.postMessage({ id, err: serializeError(err) })
           })
       } else if (type === "reply") {
-        rsvp[id].resolve(data)
-        delete rsvp[id]
+        pendingReplies[id]?.resolve(data)
+        delete pendingReplies[id]
       }
     }
   }
@@ -243,7 +244,7 @@ export class Sender extends Emitter {
 
       if (data.type === SEND) {
         return void super.send(data.events, ...data.args).then((res) => {
-          this.port.postMessage({ id: data.id, type: "reply", data: res })
+          this.port.postMessage({ id: data.id, type: "reply", data: res[0] })
         })
       }
 

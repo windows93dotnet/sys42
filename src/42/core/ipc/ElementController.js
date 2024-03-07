@@ -6,6 +6,7 @@ import ALLOWED_HTML_ATTRIBUTES from "../../fabric/constants/ALLOWED_HTML_ATTRIBU
 import SecurityError from "../../fabric/errors/SecurityError.js"
 import Canceller from "../../fabric/classes/Canceller.js"
 import untilElementRemove from "../../fabric/dom/untilElementRemove.js"
+import { serialize, deserialize } from "./transmit.js"
 
 const _isComponent = Symbol.for("Component.isComponent")
 const _REMOTE_EXPORT = Symbol.for("ElementController.REMOTE_EXPORT")
@@ -38,6 +39,76 @@ class ExtendableProxy {
 
 export let ElementController
 
+function makeRemote(el) {
+  const isComponent = el[_isComponent]
+
+  const ALLOWED_PROPS = isComponent
+    ? Object.keys(el.constructor.plan.props)
+    : []
+
+  const methods = new Set(isComponent ? ["destroy"] : [])
+
+  if (el[_EVENTS]) {
+    for (const item of EMITTER_METHODS) methods.add(item)
+  }
+
+  const ignore = IGNORE_METHODS[isComponent ? "component" : "element"]
+
+  const descriptors = Object.getOwnPropertyDescriptors(el.constructor.prototype)
+  for (const key in descriptors) {
+    if (
+      Object.hasOwn(descriptors, key) &&
+      typeof key === "string" &&
+      typeof descriptors[key].value === "function" &&
+      !ignore.has(key)
+    ) {
+      methods.add(key)
+    }
+  }
+
+  const { cancel, signal } = new Canceller()
+  untilElementRemove(el).then(() => {
+    requestIdleCallback(() => cancel())
+  })
+
+  const ELEMENT_CONTROLLER_ID = `42_ELEMENT_CONTROLLER_${el.id}`
+
+  ipc.on(ELEMENT_CONTROLLER_ID, { signal }, async ({ get, set, call }) => {
+    if (get) {
+      return Reflect.get(el, get)
+    }
+
+    if (set) {
+      let [prop, value] = set
+      value = deserialize(value, { signal })
+
+      if (
+        !(
+          ALLOWED_PROPS.includes(prop) ||
+          ALLOWED_HTML_ATTRIBUTES.includes(prop) ||
+          ALLOWED_HTML_ATTRIBUTES.includes(toKebabCase(prop))
+        )
+      ) {
+        throw new SecurityError(`Unallowed attribute: ${prop}`)
+      }
+
+      Reflect.set(el, prop, value)
+    }
+
+    if (call) {
+      const args = deserialize(call.args, { signal })
+      const res = await el[call.method](...args)
+      if (res === el) return ELEMENT_CONTROLLER_ID
+      return res
+    }
+  })
+
+  return {
+    id: el.id,
+    methods,
+  }
+}
+
 if (inTop) {
   ElementController = class extends ExtendableProxy {
     static REMOTE_EXPORT = _REMOTE_EXPORT
@@ -53,77 +124,13 @@ if (inTop) {
 
           if (prop === "el") return el
 
-          if (prop === _REMOTE_EXPORT) {
-            const isComponent = el[_isComponent]
-
-            const ALLOWED_PROPS = isComponent
-              ? Object.keys(el.constructor.plan.props)
-              : []
-
-            const methods = new Set(isComponent ? ["destroy"] : [])
-
-            if (el[_EVENTS]) {
-              for (const item of EMITTER_METHODS) methods.add(item)
-            }
-
-            const ignore = IGNORE_METHODS[isComponent ? "component" : "element"]
-
-            const descriptors = Object.getOwnPropertyDescriptors(
-              el.constructor.prototype,
-            )
-            for (const key in descriptors) {
-              if (
-                Object.hasOwn(descriptors, key) &&
-                typeof key === "string" &&
-                typeof descriptors[key].value === "function" &&
-                !ignore.has(key)
-              ) {
-                methods.add(key)
-              }
-            }
-
-            const { cancel, signal } = new Canceller()
-            untilElementRemove(el).then(cancel)
-
-            ipc.on(
-              `42_ELEMENT_CONTROLLER_${el.id}`,
-              { signal },
-              ({ get, set, call }) => {
-                if (get) {
-                  return Reflect.get(el, get)
-                }
-
-                if (set) {
-                  const [prop, value] = set
-                  if (
-                    !(
-                      ALLOWED_PROPS.includes(prop) ||
-                      ALLOWED_HTML_ATTRIBUTES.includes(prop) ||
-                      ALLOWED_HTML_ATTRIBUTES.includes(toKebabCase(prop))
-                    )
-                  ) {
-                    throw new SecurityError(`Unallowed attribute: ${prop}`)
-                  }
-
-                  Reflect.set(el, prop, value)
-                }
-
-                if (call) {
-                  return el[call.method](...call.args)
-                }
-              },
-            )
-
-            return {
-              id: el.id,
-              methods,
-            }
-          }
+          if (prop === _REMOTE_EXPORT) return makeRemote(el)
 
           // Make value reading async to be consistant
           // with ElementController in sandboxed iframes
           return Promise.resolve(Reflect.get(el, prop))
         },
+
         set(target, prop, value) {
           return Reflect.set(el, prop, value)
         },
@@ -133,7 +140,7 @@ if (inTop) {
 } else {
   ElementController = class extends ExtendableProxy {
     constructor({ id, methods }) {
-      id = `42_ELEMENT_CONTROLLER_${id}`
+      const ELEMENT_CONTROLLER_ID = `42_ELEMENT_CONTROLLER_${id}`
 
       super({
         get(target, prop) {
@@ -144,15 +151,26 @@ if (inTop) {
           }
 
           if (ELEMENT_METHODS.has(prop) || methods.has(prop)) {
-            return (...args) => ipc.send(id, { call: { method: prop, args } })
+            return async (...args) => {
+              const res = await ipc.send(ELEMENT_CONTROLLER_ID, {
+                call: {
+                  method: prop,
+                  args: serialize(args),
+                },
+              })
+              if (res === ELEMENT_CONTROLLER_ID) return target
+              return res
+            }
           }
 
+          // when called with `await`
           if (prop === "then") return
 
-          return ipc.send(id, { get: prop })
+          return ipc.send(ELEMENT_CONTROLLER_ID, { get: prop })
         },
+
         set(target, prop, value) {
-          ipc.emit(id, { set: [prop, value] })
+          ipc.emit(ELEMENT_CONTROLLER_ID, { set: [prop, value] })
           return true
         },
       })
