@@ -42,18 +42,15 @@ function renderStyles(el, stage, styles) {
   }
 }
 
-export default function renderAttributes(el, stage, attrs, prefix = "") {
-  if ("height" in attrs && "height" in el === false) {
-    attrs.style ??= {}
-    attrs.style.height = attrs.height + "px"
-    delete attrs.height
-  }
+function applySize(attrs, key) {
+  attrs.style ??= {}
+  attrs.style[key] = attrs[key]
+  delete attrs[key]
+}
 
-  if ("width" in attrs && "width" in el === false) {
-    attrs.style ??= {}
-    attrs.style.width = attrs.width + "px"
-    delete attrs.width
-  }
+export function renderAttributes(el, stage, attrs, prefix = "") {
+  if ("height" in attrs && "height" in el === false) applySize(attrs, "height")
+  if ("width" in attrs && "width" in el === false) applySize(attrs, "width")
 
   for (let [key, val] of Object.entries(attrs)) {
     if (key === "autofocus") key = "data-autofocus" // prevent use of restricted autofocus attribute
@@ -79,3 +76,5 @@ export default function renderAttributes(el, stage, attrs, prefix = "") {
     }
   }
 }
+
+export default renderAttributes

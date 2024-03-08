@@ -710,6 +710,52 @@ test("class", "object", async (t) => {
   t.is(app.el.innerHTML, '<em class="b a"></em>')
 })
 
+/* size
+======== */
+
+test("css lengths using numbers", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest(), {
+      width: "{{w}}",
+      height: 200,
+      style: {
+        top: 20,
+        margin: 5,
+        marginBottom: "{{m}}",
+        paddingTop: 10,
+        paddingBottom: "1rem",
+      },
+      state: {
+        w: 100,
+        m: "2rem",
+      },
+    }),
+  )
+
+  const div = app.el.firstChild
+
+  t.is(div.style.top, "20px")
+  t.is(div.style.marginTop, "5px")
+  t.is(div.style.margin, "5px 5px 2rem")
+  t.is(div.style.paddingTop, "10px")
+  t.is(div.style.paddingBottom, "1rem")
+
+  t.is(div.style.width, "100px")
+  t.is(div.style.height, "200px")
+
+  app.state.w = 300
+  await app
+  t.is(div.style.width, "300px")
+
+  app.state.w = Number.NaN
+  await app
+  t.is(div.style.width, "300px")
+
+  app.state.w = "100%"
+  await app
+  t.is(div.style.width, "100%")
+})
+
 /* abbreviations
 ================ */
 
@@ -2281,7 +2327,7 @@ test("watch", async (t) => {
   t.is(app.el.textContent, "2 - 12")
 })
 
-test("watch in on keyword", async (t) => {
+test("watch using on keyword", async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest({ connect: true }), {
       content: {
