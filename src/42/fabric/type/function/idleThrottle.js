@@ -2,7 +2,7 @@ if ("requestIdleCallback" in globalThis === false) {
   await import("../../../core/env/polyfills/globalThis.requestIdleCallback.js")
 }
 
-export default function idleThrottle(fn, timeout) {
+export function idleThrottle(fn, timeout) {
   let id
   let pending = false
 
@@ -23,5 +23,8 @@ export default function idleThrottle(fn, timeout) {
     pending = false
   }
 
+  throttled.originalFn = fn
   return throttled
 }
+
+export default idleThrottle

@@ -2,7 +2,7 @@
 //! [1] https://github.com/component/debounce/blob/master/CONTRIBUTORS
 // @src https://github.com/component/debounce
 
-export default function debounce(fn, ms = 100, immediate = false) {
+export function debounce(fn, ms = 100, immediate = false) {
   if (typeof ms === "object") {
     const options = ms
     ms = options.wait ?? 100
@@ -60,5 +60,8 @@ export default function debounce(fn, ms = 100, immediate = false) {
     return result
   }
 
+  debounced.originalFn = fn
   return debounced
 }
+
+export default debounce

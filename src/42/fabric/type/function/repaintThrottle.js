@@ -1,7 +1,7 @@
 // @src https://developer.mozilla.org/en-US/docs/Web/API/Visual_Viewport_API#example
 // @read https://stackoverflow.com/a/44700302
 
-export default function repaintThrottle(fn) {
+export function repaintThrottle(fn) {
   let id
   let pending = false
 
@@ -19,5 +19,8 @@ export default function repaintThrottle(fn) {
     pending = false
   }
 
+  throttled.originalFn = fn
   return throttled
 }
+
+export default repaintThrottle

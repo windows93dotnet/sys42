@@ -16,6 +16,8 @@ const DEFAULTS = {
 class Memoizer extends Callable {
   constructor(fn, options = {}) {
     super((...args) => {
+      this.originalFn = fn
+
       let key = this.config.mark(...args)
       if (key.length > 512) key = sdbm(key)
       if (this.cache.has(key) === false) {
@@ -37,6 +39,8 @@ class Memoizer extends Callable {
   }
 }
 
-export default function memoize(fn, options) {
+export function memoize(fn, options) {
   return new Memoizer(fn, options)
 }
+
+export default memoize

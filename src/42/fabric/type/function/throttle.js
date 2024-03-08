@@ -1,7 +1,7 @@
 // MIT License.
 // @src https://github.com/component/throttle
 
-export default function throttle(fn, wait = 60) {
+export function throttle(fn, wait = 60) {
   let args
   let result
   let id
@@ -31,5 +31,8 @@ export default function throttle(fn, wait = 60) {
     id = undefined
   }
 
+  throttled.originalFn = fn
   return throttled
 }
+
+export default throttle
