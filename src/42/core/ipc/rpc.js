@@ -73,28 +73,33 @@ export default function rpc(fn, options = {}) {
   const id = hash([fn, options])
   const { cancel, signal } = new Canceller()
 
-  if (!inTop) {
-    const info = {
-      name: fn.name ? `"${fn.name}"` : "corresponding",
-      module: options?.module,
-    }
+  const info = {
+    id,
+    name: fn.name ? `"${fn.name}"` : "corresponding",
+    module: options?.module,
+  }
 
+  if (!inTop) {
     const stub =
       unmarshalling && marshalling
         ? async (...args) => {
-            const packed = await marshalling(...args)
+            const packed = await marshalling(...args, info)
             if (packed === false) return
             const val = serialize(packed, { signal })
-            return unmarshalling(await remoteCall([id, val, info]))
+            return unmarshalling(await remoteCall([id, val, info]), args, info)
           }
         : unmarshalling
           ? async (...args) => {
               const val = serialize(args, { signal })
-              return unmarshalling(await remoteCall([id, val, info]))
+              return unmarshalling(
+                await remoteCall([id, val, info]),
+                args,
+                info,
+              )
             }
           : marshalling
             ? async (...args) => {
-                const packed = await marshalling(...args)
+                const packed = await marshalling(...args, info)
                 if (packed === false) return
                 const val = serialize(packed, { signal })
                 return remoteCall([id, val, info])
@@ -125,17 +130,17 @@ export default function rpc(fn, options = {}) {
   const stub =
     unmarshalling && marshalling
       ? async (...args) => {
-          const res = await marshalling(...args)
+          const res = await marshalling(...args, info)
           if (res === false) return
           return Array.isArray(res)
-            ? unmarshalling(await caller(...res))
-            : unmarshalling(await caller(res))
+            ? unmarshalling(await caller(...res), args, info)
+            : unmarshalling(await caller(res), args, info)
         }
       : unmarshalling
-        ? async (...args) => unmarshalling(await caller(...args))
+        ? async (...args) => unmarshalling(await caller(...args), args, info)
         : marshalling
           ? async (...args) => {
-              const res = await marshalling(...args)
+              const res = await marshalling(...args, info)
               if (res === false) return
               return Array.isArray(res) ? caller(...res) : caller(res)
             }

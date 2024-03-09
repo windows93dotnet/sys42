@@ -280,7 +280,10 @@ export default async function renderProps(el, props, plan) {
   await stage.waitlistPending.done()
 
   el.ready.then(() => {
-    for (const key of Reflect.ownKeys(updates)) updates[key](true)
+    for (const key of Reflect.ownKeys(updates)) {
+      const fn = updates[key].originalFn || updates[key]
+      fn(true)
+    }
   })
 
   return observed

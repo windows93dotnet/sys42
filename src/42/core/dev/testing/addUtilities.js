@@ -180,7 +180,11 @@ export default function addUtilities(item, options) {
     )
     const suiteTitle = item.suite.title
     idRegistry[suiteTitle] ??= 0
-    el.id ||= suiteTitle + "/" + idRegistry[suiteTitle]++
+
+    el.id ||=
+      "dest__" +
+      (suiteTitle.replaceAll("/", "-") + "--" + idRegistry[suiteTitle]++)
+
     el.style = `
       position: absolute;
       overflow: auto;

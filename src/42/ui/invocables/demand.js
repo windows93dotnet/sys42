@@ -39,9 +39,10 @@ export async function demand(options) {
     }
   }
 
-  const controller = await dialog(
+  return dialog(
     configure(
       {
+        returnsData: true,
         label: config.label,
         class: config.class,
         role: config.role,
@@ -70,8 +71,6 @@ export async function demand(options) {
       config.dialog,
     ),
   )
-
-  return controller.once("close")
 }
 
 export default demand

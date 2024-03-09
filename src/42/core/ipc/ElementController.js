@@ -5,8 +5,9 @@ import toKebabCase from "../../fabric/type/string/case/toKebabCase.js"
 import ALLOWED_HTML_ATTRIBUTES from "../../fabric/constants/ALLOWED_HTML_ATTRIBUTES.js"
 import SecurityError from "../../fabric/errors/SecurityError.js"
 import Canceller from "../../fabric/classes/Canceller.js"
-import untilElementRemove from "../../fabric/dom/untilElementRemove.js"
+import untilElementDisconnect from "../../fabric/dom/untilElementDisconnect.js"
 import { serialize, deserialize } from "./transmit.js"
+import untilElementConnect from "../../fabric/dom/untilElementConnect.js"
 
 const _isComponent = Symbol.for("Component.isComponent")
 const _REMOTE_EXPORT = Symbol.for("ElementController.REMOTE_EXPORT")
@@ -44,6 +45,10 @@ class ExtendableProxy {
 
 export let ElementController
 
+/**
+ * @param {HTMLElement} el
+ * @returns {object}
+ */
 function makeRemote(el) {
   const isComponent = el[_isComponent]
 
@@ -72,9 +77,16 @@ function makeRemote(el) {
   }
 
   const { cancel, signal } = new Canceller()
-  untilElementRemove(el).then(() => {
-    requestIdleCallback(() => cancel())
-  })
+
+  const onDisconnect = () => cancel("Element disconnected")
+
+  if (el.isConnected) {
+    untilElementDisconnect(el).then(onDisconnect)
+  } else {
+    untilElementConnect(el)
+      .then(() => untilElementDisconnect(el))
+      .then(onDisconnect)
+  }
 
   const ELEMENT_CONTROLLER_ID = `42_ELEMENT_CONTROLLER_${el.id}`
 
@@ -128,6 +140,7 @@ if (inTop) {
           }
 
           if (prop === "el") return el
+          if (prop === "id") return el.id
 
           if (prop === _REMOTE_EXPORT) return makeRemote(el)
 
@@ -154,6 +167,8 @@ if (inTop) {
               "ElementController.el is not accessible from an iframe",
             )
           }
+
+          if (prop === "id") return id
 
           if (ELEMENT_METHODS.has(prop) || methods.has(prop)) {
             return async (...args) => {

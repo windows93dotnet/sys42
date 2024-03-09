@@ -10,7 +10,7 @@ function makeEmitter(parent) {
 
   const observer = new MutationObserver((records) => {
     for (const record of records) {
-      if (record.removedNodes.length > 0) emitter.emit("removed")
+      if (record.removedNodes.length > 0) emitter.emit("disconnect")
     }
   })
 
@@ -19,7 +19,13 @@ function makeEmitter(parent) {
   return emitter
 }
 
-export async function untilElementRemove(el) {
+/**
+ * Returns a Promise that resolve when the element is disconnected from the DOM
+ *
+ * @param {string | HTMLElement} el
+ * @returns {Promise<HTMLElement>}
+ */
+export async function untilElementDisconnect(el) {
   el = ensureElement(el)
   if (!el.isConnected) return el
 
@@ -30,11 +36,11 @@ export async function untilElementRemove(el) {
   }
 
   return new Promise((resolve) => {
-    const off = emitter.on("removed", { off: true }, () => {
+    const off = emitter.on("disconnect", { off: true }, () => {
       if (!el.isConnected) {
         resolve(el)
         off()
-        if (emitter[_EVENTS].removed.length === 0) {
+        if (emitter[_EVENTS].disconnect.length === 0) {
           emitter.observer.disconnect()
           emitters.delete(el.parentElement)
         }
@@ -43,4 +49,4 @@ export async function untilElementRemove(el) {
   })
 }
 
-export default untilElementRemove
+export default untilElementDisconnect

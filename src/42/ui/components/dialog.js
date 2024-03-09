@@ -13,10 +13,13 @@ import dispatch from "../../fabric/event/dispatch.js"
 import maxZIndex from "../../fabric/dom/maxZIndex.js"
 import { autofocus } from "../../fabric/dom/focus.js"
 
-const _axis = Symbol("axis")
+const { isFinite } = Number
+
+const _axis = Symbol("Dialog.axis")
+const _width = Symbol("Dialog.width")
+const _height = Symbol("Dialog.height")
 
 const rootSelector = ":is(:root, ui-workspace[active])"
-
 const zIndexSelector = `${rootSelector} > :is(ui-dialog, ui-menu)`
 
 function getHeaderOffset(el) {
@@ -62,6 +65,14 @@ export class Dialog extends Component {
         type: "number",
         update: _axis,
       },
+      width: {
+        type: "number",
+        update: _width,
+      },
+      height: {
+        type: "number",
+        update: _height,
+      },
       // label: {
       //   type: "any",
       // },
@@ -89,7 +100,17 @@ export class Dialog extends Component {
   }
 
   [_axis]() {
-    this.style.translate = `${this.x}px ${this.y}px`
+    const x = isFinite(this.x) ? `${this.x}px` : this.x
+    const y = isFinite(this.y) ? `${this.y}px` : this.y
+    this.style.translate = `${x} ${y}`
+  }
+
+  [_width]() {
+    this.style.width = isFinite(this.width) ? `${this.width}px` : this.width
+  }
+
+  [_height]() {
+    this.style.height = isFinite(this.height) ? `${this.height}px` : this.height
   }
 
   async close(ok = false) {
@@ -182,37 +203,45 @@ export class Dialog extends Component {
   }
 
   setup() {
-    if (this.x === undefined) {
-      let { x, y } = this.getBoundingClientRect()
+    this[_width]()
+    this[_height]()
 
-      x = Math.round(x)
-      y = Math.round(y)
-
-      let offset
-      for (const item of document.querySelectorAll(
-        `${rootSelector} > ui-dialog:not(#${this.id})`,
-      )) {
-        if (item.x !== undefined) {
-          if (x === item.x && y === item.y) {
-            offset ??=
-              this.querySelector(":scope > .ui-dialog__header").clientHeight +
-              getHeaderOffset(this)
-            x += offset
-            y += offset
-          }
-        }
-      }
-
-      this.x = x
-      this.y = y
-      this.style.top = 0
-      this.style.left = 0
+    if (this.x === undefined || this.y === undefined) {
+      const positionAuto = this.x === undefined && this.y === undefined
+      const { x, y } = this.getBoundingClientRect()
+      this.x ??= Math.round(x)
+      this.y ??= Math.round(y)
+      if (positionAuto) this.fixOverlap()
     }
+
+    this.style.top = 0
+    this.style.left = 0
 
     this.activate()
 
     this.emit("open", this)
     dispatch(this, "ui:dialog.open")
+  }
+
+  fixOverlap() {
+    let offset
+    let { x, y } = this
+    for (const item of document.querySelectorAll(
+      `${rootSelector} > ui-dialog:not(#${this.id})`,
+    )) {
+      if (item.x !== undefined) {
+        if (x === item.x && y === item.y) {
+          offset ??=
+            this.querySelector(":scope > .ui-dialog__header").clientHeight +
+            getHeaderOffset(this)
+          x += offset
+          y += offset
+        }
+      }
+    }
+
+    if (this.x !== x) this.x = x
+    if (this.y !== y) this.y = y
   }
 }
 
@@ -220,8 +249,13 @@ Component.define(Dialog)
 
 const tracker = new Map()
 
+function focusBack(opener) {
+  document.querySelector(`#${opener}`)?.focus()
+  dispatch(window, "ui:dialog.after-close", { detail: { opener } })
+}
+
 export const dialog = rpc(
-  async function dialog(plan, stage) {
+  function dialog(plan, stage) {
     const { steps } = stage
     const n = tracker.has(steps) ? tracker.get(steps) + 1 : 0
     tracker.set(steps, n)
@@ -231,7 +265,8 @@ export const dialog = rpc(
 
     const el = new Dialog(plan, stage)
     el.ready.then(() => document.documentElement.append(el))
-    return el
+
+    return plan.returnsData ? el.once("close") : el
   },
   {
     module: import.meta.url,
@@ -252,11 +287,13 @@ export const dialog = rpc(
       return [forkPlan(plan, stage), {}]
     },
 
-    unmarshalling(controller) {
-      controller.once("close").then(async ({ opener }) => {
-        document.querySelector(`#${opener}`)?.focus()
-        dispatch(window, "ui:dialog.after-close", { detail: { opener } })
-      })
+    unmarshalling(controller, [plan]) {
+      if (plan?.returnsData) {
+        focusBack(controller.opener)
+        return controller
+      }
+
+      controller.once("close").then(async ({ opener }) => focusBack(opener))
       return controller
     },
   },

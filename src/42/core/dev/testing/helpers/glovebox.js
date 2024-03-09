@@ -1,6 +1,7 @@
 import inTop from "../../../env/realm/inTop.js"
 import { SilentError } from "../classes/Assert.js"
 import timeout from "../../../../fabric/type/promise/timeout.js"
+import noop from "../../../../fabric/type/function/noop.js"
 import "../../../../ui/popup.js"
 
 const DEFAULT = {
@@ -15,6 +16,7 @@ let ui
 
 export async function glovebox(t, options) {
   const config = { ...DEFAULT, ...options }
+  config.makeContent ??= noop
 
   const {
     id, //
@@ -90,7 +92,7 @@ export async function glovebox(t, options) {
                   content: [
                     top
                       ? { tag: ".panel.inset", content: makeContent() }
-                      : undefined,
+                      : { tag: "div" },
                     iframe
                       ? {
                           tag: "ui-sandbox.panel.inset",
