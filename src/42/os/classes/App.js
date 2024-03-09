@@ -1,5 +1,6 @@
 /* eslint-disable complexity */
 import ui, { UI } from "../../ui.js"
+import dialog from "../../ui/components/dialog.js"
 import postrenderAutofocus from "../../ui/utils/postrenderAutofocus.js"
 import transferable from "../../ui/traits/transferable.js"
 import system from "../../system.js"
@@ -8,6 +9,7 @@ import inTop from "../../core/env/realm/inTop.js"
 import uid from "../../core/uid.js"
 import template from "../../core/formats/template.js"
 import ipc from "../../core/ipc.js"
+import fs from "../../core/fs.js"
 import escapeTemplate from "../../core/formats/template/escapeTemplate.js"
 import configure from "../../core/configure.js"
 
@@ -24,7 +26,6 @@ import normalizeManifest from "./App/normalizeManifest.js"
 
 // TODO: check if rpc functions can be injecteds
 import "../../fabric/browser/openInNewTab.js"
-import "../../ui/components/dialog.js"
 import "../../ui/popup.js"
 
 let DEFAULT_PRELOAD = ""
@@ -50,11 +51,7 @@ async function prepareManifest(manifest, options) {
   manifest ??= new URL("./app.json5", document.URL).pathname
 
   if (typeof manifest === "string") {
-    const fs = await import("../../core/fs.js") //
-      .then((m) => m.default)
-
     const manifestPath = new URL(manifest, document.baseURI).pathname
-
     manifest = await fs.read.json5(manifestPath)
     manifest.manifestPath = manifestPath
   }
@@ -243,11 +240,7 @@ export async function launch(manifestPath, options) {
     return void ipc.emit("42_APP_LAUNCH", { manifestPath, options })
   }
 
-  const [manifest, dialog] = await Promise.all([
-    prepareManifest(manifestPath, options),
-    await import("../../ui/components/dialog.js") //
-      .then((m) => m.default),
-  ])
+  const manifest = await prepareManifest(manifestPath, options)
 
   const { id, sandbox } = makeSandbox(manifest)
   if (manifest.modules && !manifest.content) {
@@ -265,34 +258,33 @@ export async function launch(manifestPath, options) {
     return
   }
 
-  const width = `${manifest.width ?? "400"}px`
-  const height = `${manifest.height ?? "350"}px`
-
   let picto
   for (const item of manifest.icons) {
-    if (item.sizes === "16x16") {
-      picto = item.src
-      break
-    }
-
     picto = item.src
+    if (item.sizes === "16x16") break
   }
 
   return dialog(
-    {
-      id,
-      class: `app__${manifest.slug}`,
-      style: { width, height },
-      picto,
-      label: "{{$dialog.title}}",
-      content: {
-        tag: "ui-sandbox" + (manifest.inset ? ".inset" : ""),
-        ...sandbox,
+    configure(
+      {
+        id,
+        class: `app__${manifest.slug}`,
+        width: manifest.width ?? 400,
+        height: manifest.height ?? 350,
+        picto,
       },
-      state: {
-        $dialog: { title: manifest.name },
+      manifest.dialog,
+      {
+        label: "{{$dialog.title}}",
+        content: {
+          tag: "ui-sandbox" + (manifest.inset ? ".inset" : ""),
+          ...sandbox,
+        },
+        state: {
+          $dialog: { title: manifest.name },
+        },
       },
-    },
+    ),
     { trusted: manifest.trusted },
   )
 }

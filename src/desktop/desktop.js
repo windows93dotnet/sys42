@@ -75,51 +75,43 @@ os.desktop = await ui({
   },
 })
 
-/* Apps Manager
-=============== */
+/* Apps Manager Exemples
+======================== */
 
-// import actions from "../42/os/actions.js"
-// actions.launchFolder("/tests/fixtures/formats/video/")
-// actions.launchFile("/tests/fixtures/formats/video/example.mp4")
-// actions.launchFile("/tests/fixtures/formats/example.html")
-// actions.launchFile("/tests/fixtures/formats/video/example.mp4")
-// actions.launchFile("/tests/fixtures/formats/image/example.jpg")
-// actions.launchFile([
+// os.actions.launchFolder("/tests/fixtures/formats/video/")
+// os.actions.launchFile("/tests/fixtures/formats/video/example.mp4")
+// os.actions.launchFile("/tests/fixtures/formats/example.html")
+// os.actions.launchFile("/tests/fixtures/formats/video/example.mp4")
+// os.actions.launchFile("/tests/fixtures/formats/image/example.jpg")
+// os.actions.launchFile([
 //   "/tests/fixtures/formats/example.json",
 //   "/tests/fixtures/formats/example.json5",
 // ])
 
-// import appsManager from "../42/os/managers/appsManager.js"
-// appsManager.launch("PixelEdit")
+// os.apps.launch("Hydra")
 
-// import appsManager from "../42/os/managers/appsManager.js"
-// appsManager.launch("Hydra")
+// os.apps.launch("TextEdit")
 
-// import appsManager from "../42/os/managers/appsManager.js"
-// appsManager.launch("TextEdit")
-
-// import appsManager from "../42/os/managers/appsManager.js"
-// import sleep from "../42/fabric/type/promise/sleep.js"
-
-// appsManager.launch("Sandbox", {
-//   $files: [
-//     // "/tests/fixtures/formats/example.json5",
-//     "/tests/fixtures/formats/example.html",
-//     // "/style.css",
-//   ],
+// os.apps.launch("Sandbox", {
+//   state: {
+//     $files: [
+//       "/tests/fixtures/formats/example.html", //
+//     ],
+//   },
 // })
 
-// await sleep(100)
-
-// appsManager.launch("TextEdit", {
-//   $files: [
-//     // "/tests/fixtures/formats/example.json5",
-//     "/tests/fixtures/formats/example.html",
-//     // "/style.css",
-//   ],
+// os.apps.launch("TextEdit", {
+//   state: {
+//     $files: [
+//       // "/tests/fixtures/formats/example.json5",
+//       "/tests/fixtures/formats/example.html",
+//       // "/style.css",
+//     ],
+//   },
 // })
 
 // console.log(await os.apps.lookup("index.html"))
+
 // console.log(...(await os.apps.makeMenu("index.html")))
 // console.log(...(await os.apps.makeMenu({ mimetype: "*" })))
 // console.log(...(await os.apps.makeMenu()))

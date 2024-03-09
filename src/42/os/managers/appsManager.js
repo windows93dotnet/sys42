@@ -81,18 +81,18 @@ class AppsManager extends ConfigFile {
     if (options?.save !== false) return this.save()
   }
 
-  async launch(appName, state) {
+  async launch(appName, options) {
     await this.ready
+
     if (appName in this.value === false) {
       throw new Error(`Unknown app: ${appName}`)
     }
 
-    const app = this.value[appName]
-    const options = state ? { state } : undefined
-    return App.launch(app.manifestPath, options)
+    const { manifestPath } = this.value[appName]
+    return App.launch(manifestPath, options)
   }
 
-  async open(paths) {
+  async open(paths, options) {
     await this.ready
     await mimetypesManager.ready
 
@@ -119,7 +119,7 @@ class AppsManager extends ConfigFile {
     }
 
     for (const [appName, paths] of Object.entries(openers)) {
-      this.launch(appName, { $files: paths })
+      this.launch(appName, { state: { $files: paths }, ...options })
     }
   }
 
