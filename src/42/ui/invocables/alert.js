@@ -1,6 +1,5 @@
 import demand from "./demand.js"
 import uid from "../../core/uid.js"
-import forceOpener from "../utils/forceOpener.js"
 import isErrorLike from "../../fabric/type/any/is/isErrorLike.js"
 
 const DEFAULT = {
@@ -69,8 +68,6 @@ export async function alert(message = "", options) {
   }
 
   const config = { ...DEFAULT, ...options }
-  config.dialog ??= {}
-  forceOpener(config.dialog)
 
   config.content = {
     tag: ".box-center-y.pa-md",

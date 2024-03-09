@@ -15,9 +15,9 @@ export async function demand(options) {
   config.dialog ??= {}
   forceOpener(config.dialog)
 
-  let { content } = config
+  let { content, x, y, width, height } = config
 
-  content = { tag: ".ui-dialog-modal__content.box-v", content }
+  content = { tag: ".ui-dialog-demand__content.box-v", content }
 
   let src = config.img
 
@@ -31,7 +31,7 @@ export async function demand(options) {
       tag: ".box-h",
       content: [
         {
-          tag: ".ui-dialog-modal__image.box-center.item-shrink.pa",
+          tag: ".ui-dialog-demand__image.box-center.item-shrink.pa",
           content: { tag: "img", aria: { hidden: true }, src },
         },
         content,
@@ -46,8 +46,11 @@ export async function demand(options) {
         label: config.label,
         class: config.class,
         role: config.role,
-        aria: { modal: true },
         content,
+        x,
+        y,
+        width,
+        height,
         footer: config.footer ?? [
           config.agree === false
             ? undefined

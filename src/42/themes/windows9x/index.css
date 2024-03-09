@@ -525,12 +525,12 @@ legend button:active,
   white-space: pre-wrap;
 }
 
-.ui-dialog-modal__content {
+.ui-dialog-demand__content {
   padding: 8px;
   padding-bottom: 4px;
 }
 
-.ui-dialog-modal__image + .ui-dialog-modal__content {
+.ui-dialog-demand__image + .ui-dialog-demand__content {
   padding-inline-start: 0;
 }
 
