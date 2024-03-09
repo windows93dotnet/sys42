@@ -2,5 +2,5 @@
   name: "Hydra",
   command: "hydra",
   categories: ["entertainment"],
-  script: "./Hydra.js",
+  modules: "./Hydra.js",
 }
