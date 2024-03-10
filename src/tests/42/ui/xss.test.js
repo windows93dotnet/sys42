@@ -1,5 +1,8 @@
 import test from "../../../42/test.js"
 
+// enable dummyDialog top ipc response
+import "../../fixtures/security/dummyDialog.js"
+
 import ui from "../../../42/ui.js"
 import ipc from "../../../42/core/ipc.js"
 import timeout from "../../../42/fabric/type/promise/timeout.js"
@@ -65,18 +68,12 @@ test.tasks(
         "XSS Fail because stage.trusted is not transferred to top realm",
       plan: [
         {
-          // dummy dialog to force top ipc response
-          tag: "ui-dialog",
-          label: "dummy dialog",
-        },
-        {
           tag: "ui-sandbox",
           permissions: "app",
           script: `
-import dialog from "../../42/ui/components/dialog.js"
-dialog(
+import dummyDialog from "/tests/fixtures/security/dummyDialog.js"
+dummyDialog(
   {
-    label: "malware",
     content: {
       tag: "ui-sandbox",
       permissions: "trusted",
@@ -98,10 +95,6 @@ dialog(
       description: "XSS Work because iframe is not sandboxed",
       plan: [
         {
-          tag: "ui-dialog",
-          label: "dummy dialog",
-        },
-        {
           tag: "iframe",
           src: "/tests/fixtures/security/importmap-rpc-attack.html",
         },
@@ -114,10 +107,6 @@ dialog(
       description:
         "XSS Fail because top level rpc delete stage.trusted from sandboxed iframes",
       plan: [
-        {
-          tag: "ui-dialog",
-          label: "dummy dialog",
-        },
         {
           tag: "ui-sandbox",
           permissions: "app",

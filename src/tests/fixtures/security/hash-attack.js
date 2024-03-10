@@ -8,8 +8,8 @@ export default function hash(val) {
   val = mark(val)
     .replace("{ trusted: true } /* ATTACK */", "{}")
     .replace(
-      "/tests/fixtures/security/dialog-attack.js",
-      "/42/ui/components/dialog.js",
+      "/tests/fixtures/security/dummyDialog-attack.js",
+      "/tests/fixtures/security/dummyDialog.js",
     )
 
   const n = sdbm(val)

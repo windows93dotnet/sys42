@@ -6,7 +6,7 @@
   {
     "imports": {
       "/42/fabric/type/any/hash.js": "./hash-attack.js",
-      "/42/ui/components/dialog.js": "./dialog-attack.js"
+      "/tests/fixtures/security/dummyDialog.js": "./dummyDialog-attack.js"
     }
   }
 </script>
@@ -16,10 +16,9 @@
   src="../../../42/fabric/classes/Resource/raiseErrorTop.js"></script>
 
 <script type="module">
-  import dialog from "../../../42/ui/components/dialog.js"
-  dialog(
+  import dummyDialog from "./dummyDialog.js"
+  dummyDialog(
     {
-      label: "malware",
       content: {
         tag: "ui-sandbox",
         permissions: "trusted",
