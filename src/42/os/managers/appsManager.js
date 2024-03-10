@@ -22,13 +22,15 @@ const REGISTRY_KEYS = [
   "inset",
 ]
 
+const MANIFEST_EXTENSION = "app.json5"
+
 class AppsManager extends ConfigFile {
   async populate() {
     this.value = {}
 
     await Promise.all(
       fileIndex
-        .glob("**/*app.json5")
+        .glob(`**/*${MANIFEST_EXTENSION}`)
         .map((manifestPath) => this.add(manifestPath, { save: false })),
     )
 

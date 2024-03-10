@@ -69,12 +69,15 @@ async function prepareManifest(manifest, options) {
     //   manifest.trusted = true
     // }
 
+    // TODO: set correct permissions
     manifest.permissions ??= "trusted"
     manifest.trusted = true
   }
 
   manifest.state ??= {}
   manifest.state.$files ??= []
+
+  manifest.background ??= manifest.modules && !manifest.content
 
   return manifest
 }
@@ -143,6 +146,7 @@ function makeSandbox(manifest) {
 
   if (manifest.modules) {
     appScript += `await Promise.all([`
+
     for (const module of arrify(manifest.modules)) {
       const { href } = new URL(module, manifest.dirURL)
       appScript += `import("${href}"),`
@@ -152,12 +156,10 @@ function makeSandbox(manifest) {
   }
 
   const script = escapeTemplate(
-    manifest.modules && !manifest.content
+    manifest.content ||
+      manifest.state.$files.length > 0 ||
+      Object.keys(manifest.state).length > 1
       ? `\
-    window.$manifest = ${JSON.stringify(manifest)}
-    ${appScript}
-    `
-      : `\
     import App from "${import.meta.url}"
     window.$manifest = ${JSON.stringify(manifest)}
     window.$app = await App.init(
@@ -167,6 +169,10 @@ function makeSandbox(manifest) {
     window.$files = window.$app.state.$files
     ${appScript}
     $app.start()
+    `
+      : `\
+    window.$manifest = ${JSON.stringify(manifest)}
+    ${appScript}
     `,
   )
 
@@ -229,33 +235,45 @@ async function shell(manifestPath, options) {
 }
 
 if (inTop) {
-  ipc.on("42_APP_LAUNCH", ({ manifestPath, options }) =>
-    launch(manifestPath, options),
-  )
+  ipc.on("42_APP_LAUNCH", ({ manifestPath, options }) => {
+    launch(manifestPath, options)
+    // TODO: return an app controller
+  })
 }
 
 // Execute App sandboxed in a dialog
 export async function launch(manifestPath, options) {
   if (!inTop) {
-    return void ipc.emit("42_APP_LAUNCH", { manifestPath, options })
+    return ipc.send("42_APP_LAUNCH", { manifestPath, options })
   }
 
   const manifest = await prepareManifest(manifestPath, options)
 
   const { id, sandbox } = makeSandbox(manifest)
-  if (manifest.modules && !manifest.content) {
-    ui(
+
+  if (manifest.background) {
+    // background app (without dialog)
+    const app = await ui(
       document.documentElement,
       {
         id,
-        tag: `ui-sandbox`,
+        tag: "ui-sandbox",
         class: `app__${manifest.slug} box-fit transferable-ignore`,
         style: { zIndex: -1 },
         ...sandbox,
       },
       { trusted: manifest.trusted },
     )
-    return
+
+    // minimum controller
+    return {
+      id,
+      async close() {
+        const { data } = this.stage.reactive
+        await app.destroy()
+        return data
+      },
+    }
   }
 
   let picto
