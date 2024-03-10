@@ -42,12 +42,14 @@ test.ui("dialog controller", async (t) => {
   if (inTop) {
     el = controller.el
     await el.ready
+    t.is(el.id, "dialogTop")
     t.is(controller.id, "dialogTop")
     t.is(el.textContent, "From Top")
   } else {
     t.throws(() => controller.el, /not accessible/)
     await controller.ready
     el = window.top.document.querySelector("#dialogIframe")
+    t.is(el.id, "dialogIframe")
     t.is(controller.id, "dialogIframe")
     t.is(el.textContent, "From Iframe")
   }

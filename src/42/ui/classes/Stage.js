@@ -23,6 +23,7 @@ export class Stage {
 
     this.scope = params.scope ?? "/"
     this.steps = params.steps ?? "?"
+    this.index = params.index ?? 0
     this.renderers = params.renderers ?? Object.create(null)
     this.plugins = params.plugins ?? Object.create(null)
     this.computeds = params.computeds ?? Object.create(null)

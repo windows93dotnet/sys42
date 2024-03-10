@@ -200,6 +200,7 @@ export default function renderEach(plan, stage) {
           itemDef,
           stage.fork({
             cancel,
+            index: i,
             scope: `${stage.scope}/${i}`,
             steps: `${stage.steps},[${i}]`,
             scopeChain,

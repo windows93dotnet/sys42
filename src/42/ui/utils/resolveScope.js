@@ -1,6 +1,5 @@
 import resolvePath from "../../core/path/core/resolvePath.js"
 import segmentize from "../../fabric/type/string/segmentize.js"
-import getBasename from "../../core/path/core/getBasename.js"
 import same from "../../fabric/type/array/same.js"
 
 export default function resolveScope(scope, loc, stage) {
@@ -12,7 +11,7 @@ export default function resolveScope(scope, loc, stage) {
       ? stage.component.stage.scope + loc.slice(10)
       : loc.startsWith("@scope")
         ? stage.scope + loc.slice(6)
-        : `../${loc}:${getBasename(scope)}`
+        : `../${loc}:${stage.index}`
   } else if (loc.startsWith("#")) {
     if (!same(loc, "#")) {
       throw new Error(
@@ -20,7 +19,7 @@ export default function resolveScope(scope, loc, stage) {
       )
     }
 
-    loc = `../${loc}:${getBasename(scope)}`
+    loc = `../${loc}:${stage.index}`
   }
 
   const out = segmentize(resolvePath(scope, loc)).join("/")

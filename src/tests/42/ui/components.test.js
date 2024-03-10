@@ -1158,10 +1158,10 @@ test("props", 4, async (t) => {
   t.is(app.el.innerHTML, '<ui-a bar="d"><!--[rendered]-->foo: d, bar: d</ui-a>')
 })
 
-test.skip("props", 5, async (t) => {
+test("props", 5, async (t) => {
   const app = await t.utils.decay(
     ui(t.utils.dest(), {
-      content: { tag: "ui-a", bar: "{{foo |> upperCase(^^)}}" },
+      content: { tag: "ui-a", bar: "{{foo |> toUpperCase(^^)}}" },
       state: { foo: "a" },
     }),
   )
@@ -1530,6 +1530,7 @@ test("array", 2, async (t) => {
           "\n",
           {
             tag: "ui-a",
+            tabIndex: "{{@index}}",
             bar: "{{@index}} - {{.}}",
           },
         ],
@@ -1542,8 +1543,8 @@ test("array", 2, async (t) => {
     app.el.innerHTML,
     `\
 <!--[each]-->
-<ui-a bar="0 - a"><!--[rendered]-->foo: , bar: 0 - a</ui-a><!--[#]-->
-<ui-a bar="1 - b"><!--[rendered]-->foo: , bar: 1 - b</ui-a><!--[#]-->`,
+<ui-a bar="0 - a" tabindex="0"><!--[rendered]-->foo: , bar: 0 - a</ui-a><!--[#]-->
+<ui-a bar="1 - b" tabindex="1"><!--[rendered]-->foo: , bar: 1 - b</ui-a><!--[#]-->`,
   )
 
   t.eq(app.reactive.data, {
@@ -2545,4 +2546,109 @@ test("same own scope components", async (t) => {
   el = app.el.querySelector("ui-t-own-scope")
   t.is(el.foo, "a")
   t.is(el.textContent, "a")
+})
+
+/* ---- */
+
+Component.define(
+  class extends Component {
+    static plan = {
+      tag: "ui-t-attr-override",
+      role: "dialog",
+    }
+  },
+)
+
+Component.define(
+  class extends Component {
+    static plan = {
+      tag: "ui-t-attr-override-render",
+      role: "dialog",
+    }
+
+    render() {
+      return { tag: "em" }
+    }
+  },
+)
+
+test("attributes override", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest(), {
+      content: {
+        tag: "ui-t-attr-override",
+        role: "alertdialog",
+      },
+    }),
+  )
+
+  const el = app.el.querySelector("ui-t-attr-override")
+
+  t.is(el.role, "alertdialog")
+})
+
+test("attributes override", "component render return tag", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest(), {
+      content: {
+        tag: "ui-t-attr-override-render",
+        role: "alertdialog",
+      },
+    }),
+  )
+
+  const el = app.el.querySelector("ui-t-attr-override-render")
+
+  t.is(el.role, "alertdialog")
+})
+
+/* ---- */
+
+Component.define(
+  class extends Component {
+    static plan = {
+      tag: "ui-t-list-item",
+      props: { foo: "bar" },
+    }
+  },
+)
+
+Component.define(
+  class extends Component {
+    static plan = {
+      tag: "ui-t-list",
+      props: {
+        items: {
+          type: "array",
+        },
+      },
+    }
+
+    render() {
+      return {
+        scope: "items",
+        each: {
+          tag: "ui-t-list-item",
+          tabIndex: "{{@first ? 0 : -1}}",
+        },
+      }
+    }
+  },
+)
+
+test("bug: components with own scope incorrect index in each loop", async (t) => {
+  const app = await t.utils.decay(
+    ui(t.utils.dest(), {
+      tag: "ui-t-list",
+      items: ["a", "b", "c"],
+    }),
+  )
+
+  const icons = t.puppet.$$$("ui-t-list-item", { base: app.el })
+
+  t.eq(icons.tabIndex, [
+    0, //
+    -1,
+    -1,
+  ])
 })

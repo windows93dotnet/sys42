@@ -28,7 +28,6 @@ import defer from "../../fabric/type/promise/defer.js"
 import isEmptyObject from "../../fabric/type/any/is/isEmptyObject.js"
 import dispatch from "../../fabric/event/dispatch.js"
 import hash from "../../fabric/type/any/hash.js"
-import noop from "../../fabric/type/function/noop.js"
 
 const CREATE = 0
 const INIT = 1
@@ -202,6 +201,7 @@ export default class Component extends HTMLElement {
 
     this.#clearOwnScope = () => {
       this.stage.cancel.signal.removeEventListener("abort", this.#clearOwnScope)
+      this.#clearOwnScope = undefined
 
       if (!this.stage.reactive.data) return
 
@@ -217,7 +217,6 @@ export default class Component extends HTMLElement {
 
       const changes = new Set([this.stage.scope])
       this.stage.reactive.emit("update", changes, changes) // prevent calling $ref renderers
-      this.#clearOwnScope = noop
     }
 
     this.stage.cancel.signal.addEventListener("abort", this.#clearOwnScope)
@@ -286,33 +285,30 @@ export default class Component extends HTMLElement {
 
     if (propsKeys.length > 0) {
       const configKeys = Object.keys(cpnPlan.defaults ?? {})
-      const entries = Object.entries(plan)
-      plan = {}
-      for (const [key, val] of entries) {
+      for (const [key, val] of Object.entries(plan)) {
         if (propsKeys.includes(key)) {
+          delete plan[key]
           props[key] =
             typeof val === "string" //
               ? normalizeString(val, this.stage)
               : val
         } else if (configKeys.includes(key)) {
+          delete plan[key]
           params[key] = val
-        } else plan[key] = val
+        }
       }
     }
-
-    /* handle plan attrs
-    ------------------- */
-    // TODO: remove this
-    let attrs = normalizeAttrs(plan, this.stage, cpnPlan.defaults)
-    for (const attr of Object.keys(attrs)) delete plan[attr]
-    if (attrs) renderAttributes(this, this.stage, attrs)
-
-    if (cpnPlan.id === true) this.id ||= uid()
 
     /* handle plan
     ------------- */
     plan = configure(cpnPlan, plan)
     const { computed, state } = plan
+
+    // Set element ID as soon as possible
+    if (plan.id) {
+      this.id ||= plan.id === true ? uid() : plan.id
+      delete plan.id
+    }
 
     delete plan.computed
     delete plan.state
@@ -368,16 +364,23 @@ export default class Component extends HTMLElement {
         })
       }
 
-      Object.assign(plan, objectifyPlan(await this.render(renderConfig)))
+      const renderedPlan = objectifyPlan(await this.render(renderConfig))
+
+      if (renderedPlan.tag) {
+        const attrs = normalizeAttrs(plan, this.stage, cpnPlan.defaults)
+        if (attrs) renderAttributes(this, this.stage, attrs)
+        plan = renderedPlan
+      } else {
+        Object.assign(plan, renderedPlan)
+      }
     }
 
     plan = normalizePlan(plan, this.stage, { skipAttrs: true })
 
     this.#animateTo = plan.animate?.to
 
-    /* apply
-    -------- */
-
+    /* apply state
+    -------------- */
     if (state && options?.skipNormalize !== true) {
       normalizeData(state, this.stage, (res, scope, options) => {
         this.stage.reactive.merge(
@@ -392,12 +395,12 @@ export default class Component extends HTMLElement {
 
     if (computed) normalizeComputeds(computed, this.stage)
 
-    /* handle all attrs
-    ------------------- */
+    /* apply attrs
+    -------------- */
     if (plan.tag) {
       plan.attrs = normalizeAttrs(plan, this.stage)
     } else {
-      attrs = normalizeAttrs(plan, this.stage, cpnPlan.defaults)
+      const attrs = normalizeAttrs(plan, this.stage, cpnPlan.defaults)
       for (const attr of Object.keys(attrs)) delete plan[attr]
       if (attrs) renderAttributes(this, this.stage, attrs)
     }
