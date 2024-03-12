@@ -1,8 +1,6 @@
 import ensureElement from "./ensureElement.js"
 import Emitter from "../classes/Emitter.js"
 
-const _EVENTS = Symbol.for("Emitter.EVENTS")
-
 const emitters = new WeakMap()
 
 function makeEmitter(parent) {
@@ -40,7 +38,7 @@ export async function untilElementDisconnect(el) {
       if (!el.isConnected) {
         resolve(el)
         off()
-        if (emitter[_EVENTS].disconnect.length === 0) {
+        if ("disconnect" in emitter[Emitter.EVENTS]) {
           emitter.observer.disconnect()
           emitters.delete(el.parentElement)
         }

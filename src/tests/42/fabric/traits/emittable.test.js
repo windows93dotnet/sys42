@@ -137,13 +137,13 @@ test("send() return a promise that resolve when all handler are fulfilled", asyn
   const el = emittable()
   el.on("*", async () => 10)
   el.on("bar", async () => 3)
-  el.on("foo", async () => 5)
   el.on("foo", async () => {
     t.utils.sleep(5)
     return 4
   })
+  el.on("foo", async () => 5)
 
-  t.eq(await el.send("foo"), [5, 4, 10])
+  t.eq(await el.send("foo"), [4, 5, 10])
 })
 
 test("remove listeners", (t) => {
@@ -154,7 +154,13 @@ test("remove listeners", (t) => {
     t.is(++counter, 1)
   }
 
-  el.on("r", r).on("s", r).off("s", r).emit("r").emit("s")
+  el.on("r", r).on("s", r)
+
+  t.eq(Object.keys(el[Emitter.EVENTS]), ["r", "s"])
+
+  el.off("s", r).emit("r").emit("s")
+
+  t.eq(Object.keys(el[Emitter.EVENTS]), ["r"])
 })
 
 test("removes duplicate callbacks on off for specific handler", (t) => {

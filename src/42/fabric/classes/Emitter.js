@@ -9,9 +9,7 @@ export default class Emitter {
 
   constructor(options) {
     Object.defineProperty(this, _EVENTS, {
-      value: options?.events
-        ? Object.assign(Object.create(null), options.events)
-        : Object.create(null),
+      value: options?.events ?? {},
       writable: true,
     })
 
@@ -52,6 +50,7 @@ export default class Emitter {
         this[_EVENTS][event] = this[_EVENTS][event].filter(
           (cb) => cb !== fn && cb.originalFn !== fn,
         )
+        if (this[_EVENTS][event].length === 0) delete this[_EVENTS][event]
       } else delete this[_EVENTS][event]
     }
 

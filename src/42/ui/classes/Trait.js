@@ -4,8 +4,8 @@ import ensureElement from "../../fabric/dom/ensureElement.js"
 
 const { ELEMENT_NODE } = Node
 
-const _INSTANCES = Symbol.for("Trait.INSTANCES")
 const _EVENTS = Symbol.for("Emitter.EVENTS")
+const _INSTANCES = Symbol.for("Trait.INSTANCES")
 const _isTrait = Symbol.for("Trait.isTrait")
 
 export default class Trait {
@@ -27,7 +27,7 @@ export default class Trait {
 
     const name = options?.name ?? this.constructor.name.toLowerCase()
 
-    el[_INSTANCES] ??= Object.create(null)
+    el[_INSTANCES] ??= {}
     const previous = el[_INSTANCES][name]
     if (previous) previous.destroy()
     el[_INSTANCES][name] = this
