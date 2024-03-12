@@ -34,29 +34,12 @@ if (debug) {
 }
 /* </DEV> */
 
-const watchedDetachedSignals = new WeakSet()
-
 export default async function ipcPlugin(stage) {
   const controller = new AbortController()
   const { signal } = controller
   const options = { signal }
 
-  // signal.addEventListener("abort", () => {
-  //   console.log("ipcPlugin abort:", signal.reason?.message)
-  // })
-
-  const checkDetacheds = ({ target }) => {
-    for (const detached of stage.detacheds) {
-      if (watchedDetachedSignals.has(detached)) continue
-      watchedDetachedSignals.add(detached)
-      detached.stage.signal.addEventListener("abort", checkDetacheds)
-    }
-
-    // Abort only if no components are detached
-    if (stage.detacheds.size === 0) controller.abort(target?.reason)
-  }
-
-  stage.signal.addEventListener("abort", checkDetacheds)
+  stage.reactive.on("destroy", () => controller.abort())
 
   if (inTop) {
     stage.reactive.on("update", options, (changes, deleteds, source) => {

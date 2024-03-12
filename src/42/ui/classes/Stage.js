@@ -18,7 +18,6 @@ export class Stage {
 
     this.trusted = params.trusted
     this.initiator = params.initiator
-    this.detached = params.detached
     this.firstUpdateMade = params.firstUpdateMade
 
     this.scope = params.scope ?? "/"
@@ -30,7 +29,6 @@ export class Stage {
     this.refs = params.refs ?? Object.create(null)
     this.tmp = params.tmp ?? new Map()
     this.sandboxes = params.sandboxes ?? new Map()
-    this.detacheds = params.detacheds ?? new Set()
     this.scopeChain = params.scopeChain ?? []
     this.pluginHandlers = params.pluginHandlers ?? []
     this.scopeResolvers = params.scopeResolvers ?? {}

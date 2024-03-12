@@ -260,7 +260,6 @@ export const dialog = rpc(
     const n = tracker.has(steps) ? tracker.get(steps) + 1 : 0
     tracker.set(steps, n)
 
-    stage = { ...stage }
     stage.steps += ",dialog°" + n
 
     const el = new Dialog(plan, stage)
@@ -278,7 +277,7 @@ export const dialog = rpc(
       ensureOpener(plan)
 
       if (rpc.inTop) {
-        stage = { ...stage, detached: true }
+        stage = { ...stage, cancel: undefined }
         return [plan, stage]
       }
 
