@@ -219,7 +219,7 @@ export const popup = rpc(
         return [plan, stage, rect]
       }
 
-      if (stage) await normalizePlugins(stage, ["ipc"], { now: true })
+      if (stage?.plugins) await normalizePlugins(stage, ["ipc"], { now: true })
 
       return [forkPlan(plan, stage), {}, rect]
     },

@@ -19,8 +19,9 @@ export default class Reactive extends Emitter {
   #update = {}
 
   constructor(stage, data = {}) {
-    super({ signal: stage.cancel.signal })
-    stage.cancel.signal.addEventListener("abort", () => this.destroy())
+    const { signal } = stage
+    super({ signal })
+    signal.addEventListener("abort", () => this.destroy())
 
     this.stage = stage
     this.data = data
@@ -58,7 +59,7 @@ export default class Reactive extends Emitter {
     this.pendingUpdate = undefined
 
     this.state = observe(this.data, {
-      signal: this.stage.cancel.signal,
+      signal,
 
       locate: (ref) => locate(this.state, ref, delimiter),
 
