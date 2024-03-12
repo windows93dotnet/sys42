@@ -4,7 +4,8 @@ import checksum from "../../../../42/fabric/binary/checksum.js"
 test.suite.timeout(1000)
 
 test("throws", async (t) => {
-  const errPrefix = "Input must be a string, ArrayBuffer or ArrayBufferView: "
+  const errPrefix =
+    "Input value must be a string, ArrayBuffer or ArrayBufferView: "
   await t.throws(() => checksum(), errPrefix + "undefined")
   await t.throws(() => checksum(null), errPrefix + "null")
   await t.throws(() => checksum(1), errPrefix + "number")

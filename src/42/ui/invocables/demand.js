@@ -1,6 +1,6 @@
 import dialog from "../components/dialog.js"
 import { objectifyPlan } from "../normalize.js"
-import forceOpener from "../utils/forceOpener.js"
+import ensureOpener from "../utils/ensureOpener.js"
 import configure from "../../core/configure.js"
 
 const DEFAULT = {
@@ -13,7 +13,7 @@ const DEFAULT = {
 export async function demand(options) {
   const config = { ...DEFAULT, ...options }
   config.dialog ??= {}
-  forceOpener(config.dialog)
+  ensureOpener(config.dialog)
 
   let { content, x, y, width, height } = config
 

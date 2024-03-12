@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import Component from "../classes/Component.js"
 import { objectifyPlan, forkPlan, normalizePlugins } from "../normalize.js"
-import forceOpener from "../utils/forceOpener.js"
+import ensureOpener from "../utils/ensureOpener.js"
 import postrenderAutofocus from "../utils/postrenderAutofocus.js"
 import rpc from "../../core/ipc/rpc.js"
 
@@ -275,7 +275,7 @@ export const dialog = rpc(
       plan = objectifyPlan(plan)
 
       plan.content ??= ""
-      forceOpener(plan)
+      ensureOpener(plan)
 
       if (rpc.inTop) {
         stage = { ...stage, detached: true }

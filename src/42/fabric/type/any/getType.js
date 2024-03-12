@@ -1,5 +1,5 @@
 /**
- * Returns the input type,\
+ * Returns the input value's type,\
  * Like the `typeof` operator but with `null` and `array` support.
  *
  * @param {any} val

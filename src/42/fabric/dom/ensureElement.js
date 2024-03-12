@@ -1,26 +1,26 @@
+import getType from "../type/any/getType.js"
+
 const { ELEMENT_NODE } = Node
 
 /**
- * Throws if the value is not an element or a CSS selector for an exsiting element.\
- * Returns the element if valid.
+ * Returns an `HTMLElement` from the input value if it's an element or a CSS selector for an exsiting element.\
+ * Throws a `TypeError` otherwise.
  *
- * @param {string | HTMLElement} value
- * @param {HTMLElement} base
+ * @param {string | HTMLElement} val
+ * @param {HTMLElement} [base=document] Default is `document`
  * @returns {HTMLElement}
  */
-export default function ensureElement(value, base = document) {
-  const type = typeof value
-  const el = type === "string" ? base.querySelector(value) : value
+export default function ensureElement(val, base = document) {
+  const type = typeof val
+  const el = type === "string" ? base.querySelector(val) : val
 
   if (el?.nodeType === ELEMENT_NODE) return el
 
   throw new TypeError(
-    `The "el" argument must be an element or a CSS selector for an exsiting element: ${
+    `Input value must be an element or a CSS selector for an exsiting element: ${
       type === "string" //
-        ? value
-        : value === null
-          ? "null"
-          : type
+        ? val
+        : getType(val)
     }`,
   )
 }
