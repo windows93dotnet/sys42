@@ -9,9 +9,10 @@ import makeDevScript from "./serve/makeDevScript.js"
 const task = system.config.tasks.serve
 
 const srcPath = pathToFileURL(system.config.paths.dirs.src).href
+const libPath = pathToFileURL(system.config.paths.dirs.lib).href
 
-const errorPage = (asset, status, stack) =>
-  makeDevScript(asset) +
+const errorPage = (ua, status, stack) =>
+  makeDevScript(ua) +
   `<pre style="margin:2rem 1rem;white-space:pre-wrap;font-size:90%;word-break:break-word"><h1>${status}</h1><div>${stack}</div><pre>`
 
 function sendEvent(reply, event, data = false) {
@@ -34,6 +35,72 @@ system
   .on("watch:reload", () => {
     for (const s of clients) sendEvent(s, "reload")
   })
+
+async function sendFile(req, reply, base = srcPath, originalError) {
+  const asset = new StaticFile(base + req.url)
+
+  try {
+    await asset.open()
+
+    if (
+      needDevScript &&
+      req.headers["sec-fetch-dest"] === "document" &&
+      asset.ext === ".html"
+    ) {
+      const ua = req.headers["user-agent"]
+      chromiumBugWarning(ua)
+
+      if (needDevScript) {
+        const devStream = makeDevScript(ua)
+        asset.headers["Content-Length"] += Buffer.byteLength(devStream, "utf-8")
+        reply.headers(asset.headers)
+        const content = await asset.read()
+        asset.close()
+
+        let i = content.indexOf("</title>")
+        if (i > -1) {
+          return reply.send(
+            content.slice(0, i + 8) + devStream + content.slice(i + 8),
+          )
+        }
+
+        i = content.indexOf("<!doctype html>")
+        if (i > -1) {
+          return reply.send(
+            content.slice(0, i + 15) + devStream + content.slice(i + 15),
+          )
+        }
+
+        return reply.send(devStream + content)
+      }
+    }
+
+    reply.headers(asset.headers)
+
+    if (req.method === "GET") return reply.send(asset.stream())
+    asset.close()
+  } catch (err) {
+    asset?.close?.()
+
+    const error = originalError ?? err
+    const is404 = error.code === "ENOENT"
+
+    // try serving sys42 source files as fallback
+    if (is404 && originalError === undefined) {
+      return sendFile(req, reply, libPath, err)
+    }
+
+    const status = is404 ? 404 : 500
+    reply.code(status)
+
+    return asset.mimetype === "text/html" ||
+      asset.mimetype === "application/octet-stream"
+      ? reply
+          .type("text/html")
+          .send(errorPage(req.headers["user-agent"], status, error.stack))
+      : reply.type(asset.mimetype).send()
+  }
+}
 
 async function startServer(port) {
   const host = task.host.replace(/https?:\/\//, "")
@@ -83,15 +150,11 @@ async function startServer(port) {
     url: "*",
     method: ["OPTIONS", "HEAD", "GET"],
     async handler(req, reply) {
-      const { url } = req
-
       if ("clear-site-data" in req.query) {
         task.log(`🧽 clear site data`)
         reply.header("Clear-Site-Data", '"cache", "storage"')
         if ("empty" in req.query) return reply.send("")
       }
-
-      const asset = new StaticFile(srcPath + url)
 
       if (req.headers.host === host) {
         reply.header("Access-Control-Allow-Origin", "null")
@@ -99,58 +162,7 @@ async function startServer(port) {
 
       reply.header("Accept-Ranges", "bytes")
 
-      try {
-        await asset.open()
-
-        if (
-          needDevScript &&
-          req.headers["sec-fetch-dest"] === "document" &&
-          asset.ext === ".html"
-        ) {
-          const ua = req.headers["user-agent"]
-          chromiumBugWarning(ua)
-
-          if (needDevScript) {
-            const devStream = makeDevScript(asset, ua)
-            asset.headers["Content-Length"] += Buffer.byteLength(
-              devStream,
-              "utf-8",
-            )
-            reply.headers(asset.headers)
-            const content = await asset.read()
-            asset.close()
-
-            let i = content.indexOf("</title>")
-            if (i > -1) {
-              return reply.send(
-                content.slice(0, i + 8) + devStream + content.slice(i + 8),
-              )
-            }
-
-            i = content.indexOf("<!doctype html>")
-            if (i > -1) {
-              return reply.send(
-                content.slice(0, i + 15) + devStream + content.slice(i + 15),
-              )
-            }
-
-            return reply.send(devStream + content)
-          }
-        }
-
-        reply.headers(asset.headers)
-
-        if (req.method === "GET") return reply.send(asset.stream())
-        asset.close()
-      } catch (err) {
-        asset?.close?.()
-        const status = err.code === "ENOENT" ? 404 : 500
-        reply.code(status)
-        return asset.mimetype === "text/html" ||
-          asset.mimetype === "application/octet-stream"
-          ? reply.type("text/html").send(errorPage(asset, status, err.stack))
-          : reply.type(asset.mimetype).send()
-      }
+      await sendFile(req, reply)
     },
   })
 

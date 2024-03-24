@@ -7,10 +7,11 @@ import memoize from "../../../src/42/fabric/type/function/memoize.js"
 const getUserAgent = memoize(parseUserAgent)
 
 let { devScript } = system.config.paths.files
-devScript = devScript.replace(system.config.paths.dirs.src, "")
-devScript = devScript.replaceAll("\\", "/")
+devScript = devScript
+  .replace(system.config.paths.dirs.src, "")
+  .replaceAll("\\", "/")
 
-export default function makeDevScript(asset, ua) {
+export default function makeDevScript(ua) {
   const config = { verbose: system.config.verbose }
 
   if (system.testFiles) {
@@ -19,8 +20,8 @@ export default function makeDevScript(asset, ua) {
       engine.name === "Gecko"
         ? "firefox"
         : engine.name === "WebKit"
-        ? "webkit"
-        : "chromium"
+          ? "webkit"
+          : "chromium"
 
     const testFiles =
       system.testFiles?.[testContext] ?? system.testFiles?.browser
