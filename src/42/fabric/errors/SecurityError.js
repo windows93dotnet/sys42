@@ -3,7 +3,10 @@
 export class SecurityError extends Error {
   constructor(message) {
     super(message)
-    Object.defineProperty(this, "name", { value: "SecurityError" })
+    Object.defineProperties(this, {
+      name: { value: "SecurityError" },
+      code: { value: DOMException.SECURITY_ERR },
+    })
   }
 }
 
