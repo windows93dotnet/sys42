@@ -286,13 +286,21 @@ export const dialog = rpc(
       return [forkPlan(plan, stage), {}]
     },
 
-    unmarshalling(controller, [plan]) {
+    unmarshalling(controller, [plan, stage]) {
       if (plan?.returnsData) {
         focusBack(controller.opener)
         return controller
       }
 
-      controller.once("close").then(async ({ opener }) => focusBack(opener))
+      const off = stage?.reactive.on("destroy", { off: true }, () => {
+        controller.close()
+      })
+
+      controller.once("close").then(async ({ opener }) => {
+        off?.()
+        focusBack(opener)
+      })
+
       return controller
     },
   },

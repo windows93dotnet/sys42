@@ -156,11 +156,13 @@ export const popup = rpc(
     const { autofocus } = plan
     delete plan.autofocus
 
+    const { signal } = stage
+
     const normalized = normalize(plan, stage)
     plan = normalized[0]
     stage = normalized[1]
 
-    stage.cancel = new Canceller(stage.signal)
+    stage.cancel = new Canceller(signal)
 
     await stage.waitlistPreload.done()
     const el = render(plan, stage, { skipNormalize: true })

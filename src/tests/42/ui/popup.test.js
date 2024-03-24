@@ -61,7 +61,7 @@ const buttons = (label) => ({
   ],
 })
 
-test.ui.flaky("popup behavior", async (t, { decay, dest, pickValues }) => {
+test.ui("popup behavior", async (t, { decay, dest, pickValues }) => {
   const app = decay(
     await ui(
       dest({ connect: true }),

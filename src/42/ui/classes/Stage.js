@@ -7,44 +7,48 @@ import Canceller from "../../fabric/classes/Canceller.js"
 import Waitlist from "../../fabric/classes/Waitlist.js"
 import untilNextTask from "../../fabric/type/promise/untilNextTask.js"
 
+const _isStage = Symbol.for("Stage.isStage")
+
 export class Stage {
-  /** @param {object} [params] */
-  constructor(params = {}) {
-    this.id = params.id
-    this.type = params.type
-    this.el = params.el
-    this.parent = params.parent
-    this.component = params.component
+  [_isStage] = true
 
-    this.trusted = params.trusted
-    this.initiator = params.initiator
-    this.firstUpdateMade = params.firstUpdateMade
+  /** @param {object} [obj] */
+  constructor(obj = {}) {
+    this.id = obj.id
+    this.type = obj.type
+    this.el = obj.el
+    this.parent = obj.parent
+    this.component = obj.component
 
-    this.scope = params.scope ?? "/"
-    this.steps = params.steps ?? "?"
-    this.index = params.index ?? 0
-    this.renderers = params.renderers ?? Object.create(null)
-    this.plugins = params.plugins ?? Object.create(null)
-    this.computeds = params.computeds ?? Object.create(null)
-    this.refs = params.refs ?? Object.create(null)
-    this.tmp = params.tmp ?? new Map()
-    this.sandboxes = params.sandboxes ?? new Map()
-    this.scopeChain = params.scopeChain ?? []
-    this.pluginHandlers = params.pluginHandlers ?? []
-    this.scopeResolvers = params.scopeResolvers ?? {}
-    this.actions = params.actions ?? new Locator(Object.create(null), "/")
+    this.trusted = obj.trusted
+    this.initiator = obj.initiator
+    this.firstUpdateMade = obj.firstUpdateMade
 
-    this.waitlistPreload = params.waitlistPreload ?? new Waitlist()
-    this.waitlistPending = params.waitlistPending ?? new Waitlist()
-    this.waitlistPostrender = params.waitlistPostrender ?? new Waitlist()
-    this.waitlistComponents = params.waitlistComponents ?? new Waitlist()
-    this.waitlistTraits = params.waitlistTraits ?? new Waitlist()
+    this.scope = obj.scope ?? "/"
+    this.steps = obj.steps ?? "?"
+    this.index = obj.index ?? 0
+    this.renderers = obj.renderers ?? Object.create(null)
+    this.plugins = obj.plugins ?? Object.create(null)
+    this.computeds = obj.computeds ?? Object.create(null)
+    this.refs = obj.refs ?? Object.create(null)
+    this.tmp = obj.tmp ?? new Map()
+    this.sandboxes = obj.sandboxes ?? new Map()
+    this.scopeChain = obj.scopeChain ?? []
+    this.pluginHandlers = obj.pluginHandlers ?? []
+    this.scopeResolvers = obj.scopeResolvers ?? {}
+    this.actions = obj.actions ?? new Locator(Object.create(null), "/")
+
+    this.waitlistPreload = obj.waitlistPreload ?? new Waitlist()
+    this.waitlistPending = obj.waitlistPending ?? new Waitlist()
+    this.waitlistPostrender = obj.waitlistPostrender ?? new Waitlist()
+    this.waitlistComponents = obj.waitlistComponents ?? new Waitlist()
+    this.waitlistTraits = obj.waitlistTraits ?? new Waitlist()
 
     /** @type {Canceller} */
-    this.cancel = params.cancel ?? new Canceller()
+    this.cancel = obj.cancel ?? new Canceller()
 
     /** @type {Reactive} */
-    this.reactive = params.reactive ?? new Reactive(this)
+    this.reactive = obj.reactive ?? new Reactive(this)
   }
 
   get state() {
@@ -65,9 +69,9 @@ export class Stage {
     return this.reactive.get(resolveScope(...findScope(this, loc), this))
   }
 
-  /** @param {object} [params] */
-  fork(params) {
-    return new Stage(params ? { ...this, ...params } : this)
+  /** @param {object} [obj] */
+  fork(obj) {
+    return new Stage(obj ? { ...this, ...obj } : this)
   }
 
   async pendingDone(n = 10) {

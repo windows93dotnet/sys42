@@ -19,8 +19,9 @@ export default class Reactive extends Emitter {
   #update = {}
 
   constructor(stage, data = {}) {
+    super()
+
     const { signal } = stage
-    super({ signal })
     signal.addEventListener("abort", () => this.destroy())
 
     this.stage = stage
