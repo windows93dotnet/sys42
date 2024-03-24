@@ -15,7 +15,7 @@
     "lint:css": "stylelint 'src/**/*.css'",
     "lint:js": "eslint '{src,bin}/**/*.{js,html}'",
     "pretest": "npm run lint:css & npm run lint:js",
-    "format": "prettier --log-level silent '{src,cli}/**/*.{js,md,html}' --write",
+    "format": "prettier --log-level silent '{src,bin}/**/*.{js,md,html}' --write",
     "dev": "node ./bin/42.js"
   },
   "devDependencies": {

@@ -23,7 +23,7 @@ export default async function kit() {
   task.glob.push(
     `!${system.config.paths.dirs.kits.replace(cwd + "/", "")}/**`,
     `!${system.config.paths.files.scan.replace(cwd + "/", "")}`,
-    "!42.sw.js"
+    "!42.sw.js",
   )
 
   const scannedFiles = sortPath(
@@ -32,12 +32,12 @@ export default async function kit() {
       cwd,
       dot: true,
       absolute: true,
-    })
+    }),
   )
 
   if (scannedFiles.length === 0) {
     task.log(
-      `💥 {yellow could not find any files matching pattern: ${task.glob}}`
+      `💥 {yellow could not find any files matching pattern: ${task.glob}}`,
     )
     return 1
   }
@@ -64,7 +64,7 @@ export default async function kit() {
 
         pack.add(header)
         return fh
-      })()
+      })(),
     )
   }
 
@@ -83,7 +83,7 @@ export default async function kit() {
     ` kit {white.dim →} ${task.log.format.file(dest, {
       colors: { name: "bright.red" },
       bytes: (await destHandle.stat()).size,
-    })} (${scannedFiles.length} files bundled)`
+    })} (${scannedFiles.length} files bundled)`,
   )
 
   return 0
