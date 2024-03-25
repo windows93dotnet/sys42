@@ -292,7 +292,8 @@ export const dialog = rpc(
         return controller
       }
 
-      const off = stage?.reactive.on("destroy", { off: true }, () => {
+      // Close dialog when parent ui is destroyed
+      const off = stage?.reactive?.on("destroy", { off: true }, () => {
         controller.close()
       })
 
