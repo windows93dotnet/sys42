@@ -481,17 +481,18 @@ function normalizeOn(plan) {
   }
 
   if (plan.toggle) {
+    const id = plan.toggle
     plan.aria ??= {}
-    plan.aria.pressed ??= false
-    plan.aria.controls ??= plan.toggle
+    plan.aria.expanded ??= false
+    plan.aria.controls ??= id
     plan.on ??= []
     plan.on.push({
       click(e, target) {
-        const el = document.querySelector("#" + plan.toggle)
+        const el = document.querySelector(`#${id}`)
         if (el) {
-          el.classList.toggle("hide")
-          target.setAttribute("aria-pressed", !el.classList.contains("hide"))
-        }
+          const isHidden = el.classList.toggle("hide")
+          target.setAttribute("aria-expanded", !isHidden)
+        } else console.warn(`Toggler couldn't find element with id "${id}"`)
       },
     })
     delete plan.toggle

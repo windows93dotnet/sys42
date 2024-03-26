@@ -405,6 +405,7 @@ input[type="number" i]:disabled::-webkit-inner-spin-button {
 :active,
 [role="tab"],
 [role="menuitem"],
+[aria-pressed="true"],
 [aria-selected="true"],
 [aria-expanded="true"]
 ) {

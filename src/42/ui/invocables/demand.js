@@ -15,7 +15,7 @@ export async function demand(options) {
   config.dialog ??= {}
   ensureOpener(config.dialog)
 
-  let { content, x, y, width, height } = config
+  let { content } = config
 
   content = { tag: ".ui-dialog-demand__content.box-v", content }
 
@@ -28,13 +28,24 @@ export async function demand(options) {
 
   if (src) {
     content = {
-      tag: ".box-h",
+      tag: ".box-h.item-shrink",
       content: [
         {
           tag: ".ui-dialog-demand__image.box-center.item-shrink.pa",
           content: { tag: "img", aria: { hidden: true }, src },
         },
         content,
+      ],
+    }
+  }
+
+  if (options.beforeContent || options.afterContent) {
+    content = {
+      tag: ".box-v.items-nowrap.item-spread",
+      content: [
+        options.beforeContent, //
+        content,
+        options.afterContent,
       ],
     }
   }
@@ -46,16 +57,16 @@ export async function demand(options) {
         label: config.label,
         class: config.class,
         role: config.role,
+        x: config.x,
+        y: config.y,
+        width: config.width,
+        height: config.height,
         content,
-        x,
-        y,
-        width,
-        height,
         footer: config.footer ?? [
           config.agree === false
             ? undefined
             : {
-                tag: "button.ui-dialog__agree.btn-default",
+                tag: "button.ui-dialog__agree",
                 click: "{{ok()}}",
                 ...objectifyPlan(config.agree),
               },

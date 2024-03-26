@@ -4,11 +4,20 @@ import client from "../42/os/network/client.js"
 import clearSiteData from "../42/os/network/client/clearSiteData.js"
 
 import trap from "../42/fabric/type/error/trap.js"
+let cnt = 0
+let idleId
 trap((err) => {
-  os.desktop?.state.errors.push(err)
-})
+  cnt++
+  cancelIdleCallback(idleId)
+  if (cnt > 10) {
+    // Too many alerts
+    idleId = requestIdleCallback(() => (cnt = 0))
+    return
+  }
 
-document.body.classList.add("desktop")
+  import("../42/ui/invocables/alert.js").then(({ alert }) => alert(err))
+  return false
+})
 
 await client.connect()
 
@@ -61,18 +70,9 @@ os.desktop = await ui({
           picto: "cross-alt",
           click: () => clearSiteData({ reload: true }),
         },
-        {
-          if: "{{/errors.length > 0}}",
-          tag: ".solid.error",
-          content: "{{/errors.length}} error(s)",
-        },
       ],
     },
   ],
-
-  state: {
-    errors: [],
-  },
 })
 
 /* Apps Manager Exemples
