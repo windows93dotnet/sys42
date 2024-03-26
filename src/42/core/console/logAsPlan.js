@@ -1,29 +1,29 @@
 import parseLogTemplate from "./parseLogTemplate.js"
 
 export function formatStyle(color) {
-  return {
-    tag: "span.ansi-" + color.split(".").join(".ansi-"),
-    content: "",
-  }
+  return ".ansi-" + color.split(".").join(".ansi-")
 }
 
 export function formatLog(tokens) {
   const out = []
-  let span = { tag: "span", content: "" }
-  for (const { type, content } of tokens) {
-    if (type === "style") {
-      if (span.content) out.push(span)
-      span = formatStyle(content)
+
+  const state = { 0: undefined }
+
+  for (const { type, content, nested } of tokens) {
+    if (type === "text") {
+      const span = { tag: "span", content }
+      if (state[nested]) span.tag += state[nested]
+      out.push(span)
     } else {
-      span.content += content
+      state[nested] = formatStyle(content)
     }
   }
-
-  out.push(span)
 
   return out
 }
 
-export default function logAsPlan(str) {
+export function logAsPlan(str) {
   return formatLog(parseLogTemplate(str))
 }
+
+export default logAsPlan
