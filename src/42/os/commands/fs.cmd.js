@@ -6,7 +6,7 @@ export const cli = {
   argsKey: "glob",
 }
 
-export default async function fs(args) {
+export async function fs(args) {
   const [cmd, options] = Object.entries(args)[0]
 
   if (options) {
@@ -21,3 +21,5 @@ export default async function fs(args) {
     )
   }
 }
+
+export default fs

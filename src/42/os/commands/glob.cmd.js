@@ -1,5 +1,7 @@
 import fileIndex from "../../core/fileIndex.js"
 
-export default async function glob({ glob }) {
+export async function glob({ glob }) {
   return fileIndex.glob(glob)
 }
+
+export default glob

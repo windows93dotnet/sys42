@@ -5,11 +5,15 @@ export const cli = {
   argsKey: "glob",
 }
 
-export default async function open(options) {
+export async function open(options) {
   if (typeof options === "string" || Array.isArray(options)) {
     options = { glob: options }
   }
 
-  const { glob } = options
-  appsManager.open(fileIndex.glob(glob))
+  const { glob, ...config } = options
+  const paths = fileIndex.glob(glob)
+
+  appsManager.open(paths, config)
 }
+
+export default open
