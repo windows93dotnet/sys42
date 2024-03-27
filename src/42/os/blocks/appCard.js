@@ -32,7 +32,7 @@ export default function appCard(manifest) {
               scope: "categories",
               each: {
                 tag: "li.pill",
-                content: "{{titleCase(.)}}",
+                content: "{{toTitleCase(.)}}",
               },
             },
           },
