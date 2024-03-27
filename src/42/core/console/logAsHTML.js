@@ -1,3 +1,4 @@
+import normalizeHref from "./normalizeHref.js"
 import parseLogTemplate from "./parseLogTemplate.js"
 
 export function formatStyle(color) {
@@ -5,22 +6,47 @@ export function formatStyle(color) {
 }
 
 export function formatLog(tokens) {
-  const out = document.createDocumentFragment()
+  const root = document.createDocumentFragment()
+  let current = root
 
   const state = { 0: undefined }
 
-  for (const { type, content, nested } of tokens) {
+  let href
+
+  for (let { type, content, nested } of tokens) {
+    const hasHref = href !== undefined
+
+    if (!hasHref && content.startsWith("[](")) {
+      href = ""
+      const link = document.createElement("a")
+      link.className = "ansi--link"
+      root.append(link)
+      current = link
+      content = content.slice(3)
+      if (!content) continue
+    }
+
     if (type === "text") {
+      if (hasHref) {
+        if (content.startsWith(")")) {
+          current.href = normalizeHref(href)
+          current = root
+          content = content.slice(1)
+          href = undefined
+          if (!content) continue
+        } else href += content
+      }
+
       const span = document.createElement("span")
-      if (state[nested]) span.className = state[nested]
       span.append(content)
-      out.append(span)
+      if (state[nested]) span.className = state[nested]
+      current.append(span)
     } else {
       state[nested] = formatStyle(content)
     }
   }
 
-  return out
+  return root
 }
 
 export function logAsHTML(str) {

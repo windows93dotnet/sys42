@@ -75,13 +75,19 @@ export default function formatError(error, options) {
 
     for (let i = 0; i < obj.stack.length; i++) {
       const element = obj.stack[i]
-      const lineLocation = formatFilename(element, config.filename)
+      let lineLocation = formatFilename(element, config.filename)
+
+      if (options?.markdown) lineLocation = `[](${lineLocation})`
+
       const functionName = element.function
         ? escapeLog(element.function.padEnd(maxFnName))
         : " ".repeat(maxFnName)
+
       out += `{${colors.punctuation} ${
         i === obj.stack.length - 1 ? "\n└" : "\n├"
-      }${dash}}{${colors.function} ${functionName}}${lineLocation}`
+      }${dash}}`
+
+      out += `{${colors.function} ${functionName}}${lineLocation}`
     }
   }
 

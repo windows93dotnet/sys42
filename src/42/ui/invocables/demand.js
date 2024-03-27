@@ -67,6 +67,7 @@ export async function demand(options) {
             ? undefined
             : {
                 tag: "button.ui-dialog__agree",
+                autofocus: true,
                 click: "{{ok()}}",
                 ...objectifyPlan(config.agree),
               },

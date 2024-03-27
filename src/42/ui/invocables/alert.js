@@ -11,14 +11,19 @@ const DEFAULT = {
 export async function alert(message = "", options) {
   if (isErrorLike(message)) {
     options ??= {}
+
     const error = await import("../../fabric/type/error/normalizeError.js") //
       .then((m) => m.default(message))
+
     options.icon ??= "error"
     options.label ??= error.name
+    options.expanded ??= false
+
     message = options.content ?? error.message
 
     console.groupCollapsed(`⚠ ${error.name} - ${message}`)
-    console.log(error)
+    if (error instanceof AggregateError) console.dir(error)
+    else console.log(error)
     console.groupEnd()
 
     if (error.stack && error.stack !== error.message) {
@@ -26,7 +31,12 @@ export async function alert(message = "", options) {
         import("../../core/console/logAsPlan.js") //
           .then((m) => m.default),
         import("../../core/console/formatters/formatError.js") //
-          .then((m) => m.default(error, options.formatError)),
+          .then((m) =>
+            m.default(error, {
+              markdown: true,
+              ...options.formatError,
+            }),
+          ),
       ])
       const sampId = uid()
       const btnId = uid()
@@ -34,7 +44,7 @@ export async function alert(message = "", options) {
         tag: "samp.pa.inset.code",
         role: "status",
         aria: { labelledby: btnId },
-        class: { hide: options.collapsed !== false },
+        class: { hide: !options.expanded },
         id: sampId,
         content: [
           { tag: ".sr-only", content: error.stack },
@@ -52,7 +62,7 @@ export async function alert(message = "", options) {
               content: "Details",
               id: btnId,
               toggle: sampId,
-              aria: { expanded: options.collapsed === false },
+              aria: { expanded: options.expanded },
             },
           },
         ],

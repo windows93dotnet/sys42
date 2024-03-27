@@ -43,9 +43,26 @@ test.tasks(
         { tag: "span.ansi-cyan", content: "D" },
       ],
     },
+    {
+      title: "stackframe logging",
+      str: "{red link:}[]({blue /dir/}{cyan exemple}{blue .js:80:5})",
+      html: '<span class="ansi-red">link:</span><a class="ansi--link" href="/dir/exemple.js?line=80&amp;column=5"><span class="ansi-blue">/dir/</span><span class="ansi-cyan">exemple</span><span class="ansi-blue">.js:80:5</span></a>',
+      plan: [
+        { tag: "span.ansi-red", content: "link:" },
+        {
+          tag: "a.ansi--link",
+          content: [
+            { tag: "span.ansi-blue", content: "/dir/" },
+            { tag: "span.ansi-cyan", content: "exemple" },
+            { tag: "span.ansi-blue", content: ".js:80:5" },
+          ],
+          href: "/dir/exemple.js?line=80&column=5",
+        },
+      ],
+    },
   ],
-  (test, { str, html, plan }) => {
-    test((t) => {
+  (test, { title, str, html, plan }) => {
+    test(title ?? str, (t) => {
       if (debug) log(str)
       if (html) t.is(toHTML(str), html)
       if (plan) t.eq(logAsPlan(str), plan)

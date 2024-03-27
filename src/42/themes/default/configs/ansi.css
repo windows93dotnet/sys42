@@ -47,3 +47,13 @@
 .ansi-whiteBright { color: var(--ansi-whiteBright); }
 .ansi-dim { opacity: var(--ansi-dim); }
 .ansi-reset { color: var(--ansi-fg); }
+
+.ansi--link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.ansi--link:hover > span {
+  text-decoration: underline;
+  text-decoration-skip-ink: auto;
+}
