@@ -12,11 +12,11 @@ const VALID_TYPES = new Set([".json", ".json5", ".cbor"])
 
 const pending = new Map()
 
-const persist = {}
-export default persist
+export const persist = {}
 
 persist.ensureType = (path) => {
   const ext = getExtname(path)
+
   if (!VALID_TYPES.has(ext)) {
     throw new Error(
       `Data file must have a .json, .json5 or .cbor extension: ${ext}`,
@@ -59,7 +59,7 @@ persist.set = async (path, data) => {
   })
 }
 
-const handler = (e) => {
+const onBeforeUnload = (e) => {
   if (pending.size > 0) {
     queueMicrotask(() => {
       // force saving
@@ -82,10 +82,12 @@ let isListening = false
 
 const listenUnload = () => {
   isListening = true
-  globalThis.addEventListener("beforeunload", handler, options)
+  globalThis.addEventListener("beforeunload", onBeforeUnload, options)
 }
 
 const forgetUnload = () => {
   isListening = false
-  globalThis.removeEventListener("beforeunload", handler, options)
+  globalThis.removeEventListener("beforeunload", onBeforeUnload, options)
 }
+
+export default persist

@@ -1,7 +1,8 @@
 import system from "../system.js"
 import FileIndex from "./fs/FileIndex.js"
 
-let fileIndex
+export let fileIndex
+
 if (system.fileIndex) fileIndex = system.fileIndex
 else {
   fileIndex = new FileIndex()
@@ -9,5 +10,4 @@ else {
   system.fileIndex = fileIndex
 }
 
-export { fileIndex }
 export default fileIndex
