@@ -1,17 +1,25 @@
 //! Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>. MIT License.
 // @src https://github.com/vfile/vfile-location
 
-export default function textPosition(text) {
-  const value = String(text)
+const SEARCH_REGEX = /\r?\n|\r/g
 
-  const indices = []
-  const search = /\r?\n|\r/g
+export class TextPosition {
+  indices = []
 
-  while (search.test(value)) indices.push(search.lastIndex)
+  constructor(text) {
+    this.update(text)
+  }
 
-  indices.push(value.length + 1)
+  update(text) {
+    const value = String(text)
+    this.indices.length = 0
+    SEARCH_REGEX.lastIndex = 0
+    while (SEARCH_REGEX.test(value)) this.indices.push(SEARCH_REGEX.lastIndex)
+    this.indices.push(value.length + 1)
+  }
 
-  function toPoint(offset) {
+  toPoint(offset) {
+    const { indices } = this
     let index = -1
 
     if (offset > -1 && offset < indices.at(-1)) {
@@ -28,9 +36,10 @@ export default function textPosition(text) {
     return { line: undefined, column: undefined }
   }
 
-  function toOffset(point) {
-    const line = Number(point?.line)
-    const column = Number(point?.column)
+  toOffset(point) {
+    const { indices } = this
+    const line = Number.parseInt(point?.line, 10)
+    const column = Number.parseInt(point?.column, 10)
 
     let offset
 
@@ -44,6 +53,10 @@ export default function textPosition(text) {
 
     return offset > -1 && offset < indices.at(-1) ? offset : -1
   }
-
-  return { toPoint, toOffset }
 }
+
+export function textPosition(text) {
+  return new TextPosition(text)
+}
+
+export default textPosition
