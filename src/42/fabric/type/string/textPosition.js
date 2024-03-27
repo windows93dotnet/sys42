@@ -39,7 +39,7 @@ export class TextPosition {
   toOffset(point) {
     const { indices } = this
     const line = Number.parseInt(point?.line, 10)
-    const column = Number.parseInt(point?.column, 10)
+    const column = Number.parseInt(point?.column ?? 1, 10)
 
     let offset
 

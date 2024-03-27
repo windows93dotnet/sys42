@@ -48,7 +48,20 @@ export async function alert(message = "", options) {
         id: sampId,
         content: [
           { tag: ".sr-only", content: error.stack },
-          { aria: { hidden: true }, content: logAsPlan(formated) },
+          {
+            aria: { hidden: true },
+            content: logAsPlan(formated),
+            on: {
+              selector: "a.ansi--link",
+              preventDefault: true,
+              click(e, target) {
+                import("../../os/managers/appsManager.js") //
+                  .then(({ appsManager }) =>
+                    appsManager.open(target.pathname + target.search),
+                  )
+              },
+            },
+          },
         ],
       }
       options.dialog ??= {}

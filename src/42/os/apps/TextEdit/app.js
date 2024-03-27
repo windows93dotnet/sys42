@@ -1,3 +1,5 @@
+import textPosition from "../../../fabric/type/string/textPosition.js"
+
 export default {
   menubar: [
     { $ref: "FileMenu" },
@@ -65,7 +67,26 @@ export default {
           lazy: true,
           prose: false,
           compact: true,
-          autofocus: true,
+          // autofocus: true,
+          on: {
+            async render(e, target) {
+              const current = this.state.$current
+              const params = this.state.$params[current]
+              if (!(params && params.line)) {
+                target.focus({ preventScroll: true })
+                return
+              }
+
+              const currentFile = this.state.$files[current]
+              const text = await currentFile.text
+              const tp = textPosition(text)
+              const offset = tp.toOffset(params)
+
+              target.selectionStart = offset
+              target.selectionEnd = offset
+              target.focus({ focusVisible: false })
+            },
+          },
         },
       ],
     },

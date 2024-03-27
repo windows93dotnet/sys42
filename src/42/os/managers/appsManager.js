@@ -5,6 +5,7 @@ import arrify from "../../fabric/type/any/arrify.js"
 import pick from "../../fabric/type/object/pick.js"
 import fileIndex from "../../core/fileIndex.js"
 import isHashmapLike from "../../fabric/type/any/is/isHashmapLike.js"
+import parseURLQuery from "../../fabric/url/parseURLQuery.js"
 import mimetypesManager from "./mimetypesManager.js"
 import normalizeManifest from "../classes/App/normalizeManifest.js"
 import App from "../classes/App.js"
@@ -101,18 +102,24 @@ class AppsManager extends ConfigFile {
     const openers = {}
 
     for (const path of arrify(paths)) {
-      if (path.endsWith("/")) {
-        import("../../ui/components/explorer.js").then(({ explorer }) =>
-          explorer(path),
-        )
+      const { pathname, search, searchParams } = new URL(path, "file:")
+      const fileParams = search ? parseURLQuery(searchParams) : undefined
+
+      if (pathname.endsWith("/")) {
+        import("../../ui/components/explorer.js") //
+          .then(({ explorer }) => explorer(pathname))
         continue
       }
 
-      const { apps: appNames } = mimetypesManager.lookup(path)
+      const { apps: appNames } = mimetypesManager.lookup(pathname)
 
       if (appNames.length > 0) {
-        openers[appNames[0]] ??= []
-        openers[appNames[0]].push(path)
+        openers[appNames[0]] ??= {}
+        const opener = openers[appNames[0]]
+        opener.$files ??= []
+        opener.$files.push(pathname)
+        opener.$params ??= []
+        opener.$params.push(fileParams)
       } else {
         import("../../ui/invocables/alert.js").then(({ alert }) =>
           alert("No app available to open this type of file"),
@@ -120,8 +127,11 @@ class AppsManager extends ConfigFile {
       }
     }
 
-    for (const [appName, paths] of Object.entries(openers)) {
-      this.launch(appName, { state: { $files: paths }, ...options })
+    for (const [appName, { $files, $params }] of Object.entries(openers)) {
+      this.launch(appName, {
+        state: { $files, $params },
+        ...options,
+      })
     }
   }
 
