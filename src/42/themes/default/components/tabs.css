@@ -137,6 +137,7 @@ ui-tabs {
   inset: 0;
   border-radius: inherit;
   box-shadow: var(--tabs__tab-bsh);
+  pointer-events: none;
 }
 
 .ui-tabs__tab[aria-selected="true"] {
@@ -223,6 +224,7 @@ ui-tabs[side="bottom"] { flex-direction: column-reverse; }
 ui-tabs:is(:not([side]), [side="top"]) .ui-tabs__tablist {
   align-items: flex-end;
   padding-right: calc(-1 * var(--tabs-gap));
+  margin-right: 0;
 }
 
 ui-tabs:is(:not([side]), [side="top"]) .ui-tabs__tab[aria-selected="true"] {
@@ -249,6 +251,7 @@ ui-tabs:is(:not([side]), [side="top"]) .ui-tabs__panel {
 ui-tabs[side="bottom"] > .ui-tabs__tablist {
   align-items: flex-start;
   padding-right: calc(-1 * var(--tabs-gap));
+  margin-right: 0;
   top: calc(-1 * var(--tabs-overlap));
 }
 

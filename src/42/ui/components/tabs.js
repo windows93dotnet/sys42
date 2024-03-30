@@ -92,6 +92,9 @@ export class Tabs extends Component {
                 selected: "{{../../current === @index}}",
                 controls: `${id}-panel-{{@index}}`,
               },
+              on: {
+                "pointerdown || Space || Enter": "{{selectPanel(@index)}}",
+              },
               content: {
                 tag: "span.ui-tabs__label",
                 content: [
@@ -101,13 +104,7 @@ export class Tabs extends Component {
                     content: "{{render(prelabel)}}",
                   },
                   configure(
-                    {
-                      tag: "span.ui-tabs__trigger",
-                      on: {
-                        "pointerdown || Space || Enter":
-                          "{{selectPanel(@index)}}",
-                      },
-                    },
+                    { tag: "span.ui-tabs__trigger" },
                     tabTemplate
                       ? objectifyPlan(tabTemplate)
                       : { content: "{{render(label)}}" },

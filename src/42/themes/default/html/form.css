@@ -1222,7 +1222,7 @@ input::-webkit-datetime-edit-fields-wrapper
 /* picto
 ======== */
 
-:is(label,.label,button,.button,.field,.solid).has-picto--only-child {
+:where(label,.label,button,.button,.field,.solid).has-picto--only-child {
   padding-inline: 1px;
 }
 
