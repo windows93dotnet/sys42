@@ -115,7 +115,7 @@ export class Tabs extends Component {
                     content: "{{render(postlabel)}}",
                   },
                   closable && {
-                    tag: "button.ui-tabs__close",
+                    tag: "button.btn-clear.ui-tabs__close",
                     tabIndex: "{{../../current === @index ? 0 : -1}}",
                     picto: "close",
                     on: {

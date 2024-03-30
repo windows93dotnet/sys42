@@ -813,11 +813,11 @@ input[type="submit"]
   }
 }
 
-.button > .btn-clear.has-picto {
+.btn-clear.has-picto {
   border: 0;
   flex: 0 0 var(--picto-size);
   height: var(--picto-size);
-  --btn-oo: 0;
+  --btn-oo: -1px;
 }
 
 :where(.solid),

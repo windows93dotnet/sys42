@@ -188,10 +188,11 @@ ui-tabs {
   white-space: nowrap;
 }
 
-.ui-tabs__close {
+.ui-tabs__close,
+.ui-tabs__close:focus {
   background: transparent;
   padding: 0;
-  border: 0;
+  border: none;
   width: var(--picto-size);
   height: var(--picto-size);
   min-width: 0;

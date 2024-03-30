@@ -402,6 +402,7 @@ input[type="number" i]:disabled::-webkit-inner-spin-button {
 }
 
 :is(button, .button):focus:not(
+.btn-clear,
 :active,
 [role="tab"],
 [role="menuitem"],
