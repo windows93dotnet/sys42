@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import render from "../render.js"
 import create from "../create.js"
 import { addEntry } from "../normalize.js"
@@ -46,6 +47,12 @@ export function renderTag(tag, plan, stage) {
     }
   } else if (el.form !== undefined && !NOT_CONTROLS.has(localName)) {
     el = renderControl(el, stage, plan)
+  }
+
+  if (plan.css) {
+    const style = document.createElement("style")
+    style.textContent = `@scope {${plan.css}}`
+    el.prepend(style)
   }
 
   if (plan.picto) {

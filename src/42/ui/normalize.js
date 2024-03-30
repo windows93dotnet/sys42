@@ -40,6 +40,7 @@ const PLAN_KEYWORDS = new Set([
   "computed",
   "content",
   "contextmenu",
+  "css",
   "defaults",
   "dialog",
   "dropzone",
