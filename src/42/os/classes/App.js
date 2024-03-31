@@ -119,7 +119,8 @@ function makeSandbox(manifest) {
     return out
   }
 
-  out.sandbox.head = manifest.content ? DEFAULT_PRELOAD : ""
+  const hasContent = manifest.content || manifest.ui || manifest.$ref
+  out.sandbox.head = hasContent ? DEFAULT_PRELOAD : ""
 
   if (manifest.preload) {
     for (const preload of arrify(manifest.preload)) {
@@ -208,10 +209,7 @@ async function shell(manifestPath, options) {
       if (install?.isPending) await install
     }
 
-    import("../../core/ipc.js") //
-      .then(({ ipc }) => {
-        ipc.on("42_APP_READY", async () => system.pwa.files)
-      })
+    ipc.on("42_APP_READY", async () => system.pwa.files)
 
     const appShell = new UI(
       { id, tag: "ui-sandbox.app-shell.box-fit", ...sandbox },
@@ -282,6 +280,18 @@ export async function launch(manifestPath, options) {
     if (item.sizes === "16x16") break
   }
 
+  // // no sandbox experiment
+  // const div = document.createElement("div")
+  // const app = new App(div, await resoleManifest(manifest))
+  // app.start()
+  // const content = app.el.firstChild
+  // content.classList.add("h-full")
+
+  const content = {
+    tag: "ui-sandbox" + (manifest.inset ? ".inset" : ""),
+    ...sandbox,
+  }
+
   return dialog(
     configure(
       {
@@ -294,10 +304,7 @@ export async function launch(manifestPath, options) {
       manifest.dialog,
       {
         label: "{{$dialog.title}}",
-        content: {
-          tag: "ui-sandbox" + (manifest.inset ? ".inset" : ""),
-          ...sandbox,
-        },
+        content,
         state: {
           $dialog: { title: manifest.name },
         },
@@ -468,18 +475,16 @@ export default class App extends UI {
       })
 
     if (!inTop) {
-      import("../../core/ipc.js").then(({ ipc }) => {
-        ipc
-          .send("42_APP_READY")
-          .then((files) => {
-            if (manifest.multiple === true) {
-              for (const item of files) this.state.$files.push(item)
-            } else {
-              this.state.$files.push(files.at(-1))
-            }
-          })
-          .catch(noop)
-      })
+      ipc
+        .send("42_APP_READY")
+        .then((files) => {
+          if (manifest.multiple === true) {
+            for (const item of files) this.state.$files.push(item)
+          } else {
+            this.state.$files.push(files.at(-1))
+          }
+        })
+        .catch(noop)
     }
 
     editor.init(this)
