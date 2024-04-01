@@ -3,7 +3,7 @@ import Component from "../classes/Component.js"
 import getPathInfos from "../../core/path/getPathInfos.js"
 import fs from "../../core/fs.js"
 import decodeINI from "../../core/formats/ini/decodeINI.js"
-import themeManager from "../../os/managers/themeManager.js"
+import themesManager from "../../os/managers/themesManager.js"
 import mimetypesManager from "../../os/managers/mimetypesManager.js"
 import getStemname from "../../core/path/core/getStemname.js"
 
@@ -71,7 +71,7 @@ class Icon extends Component {
     if (path === undefined) return
 
     if (!ready) {
-      const undones = Promise.all([themeManager.ready, mimetypesManager.ready])
+      const undones = Promise.all([themesManager.ready, mimetypesManager.ready])
       this.stage.waitlistPending.push(undones)
       await undones
       ready = true
@@ -88,10 +88,10 @@ class Icon extends Component {
       infos.description = "shortcut"
 
       if (this.small) {
-        const iconPath = await themeManager.getIconPath(icon, "16x16")
+        const iconPath = await themesManager.getIconPath(icon, "16x16")
         infos.image16x16 ??= await fs.getURL(iconPath)
       } else {
-        const iconPath = await themeManager.getIconPath(icon, "32x32")
+        const iconPath = await themesManager.getIconPath(icon, "32x32")
         infos.image ??= await fs.getURL(iconPath)
       }
 
@@ -116,10 +116,10 @@ class Icon extends Component {
 
     if (this.small) {
       infos.image16x16 ??= await fs.getURL(
-        await themeManager.getIconPath(infos, "16x16"),
+        await themesManager.getIconPath(infos, "16x16"),
       )
     } else {
-      infos.image ??= await fs.getURL(await themeManager.getIconPath(infos))
+      infos.image ??= await fs.getURL(await themesManager.getIconPath(infos))
     }
 
     if (infos.isURI) infos.ext = ""

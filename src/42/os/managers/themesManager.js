@@ -1,5 +1,5 @@
 import ConfigFile from "../classes/ConfigFile.js"
-import findIconPath from "./themeManager/findIconPath.js"
+import findIconPath from "./themesManager/findIconPath.js"
 
 // import loadCSS from "../core/load/loadCSS.js"
 
@@ -9,7 +9,7 @@ const DEFAULTS = {
   icons: [new URL("../../themes/default/icons", import.meta.url).pathname],
 }
 
-class ThemeManager extends ConfigFile {
+class ThemesManager extends ConfigFile {
   #fallbackIcon
 
   async init() {
@@ -60,7 +60,7 @@ class ThemeManager extends ConfigFile {
   }
 }
 
-export const themeManager = new ThemeManager(".theme.json", DEFAULTS)
-themeManager.init()
+export const themesManager = new ThemesManager(".theme.json", DEFAULTS)
+themesManager.init()
 
-export default themeManager
+export default themesManager

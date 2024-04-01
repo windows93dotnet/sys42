@@ -19,7 +19,7 @@
 
   import ui from "../../42/ui.js"
   import cssVar from "../../42/fabric/cssom/cssVar.js"
-  import themeManager from "../../42/os/managers/themeManager.js"
+  import themesManager from "../../42/os/managers/themesManager.js"
 
   cssVar.set("--ActiveTitle", "darkslategray")
   cssVar.set("--GradientActiveTitle", "cyan")
@@ -39,7 +39,7 @@
   cssVar.set("--Window", "paleturquoise")
   cssVar.set("--WindowText", "darkslategray")
 
-  await Promise.all([document.fonts.ready, themeManager.ready])
+  await Promise.all([document.fonts.ready, themesManager.ready])
 
   // import dialog from "../../42/ui/components/dialog.js"
   // dialog("hello")

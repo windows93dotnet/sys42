@@ -1,5 +1,5 @@
 import "./form.js"
-import "../os/managers/themeManager.js"
+import "../os/managers/themesManager.js"
 // import "./components/tooltip.js"
 
 document.documentElement.lang ||= "en"
