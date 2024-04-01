@@ -49,7 +49,7 @@ export default class BrowserDriver extends Driver {
     return fileIndex.has(filename)
   }
 
-  async getURL(filename) {
+  async getURL(filename, options) {
     if (!fileIndex.has(filename)) {
       if (filename.startsWith("http") || filename.startsWith("//")) {
         return filename
@@ -64,6 +64,11 @@ export default class BrowserDriver extends Driver {
 
     const blob = await this.open(filename)
     const objectURL = URL.createObjectURL(blob)
+
+    options?.signal.addEventListener("abort", () =>
+      URL.revokeObjectURL(objectURL),
+    )
+
     return objectURL
   }
 

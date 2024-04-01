@@ -77,6 +77,8 @@ class Icon extends Component {
       ready = true
     }
 
+    const options = { signal: this.stage.signal }
+
     if (path.endsWith(".desktop")) {
       const ini = decodeINI(await fs.readText(path))["Desktop Entry"]
       const icon = ini.Icon
@@ -89,10 +91,10 @@ class Icon extends Component {
 
       if (this.small) {
         const iconPath = await themesManager.getIconPath(icon, "16x16")
-        infos.image16x16 ??= await fs.getURL(iconPath)
+        infos.image16x16 ??= await fs.getURL(iconPath, options)
       } else {
         const iconPath = await themesManager.getIconPath(icon, "32x32")
-        infos.image ??= await fs.getURL(iconPath)
+        infos.image ??= await fs.getURL(iconPath, options)
       }
 
       return infos
@@ -117,9 +119,13 @@ class Icon extends Component {
     if (this.small) {
       infos.image16x16 ??= await fs.getURL(
         await themesManager.getIconPath(infos, "16x16"),
+        options,
       )
     } else {
-      infos.image ??= await fs.getURL(await themesManager.getIconPath(infos))
+      infos.image ??= await fs.getURL(
+        await themesManager.getIconPath(infos),
+        options,
+      )
     }
 
     if (infos.isURI) infos.ext = ""

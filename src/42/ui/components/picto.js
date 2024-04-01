@@ -78,7 +78,7 @@ export class Picto extends Component {
         src = await themesManager.getIconPath(this.value, "16x16")
       }
 
-      src = await fs.getURL(src)
+      src = await fs.getURL(src, { signal: this.stage.signal })
 
       if (this.rasterImage) {
         this.rasterImage.src = src
