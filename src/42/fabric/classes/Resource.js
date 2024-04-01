@@ -168,11 +168,10 @@ export default class Resource {
     this.bus = ipc.from(this.el)
     this.bus
       .on("42_IFRAME_ERROR", async (err) => {
-        const [deserializeError] = await Promise.all([
-          import("../type/error/deserializeError.js") //
-            .then((m) => m.default),
-        ])
-        dispatch(this.el, deserializeError(err))
+        import("../type/error/deserializeError.js") //
+          .then(({ deserializeError }) => {
+            dispatch(this.el, deserializeError(err))
+          })
       })
       .on("42_IFRAME_BLUR", () => {
         dispatch(this.el, "ui:iframe.blur")

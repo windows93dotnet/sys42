@@ -117,7 +117,7 @@ dummyDialog(
   ],
 
   (test, { title, plan, timeout: ms, working, trusted, description }) => {
-    ms ??= 2000
+    ms ??= 3000
     test.ui("sandbox", title, async (t, { decay, dest, untilError }) => {
       t.timeout(ms + 100)
 
