@@ -56,7 +56,8 @@ const makeContent = () => ({
         log(
           alert(new TypeError("boom"), {
             content: "Oops",
-            collapsed: false,
+            expanded: true,
+            log: false,
           }),
         )
       },
@@ -140,6 +141,30 @@ test.ui(async (t, { triggerOpener }) => {
     },
   )
 
+  await triggerOpener(
+    "#alertErrorCustom",
+    ".ui-dialog__agree",
+    true,
+    async (dialog) => {
+      t.match(dialog.querySelector("img").src, /error\./)
+      const agree = dialog.querySelector(".ui-dialog__agree")
+      const details = dialog.querySelector(".ui-dialog__details")
+      t.is(
+        dialog.querySelector(".ui-dialog-demand__content").textContent,
+        "Oops",
+      )
+      t.match(
+        dialog.querySelector(".ui-dialog-demand__error").textContent,
+        /boom\n┌╴TypeError/,
+      )
+      t.is(details.getAttribute("aria-expanded"), "true")
+      t.true(
+        window.top.document.activeElement === agree,
+        "Alert agree button should have focus",
+      )
+    },
+  )
+
   await Promise.all([
     // alert always return true
     triggerOpener("#alert", ".ui-dialog__agree", true),
@@ -147,8 +172,8 @@ test.ui(async (t, { triggerOpener }) => {
 
     // confirm return a boolean
     triggerOpener("#confirm", ".ui-dialog__agree", true),
-    triggerOpener("#confirm", ".ui-dialog__close", false),
     triggerOpener("#confirm", ".ui-dialog__decline", false),
+    triggerOpener("#confirm", ".ui-dialog__close", false),
 
     // prompt return a string or undefined
     triggerOpener("#prompt", ".ui-dialog__agree", ""),

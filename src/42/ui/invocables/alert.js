@@ -21,10 +21,12 @@ export async function alert(message = "", options) {
 
     message = options.content ?? error.message
 
-    console.groupCollapsed(`⚠ ${error.name} - ${message}`)
-    if (error instanceof AggregateError) console.dir(error)
-    else console.log(error)
-    console.groupEnd()
+    if (options.log === "false") {
+      console.groupCollapsed(`⚠ ${error.name} - ${message}`)
+      if (error instanceof AggregateError) console.dir(error)
+      else console.log(error)
+      console.groupEnd()
+    }
 
     if (error.stack && error.stack !== error.message) {
       const [logAsPlan, formated] = await Promise.all([
@@ -41,7 +43,7 @@ export async function alert(message = "", options) {
       const sampId = uid()
       const btnId = uid()
       options.afterContent = {
-        tag: "samp.pa.inset.code",
+        tag: "samp.pa.inset.code.ui-dialog-demand__error",
         role: "status",
         aria: { labelledby: btnId },
         class: { hide: !options.expanded },
@@ -68,10 +70,15 @@ export async function alert(message = "", options) {
       options.dialog.footer = {
         $patch: [
           {
+            op: "replace",
+            path: "/0/autofocus",
+            value: true,
+          },
+          {
             op: "add",
             path: "/-",
             value: {
-              tag: "button",
+              tag: "button.ui-dialog__details",
               content: "Details",
               id: btnId,
               toggle: sampId,
