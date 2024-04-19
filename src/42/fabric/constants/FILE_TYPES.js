@@ -33,6 +33,7 @@ export const mimetypes = {
     "vnd.geo+json": "geojson",
     "vnd.ms-fontobject": "eot", // [1]
     "webbundle": "wbn",
+    "wasm": "wasm",
     "x-ndjson": "ndjson",
     "x-web-app-manifest+json": "webapp",
     "xml": "rdf xml",

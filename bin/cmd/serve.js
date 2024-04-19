@@ -86,7 +86,7 @@ async function sendFile(req, reply, base = srcPath, originalError) {
     const is404 = error.code === "ENOENT"
 
     // try serving sys42 source files as fallback
-    if (is404 && originalError === undefined) {
+    if (is404 && originalError === undefined && req.url.startsWith("/42/")) {
       return sendFile(req, reply, libPath, err)
     }
 
