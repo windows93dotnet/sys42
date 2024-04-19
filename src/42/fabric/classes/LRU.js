@@ -1,6 +1,6 @@
 import removeItem from "../type/array/removeItem.js"
 
-/** [Least Recently Used](https://en.wikipedia.org/wiki/Least_frequently_used) cache. */
+/** [Least Recently Used](https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_recently_used_(LRU)) cache. */
 export default class LRU extends Map {
   #recency
 
