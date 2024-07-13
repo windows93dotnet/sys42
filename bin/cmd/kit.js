@@ -43,6 +43,14 @@ export default async function kit() {
   }
 
   const dest = path.join(system.config.paths.dirs.kits, `${version}.tar.gz`)
+  const destDir = path.dirname(dest)
+
+  try {
+    await fs.access(destDir)
+  } catch {
+    await fs.mkdir(destDir)
+  }
+
   const destHandle = await fs.open(dest, "w")
   const writer = destHandle.createWriteStream()
 
